@@ -94,7 +94,7 @@ export function UserOffersView() {
       header: t("colCounter"),
       render: (o) =>
         o.counterAmount ? (
-          <Text className="font-semibold text-amber-600">
+          <Text className="font-semibold text-amber-600 dark:text-amber-400">
             {formatCurrency(o.counterAmount, o.currency ?? "INR")}
           </Text>
         ) : (

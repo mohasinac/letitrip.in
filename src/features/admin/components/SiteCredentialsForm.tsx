@@ -16,7 +16,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Card, Heading, Text, FormField } from "@/components";
+import {
+  Card,
+  FormField,
+  FormFieldSpan,
+  FormGroup,
+  Heading,
+  Text,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsCredentialsMasked } from "@/db/schema";
 
@@ -121,7 +128,7 @@ export function SiteCredentialsForm({
         <Heading level={4} className="text-sm font-semibold mb-3 mt-2">
           {t("razorpaySection")}
         </Heading>
-        <div className={`${spacing.stack} mb-6`}>
+        <FormGroup columns={2} className="mb-6">
           <div>
             <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
@@ -158,24 +165,26 @@ export function SiteCredentialsForm({
             />
           </div>
 
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("razorpayWebhookSecret")}
-              </Text>
-              {statusBadge(maskedCredentials.razorpayWebhookSecret)}
+          <FormFieldSpan>
+            <div>
+              <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                <Text size="sm" className="font-medium">
+                  {t("razorpayWebhookSecret")}
+                </Text>
+                {statusBadge(maskedCredentials.razorpayWebhookSecret)}
+              </div>
+              <FormField
+                name="razorpayWebhookSecret"
+                label=""
+                type="password"
+                value={values.razorpayWebhookSecret ?? ""}
+                placeholder={hint(maskedCredentials.razorpayWebhookSecret)}
+                onChange={(v) => update("razorpayWebhookSecret", v)}
+                autoComplete="new-password"
+              />
             </div>
-            <FormField
-              name="razorpayWebhookSecret"
-              label=""
-              type="password"
-              value={values.razorpayWebhookSecret ?? ""}
-              placeholder={hint(maskedCredentials.razorpayWebhookSecret)}
-              onChange={(v) => update("razorpayWebhookSecret", v)}
-              autoComplete="new-password"
-            />
-          </div>
-        </div>
+          </FormFieldSpan>
+        </FormGroup>
 
         {/* ── Resend ───────────────────────────────────────────────── */}
         <Heading level={4} className="text-sm font-semibold mb-3">
@@ -205,7 +214,7 @@ export function SiteCredentialsForm({
         <Heading level={4} className="text-sm font-semibold mb-3">
           {t("whatsappSection")}
         </Heading>
-        <div className={spacing.stack}>
+        <FormGroup columns={2}>
           <FormField
             name="whatsappNumber"
             label={t("whatsappNumber")}
@@ -232,13 +241,13 @@ export function SiteCredentialsForm({
               autoComplete="new-password"
             />
           </div>
-        </div>
+        </FormGroup>
 
         {/* ── Shiprocket ──────────────────────────────────────────── */}
         <Heading level={4} className="text-sm font-semibold mb-3 mt-6">
           {t("shiprocketSection")}
         </Heading>
-        <div className={`${spacing.stack} mb-6`}>
+        <FormGroup columns={2} className="mb-6">
           <div>
             <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
@@ -274,13 +283,13 @@ export function SiteCredentialsForm({
               autoComplete="new-password"
             />
           </div>
-        </div>
+        </FormGroup>
 
         {/* ── Meta (Facebook / Instagram) ──────────────────────── */}
         <Heading level={4} className="text-sm font-semibold mb-3">
           {t("metaSection")}
         </Heading>
-        <div className={spacing.stack}>
+        <FormGroup columns={2}>
           <div>
             <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
@@ -317,26 +326,28 @@ export function SiteCredentialsForm({
             />
           </div>
 
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("metaPageAccessToken")}
+          <FormFieldSpan>
+            <div>
+              <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                <Text size="sm" className="font-medium">
+                  {t("metaPageAccessToken")}
+                </Text>
+                {statusBadge(maskedCredentials.metaPageAccessToken)}
+              </div>
+              <FormField
+                name="metaPageAccessToken"
+                label=""
+                type="password"
+                value={values.metaPageAccessToken ?? ""}
+                placeholder={hint(maskedCredentials.metaPageAccessToken)}
+                onChange={(v) => update("metaPageAccessToken", v)}
+                autoComplete="new-password"
+              />
+              <Text size="xs" variant="secondary" className="mt-1">
+                {t("metaPageAccessTokenHint")}
               </Text>
-              {statusBadge(maskedCredentials.metaPageAccessToken)}
             </div>
-            <FormField
-              name="metaPageAccessToken"
-              label=""
-              type="password"
-              value={values.metaPageAccessToken ?? ""}
-              placeholder={hint(maskedCredentials.metaPageAccessToken)}
-              onChange={(v) => update("metaPageAccessToken", v)}
-              autoComplete="new-password"
-            />
-            <Text size="xs" variant="secondary" className="mt-1">
-              {t("metaPageAccessTokenHint")}
-            </Text>
-          </div>
+          </FormFieldSpan>
 
           <FormField
             name="metaPageId"
@@ -347,7 +358,7 @@ export function SiteCredentialsForm({
             onChange={(v) => update("metaPageId", v)}
             autoComplete="off"
           />
-        </div>
+        </FormGroup>
       </div>
     </Card>
   );

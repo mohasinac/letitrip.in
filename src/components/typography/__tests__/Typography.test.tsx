@@ -113,14 +113,14 @@ describe("Typography Components", () => {
     it("applies accent variant (indigo, font-semibold)", () => {
       const { container } = render(<Caption variant="accent">badge</Caption>);
       const el = container.firstChild as HTMLElement;
-      expect(el.className).toContain("indigo");
+      expect(el.className).toContain("primary");
       expect(el.className).toContain("font-semibold");
     });
 
     it("applies inverse variant", () => {
       const { container } = render(<Caption variant="inverse">inv</Caption>);
       const el = container.firstChild as HTMLElement;
-      expect(el.className).toContain("indigo-200");
+      expect(el.className).toContain("primary");
     });
 
     it("forwards extra className", () => {

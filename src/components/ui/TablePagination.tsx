@@ -21,6 +21,11 @@ interface TablePaginationProps {
   /** Disables controls while data is loading */
   isLoading?: boolean;
   className?: string;
+  /**
+   * Compact inline mode — renders only the page buttons (no count text, no
+   * per-page selector). Intended for use inside a sticky toolbar bar.
+   */
+  compact?: boolean;
 }
 
 /**
@@ -51,9 +56,29 @@ export function TablePagination({
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   isLoading = false,
   className = "",
+  compact = false,
 }: TablePaginationProps) {
-  const { themed, spacing } = THEME_CONSTANTS;
+  const { themed } = THEME_CONSTANTS;
   const t = useTranslations("table");
+
+  if (compact) {
+    return (
+      <div
+        role="navigation"
+        aria-label={t("paginationLabel")}
+        className={`flex items-center gap-1 ${className}`}
+      >
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          disabled={isLoading}
+          size="sm"
+          maxVisible={5}
+        />
+      </div>
+    );
+  }
 
   const from = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const to = Math.min(currentPage * pageSize, total);

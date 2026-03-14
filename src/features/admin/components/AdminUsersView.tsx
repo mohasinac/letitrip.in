@@ -310,9 +310,9 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 ${flex.center} flex-shrink-0`}
+                      className={`w-9 h-9 rounded-full bg-primary/10 dark:bg-primary/20 ${flex.center} flex-shrink-0`}
                     >
-                      <Span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                      <Span className="text-sm font-semibold text-primary">
                         {(user.displayName ??
                           user.email ??
                           "U")[0].toUpperCase()}

@@ -105,8 +105,8 @@ export function AuctionGrid({
 
   const containerClass =
     variant === "list"
-      ? "flex flex-col gap-3"
-      : (gridClassName ?? THEME_CONSTANTS.grid.cards) + " gap-4";
+      ? "flex flex-col gap-4"
+      : (gridClassName ?? THEME_CONSTANTS.grid.cards) + " gap-6";
 
   if (loading) {
     return (

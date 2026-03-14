@@ -79,11 +79,11 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
   };
 
   return (
-    <Card className="p-5 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors">
+    <Card className="p-5 border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
       <div className={`${flex.betweenStart} mb-3 gap-2`}>
         <div className="min-w-0 flex-1">
           <Heading level={4}>{coupon.name}</Heading>
-          <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-base mt-0.5">
+          <Text className="text-primary font-bold text-base mt-0.5">
             {getDiscountLabel(coupon)}
           </Text>
         </div>

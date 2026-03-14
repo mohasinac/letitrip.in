@@ -135,19 +135,19 @@ export default async function RefundPolicyPage() {
         >
           <TextLink
             href={ROUTES.PUBLIC.HELP}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("helpCenter")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("contactUs")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.SHIPPING_POLICY}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             Shipping Policy
           </TextLink>

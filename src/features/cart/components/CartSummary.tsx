@@ -72,7 +72,7 @@ export function CartSummary({
       {/* Total */}
       <div className={flex.between}>
         <Span className={`font-bold ${themed.textPrimary}`}>{t("total")}</Span>
-        <Span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
+        <Span className="font-bold text-lg text-primary">
           {formatCurrency(total)}
         </Span>
       </div>

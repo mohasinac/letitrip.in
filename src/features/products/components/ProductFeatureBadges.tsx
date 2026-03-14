@@ -94,9 +94,8 @@ export function ProductFeatureBadges({
       key: "ratedSeller",
       icon: <Award className="w-4 h-4" />,
       label: t("ratedSeller"),
-      colorClass: "text-indigo-700 dark:text-indigo-300",
-      bgClass:
-        "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800",
+      colorClass: "text-primary",
+      bgClass: "bg-primary/5 dark:bg-primary/10 border-primary/20",
     });
   }
 
@@ -115,9 +114,9 @@ export function ProductFeatureBadges({
       key: "condition",
       icon: <Package className="w-4 h-4" />,
       label: `${t("condition")}: ${t(conditionKey)}`,
-      colorClass: "text-blue-700 dark:text-blue-300",
+      colorClass: "text-primary",
       bgClass:
-        "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
+        "bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30",
     });
   }
 

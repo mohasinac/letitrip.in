@@ -112,7 +112,7 @@ export function FAQCategorySidebar({
         </Text>
         <TextLink
           href={ROUTES.PUBLIC.CONTACT}
-          className={`block text-center p-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
+          className={`block text-center p-4 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium transition-colors`}
         >
           {t("contactSupport")}
         </TextLink>

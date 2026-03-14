@@ -3,8 +3,7 @@
 import { useTranslations } from "next-intl";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { FeedbackConfig } from "@/db/schema";
-import { Checkbox } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { Checkbox, FormGroup } from "@/components";
 
 interface FeedbackConfigFormProps {
   value: Partial<FeedbackConfig>;
@@ -17,7 +16,7 @@ export function FeedbackConfigForm({
 }: FeedbackConfigFormProps) {
   const t = useTranslations("feedbackConfig");
   return (
-    <div className={THEME_CONSTANTS.spacing.stack}>
+    <FormGroup>
       <Checkbox
         id="allowAnonymous"
         checked={value.anonymous ?? false}
@@ -28,6 +27,6 @@ export function FeedbackConfigForm({
         fields={value.formFields ?? []}
         onChange={(fields) => onChange({ ...value, formFields: fields })}
       />
-    </div>
+    </FormGroup>
   );
 }

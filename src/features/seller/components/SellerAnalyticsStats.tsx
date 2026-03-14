@@ -65,7 +65,7 @@ export function SellerAnalyticsStats({ summary }: SellerAnalyticsStatsProps) {
         label={t("totalOrders")}
         value={String(summary.totalOrders)}
         icon="📦"
-        colorClass="text-indigo-600 dark:text-indigo-400"
+        colorClass="text-primary"
       />
       <StatCard
         label={t("totalProducts")}

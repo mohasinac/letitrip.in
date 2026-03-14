@@ -235,7 +235,7 @@ export function AvatarUpload({
             <AvatarDisplay
               cropData={hasPendingChange ? pendingCropData : cropData}
               size="2xl"
-              className={`border-4 ${hasPendingChange ? "border-blue-400 dark:border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800" : THEME_CONSTANTS.themed.border}`}
+              className={`border-4 ${hasPendingChange ? "border-primary/60 dark:border-primary ring-2 ring-primary/20 dark:ring-primary/30" : THEME_CONSTANTS.themed.border}`}
             />
           </div>
 
@@ -265,10 +265,7 @@ export function AvatarUpload({
             {/* Pending change notice + Save/Cancel buttons */}
             {hasPendingChange && !isBusy && (
               <div className="space-y-2">
-                <Text
-                  variant="secondary"
-                  className="text-xs text-blue-600 dark:text-blue-400"
-                >
+                <Text variant="secondary" className="text-xs text-primary">
                   {t("readyToSave")}
                 </Text>
                 <div className="flex gap-3">

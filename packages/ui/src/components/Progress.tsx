@@ -56,7 +56,7 @@ export function Progress({
     NonNullable<ProgressProps["variant"]>,
     string
   > = {
-    primary: "bg-blue-600 dark:bg-blue-500",
+    primary: "bg-primary",
     success: "bg-green-600 dark:bg-green-500",
     warning: "bg-yellow-600 dark:bg-yellow-500",
     error: "bg-red-600 dark:bg-red-500",
@@ -124,7 +124,7 @@ export function IndeterminateProgress({
     NonNullable<IndeterminateProgressProps["variant"]>,
     string
   > = {
-    primary: "bg-blue-600 dark:bg-blue-500",
+    primary: "bg-primary",
     success: "bg-green-600 dark:bg-green-500",
     warning: "bg-yellow-600 dark:bg-yellow-500",
     error: "bg-red-600 dark:bg-red-500",

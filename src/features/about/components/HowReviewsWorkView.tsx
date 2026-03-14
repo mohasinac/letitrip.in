@@ -42,8 +42,8 @@ export async function HowReviewsWorkView() {
       title: t("verifiedTitle"),
       text: t("verifiedText"),
       color:
-        "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-700",
-      iconColor: "text-indigo-600 dark:text-indigo-400",
+        "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30",
+      iconColor: "text-primary",
     },
     {
       icon: ThumbsUp,
@@ -75,10 +75,9 @@ export async function HowReviewsWorkView() {
     {
       emoji: "✍️",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/15 border-2 border-primary/30 dark:border-primary/40",
       badge: t("diagramS2"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/15 text-primary",
       desc: t("diagramS2Desc"),
     },
     {
@@ -132,7 +131,7 @@ export async function HowReviewsWorkView() {
                 className={`flex items-start gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
               >
                 <div
-                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} text-xl`}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}
                 >
                   {icon}
                 </div>
@@ -153,8 +152,8 @@ export async function HowReviewsWorkView() {
         <Section>
           <FlowDiagram
             title={`⭐ ${t("diagramTitle")}`}
-            titleClass="text-indigo-700 dark:text-indigo-300"
-            connectorClass="bg-indigo-200 dark:bg-indigo-800"
+            titleClass="text-primary"
+            connectorClass="bg-primary/20 dark:bg-primary/30"
             steps={DIAGRAM_STEPS}
             centered
           />

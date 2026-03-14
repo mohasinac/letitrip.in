@@ -71,7 +71,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
               onClick={() => setShowVariableHelper(!showVariableHelper)}
               aria-expanded={showVariableHelper}
               aria-controls="faq-variable-helper"
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="text-sm text-primary hover:text-primary/80"
             >
               {showVariableHelper ? t("hideVariables") : t("showVariables")}
             </Button>
@@ -81,7 +81,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         <div
           id="faq-variable-helper"
           hidden={!showVariableHelper || isReadonly}
-          className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800"
+          className="mb-3 p-3 bg-primary/5 dark:bg-primary/10 rounded-md border border-primary/20 dark:border-primary/30"
         >
           <Text size="xs" variant="secondary" className="mb-2">
             {t("insertVariableHelp")}

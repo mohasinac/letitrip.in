@@ -62,12 +62,12 @@ export function CartItemRow({
       <div className="flex-1 min-w-0">
         <TextLink
           href={`${ROUTES.PUBLIC.PRODUCTS}/${item.productId}`}
-          className={`text-sm font-medium ${themed.textPrimary} hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-2 transition-colors`}
+          className={`text-sm font-medium ${themed.textPrimary} hover:text-primary line-clamp-2 transition-colors`}
         >
           {item.productTitle}
         </TextLink>
         <Caption className="mt-0.5">{item.sellerName}</Caption>
-        <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+        <Text className="text-sm font-semibold text-primary mt-1">
           {formatCurrency(item.price)}
         </Text>
 

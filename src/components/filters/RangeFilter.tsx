@@ -438,7 +438,7 @@ export function RangeFilter({
                 onMinChange("");
                 onMaxChange("");
               }}
-              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-xs text-primary hover:underline"
             >
               {t("clearRange")}
             </Button>

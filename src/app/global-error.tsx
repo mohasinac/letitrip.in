@@ -96,7 +96,7 @@ function GlobalErrorContent({
           </Button>
           <TextLink
             href={ROUTES.HOME}
-            className={`px-6 py-3 rounded-lg border-2 border-blue-500 text-blue-500 text-lg font-medium min-w-[200px] inline-block text-center`}
+            className={`px-6 py-3 rounded-lg border-2 border-primary text-primary text-lg font-medium min-w-[200px] inline-block text-center`}
           >
             {t("backToHome")}
           </TextLink>

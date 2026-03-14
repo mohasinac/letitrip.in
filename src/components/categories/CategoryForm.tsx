@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl";
 import {
   Checkbox,
   FormField,
-  Grid,
+  FormGroup,
   ImageUpload,
   Label,
   MediaImage,
@@ -52,23 +52,25 @@ export function CategoryForm({
 
   return (
     <div className={spacing.stack}>
-      <FormField
-        name="name"
-        label={UI_LABELS.TABLE.NAME}
-        type="text"
-        value={category.name || ""}
-        onChange={handleNameChange}
-        disabled={isReadonly}
-      />
+      <FormGroup columns={2}>
+        <FormField
+          name="name"
+          label={UI_LABELS.TABLE.NAME}
+          type="text"
+          value={category.name || ""}
+          onChange={handleNameChange}
+          disabled={isReadonly}
+        />
 
-      <FormField
-        name="slug"
-        label={t("slug")}
-        type="text"
-        value={category.slug || ""}
-        onChange={(value) => update({ slug: value })}
-        disabled={isReadonly}
-      />
+        <FormField
+          name="slug"
+          label={t("slug")}
+          type="text"
+          value={category.slug || ""}
+          onChange={(value) => update({ slug: value })}
+          disabled={isReadonly}
+        />
+      </FormGroup>
 
       <FormField
         name="description"
@@ -129,7 +131,7 @@ export function CategoryForm({
         ]}
       />
 
-      <Grid className="grid-cols-2" gap="md">
+      <FormGroup columns={2}>
         <Checkbox
           checked={category.isActive || false}
           onChange={(e) => update({ isActive: e.target.checked })}
@@ -150,7 +152,7 @@ export function CategoryForm({
           disabled={isReadonly}
           label={LABELS.IS_BRAND}
         />
-      </Grid>
+      </FormGroup>
 
       <FormField
         name="order"

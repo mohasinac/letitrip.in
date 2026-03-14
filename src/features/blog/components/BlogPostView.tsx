@@ -89,7 +89,7 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
         >
           <TextLink
             href={ROUTES.PUBLIC.BLOG}
-            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="hover:text-primary transition-colors"
           >
             {t("title")}
           </TextLink>
@@ -176,7 +176,7 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
             <Heading level={2} className={`${typography.h3} mb-6`}>
               {t("related")}
             </Heading>
-            <div className="grid sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
               {related.map((rel) => (
                 <BlogCard key={rel.id} post={rel} />
               ))}

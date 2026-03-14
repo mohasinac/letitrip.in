@@ -10,8 +10,7 @@ export interface ViewToggleProps {
   onChange: (mode: ViewMode) => void;
 }
 
-const ACTIVE =
-  "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300";
+const ACTIVE = "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30";
 const INACTIVE =
   "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800";
 

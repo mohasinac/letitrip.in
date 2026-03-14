@@ -52,7 +52,7 @@ function VerifyEmailContent() {
 
         {isSuccess && (
           <>
-            <div className="mb-4 text-green-500">
+            <div className="mb-4 text-green-500 dark:text-green-400">
               <svg
                 className="w-16 h-16 mx-auto"
                 fill="none"

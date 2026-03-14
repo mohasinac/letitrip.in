@@ -22,7 +22,7 @@ export function SellerStatCard({
   value,
   icon,
   cardClass = enhancedCard.base,
-  iconClass = "text-indigo-600 dark:text-indigo-400",
+  iconClass = "text-primary",
   loading,
 }: SellerStatCardProps) {
   return (

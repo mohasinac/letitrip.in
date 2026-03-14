@@ -52,7 +52,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     useState<Partial<Category> | null>(null);
   const [drawerMode, setDrawerMode] = useState<CategoryDrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"tree" | "table">("tree");
+  const [viewMode, setViewMode] = useState<"tree" | "table">("table");
   const initialFormRef = useRef<string>("");
 
   const categories = data?.categories || [];
@@ -254,7 +254,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
               onClick={() => setViewMode("tree")}
               className={`px-3 py-2 text-sm ${
                 viewMode === "tree"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-primary text-white"
                   : `${themed.bgTertiary} ${themed.textSecondary}`
               }`}
             >
@@ -264,7 +264,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
               onClick={() => setViewMode("table")}
               className={`px-3 py-2 text-sm ${
                 viewMode === "table"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-primary text-white"
                   : `${themed.bgTertiary} ${themed.textSecondary}`
               }`}
             >

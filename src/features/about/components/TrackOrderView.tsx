@@ -13,8 +13,8 @@ export async function TrackOrderView() {
       icon: ShoppingBag,
       title: t("step1Title"),
       text: t("step1Text"),
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-100 dark:bg-indigo-900/40",
+      color: "text-primary",
+      bg: "bg-primary/10 dark:bg-primary/15",
     },
     {
       icon: Truck,
@@ -63,9 +63,9 @@ export async function TrackOrderView() {
           className={`${themed.bgSecondary} rounded-2xl border ${themed.border} p-8 text-center`}
         >
           <div
-            className={`w-16 h-16 bg-indigo-100 dark:bg-indigo-900/40 rounded-full ${flex.center} mx-auto mb-4`}
+            className={`w-16 h-16 bg-primary/10 dark:bg-primary/15 rounded-full ${flex.center} mx-auto mb-4`}
           >
-            <ShoppingBag className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+            <ShoppingBag className="w-8 h-8 text-primary" />
           </div>
           <Heading level={2} className="mb-3">
             {t("signInPrompt")}
@@ -73,7 +73,7 @@ export async function TrackOrderView() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className={`inline-${flex.center} gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors`}
+              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white font-medium px-6 py-3 rounded-lg transition-colors`}
             >
               {t("signIn")}
             </TextLink>
@@ -131,13 +131,13 @@ export async function TrackOrderView() {
           <div className="flex gap-3 flex-shrink-0">
             <TextLink
               href={ROUTES.PUBLIC.HELP}
-              className={`text-sm ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 underline underline-offset-4 transition-colors`}
+              className={`text-sm ${themed.textSecondary} hover:text-primary underline underline-offset-4 transition-colors`}
             >
               {t("helpCenter")}
             </TextLink>
             <TextLink
               href={ROUTES.PUBLIC.CONTACT}
-              className="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="text-sm bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
             >
               {t("contactSupport")}
             </TextLink>

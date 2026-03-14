@@ -194,7 +194,7 @@ export function SellerStorefrontView({
               <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : hasProducts ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {productsData!.data.map((product: ProductDocument) => (
                 <TextLink
                   key={product.id}

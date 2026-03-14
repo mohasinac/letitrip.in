@@ -38,7 +38,7 @@ export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
               </div>
               <Heading
                 level={2}
-                className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
+                className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover/img:text-primary transition-colors`}
               >
                 {post.title}
               </Heading>

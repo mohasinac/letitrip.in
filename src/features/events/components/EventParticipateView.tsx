@@ -17,6 +17,7 @@ import {
   Button,
   Card,
   FormField,
+  FormGroup,
   Heading,
   Input,
   Label,
@@ -131,7 +132,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     if (field.type === "select" || field.type === "radio") {
       if (field.type === "radio") {
         return (
-          <div key={field.id} className="mb-4">
+          <div key={field.id}>
             <Label className="block mb-2">
               {field.label}
               {field.required && (
@@ -172,7 +173,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
 
     if (field.type === "rating") {
       return (
-        <div key={field.id} className="mb-4">
+        <div key={field.id}>
           <Label htmlFor={`field-${field.id}`} className="mb-1.5">
             {field.label}
             {field.required && (
@@ -195,7 +196,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
 
     if (field.type === "date") {
       return (
-        <div key={field.id} className="mb-4">
+        <div key={field.id}>
           <Label htmlFor={`field-${field.id}`} className="mb-1.5">
             {field.label}
             {field.required && (
@@ -242,14 +243,14 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
         </Text>
       </div>
 
-      <Card className="p-6 space-y-5">
-        {fields.map((field) => renderField(field))}
+      <Card className="p-6">
+        <FormGroup>{fields.map((field) => renderField(field))}</FormGroup>
 
         <Button
           onClick={handleSubmit}
           isLoading={mutation.isPending}
           disabled={mutation.isPending}
-          className="w-full"
+          className="w-full mt-4"
         >
           {mutation.isPending ? tLoading("default") : t("submit")}
         </Button>

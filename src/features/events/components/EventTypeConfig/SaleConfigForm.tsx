@@ -1,10 +1,7 @@
 "use client";
 
-import { FormField } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { FormField, FormGroup } from "@/components";
 import type { SaleConfig } from "@/db/schema";
-
-const { spacing } = THEME_CONSTANTS;
 
 interface SaleConfigFormProps {
   value: Partial<SaleConfig>;
@@ -16,7 +13,7 @@ export function SaleConfigForm({ value, onChange }: SaleConfigFormProps) {
     onChange({ ...value, [k]: v });
 
   return (
-    <div className={spacing.stack}>
+    <FormGroup columns={2}>
       <FormField
         label="Discount Percent"
         name="discountPercent"
@@ -33,6 +30,6 @@ export function SaleConfigForm({ value, onChange }: SaleConfigFormProps) {
         onChange={(v) => set("bannerText", v)}
         placeholder="e.g. 20% Off Everything"
       />
-    </div>
+    </FormGroup>
   );
 }

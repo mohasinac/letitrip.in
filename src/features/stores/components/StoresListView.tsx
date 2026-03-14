@@ -177,7 +177,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
               onAction={table.get("q") ? handleClearFilters : undefined}
             />
           ) : viewMode === "list" ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
                     <div
@@ -200,7 +200,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                   ))}
             </div>
           ) : (
-            <Grid cols={4} gap="none">
+            <Grid cols={4} gap="lg">
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
                     <div

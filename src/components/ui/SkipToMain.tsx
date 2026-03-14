@@ -20,7 +20,7 @@ export function SkipToMain() {
     <TextLink
       href="#main-content"
       variant="bare"
-      className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[100] focus-visible:px-4 focus-visible:py-2.5 focus-visible:bg-indigo-600 focus-visible:text-white focus-visible:text-sm focus-visible:font-semibold focus-visible:rounded-lg focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:outline-none transition-all"
+      className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-[100] focus-visible:px-4 focus-visible:py-2.5 focus-visible:bg-primary focus-visible:text-white focus-visible:text-sm focus-visible:font-semibold focus-visible:rounded-lg focus-visible:shadow-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none transition-all"
     >
       {t("skipToMainContent")}
     </TextLink>

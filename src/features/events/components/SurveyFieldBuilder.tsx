@@ -148,7 +148,7 @@ export function SurveyFieldBuilder({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-red-600"
+                className="text-red-600 dark:text-red-400"
                 onClick={() => removeField(field.id)}
                 type="button"
               >

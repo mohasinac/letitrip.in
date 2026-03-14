@@ -68,7 +68,7 @@ export async function PromotionsView({
                 )}
               </div>
               {activeCoupons.length > 0 ? (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
                   {activeCoupons.map((coupon) => (
                     <CouponCard key={coupon.id} coupon={coupon} />
                   ))}

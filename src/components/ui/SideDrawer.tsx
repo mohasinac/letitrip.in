@@ -159,8 +159,8 @@ export default function SideDrawer({
 
   const modeHeaderStyles: Record<DrawerMode, string> = {
     delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",
-    create: `bg-gradient-to-r from-indigo-50/60 via-transparent to-teal-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-teal-950/10 ${themed.border}`,
-    edit: `bg-gradient-to-r from-amber-50/40 via-transparent to-indigo-50/20 dark:from-amber-950/15 dark:via-transparent dark:to-indigo-950/10 ${themed.border}`,
+    create: `bg-gradient-to-r from-primary/5 via-transparent to-teal-50/30 dark:from-primary/10 dark:via-transparent dark:to-teal-950/10 ${themed.border}`,
+    edit: `bg-gradient-to-r from-amber-50/40 via-transparent to-primary/5 dark:from-amber-950/15 dark:via-transparent dark:to-primary/10 ${themed.border}`,
     view: `${themed.bgSecondary} ${themed.border}`,
   };
 

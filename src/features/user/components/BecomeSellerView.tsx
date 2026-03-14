@@ -74,7 +74,7 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
           className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 ${flex.center} text-xs font-bold ${
             read
               ? "bg-emerald-500 text-white"
-              : "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300"
+              : "bg-primary/10 dark:bg-primary/15 text-primary"
           }`}
         >
           {sectionIndex + 1}
@@ -92,7 +92,7 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
           <Ul className={`${spacing.stack} list-none mb-4`}>
             {(t.raw(`sections.${id}.points`) as string[]).map((point, i) => (
               <Li key={i} className="flex items-start gap-2">
-                <Span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
+                <Span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                 <Text size="sm">{point}</Text>
               </Li>
             ))}

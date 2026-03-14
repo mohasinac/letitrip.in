@@ -113,7 +113,7 @@ export function CustomerReviewsSection({
         <div className="text-center">
           <TextLink
             href={ROUTES.PUBLIC.PRODUCTS}
-            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+            className="text-sm font-medium text-primary hover:text-primary/80"
           >
             {t("seeAllReviews")}
           </TextLink>

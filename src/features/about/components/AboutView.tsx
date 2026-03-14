@@ -55,7 +55,7 @@ export async function AboutView() {
                 text: t("howBuyersText"),
                 icon: "🛒",
                 color:
-                  "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
+                  "from-primary/5 to-primary/5 dark:from-primary/10 dark:to-primary/10",
               },
               {
                 title: t("howSellersTitle"),
@@ -128,18 +128,18 @@ export async function AboutView() {
           <Heading level={2} className="text-center mb-10">
             {t("milestonesTitle")}
           </Heading>
-          <div className="relative border-l-2 border-indigo-300 dark:border-indigo-700 pl-8 space-y-8 max-w-2xl mx-auto">
+          <div className="relative border-l-2 border-primary/30 pl-8 space-y-8 max-w-2xl mx-auto">
             {[
               { year: "2023", text: t("milestoneFounded") },
               { year: "2024", text: t("milestoneAuctions") },
               { year: "2025", text: t("milestoneMobile") },
             ].map(({ year, text }) => (
               <div key={year} className="relative">
-                <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-900" />
+                <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-primary border-2 border-white dark:border-slate-900" />
                 <Span
                   size="xs"
                   weight="bold"
-                  className="text-indigo-600 dark:text-indigo-400 uppercase tracking-wide"
+                  className="text-primary uppercase tracking-wide"
                 >
                   {year}
                 </Span>

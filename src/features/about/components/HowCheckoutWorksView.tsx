@@ -30,8 +30,8 @@ export async function HowCheckoutWorksView() {
       title: t("pm1Title"),
       text: t("pm1Text"),
       color:
-        "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-700",
-      iconColor: "text-indigo-600 dark:text-indigo-400",
+        "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30",
+      iconColor: "text-primary",
     },
     {
       icon: Banknote,
@@ -56,10 +56,9 @@ export async function HowCheckoutWorksView() {
     {
       emoji: "📍",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/15 border-2 border-primary/30 dark:border-primary/40",
       badge: t("step2Title"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/15 text-primary",
       desc: t("diagramStep2Desc"),
     },
     {
@@ -122,7 +121,7 @@ export async function HowCheckoutWorksView() {
                 className={`flex items-start gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
               >
                 <div
-                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} text-xl`}
+                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}
                 >
                   {icon}
                 </div>
@@ -143,8 +142,8 @@ export async function HowCheckoutWorksView() {
         <Section>
           <FlowDiagram
             title={`🗺️ ${t("diagramTitle")}`}
-            titleClass="text-indigo-700 dark:text-indigo-300"
-            connectorClass="bg-indigo-200 dark:bg-indigo-800"
+            titleClass="text-primary"
+            connectorClass="bg-primary/20 dark:bg-primary/30"
             steps={DIAGRAM_STEPS}
             centered
           />

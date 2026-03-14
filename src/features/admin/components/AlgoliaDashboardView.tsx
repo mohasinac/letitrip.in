@@ -36,11 +36,10 @@ const SYNC_ACTIONS = [
     emoji: "📦",
     description:
       "Bulk re-index all published products into the Algolia products index.",
-    color: "text-blue-700 dark:text-blue-300",
+    color: "text-primary",
     headerBg:
-      "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800",
-    badgeClass:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+      "bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30",
+    badgeClass: "bg-primary/10 dark:bg-primary/20 text-primary",
   },
   {
     key: "pages" as const,

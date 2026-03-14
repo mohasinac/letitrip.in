@@ -41,10 +41,9 @@ export async function SellerGuideView() {
     {
       emoji: "👤",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/20 border-2 border-primary/40",
       badge: t("onboardS1"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/20 text-primary",
       desc: t("onboardS1Desc"),
     },
     {
@@ -71,10 +70,9 @@ export async function SellerGuideView() {
     {
       emoji: "💰",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/20 border-2 border-primary/40",
       badge: t("payoutS1"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/20 text-primary",
       desc: t("payoutS1Desc"),
     },
     {
@@ -146,9 +144,9 @@ export async function SellerGuideView() {
             >
               <div className={`${flex.noShrink} mt-1`}>
                 <div
-                  className={`w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 ${flex.center}`}
+                  className={`w-10 h-10 rounded-lg bg-primary/10 dark:bg-primary/20 ${flex.center}`}
                 >
-                  <Icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <Icon className="w-5 h-5 text-primary" />
                 </div>
               </div>
               <div>
@@ -166,8 +164,8 @@ export async function SellerGuideView() {
         {/* ── Become a Seller Onboarding Diagram ── */}
         <FlowDiagram
           title={`🚀 ${t("onboardDiagramTitle")}`}
-          titleClass="text-indigo-700 dark:text-indigo-300"
-          connectorClass="bg-indigo-200 dark:bg-indigo-800"
+          titleClass="text-primary"
+          connectorClass="bg-primary/20"
           steps={ONBOARD_STEPS}
           stepWidth="w-[100px]"
           centered
@@ -177,8 +175,8 @@ export async function SellerGuideView() {
         {/* ── Payout Journey Diagram ── */}
         <FlowDiagram
           title={`💰 ${t("payoutDiagramTitle")}`}
-          titleClass="text-indigo-700 dark:text-indigo-300"
-          connectorClass="bg-indigo-200 dark:bg-indigo-800"
+          titleClass="text-primary"
+          connectorClass="bg-primary/20"
           steps={PAYOUT_STEPS}
           className="mb-10"
           note={`⌛ ${t("payoutNote")}`}
@@ -189,25 +187,25 @@ export async function SellerGuideView() {
         >
           <TextLink
             href={ROUTES.PUBLIC.HELP}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("helpCenter")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("contactUs")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             How Auctions Work
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.SHIPPING_POLICY}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             Shipping Policy
           </TextLink>

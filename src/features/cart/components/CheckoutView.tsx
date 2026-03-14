@@ -415,14 +415,14 @@ export function CheckoutView() {
               <div className="mt-6 flex justify-between items-center">
                 <Button
                   onClick={() => router.push(ROUTES.USER.CART)}
-                  className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
+                  className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
                 >
-                  â† {t("backToCart")}
+                  ← {t("backToCart")}
                 </Button>
                 <Button
                   onClick={handleNext}
                   disabled={!selectedAddressId}
-                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
+                  className="px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
                   {t("stepReview")} â†’
                 </Button>
@@ -449,7 +449,7 @@ export function CheckoutView() {
               <div className="mt-6 flex justify-between items-center">
                 <Button
                   onClick={() => setStep(1)}
-                  className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
+                  className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
                 >
                   â† {t("stepAddress")}
                 </Button>

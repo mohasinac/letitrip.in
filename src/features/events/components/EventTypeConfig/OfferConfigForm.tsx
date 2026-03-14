@@ -1,10 +1,7 @@
 "use client";
 
-import { FormField } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { FormField, FormGroup, FormFieldSpan } from "@/components";
 import type { OfferConfig } from "@/db/schema";
-
-const { spacing } = THEME_CONSTANTS;
 
 interface OfferConfigFormProps {
   value: Partial<OfferConfig>;
@@ -16,7 +13,7 @@ export function OfferConfigForm({ value, onChange }: OfferConfigFormProps) {
     onChange({ ...value, [k]: v });
 
   return (
-    <div className={spacing.stack}>
+    <FormGroup columns={2}>
       <FormField
         label="Coupon ID"
         name="couponId"
@@ -33,14 +30,16 @@ export function OfferConfigForm({ value, onChange }: OfferConfigFormProps) {
         onChange={(v) => set("displayCode", v)}
         placeholder="Visible code (e.g. SAVE20)"
       />
-      <FormField
-        label="Banner Text (optional)"
-        name="bannerText"
-        type="text"
-        value={value.bannerText ?? ""}
-        onChange={(v) => set("bannerText", v)}
-        placeholder="Override display text"
-      />
-    </div>
+      <FormFieldSpan>
+        <FormField
+          label="Banner Text (optional)"
+          name="bannerText"
+          type="text"
+          value={value.bannerText ?? ""}
+          onChange={(v) => set("bannerText", v)}
+          placeholder="Override display text"
+        />
+      </FormFieldSpan>
+    </FormGroup>
   );
 }

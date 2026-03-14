@@ -106,7 +106,7 @@ function ArrowButton({
         "active:scale-95",
         "transition-all duration-150",
         "cursor-pointer",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
       ].join(" ")}
     >
       {direction === "left" ? (

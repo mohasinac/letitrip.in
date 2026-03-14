@@ -18,7 +18,7 @@ import {
   Alert,
   Button,
   FormField,
-  Grid,
+  FormGroup,
   Toggle,
   Heading,
   Text,
@@ -304,7 +304,7 @@ export function SellerStoreView() {
             helpText={t("bioHelp")}
           />
 
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="storeLogoURL"
               label={t("storeLogoURL")}
@@ -319,7 +319,7 @@ export function SellerStoreView() {
               onChange={set("storeBannerURL")}
               placeholder="https://..."
             />
-          </Grid>
+          </FormGroup>
 
           <div className={flex.between}>
             <div>
@@ -361,7 +361,7 @@ export function SellerStoreView() {
 
           <Divider />
 
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="instagram"
               label="Instagram"
@@ -390,7 +390,7 @@ export function SellerStoreView() {
               onChange={set("linkedin")}
               placeholder="https://linkedin.com/in/..."
             />
-          </Grid>
+          </FormGroup>
         </div>
       </Card>
 

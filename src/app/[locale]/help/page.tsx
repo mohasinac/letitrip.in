@@ -63,18 +63,18 @@ export default async function HelpPage() {
           >
             {t("browseTitle")}
           </Heading>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {TOPICS.map(({ key, label, q }) => (
               <TextLink
                 key={key}
                 href={`${ROUTES.PUBLIC.FAQS}?category=${q}`}
                 variant="inherit"
-                className={`${themed.bgSecondary} border ${themed.border} rounded-xl p-5 text-center hover:border-indigo-400 hover:shadow-md transition-all group`}
+                className={`${themed.bgSecondary} border ${themed.border} rounded-xl p-5 text-center hover:border-primary/40 hover:shadow-md transition-all group`}
               >
                 <Text
                   size="sm"
                   weight="medium"
-                  className="group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                  className="group-hover:text-primary"
                 >
                   {label}
                 </Text>
@@ -95,7 +95,7 @@ export default async function HelpPage() {
           <TextLink
             href={ROUTES.PUBLIC.FAQS}
             variant="inherit"
-            className="inline-flex items-center gap-2 bg-indigo-600 text-white font-semibold px-8 py-3 rounded-full hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-full hover:bg-primary/90 transition-colors"
           >
             {t("faqsLink")}
           </TextLink>
@@ -111,7 +111,7 @@ export default async function HelpPage() {
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}
             variant="inherit"
-            className="inline-flex items-center gap-2 border-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+            className="inline-flex items-center gap-2 border-2 border-primary text-primary font-semibold px-8 py-3 rounded-full hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
           >
             {t("contactLink")}
           </TextLink>

@@ -151,7 +151,7 @@ export function FAQSection() {
           >
             {tActions("viewAllArrow")}
             {hasMore && (
-              <Span className="bg-blue-500 dark:bg-blue-400 text-white text-xs px-2 py-0.5 rounded-full">
+              <Span className="bg-primary dark:bg-primary/80 text-white text-xs px-2 py-0.5 rounded-full">
                 +{totalInCategory - faqs.length}
               </Span>
             )}

@@ -415,9 +415,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                     />
                   ) : (
                     <div
-                      className={`w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} shrink-0`}
+                      className={`w-9 h-9 rounded-full bg-primary/10 dark:bg-primary/20 ${flex.center} shrink-0`}
                     >
-                      <Span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                      <Span className="text-sm font-bold text-primary">
                         {review.userName.charAt(0).toUpperCase()}
                       </Span>
                     </div>

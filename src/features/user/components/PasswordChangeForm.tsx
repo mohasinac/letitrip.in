@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { FormField, Button, PasswordStrengthIndicator } from "@/components";
+import {
+  FormField,
+  FormGroup,
+  Button,
+  PasswordStrengthIndicator,
+} from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { calculatePasswordStrength } from "@/utils";
@@ -76,50 +81,52 @@ export function PasswordChangeForm({
 
   return (
     <form onSubmit={handleSubmit} className={spacing.stack}>
-      {/* Current Password */}
-      <FormField
-        label={tForm("currentPassword")}
-        name="currentPassword"
-        type="password"
-        value={currentPassword}
-        onChange={(value) => setCurrentPassword(value)}
-        placeholder={UI_PLACEHOLDERS.CURRENT_PASSWORD}
-        required
-      />
-
-      {/* New Password */}
-      <div>
+      <FormGroup columns={1}>
+        {/* Current Password */}
         <FormField
-          label={tForm("newPassword")}
-          name="newPassword"
+          label={tForm("currentPassword")}
+          name="currentPassword"
           type="password"
-          value={newPassword}
-          onChange={(value) => setNewPassword(value)}
-          placeholder={UI_PLACEHOLDERS.NEW_PASSWORD}
+          value={currentPassword}
+          onChange={(value) => setCurrentPassword(value)}
+          placeholder={UI_PLACEHOLDERS.CURRENT_PASSWORD}
           required
         />
-        {newPassword && (
-          <div className="mt-2">
-            <PasswordStrengthIndicator password={newPassword} />
-          </div>
-        )}
-      </div>
 
-      {/* Confirm New Password */}
-      <FormField
-        label={tForm("confirmPassword")}
-        name="confirmPassword"
-        type="password"
-        value={confirmPassword}
-        onChange={(value) => setConfirmPassword(value)}
-        placeholder={UI_PLACEHOLDERS.CONFIRM_PASSWORD}
-        required
-        error={
-          confirmPassword && newPassword !== confirmPassword
-            ? ERROR_MESSAGES.VALIDATION.PASSWORD_MISMATCH
-            : undefined
-        }
-      />
+        {/* New Password */}
+        <div>
+          <FormField
+            label={tForm("newPassword")}
+            name="newPassword"
+            type="password"
+            value={newPassword}
+            onChange={(value) => setNewPassword(value)}
+            placeholder={UI_PLACEHOLDERS.NEW_PASSWORD}
+            required
+          />
+          {newPassword && (
+            <div className="mt-2">
+              <PasswordStrengthIndicator password={newPassword} />
+            </div>
+          )}
+        </div>
+
+        {/* Confirm New Password */}
+        <FormField
+          label={tForm("confirmPassword")}
+          name="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={(value) => setConfirmPassword(value)}
+          placeholder={UI_PLACEHOLDERS.CONFIRM_PASSWORD}
+          required
+          error={
+            confirmPassword && newPassword !== confirmPassword
+              ? ERROR_MESSAGES.VALIDATION.PASSWORD_MISMATCH
+              : undefined
+          }
+        />
+      </FormGroup>
 
       {/* Error Message */}
       {error && (

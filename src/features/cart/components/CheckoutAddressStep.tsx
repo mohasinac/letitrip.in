@@ -57,7 +57,7 @@ export function CheckoutAddressStep({
           <TextLink
             href={ROUTES.USER.ADDRESSES_ADD}
             variant="inherit"
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium transition-colors"
           >
             {t("addNewAddress")}
           </TextLink>
@@ -74,8 +74,8 @@ export function CheckoutAddressStep({
                   variant="ghost"
                   className={`w-full text-left p-4 rounded-xl border-2 transition-colors ${
                     isSelected
-                      ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
-                      : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
+                      ? "border-primary bg-primary/5 dark:bg-primary/10"
+                      : `${themed.border} ${themed.bgPrimary} hover:border-primary/30`
                   }`}
                 >
                   <div className={`${flex.betweenStart} gap-3`}>
@@ -106,11 +106,11 @@ export function CheckoutAddressStep({
                     {/* Radio indicator */}
                     <div
                       className={`mt-0.5 w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
-                        isSelected ? "border-indigo-500" : themed.border
+                        isSelected ? "border-primary" : themed.border
                       }`}
                     >
                       {isSelected && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                       )}
                     </div>
                   </div>
@@ -132,7 +132,7 @@ export function CheckoutAddressStep({
           <TextLink
             href={ROUTES.USER.ADDRESSES_ADD}
             variant="inherit"
-            className={`flex items-center gap-2 w-full p-4 rounded-xl border-2 border-dashed ${themed.border} ${themed.textSecondary} hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm font-medium`}
+            className={`flex items-center gap-2 w-full p-4 rounded-xl border-2 border-dashed ${themed.border} ${themed.textSecondary} hover:border-primary hover:text-primary transition-colors text-sm font-medium`}
           >
             <svg
               className="w-4 h-4"

@@ -58,7 +58,7 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
             </Text>
             <TextLink
               href={ROUTES.SELLER.PRODUCTS}
-              className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-sm text-primary hover:underline"
             >
               {t("viewProducts")}
             </TextLink>

@@ -75,9 +75,9 @@ export function SiteCommissionsForm({
 
         {/* Info banner — explains purpose of commissions */}
         <div
-          className={`mb-6 p-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800`}
+          className={`mb-6 p-3 rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 dark:border-primary/30`}
         >
-          <Text size="sm" className="text-blue-700 dark:text-blue-300">
+          <Text size="sm" className="text-primary">
             ℹ {t("commissionsInfoBanner")}
           </Text>
         </div>

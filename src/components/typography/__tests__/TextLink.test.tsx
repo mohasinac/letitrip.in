@@ -62,9 +62,7 @@ describe("TextLink", () => {
     });
 
     it("renders mailto URL as <a> (auto-detected external)", () => {
-      render(
-        <TextLink href="mailto:test@example.com">Email us</TextLink>,
-      );
+      render(<TextLink href="mailto:test@example.com">Email us</TextLink>);
       const link = screen.getByRole("link");
       expect(link.tagName).toBe("A");
       expect(link).toHaveAttribute("href", "mailto:test@example.com");
@@ -119,16 +117,16 @@ describe("TextLink", () => {
       );
       const link = screen.getByRole("link");
       expect(link).toHaveClass("custom-class");
-      expect(link).not.toHaveClass("text-indigo-600");
+      expect(link).not.toHaveClass("text-primary");
       expect(link).not.toHaveClass("hover:underline");
     });
   });
 
   describe("variant='default'", () => {
-    it("applies indigo colour classes", () => {
+    it("applies primary colour classes", () => {
       render(<TextLink href="https://example.com">Link</TextLink>);
       const link = screen.getByRole("link");
-      expect(link.className).toContain("text-indigo-600");
+      expect(link.className).toContain("text-primary");
     });
   });
 
@@ -150,7 +148,9 @@ describe("TextLink", () => {
           <svg />
         </TextLink>,
       );
-      expect(screen.getByRole("link", { name: "Twitter profile" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Twitter profile" }),
+      ).toBeInTheDocument();
     });
 
     it("applies custom className alongside variant classes", () => {
@@ -161,7 +161,7 @@ describe("TextLink", () => {
       );
       const link = screen.getByRole("link");
       expect(link.className).toContain("break-all");
-      expect(link.className).toContain("text-indigo-600");
+      expect(link.className).toContain("text-primary");
     });
   });
 });

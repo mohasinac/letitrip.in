@@ -17,7 +17,7 @@ export function OrderSuccessActions({ orderId }: OrderSuccessActionsProps) {
     <div className="flex flex-col sm:flex-row gap-3">
       <TextLink
         href={ROUTES.USER.ORDER_DETAIL(orderId)}
-        className="flex-1 text-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+        className="flex-1 text-center px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
       >
         {t("viewOrder")}
       </TextLink>

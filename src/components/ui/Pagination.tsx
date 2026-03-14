@@ -89,7 +89,7 @@ export default function Pagination({
     }
 
     if (isActive) {
-      return `${base} bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 cursor-default`;
+      return `${base} bg-primary text-white border-primary cursor-default`;
     }
 
     return `${base} ${themed.bgSecondary} ${themed.textPrimary} ${themed.border} ${themed.hover} ${themed.hoverBorder} cursor-pointer`;

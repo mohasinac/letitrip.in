@@ -49,7 +49,7 @@ export default function Progress({
   };
 
   const variantClasses = {
-    primary: "bg-blue-600 dark:bg-blue-500",
+    primary: "bg-primary",
     success: "bg-green-600 dark:bg-green-500",
     warning: "bg-yellow-600 dark:bg-yellow-500",
     error: "bg-red-600 dark:bg-red-500",
@@ -119,7 +119,7 @@ export function IndeterminateProgress({
   };
 
   const variantClasses = {
-    primary: "bg-blue-600 dark:bg-blue-500",
+    primary: "bg-primary",
     success: "bg-green-600 dark:bg-green-500",
     warning: "bg-yellow-600 dark:bg-yellow-500",
     error: "bg-red-600 dark:bg-red-500",

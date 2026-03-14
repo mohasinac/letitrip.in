@@ -13,6 +13,7 @@ import {
   Card,
   DataTable,
   EmptyState,
+  FormGroup,
   Heading,
   Input,
   Label,
@@ -227,39 +228,41 @@ export function SellerOffersView() {
             </Text>
           )}
 
-          <div className="space-y-1">
-            <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
-            <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
-                ₹
-              </span>
-              <Input
-                id="counterAmount"
-                type="number"
-                min={1}
-                step={1}
-                className="pl-7"
-                {...counterForm.register("counterAmount", {
-                  valueAsNumber: true,
-                })}
+          <FormGroup columns={2}>
+            <div className="space-y-1">
+              <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                  ₹
+                </span>
+                <Input
+                  id="counterAmount"
+                  type="number"
+                  min={1}
+                  step={1}
+                  className="pl-7"
+                  {...counterForm.register("counterAmount", {
+                    valueAsNumber: true,
+                  })}
+                />
+              </div>
+              {counterForm.formState.errors.counterAmount && (
+                <Text className="text-sm text-red-600 dark:text-red-400">
+                  {counterForm.formState.errors.counterAmount.message}
+                </Text>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
+              <Textarea
+                id="sellerNote"
+                rows={2}
+                placeholder={t("sellerNotePlaceholder")}
+                {...counterForm.register("sellerNote")}
               />
             </div>
-            {counterForm.formState.errors.counterAmount && (
-              <Text className="text-sm text-red-600">
-                {counterForm.formState.errors.counterAmount.message}
-              </Text>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
-            <Textarea
-              id="sellerNote"
-              rows={2}
-              placeholder={t("sellerNotePlaceholder")}
-              {...counterForm.register("sellerNote")}
-            />
-          </div>
+          </FormGroup>
 
           <div className={`${flex.rowCenter} gap-2 justify-start`}>
             <Button

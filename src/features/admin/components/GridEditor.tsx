@@ -91,7 +91,7 @@ export function GridEditor({
     const isSelected =
       selectedCell?.row === cell.row && selectedCell?.col === cell.col;
     const bgColor = isSelected
-      ? "bg-blue-100 dark:bg-blue-900"
+      ? "bg-primary/10 dark:bg-primary/20"
       : THEME_CONSTANTS.themed.bgSecondary;
 
     return (
@@ -103,7 +103,7 @@ export function GridEditor({
         className={`
           ${bgColor}
           border ${THEME_CONSTANTS.themed.border}
-          hover:border-blue-400 dark:hover:border-blue-500
+          hover:border-primary/60 dark:hover:border-primary/60
           transition-colors duration-150
           p-1 min-h-[60px]
           ${flex.center}
@@ -129,7 +129,7 @@ export function GridEditor({
           </Span>
         )}
         {cell.content.type === "cta" && cell.content.buttonText && (
-          <Span className="truncate text-blue-600 dark:text-blue-400 font-medium">
+          <Span className="truncate text-primary font-medium">
             {cell.content.buttonText}
           </Span>
         )}

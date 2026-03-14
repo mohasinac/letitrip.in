@@ -114,7 +114,7 @@ export function useUserTableColumns(
             e.stopPropagation();
             onView(user);
           }}
-          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 text-sm"
+          className="text-primary hover:text-primary/80 text-sm"
         >
           {tActions("view")}
         </Button>

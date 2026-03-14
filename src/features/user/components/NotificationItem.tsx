@@ -42,7 +42,7 @@ export function NotificationItem({
   return (
     <div
       className={`flex items-start gap-4 p-4 transition-colors ${
-        !n.isRead ? "bg-blue-50/50 dark:bg-blue-950/20" : themed.bgPrimary
+        !n.isRead ? "bg-primary/5 dark:bg-primary/10" : themed.bgPrimary
       }`}
     >
       {/* Type icon */}
@@ -78,7 +78,7 @@ export function NotificationItem({
                 onClick={() => onMarkRead(n.id)}
                 title={tNotifications("markRead")}
                 aria-label={tNotifications("markRead")}
-                className="p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
+                className="p-1.5 rounded-lg text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               >
                 <svg
                   className="w-4 h-4"
@@ -127,7 +127,7 @@ export function NotificationItem({
             onClick={() => {
               if (!n.isRead) onMarkRead(n.id);
             }}
-            className="inline-block mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            className="inline-block mt-2 text-xs text-primary hover:underline font-medium"
           >
             {n.actionLabel ?? tActions("view")} →
           </TextLink>

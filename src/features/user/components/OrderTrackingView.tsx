@@ -161,7 +161,7 @@ function StepIcon({ state }: { state: TimelineStepState }) {
   if (state === "active") {
     return (
       <div
-        className={`w-10 h-10 rounded-full bg-blue-500 ${flex.center} flex-shrink-0 shadow-md ring-4 ring-blue-100 dark:ring-blue-900/40`}
+        className={`w-10 h-10 rounded-full bg-primary ${flex.center} flex-shrink-0 shadow-md ring-4 ring-primary/10 dark:ring-primary/20`}
       >
         <div className="w-3 h-3 rounded-full bg-white animate-pulse" />
       </div>
@@ -173,7 +173,7 @@ function StepIcon({ state }: { state: TimelineStepState }) {
         className={`w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 border-2 border-red-300 dark:border-red-700 ${flex.center} flex-shrink-0`}
       >
         <svg
-          className="w-5 h-5 text-red-500"
+          className="w-5 h-5 text-red-500 dark:text-red-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

@@ -208,7 +208,7 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
           <Tooltip content={tActions("selectionHint")} placement="bottom">
             <button
               type="button"
-              className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
               aria-label={tActions("selectionHint")}
             >
               <Info className="w-4 h-4" />

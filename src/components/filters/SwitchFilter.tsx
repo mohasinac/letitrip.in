@@ -74,7 +74,7 @@ export function SwitchFilter({
           {title}
           {checked && (
             <Span
-              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300`}
+              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full bg-primary/10 text-primary`}
             >
               1
             </Span>

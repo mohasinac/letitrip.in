@@ -18,7 +18,7 @@ const BID_STATUS_STYLES: Record<string, string> = {
     "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
   outbid:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
-  won: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300",
+  won: "bg-primary/10 text-primary dark:bg-primary/20",
   lost: "bg-zinc-100 text-zinc-700 dark:bg-slate-800 dark:text-zinc-400",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
@@ -73,9 +73,7 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
               {formatCurrency(bid.bidAmount)}
             </Span>
             {bid.isWinning && (
-              <Span className="ml-1 text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-                ★
-              </Span>
+              <Span className="ml-1 text-xs text-primary font-medium">★</Span>
             )}
           </div>
         ),
@@ -114,7 +112,7 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         render: (bid: BidDocument) => (
           <Button
             onClick={() => onView(bid)}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
+            className="text-primary hover:underline text-sm font-medium"
           >
             {tActions("view")}
           </Button>

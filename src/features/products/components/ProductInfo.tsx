@@ -133,7 +133,7 @@ export function ProductInfo({
                 ? ROUTES.PUBLIC.STORE_DETAIL(sellerId)
                 : ROUTES.PUBLIC.STORES
             }
-            className={`${flex.rowCenter} gap-1.5 font-medium text-indigo-600 dark:text-indigo-400 hover:underline`}
+            className={`${flex.rowCenter} gap-1.5 font-medium text-primary hover:underline`}
           >
             <Store className="w-4 h-4" aria-hidden="true" />
             {sellerName}
@@ -142,7 +142,7 @@ export function ProductInfo({
         {category && (
           <TextLink
             href={`${ROUTES.PUBLIC.PRODUCTS}?filters=category==${encodeURIComponent(category)}`}
-            className={`${flex.rowCenter} gap-1.5 ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+            className={`${flex.rowCenter} gap-1.5 ${themed.textSecondary} hover:text-primary transition-colors`}
           >
             <Tag className="w-3.5 h-3.5" aria-hidden="true" />
             {subcategory
@@ -164,7 +164,7 @@ export function ProductInfo({
             <Text size="sm" variant="secondary">
               {currentBid ? t("currentBid") : t("startingBid")}
             </Text>
-            <Text className="text-3xl sm:text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+            <Text className="text-3xl sm:text-4xl font-bold text-primary">
               {formatCurrency(displayPrice ?? price)}
             </Text>
             <div className={`${flex.rowCenter} gap-4 mt-1`}>
@@ -194,7 +194,7 @@ export function ProductInfo({
           </div>
         ) : (
           <div className={`${flex.rowCenter} gap-3`}>
-            <Text className="text-3xl sm:text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+            <Text className="text-3xl sm:text-4xl font-bold text-primary">
               {formatCurrency(price)}
             </Text>
             {!isOutOfStock && availableQuantity > 0 && (
@@ -258,7 +258,7 @@ export function ProductInfo({
                 className={`${flex.rowCenter} gap-2 text-sm ${themed.textSecondary}`}
               >
                 <Span
-                  className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"
+                  className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"
                   aria-hidden="true"
                 />
                 {f}
@@ -308,7 +308,7 @@ export function ProductInfo({
               {shippingInfo && (
                 <div className={`${flex.rowStart} gap-3`}>
                   <Truck
-                    className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"
+                    className="w-5 h-5 text-primary shrink-0 mt-0.5"
                     aria-hidden="true"
                   />
                   <div>
@@ -324,7 +324,7 @@ export function ProductInfo({
               {returnPolicy && (
                 <div className={`${flex.rowStart} gap-3`}>
                   <RotateCcw
-                    className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"
+                    className="w-5 h-5 text-primary shrink-0 mt-0.5"
                     aria-hidden="true"
                   />
                   <div>
@@ -349,7 +349,7 @@ export function ProductInfo({
             <TextLink
               key={tag}
               href={`${ROUTES.PUBLIC.PRODUCTS}?filters=tags@=${encodeURIComponent(tag)}`}
-              className={`px-2.5 py-1 text-xs rounded-full ${themed.bgSecondary} border ${themed.border} ${themed.textSecondary} hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+              className={`px-2.5 py-1 text-xs rounded-full ${themed.bgSecondary} border ${themed.border} ${themed.textSecondary} hover:border-primary/40 hover:text-primary transition-colors`}
             >
               #{tag}
             </TextLink>

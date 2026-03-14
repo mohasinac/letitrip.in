@@ -146,7 +146,7 @@ export function AdminAnalyticsView() {
               label={t("totalOrders")}
               value={String(summary.totalOrders)}
               icon="📦"
-              colorClass="text-indigo-600 dark:text-indigo-400"
+              colorClass="text-primary"
             />
             <StatCard
               label={t("revenueThisMonth")}
@@ -270,7 +270,7 @@ export function AdminAnalyticsView() {
                     </Span>
                     <TextLink
                       href={ROUTES.ADMIN.PRODUCTS}
-                      className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+                      className="text-xs text-primary hover:underline shrink-0"
                     >
                       View
                     </TextLink>

@@ -382,18 +382,11 @@ function UserOrdersContent() {
             onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
           />
         }
+        selectable
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
         mobileCardRender={(order) => (
-          <OrderCard
-            order={order}
-            variant={viewMode}
-            selectable
-            isSelected={selectedIds.includes(order.id ?? "")}
-            onSelect={(id, checked) =>
-              setSelectedIds((prev) =>
-                checked ? [...prev, id] : prev.filter((x) => x !== id),
-              )
-            }
-          />
+          <OrderCard order={order} variant={viewMode} />
         )}
       />
     </ListingLayout>

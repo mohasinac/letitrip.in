@@ -13,9 +13,9 @@ export function ContactCTA() {
     >
       {/* Icon */}
       <div className="flex justify-center mb-6">
-        <div className={`p-8 rounded-full bg-blue-100 dark:bg-blue-900/20`}>
+        <div className={`p-8 rounded-full bg-primary/10 dark:bg-primary/20`}>
           <svg
-            className="w-12 h-12 text-blue-600 dark:text-blue-400"
+            className="w-12 h-12 text-primary"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ export function ContactCTA() {
           className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
-            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
+            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-primary mx-auto mb-3 transition-colors`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -85,7 +85,7 @@ export function ContactCTA() {
           className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
-            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
+            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-primary mx-auto mb-3 transition-colors`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -115,7 +115,7 @@ export function ContactCTA() {
           className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
-            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
+            className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-primary mx-auto mb-3 transition-colors`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -143,7 +143,7 @@ export function ContactCTA() {
       {/* Primary CTA Button */}
       <TextLink
         href={ROUTES.PUBLIC.CONTACT}
-        className={`inline-flex items-center gap-2 p-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
+        className={`inline-flex items-center gap-2 p-6 rounded-xl bg-primary hover:bg-primary/90 text-white font-medium transition-colors`}
       >
         <Span>{t("contactTeam")}</Span>
         <svg

@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Checkbox, Input, Label, Select } from "@/components";
+import {
+  Button,
+  Checkbox,
+  FormGroup,
+  Input,
+  Label,
+  Select,
+} from "@/components";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
 import type { PollConfig } from "@/db/schema";
-
-const { spacing } = THEME_CONSTANTS;
 
 interface PollConfigFormProps {
   value: Partial<PollConfig>;
@@ -46,7 +50,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
   };
 
   return (
-    <div className={spacing.stack}>
+    <FormGroup>
       <div className="space-y-2">
         <Label>{t("pollOptionsLabel")}</Label>
         {options.map((opt, idx) => (
@@ -75,18 +79,20 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           {t("pollAddOption")}
         </Button>
       </div>
-      <Checkbox
-        id="allowMultiSelect"
-        checked={value.allowMultiSelect ?? false}
-        onChange={(e) => setField("allowMultiSelect", e.target.checked)}
-        label={t("pollAllowMultiSelect")}
-      />
-      <Checkbox
-        id="allowComment"
-        checked={value.allowComment ?? false}
-        onChange={(e) => setField("allowComment", e.target.checked)}
-        label={t("pollAllowComments")}
-      />
+      <FormGroup columns={2}>
+        <Checkbox
+          id="allowMultiSelect"
+          checked={value.allowMultiSelect ?? false}
+          onChange={(e) => setField("allowMultiSelect", e.target.checked)}
+          label={t("pollAllowMultiSelect")}
+        />
+        <Checkbox
+          id="allowComment"
+          checked={value.allowComment ?? false}
+          onChange={(e) => setField("allowComment", e.target.checked)}
+          label={t("pollAllowComments")}
+        />
+      </FormGroup>
       <div>
         <Label htmlFor="poll-results-visibility" className="mb-1.5">
           {t("pollResultsVisibility")}
@@ -107,6 +113,6 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           ]}
         />
       </div>
-    </div>
+    </FormGroup>
   );
 }

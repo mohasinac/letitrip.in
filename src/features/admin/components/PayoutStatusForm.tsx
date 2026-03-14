@@ -15,7 +15,7 @@ import { formatCurrency, formatDate } from "@/utils";
 import type { PayoutDocument, PayoutStatus } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.PAYOUTS;
-const { themed } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 const STATUS_OPTIONS: { value: PayoutStatus; label: string }[] = [
   { value: "pending", label: LABELS.STATUS_PENDING },
@@ -47,7 +47,7 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className={spacing.stack}>
       {/* Read-only payout summary */}
       <div
         className={`rounded-lg border ${themed.border} p-4 space-y-2 text-sm`}

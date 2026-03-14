@@ -81,7 +81,7 @@ export function CheckoutOrderReview({
             variant="ghost"
             size="sm"
             onClick={onChangeAddress}
-            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            className="text-sm text-primary hover:text-primary/80 font-medium"
           >
             {t("changeAddress")}
           </Button>
@@ -150,18 +150,18 @@ export function CheckoutOrderReview({
             onClick={() => onPaymentMethodChange("cod")}
             className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
               paymentMethod === "cod"
-                ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                ? "border-primary bg-primary/5 dark:bg-primary/10"
                 : `${themed.border} ${themed.bgPrimary}`
             }`}
           >
             <div className="flex items-center gap-3">
               <div
                 className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
-                  paymentMethod === "cod" ? "border-indigo-500" : themed.border
+                  paymentMethod === "cod" ? "border-primary" : themed.border
                 }`}
               >
                 {paymentMethod === "cod" && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                 )}
               </div>
               <div>
@@ -181,20 +181,18 @@ export function CheckoutOrderReview({
             onClick={() => onPaymentMethodChange("online")}
             className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
               paymentMethod === "online"
-                ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                ? "border-primary bg-primary/5 dark:bg-primary/10"
                 : `${themed.border} ${themed.bgPrimary}`
             }`}
           >
             <div className="flex items-center gap-3">
               <div
                 className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
-                  paymentMethod === "online"
-                    ? "border-indigo-500"
-                    : themed.border
+                  paymentMethod === "online" ? "border-primary" : themed.border
                 }`}
               >
                 {paymentMethod === "online" && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                 )}
               </div>
               <div>
@@ -216,7 +214,7 @@ export function CheckoutOrderReview({
                 onClick={() => onPaymentMethodChange("upi_manual")}
                 className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
                   paymentMethod === "upi_manual"
-                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 rounded-b-none border-b-0"
+                    ? "border-primary bg-primary/5 dark:bg-primary/10 rounded-b-none border-b-0"
                     : `${themed.border} ${themed.bgPrimary}`
                 }`}
               >
@@ -224,12 +222,12 @@ export function CheckoutOrderReview({
                   <div
                     className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                       paymentMethod === "upi_manual"
-                        ? "border-indigo-500"
+                        ? "border-primary"
                         : themed.border
                     }`}
                   >
                     {paymentMethod === "upi_manual" && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary" />
                     )}
                   </div>
                   <div>
@@ -253,7 +251,7 @@ export function CheckoutOrderReview({
               {/* Expanded UPI instructions panel */}
               {paymentMethod === "upi_manual" && (
                 <div
-                  className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 ${spacing.stack}`}
+                  className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-primary bg-primary/5 dark:bg-primary/10 ${spacing.stack}`}
                 >
                   {/* UPI ID display + copy */}
                   <div
@@ -291,7 +289,7 @@ export function CheckoutOrderReview({
                       ].map((step, i) => (
                         <Li key={i} className="flex items-start gap-2">
                           <Span
-                            className={`flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs ${flex.center} font-bold mt-0.5`}
+                            className={`flex-shrink-0 w-5 h-5 rounded-full bg-primary text-white text-xs ${flex.center} font-bold mt-0.5`}
                             variant="inherit"
                           >
                             {i + 1}
@@ -318,9 +316,9 @@ export function CheckoutOrderReview({
 
       {/* Commission info banner */}
       <div
-        className={`p-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800`}
+        className={`p-3 rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 dark:border-primary/30`}
       >
-        <Text size="xs" className="text-blue-700 dark:text-blue-300">
+        <Text size="xs" className="text-primary">
           ℹ️ {t("commissionInfoNote")}
         </Text>
       </div>

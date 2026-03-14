@@ -5,7 +5,6 @@ import { Button } from "./components/Button";
 import { Spinner } from "./components/Spinner";
 import { Pagination } from "./components/Pagination";
 import { Text } from "./components/Typography";
-import { Label } from "./components/Typography";
 import { GRID_MAP } from "./components/Layout";
 import type { GridCols } from "./components/Layout";
 
@@ -233,7 +232,7 @@ export function DataTable<T extends Record<string, any>>({
             onClick={() => handleViewModeChange("table")}
             aria-label={tableView}
             aria-pressed={activeViewMode === "table"}
-            className={`hidden sm:flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "table" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+            className={`hidden sm:flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "table" ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
           >
             <svg
               className="w-4 h-4"
@@ -258,7 +257,7 @@ export function DataTable<T extends Record<string, any>>({
           onClick={() => handleViewModeChange("grid")}
           aria-label={gridView}
           aria-pressed={activeViewMode === "grid"}
-          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "grid" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "grid" ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
         >
           <svg
             className="w-4 h-4"
@@ -282,7 +281,7 @@ export function DataTable<T extends Record<string, any>>({
           onClick={() => handleViewModeChange("list")}
           aria-label={listView}
           aria-pressed={activeViewMode === "list"}
-          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "list" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "list" ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
         >
           <svg
             className="w-4 h-4"
@@ -310,8 +309,8 @@ export function DataTable<T extends Record<string, any>>({
       <div
         className={
           mode === "grid"
-            ? `${GRID_MAP[gridCols]} gap-4`
-            : "flex flex-col gap-2"
+            ? `${GRID_MAP[gridCols]} gap-6`
+            : "flex flex-col gap-4"
         }
       >
         {paginatedData.map((item) => (
@@ -348,7 +347,7 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Mobile cards in table mode */}
       {activeViewMode === "table" && mobileCardRender && (
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-6">
           {paginatedData.map((item) => (
             <SelectableCard
               key={keyExtractor(item)}
@@ -548,6 +547,7 @@ function SelectableCard({
   if (!selectable) return <div className="h-full">{children}</div>;
   return (
     <div className="relative group h-full">
+      {/* Checkbox overlay — always visible, bg/shadow ensures contrast over any card background */}
       <div
         className={[
           "absolute z-10",
@@ -555,40 +555,43 @@ function SelectableCard({
         ].join(" ")}
         onClick={(e) => e.stopPropagation()}
       >
-        <Label className="flex items-center justify-center cursor-pointer !mb-0 !text-inherit !text-base !font-normal">
-          <input
-            type="checkbox"
-            className={[
-              "w-4 h-4 rounded border-2 cursor-pointer transition-all appearance-none border-zinc-300 dark:border-slate-600",
-              selected
-                ? "border-indigo-500 bg-indigo-500"
-                : "bg-white dark:bg-slate-800 group-hover:border-indigo-400",
-            ].join(" ")}
-            checked={selected}
-            onChange={(e) => onToggle(id, e.target.checked)}
-            aria-label="Select item"
-          />
-          {selected && (
-            <svg
-              className="absolute w-3 h-3 text-white pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          )}
-        </Label>
+        <div className="w-6 h-6 rounded-md bg-white/95 dark:bg-slate-800/95 shadow-md flex items-center justify-center">
+          {/* relative wrapper ensures checkmark SVG centers over the input */}
+          <div className="relative flex items-center justify-center">
+            <input
+              type="checkbox"
+              className={[
+                "w-4 h-4 rounded cursor-pointer transition-all appearance-none",
+                selected
+                  ? "border-2 border-primary bg-primary"
+                  : "border-2 border-zinc-500 dark:border-slate-400 bg-transparent group-hover:border-primary",
+              ].join(" ")}
+              checked={selected}
+              onChange={(e) => onToggle(id, e.target.checked)}
+              aria-label="Select item"
+            />
+            {selected && (
+              <svg
+                className="absolute inset-0 m-auto w-2.5 h-2.5 text-white pointer-events-none"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            )}
+          </div>
+        </div>
       </div>
       {selected && (
         <div
-          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-indigo-500 ring-offset-0 pointer-events-none"
+          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-primary ring-offset-0 pointer-events-none"
           aria-hidden="true"
         />
       )}

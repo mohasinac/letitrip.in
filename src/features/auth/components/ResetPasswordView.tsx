@@ -80,7 +80,7 @@ export function ResetPasswordView() {
     return (
       <div className={`min-h-screen ${flex.center} px-4 py-8`}>
         <Card className="max-w-md w-full p-8 text-center">
-          <div className="mb-4 text-green-500">
+          <div className="mb-4 text-green-500 dark:text-green-400">
             <svg
               className="w-16 h-16 mx-auto"
               fill="none"
@@ -192,7 +192,7 @@ export function ResetPasswordView() {
             {t("forgotPassword.rememberPassword")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="text-blue-600 hover:underline"
+              className="text-primary hover:underline"
             >
               {t("forgotPassword.signInLink")}
             </TextLink>

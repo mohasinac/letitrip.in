@@ -39,7 +39,7 @@ export interface FlowDiagramProps {
 
 export function FlowDiagram({
   title,
-  titleClass = "text-indigo-700 dark:text-indigo-300",
+  titleClass = "text-primary",
   connectorClass,
   steps,
   stepWidth = "w-[86px]",

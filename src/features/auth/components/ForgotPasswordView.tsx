@@ -12,6 +12,7 @@ import {
   Button,
   Alert,
   FormField,
+  FormGroup,
   Heading,
   Text,
   TextLink,
@@ -47,12 +48,13 @@ export function ForgotPasswordView() {
       <div className={`${flex.center} ${page.authPad} w-full`}>
         <Card className="max-w-md w-full p-6 sm:p-8">
           <div className="text-center mb-6">
-            <div className="mb-4 text-green-500">
+            <div className="mb-4 text-green-500 dark:text-green-400">
               <svg
-                className="w-16 h-16 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-16 w-16 mx-auto"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
                   strokeLinecap="round"
@@ -115,18 +117,20 @@ export function ForgotPasswordView() {
         )}
 
         <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
-          <FormField
-            label={t("shared.emailAddress")}
-            name="email"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            onBlur={() => setTouched(true)}
-            touched={touched}
-            placeholder={t("shared.emailPlaceholder")}
-            disabled={isLoading}
-            required
-          />
+          <FormGroup>
+            <FormField
+              label={t("shared.emailAddress")}
+              name="email"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              onBlur={() => setTouched(true)}
+              touched={touched}
+              placeholder={t("shared.emailPlaceholder")}
+              disabled={isLoading}
+              required
+            />
+          </FormGroup>
 
           <Button
             type="submit"
@@ -145,7 +149,7 @@ export function ForgotPasswordView() {
             {t("forgotPassword.rememberPassword")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-primary hover:underline"
             >
               {t("forgotPassword.signInLink")}
             </TextLink>

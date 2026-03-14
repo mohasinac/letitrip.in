@@ -6,7 +6,15 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid, useMessage } from "@/hooks";
-import { Button, Input, Label, Span, Text, TextLink } from "@/components";
+import {
+  Button,
+  FormGroup,
+  Input,
+  Label,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -107,44 +115,46 @@ export function PlaceBidForm({
       onSubmit={handleSubmit}
       className={`rounded-xl border ${themed.border} p-4 space-y-3`}
     >
-      <div>
-        <Label
-          htmlFor="bid-amount"
-          className={`block text-sm font-medium ${themed.textPrimary} mb-1`}
-        >
-          {t("yourBidLabel")}
-        </Label>
-        <Text size="xs" variant="secondary" className="mb-2">
-          {t("minimumBidError", { amount: formatCurrency(minimumRequired) })}
-        </Text>
-        <div className="flex items-center gap-2">
-          <Span className={`text-sm font-medium ${themed.textSecondary}`}>
-            {currency}
-          </Span>
-          <Input
-            id="bid-amount"
-            type="number"
-            min={minimumRequired}
-            step={1}
-            value={bidAmount}
-            onChange={(e) => {
-              setBidAmount(e.target.value);
-              setError(null);
-              setSuccess(false);
-            }}
-            placeholder={String(minimumRequired)}
-            className="flex-1"
-          />
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isSubmitting}
-            className="h-10 px-5 text-sm font-semibold whitespace-nowrap"
+      <FormGroup>
+        <div>
+          <Label
+            htmlFor="bid-amount"
+            className={`block text-sm font-medium ${themed.textPrimary} mb-1`}
           >
-            {isSubmitting ? tLoading("default") : t("placeBid")}
-          </Button>
+            {t("yourBidLabel")}
+          </Label>
+          <Text size="xs" variant="secondary" className="mb-2">
+            {t("minimumBidError", { amount: formatCurrency(minimumRequired) })}
+          </Text>
+          <div className="flex items-center gap-2">
+            <Span className={`text-sm font-medium ${themed.textSecondary}`}>
+              {currency}
+            </Span>
+            <Input
+              id="bid-amount"
+              type="number"
+              min={minimumRequired}
+              step={1}
+              value={bidAmount}
+              onChange={(e) => {
+                setBidAmount(e.target.value);
+                setError(null);
+                setSuccess(false);
+              }}
+              placeholder={String(minimumRequired)}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isSubmitting}
+              className="h-10 px-5 text-sm font-semibold whitespace-nowrap"
+            >
+              {isSubmitting ? tLoading("default") : t("placeBid")}
+            </Button>
+          </div>
         </div>
-      </div>
+      </FormGroup>
 
       {/* Error */}
       {error && (

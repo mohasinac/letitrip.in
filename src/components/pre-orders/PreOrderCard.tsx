@@ -52,7 +52,7 @@ export interface PreOrderCardProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  upcoming: "bg-blue-600/90",
+  upcoming: "bg-primary/90",
   in_production: "bg-amber-500/90",
   ready_to_ship: "bg-emerald-600/90",
 };

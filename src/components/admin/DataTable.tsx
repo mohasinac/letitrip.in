@@ -241,7 +241,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
               size="sm"
               className={`hidden sm:${flex.center} p-2 rounded-lg ring-1 transition-colors ${
                 activeViewMode === "table"
-                  ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
+                  ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30"
                   : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
               }`}
             >
@@ -273,7 +273,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
             size="sm"
             className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "grid"
-                ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
+                ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30"
                 : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
             }`}
           >
@@ -304,7 +304,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
             size="sm"
             className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "list"
-                ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
+                ? "bg-primary/5 text-primary dark:bg-primary/10 ring-primary/30"
                 : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
             }`}
           >
@@ -329,7 +329,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
 
       {/* Grid view */}
       {activeViewMode === "grid" && mobileCardRender && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {paginatedData.map((item) => (
             <SelectableCard
               key={keyExtractor(item)}
@@ -352,7 +352,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
 
       {/* List view */}
       {activeViewMode === "list" && mobileCardRender && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           {paginatedData.map((item) => (
             <SelectableCard
               key={keyExtractor(item)}
@@ -376,7 +376,7 @@ export function DataTable_LegacyDeleted<T extends Record<string, any>>({
 
       {/* Mobile Card View (CSS-driven, table mode only) */}
       {activeViewMode === "table" && mobileCardRender && (
-        <div className={`md:hidden ${THEME_CONSTANTS.spacing.stack}`}>
+        <div className={`md:hidden space-y-6`}>
           {paginatedData.map((item) => (
             <SelectableCard
               key={keyExtractor(item)}
@@ -607,8 +607,8 @@ function SelectableCard({
               "transition-all appearance-none",
               "border-zinc-300 dark:border-slate-600",
               selected
-                ? "border-indigo-500 bg-indigo-500"
-                : "bg-white dark:bg-slate-800 group-hover:border-indigo-400",
+                ? "border-primary bg-primary"
+                : "bg-white dark:bg-slate-800 group-hover:border-primary",
             ].join(" ")}
             checked={selected}
             onChange={(e) => onToggle(id, e.target.checked)}
@@ -637,7 +637,7 @@ function SelectableCard({
       {/* Selected ring highlight */}
       {selected && (
         <div
-          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-indigo-500 ring-offset-0 pointer-events-none"
+          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-primary ring-offset-0 pointer-events-none"
           aria-hidden="true"
         />
       )}

@@ -78,13 +78,13 @@ export default async function CookiePolicyPage() {
         >
           <TextLink
             href={ROUTES.PUBLIC.PRIVACY}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("privacyPolicy")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("contactUs")}
           </TextLink>

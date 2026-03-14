@@ -184,7 +184,7 @@ export function CheckoutVerifyModal({
                 <Button
                   variant="ghost"
                   onClick={() => switchMode("email")}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
+                  className="text-xs text-primary hover:underline p-0 h-auto"
                 >
                   {t("verifyUseEmailInstead")}
                 </Button>
@@ -193,7 +193,7 @@ export function CheckoutVerifyModal({
                 <Button
                   variant="ghost"
                   onClick={() => switchMode("sms")}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
+                  className="text-xs text-primary hover:underline p-0 h-auto"
                 >
                   {t("verifyUseSmsInstead")}
                 </Button>

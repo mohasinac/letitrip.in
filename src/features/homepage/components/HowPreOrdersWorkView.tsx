@@ -61,10 +61,9 @@ export async function HowPreOrdersWorkView() {
     {
       emoji: "🚚",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-300 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/20 border-2 border-primary/30",
       badge: t("diagramStatus4"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/20 text-primary",
       desc: t("diagramStatus4Desc"),
     },
     {
@@ -119,8 +118,8 @@ export async function HowPreOrdersWorkView() {
                 item ships and is delivered.
               </Text>
             </div>
-            <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800 p-3">
-              <Span className="text-xs font-bold text-indigo-700 dark:text-indigo-400 block mb-1">
+            <div className="rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/20 p-3">
+              <Span className="text-xs font-bold text-primary block mb-1">
                 🏪 As a Seller
               </Span>
               <Text size="xs" variant="secondary">

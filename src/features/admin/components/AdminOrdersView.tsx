@@ -27,7 +27,7 @@ import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
-  Caption,
+  OrderCard,
   SideDrawer,
   DataTable,
   AdminPageHeader,
@@ -35,14 +35,12 @@ import {
   ListingLayout,
   OrderFilters,
   Search,
-  StatusBadge,
   TablePagination,
   Text,
 } from "@/components";
 import { useOrderTableColumns, OrderStatusForm } from ".";
 import type { OrderStatusFormState } from ".";
 import type { OrderDocument } from "@/db/schema";
-import { formatCurrency, formatDate } from "@/utils";
 
 interface AdminOrdersViewProps {
   action?: string[];
@@ -225,6 +223,8 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
             onPageSizeChange={table.setPageSize}
           />
         }
+        selectedCount={selectedIds.length}
+        onClearSelection={() => setSelectedIds([])}
       >
         <DataTable
           columns={columns}
@@ -240,24 +240,10 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
-            <Card className="p-4 space-y-2">
-              <div className={`${flex.between}`}>
-                <Caption className="font-mono text-xs">
-                  #{(order.id ?? "").slice(-8).toUpperCase()}
-                </Caption>
-                <StatusBadge status={order.status as any} />
-              </div>
-              <Text weight="medium" size="sm" className="truncate">
-                {order.productTitle}
-              </Text>
-              <Caption>{order.userName}</Caption>
-              <div className={`${flex.between} pt-1`}>
-                <Caption>{formatDate(order.createdAt)}</Caption>
-                <Text weight="bold" size="sm">
-                  {formatCurrency(order.totalPrice)}
-                </Text>
-              </div>
-            </Card>
+            <OrderCard
+              order={order}
+              variant={(table.get("view") as "grid" | "list") || "list"}
+            />
           )}
         />
       </ListingLayout>

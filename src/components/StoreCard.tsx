@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
   Card,
-  Checkbox,
   Heading,
   MediaImage,
   Text,
@@ -56,17 +55,37 @@ export function StoreCard({
           {selectable && (
             <div
               className="absolute top-2 left-2 z-10"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSelect?.(store.ownerId, !selected);
+              }}
             >
-              <Checkbox
-                aria-label={`Select ${name}`}
-                checked={selected}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  onSelect?.(store.ownerId, e.target.checked);
-                }}
-                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
-              />
+              <div
+                className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
+                  selected
+                    ? "bg-primary border-primary"
+                    : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
+                }`}
+                aria-label={selected ? `Deselect ${name}` : `Select ${name}`}
+              >
+                {selected && (
+                  <svg
+                    className="absolute inset-0 m-auto w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
             </div>
           )}
 

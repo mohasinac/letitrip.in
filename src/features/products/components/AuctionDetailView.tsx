@@ -167,7 +167,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           </Text>
           <TextLink
             href={ROUTES.PUBLIC.AUCTIONS}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-colors text-sm"
           >
             ← {t("backToAuctions")}
           </TextLink>
@@ -262,7 +262,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
               <TextLink
                 href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
-                className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                className="text-primary hover:underline font-medium"
               >
                 {product.sellerName}
               </TextLink>
@@ -285,7 +285,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
             {/* ——— Countdown Timer — prominent display ——— */}
             <div
-              className={`rounded-xl border-2 ${isEnded ? "border-zinc-300 dark:border-slate-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-indigo-400 dark:border-indigo-500"} p-4`}
+              className={`rounded-xl border-2 ${isEnded ? "border-zinc-300 dark:border-slate-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-primary/60"} p-4`}
             >
               <Text
                 size="xs"
@@ -304,7 +304,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                     { value: remaining.seconds, label: t("seconds") },
                   ].map((unit) => (
                     <div key={unit.label}>
-                      <Text className="text-2xl sm:text-3xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                      <Text className="text-2xl sm:text-3xl font-bold font-mono text-primary">
                         {String(unit.value).padStart(2, "0")}
                       </Text>
                       <Text size="xs" variant="secondary">
@@ -340,7 +340,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   <Text size="xs" variant="secondary">
                     {hasCurrentBid ? t("currentBid") : t("startingBid")}
                   </Text>
-                  <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+                  <Text className="text-3xl font-bold text-primary">
                     {formatCurrency(displayBid)}
                   </Text>
                 </div>
@@ -423,7 +423,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
               {/* Auto-extend badge */}
               {product.autoExtendable && (
-                <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/5 text-primary dark:bg-primary/10">
                   ⏱️{" "}
                   {t("autoExtendInfo", {
                     minutes: product.auctionExtensionMinutes ?? 5,
@@ -459,7 +459,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 <Ul className="space-y-1.5">
                   {product.features.map((feature, i) => (
                     <Li key={i} className="flex items-start gap-2">
-                      <Span className="text-indigo-500 mt-0.5">•</Span>
+                      <Span className="text-primary mt-0.5">•</Span>
                       <Text size="sm" variant="secondary">
                         {feature}
                       </Text>
@@ -581,7 +581,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 <Text weight="semibold">{product.sellerName}</Text>
                 <TextLink
                   href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
-                  className="text-indigo-600 dark:text-indigo-400 text-sm hover:underline mt-1 inline-block"
+                  className="text-primary text-sm hover:underline mt-1 inline-block"
                 >
                   {t("viewStore")} →
                 </TextLink>

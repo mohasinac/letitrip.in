@@ -7,7 +7,7 @@ import {
   Button,
   Card,
   Checkbox,
-  Grid,
+  FormGroup,
   Heading,
   Input,
   Label,
@@ -127,7 +127,7 @@ export default function BackgroundSettings({
                 onClick={() => updateConfig({ type })}
                 className={`px-4 py-3 rounded-lg border-2 transition-all capitalize ${
                   config.type === type
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                    ? "border-primary bg-primary/5 dark:bg-primary/10 text-primary"
                     : `${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.hoverBorder}`
                 }`}
               >
@@ -194,7 +194,7 @@ export default function BackgroundSettings({
                     key={preset.name}
                     variant="ghost"
                     onClick={() => updateConfig({ value: preset.value })}
-                    className={`relative h-20 rounded-lg border-2 ${THEME_CONSTANTS.themed.border} hover:border-blue-500 overflow-hidden transition-all group`}
+                    className={`relative h-20 rounded-lg border-2 ${THEME_CONSTANTS.themed.border} hover:border-primary overflow-hidden transition-all group`}
                     style={{ background: preset.value }}
                   >
                     <div
@@ -280,7 +280,7 @@ export default function BackgroundSettings({
           </div>
 
           {config.overlay?.enabled && (
-            <Grid cols={2} gap="md" className="ml-7">
+            <FormGroup columns={2} className="ml-7">
               <div>
                 <Label
                   className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -317,7 +317,7 @@ export default function BackgroundSettings({
                   className="w-full"
                 />
               </div>
-            </Grid>
+            </FormGroup>
           )}
         </div>
 

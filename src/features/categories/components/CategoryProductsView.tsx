@@ -218,7 +218,7 @@ export function CategoryProductsView({
         </Text>
         <TextLink
           href={ROUTES.PUBLIC.CATEGORIES}
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           {t("backToCategories")}
         </TextLink>
@@ -242,7 +242,7 @@ export function CategoryProductsView({
             />
           ) : (
             <div
-              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20`}
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-primary/5 to-purple-50 dark:from-primary/10 dark:to-purple-900/20`}
             >
               <Span className="text-6xl">{category.display?.icon ?? "🗂️"}</Span>
             </div>
@@ -296,7 +296,7 @@ export function CategoryProductsView({
             <TextLink
               href={`${ROUTES.PUBLIC.CATEGORIES}/${child.slug}`}
               variant="inherit"
-              className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors no-underline ${themed.border} hover:border-indigo-500 ${themed.bgSecondary} hover:bg-indigo-50 dark:hover:bg-indigo-900/20 ${themed.textPrimary}`}
+              className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors no-underline ${themed.border} hover:border-primary ${themed.bgSecondary} hover:bg-primary/5 dark:hover:bg-primary/10 ${themed.textPrimary}`}
             >
               {child.display?.icon && (
                 <Span className="text-lg">{child.display.icon}</Span>
@@ -334,7 +334,7 @@ export function CategoryProductsView({
             >
               <TextLink
                 href={ROUTES.PUBLIC.CATEGORIES}
-                className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                className="hover:text-primary"
               >
                 {t("title")}
               </TextLink>
@@ -343,7 +343,7 @@ export function CategoryProductsView({
                   <Span className="mx-2">/</Span>
                   <TextLink
                     href={`${ROUTES.PUBLIC.CATEGORIES}/${ancestor.name.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="hover:text-primary"
                   >
                     {ancestor.name}
                   </TextLink>
@@ -416,7 +416,7 @@ export function CategoryProductsView({
                 <Tooltip content={tActions("selectionHint")} placement="bottom">
                   <button
                     type="button"
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
                     aria-label={tActions("selectionHint")}
                   >
                     <Info className="w-4 h-4" />
@@ -473,7 +473,7 @@ export function CategoryProductsView({
                     </Text>
                     <TextLink
                       href={ROUTES.PUBLIC.CATEGORIES}
-                      className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                      className="mt-3 text-sm text-primary hover:underline"
                     >
                       {t("backToCategories")}
                     </TextLink>

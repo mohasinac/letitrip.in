@@ -47,7 +47,7 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
 
               {/* Question Text */}
               <Text
-                className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
+                className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-primary transition-colors`}
               >
                 {faq.question}
               </Text>

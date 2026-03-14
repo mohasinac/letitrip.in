@@ -157,7 +157,7 @@ export function AuctionCard({
 
   return (
     <div
-      className={`h-full ${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
+      className={`h-full ${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-primary" : ""} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div
@@ -217,12 +217,12 @@ export function AuctionCard({
             variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10 p-0`}
+            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-primary transition-colors z-10 p-0`}
           >
             {isSelected ? (
               <Span
                 variant="inherit"
-                className={`w-4 h-4 rounded bg-indigo-600 ${flex.center}`}
+                className={`w-4 h-4 rounded bg-primary ${flex.center}`}
               >
                 <svg
                   viewBox="0 0 10 8"
@@ -291,7 +291,7 @@ export function AuctionCard({
         <div className={`${flex.rowCenter} gap-2 items-start`}>
           <TextLink
             href={auctionHref}
-            className={`flex-1 min-w-0 text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+            className={`flex-1 min-w-0 text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug hover:text-primary transition-colors`}
           >
             {product.title}
           </TextLink>
@@ -325,7 +325,7 @@ export function AuctionCard({
           <Caption>
             {hasCurrentBid ? t("currentBid") : t("startingBid")}
           </Caption>
-          <Text className="text-base font-bold text-indigo-600 dark:text-indigo-400 leading-none">
+          <Text className="text-base font-bold text-primary leading-none">
             {formatCurrency(displayBid)}
           </Text>
         </div>

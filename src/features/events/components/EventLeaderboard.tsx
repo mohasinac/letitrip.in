@@ -55,21 +55,21 @@ export function EventLeaderboard({
           <div
             key={entry.id}
             className={`flex items-center gap-3 p-3 rounded-lg border ${rankStyle} ${
-              isCurrentUser ? "ring-2 ring-indigo-500" : ""
+              isCurrentUser ? "ring-2 ring-primary" : ""
             }`}
           >
             <Span className="text-sm font-bold w-6 text-center text-zinc-500">
               #{idx + 1}
             </Span>
             <div
-              className={`w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 ${flex.center} text-xs font-semibold text-indigo-700 dark:text-indigo-300 shrink-0`}
+              className={`w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xs font-semibold text-primary shrink-0`}
             >
               {(entry.userDisplayName ?? "U").charAt(0).toUpperCase()}
             </div>
             <Span className="text-sm flex-1">
               {entry.userDisplayName ?? "Anonymous"}
               {isCurrentUser && (
-                <Span className="ml-2 text-xs text-indigo-600">(you)</Span>
+                <Span className="ml-2 text-xs text-primary">(you)</Span>
               )}
             </Span>
             <Span className="text-sm font-semibold">

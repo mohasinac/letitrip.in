@@ -160,8 +160,8 @@ export function FAQPageContent({
                 className={[
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 border",
                   isActive
-                    ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                    : `${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.border} hover:border-indigo-400`,
+                    ? "bg-primary text-white border-primary shadow-sm"
+                    : `${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.border} hover:border-primary/60`,
                 ].join(" ")}
               >
                 <Span>{pill.icon}</Span>

@@ -274,7 +274,7 @@ export function FilterFacetSection({
                   type="button"
                   variant="ghost"
                   onClick={handleSelectAll}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
+                  className="text-xs text-primary hover:underline p-0 h-auto"
                 >
                   {allVisibleSelected ? t("deselectAll") : t("selectAll")}
                 </Button>
@@ -372,7 +372,7 @@ export function FilterFacetSection({
               type="button"
               variant="ghost"
               onClick={() => setVisibleCount((c) => c + pageSize)}
-              className="mt-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="mt-1 text-xs font-medium text-primary hover:underline"
             >
               {t("showMore", { count: filteredOptions.length - visibleCount })}
             </Button>

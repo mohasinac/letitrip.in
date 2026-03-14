@@ -9,15 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  Checkbox,
-  Heading,
-  MediaImage,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
@@ -95,17 +87,39 @@ export function BlogCard({
           {selectable && (
             <div
               className="absolute top-2 left-2 z-10"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSelect?.(post.id, !selected);
+              }}
             >
-              <Checkbox
-                aria-label={`Select ${post.title}`}
-                checked={selected}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  onSelect?.(post.id, e.target.checked);
-                }}
-                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
-              />
+              <div
+                className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
+                  selected
+                    ? "bg-primary border-primary"
+                    : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
+                }`}
+                aria-label={
+                  selected ? `Deselect ${post.title}` : `Select ${post.title}`
+                }
+              >
+                {selected && (
+                  <svg
+                    className="absolute inset-0 m-auto w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
             </div>
           )}
 

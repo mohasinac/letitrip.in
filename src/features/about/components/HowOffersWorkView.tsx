@@ -113,7 +113,7 @@ export async function HowOffersWorkView() {
         <Section>
           <FlowDiagram
             title={t("diagramTitle")}
-            connectorClass="bg-indigo-200 dark:bg-indigo-800"
+            connectorClass="bg-primary/20 dark:bg-primary/30"
             steps={DIAGRAM_STEPS}
           />
         </Section>
@@ -129,7 +129,7 @@ export async function HowOffersWorkView() {
             {RULES.map((rule, i) => (
               <div key={i} className={`${flex.center} gap-3`}>
                 <div
-                  className={`flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} text-sm font-semibold text-indigo-700 dark:text-indigo-300`}
+                  className={`flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`}
                 >
                   {i + 1}
                 </div>

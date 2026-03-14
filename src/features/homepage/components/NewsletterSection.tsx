@@ -81,7 +81,7 @@ export function NewsletterSection() {
 
         {subscribed ? (
           <div className="flex flex-col items-center gap-3 py-4">
-            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <CheckCircle2 className="w-10 h-10 text-green-500 dark:text-green-400" />
             <Text
               size="base"
               weight="semibold"

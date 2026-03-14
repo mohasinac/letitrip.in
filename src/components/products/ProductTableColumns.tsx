@@ -20,7 +20,7 @@ const STATUS_STYLES: Record<string, string> = {
   out_of_stock:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
   discontinued: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
-  sold: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
+  sold: "bg-primary/10 dark:bg-primary/20 text-primary",
 };
 
 export function useProductTableColumns(
@@ -130,7 +130,7 @@ export function useProductTableColumns(
             e.stopPropagation();
             onEdit(product);
           }}
-          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+          className="text-primary hover:text-primary/80"
         >
           {tActions("edit")}
         </Button>

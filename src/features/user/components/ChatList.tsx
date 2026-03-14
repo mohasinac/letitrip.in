@@ -105,7 +105,7 @@ export function ChatList() {
                 }
                 className={`w-full text-left rounded-xl border px-4 py-3 pr-10 transition-colors ${
                   isActive
-                    ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700"
+                    ? "bg-primary/5 dark:bg-primary/10 border-primary/30 dark:border-primary/30"
                     : `${themed.bgPrimary} ${themed.border} hover:bg-zinc-50 dark:hover:bg-slate-800`
                 }`}
               >

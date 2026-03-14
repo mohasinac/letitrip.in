@@ -36,8 +36,8 @@ const VARIANT_STYLES = {
     loadingText: "Processing...",
   },
   primary: {
-    iconBg: "bg-blue-100 dark:bg-blue-900/20",
-    iconColor: "text-blue-600 dark:text-blue-500",
+    iconBg: "bg-primary/10 dark:bg-primary/20",
+    iconColor: "text-primary",
     buttonVariant: "primary" as const,
     loadingText: "Processing...",
   },

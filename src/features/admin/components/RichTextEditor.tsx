@@ -101,8 +101,11 @@ function MenuBar({ editor }: MenuBarProps) {
     type: "link" | "image" | null;
   }>({ type: null });
 
-  if (!editor) return null;
-
+  // All hooks must be declared before any early return (Rules of Hooks).
+  // `useEditor` initialises asynchronously so `editor` is null on the first
+  // render; calling hooks after the null guard would change the hook count
+  // between renders and trigger "Rendered more hooks than during the previous
+  // render".
   const addLink = useCallback(() => {
     setUrlPopover({ type: "link" });
   }, []);
@@ -113,6 +116,7 @@ function MenuBar({ editor }: MenuBarProps) {
 
   const handleUrlSubmit = useCallback(
     (url: string) => {
+      if (!editor) return;
       if (urlPopover.type === "link") {
         editor.chain().focus().setLink({ href: url }).run();
       } else if (urlPopover.type === "image") {
@@ -126,6 +130,8 @@ function MenuBar({ editor }: MenuBarProps) {
   const handleUrlClose = useCallback(() => {
     setUrlPopover({ type: null });
   }, []);
+
+  if (!editor) return null;
 
   return (
     <div
@@ -370,8 +376,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class:
-            "text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300",
+          class: "text-primary underline hover:text-primary/80",
         },
       }),
       Image.configure({

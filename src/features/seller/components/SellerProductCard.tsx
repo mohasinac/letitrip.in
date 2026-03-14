@@ -19,7 +19,7 @@ const STATUS_STYLES: Record<string, string> = {
   out_of_stock:
     "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
   discontinued: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
-  sold: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  sold: "bg-primary/10 text-primary dark:bg-primary/20",
 };
 
 function StockBar({ available, total }: { available: number; total: number }) {

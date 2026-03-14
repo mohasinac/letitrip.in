@@ -62,7 +62,7 @@ export function BidHistory({
             <Li
               key={bid.id}
               className={`${flex.between} px-4 py-3 ${
-                index === 0 ? "bg-indigo-50 dark:bg-indigo-950/30" : ""
+                index === 0 ? "bg-primary/5 dark:bg-primary/10" : ""
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">
@@ -79,12 +79,12 @@ export function BidHistory({
                   </Span>
                 </div>
                 {index === 0 && (
-                  <Span className="shrink-0 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold px-2 py-0.5 rounded-full">
+                  <Span className="shrink-0 text-xs bg-primary/10 dark:bg-primary/20 text-primary font-semibold px-2 py-0.5 rounded-full">
                     {UI_LABELS.AUCTIONS_PAGE.WINNING_BID}
                   </Span>
                 )}
               </div>
-              <Span className="font-bold text-indigo-600 dark:text-indigo-400 shrink-0 ml-2">
+              <Span className="font-bold text-primary shrink-0 ml-2">
                 {formatCurrency(bid.bidAmount)}
               </Span>
             </Li>

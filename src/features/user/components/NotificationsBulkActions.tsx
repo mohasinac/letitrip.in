@@ -35,7 +35,7 @@ export function NotificationsBulkActions({
           variant="ghost"
           onClick={onMarkAllRead}
           disabled={isMarkingAll}
-          className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline disabled:opacity-50"
+          className="text-sm text-primary font-medium hover:underline disabled:opacity-50"
         >
           {isMarkingAll ? tLoading("saving") : tNotifications("markAllRead")}
         </Button>

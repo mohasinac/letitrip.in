@@ -91,7 +91,7 @@ export function getCategoryTableColumns(
             e.stopPropagation();
             onEdit(cat);
           }}
-          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+          className="text-primary hover:text-primary/80"
         >
           {UI_LABELS.ACTIONS.EDIT}
         </Button>

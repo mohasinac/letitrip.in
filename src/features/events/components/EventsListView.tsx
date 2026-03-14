@@ -249,7 +249,7 @@ function EventsListContent({
               }
             />
           ) : (
-            <Grid cols={4} gap="none">
+            <Grid cols={4} gap="lg">
               {isLoading
                 ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
                     <div

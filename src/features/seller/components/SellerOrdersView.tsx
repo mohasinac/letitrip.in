@@ -15,11 +15,10 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
-  Alert,
   Badge,
   Button,
-  Caption,
   Card,
+  OrderCard,
   DataTable,
   AdminPageHeader,
   OrderFilters,
@@ -29,7 +28,6 @@ import {
   Search,
   SortDropdown,
   Spinner,
-  StatusBadge,
   TablePagination,
   Tabs,
   TabsList,
@@ -52,7 +50,7 @@ import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
@@ -144,65 +142,6 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
         </div>
       </div>
     </SideDrawer>
-  );
-}
-
-// ─── Bulk action bar ──────────────────────────────────────────────────────────
-
-interface BulkActionBarProps {
-  selectedCount: number;
-  eligibleCount: number;
-  isPayoutConfigured: boolean;
-  onRequestPayout: () => void;
-  onClearSelection: () => void;
-  isLoading: boolean;
-}
-
-function BulkActionBar({
-  selectedCount,
-  eligibleCount,
-  isPayoutConfigured,
-  onRequestPayout,
-  onClearSelection,
-  isLoading,
-}: BulkActionBarProps) {
-  const t = useTranslations("sellerOrders");
-  if (selectedCount === 0) return null;
-
-  return (
-    <Card className="p-3 border-indigo-200 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/20">
-      <div className={`${flex.between} gap-3 flex-wrap`}>
-        <div className={`${flex.rowCenter} gap-2`}>
-          <Badge variant="secondary">
-            {t("bulkSelected", { count: selectedCount })}
-          </Badge>
-          {eligibleCount < selectedCount && (
-            <Text size="sm" variant="secondary">
-              {t("bulkEligible", { count: eligibleCount })}
-            </Text>
-          )}
-        </div>
-        <div className={`${flex.rowCenter} gap-2`}>
-          <Button variant="ghost" size="sm" onClick={onClearSelection}>
-            {t("bulkClear")}
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            disabled={eligibleCount === 0 || !isPayoutConfigured}
-            isLoading={isLoading}
-            onClick={onRequestPayout}
-          >
-            {t("bulkRequestPayout", { count: eligibleCount })}
-          </Button>
-        </div>
-      </div>
-      {!isPayoutConfigured && (
-        <Alert variant="warning" className="mt-2">
-          {t("payoutNotConfiguredWarning")}
-        </Alert>
-      )}
-    </Card>
   );
 }
 
@@ -487,7 +426,7 @@ function SellerOrdersContent() {
                     {
                       label: t("statTotal"),
                       count: orders.length,
-                      color: "text-indigo-600 dark:text-indigo-400",
+                      color: "text-primary",
                     },
                     {
                       label: t("statPending"),
@@ -499,7 +438,7 @@ function SellerOrdersContent() {
                       label: t("statConfirmed"),
                       count: orders.filter((o) => o.status === "confirmed")
                         .length,
-                      color: "text-blue-600 dark:text-blue-400",
+                      color: "text-primary",
                     },
                     {
                       label: t("statDelivered"),
@@ -578,17 +517,19 @@ function SellerOrdersContent() {
             />
           ) : undefined
         }
+        selectedCount={selectedIds.length}
+        onClearSelection={() => setSelectedIds([])}
+        bulkActionItems={[
+          {
+            id: "payout",
+            label: t("bulkRequestPayout", { count: eligibleForPayout.length }),
+            variant: "primary",
+            onClick: handleRequestPayout,
+            disabled: eligibleForPayout.length === 0 || !isPayoutConfigured,
+            loading: isBulkLoading,
+          },
+        ]}
       >
-        {/* Bulk action bar — only visible when rows selected */}
-        <BulkActionBar
-          selectedCount={selectedIds.length}
-          eligibleCount={eligibleForPayout.length}
-          isPayoutConfigured={isPayoutConfigured}
-          onRequestPayout={handleRequestPayout}
-          onClearSelection={() => setSelectedIds([])}
-          isLoading={isBulkLoading}
-        />
-
         {/* Orders table */}
         <DataTable<OrderDocument>
           data={orders}
@@ -606,24 +547,10 @@ function SellerOrdersContent() {
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
-            <Card className="p-4 space-y-2">
-              <div className={`${flex.between}`}>
-                <Caption className="font-mono">
-                  #{(order.id ?? "").slice(-8).toUpperCase()}
-                </Caption>
-                <StatusBadge status={order.status as any} />
-              </div>
-              <Text weight="medium" size="sm" className="line-clamp-1">
-                {order.productTitle}
-              </Text>
-              <Caption>{order.userName}</Caption>
-              <div className={`${flex.between}`}>
-                <Caption>{formatDate(order.createdAt)}</Caption>
-                <Text weight="semibold" size="sm">
-                  {formatCurrency(order.totalPrice)}
-                </Text>
-              </div>
-            </Card>
+            <OrderCard
+              order={order}
+              variant={(table.get("view") as "grid" | "list") || "list"}
+            />
           )}
         />
 
@@ -636,10 +563,7 @@ function SellerOrdersContent() {
                   ? t("revenueFiltered", { status: statusFilter })
                   : t("revenueThisPage")}
               </Text>
-              <Text
-                weight="bold"
-                className="text-2xl text-indigo-600 dark:text-indigo-400"
-              >
+              <Text weight="bold" className="text-2xl text-primary">
                 {formatCurrency(
                   orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0),
                 )}

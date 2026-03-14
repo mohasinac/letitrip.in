@@ -296,7 +296,7 @@ function WishlistContent() {
             <Tooltip content={tActions("selectionHint")} placement="bottom">
               <button
                 type="button"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
                 aria-label={tActions("selectionHint")}
               >
                 <Info className="w-4 h-4" />
@@ -354,7 +354,7 @@ function WishlistContent() {
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 absolute inset-0 pointer-events-none">
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

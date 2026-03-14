@@ -98,7 +98,7 @@ export function BulkActionBar({
   return (
     <div
       ref={containerRef}
-      className="relative rounded-lg overflow-hidden border border-indigo-200 dark:border-indigo-800 animate-in fade-in slide-in-from-top-1 duration-150"
+      className="relative rounded-lg overflow-hidden border border-primary/20 dark:border-primary/30 animate-in fade-in slide-in-from-top-1 duration-150"
       role="region"
       aria-live="polite"
       aria-label={t("bulkActionsRegion")}

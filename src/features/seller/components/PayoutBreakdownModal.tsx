@@ -85,7 +85,7 @@ export function PayoutBreakdownModal({
     >
       <div className="space-y-3">
         {breakdown.isAutomatic && (
-          <Caption className="text-blue-600">{t("autoPayoutBadge")}</Caption>
+          <Caption className="text-primary">{t("autoPayoutBadge")}</Caption>
         )}
 
         {rows.map((row, i) => (

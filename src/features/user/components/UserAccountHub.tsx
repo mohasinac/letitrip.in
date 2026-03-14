@@ -49,8 +49,8 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     href: ROUTES.USER.ORDERS,
     labelKey: "myOrders",
     icon: Package,
-    iconBg: "bg-indigo-500/10",
-    iconColor: "text-indigo-600 dark:text-indigo-400",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
   },
   {
     href: ROUTES.USER.MESSAGES,

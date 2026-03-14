@@ -49,7 +49,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
     <div className="w-full">
       {/* Banner */}
       <div
-        className="h-36 sm:h-48 w-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30"
+        className="h-36 sm:h-48 w-full bg-gradient-to-br from-primary/10 to-purple-100 dark:from-primary/20 dark:to-purple-900/30"
         style={
           store.storeBannerURL
             ? {
@@ -67,7 +67,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
           <div className="flex items-end gap-4 -mt-8 sm:-mt-10 flex-wrap">
             {/* Avatar */}
             <div
-              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-slate-900 ${overflow.hidden} bg-indigo-50 dark:bg-indigo-900/40 ${flex.noShrink} ${flex.center} shadow-sm`}
+              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-slate-900 ${overflow.hidden} bg-primary/5 dark:bg-primary/10 ${flex.noShrink} ${flex.center} shadow-sm`}
             >
               {store.storeLogoURL || store.photoURL ? (
                 <AvatarDisplay
@@ -80,7 +80,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
                   alt={store.storeName}
                 />
               ) : (
-                <Store className="w-9 h-9 text-indigo-400" />
+                <Store className="w-9 h-9 text-primary/60" />
               )}
             </div>
 

@@ -41,7 +41,11 @@ export function AdminDashboardView() {
   if (error) {
     return (
       <Card>
-        <Heading level={3} variant="primary" className="text-red-600">
+        <Heading
+          level={3}
+          variant="primary"
+          className="text-red-600 dark:text-red-400"
+        >
           {error}
         </Heading>
         <Button onClick={refresh} variant="primary" className="mt-4">

@@ -39,7 +39,7 @@ export default function Spinner({
   };
 
   const variantClasses = {
-    primary: "border-blue-600 border-t-transparent",
+    primary: "border-primary border-t-transparent",
     white: "border-white border-t-transparent",
     current: "border-current border-t-transparent",
   };

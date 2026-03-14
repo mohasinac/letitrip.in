@@ -23,9 +23,8 @@ export async function HowOrdersWorkView() {
       label: t("s2Label"),
       desc: t("s2Desc"),
       color:
-        "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-700",
-      badge:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+        "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30",
+      badge: "bg-primary/10 dark:bg-primary/15 text-primary",
       icon: "✅",
     },
     {
@@ -86,8 +85,8 @@ export async function HowOrdersWorkView() {
       title: t("invoiceTitle"),
       text: t("invoiceText"),
       color:
-        "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-700",
-      iconColor: "text-indigo-600 dark:text-indigo-400",
+        "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30",
+      iconColor: "text-primary",
     },
     {
       icon: MapPinned,
@@ -111,10 +110,9 @@ export async function HowOrdersWorkView() {
     {
       emoji: "✅",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/15 border-2 border-primary/30 dark:border-primary/40",
       badge: t("s2Label"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/15 text-primary",
     },
     {
       emoji: "📦",
@@ -225,8 +223,8 @@ export async function HowOrdersWorkView() {
         <Section>
           <FlowDiagram
             title={`📦 ${t("diagramTitle")}`}
-            titleClass="text-indigo-700 dark:text-indigo-300"
-            connectorClass="bg-indigo-200 dark:bg-indigo-800"
+            titleClass="text-primary"
+            connectorClass="bg-primary/20 dark:bg-primary/30"
             steps={DIAGRAM_STEPS}
           />
         </Section>

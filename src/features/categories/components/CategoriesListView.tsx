@@ -121,7 +121,7 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
           }
         >
           {isLoading ? (
-            <Grid cols={4} gap="none">
+            <Grid cols={4} gap="lg">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}

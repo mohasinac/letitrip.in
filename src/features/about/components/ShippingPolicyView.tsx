@@ -23,10 +23,9 @@ export async function ShippingPolicyView() {
     {
       emoji: "✅",
       circleClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-300 dark:border-indigo-600",
+        "bg-primary/10 dark:bg-primary/15 border-2 border-primary/30 dark:border-primary/40",
       badge: t("diagramStatus1"),
-      badgeClass:
-        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      badgeClass: "bg-primary/10 dark:bg-primary/15 text-primary",
       desc: t("diagramStatus1Desc"),
     },
     {

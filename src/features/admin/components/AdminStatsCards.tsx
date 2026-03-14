@@ -40,7 +40,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
       label: t("totalUsers"),
       value: stats.users.total,
       cardClass: enhancedCard.stat.indigo,
-      iconClass: "text-indigo-600 dark:text-indigo-400",
+      iconClass: "text-primary",
       Icon: Users,
     },
     {
@@ -75,7 +75,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
       label: t("totalOrders"),
       value: stats.orders.total,
       cardClass: enhancedCard.stat.indigo,
-      iconClass: "text-indigo-600 dark:text-indigo-400",
+      iconClass: "text-primary",
       Icon: ShoppingCart,
     },
   ];

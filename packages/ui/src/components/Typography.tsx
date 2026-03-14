@@ -171,8 +171,8 @@ export function Caption({
 
   const variantClasses = {
     default: themed.textMuted,
-    accent: "text-indigo-600 dark:text-indigo-400 font-semibold",
-    inverse: "text-indigo-200",
+    accent: "text-primary font-semibold",
+    inverse: "text-primary/40",
   };
 
   return (
@@ -232,7 +232,7 @@ export function Span({
     muted: themed.textMuted,
     error: themed.textError,
     success: themed.textSuccess,
-    accent: "text-indigo-600 dark:text-indigo-400",
+    accent: "text-primary",
   };
 
   const sizeClasses: Record<NonNullable<SpanProps["size"]>, string> = {

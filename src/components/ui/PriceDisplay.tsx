@@ -28,8 +28,8 @@ export function PriceDisplay({
 
   const priceClass =
     variant === "detail"
-      ? "text-xl font-bold text-indigo-600 dark:text-indigo-400"
-      : "text-base font-bold text-indigo-600 dark:text-indigo-400";
+      ? "text-xl font-bold text-primary"
+      : "text-base font-bold text-primary";
 
   const originalClass =
     variant === "detail"

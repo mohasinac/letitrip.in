@@ -70,7 +70,7 @@ function CouponCard({
         <div className="flex-1 min-w-0">
           {/* Code */}
           <div className={`${flex.row} gap-2 mb-1 flex-wrap`}>
-            <Span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm tracking-wide">
+            <Span className="font-mono font-bold text-primary text-sm tracking-wide">
               {coupon.code}
             </Span>
             <Badge
@@ -224,12 +224,10 @@ export function SellerCouponsView() {
       </div>
 
       {/* Info banner */}
-      <div className="rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 p-4">
+      <div className="rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4">
         <div className={`${flex.row} gap-2 items-start`}>
-          <Tag className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
-          <Text className="text-sm text-indigo-700 dark:text-indigo-300">
-            {t("infoBanner")}
-          </Text>
+          <Tag className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <Text className="text-sm text-primary">{t("infoBanner")}</Text>
         </div>
       </div>
 
@@ -243,7 +241,7 @@ export function SellerCouponsView() {
           onAction={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
           {coupons.map((coupon) => (
             <CouponCard
               key={coupon.id}

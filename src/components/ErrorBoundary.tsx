@@ -46,7 +46,7 @@ function ErrorFallbackView({
             className={`inline-flex ${flex.center} w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4`}
           >
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-8 h-8 text-red-600 dark:text-red-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

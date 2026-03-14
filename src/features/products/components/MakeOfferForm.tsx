@@ -10,7 +10,16 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useMessage } from "@/hooks";
 import { makeOfferAction } from "@/actions";
-import { Button, Card, Input, Label, Span, Text, Textarea } from "@/components";
+import {
+  Button,
+  Card,
+  FormGroup,
+  Input,
+  Label,
+  Span,
+  Text,
+  Textarea,
+} from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -99,51 +108,52 @@ export function MakeOfferForm({
           </Text>
         </div>
 
-        {/* Offer amount */}
-        <div>
-          <Label
-            htmlFor="offerAmount"
-            className="block text-sm font-medium mb-1.5"
-          >
-            {t("offerAmountLabel")}
-          </Label>
-          <div className="relative">
-            <Span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
-              ₹
-            </Span>
-            <Input
-              id="offerAmount"
-              type="number"
-              min={minAmount}
-              max={product.price - 1}
-              step={1}
-              className="pl-7"
-              {...form.register("offerAmount", { valueAsNumber: true })}
+        <FormGroup columns={2}>
+          {/* Offer amount */}
+          <div>
+            <Label
+              htmlFor="offerAmount"
+              className="block text-sm font-medium mb-1.5"
+            >
+              {t("offerAmountLabel")}
+            </Label>
+            <div className="relative">
+              <Span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                ₹
+              </Span>
+              <Input
+                id="offerAmount"
+                type="number"
+                min={minAmount}
+                max={product.price - 1}
+                step={1}
+                className="pl-7"
+                {...form.register("offerAmount", { valueAsNumber: true })}
+              />
+            </div>
+            {form.formState.errors.offerAmount && (
+              <Text className="mt-1 text-xs text-red-500 dark:text-red-400">
+                {form.formState.errors.offerAmount.message}
+              </Text>
+            )}
+          </div>
+
+          {/* Buyer note */}
+          <div>
+            <Label
+              htmlFor="buyerNote"
+              className="block text-sm font-medium mb-1.5"
+            >
+              {t("buyerNoteLabel")}
+            </Label>
+            <Textarea
+              id="buyerNote"
+              rows={2}
+              placeholder={t("buyerNotePlaceholder")}
+              {...form.register("buyerNote")}
             />
           </div>
-          {form.formState.errors.offerAmount && (
-            <Text className="mt-1 text-xs text-red-500 dark:text-red-400">
-              {form.formState.errors.offerAmount.message}
-            </Text>
-          )}
-        </div>
-
-        {/* Buyer note */}
-        <div>
-          <Label
-            htmlFor="buyerNote"
-            className="block text-sm font-medium mb-1.5"
-          >
-            {t("buyerNoteLabel")}
-          </Label>
-          <Textarea
-            id="buyerNote"
-            rows={2}
-            placeholder={t("buyerNotePlaceholder")}
-            {...form.register("buyerNote")}
-          />
-        </div>
-
+        </FormGroup>
         <div className="flex gap-2">
           <Button
             type="submit"

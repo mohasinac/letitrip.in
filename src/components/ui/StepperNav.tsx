@@ -30,9 +30,9 @@ export function StepperNav({ steps, currentStep, className }: StepperNavProps) {
                     "w-8 h-8 rounded-full text-sm font-semibold border-2 transition-colors",
                     flex.center,
                     isComplete
-                      ? "bg-indigo-600 border-indigo-600 text-white"
+                      ? "bg-primary border-primary text-white"
                       : isActive
-                        ? "border-indigo-600 text-indigo-600 bg-transparent"
+                        ? "border-primary text-primary bg-transparent"
                         : classNames(
                             themed.border,
                             "text-zinc-500 dark:text-zinc-400",
@@ -62,7 +62,7 @@ export function StepperNav({ steps, currentStep, className }: StepperNavProps) {
                   className={classNames(
                     "text-sm font-medium hidden sm:block",
                     isActive
-                      ? "text-indigo-600"
+                      ? "text-primary"
                       : isComplete
                         ? themed.textPrimary
                         : "text-zinc-500 dark:text-zinc-400",
@@ -78,7 +78,7 @@ export function StepperNav({ steps, currentStep, className }: StepperNavProps) {
                   className={classNames(
                     "flex-1 h-0.5 mx-3 transition-colors",
                     isComplete
-                      ? "bg-indigo-600"
+                      ? "bg-primary"
                       : classNames(themed.border, "bg-zinc-200"),
                   )}
                 />

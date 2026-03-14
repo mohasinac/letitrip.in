@@ -64,7 +64,7 @@ function TreeNode({
       <div
         className={`
           flex items-center gap-2 py-2 px-3 hover:bg-zinc-50 dark:hover:bg-slate-800 rounded-md
-          ${isSelected ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500" : ""}
+          ${isSelected ? "bg-primary/5 dark:bg-primary/10 border-l-4 border-primary" : ""}
           transition-colors duration-150
         `}
         style={{ paddingLeft: `${indent + 12}px` }}
@@ -180,7 +180,7 @@ function TreeNode({
                 e.stopPropagation();
                 onEdit(node);
               }}
-              className="p-1.5 text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 rounded hover:bg-zinc-100 dark:hover:bg-slate-700"
+              className="p-1.5 text-zinc-500 hover:text-primary rounded hover:bg-zinc-100 dark:hover:bg-slate-700"
               title="Edit category"
             >
               <svg

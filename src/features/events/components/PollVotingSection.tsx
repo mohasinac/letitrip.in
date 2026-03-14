@@ -79,13 +79,13 @@ export function PollVotingSection({
                 key={opt.id}
                 className={`flex items-center gap-3 p-3 rounded-lg border ${
                   isSelected
-                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                    ? "border-primary bg-primary/5 dark:bg-primary/10"
                     : themed.border
                 }`}
               >
                 <Span className="text-sm flex-1">{opt.label}</Span>
                 {isSelected && (
-                  <Span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                  <Span className="text-xs text-primary font-medium">
                     Your vote
                   </Span>
                 )}
@@ -121,7 +121,7 @@ export function PollVotingSection({
               }
               className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                 isChecked
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                  ? "border-primary bg-primary/5 dark:bg-primary/10"
                   : `${themed.border} hover:border-zinc-300`
               }`}
             >

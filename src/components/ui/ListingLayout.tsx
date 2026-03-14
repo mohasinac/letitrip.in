@@ -11,11 +11,11 @@
  *  ├──────────────────────────────────────────────────────────────────┤
  *  │ [statusTabsSlot — status filter tabs]                           │
  *  ├──────────────────────────────────────────────────────────────────┤
- *  │ [searchSlot] [🔍] [viewToggle] [bulkActions] [sortSlot] [acts] │
+ *  │ STICKY ─────────────────────────────────────────────────────── │
+ *  │ [Filters] [searchSlot] [viewToggle] [sortSlot] [acts] [page]   │
  *  ├──────────┬───────────────────────────────────────────────────────┤
  *  │ Filters  │  [activeFiltersSlot — chips]                         │
  *  │ (sidebar)│  [DataTable / ProductGrid / card list — children]    │
- *  │          │  [paginationSlot — TablePagination]                  │
  *  └──────────┴───────────────────────────────────────────────────────┘
  *
  * Desktop: collapsible left filter sidebar.
@@ -93,7 +93,15 @@ export interface ListingLayoutProps {
   bulkActionItems?: BulkActionItem[];
 
   // ── Pagination ───────────────────────────────────────────────────────────
-  /** TablePagination rendered below the content area */
+  /**
+   * TablePagination rendered in the sticky toolbar (compact inline).
+   * Pass `<TablePagination compact … />` here.
+   */
+  toolbarPaginationSlot?: ReactNode;
+  /**
+   * TablePagination rendered below the content area (full footer).
+   * Used by all listing pages that want page controls at the bottom.
+   */
   paginationSlot?: ReactNode;
 
   // ── Content ──────────────────────────────────────────────────────────────
@@ -127,6 +135,7 @@ export function ListingLayout({
   selectedCount = 0,
   onClearSelection,
   bulkActionItems,
+  toolbarPaginationSlot,
   paginationSlot,
   children,
   defaultSidebarOpen = false,
@@ -185,81 +194,98 @@ export function ListingLayout({
       {/* ─────────────────────── Status tabs ───────────────── */}
       {statusTabsSlot}
 
-      {/* ─────────────────────── Toolbar ─────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        {/* Filter trigger */}
-        {hasFilter && (
-          <>
-            {/* Mobile: opens fullscreen overlay */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setMobileFilterOpen(true)}
-              aria-label={t("title")}
-              className="lg:hidden flex items-center gap-1.5"
-            >
-              <FilterIcon />
-              {t("title")}
-              {filterActiveCount > 0 && (
-                <Span
-                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-                  aria-label={t("activeCount", { count: filterActiveCount })}
+      {/* ─────────────────── Sticky toolbar header ──────────── */}
+      <div
+        className={[
+          "sticky z-20 py-2",
+          "top-20",
+          THEME_CONSTANTS.layout.titleBarBg,
+        ].join(" ")}
+      >
+        {/* Two-row layout on mobile; collapses to single row on sm+ */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          {/* Row 1 on mobile / left group on sm+: filter trigger + search */}
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {/* Filter trigger */}
+            {hasFilter && (
+              <>
+                {/* Mobile: opens fullscreen overlay */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMobileFilterOpen(true)}
+                  aria-label={t("title")}
+                  className="lg:hidden flex-shrink-0 flex items-center gap-1.5"
                 >
-                  {filterActiveCount}
-                </Span>
-              )}
-            </Button>
+                  <FilterIcon />
+                  {t("title")}
+                  {filterActiveCount > 0 && (
+                    <Span
+                      className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                      aria-label={t("activeCount", {
+                        count: filterActiveCount,
+                      })}
+                    >
+                      {filterActiveCount}
+                    </Span>
+                  )}
+                </Button>
 
-            {/* Desktop: collapses/expands the sidebar */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setSidebarOpen((prev) => !prev)}
-              aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
-              aria-expanded={sidebarOpen}
-              className="hidden lg:flex items-center gap-1.5"
-            >
-              <FilterIcon />
-              {t("title")}
-              {filterActiveCount > 0 && (
-                <Span
-                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-                  aria-label={t("activeCount", { count: filterActiveCount })}
+                {/* Desktop: collapses/expands the sidebar */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSidebarOpen((prev) => !prev)}
+                  aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
+                  aria-expanded={sidebarOpen}
+                  className="hidden lg:flex flex-shrink-0 items-center gap-1.5"
                 >
-                  {filterActiveCount}
-                </Span>
-              )}
-              {/* Chevron */}
-              <svg
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${sidebarOpen ? "rotate-90" : "-rotate-90"}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Button>
-          </>
-        )}
+                  <FilterIcon />
+                  {t("title")}
+                  {filterActiveCount > 0 && (
+                    <Span
+                      className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                      aria-label={t("activeCount", {
+                        count: filterActiveCount,
+                      })}
+                    >
+                      {filterActiveCount}
+                    </Span>
+                  )}
+                  {/* Chevron */}
+                  <svg
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${sidebarOpen ? "rotate-90" : "-rotate-90"}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </Button>
+              </>
+            )}
 
-        {/* Search — grows to fill available space */}
-        {searchSlot && (
-          <div className="flex-1 min-w-[180px] max-w-xl">{searchSlot}</div>
-        )}
+            {/* Search — grows to fill remaining space */}
+            {searchSlot && <div className="flex-1 min-w-0">{searchSlot}</div>}
+          </div>
 
-        {/* Right-side controls */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
-          {viewToggleSlot}
-          {sortSlot}
-          {actionsSlot}
+          {/* Row 2 on mobile / right group on sm+: sort · view toggle · actions · toolbar pagination */}
+          <div className="flex items-center gap-2 flex-shrink-0 justify-between sm:justify-start">
+            <div className="flex items-center gap-2">
+              {sortSlot}
+              {viewToggleSlot}
+              {actionsSlot}
+            </div>
+            {toolbarPaginationSlot}
+          </div>
         </div>
       </div>
 
@@ -270,7 +296,8 @@ export function ListingLayout({
           <aside
             aria-label={panelTitle}
             className={[
-              "hidden lg:block flex-shrink-0",
+              "hidden lg:block flex-shrink-0 self-start",
+              "sticky top-[8.5rem]",
               "transition-all duration-200 ease-in-out overflow-hidden",
               sidebarOpen
                 ? "w-60 xl:w-64 2xl:w-72 opacity-100"
@@ -279,7 +306,7 @@ export function ListingLayout({
           >
             <div
               className={[
-                "w-60 xl:w-64 2xl:w-72 border rounded-xl overflow-hidden sticky top-20",
+                "w-60 xl:w-64 2xl:w-72 border rounded-xl overflow-hidden",
                 themed.border,
                 themed.bgPrimary,
               ].join(" ")}
@@ -297,7 +324,7 @@ export function ListingLayout({
                     variant="ghost"
                     size="sm"
                     onClick={onFilterClear}
-                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto leading-none"
+                    className="text-xs text-primary hover:underline p-0 h-auto leading-none"
                   >
                     {tActions("clearAll")}
                   </Button>
@@ -306,7 +333,7 @@ export function ListingLayout({
 
               {/* Scrollable facets */}
               <div
-                className={`px-3 py-3 max-h-[calc(100vh-220px)] overflow-y-auto ${spacing.stack}`}
+                className={`px-3 py-3 max-h-[calc(100vh-15rem)] overflow-y-auto ${spacing.stack}`}
               >
                 {filterContent}
               </div>
@@ -347,7 +374,7 @@ export function ListingLayout({
           ) : (
             <>
               {children}
-              {/* Pagination */}
+              {/* Full pagination footer — below content */}
               {paginationSlot && <div className="pt-2">{paginationSlot}</div>}
             </>
           )}

@@ -52,9 +52,7 @@ export function SummaryCard({
       {/* Total row */}
       <div className={flex.between}>
         <Span className={`font-bold ${themed.textPrimary}`}>{total.label}</Span>
-        <Span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
-          {total.value}
-        </Span>
+        <Span className="font-bold text-lg text-primary">{total.value}</Span>
       </div>
 
       {/* Action slot */}

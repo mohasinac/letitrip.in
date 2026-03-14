@@ -22,8 +22,8 @@ const SECURITY_ITEMS: SecurityItem[] = [
     titleKey: "securityEncryptionTitle",
     descKey: "securityEncryptionDesc",
     color:
-      "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/20 dark:border-indigo-700",
-    iconColor: "text-indigo-600 dark:text-indigo-400",
+      "bg-primary/5 border-primary/20 dark:bg-primary/10 dark:border-primary/30",
+    iconColor: "text-primary",
   },
   {
     icon: Globe,

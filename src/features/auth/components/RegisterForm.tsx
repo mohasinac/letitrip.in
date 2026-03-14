@@ -13,6 +13,7 @@ import {
   Button,
   Checkbox,
   FormField,
+  FormGroup,
   Heading,
   Label,
   PasswordStrengthIndicator,
@@ -149,7 +150,7 @@ export function RegisterForm() {
         <div>
           <div className="flex justify-center">
             <div
-              className={`w-16 h-16 bg-blue-600 rounded-2xl ${flex.center} shadow-lg`}
+              className={`w-16 h-16 bg-primary rounded-2xl ${flex.center} shadow-lg`}
             >
               <Span className="text-white text-2xl font-bold">L</Span>
             </div>
@@ -167,7 +168,7 @@ export function RegisterForm() {
             {t("register.or")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+              className="font-medium text-primary hover:text-primary/80"
             >
               {t("register.signInLink")}
             </TextLink>
@@ -267,14 +268,14 @@ export function RegisterForm() {
                 {t("register.acceptTerms")}{" "}
                 <TextLink
                   href={ROUTES.PUBLIC.TERMS}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+                  className="text-primary hover:text-primary/80"
                 >
                   {t("register.termsOfService")}
                 </TextLink>{" "}
                 {t("register.and")}{" "}
                 <TextLink
                   href={ROUTES.PUBLIC.PRIVACY}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
+                  className="text-primary hover:text-primary/80"
                 >
                   {t("register.privacyPolicy")}
                 </TextLink>

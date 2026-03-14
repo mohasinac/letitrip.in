@@ -83,7 +83,7 @@ export function SellerDashboardView() {
           value={stats.total}
           icon={<Package className="w-5 h-5" />}
           cardClass={enhancedCard.stat.indigo}
-          iconClass="text-indigo-600 dark:text-indigo-400"
+          iconClass="text-primary"
           loading={productsLoading}
         />
         <SellerStatCard

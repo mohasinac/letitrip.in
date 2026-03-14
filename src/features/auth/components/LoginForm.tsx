@@ -14,6 +14,7 @@ import {
   Alert,
   Button,
   Checkbox,
+  FormGroup,
   Heading,
   Input,
   Label,
@@ -94,7 +95,7 @@ export function LoginForm() {
         <div>
           <div className="flex justify-center">
             <div
-              className={`w-16 h-16 bg-blue-600 rounded-2xl ${flex.center} shadow-lg`}
+              className={`w-16 h-16 bg-primary rounded-2xl ${flex.center} shadow-lg`}
             >
               <Span className="text-white text-2xl font-bold">L</Span>
             </div>
@@ -112,7 +113,7 @@ export function LoginForm() {
             {t("login.or")}{" "}
             <TextLink
               href={ROUTES.AUTH.REGISTER}
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              className="font-medium text-primary hover:text-primary/80"
             >
               {t("login.createAccountLink")}
             </TextLink>
@@ -129,32 +130,34 @@ export function LoginForm() {
         {/* Login Form */}
         <form className={`mt-8 ${spacing.stack}`} onSubmit={handleSubmit}>
           <div className={spacing.stack}>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label={t("shared.emailAddress")}
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-              autoComplete="username"
-              placeholder={t("shared.emailPlaceholder")}
-            />
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label={t("shared.password")}
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              required
-              autoComplete="current-password"
-              placeholder={t("shared.passwordPlaceholder")}
-            />
+            <FormGroup columns={1}>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                label={t("shared.emailAddress")}
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                required
+                autoComplete="username"
+                placeholder={t("shared.emailPlaceholder")}
+              />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                label={t("shared.password")}
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+                autoComplete="current-password"
+                placeholder={t("shared.passwordPlaceholder")}
+              />
+            </FormGroup>
           </div>
 
           <div className={flex.between}>
@@ -176,7 +179,7 @@ export function LoginForm() {
             <div className="text-sm">
               <TextLink
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
-                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                className="font-medium text-primary hover:text-primary/80"
               >
                 {t("login.forgotPasswordLink")}
               </TextLink>

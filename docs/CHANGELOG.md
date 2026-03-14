@@ -6,6 +6,77 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-15
 
+### Styling — Hardcoded Color Token Purge (F1 continued)
+
+Replaced every remaining hardcoded `indigo-*` and `blue-*` Tailwind color value with semantic `primary` tokens (`text-primary`, `bg-primary`, `ring-primary`, `border-primary`, `bg-primary/5`, `bg-primary/10`, `ring-primary/30`, `hover:text-primary`, `hover:bg-primary/90`) across the entire codebase. Normalised grid/card gaps to consistent `gap-4` / `gap-6` cadence throughout.
+
+**`@lir/ui` package:**
+
+- `packages/ui/src/components/Typography.tsx` — `Caption` accent/inverse and `Span` accent variants use `text-primary`
+- `packages/ui/src/components/Progress.tsx` — `primary` variant uses `bg-primary` (replaces `bg-blue-600`)
+- `packages/ui/src/DataTable.tsx` — view-mode toggle buttons use `bg-primary/5 text-primary ring-primary/30`; removed unused `Label` import; grid gap `gap-4→gap-6`, list gap `gap-2→gap-4`, mobile card spacing `space-y-4→space-y-6`; checkbox overlay replaced with native `<input type="checkbox">` for correct focus/checked state
+
+**Shared components:**
+
+- `src/components/typography/TextLink.tsx` — `default` variant `text-primary hover:text-primary/80`; `nav` variant `hover:text-primary`
+- `src/components/ui/SkipToMain.tsx` — `bg-primary ring-primary` focus-visible classes
+- `src/app/global-error.tsx` — `border-primary text-primary` home link
+- `src/app/[locale]/help/page.tsx` — topic cards `hover:border-primary/40 group-hover:text-primary`; CTA buttons use `bg-primary` / `border-primary`
+- `src/app/[locale]/cookies/page.tsx` and `src/app/[locale]/refund-policy/page.tsx` — inline color references updated
+- All components under `src/components/` (filters, modals, cards, admin, auctions, categories, orders, products, typography, UI primitives) — `indigo-*` replaced with `primary` tokens
+
+**Feature components (~120 files):**
+
+- All components under `src/features/about/`, `src/features/admin/`, `src/features/auth/`, `src/features/blog/`, `src/features/cart/`, `src/features/categories/`, `src/features/events/`, `src/features/faq/`, `src/features/homepage/`, `src/features/products/`, `src/features/promotions/`, `src/features/seller/`, `src/features/stores/`, `src/features/user/`, `src/features/wishlist/` — `indigo-*`/`blue-*` replaced with `primary` tokens
+
+**Violations scanner:**
+
+- `violations.json` — updated scan (`2026-03-14`): 1 341 files, 20 info-level styling violations (`STYL-001` × 8, `STYL-003` × 12); 0 errors, 0 warnings
+
+---
+
+## [Unreleased] — 2026-03-15
+
+### FormGroup UI Standardisation — Full Coverage
+
+Completed `FormGroup` adoption across every form in the codebase. All field-layout divs (`space-y-*`, `spacing.stack` wrappers, raw `Grid` usages) inside form components have been replaced with `FormGroup` (and `FormFieldSpan` where a field must span full width). Forms are now uniformly responsive: `columns={2}` collapses to single-column on mobile.
+
+**Phase 1 — already migrated (prior sessions):**
+`AddressForm`, `ProductForm`, `ContactForm`, `ProfileInfoForm`, `SaleConfigForm`, `OfferConfigForm`, `EventFormDrawer`, `SellerPayoutSettingsView`, `SellerPayoutRequestForm`, `SellerCouponForm`, `SellerShippingView`, `SiteBasicInfoForm`, `SiteContactForm`, `SiteSocialLinksForm`, `SiteCommissionsForm`, `SectionForm`, `OrderStatusForm`, `MediaOperationForm`, `FaqForm`, `CouponForm`, `CarouselSlideForm`, `BlogForm`
+
+**Phase 2 — migrated this session:**
+
+- `src/features/seller/components/SellerStoreView.tsx` — replaced two `<Grid cols={2}>` blocks with `<FormGroup columns={2}>` (storeLogoURL + storeBannerURL; social links)
+- `src/features/admin/components/PayoutStatusForm.tsx` — `<div className="space-y-5">` → `<div className={spacing.stack}>`
+- `src/features/events/components/EventTypeConfig/SaleConfigForm.tsx` — `spacing.stack` div → `<FormGroup columns={2}>`; removed `THEME_CONSTANTS` import
+- `src/features/events/components/EventTypeConfig/OfferConfigForm.tsx` — `spacing.stack` div → `<FormGroup columns={2}>`; `bannerText` wrapped in `<FormFieldSpan>`; removed `THEME_CONSTANTS` import
+- `src/components/categories/CategoryForm.tsx` — `name + slug` → `<FormGroup columns={2}>`; checkbox trio `<Grid className="grid-cols-2">` → `<FormGroup columns={2}>`; `Grid` import removed
+- `src/features/admin/components/BackgroundSettings.tsx` — overlay `<Grid cols={2}>` → `<FormGroup columns={2}>`; `Grid` import removed
+- `src/features/admin/components/SiteCredentialsForm.tsx` — four provider sections (Razorpay, WhatsApp, Shiprocket, Meta) converted to `<FormGroup columns={2}>`; solo fields (`razorpayWebhookSecret`, `metaPageAccessToken`) wrapped in `<FormFieldSpan>`; `FormFieldSpan` added to imports
+- `src/features/auth/components/RegisterForm.tsx` — `displayName + email` → `<FormGroup columns={2}>`; passwords + terms → `<FormGroup columns={1}>`; `FormGroup` added to imports
+- `src/features/auth/components/LoginForm.tsx` — email + password `Input`s → `<FormGroup columns={1}>`; `FormGroup` added to imports
+- `src/features/auth/components/ForgotPasswordView.tsx` — single `FormField` wrapped in `<FormGroup>`; `FormGroup` added to imports
+- `src/features/products/components/MakeOfferForm.tsx` — offer amount + buyer note → `<FormGroup columns={2}>`; `FormGroup` added to imports
+- `src/features/products/components/PlaceBidForm.tsx` — bid field section wrapped in `<FormGroup>`; `FormGroup` added to imports
+- `src/features/user/components/PasswordChangeForm.tsx` — 3 password fields → `<FormGroup columns={1}>`; `FormGroup` added to imports
+- `src/features/seller/components/SellerOffersView.tsx` — counter-offer drawer (counter amount + seller note) → `<FormGroup columns={2}>`; `FormGroup` added to imports
+- `src/features/events/components/EventTypeConfig/PollConfigForm.tsx` — outer `spacing.stack` div → `<FormGroup>`; two checkboxes → nested `<FormGroup columns={2}>`; removed `THEME_CONSTANTS` import
+- `src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx` — outer div → `<FormGroup columns={1}>`; two checkboxes → `<FormGroup columns={2}>`; removed `THEME_CONSTANTS` import
+- `src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx` — outer `THEME_CONSTANTS.spacing.stack` div → `<FormGroup>`; removed `THEME_CONSTANTS` import
+- `src/features/events/components/EventParticipateView.tsx` — Card `space-y-5` replaced by `<FormGroup>` wrapping dynamic survey fields; `FormGroup` added to imports
+- `src/features/seller/components/SellerStoreSetupView.tsx` — outer `spacing.stack` form → `<FormGroup columns={1}>` with storeName + storeCategory in `<FormGroup columns={2}>`
+
+**Skipped (structure incompatible with FormGroup):**
+
+- `NavbarConfigForm` — toggle-switch panel, no form fields
+- `FooterConfigForm` — custom `grid-cols-[6rem_1fr_auto]` repeater rows
+- `NewsletterSection` — intentional horizontal flex `Input + Button` layout
+- `SellerCreateProductView` — pure pass-through wrapper for `ProductForm`
+
+---
+
+## [Unreleased] — 2026-03-15
+
 ### Fixed — Hydration & UI safety audit
 
 Audited the codebase for hydration mismatches and preventive SSR safety.

@@ -64,7 +64,7 @@ export function useSectionTableColumns(
             e.stopPropagation();
             onEdit(section);
           }}
-          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+          className="text-primary hover:text-primary/80"
         >
           {tActions("edit")}
         </Button>

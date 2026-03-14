@@ -15,6 +15,7 @@ import {
   Button,
   Container,
   Tooltip,
+  ViewToggle,
 } from "@/components";
 import { ProductFilters } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -257,6 +258,12 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
               options={sortOptions}
             />
           }
+          viewToggleSlot={
+            <ViewToggle
+              value={viewMode}
+              onChange={(m) => table.set("view", m)}
+            />
+          }
           activeFiltersSlot={
             activeFilters.length > 0 ? (
               <ActiveFilterChips
@@ -278,7 +285,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
             <Tooltip content={tActions("selectionHint")} placement="bottom">
               <button
                 type="button"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
                 aria-label={tActions("selectionHint")}
               >
                 <Info className="w-4 h-4" />
@@ -307,7 +314,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
                 ]
               : undefined
           }
-          paginationSlot={
+          toolbarPaginationSlot={
             totalPages > 1 ? (
               <TablePagination
                 total={totalItems}
@@ -317,6 +324,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
                 onPageChange={table.setPage}
                 onPageSizeChange={(n) => table.set("pageSize", String(n))}
                 pageSizeOptions={[12, 24, 48]}
+                compact
               />
             ) : undefined
           }
@@ -332,7 +340,6 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
               { key: "category", header: t("filterCategory") },
               { key: "status", header: t("colStatus") },
             ]}
-            showViewToggle
             showTableView={false}
             viewMode={viewMode}
             onViewModeChange={(m) => table.set("view", m)}

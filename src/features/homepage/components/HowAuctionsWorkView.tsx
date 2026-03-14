@@ -98,7 +98,7 @@ export async function HowAuctionsWorkView() {
         {/* ── Auction Journey Diagram ── */}
         <FlowDiagram
           title={`🗺️ ${t("diagramTitle")}`}
-          titleClass="text-indigo-700 dark:text-indigo-300"
+          titleClass="text-primary"
           connectorClass="bg-slate-200 dark:bg-slate-600"
           steps={DIAGRAM_STEPS}
           stepWidth="w-[78px]"
@@ -161,7 +161,7 @@ export async function HowAuctionsWorkView() {
               className={`flex gap-4 items-start ${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
             >
               <div
-                className={`shrink-0 w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} text-sm font-bold text-indigo-600 dark:text-indigo-400`}
+                className={`shrink-0 w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 ${flex.center} text-sm font-bold text-primary`}
               >
                 {number}
               </div>
@@ -210,7 +210,7 @@ export async function HowAuctionsWorkView() {
           <div className="flex flex-wrap justify-center gap-3">
             <TextLink
               href={ROUTES.PUBLIC.AUCTIONS}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors text-sm"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold transition-colors text-sm"
             >
               {t("ctaBrowse")}
             </TextLink>
@@ -222,13 +222,13 @@ export async function HowAuctionsWorkView() {
         >
           <TextLink
             href={ROUTES.PUBLIC.AUCTIONS}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("viewAuctions")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.FAQS}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-primary hover:underline"
           >
             {t("faqLink")}
           </TextLink>

@@ -84,10 +84,10 @@ export function OrderCard({
           aria-label={isSelected ? "Deselect order" : "Select order"}
           aria-pressed={isSelected}
           onClick={handleSelect}
-          className={`absolute top-3 left-3 z-10 w-6 h-6 rounded border-2 ${THEME_CONSTANTS.flex.center} transition-colors ${
+          className={`absolute top-3 left-3 z-10 w-6 h-6 rounded-md shadow-md border-2 ${THEME_CONSTANTS.flex.center} transition-colors cursor-pointer ${
             isSelected
-              ? "bg-primary-700 border-primary-700"
-              : "bg-white/90 border-zinc-300 dark:bg-slate-800/90 dark:border-slate-600 hover:border-primary-400"
+              ? "bg-primary border-primary"
+              : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
           }`}
         >
           {isSelected && (

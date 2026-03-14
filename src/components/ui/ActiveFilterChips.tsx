@@ -100,7 +100,7 @@ export function ActiveFilterChips({
         type="button"
         variant="ghost"
         onClick={onClearAll}
-        className={`text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline p-2`}
+        className={`text-xs font-medium text-primary hover:underline p-2`}
       >
         {tActions("clearAll")}
       </Button>

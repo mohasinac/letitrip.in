@@ -155,7 +155,7 @@ export default function NotificationBell() {
               <Button
                 onClick={handleMarkAllRead}
                 disabled={isMarkingAll}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium disabled:opacity-50"
+                className="text-xs text-primary hover:underline font-medium disabled:opacity-50"
               >
                 {isMarkingAll ? tLoading("default") : t("markAllRead")}
               </Button>
@@ -202,7 +202,7 @@ export default function NotificationBell() {
                     <Li
                       key={n.id}
                       className={`group flex items-start gap-3 px-4 py-3 border-b ${THEME_CONSTANTS.themed.border} last:border-0 transition-colors hover:${THEME_CONSTANTS.themed.bgSecondary} ${
-                        !n.isRead ? "bg-blue-50/50 dark:bg-blue-950/20" : ""
+                        !n.isRead ? "bg-primary/5 dark:bg-primary/10" : ""
                       }`}
                     >
                       {/* Icon */}
@@ -219,7 +219,7 @@ export default function NotificationBell() {
                           >
                             {n.title}
                             {!n.isRead && (
-                              <Span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 align-middle" />
+                              <Span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-primary flex-shrink-0 align-middle" />
                             )}
                           </Text>
                           <Span
@@ -243,7 +243,7 @@ export default function NotificationBell() {
                                 if (!n.isRead) handleMarkRead(n.id);
                                 setIsOpen(false);
                               }}
-                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                              className="text-xs text-primary hover:underline font-medium"
                             >
                               {n.actionLabel ?? tActions("view")}
                             </TextLink>
@@ -273,7 +273,7 @@ export default function NotificationBell() {
             <TextLink
               href={ROUTES.USER.NOTIFICATIONS}
               onClick={() => setIsOpen(false)}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              className="text-sm text-primary hover:underline font-medium"
             >
               {t("viewAll")}
             </TextLink>
