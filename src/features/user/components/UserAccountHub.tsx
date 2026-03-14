@@ -5,7 +5,6 @@ import {
   MessageSquare,
   Bell,
   MapPin,
-  Zap,
   Settings,
   ChevronRight,
   ArrowRight,
@@ -19,7 +18,6 @@ import { StatusBadge } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth } from "@/hooks";
 import { useUserOrders } from "../hooks";
-import { useRCBalance } from "@/hooks";
 import { formatCurrency, formatDate } from "@/utils";
 
 const ORDER_STATUS_MAP: Record<
@@ -76,13 +74,6 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     iconColor: "text-rose-600 dark:text-rose-400",
   },
   {
-    href: ROUTES.USER.RC,
-    labelKey: "myRC",
-    icon: Zap,
-    iconBg: "bg-primary-500/10",
-    iconColor: "text-primary-600 dark:text-primary-400",
-  },
-  {
     href: ROUTES.USER.SETTINGS,
     labelKey: "settings",
     icon: Settings,
@@ -95,7 +86,7 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
  * UserAccountHub
  *
  * Landing page for the /user route — spatial orientation for users with:
- * 1. Profile header (avatar, name, role badge, RC balance)
+ * 1. Profile header (avatar, name, role badge)
  * 2. Quick nav grid (2×3 cards)
  * 3. Recent orders (last 3)
  */
@@ -103,7 +94,6 @@ export function UserAccountHub() {
   const { user, loading } = useAuth();
   const t = useTranslations("userHub");
   const tNav = useTranslations("nav");
-  const { data: rcData } = useRCBalance();
   const { orders, isLoading: ordersLoading } = useUserOrders();
 
   if (loading) {
@@ -147,12 +137,6 @@ export function UserAccountHub() {
             </Text>
             {/* Quick stats row */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
-              <div className="flex items-center gap-1.5">
-                <Zap className="h-4 w-4 text-primary-500" strokeWidth={1.5} />
-                <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                  {rcData?.rcBalance ?? 0} RC
-                </span>
-              </div>
               {user.role === "user" && (
                 <Link
                   href={ROUTES.USER.BECOME_SELLER}

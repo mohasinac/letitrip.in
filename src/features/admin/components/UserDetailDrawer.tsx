@@ -34,7 +34,6 @@ interface UserDetailDrawerProps {
   onRoleChange: (user: AdminUser, newRole: string) => void;
   onToggleBan: (user: AdminUser) => void;
   onDelete: (user: AdminUser) => void;
-  onAdjustRC: (user: AdminUser) => void;
 }
 
 const ROLES = ["user", "seller", "moderator", "admin"] as const;
@@ -46,10 +45,8 @@ export function UserDetailDrawer({
   onRoleChange,
   onToggleBan,
   onDelete,
-  onAdjustRC,
 }: UserDetailDrawerProps) {
   const t = useTranslations("adminUsers");
-  const tRC = useTranslations("adminRC");
   const tRoles = useTranslations("roles");
   if (!user) return null;
 
@@ -118,24 +115,6 @@ export function UserDetailDrawer({
             </Text>
           </div>
         </Grid>
-
-        {/* RC */}
-        <div className={`pt-4 border-t ${themed.border}`}>
-          <div className={`${THEME_CONSTANTS.flex.between} mb-2`}>
-            <Label>{tRC("balance")}</Label>
-            <Text weight="semibold">
-              {(user.rcBalance ?? 0).toLocaleString()} {tRC("coins")}
-            </Text>
-          </div>
-          <Button
-            onClick={() => onAdjustRC(user)}
-            variant="outline"
-            size="sm"
-            className="w-full"
-          >
-            {tRC("adjustButton")}
-          </Button>
-        </div>
 
         {/* Role Change */}
         <div className={`pt-4 border-t ${themed.border}`}>

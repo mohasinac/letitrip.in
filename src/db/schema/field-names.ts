@@ -87,10 +87,6 @@ export const USER_FIELDS = {
     CREATION_TIME: "metadata.creationTime",
     LOGIN_COUNT: "metadata.loginCount",
   },
-
-  // RC wallet
-  RC_BALANCE: "rcBalance",
-  ENGAGED_RC: "engagedRC",
 } as const;
 
 // ============================================================================
@@ -358,18 +354,8 @@ export const BID_FIELDS = {
   PREVIOUS_BID_AMOUNT: "previousBidAmount",
   BID_DATE: "bidDate",
   AUTO_MAX_BID: "autoMaxBid",
-  ENGAGED_COINS: "engagedCoins",
-  COINS_STATUS: "coinsStatus",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
-
-  // Coins status values
-  COINS_STATUS_VALUES: {
-    ENGAGED: "engaged",
-    RELEASED: "released",
-    FORFEITED: "forfeited",
-    RETURNED: "returned",
-  },
 
   // Bid statuses
   STATUS_VALUES: {
@@ -648,7 +634,6 @@ export const SITE_SETTINGS_FIELDS = {
     BLOG: "featureFlags.blog",
     COUPONS: "featureFlags.coupons",
     NOTIFICATIONS: "featureFlags.notifications",
-    RC: "featureFlags.rc",
     SELLER_REGISTRATION: "featureFlags.sellerRegistration",
     PRE_ORDERS: "featureFlags.preOrders",
   },

@@ -30,7 +30,6 @@ export * from "./blog-posts";
 export * from "./notifications";
 export * from "./payouts";
 export * from "./events";
-export * from "./rc";
 export * from "./chat";
 export * from "./newsletter-subscribers";
 export * from "./sms-counters";

@@ -5,12 +5,6 @@
  *
  * Make an Offer feature — buyer and seller lifecycle mutations.
  * Calls repositories directly (no HTTP hop).
- *
- * RC flow (mirrors auction bidding):
- *  makeOffer        → check freeCoins >= offerAmount → engage RC
- *  decline/withdraw → release engaged RC immediately
- *  acceptCounter    → adjust engaged RC by delta (counterAmount − offerAmount)
- *  checkoutOffer    → add to cart with offerId + lockedPrice (RC returned in verify route)
  */
 
 import { z } from "zod";
@@ -20,7 +14,6 @@ import {
   productRepository,
   notificationRepository,
   userRepository,
-  rcRepository,
   cartRepository,
 } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -123,13 +116,6 @@ export async function makeOfferAction(
   if (alreadyActive)
     throw new ValidationError(ERROR_MESSAGES.OFFER.ACTIVE_OFFER_EXISTS);
 
-  // ── RC balance check (same as auction bidding) ────────────────────────────
-  const userDoc = await userRepository.findById(user.uid);
-  const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
-  if (freeCoins < offerAmount) {
-    throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
-  }
-
   const offer = await offerRepository.create({
     productId,
     productTitle: product.title,
@@ -155,20 +141,6 @@ export async function makeOfferAction(
     message: `${user.displayName ?? "A buyer"} offered ₹${offerAmount} on "${product.title}"`,
     relatedId: offer.id,
     relatedType: "offer",
-  });
-
-  // ── Engage RC ─────────────────────────────────────────────────────────────
-  await userRepository.incrementRCBalance(user.uid, -offerAmount, offerAmount);
-  const updatedDoc = await userRepository.findById(user.uid);
-  await rcRepository.create({
-    userId: user.uid,
-    type: "engage",
-    coins: offerAmount,
-    balanceBefore: (updatedDoc?.rcBalance ?? 0) + offerAmount,
-    balanceAfter: updatedDoc?.rcBalance ?? 0,
-    productId,
-    productTitle: product.title,
-    notes: `Offer locked — RC engaged for offer ${offer.id}`,
   });
 
   serverLogger.info("Offer created", {
@@ -224,25 +196,6 @@ export async function respondToOfferAction(
     );
   } else if (action === "decline") {
     updated = await offerRepository.decline(offerId, sellerNote);
-
-    // ── Release buyer's engaged RC on decline ───────────────────────────────
-    const buyerDocBefore = await userRepository.findById(offer.buyerUid);
-    await userRepository.incrementRCBalance(
-      offer.buyerUid,
-      offer.offerAmount,
-      -offer.offerAmount,
-    );
-    const buyerDocAfter = await userRepository.findById(offer.buyerUid);
-    await rcRepository.create({
-      userId: offer.buyerUid,
-      type: "release",
-      coins: offer.offerAmount,
-      balanceBefore: buyerDocBefore?.rcBalance ?? 0,
-      balanceAfter: buyerDocAfter?.rcBalance ?? 0,
-      productId: offer.productId,
-      productTitle: offer.productTitle,
-      notes: `Offer declined by seller — RC released for offer ${offerId}`,
-    });
   } else {
     if (!counterAmount)
       throw new ValidationError("Counter amount is required when countering.");
@@ -307,34 +260,8 @@ export async function acceptCounterOfferAction(
     throw new ValidationError(ERROR_MESSAGES.OFFER.EXPIRED);
 
   const counterAmount = offer.counterAmount ?? offer.offerAmount;
-  const delta = counterAmount - offer.offerAmount;
-
-  // ── Check + adjust engaged RC to match counter amount ────────────────────
-  if (delta > 0) {
-    const userDoc = await userRepository.findById(user.uid);
-    const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
-    if (freeCoins < delta) {
-      throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
-    }
-  }
 
   const updated = await offerRepository.acceptCounter(parsed.data.offerId);
-
-  // ── Adjust engaged RC by delta ────────────────────────────────────────────
-  if (delta !== 0) {
-    await userRepository.incrementRCBalance(user.uid, -delta, delta);
-    const finalDoc = await userRepository.findById(user.uid);
-    await rcRepository.create({
-      userId: user.uid,
-      type: delta > 0 ? "engage" : "release",
-      coins: Math.abs(delta),
-      balanceBefore: (finalDoc?.rcBalance ?? 0) + delta,
-      balanceAfter: finalDoc?.rcBalance ?? 0,
-      productId: offer.productId,
-      productTitle: offer.productTitle,
-      notes: `Counter accepted — RC ${delta > 0 ? "engaged" : "released"} to match ₹${counterAmount} for offer ${parsed.data.offerId}`,
-    });
-  }
 
   await notificationRepository.create({
     userId: offer.sellerId,
@@ -358,12 +285,9 @@ export async function acceptCounterOfferAction(
  *  1. `counterAmount` must be within ±20 % of the seller's counterAmount.
  *  2. Buyer may submit at most 3 offer documents per product since
  *     the product was last updated — tracked purely by document count.
- *  3. Buyer must have sufficient free RC for the net delta
- *     (counterAmount − original offerAmount).
  *
  * The previous `countered` offer is closed (withdrawn) and a fresh
- * offer document is created at the buyer's new price.  The engaged RC
- * is adjusted by the net delta so the buyer is never over- or under-charged.
+ * offer document is created at the buyer's new price.
  */
 export async function counterOfferByBuyerAction(
   input: BuyerCounterInput,
@@ -423,17 +347,6 @@ export async function counterOfferByBuyerAction(
   if (offerCount >= 3)
     throw new ValidationError(ERROR_MESSAGES.OFFER.LIMIT_REACHED);
 
-  // ── RC check: buyer needs enough free coins to cover the net delta ────────
-  // The original offerAmount is already engaged.  Only the incremental delta
-  // (counterAmount − offerAmount) requires additional free coins.
-  const delta = counterAmount - offer.offerAmount;
-  if (delta > 0) {
-    const userDoc = await userRepository.findById(user.uid);
-    const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
-    if (freeCoins < delta)
-      throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
-  }
-
   // ── Close old offer ───────────────────────────────────────────────────────
   await offerRepository.withdraw(offerId);
 
@@ -453,22 +366,6 @@ export async function counterOfferByBuyerAction(
     currency: offer.currency,
     buyerNote,
   });
-
-  // ── Adjust engaged RC by net delta ───────────────────────────────────────
-  if (delta !== 0) {
-    await userRepository.incrementRCBalance(user.uid, -delta, delta);
-    const finalDoc = await userRepository.findById(user.uid);
-    await rcRepository.create({
-      userId: user.uid,
-      type: delta > 0 ? "engage" : "release",
-      coins: Math.abs(delta),
-      balanceBefore: (finalDoc?.rcBalance ?? 0) + delta,
-      balanceAfter: finalDoc?.rcBalance ?? 0,
-      productId: offer.productId,
-      productTitle: offer.productTitle,
-      notes: `Buyer counter offer — RC ${delta > 0 ? "engaged" : "released"} for offer ${newOffer.id}`,
-    });
-  }
 
   // ── Notify seller ─────────────────────────────────────────────────────────
   await notificationRepository.create({
@@ -507,36 +404,11 @@ export async function withdrawOfferAction(
   if (offer.buyerUid !== user.uid)
     throw new AuthorizationError("Not authorised.");
   if (offer.status === "expired")
-    throw new ValidationError(
-      "This offer has already expired. RC has been automatically released.",
-    );
+    throw new ValidationError("This offer has already expired.");
   if (!["pending", "countered"].includes(offer.status))
     throw new ValidationError("Offer cannot be withdrawn at this stage.");
 
   await offerRepository.withdraw(parsed.data.offerId);
-
-  // ── Release engaged RC on withdrawal ─────────────────────────────────────
-  // Always release offerAmount — RC is only ever adjusted in acceptCounterOfferAction
-  // (which transitions to 'accepted'). When status is 'countered', engaged RC
-  // is still the original offerAmount regardless of the counter value.
-  const engagedCoins = offer.offerAmount;
-  const buyerDocBefore = await userRepository.findById(user.uid);
-  await userRepository.incrementRCBalance(
-    user.uid,
-    engagedCoins,
-    -engagedCoins,
-  );
-  const buyerDocAfter = await userRepository.findById(user.uid);
-  await rcRepository.create({
-    userId: user.uid,
-    type: "release",
-    coins: engagedCoins,
-    balanceBefore: buyerDocBefore?.rcBalance ?? 0,
-    balanceAfter: buyerDocAfter?.rcBalance ?? 0,
-    productId: offer.productId,
-    productTitle: offer.productTitle,
-    notes: `Offer withdrawn by buyer — RC released for offer ${parsed.data.offerId}`,
-  });
 
   serverLogger.info("Offer withdrawn by buyer", {
     offerId: parsed.data.offerId,
@@ -562,7 +434,6 @@ export async function listSellerOffersAction(): Promise<OfferDocument[]> {
 
 /**
  * Add an accepted offer item to the cart at the locked price.
- * Engaged RC are returned by the payment verify route after successful payment.
  */
 export async function checkoutOfferAction(
   offerId: string,

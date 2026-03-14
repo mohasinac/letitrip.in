@@ -71,7 +71,6 @@ export const GET = createApiHandler({
           ? u.metadata.lastSignInTime.toISOString()
           : ((u.metadata?.lastSignInTime as any)?.toDate?.()?.toISOString() ??
             u.metadata?.lastSignInTime),
-      rcBalance: u.rcBalance ?? 0,
       metadata: u.metadata ? { loginCount: u.metadata.loginCount } : undefined,
     }));
 

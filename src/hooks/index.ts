@@ -179,15 +179,6 @@ export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
 
-// RC hooks
-export {
-  useRCBalance,
-  usePurchaseRC,
-  useVerifyRCPurchase,
-  useRefundRCPurchase,
-  useRCHistory,
-} from "./useRC";
-
 // Chat hooks
 export {
   useChat,

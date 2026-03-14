@@ -11,13 +11,7 @@
 
 import { z } from "zod";
 import { requireRole, requireAuth } from "@/lib/firebase/auth-server";
-import {
-  eventRepository,
-  eventEntryRepository,
-  rcRepository,
-  userRepository,
-  siteSettingsRepository,
-} from "@/repositories";
+import { eventRepository, eventEntryRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import {
@@ -34,7 +28,6 @@ import type {
 } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { resolveDate } from "@/utils";
-import { calculateEventCoins } from "@/lib/loyalty";
 import { ERROR_MESSAGES } from "@/constants";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
@@ -331,9 +324,7 @@ export async function adminGetEventEntriesAction(
   return result.items;
 }
 
-export async function adminGetEventStatsAction(
-  eventId: string,
-): Promise<{
+export async function adminGetEventStatsAction(eventId: string): Promise<{
   totalEntries: number;
   approvedEntries: number;
   flaggedEntries: number;
@@ -471,37 +462,6 @@ export async function enterEventAction(
     type: event.type,
     userId: user?.uid,
   });
-
-  if (user && autoApprove) {
-    try {
-      const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
-      const coinsToCredit = calculateEventCoins(
-        event.coinReward,
-        loyaltyConfig,
-      );
-      if (coinsToCredit > 0) {
-        const userDoc = await userRepository.findById(user.uid);
-        const balanceBefore = userDoc?.rcBalance ?? 0;
-        await userRepository.incrementRCBalance(user.uid, coinsToCredit);
-        await rcRepository.create({
-          userId: user.uid,
-          type: "earn_event",
-          coins: coinsToCredit,
-          balanceBefore,
-          balanceAfter: balanceBefore + coinsToCredit,
-          eventId,
-          eventTitle: event.title,
-          notes: `Earned for entering event: ${event.title}`,
-        });
-      }
-    } catch (err) {
-      serverLogger.warn("earn_event coin credit failed (non-critical)", {
-        eventId,
-        userId: user.uid,
-        err,
-      });
-    }
-  }
 
   return { entryId: entry.id };
 }

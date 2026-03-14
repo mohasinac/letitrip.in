@@ -10,7 +10,7 @@ export async function HowOffersWorkView() {
 
   const STEPS = [
     { number: 1, icon: "🔍", title: t("step1Title"), text: t("step1Text") },
-    { number: 2, icon: "🪙", title: t("step2Title"), text: t("step2Text") },
+    { number: 2, icon: "🏷️", title: t("step2Title"), text: t("step2Text") },
     { number: 3, icon: "💬", title: t("step3Title"), text: t("step3Text") },
     { number: 4, icon: "🤝", title: t("step4Title"), text: t("step4Text") },
     { number: 5, icon: "🛒", title: t("step5Title"), text: t("step5Text") },
@@ -23,15 +23,6 @@ export async function HowOffersWorkView() {
       circleClass:
         "bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-500",
       title: t("step1Title"),
-    },
-    {
-      emoji: "🪙",
-      circleClass:
-        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-300 dark:border-violet-700",
-      title: t("step2Title"),
-      badge: "RC Locked",
-      badgeClass:
-        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
     },
     {
       emoji: "💬",
@@ -56,9 +47,6 @@ export async function HowOffersWorkView() {
       circleClass:
         "bg-sky-100 dark:bg-sky-900/40 border-2 border-sky-300 dark:border-sky-600",
       title: t("step5Title"),
-      badge: "RC Returned",
-      badgeClass:
-        "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300",
     },
     {
       emoji: "📦",
@@ -71,35 +59,7 @@ export async function HowOffersWorkView() {
     },
   ];
 
-  const RC_STATES = [
-    {
-      icon: "🔒",
-      title: t("rcEngageTitle"),
-      desc: t("rcEngageDesc"),
-      color:
-        "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700",
-    },
-    {
-      icon: "🔓",
-      title: t("rcReleaseTitle"),
-      desc: t("rcReleaseDesc"),
-      color: "bg-sky-50 border-sky-200 dark:bg-sky-900/20 dark:border-sky-700",
-    },
-    {
-      icon: "↩️",
-      title: t("rcReturnTitle"),
-      desc: t("rcReturnDesc"),
-      color:
-        "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
-    },
-  ];
-
-  const RULES = [
-    t("rulesItem1"),
-    t("rulesItem2"),
-    t("rulesItem3"),
-    t("rulesItem4"),
-  ];
+  const RULES = [t("rulesItem1"), t("rulesItem2"), t("rulesItem3")];
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
@@ -158,30 +118,6 @@ export async function HowOffersWorkView() {
           />
         </Section>
 
-        {/* RC states */}
-        <Section>
-          <Heading level={2} className="mb-6 text-center">
-            {t("rcTitle")}
-          </Heading>
-          <Text
-            variant="secondary"
-            className="text-center mb-8 max-w-xl mx-auto"
-          >
-            {t("rcText")}
-          </Text>
-          <div className="grid gap-4 md:grid-cols-3">
-            {RC_STATES.map(({ icon, title, desc, color }) => (
-              <div key={title} className={`rounded-xl border p-5 ${color}`}>
-                <div className="text-2xl mb-2">{icon}</div>
-                <Text className="font-semibold mb-1">{title}</Text>
-                <Text variant="secondary" className="text-sm leading-relaxed">
-                  {desc}
-                </Text>
-              </div>
-            ))}
-          </div>
-        </Section>
-
         {/* Negotiation rules */}
         <Section>
           <Heading level={2} className="mb-6 text-center">
@@ -216,7 +152,6 @@ export async function HowOffersWorkView() {
             {t("ctaText")}
           </Text>
           <div className={`${flex.center} gap-4 flex-wrap`}>
-            <TextLink href={ROUTES.PUBLIC.RC_INFO}>{t("learnRC")}</TextLink>
             <TextLink href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK} variant="muted">
               {t("seeAuctions")}
             </TextLink>

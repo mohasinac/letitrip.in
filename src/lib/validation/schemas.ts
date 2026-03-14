@@ -576,7 +576,6 @@ export const siteSettingsUpdateSchema = z
         blog: z.boolean(),
         coupons: z.boolean(),
         notifications: z.boolean(),
-        rc: z.boolean(),
         sellerRegistration: z.boolean(),
         preOrders: z.boolean(),
       })

@@ -9,7 +9,6 @@ import {
   CheckCircle,
   Smartphone,
   Banknote,
-  Coins,
 } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
@@ -41,14 +40,6 @@ export async function HowCheckoutWorksView() {
       color:
         "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
       iconColor: "text-emerald-600 dark:text-emerald-400",
-    },
-    {
-      icon: Coins,
-      title: t("pm3Title"),
-      text: t("pm3Text"),
-      color:
-        "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700",
-      iconColor: "text-amber-600 dark:text-amber-400",
     },
   ];
 
@@ -187,29 +178,6 @@ export async function HowCheckoutWorksView() {
               ),
             )}
           </div>
-        </Section>
-
-        {/* RC coins at checkout */}
-        <Section
-          className={`rounded-2xl p-6 md:p-8 border ${themed.border} ${themed.bgSecondary}`}
-        >
-          <div className={`${flex.start} gap-4 mb-4`}>
-            <div className="text-3xl">🪙</div>
-            <div>
-              <Heading level={3} className="mb-1">
-                {t("rcCoinsTitle")}
-              </Heading>
-              <Text variant="secondary" className="text-sm leading-relaxed">
-                {t("rcCoinsText")}
-              </Text>
-            </div>
-          </div>
-          <TextLink
-            href={ROUTES.PUBLIC.RC_INFO}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-          >
-            {t("learnRC")}
-          </TextLink>
         </Section>
 
         {/* CTA */}

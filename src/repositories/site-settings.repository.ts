@@ -14,7 +14,6 @@ import {
   SiteSettingsUpdateInput,
   DEFAULT_SITE_SETTINGS_DATA,
 } from "@/db/schema/site-settings";
-import { DEFAULT_LOYALTY_CONFIG, LoyaltyConfig } from "@/db/schema/rc";
 import { DatabaseError } from "@/lib/errors";
 import { encrypt, decrypt, maskSecret } from "@/lib/encryption";
 
@@ -158,15 +157,6 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
       (masked as Record<string, string>)[key] = value ? maskSecret(value) : "";
     }
     return masked;
-  }
-
-  /**
-   * Get the active loyalty configuration.
-   * Returns siteSettings.loyalty if present, otherwise DEFAULT_LOYALTY_CONFIG.
-   */
-  async getLoyaltyConfig(): Promise<LoyaltyConfig> {
-    const settings = await this.getSingleton();
-    return settings.loyalty ?? DEFAULT_LOYALTY_CONFIG;
   }
 
   /**

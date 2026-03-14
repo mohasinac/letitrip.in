@@ -34,7 +34,6 @@ export interface CartItemDocument {
   isOffer?: boolean;
   /**
    * Present when item was added from an accepted Make-an-Offer.
-   * Checkout verify route uses this to return engaged RC after payment.
    */
   offerId?: string;
   /** Locked offer price — overrides normal product price at checkout */

@@ -106,7 +106,6 @@ export interface SiteSettingsDocument {
     blog: boolean;
     coupons: boolean;
     notifications: boolean;
-    rc: boolean;
     sellerRegistration: boolean;
     preOrders: boolean;
   };
@@ -156,12 +155,7 @@ export interface SiteSettingsDocument {
    * Values are encrypted blobs — never return raw to the client.
    * Empty / undefined means "fall back to environment variable".
    */
-  credentials?: SiteSettingsCredentials; /**
-   * Loyalty / RC earn configuration.
-   * Controls earn rates for purchases and events.
-   * Falls back to DEFAULT_LOYALTY_CONFIG when not set.
-   */
-  loyalty?: import("./rc").LoyaltyConfig;
+  credentials?: SiteSettingsCredentials;
   /**
    * Admin-curated before/after result cards shown in `FeaturedResultsSection`.
    * Each entry pairs two image URLs with an optional caption.
@@ -326,13 +320,6 @@ export const FEATURE_FLAG_META: FeatureFlagMeta[] = [
     category: "platform",
   },
   {
-    key: "rc",
-    labelKey: "rc",
-    descKey: "rcDesc",
-    icon: "🪙",
-    category: "platform",
-  },
-  {
     key: "sellerRegistration",
     labelKey: "sellerRegistration",
     descKey: "sellerRegistrationDesc",
@@ -454,7 +441,6 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
     blog: true,
     coupons: true,
     notifications: true,
-    rc: true,
     sellerRegistration: true,
     preOrders: false,
   },

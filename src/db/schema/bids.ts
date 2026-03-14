@@ -23,8 +23,6 @@ export interface BidDocument {
   previousBidAmount?: number; // Previous bid by same user
   bidDate: Date;
   autoMaxBid?: number; // Maximum auto-bid amount
-  engagedCoins?: number; // RC locked for this bid
-  coinsStatus?: "engaged" | "released" | "forfeited" | "returned"; // Lifecycle of engaged coins
   createdAt: Date;
   updatedAt: Date;
 }

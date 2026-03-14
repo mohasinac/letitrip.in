@@ -22,7 +22,6 @@ import {
   AccordionItem,
   Ul,
   Li,
-  RCBalanceChip,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
@@ -524,14 +523,6 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           {/* Column 3 — Bid Panel (desktop sticky sidebar) */}
           <div className="hidden lg:block">
             <div className={`sticky top-24 ${spacing.stack}`}>
-              {/* RC balance panel — shown to authenticated users */}
-              {!!user && !isEnded && (
-                <RCBalanceChip
-                  minimumRequired={displayBid + 1}
-                  variant="panel"
-                />
-              )}
-
               {/* Bid panel card */}
               <div
                 className={`${themed.bgPrimary} rounded-xl p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
@@ -595,14 +586,6 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   {t("viewStore")} →
                 </TextLink>
               </div>
-
-              {/* How Auctions Work link */}
-              <TextLink
-                href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
-                className="block text-center text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
-              >
-                {t("rcInfoLink")} →
-              </TextLink>
             </div>
           </div>
         </div>
@@ -619,9 +602,6 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           >
             {t("placeBid")}
           </Text>
-          {!!user && !isEnded && (
-            <RCBalanceChip minimumRequired={displayBid + 1} variant="panel" />
-          )}
           <PlaceBidForm
             productId={product.id}
             minimumBid={displayBid}

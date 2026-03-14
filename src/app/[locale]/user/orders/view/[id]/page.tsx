@@ -6,8 +6,8 @@ import { OrderDetailView } from "@/features/user";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("orders");
   return {
-    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
-    description: t("metaDescription"),
+    title: `${t("metaTitleDetail")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescriptionDetail"),
     robots: { index: false, follow: false },
   };
 }

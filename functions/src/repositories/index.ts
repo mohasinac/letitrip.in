@@ -31,7 +31,7 @@ export { reviewRepository } from "./review.repository";
 export type { ReviewRatingAggregate } from "./review.repository";
 
 export { userRepository } from "./user.repository";
-export type { SellerPayoutDetails, UserRC } from "./user.repository";
+export type { SellerPayoutDetails } from "./user.repository";
 
 export { categoryRepository } from "./category.repository";
 export type { CategoryRow } from "./category.repository";
@@ -40,6 +40,3 @@ export { storeRepository } from "./store.repository";
 
 export { offerRepository } from "./offer.repository";
 export type { OfferRow } from "./offer.repository";
-
-export { rcRepository } from "./rc.repository";
-export type { CreateRCTransactionInput } from "./rc.repository";

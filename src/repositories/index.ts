@@ -76,8 +76,6 @@ export { newsletterRepository } from "./newsletter.repository";
 export { eventRepository } from "./event.repository";
 export * from "./eventEntry.repository";
 export { eventEntryRepository } from "./eventEntry.repository";
-export * from "./rc.repository";
-export { rcRepository } from "./rc.repository";
 export * from "./chat.repository";
 export { chatRepository } from "./chat.repository";
 export * from "./sms-counter.repository";

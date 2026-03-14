@@ -324,15 +324,6 @@ export const API_ENDPOINTS = {
     BIDS_SSE: (productId: string) => `/api/realtime/bids/${productId}`, // GET - SSE stream for auction bid updates
   },
 
-  // RC endpoints
-  RC: {
-    BALANCE: "/api/rc/balance", // GET  - Current balance + engaged coins
-    PURCHASE: "/api/rc/purchase", // POST - Create Razorpay order for coin package
-    VERIFY: "/api/rc/purchase/verify", // POST - Verify payment and credit coins
-    HISTORY: "/api/rc/history", // GET  - Transaction history
-    REFUND: "/api/rc/refund", // POST - Refund a purchase transaction
-  },
-
   // Shiprocket webhook
   WEBHOOKS: {
     SHIPROCKET: "/api/webhooks/shiprocket", // POST - Shiprocket shipment status updates

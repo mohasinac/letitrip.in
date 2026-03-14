@@ -17,7 +17,7 @@ export async function HowAuctionsWorkView() {
 
   const STEPS = [
     { number: 1, icon: "🔍", title: t("step1Title"), text: t("step1Text") },
-    { number: 2, icon: "🪙", title: t("step2Title"), text: t("step2Text") },
+    { number: 2, icon: "📋", title: t("step2Title"), text: t("step2Text") },
     { number: 3, icon: "🔨", title: t("step3Title"), text: t("step3Text") },
     { number: 4, icon: "🏆", title: t("step4Title"), text: t("step4Text") },
     { number: 5, icon: "↩️", title: t("step5Title"), text: t("step5Text") },
@@ -27,7 +27,6 @@ export async function HowAuctionsWorkView() {
   const DETAILS = [
     { title: t("reservePriceTitle"), text: t("reservePriceText") },
     { title: t("autoExtendTitle"), text: t("autoExtendText") },
-    { title: t("rcTitle"), text: t("rcText") },
   ];
 
   const DIAGRAM_STEPS: FlowStep[] = [
@@ -38,13 +37,10 @@ export async function HowAuctionsWorkView() {
       title: t("step1Title"),
     },
     {
-      emoji: "🪙",
+      emoji: "📋",
       circleClass:
-        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-300 dark:border-violet-700",
+        "bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-500",
       title: t("step2Title"),
-      badge: "Wallet",
-      badgeClass:
-        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
     },
     {
       emoji: "🔨",
@@ -218,12 +214,6 @@ export async function HowAuctionsWorkView() {
             >
               {t("ctaBrowse")}
             </TextLink>
-            <TextLink
-              href={ROUTES.USER.RC_PURCHASE}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 rounded-xl font-semibold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors text-sm"
-            >
-              🪙 {t("buyRC")}
-            </TextLink>
           </div>
         </Section>
 
@@ -241,12 +231,6 @@ export async function HowAuctionsWorkView() {
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {t("faqLink")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.RC_INFO}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline"
-          >
-            🪙 {t("rcTitle")}
           </TextLink>
         </div>
       </div>

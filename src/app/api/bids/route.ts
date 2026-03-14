@@ -5,13 +5,7 @@
  * POST /api/bids              — Place a new bid (auth required)
  */
 
-import {
-  bidRepository,
-  productRepository,
-  unitOfWork,
-  userRepository,
-  rcRepository,
-} from "@/repositories";
+import { bidRepository, productRepository, unitOfWork } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -57,7 +51,6 @@ export const GET = createApiHandler({
  * - bidAmount must exceed current highest bid (or starting bid)
  * - Cannot bid on own auction
  * - Auction must not have ended
- * - User must have enough RC (1 RC = ₹1 bid value)
  */
 export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
   auth: true,
@@ -99,15 +92,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       return errorResponse(ERROR_MESSAGES.BID.BID_TOO_LOW, 400);
     }
 
-    // ── RC balance check ──────────────────────────────────────────────
-    // 1 RC = ₹1 bid value; user must hold at least bidAmount free coins.
-    const userDoc = await userRepository.findById(user!.uid);
-    const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
-    if (freeCoins < bidAmount) {
-      return errorResponse(ERROR_MESSAGES.RC.INSUFFICIENT_COINS, 402);
-    }
-
-    // Find the user's existing active bid for this product (coins may need releasing)
+    // Find the user's existing active bid for this product
     const userPriorActiveBid = (
       await bidRepository.findBy("productId", productId)
     ).find((b) => b.userId === user!.uid && b.status === "active");
@@ -122,8 +107,6 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       bidAmount,
       currency: product.currency || "INR",
       bidDate: new Date(),
-      engagedCoins: bidAmount,
-      coinsStatus: "engaged",
       ...(autoMaxBid ? { autoMaxBid } : {}),
     });
 
@@ -143,51 +126,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       } as any);
     });
 
-    // ── RC atomic balance update ─────────────────────────────────────
-    // (a) Engage coins for the new bid: debit free balance, credit engaged pool
-    await userRepository.incrementRCBalance(user!.uid, -bidAmount, bidAmount);
-
-    // (b) Release coins for any previous active bid from this user on this product
-    if (userPriorActiveBid?.engagedCoins) {
-      const released = userPriorActiveBid.engagedCoins;
-      await userRepository.incrementRCBalance(user!.uid, released, -released);
-
-      // Update the outbid bid record and record ledger entry
-      await bidRepository.update(userPriorActiveBid.id, {
-        coinsStatus: "released",
-      } as any);
-
-      const priorUserDoc = await userRepository.findById(user!.uid);
-      await rcRepository.create({
-        userId: user!.uid,
-        type: "release",
-        coins: released,
-        balanceBefore: (priorUserDoc?.rcBalance ?? 0) - released,
-        balanceAfter: priorUserDoc?.rcBalance ?? 0,
-        bidId: userPriorActiveBid.id,
-        productId,
-        productTitle: product.title,
-        bidAmount: userPriorActiveBid.bidAmount,
-        notes: "Outbid — coins released",
-      });
-    }
-
-    // Record "engage" transaction for the new bid
-    const freshUserDoc = await userRepository.findById(user!.uid);
-    await rcRepository.create({
-      userId: user!.uid,
-      type: "engage",
-      coins: bidAmount,
-      balanceBefore: (freshUserDoc?.rcBalance ?? 0) + bidAmount,
-      balanceAfter: freshUserDoc?.rcBalance ?? 0,
-      bidId: bid.id,
-      productId,
-      productTitle: product.title,
-      bidAmount,
-      notes: "Coins locked for bid",
-    });
-
-    // Write to Realtime DB for live bid streaming
+    // ── Write to Realtime DB for live bid streaming ─────────────────
     try {
       const rtdb = getAdminRealtimeDb();
       await rtdb.ref(`/auction-bids/${productId}`).set({
@@ -208,12 +147,11 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       });
     }
 
-    serverLogger.info("Bid placed with RC engaged", {
+    serverLogger.info("Bid placed", {
       bidId: bid.id,
       productId,
       userId: user!.uid,
       bidAmount,
-      engagedCoins: bidAmount,
     });
 
     return successResponse(bid, SUCCESS_MESSAGES.BID.PLACED, 201);

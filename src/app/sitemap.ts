@@ -152,12 +152,6 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     priority: 0.7,
   },
   {
-    url: `${BASE_URL}${ROUTES.PUBLIC.RC_INFO}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.4,
-  },
-  {
     url: `${BASE_URL}${ROUTES.PUBLIC.FEES}`,
     lastModified: new Date(),
     changeFrequency: "monthly",
@@ -441,5 +435,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 }
 
-export const dynamic = "force-dynamic";
 export const revalidate = 3600; // Re-generate at most once per hour

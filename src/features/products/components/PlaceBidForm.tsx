@@ -6,15 +6,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid, useMessage } from "@/hooks";
-import {
-  Button,
-  Input,
-  Label,
-  Span,
-  Text,
-  TextLink,
-  RCBalanceChip,
-} from "@/components";
+import { Button, Input, Label, Span, Text, TextLink } from "@/components";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -115,8 +107,6 @@ export function PlaceBidForm({
       onSubmit={handleSubmit}
       className={`rounded-xl border ${themed.border} p-4 space-y-3`}
     >
-      {/* RC balance + top-up */}
-      <RCBalanceChip minimumRequired={minimumRequired + 1} variant="panel" />
       <div>
         <Label
           htmlFor="bid-amount"
@@ -172,14 +162,6 @@ export function PlaceBidForm({
           {t("bidPlaced")}
         </Text>
       )}
-
-      {/* How it works link */}
-      <TextLink
-        href={ROUTES.PUBLIC.RC_INFO}
-        className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
-      >
-        🪙 {t("rcInfoLink")}
-      </TextLink>
     </form>
   );
 }

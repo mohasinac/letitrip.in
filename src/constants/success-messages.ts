@@ -85,8 +85,6 @@ export const SUCCESS_MESSAGES = {
     ALGOLIA_STORES_CLEARED: "Stores index cleared successfully",
     STORE_APPROVED: "Store approved successfully",
     STORE_REJECTED: "Store application rejected",
-    RC_CREDITED: "RC credited successfully",
-    RC_DEBITED: "RC debited successfully",
   },
 
   // Review Success
@@ -280,16 +278,6 @@ export const SUCCESS_MESSAGES = {
     ENTRY_APPROVED: "Entry approved",
     ENTRY_FLAGGED: "Entry flagged",
     STATUS_CHANGED: "Event status updated",
-  },
-
-  // RC success messages
-  RC: {
-    PURCHASE_INITIATED: "RC purchase initiated",
-    PURCHASE_COMPLETE: "RC added to your wallet!",
-    COINS_ENGAGED: "RC locked for your bid",
-    COINS_RELEASED: "RC returned to your wallet",
-    COINS_RETURNED: "RC refunded after payment",
-    REFUND_COMPLETE: "RC successfully refunded!",
   },
 
   // Chat success messages

@@ -33,7 +33,7 @@ const addToCartSchema = z.object({
   isPreOrder: z.boolean().optional(),
   /** Set when item originates from an accepted Make-an-Offer */
   offerId: z.string().optional(),
-  /** Locked offer price — used in verify route to return engaged RC */
+  /** Locked offer price — used in verify route at checkout */
   lockedPrice: z.number().positive().optional(),
 });
 

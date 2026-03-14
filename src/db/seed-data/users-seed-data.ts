@@ -642,8 +642,6 @@ export const usersSeedData: Partial<UserDocument>[] = [
       reviewsCount: 4,
       rating: 4.7,
     },
-    rcBalance: 18000,
-    engagedRC: 6000,
     metadata: {
       lastSignInTime: daysAgo(4),
       creationTime: daysAgo(272).toISOString(),
@@ -682,8 +680,6 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 3,
     },
-    rcBalance: 4000,
-    engagedRC: 0,
     metadata: {
       lastSignInTime: daysAgo(7),
       creationTime: daysAgo(207).toISOString(),
@@ -720,8 +716,6 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 2,
     },
-    rcBalance: 3000,
-    engagedRC: 1500,
     metadata: {
       lastSignInTime: daysAgo(6),
       creationTime: daysAgo(190).toISOString(),
@@ -758,8 +752,6 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 1,
     },
-    rcBalance: 6000,
-    engagedRC: 0,
     metadata: {
       lastSignInTime: daysAgo(4),
       creationTime: daysAgo(160).toISOString(),

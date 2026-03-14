@@ -17,7 +17,6 @@ import {
   payoutRepository,
   userRepository,
   productRepository,
-  rcRepository,
   blogRepository,
   storeRepository,
   bidRepository,
@@ -448,77 +447,6 @@ export async function adminDeleteProductAction(id: string): Promise<void> {
     adminId: admin.uid,
     productId: id,
   });
-}
-
-// ─── RC adjustments (admin only) ────────────────────────────────────
-
-const adminAdjustRCSchema = z.object({
-  targetUid: z.string().min(1, "targetUid is required"),
-  coins: z.number().int().positive("Must be a positive integer"),
-  type: z.enum(["admin_grant", "admin_deduct"]),
-  notes: z.string().max(500).optional(),
-});
-
-export type AdminAdjustRCInput = z.infer<typeof adminAdjustRCSchema>;
-
-/**
- * Manually credit or debit RC for any user (admin only).
- * Writes an immutable ledger entry and atomically updates the user balance.
- */
-export async function adminAdjustRCAction(
-  input: AdminAdjustRCInput,
-): Promise<{ success: true; newBalance: number }> {
-  const admin = await requireRole(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `rc:adjust:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = adminAdjustRCSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const { targetUid, coins, type, notes } = parsed.data;
-
-  const user = await userRepository.findById(targetUid);
-  if (!user) throw new NotFoundError("User not found");
-
-  const currentBalance = user.rcBalance ?? 0;
-
-  if (type === "admin_deduct" && coins > currentBalance)
-    throw new ValidationError(
-      `Cannot deduct ${coins} coins — user only has ${currentBalance}`,
-    );
-
-  const balanceDelta = type === "admin_grant" ? coins : -coins;
-  const newBalance = currentBalance + balanceDelta;
-
-  await userRepository.incrementRCBalance(targetUid, balanceDelta);
-
-  await rcRepository.create({
-    userId: targetUid,
-    type,
-    coins,
-    balanceBefore: currentBalance,
-    balanceAfter: newBalance,
-    notes,
-  });
-
-  serverLogger.info("adminAdjustRCAction", {
-    adminId: admin.uid,
-    targetUid,
-    type,
-    coins,
-    balanceBefore: currentBalance,
-    balanceAfter: newBalance,
-  });
-
-  return { success: true, newBalance };
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────

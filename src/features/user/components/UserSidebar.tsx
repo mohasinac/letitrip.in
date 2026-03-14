@@ -5,7 +5,6 @@ import {
   ShoppingBag,
   Heart,
   MapPin,
-  Zap,
   MessageCircle,
   Bell,
   Settings,
@@ -17,7 +16,7 @@ import { usePathname, Link } from "@/i18n/navigation";
 import { Drawer } from "@mohasinac/ui";
 import { MediaAvatar, Span, Text, Nav, Aside } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useAuth, useNotifications, useRCBalance } from "@/hooks";
+import { useAuth, useNotifications } from "@/hooks";
 
 interface UserSidebarProps {
   mobileOpen: boolean;
@@ -35,9 +34,7 @@ interface NavItem {
 
 function useSidebarBadges() {
   const { unreadCount } = useNotifications();
-  const { data } = useRCBalance();
-  const rcBadge = data?.rcBalance ?? 0;
-  return { notifBadge: unreadCount, rcBadge };
+  return { notifBadge: unreadCount };
 }
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
@@ -45,19 +42,13 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   const tHub = useTranslations("userHub");
   const pathname = usePathname();
   const { user } = useAuth();
-  const { notifBadge, rcBadge } = useSidebarBadges();
+  const { notifBadge } = useSidebarBadges();
 
   const navItems: NavItem[] = [
     { href: ROUTES.USER.PROFILE, labelKey: "myProfile", icon: User },
     { href: ROUTES.USER.ORDERS, labelKey: "myOrders", icon: ShoppingBag },
     { href: ROUTES.USER.WISHLIST, labelKey: "myWishlist", icon: Heart },
     { href: ROUTES.USER.ADDRESSES, labelKey: "myAddresses", icon: MapPin },
-    {
-      href: ROUTES.USER.RC,
-      labelKey: "myRC",
-      icon: Zap,
-      badge: rcBadge > 0 ? rcBadge.toLocaleString() : undefined,
-    },
     { href: ROUTES.USER.MESSAGES, labelKey: "myMessages", icon: MessageCircle },
     {
       href: ROUTES.USER.NOTIFICATIONS,

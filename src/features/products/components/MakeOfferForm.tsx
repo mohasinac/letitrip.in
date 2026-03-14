@@ -5,22 +5,12 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useMutation } from "@tanstack/react-query";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useMessage } from "@/hooks";
 import { makeOfferAction } from "@/actions";
-import { getRCBalanceAction } from "@/actions";
-import {
-  Button,
-  Card,
-  Input,
-  Label,
-  Span,
-  Text,
-  Textarea,
-  TextLink,
-} from "@/components";
+import { Button, Card, Input, Label, Span, Text, Textarea } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -54,7 +44,6 @@ export function MakeOfferForm({
   const tActions = useTranslations("actions");
   const { showError } = useMessage();
   const [submitted, setSubmitted] = useState(false);
-  const [rcInsufficient, setRcInsufficient] = useState(false);
 
   const minOfferPercent = product.minOfferPercent ?? 70;
   const minAmount = Math.ceil(product.price * (minOfferPercent / 100));
@@ -64,16 +53,6 @@ export function MakeOfferForm({
     resolver: zodResolver(schema),
     defaultValues: { offerAmount: minAmount, buyerNote: "" },
   });
-
-  const offerAmount = form.watch("offerAmount") ?? minAmount;
-
-  const { data: rcBalance } = useQuery({
-    queryKey: ["rc-balance"],
-    queryFn: getRCBalanceAction,
-    staleTime: 30_000,
-  });
-  const freeCoins = (rcBalance?.rcBalance ?? 0) - (rcBalance?.engagedRC ?? 0);
-  const hasEnoughRC = freeCoins >= (Number(offerAmount) || 0);
 
   const { mutateAsync: makeOffer, isPending } = useMutation({
     mutationFn: (values: FormValues) =>
@@ -87,16 +66,11 @@ export function MakeOfferForm({
       onSuccess?.();
     },
     onError: (err: unknown) => {
-      const msg = (err as Error).message ?? t("offerFailed");
-      if (msg.includes("Insufficient RC") || msg.includes("RC")) {
-        setRcInsufficient(true);
-      }
-      showError(msg);
+      showError((err as Error).message ?? t("offerFailed"));
     },
   });
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    setRcInsufficient(false);
     await makeOffer(values);
   });
 
@@ -154,31 +128,6 @@ export function MakeOfferForm({
           )}
         </div>
 
-        {/* RC hint */}
-        <div
-          className={`rounded-md px-3 py-2 text-sm ${
-            hasEnoughRC
-              ? "bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300"
-              : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-          }`}
-        >
-          {t("rcLockHint", { amount: Number(offerAmount) || minAmount })}
-          {!hasEnoughRC && (
-            <span>
-              {" "}
-              {t("rcBalance", { balance: freeCoins })}.{" "}
-              <TextLink href={ROUTES.USER.RC_PURCHASE}>{t("buyRC")}</TextLink>
-            </span>
-          )}
-        </div>
-
-        {rcInsufficient && (
-          <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
-            {t("insufficientRCDesc")}{" "}
-            <TextLink href={ROUTES.USER.RC_PURCHASE}>{t("topUpNow")}</TextLink>
-          </div>
-        )}
-
         {/* Buyer note */}
         <div>
           <Label htmlFor="buyerNote" className="block text-sm font-medium mb-1">
@@ -195,7 +144,7 @@ export function MakeOfferForm({
         <div className="flex gap-2">
           <Button
             type="submit"
-            disabled={isPending || !hasEnoughRC}
+            disabled={isPending}
             isLoading={isPending}
             className="flex-1"
           >

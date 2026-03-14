@@ -17,7 +17,6 @@ import {
   productRepository,
   unitOfWork,
   userRepository,
-  rcRepository,
 } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
@@ -51,7 +50,7 @@ export interface PlaceBidResult {
 /**
  * Place a bid on an auction product.
  *
- * Validates ownership, timing, bid amount, and RC balance before
+ * Validates ownership, timing, and bid amount before
  * atomically recording the bid, updating the product, and writing to RTDB.
  */
 export async function placeBidAction(
@@ -106,15 +105,7 @@ export async function placeBidAction(
     throw new ValidationError(ERROR_MESSAGES.BID.BID_TOO_LOW);
   }
 
-  // ── RC balance check ────────────────────────────────────────────────────────────
-  // 1 RC = ₹1 bid value; user must hold at least bidAmount free coins.
-  const userDoc = await userRepository.findById(user.uid);
-  const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
-  if (freeCoins < bidAmount) {
-    throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
-  }
-
-  // Find the user's existing active bid for this product (coins may need releasing)
+  // Find the user's existing active bid for this product
   const userPriorActiveBid = (
     await bidRepository.findBy("productId", productId)
   ).find((b) => b.userId === user.uid && b.status === "active");
@@ -129,8 +120,6 @@ export async function placeBidAction(
     bidAmount,
     currency: product.currency || "INR",
     bidDate: new Date(),
-    engagedCoins: bidAmount,
-    coinsStatus: "engaged",
     ...(autoMaxBid ? { autoMaxBid } : {}),
   });
 
@@ -147,48 +136,6 @@ export async function placeBidAction(
       currentBid: bidAmount,
       bidCount: (product.bidCount ?? 0) + 1,
     } as any);
-  });
-
-  // ── RC: engage coins for new bid ─────────────────────────────────────
-  await userRepository.incrementRCBalance(user.uid, -bidAmount, bidAmount);
-
-  // ── RC: release coins from prior outbid bid ──────────────────────────
-  if (userPriorActiveBid?.engagedCoins) {
-    const released = userPriorActiveBid.engagedCoins;
-    await userRepository.incrementRCBalance(user.uid, released, -released);
-
-    await bidRepository.update(userPriorActiveBid.id, {
-      coinsStatus: "released",
-    } as any);
-
-    const priorUserDoc = await userRepository.findById(user.uid);
-    await rcRepository.create({
-      userId: user.uid,
-      type: "release",
-      coins: released,
-      balanceBefore: (priorUserDoc?.rcBalance ?? 0) - released,
-      balanceAfter: priorUserDoc?.rcBalance ?? 0,
-      bidId: userPriorActiveBid.id,
-      productId,
-      productTitle: product.title,
-      bidAmount: userPriorActiveBid.bidAmount,
-      notes: "Outbid — coins released",
-    });
-  }
-
-  // ── Record "engage" transaction for the new bid ───────────────────────────
-  const freshUserDoc = await userRepository.findById(user.uid);
-  await rcRepository.create({
-    userId: user.uid,
-    type: "engage",
-    coins: bidAmount,
-    balanceBefore: (freshUserDoc?.rcBalance ?? 0) + bidAmount,
-    balanceAfter: freshUserDoc?.rcBalance ?? 0,
-    bidId: bid.id,
-    productId,
-    productTitle: product.title,
-    bidAmount,
-    notes: "Coins locked for bid",
   });
 
   // ── Write to Realtime DB for live bid streaming ───────────────────────────
@@ -217,7 +164,6 @@ export async function placeBidAction(
     productId,
     userId: user.uid,
     bidAmount,
-    engagedCoins: bidAmount,
   });
 
   return { bid };

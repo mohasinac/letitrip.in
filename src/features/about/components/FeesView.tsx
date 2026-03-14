@@ -170,39 +170,6 @@ export async function FeesView() {
           </div>
         </Section>
 
-        {/* RC & Offers */}
-        <Section>
-          <Heading level={2} className="mb-3">
-            {t("rcOffersTitle")}
-          </Heading>
-          <div className={THEME_CONSTANTS.spacing.stack}>
-            <div
-              className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5`}
-            >
-              <Text className="font-semibold mb-2">{t("rcEngageTitle")}</Text>
-              <Text variant="secondary" className="text-sm leading-relaxed">
-                {t("rcEngageDesc")}
-              </Text>
-            </div>
-            <div
-              className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5`}
-            >
-              <Text className="font-semibold mb-2">{t("rcReturnTitle")}</Text>
-              <Text variant="secondary" className="text-sm leading-relaxed">
-                {t("rcReturnDesc")}
-              </Text>
-            </div>
-            <div
-              className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5`}
-            >
-              <Text className="font-semibold mb-2">{t("rcReleaseTitle")}</Text>
-              <Text variant="secondary" className="text-sm leading-relaxed">
-                {t("rcReleaseDesc")}
-              </Text>
-            </div>
-          </div>
-        </Section>
-
         {/* Disclaimer */}
         <Section
           className={`rounded-xl border ${themed.border} p-5 ${themed.bgSecondary}`}

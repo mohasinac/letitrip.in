@@ -2,7 +2,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
-import { ShieldCheck, Star, ThumbsUp, Clock, Pencil } from "lucide-react";
+import { ShieldCheck, ThumbsUp, Pencil } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
@@ -60,14 +60,6 @@ export async function HowReviewsWorkView() {
         "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700",
       iconColor: "text-amber-600 dark:text-amber-400",
     },
-    {
-      icon: Star,
-      title: t("rcRewardTitle"),
-      text: t("rcRewardText"),
-      color:
-        "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-    },
   ];
 
   const DIAGRAM_STEPS: FlowStep[] = [
@@ -106,15 +98,6 @@ export async function HowReviewsWorkView() {
       badgeClass:
         "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
       desc: t("diagramS4Desc"),
-    },
-    {
-      emoji: "🪙",
-      circleClass:
-        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-600",
-      badge: t("diagramS5"),
-      badgeClass:
-        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
-      desc: t("diagramS5Desc"),
     },
   ];
 

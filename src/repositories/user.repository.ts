@@ -381,38 +381,6 @@ export class UserRepository extends BaseRepository<UserDocument> {
     }
   }
 
-  /**
-   * Atomically adjust RC balance fields.
-   * @param balanceDelta  — positive to credit, negative to debit
-   * @param engagedDelta  — positive to lock more coins, negative to release
-   */
-  async incrementRCBalance(
-    uid: string,
-    balanceDelta: number,
-    engagedDelta: number = 0,
-  ): Promise<void> {
-    try {
-      const updateFields: Record<string, unknown> = {
-        [USER_FIELDS.UPDATED_AT]: FieldValue.serverTimestamp(),
-      };
-      if (balanceDelta !== 0) {
-        updateFields[USER_FIELDS.RC_BALANCE] =
-          FieldValue.increment(balanceDelta);
-      }
-      if (engagedDelta !== 0) {
-        updateFields[USER_FIELDS.ENGAGED_RC] =
-          FieldValue.increment(engagedDelta);
-      }
-
-      await this.getCollection().doc(uid).update(updateFields);
-    } catch (error) {
-      throw new DatabaseError(
-        `Failed to increment RC balance for user: ${uid}`,
-        error,
-      );
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // Sieve-powered list query
   // ---------------------------------------------------------------------------

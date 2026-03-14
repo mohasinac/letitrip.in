@@ -24,7 +24,6 @@ import {
   SortDropdown,
   TablePagination,
   Text,
-  RCBalanceChip,
   TextLink,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -191,16 +190,6 @@ function AuctionsContent({
                   ? t("subtitleWithCount", { count: total })
                   : t("subtitle")}
               </Text>
-              {/* RC balance chip — auction-specific, authenticated users only */}
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <RCBalanceChip variant="chip" />
-                <TextLink
-                  href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
-                  className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
-                >
-                  🪙 {t("rcInfoLink")}
-                </TextLink>
-              </div>
             </div>
           }
           searchSlot={

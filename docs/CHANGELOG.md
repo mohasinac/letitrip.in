@@ -6,6 +6,70 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-14
 
+### RC (RipCoins) Virtual Currency System — Complete Removal
+
+Removed the entire RC virtual currency system to eliminate RBI PPI licensing requirements. All RC code has been deleted from both the main app and Firebase Functions with zero breaking changes to remaining functionality.
+
+**Deleted files:**
+
+- `src/app/[locale]/rc/` — RC info public page
+- `src/app/[locale]/user/rc/` — RC wallet and purchase pages
+- `src/app/api/rc/` — RC API routes (balance, purchase, verify, history, refund)
+- `src/db/schema/rc.ts`, `src/actions/rc.actions.ts`, `src/hooks/useRC.ts`
+- `src/components/user/RCBalanceChip.tsx`
+- `src/repositories/rc.repository.ts`, `src/lib/loyalty.ts`
+- `src/features/user/components/RCWallet.tsx`, `RCPurchaseView.tsx`, `BuyRCModal.tsx`
+- `src/features/about/components/RCInfoView.tsx`
+- `src/features/admin/components/RCAdjustModal.tsx`, `RCFilters.tsx`
+- `functions/src/repositories/rc.repository.ts`
+- `docs/features/rc.md`
+
+**Schema / constants cleaned:**
+
+- `src/db/schema/users.ts` — removed `rcBalance`, `engagedRC` from `UserDocument`, `DEFAULT_USER_DOCUMENT`, `USER_INDEXED_FIELDS`
+- `src/db/schema/field-names.ts` — removed `RC_BALANCE`, `ENGAGED_RC`
+- `src/db/schema/site-settings.ts` — removed `loyalty?: LoyaltyConfig` field
+- `src/constants/routes.ts` — removed `RC_INFO`, `RC`, `RC_PURCHASE`
+- `src/constants/api-endpoints.ts` — removed RC block
+- `src/constants/success-messages.ts` / `error-messages.ts` — removed RC blocks
+
+**Application code cleaned:**
+
+- `src/actions/admin.actions.ts` — removed `adminAdjustRCAction`
+- `src/actions/bid.actions.ts` — removed RC balance check and engage/release logic
+- `src/actions/offer.actions.ts` — removed RC engage/release across all 5 offer actions
+- `src/actions/event.actions.ts` — removed RC earn block
+- `src/app/api/bids/route.ts` — removed RC balance check and atomic operations
+- `src/app/api/payment/verify/route.ts` — removed RC earn and RC return-for-offers blocks
+- `src/app/api/events/[id]/enter/route.ts` — removed RC earn block
+- `src/app/api/admin/users/route.ts` — removed `rcBalance` from serialized output
+- `src/repositories/user.repository.ts` — removed `incrementRCBalance`
+- `src/repositories/site-settings.repository.ts` — removed `getLoyaltyConfig`
+- `src/features/products/components/PlaceBidForm.tsx`, `AuctionsView.tsx`, `AuctionDetailView.tsx`, `MakeOfferForm.tsx` — removed RC UI
+- `src/features/user/components/UserSidebar.tsx`, `UserAccountHub.tsx` — removed RC nav items
+- `src/features/admin/components/UserDetailDrawer.tsx` — removed RC section and `onAdjustRC` prop
+- `src/components/layout/Footer.tsx` — removed RC_INFO link
+- `src/features/about/components/HowOffersWorkView.tsx`, `HowCheckoutWorksView.tsx` — removed RC sections
+- `src/features/homepage/components/HowAuctionsWorkView.tsx` — removed RC detail and links
+- `functions/src/repositories/user.repository.ts` — removed `UserRC`, `findRCBalance`, `incrementRCBalance`
+- `functions/src/repositories/index.ts` — removed RC repository exports
+- `functions/src/jobs/offerExpiry.ts` — removed RC release logic; kept offer expiry + buyer notification
+- `src/db/seed-data/users-seed-data.ts` — removed `rcBalance`/`engagedRC` from 4 user entries
+
+**Additional cleanup (follow-up pass):**
+
+- `src/db/schema/bids.ts` — removed `engagedCoins` and `coinsStatus` fields from `BidDocument`
+- `src/db/schema/field-names.ts` — removed `ENGAGED_COINS`, `COINS_STATUS`, `COINS_STATUS_VALUES` from `BID_FIELDS`
+- `src/db/schema/site-settings.ts` — removed `rc: boolean` from `FeatureFlags` interface and `DEFAULT_FEATURE_FLAGS`; removed `rc` entry from `DEFAULT_FEATURE_TOGGLES` display list
+- `src/features/admin/components/AdminFeatureFlagsView.tsx` — removed `rc: true` from local `DEFAULT_FEATURE_FLAGS`
+- `src/lib/validation/schemas.ts` — removed `rc: z.boolean()` from featureFlags Zod schema
+- `src/actions/bid.actions.ts` / `src/app/api/bids/route.ts` — removed `engagedCoins`/`coinsStatus` from bid creation payload and server log
+- `src/features/about/components/HowReviewsWorkView.tsx` — removed "Earn RC for Reviews" info card and diagram step 5 "RC Rewarded"; removed unused `Star`/`Clock` lucide imports
+- `messages/en.json` — removed `howReviewsWork.diagramS5`, `diagramS5Desc`, `rcRewardTitle`, `rcRewardText`
+- `src/features/homepage/components/HowAuctionsWorkView.tsx` — updated step 2 icon 🪙 → 📋; removed "Wallet" badge from DIAGRAM_STEPS step 2
+- `src/features/about/components/HowOffersWorkView.tsx` — updated step 2 icon 🪙 → 🏷️
+- `src/features/products/components/AuctionDetailView.tsx` — restored missing `</div>` (sticky sidebar wrapper) that was inadvertently dropped with the RC info link
+
 ### Homepage — Security Highlights Section
 
 Added a new `SecurityHighlightsSection` to the homepage, placed after Customer Reviews, showcasing the platform's data-protection measures with a CTA to the full `/security` page.

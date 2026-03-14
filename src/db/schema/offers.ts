@@ -18,7 +18,7 @@ export type OfferStatus =
   | "countered" // Seller sent a counter price — awaiting buyer response
   | "expired" // Passed expiresAt without a response
   | "withdrawn" // Buyer withdrew before response
-  | "paid"; // Buyer completed checkout — order placed, RC returned
+  | "paid"; // Buyer completed checkout — order placed
 
 export interface OfferDocument {
   id: string;

@@ -140,9 +140,7 @@ export {
   adminUpdateProductAction,
   adminCreateProductAction,
   adminDeleteProductAction,
-  adminAdjustRCAction,
 } from "./admin.actions";
-export type { AdminAdjustRCInput } from "./admin.actions";
 
 // Blog post mutations (admin only)
 export {
@@ -335,9 +333,6 @@ export { listOrdersAction, getOrderByIdAction } from "./order.actions";
 
 // Cart read (auth required)
 export { getCartAction } from "./cart.actions";
-
-// RC reads (auth required)
-export { getRCBalanceAction, getRCHistoryAction } from "./rc.actions";
 
 // Chat actions (auth required)
 export {

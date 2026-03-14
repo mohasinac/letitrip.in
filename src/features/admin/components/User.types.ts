@@ -15,7 +15,6 @@ export interface AdminUser {
   disabled: boolean;
   createdAt: string;
   lastLoginAt?: string;
-  rcBalance?: number;
   metadata?: {
     loginCount?: number;
   };

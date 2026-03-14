@@ -26,12 +26,10 @@ import {
 import {
   unitOfWork,
   siteSettingsRepository,
-  userRepository,
-  rcRepository,
   failedCheckoutRepository,
   offerRepository,
+  userRepository,
 } from "@/repositories";
-import { calculatePurchaseCoins } from "@/lib/loyalty";
 import { successResponse } from "@/lib/api-response";
 import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -358,63 +356,6 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
     });
     // Delete the consent OTP doc — fire-and-forget (single-use; expired anyway)
     otpRef.delete().catch(() => {});
-
-    // 10. Credit RC earned from this purchase (loyalty earn rate from DB)
-    {
-      const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
-      const earnedCoins = calculatePurchaseCoins(total, loyaltyConfig);
-      if (earnedCoins > 0) {
-        try {
-          const userDoc = await userRepository.findById(user!.uid);
-          const balanceBefore = userDoc?.rcBalance ?? 0;
-          await userRepository.incrementRCBalance(user!.uid, earnedCoins);
-          await rcRepository.create({
-            userId: user!.uid,
-            type: "earn_purchase",
-            coins: earnedCoins,
-            balanceBefore,
-            balanceAfter: balanceBefore + earnedCoins,
-            notes: `Earned from orders: ${orderIds.join(", ")}`,
-          });
-        } catch (err) {
-          serverLogger.warn("RC earn credit failed (non-critical)", {
-            err,
-          });
-        }
-      }
-    }
-
-    // 10b. Return engaged RC for offer-based cart items
-    for (const { item } of productChecks) {
-      const offerId = item.offerId;
-      if (!offerId) continue;
-      try {
-        const offer = await offerRepository.findById(offerId);
-        if (!offer || offer.status !== "accepted") continue;
-        const engagedCoins = offer.lockedPrice ?? offer.offerAmount;
-        const buyerDocBefore = await userRepository.findById(user!.uid);
-        await userRepository.incrementRCBalance(
-          user!.uid,
-          engagedCoins,
-          -engagedCoins,
-        );
-        const buyerDocAfter = await userRepository.findById(user!.uid);
-        await rcRepository.create({
-          userId: user!.uid,
-          type: "return",
-          coins: engagedCoins,
-          balanceBefore: buyerDocBefore?.rcBalance ?? 0,
-          balanceAfter: buyerDocAfter?.rcBalance ?? 0,
-          productId: offer.productId,
-          productTitle: offer.productTitle,
-          notes: `Offer paid — RC returned for offer ${offerId}`,
-        });
-        // Mark offer as paid
-        await offerRepository.updateStatus(offerId, { status: "paid" });
-      } catch (err) {
-        serverLogger.warn("RC return for offer failed (non-critical)", { err });
-      }
-    }
 
     // 11. Send confirmation emails (fire-and-forget)
     if (emailsToSend.length > 0) {
