@@ -127,7 +127,7 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
           options={sortOptions}
         />
       }
-      paginationSlot={
+      toolbarPaginationSlot={
         totalPages > 1 ? (
           <TablePagination
             total={total}
@@ -135,8 +135,7 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
             totalPages={totalPages}
             pageSize={pageSize}
             onPageChange={table.setPage}
-            onPageSizeChange={(n) => table.set("pageSize", String(n))}
-            pageSizeOptions={[12, 24, 48]}
+            compact
           />
         ) : undefined
       }

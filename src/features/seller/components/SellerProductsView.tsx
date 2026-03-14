@@ -329,18 +329,6 @@ function SellerProductsContent() {
             onClick: handleBulkDelete,
           },
         ]}
-        paginationSlot={
-          totalPages > 1 ? (
-            <TablePagination
-              currentPage={page}
-              totalPages={totalPages}
-              pageSize={25}
-              total={totalItems}
-              onPageChange={table.setPage}
-              isLoading={isLoading}
-            />
-          ) : undefined
-        }
       >
         {!isLoading && products.length === 0 ? (
           <EmptyState

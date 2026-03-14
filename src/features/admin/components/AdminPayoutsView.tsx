@@ -205,14 +205,14 @@ export function AdminPayoutsView() {
         filterActiveCount={filterActiveCount}
         onFilterApply={onFilterApply}
         onFilterClear={onFilterClear}
-        paginationSlot={
+        toolbarPaginationSlot={
           <TablePagination
             currentPage={data?.meta?.page ?? 1}
             totalPages={data?.meta?.totalPages ?? 1}
             pageSize={table.getNumber("pageSize", 25)}
             total={data?.meta?.total ?? 0}
             onPageChange={table.setPage}
-            onPageSizeChange={table.setPageSize}
+            compact
           />
         }
       >

@@ -33,7 +33,7 @@ import {
 } from "@/components";
 import type { ViewMode } from "@/components";
 import { WishlistButton } from "./WishlistButton";
-import { ROUTES, ERROR_MESSAGES } from "@/constants";
+import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { removeFromWishlistAction, addToCartAction } from "@/actions";
 import { useWishlist } from "../hooks/useWishlist";
 import type { WishlistItem } from "../hooks/useWishlist";
@@ -294,13 +294,14 @@ function WishlistContent() {
               onChange={(m) => table.set("view", m)}
             />
             <Tooltip content={tActions("selectionHint")} placement="bottom">
-              <button
+              <Button
                 type="button"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
+                variant="ghost"
+                className={`w-7 h-7 rounded-full ${THEME_CONSTANTS.flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
                 aria-label={tActions("selectionHint")}
               >
                 <Info className="w-4 h-4" />
-              </button>
+              </Button>
             </Tooltip>
           </div>
         ) : undefined
@@ -354,7 +355,7 @@ function WishlistContent() {
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 absolute inset-0 pointer-events-none">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 absolute inset-0 pointer-events-none">
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

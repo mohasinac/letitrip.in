@@ -505,18 +505,6 @@ function SellerOrdersContent() {
             </TabsList>
           </Tabs>
         }
-        paginationSlot={
-          (meta?.totalPages ?? 1) > 1 ? (
-            <TablePagination
-              currentPage={page}
-              totalPages={meta?.totalPages ?? 1}
-              pageSize={PAGE_SIZE}
-              total={meta?.total ?? 0}
-              onPageChange={table.setPage}
-              isLoading={isLoading}
-            />
-          ) : undefined
-        }
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
         bulkActionItems={[

@@ -283,7 +283,7 @@ function UserOrdersContent() {
           options={sortOptions}
         />
       }
-      paginationSlot={
+      toolbarPaginationSlot={
         totalPages > 1 ? (
           <TablePagination
             currentPage={page}
@@ -291,7 +291,7 @@ function UserOrdersContent() {
             pageSize={pageSize}
             total={totalOrders}
             onPageChange={table.setPage}
-            isLoading={isLoading}
+            compact
           />
         ) : undefined
       }

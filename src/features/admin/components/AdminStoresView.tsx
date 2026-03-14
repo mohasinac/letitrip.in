@@ -228,14 +228,14 @@ export function AdminStoresView() {
         filterActiveCount={filterActiveCount}
         onFilterApply={onFilterApply}
         onFilterClear={onFilterClear}
-        paginationSlot={
+        toolbarPaginationSlot={
           <TablePagination
             total={total}
             currentPage={data?.page ?? 1}
             pageSize={data?.pageSize ?? 25}
             totalPages={data?.totalPages ?? 1}
             onPageChange={(p) => table.setPage(p)}
-            onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
+            compact
           />
         }
       >

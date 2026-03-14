@@ -276,7 +276,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
           filterActiveCount={filterActiveCount}
           onFilterApply={onFilterApply}
           onFilterClear={onFilterClear}
-          paginationSlot={
+          toolbarPaginationSlot={
             (faqMeta?.totalPages ?? 1) > 1 ? (
               <TablePagination
                 currentPage={faqMeta?.page ?? 1}
@@ -284,8 +284,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                 pageSize={faqMeta?.pageSize ?? 50}
                 total={faqMeta?.total ?? faqs.length}
                 onPageChange={table.setPage}
-                onPageSizeChange={table.setPageSize}
-                isLoading={isLoading}
+                compact
               />
             ) : undefined
           }

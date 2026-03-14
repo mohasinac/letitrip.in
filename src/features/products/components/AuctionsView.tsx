@@ -260,7 +260,7 @@ function AuctionsContent({
                 ]
               : undefined
           }
-          paginationSlot={
+          toolbarPaginationSlot={
             total > 0 ? (
               <TablePagination
                 total={total}
@@ -268,8 +268,7 @@ function AuctionsContent({
                 totalPages={totalPages}
                 pageSize={PAGE_SIZE}
                 onPageChange={table.setPage}
-                onPageSizeChange={(n) => table.set("pageSize", String(n))}
-                pageSizeOptions={[12, 24, 48]}
+                compact
               />
             ) : undefined
           }

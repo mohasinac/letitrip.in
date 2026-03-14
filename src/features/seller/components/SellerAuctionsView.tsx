@@ -157,18 +157,6 @@ function SellerAuctionsContent() {
             />
           ) : undefined
         }
-        paginationSlot={
-          total > 0 ? (
-            <TablePagination
-              total={total}
-              currentPage={page}
-              totalPages={Math.ceil(total / pageSize)}
-              pageSize={pageSize}
-              onPageChange={(p) => table.setPage(p)}
-              onPageSizeChange={(n) => table.set("pageSize", String(n))}
-            />
-          ) : undefined
-        }
       >
         <DataTable
           columns={columns}

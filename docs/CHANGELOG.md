@@ -6,6 +6,41 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-15
 
+### UX — Remove Bottom Pagination from All Listing Views
+
+Removed the redundant bottom `paginationSlot` from every `ListingLayout`-based view across the codebase. The compact toolbar pagination (top) remains as the sole pagination control, decluttering all listing pages.
+
+**Files updated (24):**
+
+- `src/features/products/components/PreOrdersView.tsx`
+- `src/features/products/components/AuctionsView.tsx`
+- `src/features/events/components/EventsListView.tsx`
+- `src/features/events/components/AdminEventsView.tsx`
+- `src/features/categories/components/CategoryProductsView.tsx`
+- `src/features/blog/components/BlogListView.tsx`
+- `src/features/reviews/components/ReviewsListView.tsx`
+- `src/features/stores/components/StoresListView.tsx`
+- `src/features/stores/components/StoreProductsView.tsx`
+- `src/features/stores/components/StoreAuctionsView.tsx`
+- `src/features/user/components/UserNotificationsView.tsx`
+- `src/features/user/components/UserOrdersView.tsx`
+- `src/features/seller/components/SellerProductsView.tsx`
+- `src/features/seller/components/SellerOrdersView.tsx`
+- `src/features/seller/components/SellerAuctionsView.tsx`
+- `src/features/admin/components/AdminBidsView.tsx`
+- `src/features/admin/components/AdminCouponsView.tsx`
+- `src/features/admin/components/AdminFaqsView.tsx`
+- `src/features/admin/components/AdminOrdersView.tsx`
+- `src/features/admin/components/AdminPayoutsView.tsx`
+- `src/features/admin/components/AdminReviewsView.tsx`
+- `src/features/admin/components/AdminProductsView.tsx`
+- `src/features/admin/components/AdminUsersView.tsx`
+- `src/features/admin/components/AdminStoresView.tsx`
+
+---
+
+## [Unreleased] — 2026-03-15
+
 ### Styling — Hardcoded Color Token Purge (F1 continued)
 
 Replaced every remaining hardcoded `indigo-*` and `blue-*` Tailwind color value with semantic `primary` tokens (`text-primary`, `bg-primary`, `ring-primary`, `border-primary`, `bg-primary/5`, `bg-primary/10`, `ring-primary/30`, `hover:text-primary`, `hover:bg-primary/90`) across the entire codebase. Normalised grid/card gaps to consistent `gap-4` / `gap-6` cadence throughout.

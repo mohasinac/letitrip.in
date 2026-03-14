@@ -28,6 +28,7 @@ import { useTranslations } from "next-intl";
 import { X, ChevronUp, ChevronDown, Check } from "lucide-react";
 import { Button, Span } from "@/components";
 import { useClickOutside } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface BulkActionItem {
   /** Stable unique key. */
@@ -109,22 +110,24 @@ export function BulkActionBar({
       {/* ── Main row ── */}
       <div className="flex items-center gap-2 px-3 py-2">
         {/* Selection count pill — tap to clear */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={onClearSelection}
-          className="inline-flex items-center gap-1.5 flex-shrink-0 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full pl-2 pr-3 h-8 border border-primary-200/70 dark:border-primary-800/50 transition-colors"
+          className="inline-flex items-center gap-1.5 flex-shrink-0 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full pl-2 pr-3 h-8 border border-primary-200/70 dark:border-primary-800/50 transition-colors min-h-0"
           aria-label={tActions("clearSelection")}
         >
           <X className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-          <span className="text-xs font-semibold tabular-nums whitespace-nowrap leading-none">
+          <Span className="text-xs font-semibold tabular-nums whitespace-nowrap leading-none">
             {t("selectedCount", { count: selectedCount })}
-          </span>
-        </button>
+          </Span>
+        </Button>
 
         {/* Picker trigger — flex-1 */}
         {actions.length > 0 && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setPickerOpen((o) => !o)}
             aria-haspopup="listbox"
             aria-expanded={pickerOpen}
@@ -140,16 +143,16 @@ export function BulkActionBar({
               .join(" ")}
           >
             {selectedAction?.icon && (
-              <span
-                className="flex-shrink-0 w-4 h-4 flex items-center justify-center"
+              <Span
+                className={`flex-shrink-0 w-4 h-4 ${THEME_CONSTANTS.flex.center}`}
                 aria-hidden="true"
               >
                 {selectedAction.icon}
-              </span>
+              </Span>
             )}
-            <span className="flex-1 truncate text-left leading-none">
+            <Span className="flex-1 truncate text-left leading-none">
               {selectedAction?.label ?? t("bulkActionsRegion")}
-            </span>
+            </Span>
             {pickerOpen ? (
               <ChevronUp
                 className="w-4 h-4 flex-shrink-0 text-zinc-400"
@@ -161,7 +164,7 @@ export function BulkActionBar({
                 aria-hidden="true"
               />
             )}
-          </button>
+          </Button>
         )}
 
         {/* Apply button */}
@@ -202,18 +205,19 @@ export function BulkActionBar({
           {actions.map((action, i) => {
             const isSelected = action.id === selectedActionId;
             return (
-              <button
+              <Button
                 key={action.id}
                 role="option"
                 aria-selected={isSelected}
                 type="button"
+                variant="ghost"
                 disabled={action.disabled || action.loading}
                 onClick={() => {
                   setSelectedActionId(action.id);
                   setPickerOpen(false);
                 }}
                 className={[
-                  "w-full flex items-center gap-3 px-5 py-3.5 text-left text-sm font-medium transition-colors",
+                  "w-full flex items-center gap-3 px-5 py-3.5 text-left text-sm font-medium transition-colors rounded-none",
                   i > 0
                     ? "border-t border-zinc-100/80 dark:border-slate-800/80"
                     : "",
@@ -229,21 +233,21 @@ export function BulkActionBar({
                   .join(" ")}
               >
                 {action.icon && (
-                  <span
-                    className="flex-shrink-0 w-5 h-5 flex items-center justify-center"
+                  <Span
+                    className={`flex-shrink-0 w-5 h-5 ${THEME_CONSTANTS.flex.center}`}
                     aria-hidden="true"
                   >
                     {action.icon}
-                  </span>
+                  </Span>
                 )}
-                <span className="flex-1 truncate">{action.label}</span>
+                <Span className="flex-1 truncate">{action.label}</Span>
                 {isSelected && (
                   <Check
                     className="w-4 h-4 flex-shrink-0 text-primary-600 dark:text-primary-400"
                     aria-hidden="true"
                   />
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>

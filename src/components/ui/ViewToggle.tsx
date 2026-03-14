@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 
 export type ViewMode = "grid" | "list";
 
@@ -48,7 +49,7 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
         onClick={() => onChange("grid")}
         aria-label={t("gridView")}
         aria-pressed={value === "grid"}
-        className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
+        className={`${THEME_CONSTANTS.flex.center} p-2 rounded-lg ring-1 transition-colors ${
           value === "grid" ? ACTIVE : INACTIVE
         }`}
       >
@@ -76,7 +77,7 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
         onClick={() => onChange("list")}
         aria-label={t("listView")}
         aria-pressed={value === "list"}
-        className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
+        className={`${THEME_CONSTANTS.flex.center} p-2 rounded-lg ring-1 transition-colors ${
           value === "list" ? ACTIVE : INACTIVE
         }`}
       >

@@ -238,14 +238,14 @@ export function AdminEventsView() {
           },
         ]}
         loading={isLoading}
-        paginationSlot={
+        toolbarPaginationSlot={
           <TablePagination
             currentPage={page}
             totalPages={totalPages}
             pageSize={pageSize}
             total={total}
             onPageChange={table.setPage}
-            onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
+            compact
           />
         }
       >

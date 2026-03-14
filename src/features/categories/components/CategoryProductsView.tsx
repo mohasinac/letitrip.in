@@ -397,30 +397,18 @@ export function CategoryProductsView({
                   />
                 ) : undefined
               }
-              paginationSlot={
-                totalPages > 1 ? (
-                  <TablePagination
-                    total={totalProducts}
-                    currentPage={page}
-                    totalPages={totalPages}
-                    pageSize={PAGE_SIZE}
-                    onPageChange={table.setPage}
-                    onPageSizeChange={(n) => table.set("pageSize", String(n))}
-                    pageSizeOptions={[12, 24, 48]}
-                  />
-                ) : undefined
-              }
               selectedCount={selectedIds.length}
               onClearSelection={() => setSelectedIds([])}
               actionsSlot={
                 <Tooltip content={tActions("selectionHint")} placement="bottom">
-                  <button
+                  <Button
                     type="button"
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
+                    variant="ghost"
+                    className={`w-7 h-7 rounded-full ${flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
                     aria-label={tActions("selectionHint")}
                   >
                     <Info className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </Tooltip>
               }
               bulkActionItems={

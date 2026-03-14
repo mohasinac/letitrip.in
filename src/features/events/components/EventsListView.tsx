@@ -219,7 +219,7 @@ function EventsListContent({
                 ]
               : undefined
           }
-          paginationSlot={
+          toolbarPaginationSlot={
             totalPages > 1 ? (
               <TablePagination
                 total={total}
@@ -227,8 +227,7 @@ function EventsListContent({
                 totalPages={totalPages}
                 pageSize={PAGE_SIZE}
                 onPageChange={table.setPage}
-                onPageSizeChange={(n) => table.set("pageSize", String(n))}
-                pageSizeOptions={[12, 24, 48]}
+                compact
               />
             ) : undefined
           }

@@ -215,7 +215,7 @@ export function UserNotificationsView() {
           onMarkAllRead={handleMarkAllRead}
         />
       }
-      paginationSlot={
+      toolbarPaginationSlot={
         totalPages > 1 ? (
           <TablePagination
             total={total}
@@ -223,8 +223,7 @@ export function UserNotificationsView() {
             totalPages={totalPages}
             pageSize={PAGE_SIZE}
             onPageChange={table.setPage}
-            onPageSizeChange={(n) => table.set("pageSize", String(n))}
-            pageSizeOptions={[10, 20, 50]}
+            compact
           />
         ) : undefined
       }

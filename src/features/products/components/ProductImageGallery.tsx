@@ -130,7 +130,9 @@ export function ProductImageGallery({
               <div
                 className={`absolute inset-0 ${THEME_CONSTANTS.flex.center} opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none`}
               >
-                <div className="w-16 h-16 rounded-full bg-black/55 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30 shadow-xl">
+                <div
+                  className={`w-16 h-16 rounded-full bg-black/55 backdrop-blur-sm ${flex.center} ring-2 ring-white/30 shadow-xl`}
+                >
                   <ZoomIn
                     className="h-8 w-8 text-white drop-shadow-lg"
                     aria-hidden="true"

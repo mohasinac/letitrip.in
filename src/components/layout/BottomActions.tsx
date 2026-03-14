@@ -127,18 +127,19 @@ export default function BottomActions() {
           {bulkActions.map((action, i) => {
             const isSelected = action.id === selectedActionId;
             return (
-              <button
+              <Button
                 key={action.id}
                 role="option"
                 aria-selected={isSelected}
                 type="button"
+                variant="ghost"
                 disabled={action.disabled || action.loading}
                 onClick={() => {
                   setSelectedActionId(action.id);
                   setPickerOpen(false);
                 }}
                 className={[
-                  "w-full flex items-center gap-3 px-5 py-3.5 text-left text-sm font-medium transition-colors",
+                  "w-full flex items-center gap-3 px-5 py-3.5 text-left text-sm font-medium transition-colors rounded-none",
                   i > 0
                     ? "border-t border-zinc-100/80 dark:border-slate-800/80"
                     : "",
@@ -154,21 +155,21 @@ export default function BottomActions() {
                   .join(" ")}
               >
                 {action.icon && (
-                  <span
-                    className="flex-shrink-0 w-5 h-5 flex items-center justify-center"
+                  <Span
+                    className={`flex-shrink-0 w-5 h-5 ${THEME_CONSTANTS.flex.center}`}
                     aria-hidden="true"
                   >
                     {action.icon}
-                  </span>
+                  </Span>
                 )}
-                <span className="flex-1 truncate">{action.label}</span>
+                <Span className="flex-1 truncate">{action.label}</Span>
                 {isSelected && (
                   <Check
                     className="w-4 h-4 flex-shrink-0 text-primary-600 dark:text-primary-400"
                     aria-hidden="true"
                   />
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -193,24 +194,26 @@ export default function BottomActions() {
         {isBulkMode && bulk ? (
           <>
             {/* Selection count pill — tap to clear ─────────────────────── */}
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={dispatchBulkClear}
-              className="inline-flex items-center gap-1.5 flex-shrink-0 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full pl-2 pr-3 h-8 border border-primary-200/70 dark:border-primary-800/50 transition-colors"
+              className="inline-flex items-center gap-1.5 flex-shrink-0 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full pl-2 pr-3 h-8 border border-primary-200/70 dark:border-primary-800/50 transition-colors min-h-0"
               aria-label={tActions("clearSelection")}
             >
               <X className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-              <span className="text-xs font-semibold tabular-nums whitespace-nowrap leading-none">
+              <Span className="text-xs font-semibold tabular-nums whitespace-nowrap leading-none">
                 {bulk.noun
                   ? `${bulk.selectedCount} ${bulk.noun}`
                   : tBottom("selectedCount", { count: bulk.selectedCount })}
-              </span>
-            </button>
+              </Span>
+            </Button>
 
             {/* Type picker trigger — flex-1 ─────────────────────────────── */}
             {bulkActions.length > 0 && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => setPickerOpen((o) => !o)}
                 aria-haspopup="listbox"
                 aria-expanded={pickerOpen}
@@ -226,16 +229,16 @@ export default function BottomActions() {
                   .join(" ")}
               >
                 {selectedAction?.icon && (
-                  <span
-                    className="flex-shrink-0 w-4 h-4 flex items-center justify-center"
+                  <Span
+                    className={`flex-shrink-0 w-4 h-4 ${THEME_CONSTANTS.flex.center}`}
                     aria-hidden="true"
                   >
                     {selectedAction.icon}
-                  </span>
+                  </Span>
                 )}
-                <span className="flex-1 truncate text-left leading-none">
+                <Span className="flex-1 truncate text-left leading-none">
                   {selectedAction?.label ?? tBottom("bulkActionsLabel")}
-                </span>
+                </Span>
                 {pickerOpen ? (
                   <ChevronDown
                     className="w-4 h-4 flex-shrink-0 text-zinc-400"
@@ -247,7 +250,7 @@ export default function BottomActions() {
                     aria-hidden="true"
                   />
                 )}
-              </button>
+              </Button>
             )}
 
             {/* Apply / submit button ────────────────────────────────────── */}
@@ -310,12 +313,12 @@ export default function BottomActions() {
                   <Span className="truncate leading-none">{action.label}</Span>
                 )}
                 {action.badge !== undefined && (
-                  <span
-                    className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 pointer-events-none select-none"
+                  <Span
+                    className={`absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full ${THEME_CONSTANTS.flex.center} px-1 pointer-events-none select-none`}
                     aria-hidden="true"
                   >
                     {action.badge}
-                  </span>
+                  </Span>
                 )}
               </Button>
             );

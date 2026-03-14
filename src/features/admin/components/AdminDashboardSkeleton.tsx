@@ -44,7 +44,10 @@ export function AdminDashboardSkeleton() {
       {/* Quick actions skeleton */}
       <div className="rounded-xl border border-zinc-200 dark:border-slate-800 p-6">
         <div className={`${skeleton.heading} w-36 mb-4`} />
-        <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" gap="3">
+        <Grid
+          className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4"
+          gap="3"
+        >
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className={`${skeleton.base} h-10 rounded-lg`} />
           ))}
