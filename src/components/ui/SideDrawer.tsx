@@ -155,7 +155,7 @@ export default function SideDrawer({
   const positionClass =
     side === "left"
       ? "left-0 w-full sm:w-96 md:w-[420px]"
-      : "right-0 w-full md:w-3/4 md:max-w-[900px]";
+      : "right-0 w-full md:w-1/2 md:min-w-[50vw]";
 
   const modeHeaderStyles: Record<DrawerMode, string> = {
     delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",
@@ -265,7 +265,7 @@ export default function SideDrawer({
                 </Text>
               </div>
             </div>
-            <div className="flex gap-3 justify-end">
+            <div className="flex gap-3 justify-start">
               <Button onClick={cancelClose} variant="secondary" size="sm">
                 {tActions("cancel")}
               </Button>

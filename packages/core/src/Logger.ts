@@ -32,15 +32,18 @@ export interface LoggerOptions {
    */
   enableFileLogging?: boolean;
   maxEntries?: number;
+  /** Optional function to sanitize data before logging (e.g., PII redaction). */
+  sanitizer?: (data: unknown) => unknown;
 }
 
 export class Logger {
   private static instance: Logger;
   private logs: LogEntry[] = [];
   private options: Required<
-    Omit<LoggerOptions, "logFileUrl" | "enableFileLogging">
+    Omit<LoggerOptions, "logFileUrl" | "enableFileLogging" | "sanitizer">
   > & {
     logFileUrl?: string;
+    sanitizer?: (data: unknown) => unknown;
   };
   private levelPriority: Record<LogLevel, number> = {
     debug: 0,
@@ -60,6 +63,7 @@ export class Logger {
       enableStorage: options?.enableStorage ?? false,
       logFileUrl: fileUrl,
       maxEntries: options?.maxEntries ?? 1000,
+      sanitizer: options?.sanitizer,
     };
   }
 
@@ -71,6 +75,11 @@ export class Logger {
     return Logger.instance;
   }
 
+  /** Set or update the data sanitizer (e.g., for PII redaction). */
+  public static setSanitizer(fn: (data: unknown) => unknown): void {
+    Logger.getInstance().options.sanitizer = fn;
+  }
+
   private shouldLog(level: LogLevel): boolean {
     return (
       this.levelPriority[level] >= this.levelPriority[this.options.minLevel]
@@ -80,7 +89,14 @@ export class Logger {
   private addLog(level: LogLevel, message: string, data?: unknown): void {
     if (!this.shouldLog(level)) return;
 
-    const entry: LogEntry = { level, message, timestamp: new Date(), data };
+    const sanitized =
+      data && this.options.sanitizer ? this.options.sanitizer(data) : data;
+    const entry: LogEntry = {
+      level,
+      message,
+      timestamp: new Date(),
+      data: sanitized,
+    };
 
     this.logs.push(entry);
     if (this.logs.length > this.options.maxEntries) {

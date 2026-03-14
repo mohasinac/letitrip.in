@@ -1,11 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, Caption, Divider, Heading, Text } from "@/components";
+import {
+  Card,
+  Caption,
+  Divider,
+  Heading,
+  SideDrawer,
+  Text,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
-const { flex, position } = THEME_CONSTANTS;
+const { flex } = THEME_CONSTANTS;
 
 export interface PayoutBreakdown {
   grossAmount: number;
@@ -70,49 +77,47 @@ export function PayoutBreakdownModal({
   });
 
   return (
-    <div
-      className={`${position.fixedFill} z-50 ${flex.center} p-4 bg-black/50 backdrop-blur-sm`}
-      onClick={onClose}
+    <SideDrawer
+      isOpen={open}
+      onClose={onClose}
+      title={t("breakdownTitle")}
+      mode="view"
     >
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md">
-        <Card className="p-6 space-y-3">
-          <Heading level={3}>{t("breakdownTitle")}</Heading>
+      <div className="space-y-3">
+        {breakdown.isAutomatic && (
+          <Caption className="text-blue-600">{t("autoPayoutBadge")}</Caption>
+        )}
 
-          {breakdown.isAutomatic && (
-            <Caption className="text-blue-600">{t("autoPayoutBadge")}</Caption>
-          )}
-
-          {rows.map((row, i) => (
-            <div key={i}>
-              {row.highlight && <Divider className="my-2" />}
-              <div className={`${flex.rowCenter} justify-between`}>
-                <Text
-                  className={
-                    row.highlight ? "font-semibold" : "text-sm text-neutral-600"
-                  }
-                >
-                  {row.label}
-                </Text>
-                <Text
-                  className={
-                    row.highlight ? "font-bold text-green-700" : "text-sm"
-                  }
-                >
-                  {row.value}
-                </Text>
-              </div>
+        {rows.map((row, i) => (
+          <div key={i}>
+            {row.highlight && <Divider className="my-2" />}
+            <div className={`${flex.rowCenter} justify-between`}>
+              <Text
+                className={
+                  row.highlight ? "font-semibold" : "text-sm text-neutral-600"
+                }
+              >
+                {row.label}
+              </Text>
+              <Text
+                className={
+                  row.highlight ? "font-bold text-green-700" : "text-sm"
+                }
+              >
+                {row.value}
+              </Text>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {breakdown.orderIds && breakdown.orderIds.length > 0 && (
-            <div className="mt-3">
-              <Caption>
-                {t("includesOrders", { count: breakdown.orderIds.length })}
-              </Caption>
-            </div>
-          )}
-        </Card>
+        {breakdown.orderIds && breakdown.orderIds.length > 0 && (
+          <div className="mt-3">
+            <Caption>
+              {t("includesOrders", { count: breakdown.orderIds.length })}
+            </Caption>
+          </div>
+        )}
       </div>
-    </div>
+    </SideDrawer>
   );
 }

@@ -30,8 +30,11 @@ const updateProfileSchema = z.object({
   avatarMetadata: z
     .object({
       url: z.string(),
-      position: z.object({ x: z.number(), y: z.number() }),
-      zoom: z.number(),
+      position: z.object({
+        x: z.number().min(0).max(100),
+        y: z.number().min(0).max(100),
+      }),
+      zoom: z.number().min(0.1).max(3),
     })
     .optional(),
 });

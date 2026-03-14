@@ -102,12 +102,15 @@ export function Select<V extends string = string>({
       if (e.key === "ArrowDown") {
         e.preventDefault();
         const idx = options.findIndex((o) => o.value === value);
-        const next = options.slice(idx + 1).find((o) => !o.disabled);
+        const next = options
+          .slice(idx < 0 ? 0 : idx + 1)
+          .find((o) => !o.disabled);
         if (next) onChange?.(next.value);
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
         const idx = options.findIndex((o) => o.value === value);
+        if (idx < 0) return;
         const prev = [...options]
           .slice(0, idx)
           .reverse()

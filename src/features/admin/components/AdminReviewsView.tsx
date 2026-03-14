@@ -34,7 +34,7 @@ import {
   SortDropdown,
 } from "@/components";
 import { useToast } from "@/components";
-import { Modal, ConfirmDeleteModal, Text, Textarea } from "@/components";
+import { SideDrawer, ConfirmDeleteModal, Text, Textarea } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
 import type { Review, ReviewStatus } from ".";
 
@@ -348,13 +348,14 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         />
       </ListingLayout>
 
-      {/* Reject modal */}
-      <Modal
+      {/* Reject drawer */}
+      <SideDrawer
         isOpen={rejectModal.open}
         onClose={() =>
           setRejectModal({ open: false, review: null, reason: "" })
         }
         title={t("rejectionReason")}
+        mode="edit"
       >
         <div className={THEME_CONSTANTS.spacing.stack}>
           <Textarea
@@ -365,7 +366,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             }
             placeholder="Enter rejection reason..."
           />
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-3 justify-start">
             <Button
               variant="outline"
               onClick={() =>
@@ -379,7 +380,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             </Button>
           </div>
         </div>
-      </Modal>
+      </SideDrawer>
 
       {/* Delete confirmation */}
       <ConfirmDeleteModal

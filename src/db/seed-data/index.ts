@@ -21,4 +21,5 @@ export { payoutsSeedData } from "./payouts-seed-data";
 export { sessionsSeedData } from "./sessions-seed-data";
 export { cartsSeedData } from "./cart-seed-data";
 export { storesSeedData } from "./stores-seed-data";
+export { storeAddressesSeedData } from "./store-addresses-seed-data";
 export { productsSeedData } from "./products-seed-data";

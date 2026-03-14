@@ -6,7 +6,9 @@
  */
 
 import { logger } from "@/classes";
+import { Logger } from "@/classes";
 import { AppError } from "@/lib/errors";
+import { redactPii } from "@/utils";
 
 /**
  * Error context information for better debugging
@@ -213,6 +215,9 @@ export const logApplicationError = (
  * Call this in your root layout or app initialization
  */
 export const initializeClientLogger = (): void => {
+  // Enable PII redaction for all client-side logs
+  Logger.setSanitizer(redactPii);
+
   // Enable file logging for errors in production
   logger.error.bind(logger); // Ensure binding is correct
 

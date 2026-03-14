@@ -127,7 +127,7 @@ export async function updateReviewAction(
 
   // Verify ownership
   const existing = await reviewRepository.findById(reviewId);
-  if (!existing) throw new ValidationError("Review not found");
+  if (!existing) throw new NotFoundError("Review not found");
   if (existing.userId !== user.uid) {
     throw new AuthorizationError("Not authorized to update this review");
   }

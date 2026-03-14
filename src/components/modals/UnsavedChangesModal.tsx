@@ -78,7 +78,7 @@ export default function UnsavedChangesModal() {
           >
             {t("message")}
           </Text>
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-3 justify-start">
             <Button variant="outline" onClick={handleCancel}>
               {t("stay")}
             </Button>

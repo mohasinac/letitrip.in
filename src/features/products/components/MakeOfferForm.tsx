@@ -77,7 +77,7 @@ export function MakeOfferForm({
   if (submitted) {
     return (
       <Card className={`p-4 text-center ${themed.bgPrimary}`}>
-        <Text className="font-semibold text-green-600">
+        <Text className="font-semibold text-green-600 dark:text-green-400">
           {t("offerSentTitle")}
         </Text>
         <Text className="mt-1 text-sm">{t("offerSentDesc")}</Text>
@@ -103,7 +103,7 @@ export function MakeOfferForm({
         <div>
           <Label
             htmlFor="offerAmount"
-            className="block text-sm font-medium mb-1"
+            className="block text-sm font-medium mb-1.5"
           >
             {t("offerAmountLabel")}
           </Label>
@@ -122,7 +122,7 @@ export function MakeOfferForm({
             />
           </div>
           {form.formState.errors.offerAmount && (
-            <Text className="mt-1 text-xs text-red-500">
+            <Text className="mt-1 text-xs text-red-500 dark:text-red-400">
               {form.formState.errors.offerAmount.message}
             </Text>
           )}
@@ -130,7 +130,10 @@ export function MakeOfferForm({
 
         {/* Buyer note */}
         <div>
-          <Label htmlFor="buyerNote" className="block text-sm font-medium mb-1">
+          <Label
+            htmlFor="buyerNote"
+            className="block text-sm font-medium mb-1.5"
+          >
             {t("buyerNoteLabel")}
           </Label>
           <Textarea

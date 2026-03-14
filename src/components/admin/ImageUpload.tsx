@@ -22,7 +22,16 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatFileSize } from "@/utils";
 import { useCamera } from "@/hooks";
-import { Button, CameraCapture, Label, Span, Text } from "@/components";
+import {
+  Alert,
+  Button,
+  CameraCapture,
+  Label,
+  Progress,
+  Span,
+  Spinner,
+  Text,
+} from "@/components";
 
 const { flex, position } = THEME_CONSTANTS;
 
@@ -54,7 +63,7 @@ export function ImageUpload({
   maxSizeMB = 10,
   label = "Upload Image",
   helperText,
-  captureSource = "file-only",
+  captureSource = "both",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string>(currentImage || "");
@@ -162,13 +171,14 @@ export function ImageUpload({
     fileInputRef.current?.click();
   };
 
+  const { themed } = THEME_CONSTANTS;
+  const tUpload = useTranslations("upload");
+
   return (
     <div className="space-y-3">
       {/* Label */}
       {label && (
-        <Label
-          className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
-        >
+        <Label className={`block text-sm font-medium ${themed.textSecondary}`}>
           {label}
         </Label>
       )}
@@ -177,7 +187,7 @@ export function ImageUpload({
       <div className="relative">
         {preview ? (
           <div
-            className={`relative group h-64 overflow-hidden rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}
+            className={`relative group aspect-[16/9] overflow-hidden rounded-xl border-2 ${themed.border}`}
           >
             <Image
               src={preview}
@@ -197,9 +207,8 @@ export function ImageUpload({
                 disabled={uploading}
                 variant="secondary"
                 size="sm"
-                className="px-4 py-2 bg-white text-zinc-900 rounded-md hover:bg-zinc-100 transition-colors duration-200 font-medium"
               >
-                Change
+                {tUpload("change")}
               </Button>
               <Button
                 type="button"
@@ -207,19 +216,15 @@ export function ImageUpload({
                 disabled={uploading}
                 variant="danger"
                 size="sm"
-                className="px-4 py-2"
               >
-                Remove
+                {tUpload("remove")}
               </Button>
             </div>
 
             {/* Upload Progress */}
             {uploading && progress > 0 && (
-              <div className="absolute inset-x-0 bottom-0 h-2 bg-zinc-200 dark:bg-slate-700 rounded-b-lg overflow-hidden">
-                <div
-                  className="h-full bg-blue-600 transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
+              <div className="absolute inset-x-0 bottom-0">
+                <Progress value={progress} size="sm" />
               </div>
             )}
           </div>
@@ -264,7 +269,7 @@ export function ImageUpload({
                 onClick={() => mobileCaptureRef.current?.click()}
                 disabled={uploading}
                 variant="ghost"
-                className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
+                className={`w-full aspect-[16/9] border-2 border-dashed ${themed.border} rounded-xl ${themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${themed.textSecondary} ${themed.bgTertiary}`}
               >
                 <Span className="text-sm font-medium">
                   {t("switchToCamera")}
@@ -279,13 +284,14 @@ export function ImageUpload({
                 onClick={handleClick}
                 disabled={uploading}
                 variant="ghost"
-                className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
+                className={`w-full aspect-[16/9] border-2 border-dashed ${themed.border} rounded-xl ${themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${themed.textSecondary} ${themed.bgTertiary}`}
               >
                 <svg
                   className="w-12 h-12 mb-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -295,7 +301,7 @@ export function ImageUpload({
                   />
                 </svg>
                 <Span className="text-sm font-medium">
-                  {uploading ? "Uploading..." : "Click to upload"}
+                  {uploading ? tUpload("uploading") : tUpload("clickToUpload")}
                 </Span>
                 <Span className="text-xs mt-1">
                   {accept
@@ -339,33 +345,15 @@ export function ImageUpload({
       )}
 
       {/* Error Message */}
-      {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <Text variant="error" size="sm">
-            {error}
-          </Text>
-        </div>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
 
       {/* Upload Status */}
       {uploading && (
-        <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
-          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-          <Span>Uploading {progress}%...</Span>
+        <div className={`${flex.rowCenter} gap-2`}>
+          <Spinner size="sm" />
+          <Text size="sm" variant="secondary">
+            {tUpload("uploadingProgress", { progress })}
+          </Text>
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FormField, Button, Card, Grid, Text } from "@/components";
+import { FormField, FormGroup, Button, Card, Text } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;
@@ -72,7 +72,7 @@ export function MediaOperationForm({
             <Text className="font-semibold text-sm mb-3">
               {LABELS.CROP_PARAMETERS}
             </Text>
-            <Grid className="grid-cols-2" gap="md">
+            <FormGroup columns={2}>
               <FormField
                 label={LABELS.X_POSITION}
                 name="x"
@@ -107,13 +107,13 @@ export function MediaOperationForm({
                 }
                 required
               />
-            </Grid>
+            </FormGroup>
           </div>
 
           {/* Output Settings */}
           <div className="border-t pt-4">
             <Text className="font-semibold text-sm mb-3">Output Settings</Text>
-            <Grid className="grid-cols-2" gap="md">
+            <FormGroup columns={2}>
               <FormField
                 label={LABELS.OUTPUT_FORMAT}
                 name="outputFormat"
@@ -140,7 +140,7 @@ export function MediaOperationForm({
                   { value: "90", label: "High (90)" },
                 ]}
               />
-            </Grid>
+            </FormGroup>
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -173,7 +173,7 @@ export function MediaOperationForm({
           <Text className="font-semibold text-sm mb-3">
             {LABELS.TRIM_PARAMETERS}
           </Text>
-          <Grid className="grid-cols-2" gap="md">
+          <FormGroup columns={2}>
             <FormField
               label={LABELS.START_TIME}
               name="startTime"
@@ -194,13 +194,13 @@ export function MediaOperationForm({
               }
               required
             />
-          </Grid>
+          </FormGroup>
         </div>
 
         {/* Output Settings */}
         <div className="border-t pt-4">
           <Text className="font-semibold text-sm mb-3">Output Settings</Text>
-          <Grid className="grid-cols-2" gap="md">
+          <FormGroup columns={2}>
             <FormField
               label={LABELS.OUTPUT_FORMAT}
               name="outputFormat"
@@ -224,7 +224,7 @@ export function MediaOperationForm({
                 { value: "high", label: "High (2500k/192k)" },
               ]}
             />
-          </Grid>
+          </FormGroup>
         </div>
 
         <div className="flex gap-3 pt-4">

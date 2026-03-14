@@ -33,3 +33,9 @@ export type { SellerPayoutsResponse } from "./useSellerPayouts";
 export { useSellerCoupons } from "./useSellerCoupons";
 export type { SellerCouponsResponse } from "./useSellerCoupons";
 export { useSellerOffers, useRespondToOffer } from "./useSellerOffers";
+export {
+  useStoreAddresses,
+  useCreateStoreAddress,
+  useUpdateStoreAddress,
+  useDeleteStoreAddress,
+} from "./useStoreAddresses";

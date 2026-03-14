@@ -151,7 +151,8 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const theme = localStorage.getItem('theme') || 
+                var m = document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);
+                var theme = (m && m[1]) || localStorage.getItem('theme') ||
                   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 document.documentElement.classList.toggle('dark', theme === 'dark');
                 document.documentElement.setAttribute('data-theme', theme);

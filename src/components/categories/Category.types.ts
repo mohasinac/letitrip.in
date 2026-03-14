@@ -37,7 +37,7 @@ export function flattenCategories(cats: Category[]): Category[] {
   const flatten = (items: Category[]) => {
     items.forEach((item) => {
       result.push(item);
-      if (item.children.length > 0) {
+      if (item.children && item.children.length > 0) {
         flatten(item.children);
       }
     });

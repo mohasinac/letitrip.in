@@ -22,9 +22,8 @@ import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, formatDate, resolveDate } from "@/utils";
 import { useSellerCoupons } from "../hooks/useSellerCoupons";
-import { resolveDate } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
@@ -58,10 +57,10 @@ function CouponCard({
     ? t("scopeAuctions")
     : t("scopeRegular");
 
-  const endDate = coupon.validity.endDate
-    ? (resolveDate(coupon.validity.endDate)?.toLocaleDateString() ??
-      t("noExpiry"))
-    : t("noExpiry");
+  const resolved = coupon.validity.endDate
+    ? resolveDate(coupon.validity.endDate)
+    : null;
+  const endDate = resolved ? formatDate(resolved) : t("noExpiry");
 
   return (
     <Card

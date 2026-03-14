@@ -9,7 +9,7 @@
 
 "use client";
 
-import { Checkbox, FormField, Grid, Label, Textarea } from "@/components";
+import { Checkbox, FormField, FormGroup, Label, Textarea } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";
@@ -101,7 +101,7 @@ function CarouselConfigFields({
 
       {/* Items per view — reviews only */}
       {hasItemsPerView && (
-        <Grid className="grid-cols-2" gap="md">
+        <FormGroup columns={2}>
           <FormField
             name="itemsPerView"
             label={t("formItemsPerView")}
@@ -120,11 +120,11 @@ function CarouselConfigFields({
             }
             disabled={isReadonly}
           />
-        </Grid>
+        </FormGroup>
       )}
 
       {/* Auto scroll + interval */}
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <div className="flex items-end pb-1">
           <Checkbox
             label={t("formAutoScroll")}
@@ -143,7 +143,7 @@ function CarouselConfigFields({
             disabled={isReadonly}
           />
         )}
-      </Grid>
+      </FormGroup>
     </div>
   );
 }
@@ -212,7 +212,7 @@ export function SectionForm({
         )}
       </div>
 
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           name="order"
           label={t("formOrder")}
@@ -230,7 +230,7 @@ export function SectionForm({
             disabled={isReadonly}
           />
         </div>
-      </Grid>
+      </FormGroup>
 
       <div>
         <Label className={`block ${typography.label} mb-2`}>

@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Card, Heading, FormField } from "@/components";
+import { Card, Heading, FormField, FormGroup } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 
@@ -29,7 +29,7 @@ export function SiteBasicInfoForm({
         <Heading level={3} className={`${typography.cardTitle} mb-4`}>
           {UI_LABELS.ADMIN.SITE.BASIC_INFO}
         </Heading>
-        <div className={spacing.stack}>
+        <FormGroup columns={2}>
           <FormField
             name="siteName"
             label={UI_LABELS.ADMIN.SITE.SITE_NAME}
@@ -44,7 +44,7 @@ export function SiteBasicInfoForm({
             value={settings.motto || ""}
             onChange={(value) => onChange({ ...settings, motto: value })}
           />
-        </div>
+        </FormGroup>
       </div>
     </Card>
   );

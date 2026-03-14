@@ -1,29 +1,18 @@
 "use client";
 
 /**
- * AddressSelectorCreate Component
- * Path: src/features/user/components/AddressSelectorCreate.tsx
+ * StoreAddressSelectorCreate
  *
- * Address selector with an inline "Add new address" trigger.
- * Fetches the user's saved addresses and populates a dropdown.
- * Opens a SideDrawer with AddressForm when the user wants to add a new
- * address on-the-fly — without leaving the form they are filling in.
+ * Address selector for store pickup addresses with an inline "Add new" trigger.
+ * Fetches the seller's store addresses (not personal user addresses) and lets
+ * the seller pick one or create a new store address on-the-fly.
  *
- * Used by: ProductForm (pickup address), CheckoutPage (shipping address)
- *
- * @example
- * ```tsx
- * <AddressSelectorCreate
- *   label="Pickup Address"
- *   value={product.pickupAddressId ?? ""}
- *   onChange={(id) => update({ pickupAddressId: id })}
- * />
- * ```
+ * Used by: ProductForm (pickup address field)
  */
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { useAddressSelector, useMessage } from "@/hooks";
+import { useStoreAddressSelector, useMessage } from "@/hooks";
 import { SideDrawer, Button, AddressForm, Label, Select } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { UI_PLACEHOLDERS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
@@ -36,7 +25,7 @@ interface SavedAddress {
   state?: string;
 }
 
-export interface AddressSelectorCreateProps {
+export interface StoreAddressSelectorCreateProps {
   /** Currently selected address ID */
   value: string;
   /** Called with the ID of the selected or newly-created address */
@@ -45,23 +34,24 @@ export interface AddressSelectorCreateProps {
   label?: string;
 }
 
-export function AddressSelectorCreate({
+export function StoreAddressSelectorCreate({
   value,
   onChange,
   disabled = false,
   label,
-}: AddressSelectorCreateProps) {
+}: StoreAddressSelectorCreateProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { showSuccess, showError } = useMessage();
   const tForm = useTranslations("form");
   const tActions = useTranslations("actions");
+  const tStore = useTranslations("storeAddresses");
 
   const {
     addresses,
     isLoading,
     createAddress: mutate,
     isSaving,
-  } = useAddressSelector({
+  } = useStoreAddressSelector({
     onCreated: (id) => {
       showSuccess(SUCCESS_MESSAGES.ADDRESS.CREATED);
       setDrawerOpen(false);
@@ -77,7 +67,6 @@ export function AddressSelectorCreate({
     [mutate],
   );
 
-  /** Format an address option label for the dropdown */
   const formatLabel = (addr: SavedAddress) => {
     const parts = [addr.label, addr.fullName, addr.city, addr.state].filter(
       Boolean,
@@ -114,7 +103,7 @@ export function AddressSelectorCreate({
               onClick={() => setDrawerOpen(true)}
               aria-haspopup="dialog"
             >
-              + {tActions("addAddress")}
+              + {tStore("addAddress")}
             </Button>
           )}
         </div>
@@ -123,7 +112,7 @@ export function AddressSelectorCreate({
       <SideDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={tActions("addAddress")}
+        title={tStore("addAddress")}
         mode="create"
       >
         <AddressForm

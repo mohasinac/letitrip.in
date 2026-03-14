@@ -17,7 +17,7 @@ import {
   Card,
   Button,
   FormField,
-  Grid,
+  FormGroup,
   Alert,
   Text,
   Heading,
@@ -121,7 +121,7 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
         onChange={(v) => set("accountHolderName", v)}
         placeholder={t("accountHolderPlaceholder")}
       />
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           type="password"
           name="accountNumber"
@@ -139,8 +139,8 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
           placeholder="XXXXXXXXXX"
           error={mismatch ? t("accountNumberMismatch") : undefined}
         />
-      </Grid>
-      <Grid cols={2} gap="md">
+      </FormGroup>
+      <FormGroup columns={2}>
         <FormField
           type="text"
           name="ifscCode"
@@ -158,7 +158,7 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
           onChange={(v) => set("bankName", v)}
           placeholder={t("bankNamePlaceholder")}
         />
-      </Grid>
+      </FormGroup>
       <FormField
         type="select"
         name="accountType"
@@ -226,7 +226,7 @@ export function SellerPayoutSettingsView() {
         <Heading level={3} className="mb-4">
           {t("methodHeading")}
         </Heading>
-        <Grid cols={2} gap="md">
+        <FormGroup columns={2}>
           {(["upi", "bank_transfer"] as const).map((method) => (
             <Button
               key={method}
@@ -235,8 +235,8 @@ export function SellerPayoutSettingsView() {
               onClick={() => setSelectedMethod(method)}
               className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
                 activeMethod === method
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-                  : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
+                  ? "border-primary bg-primary/5 dark:bg-primary/10"
+                  : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
               }`}
             >
               <Text weight="semibold" className="mb-1">
@@ -247,7 +247,7 @@ export function SellerPayoutSettingsView() {
               </Text>
             </Button>
           ))}
-        </Grid>
+        </FormGroup>
       </Card>
 
       {/* UPI form */}

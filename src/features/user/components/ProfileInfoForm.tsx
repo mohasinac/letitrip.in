@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FormField, Button, AvatarUpload, Card, Heading } from "@/components";
+import {
+  FormField,
+  FormGroup,
+  Button,
+  AvatarUpload,
+  Card,
+  Heading,
+} from "@/components";
 import type { ImageCropData } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
@@ -97,28 +104,29 @@ export function ProfileInfoForm({
             />
           </div>
 
-          {/* Display Name */}
-          <FormField
-            label={tForm("displayName")}
-            name="displayName"
-            type="text"
-            value={formData.displayName}
-            onChange={(value) => handleChange("displayName", value)}
-            placeholder={UI_PLACEHOLDERS.NAME}
-          />
+          {/* Display Name + Phone */}
+          <FormGroup columns={2}>
+            <FormField
+              label={tForm("displayName")}
+              name="displayName"
+              type="text"
+              value={formData.displayName}
+              onChange={(value) => handleChange("displayName", value)}
+              placeholder={UI_PLACEHOLDERS.NAME}
+            />
 
-          {/* Phone */}
-          <FormField
-            label={tForm("phone")}
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={(value) => handleChange("phone", value)}
-            placeholder={UI_PLACEHOLDERS.PHONE}
-          />
+            <FormField
+              label={tForm("phone")}
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(value) => handleChange("phone", value)}
+              placeholder={UI_PLACEHOLDERS.PHONE}
+            />
+          </FormGroup>
 
           {/* Submit Button */}
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-start pt-4">
             <Button type="submit" variant="primary" disabled={isLoading}>
               {isLoading ? tLoading("default") : tActions("save")}
             </Button>

@@ -386,7 +386,7 @@ function SellerProductsContent() {
         mode={drawerMode ?? "view"}
         isDirty={isFormDirty}
         footer={
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-3 justify-start">
             <Button variant="outline" onClick={closeDrawer}>
               {tActions("cancel")}
             </Button>

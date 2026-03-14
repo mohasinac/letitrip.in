@@ -15,6 +15,7 @@ import {
 } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import { redactPii } from "@/utils";
 
 const LOGS_DIR = path.join(process.cwd(), "logs");
 const MAX_LOG_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -50,8 +51,9 @@ function getLogFilePath(level: LogLevel): string {
  * Format log entry for file
  */
 function formatLogEntry(entry: LogEntry): string {
-  const dataStr = entry.data
-    ? `\n  Data: ${JSON.stringify(entry.data, null, 2)}`
+  const sanitized = entry.data ? redactPii(entry.data) : undefined;
+  const dataStr = sanitized
+    ? `\n  Data: ${JSON.stringify(sanitized, null, 2)}`
     : "";
   return `[${entry.level.toUpperCase()}] ${entry.timestamp} - ${entry.message}${dataStr}\n\n`;
 }
@@ -148,40 +150,44 @@ async function writeLog(entry: LogEntry): Promise<void> {
  */
 export const serverLogger = {
   debug(message: string, data?: any): void {
-    console.debug(`[DEBUG] ${message}`, data);
+    const sanitized = data ? redactPii(data) : undefined;
+    console.debug(`[DEBUG] ${message}`, sanitized);
     // Don't write debug logs to files (too noisy)
   },
 
   info(message: string, data?: any): void {
+    const sanitized = data ? redactPii(data) : undefined;
     const entry: LogEntry = {
       level: "info",
       message,
       timestamp: new Date().toISOString(),
-      data,
+      data: sanitized,
     };
-    console.info(`[INFO] ${message}`, data);
+    console.info(`[INFO] ${message}`, sanitized);
     writeLog(entry).catch(() => {}); // Fire and forget
   },
 
   warn(message: string, data?: any): void {
+    const sanitized = data ? redactPii(data) : undefined;
     const entry: LogEntry = {
       level: "warn",
       message,
       timestamp: new Date().toISOString(),
-      data,
+      data: sanitized,
     };
-    console.warn(`[WARN] ${message}`, data);
+    console.warn(`[WARN] ${message}`, sanitized);
     writeLog(entry).catch(() => {}); // Fire and forget
   },
 
   error(message: string, data?: any): void {
+    const sanitized = data ? redactPii(data) : undefined;
     const entry: LogEntry = {
       level: "error",
       message,
       timestamp: new Date().toISOString(),
-      data,
+      data: sanitized,
     };
-    console.error(`[ERROR] ${message}`, data);
+    console.error(`[ERROR] ${message}`, sanitized);
     writeLog(entry).catch(() => {}); // Fire and forget
   },
 };

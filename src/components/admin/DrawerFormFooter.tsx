@@ -65,7 +65,7 @@ export function DrawerFormFooter({
   return (
     <div
       className={`
-        ${flex.between} gap-3 
+        flex gap-3 
         pt-6 border-t ${themed.border}
         ${className}
       `}
@@ -85,21 +85,21 @@ export function DrawerFormFooter({
 
       <div className="flex items-center gap-3">
         <Button
-          variant="outline"
-          onClick={onCancel}
-          disabled={isLoading}
-          size="md"
-        >
-          {resolvedCancelLabel}
-        </Button>
-
-        <Button
           variant="primary"
           onClick={onSubmit}
           disabled={isLoading || isSubmitDisabled}
           size="md"
         >
           {isLoading ? tLoading("saving") : resolvedSubmitLabel}
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+          size="md"
+        >
+          {resolvedCancelLabel}
         </Button>
       </div>
     </div>

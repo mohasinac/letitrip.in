@@ -30,6 +30,7 @@ export * from "./session.repository";
 export * from "./bid.repository";
 export * from "./cart.repository";
 export * from "./store.repository";
+export * from "./store-address.repository";
 
 // Platform configuration repositories
 export * from "./site-settings.repository";

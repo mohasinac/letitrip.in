@@ -51,7 +51,7 @@ export async function cancelOrderAction(
   const order = await orderRepository.findById(parsed.data.id);
 
   if (!order) {
-    throw new ValidationError("Order not found");
+    throw new NotFoundError("Order not found");
   }
 
   if (order.userId !== user.uid) {

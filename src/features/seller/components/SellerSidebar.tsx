@@ -73,7 +73,11 @@ const NAV_GROUPS: NavGroup[] = [
     groupKey: "groupStore",
     items: [
       { href: ROUTES.SELLER.STORE, labelKey: "myStore", icon: Store },
-      { href: ROUTES.SELLER.ADDRESSES, labelKey: "myAddresses", icon: MapPin },
+      {
+        href: ROUTES.SELLER.ADDRESSES,
+        labelKey: "pickupAddresses",
+        icon: MapPin,
+      },
       {
         href: ROUTES.SELLER.SHIPPING,
         labelKey: "shippingSettings",

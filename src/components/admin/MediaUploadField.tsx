@@ -15,7 +15,16 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { useCamera } from "@/hooks";
-import { Alert, Button, CameraCapture, Label, Span, Spinner, Text, TextLink } from "@/components";
+import {
+  Alert,
+  Button,
+  CameraCapture,
+  Label,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
+} from "@/components";
 
 export interface MediaUploadFieldProps {
   /** Required label shown above the upload control */
@@ -85,6 +94,7 @@ export function MediaUploadField({
   const mobileCaptureRef = useRef<HTMLInputElement>(null);
 
   const t = useTranslations("camera");
+  const tUpload = useTranslations("upload");
   const { isSupported: isCameraSupported } = useCamera();
   const [inputMode, setInputMode] = useState<"file" | "camera">("file");
 
@@ -97,7 +107,11 @@ export function MediaUploadField({
 
   // MIME type for the mobile capture fallback input
   const captureModeAccept =
-    captureMode === "video" ? "video/*" : captureMode === "both" ? "image/*,video/*" : "image/*";
+    captureMode === "video"
+      ? "video/*"
+      : captureMode === "both"
+        ? "image/*,video/*"
+        : "image/*";
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -178,10 +192,7 @@ export function MediaUploadField({
               unoptimized
             />
           ) : (
-            <TextLink
-              href={value}
-              className="text-sm underline break-all"
-            >
+            <TextLink href={value} className="text-sm underline break-all">
               {filenameFromUrl(value)}
             </TextLink>
           )}
@@ -190,11 +201,11 @@ export function MediaUploadField({
             <Button
               type="button"
               onClick={handleRemove}
-              variant="ghost"
+              variant="danger"
               size="sm"
-              className="mt-2 text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
+              className="mt-2"
             >
-              Remove
+              {tUpload("remove")}
             </Button>
           )}
         </div>
@@ -241,7 +252,7 @@ export function MediaUploadField({
               type="button"
               onClick={() => mobileCaptureRef.current?.click()}
               variant="ghost"
-              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
+              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-xl text-sm ${themed.textSecondary} ${themed.hoverBorder} transition-colors`}
             >
               {t("switchToCamera")}
             </Button>
@@ -253,9 +264,9 @@ export function MediaUploadField({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               variant="ghost"
-              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
+              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-xl text-sm ${themed.textSecondary} ${themed.hoverBorder} transition-colors`}
             >
-              {value ? "Replace file" : "Choose file to upload"}
+              {value ? tUpload("replaceFile") : tUpload("chooseFile")}
             </Button>
           )}
         </>
@@ -263,9 +274,11 @@ export function MediaUploadField({
 
       {/* Uploading indicator */}
       {isLoading && (
-        <div className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400">
+        <div className="flex items-center gap-2">
           <Spinner size="sm" />
-          <Span>Uploading…</Span>
+          <Text size="sm" variant="secondary">
+            {tUpload("uploading")}
+          </Text>
         </div>
       )}
 

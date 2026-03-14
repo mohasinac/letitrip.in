@@ -6,7 +6,7 @@ import {
   Button,
   FormField,
   Alert,
-  Grid,
+  FormGroup,
   Input,
   Label,
   Select,
@@ -280,7 +280,7 @@ export function EventFormDrawer({
 
         {/* Type selector */}
         <div>
-          <Label htmlFor="event-type" className="mb-1">
+          <Label htmlFor="event-type" className="mb-1.5">
             Event Type
           </Label>
           <Select
@@ -301,9 +301,9 @@ export function EventFormDrawer({
         </div>
 
         {/* Dates */}
-        <Grid className="grid-cols-2" gap="md">
+        <FormGroup columns={2}>
           <div>
-            <Label htmlFor="event-starts-at" className="mb-1">
+            <Label htmlFor="event-starts-at" className="mb-1.5">
               Starts At
             </Label>
             <Input
@@ -314,7 +314,7 @@ export function EventFormDrawer({
             />
           </div>
           <div>
-            <Label htmlFor="event-ends-at" className="mb-1">
+            <Label htmlFor="event-ends-at" className="mb-1.5">
               Ends At
             </Label>
             <Input
@@ -324,7 +324,7 @@ export function EventFormDrawer({
               onChange={(e) => set("endsAt", e.target.value)}
             />
           </div>
-        </Grid>
+        </FormGroup>
 
         <FormField
           label="Max Entries Per User"
@@ -336,7 +336,7 @@ export function EventFormDrawer({
         />
 
         <div>
-          <Label htmlFor="event-banner-url" className="mb-1">
+          <Label htmlFor="event-banner-url" className="mb-1.5">
             Banner Image URL
           </Label>
           <Input

@@ -222,7 +222,7 @@ export function AdminFeatureFlagsView() {
       </Card>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-start">
         <Button
           variant="primary"
           onClick={handleSave}

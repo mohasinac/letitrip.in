@@ -76,6 +76,15 @@ export {
 } from "./address.actions";
 export type { AddressInput } from "./address.actions";
 
+// Store address mutations (seller role required)
+export {
+  listStoreAddressesAction,
+  createStoreAddressAction,
+  updateStoreAddressAction,
+  deleteStoreAddressAction,
+} from "./store-address.actions";
+export type { StoreAddressInput } from "./store-address.actions";
+
 // Bid mutations (auth required)
 export { placeBidAction } from "./bid.actions";
 export type { PlaceBidInput, PlaceBidResult } from "./bid.actions";

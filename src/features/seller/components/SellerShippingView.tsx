@@ -15,12 +15,12 @@ import {
   Card,
   Button,
   FormField,
-  Grid,
+  FormGroup,
   Alert,
   Text,
   Heading,
   Badge,
-  Modal,
+  SideDrawer,
   Spinner,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
@@ -201,7 +201,7 @@ function PickupAddressForm({
         value={form.name}
         onChange={(v) => set("name", v)}
       />
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           type="email"
           name="pickupEmail"
@@ -216,7 +216,7 @@ function PickupAddressForm({
           value={form.phone}
           onChange={(v) => set("phone", v)}
         />
-      </Grid>
+      </FormGroup>
       <FormField
         type="text"
         name="address"
@@ -231,7 +231,7 @@ function PickupAddressForm({
         value={form.address2}
         onChange={(v) => set("address2", v)}
       />
-      <Grid cols={3} gap="md">
+      <FormGroup columns={3}>
         <FormField
           type="text"
           name="city"
@@ -253,7 +253,7 @@ function PickupAddressForm({
           value={form.pincode}
           onChange={(v) => set("pincode", v)}
         />
-      </Grid>
+      </FormGroup>
       <Button
         variant="primary"
         isLoading={isSaving}
@@ -286,7 +286,12 @@ function OtpModal({
   const [otp, setOtp] = useState("");
 
   return (
-    <Modal isOpen={open} onClose={onClose} title={t("otpModalTitle")} size="sm">
+    <SideDrawer
+      isOpen={open}
+      onClose={onClose}
+      title={t("otpModalTitle")}
+      mode="edit"
+    >
       <div className={spacing.stack}>
         <Text variant="secondary" size="sm">
           {t("otpModalDesc")}
@@ -299,7 +304,7 @@ function OtpModal({
           onChange={(v) => setOtp(v)}
           placeholder="000000"
         />
-        <div className={`${flex.end} gap-2`}>
+        <div className={`${flex.start} gap-2`}>
           <Button variant="outline" onClick={onClose} disabled={isVerifying}>
             {t("cancel")}
           </Button>
@@ -314,7 +319,7 @@ function OtpModal({
           </Button>
         </div>
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }
 
@@ -371,7 +376,7 @@ export function SellerShippingView() {
         <Heading level={3} className="mb-4">
           {t("methodHeading")}
         </Heading>
-        <Grid cols={2} gap="md">
+        <FormGroup columns={2}>
           {(["custom", "shiprocket"] as const).map((method) => (
             <Button
               key={method}
@@ -380,8 +385,8 @@ export function SellerShippingView() {
               onClick={() => setSelectedMethod(method)}
               className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
                 activeMethod === method
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-                  : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
+                  ? "border-primary bg-primary/5 dark:bg-primary/10"
+                  : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
               }`}
             >
               <Text weight="semibold" className="mb-1">
@@ -396,7 +401,7 @@ export function SellerShippingView() {
               </Text>
             </Button>
           ))}
-        </Grid>
+        </FormGroup>
       </Card>
 
       {/* Custom shipping config */}

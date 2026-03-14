@@ -13,17 +13,19 @@
  * Query params:
  *   error  — Optional. If present the popup was opened outside of a valid flow
  *             (e.g. direct navigation). We show a brief message before closing.
+ *
+ * Wrapped in Suspense because AuthCloseContent uses useSearchParams().
  */
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Text } from "@/components";
+import { Text, Spinner } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
 
-export default function AuthClosePage() {
+function AuthCloseContent() {
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error");
   const [closed, setClosed] = useState(false);
@@ -54,5 +56,19 @@ export default function AuthClosePage() {
         <Text variant="secondary">{t("closing")}</Text>
       )}
     </div>
+  );
+}
+
+export default function AuthClosePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={`${flex.center} min-h-screen`}>
+          <Spinner size="sm" />
+        </div>
+      }
+    >
+      <AuthCloseContent />
+    </Suspense>
   );
 }

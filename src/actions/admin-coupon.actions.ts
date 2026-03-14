@@ -29,7 +29,7 @@ import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 const couponIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
 const discountConfigSchema = z.object({
-  value: z.number().min(0),
+  value: z.number().positive(),
   maxDiscount: z.number().optional(),
   minPurchase: z.number().optional(),
 });

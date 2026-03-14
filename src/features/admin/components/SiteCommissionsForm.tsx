@@ -11,7 +11,7 @@ import {
   Card,
   Heading,
   FormField,
-  Grid,
+  FormGroup,
   Text,
   Caption,
   Label,
@@ -100,7 +100,7 @@ export function SiteCommissionsForm({
                   key={field}
                   className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors mb-0 ${
                     payment[field as keyof typeof payment]
-                      ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                      ? `border-primary bg-primary/5 dark:bg-primary/10`
                       : `${themed.border} ${themed.bgSecondary}`
                   }`}
                 >
@@ -108,7 +108,7 @@ export function SiteCommissionsForm({
                     type="checkbox"
                     checked={!!payment[field as keyof typeof payment]}
                     onChange={(e) => togglePayment(field, e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded"
+                    className="w-4 h-4 text-primary rounded"
                   />
                   <Text size="sm" weight="medium">
                     {label}
@@ -123,7 +123,7 @@ export function SiteCommissionsForm({
             <Caption className="font-semibold mb-3 uppercase tracking-wide">
               {t("paymentFeesLabel")}
             </Caption>
-            <Grid cols={2} gap="md">
+            <FormGroup columns={2}>
               <FormField
                 name="razorpayFeePercent"
                 label={t("razorpayFeePercent")}
@@ -140,7 +140,7 @@ export function SiteCommissionsForm({
                 onChange={(v) => updateCommission("codDepositPercent", v)}
                 helpText={t("codDepositHint")}
               />
-            </Grid>
+            </FormGroup>
           </div>
 
           {/* Shipping fees */}
@@ -148,7 +148,7 @@ export function SiteCommissionsForm({
             <Caption className="font-semibold mb-3 uppercase tracking-wide">
               {t("shippingFeesLabel")}
             </Caption>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <FormGroup columns={3}>
               <FormField
                 name="sellerShippingFixed"
                 label={t("sellerShippingFixed")}
@@ -175,7 +175,7 @@ export function SiteCommissionsForm({
                 }
                 helpText={t("platformShippingFixedMinHint")}
               />
-            </div>
+            </FormGroup>
             <Text size="xs" variant="secondary" className="mt-2">
               {t("shippingFeeRule")}
             </Text>

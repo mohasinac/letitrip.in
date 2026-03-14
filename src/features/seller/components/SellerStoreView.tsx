@@ -457,8 +457,28 @@ export function SellerStoreView() {
         </div>
       </Card>
 
+      {/* ── Pickup Addresses (link to dedicated page) ─────────── */}
+      <Card>
+        <div className={`${flex.between} gap-4`}>
+          <div>
+            <Heading level={3}>{t("pickupAddressesTitle")}</Heading>
+            <Text variant="secondary" size="sm" className="mt-0.5">
+              {t("pickupAddressesSubtitle")}
+            </Text>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(ROUTES.SELLER.ADDRESSES)}
+          >
+            {t("manageAddresses")}
+          </Button>
+        </div>
+      </Card>
+
       {/* ── Save ──────────────────────────────────────────────── */}
-      <div className="flex justify-end">
+      <div className="flex justify-start">
         <Button
           type="submit"
           variant="primary"

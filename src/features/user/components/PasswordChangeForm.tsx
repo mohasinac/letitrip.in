@@ -127,7 +127,7 @@ export function PasswordChangeForm({
       )}
 
       {/* Submit Button */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-start pt-4">
         <Button
           type="submit"
           variant="primary"

@@ -134,7 +134,9 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
           <div key={field.id} className="mb-4">
             <Label className="block mb-2">
               {field.label}
-              {field.required && <Span className="text-red-500 ml-1">*</Span>}
+              {field.required && (
+                <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+              )}
             </Label>
             <RadioGroup
               name={field.id}
@@ -171,9 +173,11 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     if (field.type === "rating") {
       return (
         <div key={field.id} className="mb-4">
-          <Label htmlFor={`field-${field.id}`} className="mb-1">
+          <Label htmlFor={`field-${field.id}`} className="mb-1.5">
             {field.label}
-            {field.required && <Span className="text-red-500 ml-1">*</Span>}
+            {field.required && (
+              <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+            )}
           </Label>
           <Input
             id={`field-${field.id}`}
@@ -192,9 +196,11 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     if (field.type === "date") {
       return (
         <div key={field.id} className="mb-4">
-          <Label htmlFor={`field-${field.id}`} className="mb-1">
+          <Label htmlFor={`field-${field.id}`} className="mb-1.5">
             {field.label}
-            {field.required && <Span className="text-red-500 ml-1">*</Span>}
+            {field.required && (
+              <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+            )}
           </Label>
           <Input
             id={`field-${field.id}`}

@@ -107,8 +107,6 @@ export const ROUTES = {
     SHIPPING: "/seller/shipping",
     PAYOUT_SETTINGS: "/seller/payout-settings",
     ADDRESSES: "/seller/addresses",
-    ADDRESSES_ADD: "/seller/addresses/add",
-    ADDRESSES_EDIT: (id: string) => `/seller/addresses/edit/${id}`,
     COUPONS: "/seller/coupons",
     COUPONS_NEW: "/seller/coupons/new",
     OFFERS: "/seller/offers",

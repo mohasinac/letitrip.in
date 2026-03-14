@@ -10,7 +10,7 @@
 import {
   FormField,
   Checkbox,
-  Grid,
+  FormGroup,
   ImageUpload,
   Heading,
   Stack,
@@ -18,7 +18,7 @@ import {
   Alert,
 } from "@/components";
 import { CategorySelectorCreate } from "@/components";
-import { AddressSelectorCreate } from "@/components";
+import { StoreAddressSelectorCreate } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { resolveDate } from "@/utils";
@@ -65,7 +65,7 @@ export function ProductForm({
         placeholder="Enter product description"
       />
 
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <CategorySelectorCreate
           label={t("formCategory")}
           value={product.categoryId || product.category || ""}
@@ -81,9 +81,9 @@ export function ProductForm({
           disabled={isReadonly}
           placeholder="e.g. Smartphones"
         />
-      </Grid>
+      </FormGroup>
 
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           name="brand"
           label={t("formBrand")}
@@ -104,10 +104,10 @@ export function ProductForm({
           disabled={isReadonly}
           options={PRODUCT_STATUS_OPTIONS}
         />
-      </Grid>
+      </FormGroup>
 
       {/* Pricing & Stock */}
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           name="price"
           label={t("formPrice")}
@@ -126,7 +126,7 @@ export function ProductForm({
           disabled={isReadonly}
           placeholder="0"
         />
-      </Grid>
+      </FormGroup>
 
       {/* Media */}
       {!isReadonly && (
@@ -176,7 +176,7 @@ export function ProductForm({
       />
 
       {/* Toggles */}
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <Checkbox
           label={t("formFeatured")}
           checked={!!product.featured}
@@ -189,14 +189,14 @@ export function ProductForm({
           onChange={(e) => update({ isPromoted: e.target.checked })}
           disabled={isReadonly}
         />
-      </Grid>
+      </FormGroup>
 
       {/* Condition & Shipping */}
       <Heading level={4} className="mt-4">
         {t("sectionConditionShipping")}
       </Heading>
 
-      <Grid cols={2} gap="md">
+      <FormGroup columns={2}>
         <FormField
           name="condition"
           label={t("formCondition")}
@@ -231,7 +231,7 @@ export function ProductForm({
             { value: "seller", label: t("formShippingPaidBySeller") },
           ]}
         />
-      </Grid>
+      </FormGroup>
 
       {/* Insurance */}
       <Checkbox
@@ -278,7 +278,7 @@ export function ProductForm({
 
       {product.isAuction && (
         <>
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="startingBid"
               label={t("formStartingBid")}
@@ -301,9 +301,9 @@ export function ProductForm({
               onChange={(value) => update({ auctionEndDate: value })}
               disabled={isReadonly}
             />
-          </Grid>
+          </FormGroup>
 
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="reservePrice"
               label={t("formReservePrice")}
@@ -328,7 +328,7 @@ export function ProductForm({
               placeholder="0"
               helpText={t("formBuyNowPriceHelp")}
             />
-          </Grid>
+          </FormGroup>
 
           <FormField
             name="minBidIncrement"
@@ -409,7 +409,7 @@ export function ProductForm({
 
       {product.isPreOrder && (
         <>
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="preOrderDeliveryDate"
               label={t("formPreOrderDeliveryDate")}
@@ -436,9 +436,9 @@ export function ProductForm({
               placeholder="20"
               helpText={t("formPreOrderDepositPercentHelp")}
             />
-          </Grid>
+          </FormGroup>
 
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="preOrderMaxQuantity"
               label={t("formPreOrderMaxQuantity")}
@@ -475,7 +475,7 @@ export function ProductForm({
                 },
               ]}
             />
-          </Grid>
+          </FormGroup>
 
           <Checkbox
             label={t("formPreOrderCancellable")}
@@ -487,7 +487,7 @@ export function ProductForm({
       )}
 
       {/* Shipping & Returns */}
-      <AddressSelectorCreate
+      <StoreAddressSelectorCreate
         label={t("formPickupAddress")}
         value={product.pickupAddressId || ""}
         onChange={(id) => update({ pickupAddressId: id })}

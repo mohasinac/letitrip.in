@@ -24,7 +24,7 @@ const validateCouponSchema = z.object({
 const cartItemSchema = z.object({
   productId: z.string(),
   sellerId: z.string(),
-  price: z.number().min(0),
+  price: z.number().positive(),
   quantity: z.number().int().min(1),
   isPreOrder: z.boolean(),
   isAuction: z.boolean(),

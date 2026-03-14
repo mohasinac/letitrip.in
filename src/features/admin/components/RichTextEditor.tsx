@@ -74,7 +74,7 @@ function UrlInputPopover({
           onClick={() => {
             if (value) onSubmit(value);
           }}
-          className="px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-primary/90"
         >
           {t("confirm")}
         </Button>

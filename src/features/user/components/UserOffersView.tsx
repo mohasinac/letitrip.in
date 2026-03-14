@@ -142,8 +142,11 @@ export function UserOffersView() {
               disabled={busy}
               onClick={async () => {
                 setPendingId(o.id);
-                await checkoutOffer(o.id);
-                setPendingId(null);
+                try {
+                  await checkoutOffer(o.id);
+                } finally {
+                  setPendingId(null);
+                }
               }}
             >
               {t("checkoutNow")}
@@ -159,8 +162,11 @@ export function UserOffersView() {
                 disabled={busy}
                 onClick={async () => {
                   setPendingId(o.id);
-                  await acceptCounter({ offerId: o.id });
-                  setPendingId(null);
+                  try {
+                    await acceptCounter({ offerId: o.id });
+                  } finally {
+                    setPendingId(null);
+                  }
                 }}
               >
                 {t("acceptCounter")}
@@ -171,8 +177,11 @@ export function UserOffersView() {
                 disabled={busy}
                 onClick={async () => {
                   setPendingId(o.id);
-                  await withdraw({ offerId: o.id });
-                  setPendingId(null);
+                  try {
+                    await withdraw({ offerId: o.id });
+                  } finally {
+                    setPendingId(null);
+                  }
                 }}
               >
                 {tActions("decline")}
@@ -189,8 +198,11 @@ export function UserOffersView() {
               disabled={busy}
               onClick={async () => {
                 setPendingId(o.id);
-                await withdraw({ offerId: o.id });
-                setPendingId(null);
+                try {
+                  await withdraw({ offerId: o.id });
+                } finally {
+                  setPendingId(null);
+                }
               }}
             >
               {t("withdraw")}

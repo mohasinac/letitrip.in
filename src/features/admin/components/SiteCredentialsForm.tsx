@@ -92,11 +92,17 @@ export function SiteCredentialsForm({
 
   const statusBadge = (masked: string | undefined) =>
     masked ? (
-      <Text size="xs" className="text-green-600 font-medium">
+      <Text
+        size="xs"
+        className="text-green-600 dark:text-green-400 font-medium"
+      >
         {t("credentialSet")}
       </Text>
     ) : (
-      <Text size="xs" className="text-amber-600 font-medium">
+      <Text
+        size="xs"
+        className="text-amber-600 dark:text-amber-400 font-medium"
+      >
         {t("credentialNotSet")}
       </Text>
     );

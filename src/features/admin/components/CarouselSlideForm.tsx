@@ -15,9 +15,8 @@ import {
   Button,
   Checkbox,
   FormField,
-  Grid,
+  FormGroup,
   Heading,
-  ImageUpload,
   Label,
   Select,
   Text,
@@ -106,8 +105,11 @@ export function CarouselSlideForm({
         disabled={isReadonly}
       />
       {!isReadonly && (
-        <ImageUpload
-          currentImage={slide.media?.url ?? ""}
+        <FormField
+          name="slideImage"
+          label="Slide Image"
+          type="image"
+          value={slide.media?.url ?? ""}
           onUpload={(file) =>
             upload(file, "carousel", true, {
               type: "carousel-image",
@@ -117,8 +119,7 @@ export function CarouselSlideForm({
           onChange={(url) =>
             update({ media: { type: "image", url, alt: slide.title || "" } })
           }
-          label="Slide Image"
-          helperText="Recommended: 1920×600 px"
+          helpText="Recommended: 1920×600 px"
         />
       )}
       <FormField
@@ -135,7 +136,7 @@ export function CarouselSlideForm({
         }
         disabled={isReadonly}
       />
-      <Grid className="grid-cols-2" gap="md">
+      <FormGroup columns={2}>
         <FormField
           name="order"
           label="Order"
@@ -152,7 +153,7 @@ export function CarouselSlideForm({
             label={UI_LABELS.STATUS.ACTIVE}
           />
         </div>
-      </Grid>
+      </FormGroup>
       {/* -- Central overlay (mutually exclusive with cards) --------- */}
       <div className={`border-t ${themed.border} pt-4`}>
         <div className={`${flex.between} mb-3`}>
@@ -245,7 +246,7 @@ export function CarouselSlideForm({
               </div>
               {slide.overlay.button && (
                 <div className="space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
+                  <FormGroup columns={2}>
                     <FormField
                       name="overlay-btn-text"
                       label={t("buttonText")}
@@ -276,8 +277,8 @@ export function CarouselSlideForm({
                       }
                       disabled={isReadonly}
                     />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  </FormGroup>
+                  <FormGroup columns={2}>
                     <Select
                       value={slide.overlay.button.variant}
                       onChange={(e) =>
@@ -318,7 +319,7 @@ export function CarouselSlideForm({
                         label={t("openInNewTab")}
                       />
                     </div>
-                  </div>
+                  </FormGroup>
                 </div>
               )}
             </div>
@@ -328,10 +329,10 @@ export function CarouselSlideForm({
       {/* -- 2×3 grid designer (max 2 cards) — hidden when overlay active */}
       {!slide.overlay && (
         <div className={`border-t ${themed.border} pt-4`}>
-          <Heading level={3} className="mb-1">
+          <Heading level={3} className="mb-1.5">
             {t("gridLayout")}
           </Heading>
-          <Text variant="secondary" size="sm" className="mb-1">
+          <Text variant="secondary" size="sm" className="mb-1.5">
             {t("gridLayoutSubtitle")}
           </Text>
           <Text variant="muted" size="xs" className="mb-4">
@@ -358,7 +359,7 @@ export function CarouselSlideForm({
                       <div
                         className={`${flex.between} px-3 py-2 ${
                           card
-                            ? "bg-indigo-50 dark:bg-indigo-900/20"
+                            ? "bg-primary/5 dark:bg-primary/10"
                             : themed.bgSecondary
                         }`}
                       >
@@ -382,7 +383,7 @@ export function CarouselSlideForm({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => removeCard(row, col)}
-                                  className="text-red-500 hover:text-red-700"
+                                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                                 >
                                   {t("removeCard")}
                                 </Button>
@@ -513,7 +514,7 @@ function CardEditor({
     <div className={`px-3 py-3 space-y-3 border-t ${themed.border}`}>
       {/* Background */}
       <div>
-        <Label className="block mb-1 text-xs font-medium">
+        <Label className="block mb-1.5 text-xs font-medium">
           {t("cardBackground")}
         </Label>
         <div
@@ -553,12 +554,12 @@ function CardEditor({
 
       {/* Sizing */}
       <div>
-        <Label className="block mb-1 text-xs font-medium">
+        <Label className="block mb-1.5 text-xs font-medium">
           {t("cardSizing")}
         </Label>
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <Label className="block mb-1 text-xs">{t("cardWidth")}</Label>
+            <Label className="block mb-1.5 text-xs">{t("cardWidth")}</Label>
             <Select
               value={String(card.sizing?.widthPct ?? 100)}
               onChange={(e) =>
@@ -578,7 +579,7 @@ function CardEditor({
             />
           </div>
           <div>
-            <Label className="block mb-1 text-xs">{t("cardHeight")}</Label>
+            <Label className="block mb-1.5 text-xs">{t("cardHeight")}</Label>
             <Select
               value={String(card.sizing?.heightPct ?? 100)}
               onChange={(e) =>
@@ -598,7 +599,7 @@ function CardEditor({
             />
           </div>
           <div>
-            <Label className="block mb-1 text-xs">{t("cardPadding")}</Label>
+            <Label className="block mb-1.5 text-xs">{t("cardPadding")}</Label>
             <Select
               value={card.sizing?.padding ?? "md"}
               onChange={(e) =>
@@ -665,7 +666,7 @@ function CardEditor({
             key={btn.id}
             className={`mb-2 p-2 border ${themed.border} rounded-lg`}
           >
-            <div className="grid grid-cols-2 gap-2">
+            <FormGroup columns={2}>
               <FormField
                 name={`btnText${i}`}
                 label={t("cardButtonText")}
@@ -680,7 +681,7 @@ function CardEditor({
                 value={btn.link}
                 onChange={(val) => updateButton(i, { link: val })}
               />
-            </div>
+            </FormGroup>
             <div className="flex items-center gap-3 mt-2 flex-wrap">
               <Select
                 value={btn.variant}
@@ -708,7 +709,7 @@ function CardEditor({
                 variant="ghost"
                 size="sm"
                 onClick={() => removeButton(i)}
-                className="text-red-500 hover:text-red-700 ml-auto"
+                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 ml-auto"
               >
                 {t("removeButton")}
               </Button>

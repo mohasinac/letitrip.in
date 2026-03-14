@@ -8,7 +8,7 @@
 "use client";
 
 import { useState } from "react";
-import { Input, Select, Span, Text, Textarea } from "@/components";
+import { FormGroup, Input, Select, Span, Text, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
 
@@ -84,29 +84,31 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
         </Text>
       </div>
 
-      <Select
-        label={UI_LABELS.ACTIONS.CONFIRM + " Status"}
-        value={formState.status}
-        onChange={(e) =>
-          handleChange("status", (e.target as HTMLSelectElement).value)
-        }
-        options={ORDER_STATUS_OPTIONS.map((o) => ({
-          value: o.value,
-          label: o.label,
-        }))}
-      />
+      <FormGroup columns={2}>
+        <Select
+          label={UI_LABELS.ACTIONS.CONFIRM + " Status"}
+          value={formState.status}
+          onChange={(e) =>
+            handleChange("status", (e.target as HTMLSelectElement).value)
+          }
+          options={ORDER_STATUS_OPTIONS.map((o) => ({
+            value: o.value,
+            label: o.label,
+          }))}
+        />
 
-      <Select
-        label="Payment Status"
-        value={formState.paymentStatus}
-        onChange={(e) =>
-          handleChange("paymentStatus", (e.target as HTMLSelectElement).value)
-        }
-        options={PAYMENT_STATUS_OPTIONS.map((o) => ({
-          value: o.value,
-          label: o.label,
-        }))}
-      />
+        <Select
+          label="Payment Status"
+          value={formState.paymentStatus}
+          onChange={(e) =>
+            handleChange("paymentStatus", (e.target as HTMLSelectElement).value)
+          }
+          options={PAYMENT_STATUS_OPTIONS.map((o) => ({
+            value: o.value,
+            label: o.label,
+          }))}
+        />
+      </FormGroup>
 
       <Input
         label={LABELS.TRACKING_NUMBER}

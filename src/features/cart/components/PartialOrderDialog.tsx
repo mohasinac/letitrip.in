@@ -12,7 +12,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { Modal, Button, Text, Heading } from "@/components";
+import { SideDrawer, Button, Text, Heading } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UnavailableItem } from "@/hooks";
 
@@ -51,11 +51,11 @@ export function PartialOrderDialog({
   const allUnavailable = availableCount === 0;
 
   return (
-    <Modal
+    <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
       title={t("partialOrderTitle")}
-      size="md"
+      mode="view"
     >
       <div className={spacing.stack}>
         {/* Description */}
@@ -94,7 +94,7 @@ export function PartialOrderDialog({
         </div>
 
         {/* Actions */}
-        <div className={`${flex.end} gap-3`}>
+        <div className={`${flex.start} gap-3`}>
           {isPostPlacement ? (
             /* Post-placement: just go to order or cart */
             <>
@@ -123,6 +123,6 @@ export function PartialOrderDialog({
           )}
         </div>
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }

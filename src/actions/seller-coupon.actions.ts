@@ -32,7 +32,7 @@ import { buildSellerCouponCode, type CouponDocument } from "@/db/schema";
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
 const discountConfigSchema = z.object({
-  value: z.number().min(0),
+  value: z.number().positive(),
   maxDiscount: z.number().optional(),
   minPurchase: z.number().optional(),
 });

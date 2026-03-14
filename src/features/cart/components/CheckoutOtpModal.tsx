@@ -13,7 +13,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Modal, Button, Text, Heading, TextLink } from "@/components";
+import { SideDrawer, Button, Text, Heading, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { usePaymentOtp } from "../hooks/usePaymentOtp";
 
@@ -99,11 +99,11 @@ export function CheckoutOtpModal({
   })();
 
   return (
-    <Modal
+    <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
       title={t("otpModalTitle")}
-      size="sm"
+      mode="edit"
     >
       {/* Invisible reCAPTCHA anchor */}
       <div id={recaptchaId} />
@@ -133,7 +133,7 @@ export function CheckoutOtpModal({
                 {friendlyError}
               </Text>
             )}
-            <div className={`${flex.end} gap-2`}>
+            <div className={`${flex.start} gap-2`}>
               <Button variant="outline" onClick={onClose} disabled={isSending}>
                 {t("otpCancelBtn")}
               </Button>
@@ -199,7 +199,7 @@ export function CheckoutOtpModal({
           </div>
         )}
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }
 

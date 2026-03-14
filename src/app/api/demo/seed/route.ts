@@ -27,6 +27,7 @@ import {
 import {
   usersSeedData,
   addressesSeedData,
+  storeAddressesSeedData,
   categoriesSeedData,
   storesSeedData,
   ordersSeedData,
@@ -67,11 +68,13 @@ import {
   STORE_COLLECTION,
   PRODUCT_COLLECTION,
   ADDRESS_SUBCOLLECTION,
+  STORE_ADDRESS_SUBCOLLECTION,
 } from "@/db/schema";
 
 type CollectionName =
   | "users"
   | "addresses"
+  | "storeAddresses"
   | "categories"
   | "stores"
   | "products"
@@ -98,7 +101,8 @@ interface SeedRequest {
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
-  addresses: "addresses", // Subcollection
+  addresses: "addresses", // Subcollection under users
+  storeAddresses: "storeAddresses", // Subcollection under stores
   categories: CATEGORIES_COLLECTION,
   stores: STORE_COLLECTION,
   products: PRODUCT_COLLECTION,
@@ -122,6 +126,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: usersSeedData,
   addresses: addressesSeedData,
+  storeAddresses: storeAddressesSeedData,
   categories: categoriesSeedData,
   stores: storesSeedData,
   products: productsSeedData,
@@ -214,6 +219,20 @@ export async function GET(_request: NextRequest) {
                   .collection(USER_COLLECTION)
                   .doc(d.userId)
                   .collection(ADDRESS_SUBCOLLECTION)
+                  .doc(d.id),
+              );
+            if (refs.length > 0) {
+              const snaps = await db.getAll(...refs);
+              existingCount = snaps.filter((s) => s.exists).length;
+            }
+          } else if (colName === "storeAddresses") {
+            const refs = (seedData as any[])
+              .filter((d) => d.storeSlug && d.id)
+              .map((d) =>
+                db
+                  .collection(STORE_COLLECTION)
+                  .doc(d.storeSlug)
+                  .collection(STORE_ADDRESS_SUBCOLLECTION)
                   .doc(d.id),
               );
             if (refs.length > 0) {
@@ -441,6 +460,40 @@ export async function POST(request: NextRequest) {
                 totalErrors++;
               }
             }
+          } else if (collectionName === "storeAddresses") {
+            // Store addresses are subcollection under stores
+            for (const addressData of seedData) {
+              try {
+                const { storeSlug, id, ...data } = addressData as any;
+
+                if (!storeSlug || !id) {
+                  serverLogger.error("Store address missing storeSlug or id");
+                  totalErrors++;
+                  continue;
+                }
+
+                const docRef = db
+                  .collection(STORE_COLLECTION)
+                  .doc(storeSlug)
+                  .collection(STORE_ADDRESS_SUBCOLLECTION)
+                  .doc(id);
+                const docSnapshot = await docRef.get();
+                if (docSnapshot.exists) {
+                  totalSkipped++;
+                  continue;
+                }
+
+                await docRef.set(
+                  encryptPiiFields(stripUndefined(data), [
+                    ...ADDRESS_PII_FIELDS,
+                  ]),
+                );
+                totalCreated++;
+              } catch (err) {
+                serverLogger.error(`Error seeding store address:`, err);
+                totalErrors++;
+              }
+            }
           } else if (collectionName === "siteSettings") {
             // Site settings is a singleton document
             const settingsData = seedData[0];
@@ -618,6 +671,36 @@ export async function POST(request: NextRequest) {
                 }
               } catch (err) {
                 serverLogger.error(`Error deleting address:`, err);
+                totalErrors++;
+              }
+            }
+          } else if (collectionName === "storeAddresses") {
+            // Store addresses are subcollection under stores
+            for (const addressData of seedData) {
+              try {
+                const { storeSlug, id } = addressData as any;
+
+                if (!storeSlug || !id) {
+                  serverLogger.error("Store address missing storeSlug or id");
+                  totalErrors++;
+                  continue;
+                }
+
+                const docRef = db
+                  .collection(STORE_COLLECTION)
+                  .doc(storeSlug)
+                  .collection(STORE_ADDRESS_SUBCOLLECTION)
+                  .doc(id);
+                const docSnapshot = await docRef.get();
+
+                if (docSnapshot.exists) {
+                  await docRef.delete();
+                  totalDeleted++;
+                } else {
+                  totalSkipped++;
+                }
+              } catch (err) {
+                serverLogger.error(`Error deleting store address:`, err);
                 totalErrors++;
               }
             }

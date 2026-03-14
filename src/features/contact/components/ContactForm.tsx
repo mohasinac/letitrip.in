@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { Button, FormField, Alert, Heading } from "@/components";
+import { Button, FormField, FormGroup, Alert, Heading } from "@/components";
 import { useMessage, useContactSubmit } from "@/hooks";
 import { isValidEmail, isRequired } from "@/utils";
 const { spacing } = THEME_CONSTANTS;
@@ -75,26 +75,32 @@ export function ContactForm() {
       )}
 
       <form onSubmit={handleSubmit} className={spacing.stack}>
-        <FormField
-          name="name"
-          label={t("formName")}
-          type="text"
-          value={form.name}
-          onChange={(value: string) => setForm((f) => ({ ...f, name: value }))}
-          placeholder={t("namePlaceholder")}
-          error={errors.name}
-          required
-        />
-        <FormField
-          name="email"
-          label={t("formEmail")}
-          type="email"
-          value={form.email}
-          onChange={(value: string) => setForm((f) => ({ ...f, email: value }))}
-          placeholder={t("emailPlaceholder")}
-          error={errors.email}
-          required
-        />
+        <FormGroup columns={2}>
+          <FormField
+            name="name"
+            label={t("formName")}
+            type="text"
+            value={form.name}
+            onChange={(value: string) =>
+              setForm((f) => ({ ...f, name: value }))
+            }
+            placeholder={t("namePlaceholder")}
+            error={errors.name}
+            required
+          />
+          <FormField
+            name="email"
+            label={t("formEmail")}
+            type="email"
+            value={form.email}
+            onChange={(value: string) =>
+              setForm((f) => ({ ...f, email: value }))
+            }
+            placeholder={t("emailPlaceholder")}
+            error={errors.email}
+            required
+          />
+        </FormGroup>
         <FormField
           name="subject"
           label={t("formSubject")}

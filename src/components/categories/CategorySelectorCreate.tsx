@@ -69,7 +69,7 @@ function CreateCategoryContent({
   const { mutate, isPending: isLoading } = useCreateCategory({
     onSuccess: (res) => {
       showSuccess(SUCCESS_MESSAGES.CATEGORY.CREATED);
-      onSuccess(res.data?.id ?? "");
+      onSuccess(res?.id ?? "");
     },
     onError: (err) => showError(err.message),
   });
@@ -122,7 +122,7 @@ export function CategorySelectorCreate({
   return (
     <>
       <div>
-        {label && <Label className="mb-1">{label}</Label>}
+        {label && <Label className="mb-1.5">{label}</Label>}
         <div className="flex gap-2 items-center">
           <div className="flex-1">
             <Select

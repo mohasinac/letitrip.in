@@ -178,6 +178,7 @@ export { usePlaceBid } from "./usePlaceBid";
 export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
+export { useStoreAddressSelector } from "./useStoreAddressSelector";
 
 // Chat hooks
 export {

@@ -66,9 +66,11 @@ export function FeedbackEventSection({
     <div className={spacing.stack}>
       {feedbackConfig.formFields.map((field: SurveyFormField) => (
         <div key={field.id}>
-          <Label className="block mb-1">
+          <Label className="block mb-1.5">
             {field.label}
-            {field.required && <Span className="text-red-500 ml-1">*</Span>}
+            {field.required && (
+              <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+            )}
           </Label>
           {field.type === "textarea" ? (
             <Textarea

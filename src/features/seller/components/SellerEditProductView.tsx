@@ -181,7 +181,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
 
         {formData && <ProductForm product={formData} onChange={setFormData} />}
 
-        <div className="mt-6 flex gap-3 justify-end">
+        <div className="mt-6 flex gap-3 justify-start">
           <Button
             variant="outline"
             onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}

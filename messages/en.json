@@ -23,6 +23,15 @@
     "notSupported": "Camera is not supported on this device",
     "starting": "Starting camera..."
   },
+  "upload": {
+    "change": "Change",
+    "remove": "Remove",
+    "clickToUpload": "Click to upload",
+    "uploading": "Uploading…",
+    "uploadingProgress": "Uploading {progress}%…",
+    "replaceFile": "Replace file",
+    "chooseFile": "Choose file to upload"
+  },
   "empty": {
     "noData": "No data available",
     "noUsers": "No users found",
@@ -272,6 +281,7 @@
     "eventsAdmin": "Events",
     "myWishlist": "My Wishlist",
     "myAddresses": "My Addresses",
+    "pickupAddresses": "Pickup Addresses",
 
     "myMessages": "Messages",
     "chatComingSoon": "Chat Coming Soon",
@@ -286,7 +296,10 @@
     "todayDeals": "Today's Deals",
     "sellOnLet": "Sell on LetItRip",
     "analytics": "Analytics",
-    "coupons": "Coupons"
+    "coupons": "Coupons",
+    "createProduct": "Create Product",
+    "payoutSettings": "Payout Settings",
+    "shippingSettings": "Shipping Settings"
   },
   "auth": {
     "login": {
@@ -509,6 +522,14 @@
     "setDefault": "Set as Default",
     "shippingAddress": "Shipping Address",
     "billingAddress": "Billing Address"
+  },
+  "storeAddresses": {
+    "title": "Pickup Addresses",
+    "subtitle": "Manage your store's pickup and warehouse addresses for product fulfillment",
+    "addAddress": "Add Store Address",
+    "editAddress": "Edit Store Address",
+    "emptyState": "No pickup addresses added yet. Add one to use as a pickup location for your products.",
+    "defaultBadge": "Default"
   },
   "notifications": {
     "metaTitle": "Notifications",
@@ -2164,7 +2185,10 @@
     "statusPending": "Pending Review",
     "statusActive": "Active",
     "statusSuspended": "Suspended",
-    "statusRejected": "Rejected"
+    "statusRejected": "Rejected",
+    "pickupAddressesTitle": "Pickup Addresses",
+    "pickupAddressesSubtitle": "Manage where orders are shipped from",
+    "manageAddresses": "Manage Addresses"
   },
   "sellerAuctions": {
     "metaTitle": "My Auctions",
@@ -2343,6 +2367,8 @@
     "addFirst": "Add Your First Business Address",
     "empty": "No saved addresses",
     "emptySubtitle": "Add a pickup or business address for your store",
+    "editTitle": "Edit Address",
+    "defaultBadge": "Default",
     "deleteConfirmTitle": "Delete Address?",
     "deleteConfirmMessage": "Are you sure you want to delete this address? This action cannot be undone."
   },

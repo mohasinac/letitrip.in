@@ -9,7 +9,14 @@
 
 import { useState, useEffect } from "react";
 import { nowISO } from "@/utils";
-import { Grid, Input, Select, Stack, Textarea, Toggle } from "@/components";
+import {
+  FormGroup,
+  Input,
+  Select,
+  Stack,
+  Textarea,
+  Toggle,
+} from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;
@@ -155,7 +162,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
         options={COUPON_TYPE_OPTIONS}
       />
 
-      <Grid className="grid-cols-2" gap="md">
+      <FormGroup columns={2}>
         <Input
           label={
             form.type === "percentage"
@@ -176,7 +183,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           onChange={(e) => update("maxDiscount", e.target.value)}
           placeholder="500"
         />
-      </Grid>
+      </FormGroup>
 
       <Input
         label={LABELS.MIN_PURCHASE_LABEL}
@@ -186,7 +193,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
         placeholder="999"
       />
 
-      <Grid className="grid-cols-2" gap="md">
+      <FormGroup columns={2}>
         <Input
           label={LABELS.TOTAL_LIMIT_LABEL}
           type="number"
@@ -201,9 +208,9 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           onChange={(e) => update("perUserLimit", e.target.value)}
           placeholder="1"
         />
-      </Grid>
+      </FormGroup>
 
-      <Grid className="grid-cols-2" gap="md">
+      <FormGroup columns={2}>
         <Input
           label={LABELS.START_DATE_LABEL}
           type="date"
@@ -216,7 +223,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           value={form.endDate}
           onChange={(e) => update("endDate", e.target.value)}
         />
-      </Grid>
+      </FormGroup>
 
       <Stack gap="3" className="pt-2">
         <Toggle

@@ -25,26 +25,30 @@ export function ThemeProvider({
   children: React.ReactNode;
   initialTheme?: ThemeMode;
 }) {
-  // `initialTheme` is passed by the server layout (read from the theme cookie)
-  // so SSR and client hydration agree on the initial theme — no mismatch.
-  const [theme, setThemeState] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return initialTheme;
-    return document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
-  });
+  // Always initialise with the server-provided value so SSR and the first
+  // client render produce identical output — no hydration mismatch.
+  const [theme, setThemeState] = useState<ThemeMode>(initialTheme);
 
   useEffect(() => {
-    // Sync with localStorage / system preference on first mount only if
-    // no server-side cookie was set yet (first-time visitors).
+    // After hydration, reconcile localStorage / system preference with the
+    // cookie-driven value the server used.  This corrects any drift (e.g.
+    // cookie cleared but localStorage still set, or first-time visitor).
     const savedTheme = localStorage.getItem("theme") as ThemeMode | null;
-    if (!savedTheme) {
+    if (savedTheme) {
+      if (savedTheme !== initialTheme) {
+        setThemeState(savedTheme);
+        applyTheme(savedTheme);
+        document.cookie = `theme=${savedTheme}; path=/; max-age=31536000; SameSite=Lax`;
+      }
+    } else {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
       setThemeState(systemTheme);
       applyTheme(systemTheme);
+      localStorage.setItem("theme", systemTheme);
+      document.cookie = `theme=${systemTheme}; path=/; max-age=31536000; SameSite=Lax`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

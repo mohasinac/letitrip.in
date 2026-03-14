@@ -25,7 +25,7 @@ import {
   OrderFilters,
   FormField,
   ListingLayout,
-  Modal,
+  SideDrawer,
   Search,
   SortDropdown,
   Spinner,
@@ -99,11 +99,11 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
   if (!order) return null;
 
   return (
-    <Modal
+    <SideDrawer
       isOpen={!!order}
       onClose={onClose}
       title={t("shipModalTitle")}
-      size="md"
+      mode="edit"
     >
       <div className={spacing.stack}>
         <FormField
@@ -130,7 +130,7 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
           onChange={(v) => setForm((f) => ({ ...f, trackingUrl: v }))}
           placeholder="https://courier.com/track/AWB123"
         />
-        <div className={`${flex.end} gap-2 pt-1`}>
+        <div className={`${flex.start} gap-2 pt-1`}>
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {t("cancel")}
           </Button>
@@ -143,7 +143,7 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
           </Button>
         </div>
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }
 

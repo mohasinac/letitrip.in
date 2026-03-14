@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Modal, Button, Text, Heading, Label, Input } from "@/components";
+import { SideDrawer, Button, Text, Heading, Label, Input } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useAddressConsentOtp } from "../hooks/useAddressConsentOtp";
 
@@ -82,11 +82,11 @@ export function ConsentOtpModal({
   })();
 
   return (
-    <Modal
+    <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
       title={t("consentOtpModalTitle")}
-      size="sm"
+      mode="edit"
     >
       <div className={spacing.stack}>
         {!codeSent ? (
@@ -103,7 +103,7 @@ export function ConsentOtpModal({
                 {friendlyError}
               </Text>
             )}
-            <div className={`${flex.end} gap-2`}>
+            <div className={`${flex.start} gap-2`}>
               <Button variant="outline" onClick={onClose} disabled={isSending}>
                 {t("consentOtpCancelBtn")}
               </Button>
@@ -124,7 +124,7 @@ export function ConsentOtpModal({
             </Text>
 
             <div>
-              <Label className="block text-sm font-medium mb-1">
+              <Label className="block text-sm font-medium mb-1.5">
                 {t("consentOtpInputLabel")}
               </Label>
               <Input
@@ -135,7 +135,7 @@ export function ConsentOtpModal({
                 value={code}
                 onChange={handleCodeInput}
                 placeholder="000000"
-                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-[0.4em] border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-[0.4em] border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-800 dark:border-neutral-600"
                 autoFocus
               />
             </div>
@@ -176,6 +176,6 @@ export function ConsentOtpModal({
           </div>
         )}
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }

@@ -12,7 +12,8 @@ import { useTranslations } from "next-intl";
 import {
   Checkbox,
   FormField,
-  ImageUpload,
+  FormFieldSpan,
+  FormGroup,
   Label,
   Span,
   Text,
@@ -81,26 +82,28 @@ export function BlogForm({
 
   return (
     <div className={spacing.stack}>
-      {/* Title — auto-generates slug */}
-      <FormField
-        name="title"
-        label={t("formTitle")}
-        type="text"
-        value={post.title || ""}
-        onChange={handleTitleChange}
-        disabled={isReadonly}
-        required
-      />
+      {/* Title + Slug — side by side on wider screens */}
+      <FormGroup columns={2}>
+        <FormField
+          name="title"
+          label={t("formTitle")}
+          type="text"
+          value={post.title || ""}
+          onChange={handleTitleChange}
+          disabled={isReadonly}
+          required
+        />
 
-      <FormField
-        name="slug"
-        label={t("formSlug")}
-        type="text"
-        value={post.slug || ""}
-        onChange={(value) => update({ slug: value })}
-        disabled={isReadonly}
-        required
-      />
+        <FormField
+          name="slug"
+          label={t("formSlug")}
+          type="text"
+          value={post.slug || ""}
+          onChange={(value) => update({ slug: value })}
+          disabled={isReadonly}
+          required
+        />
+      </FormGroup>
 
       <FormField
         name="excerpt"
@@ -116,10 +119,10 @@ export function BlogForm({
       {/* Content — rich text editor */}
       <div>
         <Label
-          className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
+          className={`block text-sm font-medium ${themed.textSecondary} mb-1.5`}
         >
           {t("formContent")}
-          <Span className="text-red-500 ml-1">*</Span>
+          <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
         </Label>
         {isReadonly ? (
           <div
@@ -138,10 +141,14 @@ export function BlogForm({
         )}
       </div>
 
-      {/* Cover image upload */}
-      {!isReadonly && (
-        <ImageUpload
-          currentImage={post.coverImage}
+      {/* Cover image — uses FormField type="image" */}
+      {!isReadonly ? (
+        <FormField
+          name="coverImage"
+          label={t("formCover")}
+          type="image"
+          value={post.coverImage || ""}
+          onChange={(url) => update({ coverImage: url })}
           onUpload={(file) =>
             upload(file, "blog", true, {
               type: "blog-image",
@@ -149,72 +156,77 @@ export function BlogForm({
               category: post.category || "news",
             })
           }
-          onChange={(url) => update({ coverImage: url })}
-          label={t("formCover")}
-          helperText="Recommended: 1200x630px (16:9)"
+          helpText="Recommended: 1200x630px (16:9)"
         />
+      ) : (
+        post.coverImage && (
+          <div>
+            <Label
+              className={`block text-sm font-medium ${themed.textSecondary} mb-1.5`}
+            >
+              {t("formCover")}
+            </Label>
+            <Text size="sm" variant="secondary" className="truncate">
+              {post.coverImage}
+            </Text>
+          </div>
+        )
       )}
-      {isReadonly && post.coverImage && (
-        <div>
-          <Label
-            className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
-          >
-            {t("formCover")}
-          </Label>
-          <Text size="sm" variant="secondary" className="truncate">
-            {post.coverImage}
-          </Text>
-        </div>
-      )}
 
-      <FormField
-        name="category"
-        label={t("formCategory")}
-        type="select"
-        value={post.category || "news"}
-        onChange={(value) => update({ category: value as BlogPostCategory })}
-        disabled={isReadonly}
-        options={categoryOptions}
-        required
-      />
+      {/* Category + Status — side by side */}
+      <FormGroup columns={2}>
+        <FormField
+          name="category"
+          label={t("formCategory")}
+          type="select"
+          value={post.category || "news"}
+          onChange={(value) => update({ category: value as BlogPostCategory })}
+          disabled={isReadonly}
+          options={categoryOptions}
+          required
+        />
 
-      <FormField
-        name="status"
-        label={t("formStatus")}
-        type="select"
-        value={post.status || "draft"}
-        onChange={(value) => update({ status: value as BlogPostStatus })}
-        disabled={isReadonly}
-        options={statusOptions}
-        required
-      />
+        <FormField
+          name="status"
+          label={t("formStatus")}
+          type="select"
+          value={post.status || "draft"}
+          onChange={(value) => update({ status: value as BlogPostStatus })}
+          disabled={isReadonly}
+          options={statusOptions}
+          required
+        />
+      </FormGroup>
 
-      <FormField
-        name="tags"
-        label={t("formTags")}
-        type="text"
-        value={(post.tags || []).join(", ")}
-        onChange={(value) =>
-          update({
-            tags: value
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter(Boolean),
-          })
-        }
-        disabled={isReadonly}
-      />
+      {/* Tags + Read time — side by side */}
+      <FormGroup columns={2}>
+        <FormField
+          name="tags"
+          label={t("formTags")}
+          type="text"
+          value={(post.tags || []).join(", ")}
+          onChange={(value) =>
+            update({
+              tags: value
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter(Boolean),
+            })
+          }
+          disabled={isReadonly}
+        />
 
-      <FormField
-        name="readTimeMinutes"
-        label={t("formReadTime")}
-        type="number"
-        value={String(post.readTimeMinutes ?? 5)}
-        onChange={(value) =>
-          update({ readTimeMinutes: parseInt(value, 10) || 5 })
-        }
-        disabled={isReadonly}
-      />
+        <FormField
+          name="readTimeMinutes"
+          label={t("formReadTime")}
+          type="number"
+          value={String(post.readTimeMinutes ?? 5)}
+          onChange={(value) =>
+            update({ readTimeMinutes: parseInt(value, 10) || 5 })
+          }
+          disabled={isReadonly}
+        />
+      </FormGroup>
 
       <Checkbox
         label={t("formFeatured")}

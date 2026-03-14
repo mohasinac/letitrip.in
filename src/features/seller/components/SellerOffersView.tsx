@@ -16,6 +16,7 @@ import {
   Heading,
   Input,
   Label,
+  SideDrawer,
   Spinner,
   StatusBadge,
   Text,
@@ -203,85 +204,77 @@ export function SellerOffersView() {
         )}
       </div>
 
-      {/* Counter-offer inline modal */}
-      {counterModalOpen && (
-        <div
-          className={`${position.fixedFill} z-50 ${flex.center} p-4 bg-black/50 backdrop-blur-sm`}
-          onClick={() => setCounterModalOpen(false)}
+      {/* Counter-offer drawer */}
+      <SideDrawer
+        isOpen={counterModalOpen}
+        onClose={() => setCounterModalOpen(false)}
+        title={t("counterModalTitle")}
+        mode="edit"
+      >
+        <form
+          onSubmit={handleCounterSubmit}
+          className={THEME_CONSTANTS.spacing.stack}
         >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md">
-            <Card className={`p-6 ${THEME_CONSTANTS.spacing.stack}`}>
-              <Heading level={3}>{t("counterModalTitle")}</Heading>
-
-              <form
-                onSubmit={handleCounterSubmit}
-                className={THEME_CONSTANTS.spacing.stack}
-              >
-                {respondingTo && (
-                  <Text className="text-sm">
-                    {t("buyerOffered")}:{" "}
-                    <span className="font-semibold">
-                      {formatCurrency(
-                        respondingTo.offerAmount,
-                        respondingTo.currency,
-                      )}
-                    </span>
-                  </Text>
+          {respondingTo && (
+            <Text className="text-sm">
+              {t("buyerOffered")}:{" "}
+              <span className="font-semibold">
+                {formatCurrency(
+                  respondingTo.offerAmount,
+                  respondingTo.currency,
                 )}
+              </span>
+            </Text>
+          )}
 
-                <div className="space-y-1">
-                  <Label htmlFor="counterAmount">
-                    {t("counterAmountLabel")}
-                  </Label>
-                  <div className="relative">
-                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
-                      ₹
-                    </span>
-                    <Input
-                      id="counterAmount"
-                      type="number"
-                      min={1}
-                      step={1}
-                      className="pl-7"
-                      {...counterForm.register("counterAmount", {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </div>
-                  {counterForm.formState.errors.counterAmount && (
-                    <Text className="text-sm text-red-600">
-                      {counterForm.formState.errors.counterAmount.message}
-                    </Text>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
-                  <Textarea
-                    id="sellerNote"
-                    rows={2}
-                    placeholder={t("sellerNotePlaceholder")}
-                    {...counterForm.register("sellerNote")}
-                  />
-                </div>
-
-                <div className={`${flex.rowCenter} gap-2 justify-end`}>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setCounterModalOpen(false)}
-                  >
-                    {tActions("cancel")}
-                  </Button>
-                  <Button type="submit" disabled={responding}>
-                    {responding ? tActions("submitting") : t("sendCounter")}
-                  </Button>
-                </div>
-              </form>
-            </Card>
+          <div className="space-y-1">
+            <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
+            <div className="relative">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                ₹
+              </span>
+              <Input
+                id="counterAmount"
+                type="number"
+                min={1}
+                step={1}
+                className="pl-7"
+                {...counterForm.register("counterAmount", {
+                  valueAsNumber: true,
+                })}
+              />
+            </div>
+            {counterForm.formState.errors.counterAmount && (
+              <Text className="text-sm text-red-600">
+                {counterForm.formState.errors.counterAmount.message}
+              </Text>
+            )}
           </div>
-        </div>
-      )}
+
+          <div className="space-y-1">
+            <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
+            <Textarea
+              id="sellerNote"
+              rows={2}
+              placeholder={t("sellerNotePlaceholder")}
+              {...counterForm.register("sellerNote")}
+            />
+          </div>
+
+          <div className={`${flex.rowCenter} gap-2 justify-start`}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCounterModalOpen(false)}
+            >
+              {tActions("cancel")}
+            </Button>
+            <Button type="submit" disabled={responding}>
+              {responding ? tActions("submitting") : t("sendCounter")}
+            </Button>
+          </div>
+        </form>
+      </SideDrawer>
     </>
   );
 }

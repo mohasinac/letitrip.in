@@ -88,7 +88,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
         label={t("pollAllowComments")}
       />
       <div>
-        <Label htmlFor="poll-results-visibility" className="mb-1">
+        <Label htmlFor="poll-results-visibility" className="mb-1.5">
           {t("pollResultsVisibility")}
         </Label>
         <Select

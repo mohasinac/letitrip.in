@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Card, FormField, Grid, Heading } from "@/components";
+import { Card, FormField, FormGroup, Heading } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 
@@ -36,7 +36,7 @@ export function SiteContactForm({ settings, onChange }: SiteContactFormProps) {
           {UI_LABELS.ADMIN.SITE.CONTACT_INFO}
         </Heading>
         <div className={spacing.stack}>
-          <Grid cols={2} gap="md">
+          <FormGroup columns={2}>
             <FormField
               name="contactEmail"
               label={UI_LABELS.ADMIN.SITE.SUPPORT_EMAIL}
@@ -51,7 +51,7 @@ export function SiteContactForm({ settings, onChange }: SiteContactFormProps) {
               value={contact.phone || ""}
               onChange={(value) => updateContact("phone", value)}
             />
-          </Grid>
+          </FormGroup>
           <FormField
             name="contactAddress"
             label={UI_LABELS.ADMIN.SITE.ADDRESS}

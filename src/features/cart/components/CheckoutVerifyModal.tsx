@@ -20,7 +20,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Modal, Button, Text, TextLink, Label, Input } from "@/components";
+import { SideDrawer, Button, Text, TextLink, Label, Input } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useCheckoutVerifyOtp } from "../hooks/useCheckoutVerifyOtp";
 
@@ -123,11 +123,11 @@ export function CheckoutVerifyModal({
     !!buyerPhone && normalizePhone(addressPhone) !== normalizePhone(buyerPhone);
 
   return (
-    <Modal
+    <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
       title={t("verifyModalTitle")}
-      size="sm"
+      mode="edit"
     >
       {/* Invisible reCAPTCHA anchor (SMS path) */}
       <div id={recaptchaId} />
@@ -200,7 +200,7 @@ export function CheckoutVerifyModal({
               )}
             </div>
 
-            <div className={`${flex.end} gap-2`}>
+            <div className={`${flex.start} gap-2`}>
               <Button variant="outline" onClick={onClose} disabled={isSending}>
                 {t("consentOtpCancelBtn")}
               </Button>
@@ -225,7 +225,7 @@ export function CheckoutVerifyModal({
             </Text>
 
             <div>
-              <Label className="block text-sm font-medium mb-1">
+              <Label className="block text-sm font-medium mb-1.5">
                 {t("verifyCodeLabel")}
               </Label>
               <Input
@@ -237,7 +237,7 @@ export function CheckoutVerifyModal({
                 value={code}
                 onChange={handleCodeInput}
                 placeholder="000000"
-                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-[0.4em] border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-neutral-800 dark:border-neutral-600"
+                className="w-full px-4 py-3 text-center text-2xl font-mono tracking-[0.4em] border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-800 dark:border-neutral-600"
                 autoFocus
               />
             </div>
@@ -278,6 +278,6 @@ export function CheckoutVerifyModal({
           </div>
         )}
       </div>
-    </Modal>
+    </SideDrawer>
   );
 }

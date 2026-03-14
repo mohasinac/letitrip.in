@@ -35,14 +35,15 @@ export function useCategorySelector(options?: {
   const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
 
   const { mutate: createCategory, isPending: isCreating } = useMutation<
-    { data?: { id?: string }; id?: string },
+    CategoryDocument,
     Error,
-    Partial<CategoryDocument>
+    Record<string, unknown>
   >({
-    mutationFn: (data) => createCategoryAction(data as any) as any,
+    mutationFn: (data) =>
+      createCategoryAction(data as Parameters<typeof createCategoryAction>[0]),
     onSuccess: (res) => {
       refetch();
-      const id = res?.data?.id ?? res?.id ?? "";
+      const id = res?.id ?? "";
       options?.onCreated?.(id);
     },
     onError: options?.onCreateError,
@@ -75,11 +76,12 @@ export function useCategories() {
  * Used by the inner CreateCategoryContent sub-component.
  */
 export function useCreateCategory(options?: {
-  onSuccess?: (res: { data?: { id?: string }; id?: string }) => void;
+  onSuccess?: (res: CategoryDocument) => void;
   onError?: (err: Error) => void;
 }) {
-  return useMutation<{ data?: { id?: string }; id?: string }, Error, unknown>({
-    mutationFn: (data) => createCategoryAction(data as any) as any,
+  return useMutation<CategoryDocument, Error, Record<string, unknown>>({
+    mutationFn: (data) =>
+      createCategoryAction(data as Parameters<typeof createCategoryAction>[0]),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

@@ -178,6 +178,7 @@ export default function Modal({
   }, [isOpen, handleFocusTrap]);
 
   if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
 
   const sizeClasses = {
     sm: "max-w-md",

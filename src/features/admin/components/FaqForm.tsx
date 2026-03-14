@@ -15,6 +15,7 @@ import {
   Button,
   Checkbox,
   FormField,
+  FormGroup,
   Label,
   Li,
   Text,
@@ -26,7 +27,7 @@ import { proseMirrorToHtml } from "@/utils";
 import type { FAQ } from "./Faq.types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";
 
-const { spacing, themed, typography, flex, grid } = THEME_CONSTANTS;
+const { spacing, themed, typography, flex } = THEME_CONSTANTS;
 
 interface FaqFormProps {
   faq: Partial<FAQ>;
@@ -62,7 +63,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
       {/* Answer with variable helper */}
       <div>
         <div className={`${flex.between} mb-2`}>
-          <Label className={`block ${typography.label} mb-0`}>
+          <Label className={`block ${typography.label} mb-1.5`}>
             {t("answer")}
           </Label>
           {!isReadonly && (
@@ -121,7 +122,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         )}
       </div>
 
-      <div className={`${grid.cols2} gap-4`}>
+      <FormGroup columns={2}>
         <FormField
           name="category"
           label={t("category")}
@@ -148,7 +149,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
             {t("priorityHelp")}
           </Text>
         </div>
-      </div>
+      </FormGroup>
 
       <FormField
         name="tags"
@@ -167,7 +168,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         placeholder={t("tagsPlaceholder")}
       />
 
-      <div className={`${grid.cols2} gap-4`}>
+      <FormGroup columns={2}>
         <div>
           <FormField
             name="order"
@@ -190,7 +191,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
             disabled={isReadonly}
           />
         </div>
-      </div>
+      </FormGroup>
     </div>
   );
 }

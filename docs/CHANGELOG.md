@@ -4,7 +4,55 @@ All notable changes to this project are documented here.
 
 ---
 
-## [Unreleased] — 2026-03-14
+## [Unreleased] — 2026-03-15
+
+### Fixed — Hydration & UI safety audit
+
+Audited the codebase for hydration mismatches and preventive SSR safety.
+
+- `src/app/[locale]/auth/close/page.tsx` — wrapped `useSearchParams()` in a `<Suspense>` boundary (extracted `AuthCloseContent` inner component); prevents Next.js from de-opting the entire route to CSR
+- `src/features/seller/components/SellerCouponsView.tsx` — replaced bare `toLocaleDateString()` (no explicit locale) with the project's `formatDate()` utility; prevents server/client locale mismatch
+- `src/components/feedback/Modal.tsx` — added `typeof document === "undefined"` SSR guard before `createPortal`, matching the `@lir/ui` Modal and Drawer pattern
+
+---
+
+## [Unreleased] — 2026-03-15
+
+### Fixed — Theme hydration mismatch
+
+Eliminated the `BackgroundRenderer` hydration mismatch caused by server/client theme disagreement.
+
+- `src/contexts/ThemeContext.tsx` — `useState` now always uses the server-provided `initialTheme` (removed `typeof window` branch); `useEffect` reconciles localStorage/cookie drift post-hydration and persists both cookie + localStorage for first-time visitors
+- `src/app/layout.tsx` — inline theme script reads the `theme` cookie first (matching SSR), then falls back to localStorage → system preference
+
+---
+
+## [Unreleased] — 2026-03-15
+
+### Store Addresses — Full Migration
+
+Migrated seller address management from user addresses (subcollection under `users/`) to store addresses (subcollection under `stores/`). Seller business/pickup addresses are now properly scoped to the store, not the user's personal address book.
+
+**Migrated:**
+
+- `src/features/seller/components/SellerAddressesView.tsx` — rewrote to use `useStoreAddresses`, `useCreateStoreAddress`, `useUpdateStoreAddress`, `useDeleteStoreAddress` from store address hooks; replaced page-navigation pattern with inline SideDrawer create/edit
+- `src/features/seller/components/SellerSidebar.tsx` — sidebar label changed from "My Addresses" to "Pickup Addresses"
+- `src/constants/routes.ts` — removed unused `SELLER.ADDRESSES_ADD` / `SELLER.ADDRESSES_EDIT` routes
+
+**Seed data:**
+
+- `src/db/seed-data/store-addresses-seed-data.ts` — new seed data with 5 store addresses across 3 demo stores
+- `src/db/seed-data/index.ts` — added `storeAddressesSeedData` export
+- `src/app/api/demo/seed/route.ts` — added `storeAddresses` to CollectionName, COLLECTION_MAP, SEED_DATA_MAP; added subcollection handling in GET (status), POST (load), and POST (delete) branches
+
+**i18n:**
+
+- `messages/en.json` — added `sellerAddresses.editTitle`, `sellerAddresses.defaultBadge`; added `navigation.pickupAddresses`; added `sellerStore.pickupAddressesTitle`, `pickupAddressesSubtitle`, `manageAddresses`
+
+**Cleanup:**
+
+- `src/features/seller/components/SellerStoreView.tsx` — replaced inline `StoreAddressesSection` with a lightweight card linking to the dedicated `/seller/addresses` page (eliminates duplicate store address management)
+- `src/features/seller/components/StoreAddressesSection.tsx` — removed unused `Caption` import and `themed` destructure
 
 ### Dashboard Nav Context & TitleBar Integration
 

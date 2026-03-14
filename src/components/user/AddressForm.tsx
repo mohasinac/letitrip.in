@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FormField, Button, Checkbox } from "@/components";
+import { FormField, FormGroup, Button, Checkbox } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
 
@@ -142,7 +142,7 @@ export function AddressForm({
       />
 
       {/* City, State, Postal Code Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <FormGroup columns={3}>
         <FormField
           label="City"
           name="city"
@@ -172,7 +172,7 @@ export function AddressForm({
           placeholder="Postal/ZIP code"
           required
         />
-      </div>
+      </FormGroup>
 
       {/* Country */}
       <FormField
@@ -193,7 +193,7 @@ export function AddressForm({
       />
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4">
+      <div className="flex items-center justify-start gap-3 pt-4">
         <Button
           type="button"
           variant="outline"

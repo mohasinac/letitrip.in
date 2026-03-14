@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button, Grid, Heading, Text } from "@/components";
+import { Card, Button, Heading, Text } from "@/components";
 import { Alert } from "@/components";
-import { FormField } from "@/components";
+import { FormField, FormGroup } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -101,7 +101,7 @@ export function SellerPayoutRequestForm({
           />
 
           {paymentMethod === "bank_transfer" ? (
-            <Grid cols={2} gap="md">
+            <FormGroup columns={2}>
               <FormField
                 name="accountHolderName"
                 label={t("bankHolderName")}
@@ -130,7 +130,7 @@ export function SellerPayoutRequestForm({
                 value={bankForm.bankName}
                 onChange={(v) => setBankForm((f) => ({ ...f, bankName: v }))}
               />
-            </Grid>
+            </FormGroup>
           ) : (
             <FormField
               name="upiId"
@@ -147,7 +147,7 @@ export function SellerPayoutRequestForm({
             onChange={(v) => setNotes(v)}
           />
 
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-3 justify-start">
             <Button variant="secondary" onClick={() => setShowForm(false)}>
               {tActions("cancel")}
             </Button>

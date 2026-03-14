@@ -1,14 +1,28 @@
 /**
  * Form Field Component
  *
- * Reusable form field with label, input, error, and validation
+ * Unified form field: text inputs, selects, textareas, image upload, and media upload.
+ * Delegates to existing primitives (Input, Textarea, Select, ImageUpload, MediaUploadField).
+ *
+ * For image/media types, pass `onUpload` from `useMediaUpload().upload`.
  */
 
 "use client";
 
 import React from "react";
-import { Input, Label, Select, Span, Text, Textarea } from "@/components";
+import {
+  ImageUpload,
+  Input,
+  Label,
+  MediaUploadField,
+  Select,
+  Span,
+  Text,
+  Textarea,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+
+const { input, themed } = THEME_CONSTANTS;
 
 export interface SelectOption {
   value: string;
@@ -26,7 +40,9 @@ export interface FormFieldProps {
     | "number"
     | "datetime-local"
     | "textarea"
-    | "select";
+    | "select"
+    | "image"
+    | "media";
   value?: string;
   onChange?: (value: string) => void;
   onBlur?: () => void;
@@ -39,6 +55,18 @@ export interface FormFieldProps {
   rows?: number;
   helpText?: string;
   options?: SelectOption[];
+
+  // ── Media props (type="image" | type="media") ──────────────────────
+  /** Upload fn — required for type="image" and type="media". Use useMediaUpload().upload. */
+  onUpload?: (file: File) => Promise<string>;
+  /** Capture source for image/media fields */
+  captureSource?: "file-only" | "camera-only" | "both";
+  /** Camera capture mode for type="media" */
+  captureMode?: "photo" | "video" | "both";
+  /** Accepted MIME types for image/media upload */
+  accept?: string;
+  /** Max file size in MB for image/media upload */
+  maxSizeMB?: number;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -57,6 +85,11 @@ export const FormField: React.FC<FormFieldProps> = ({
   rows,
   helpText,
   options = [],
+  onUpload,
+  captureSource,
+  captureMode,
+  accept,
+  maxSizeMB,
 }) => {
   const showError = error
     ? touched !== undefined
@@ -72,15 +105,80 @@ export const FormField: React.FC<FormFieldProps> = ({
     "aria-describedby": showError ? errorId : undefined,
   };
 
+  const errorClasses = showError ? input.error : "";
+
+  // ── Image upload ───────────────────────────────────────────────────
+  if (type === "image" && onUpload) {
+    return (
+      <div className="w-full">
+        <ImageUpload
+          currentImage={value || undefined}
+          onUpload={onUpload}
+          onChange={(url) => onChange?.(url)}
+          label={label ? `${label}${required ? " *" : ""}` : undefined}
+          helperText={helpText}
+          captureSource={captureSource ?? "file-only"}
+          accept={accept}
+          maxSizeMB={maxSizeMB}
+        />
+        {showError && (
+          <Text
+            id={errorId}
+            size="sm"
+            variant="error"
+            className="mt-1.5"
+            role="alert"
+          >
+            {error}
+          </Text>
+        )}
+      </div>
+    );
+  }
+
+  // ── Media upload (video/document/any) ──────────────────────────────
+  if (type === "media" && onUpload) {
+    return (
+      <div className="w-full">
+        <MediaUploadField
+          label={`${label || name}${required ? " *" : ""}`}
+          value={value}
+          onChange={(url) => onChange?.(url)}
+          onUpload={onUpload}
+          disabled={disabled}
+          helperText={helpText}
+          captureSource={captureSource ?? "file-only"}
+          captureMode={captureMode ?? "both"}
+          accept={accept}
+          maxSizeMB={maxSizeMB}
+        />
+        {showError && (
+          <Text
+            id={errorId}
+            size="sm"
+            variant="error"
+            className="mt-1.5"
+            role="alert"
+          >
+            {error}
+          </Text>
+        )}
+      </div>
+    );
+  }
+
+  // ── Standard fields (text, select, textarea) ───────────────────────
   return (
-    <div className="mb-4">
+    <div className="w-full">
       {label && (
         <Label
           htmlFor={inputId}
-          className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
+          className={`block text-sm font-medium ${themed.textSecondary} mb-1.5`}
         >
           {label}
-          {required && <Span className="text-red-500 ml-1">*</Span>}
+          {required && (
+            <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+          )}
         </Label>
       )}
 
@@ -93,7 +191,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           onBlur={onBlur}
           disabled={disabled}
           options={options}
-          className={showError ? "border-red-500" : ""}
+          className={errorClasses}
           {...ariaProps}
         />
       ) : type === "textarea" ? (
@@ -106,7 +204,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           rows={rows}
-          className={showError ? "border-red-500" : ""}
+          className={errorClasses}
           {...ariaProps}
         />
       ) : (
@@ -120,13 +218,13 @@ export const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           autoComplete={autoComplete}
-          className={showError ? "border-red-500" : ""}
+          className={errorClasses}
           {...ariaProps}
         />
       )}
 
       {helpText && !showError && (
-        <Text size="sm" variant="secondary" className="mt-1">
+        <Text size="sm" variant="secondary" className="mt-1.5">
           {helpText}
         </Text>
       )}
@@ -136,7 +234,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           id={errorId}
           size="sm"
           variant="error"
-          className="mt-1"
+          className="mt-1.5"
           role="alert"
         >
           {error}
