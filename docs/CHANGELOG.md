@@ -6,6 +6,92 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-15
 
+### Packages — `@mohasinac/create-app` scaffolder + dist/tsconfig fixes
+
+**`@mohasinac/create-app` (new package):**
+
+Interactive CLI scaffolder (`npx @mohasinac/create-app`) that generates a complete Next.js project wired to any combination of `@mohasinac/*` providers and feature packages. Prompts the user for db, auth, email, storage, CSS, search, payment, and shipping provider choices plus feature selection, then writes:
+
+- `providers.ts` — `registerProviders()` with selected concrete adapters
+- Feature page stubs under `app/[locale]/`
+- `env.example` with per-provider variable blocks
+- `i18n/request.ts` with `mergeFeatureMessages()` wired
+- `middleware.ts` with locale + auth middleware chained
+- `next.config.ts` with `transpilePackages` for all selected features
+- `app/[locale]/layout.tsx` root layout
+- `constants/site.ts` + `constants/theme.ts`
+
+Files: `packages/create-app/src/index.ts`, `generators.ts`, `features.ts`, `providers.ts`, `prompts.ts`
+
+**Flat dist output (all packages):**
+
+All 30+ `packages/*/package.json` updated to use flat tsup output (`./dist/index.js`, `./dist/index.cjs`, `./dist/index.d.ts`) instead of the nested `./dist/esm/`, `./dist/cjs/`, `./dist/types/` subdirectory layout. `exports` map reordered to `types → import → require`.
+
+**Dev path aliases in all `tsconfig.json` files:**
+
+Every package `tsconfig.json` now declares the full set of `@mohasinac/*` path aliases pointing to `../../packages/*/src` — enables cross-package IDE navigation, type-checking, and refactors during development without needing a prior `tsc --build`.
+
+**`packages/cli/src/i18n.ts` — dynamic import opaque wrapper:**
+
+Static import expressions (`import(\`...\`)`) inside `tryLoadFeatureMessages`and`mergeFeatureMessages`replaced with`\_dynamicImport`(a`new Function(...)` wrapper). This prevents esbuild/webpack/rollup from statically analysing the import path at library-build time, which was causing bundler errors when the CLI was consumed in Next.js projects where the message files resolve at runtime inside the consumer's project tree.
+
+**`packages/cli/tsup.config.ts` (new file):**
+
+Explicit `tsup` configuration for the `@mohasinac/cli` build: `format: ['esm','cjs']`, `dts: true`, `entry: ['src/index.ts']`.
+
+**Root `tsconfig.json`:**
+
+Added `packages/create-app` to the root `exclude` array (scaffolder uses `node:fs` / readline APIs incompatible with the app's browser-targeted compiler settings).
+
+---
+
+## [Unreleased] — 2026-03-15
+
+### Phase 8 + 9 — `@mohasinac/*` Package Monorepo Bootstrap
+
+Created the full `@mohasinac/*` scoped package tree under `packages/`. All packages are authored in TypeScript with `tsup` dual-output (ESM + CJS + `.d.ts`) and published under the `@mohasinac` npm org.
+
+**Infrastructure packages (8):**
+
+| Package                    | Description                                                                                                                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@mohasinac/contracts`     | All shared TypeScript interfaces — `IRepository`, `IEmailProvider`, `IAuthProvider`, `IStorageProvider`, `IStyleAdapter`, `ISearchProvider`, `IPaymentProvider`, `IShippingProvider`, `ProviderRegistry`, `FeaturesConfig` |
+| `@mohasinac/auth-firebase` | Firebase Auth provider — `FirebaseAuthProvider` (sign-in, sign-up, sign-out, token refresh, session cookie), `FirebaseAuthVerifier`, helpers, `session.ts`                                                                 |
+| `@mohasinac/db-firebase`   | Firestore data layer — `FirebaseBaseRepository`, `FirebaseAdminRepository`, `RealtimeDBHelper`, `buildSieveQuery` (Sieve-compatible Firestore filter compiler), `stripTimestamps`                                          |
+| `@mohasinac/email-resend`  | Resend email provider — `ResendEmailProvider` implementing `IEmailProvider`                                                                                                                                                |
+| `@mohasinac/css-tailwind`  | Tailwind CSS adapter — `TailwindStyleAdapter` with `THEME_CONSTANTS`, token helpers                                                                                                                                        |
+| `@mohasinac/css-vanilla`   | Vanilla CSS adapter — CSS custom property writer                                                                                                                                                                           |
+| `@mohasinac/errors`        | Typed error hierarchy — `BaseError`, `ApiError`, `AuthenticationError`, `AuthorizationError`, `DatabaseError`, `NotFoundError`, `ValidationError`; `ErrorCodes` enum; `createApiErrorHandler` factory                      |
+| `@mohasinac/cli`           | `@mohasinac/cli` — `add/remove/list` commands, `withFeatures()` config wrapper, `mergeFeatureMessages()` i18n loader, `generateMockData()`, `syncWithDatabase()`                                                           |
+
+**Feature packages (21):**
+
+`@mohasinac/feat-account`, `@mohasinac/feat-admin`, `@mohasinac/feat-auctions`, `@mohasinac/feat-auth`, `@mohasinac/feat-blog`, `@mohasinac/feat-cart`, `@mohasinac/feat-categories`, `@mohasinac/feat-checkout`, `@mohasinac/feat-events`, `@mohasinac/feat-faq`, `@mohasinac/feat-filters`, `@mohasinac/feat-forms`, `@mohasinac/feat-homepage`, `@mohasinac/feat-layout`, `@mohasinac/feat-media`, `@mohasinac/feat-orders`, `@mohasinac/feat-payments`, `@mohasinac/feat-pre-orders`, `@mohasinac/feat-products`, `@mohasinac/feat-promotions`, `@mohasinac/feat-reviews`, `@mohasinac/feat-search`, `@mohasinac/feat-seller`, `@mohasinac/feat-stores`, `@mohasinac/feat-wishlist`
+
+Each feature package follows the standard layout:
+
+```
+packages/feat-<name>/
+  manifest.ts              — IFeatureManifest (id, name, version, dependencies, requiredProviders, i18nNamespaces, routes, components)
+  src/
+    components/            — canonical React components (e.g. AuctionCard, BlogListView, CartDrawer)
+    hooks/                 — data-fetching hooks wired to @mohasinac/http apiClient
+    repository/            — IRepository implementations (Firestore-backed)
+    types/index.ts         — feature-local TypeScript types
+    messages/en.json       — default i18n strings
+    index.ts               — barrel export
+  tsconfig.json
+  package.json
+```
+
+**`next.config.js`:**
+
+Added all 29 `@mohasinac/*` packages to `transpilePackages` — required for Next.js to compile the TypeScript source-linked packages in the monorepo.
+
+---
+
+## [Unreleased] — 2026-03-15
+
 ### Refactor — Primitive Components & i18n Compliance
 
 Replaced raw HTML `<button>`, `<span>` and hardcoded strings in shared components and user-facing layout with their canonical primitives and `useTranslations` keys.

@@ -19,6 +19,14 @@ import type { FeaturesConfig } from "@mohasinac/contracts";
 
 type Messages = Record<string, unknown>;
 
+// Opaque dynamic import — prevents bundlers (esbuild, webpack, rollup) from
+// statically analysing the import path. These paths are resolved at runtime
+// inside the consumer's Next.js project, not at library-build time.
+const _dynamicImport = new Function(
+  "modulePath",
+  "return import(modulePath)",
+) as (modulePath: string) => Promise<Record<string, unknown>>;
+
 /** Maps feature key → i18n namespace used by that feature package */
 const FEATURE_NAMESPACE_MAP: Record<string, string> = {
   layout: "layout",
@@ -88,7 +96,7 @@ async function tryLoadFeatureMessages(
 ): Promise<Messages> {
   try {
     const pkg = `@mohasinac/feat-${featureKey}`;
-    const mod = await import(`${pkg}/messages/${locale}.json`);
+    const mod = await _dynamicImport(`${pkg}/messages/${locale}.json`);
     return (mod.default ?? mod) as Messages;
   } catch {
     // Package not installed or locale file missing — safe to ignore
@@ -125,7 +133,7 @@ export async function mergeFeatureMessages(
   // Load the project's own message file — this is always the authority
   let projectMessages: Messages = {};
   try {
-    const mod = await import(`../../messages/${locale}.json`);
+    const mod = await _dynamicImport(`../../messages/${locale}.json`);
     projectMessages = (mod.default ?? mod) as Messages;
   } catch {
     // Tolerate missing file in edge cases (e.g. test environments)

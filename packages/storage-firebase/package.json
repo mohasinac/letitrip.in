@@ -1,20 +1,27 @@
 {
   "name": "@mohasinac/storage-firebase",
   "version": "0.1.0",
-  "private": true,
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Firebase Storage (Admin SDK) implementation of @mohasinac/contracts IStorageProvider",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
   },

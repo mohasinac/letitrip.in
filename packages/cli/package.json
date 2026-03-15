@@ -6,27 +6,27 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./dist/cjs/index.cjs",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "mohasinac": "./dist/esm/cli.js"
+    "mohasinac": "./dist/cli.js"
   },
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.cjs",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./next": {
-      "import": "./dist/esm/next.js",
-      "require": "./dist/cjs/next.cjs",
-      "types": "./dist/types/next.d.ts"
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js",
+      "require": "./dist/next.cjs"
     },
     "./i18n": {
-      "import": "./dist/esm/i18n.js",
-      "require": "./dist/cjs/i18n.cjs",
-      "types": "./dist/types/i18n.d.ts"
+      "types": "./dist/i18n.d.ts",
+      "import": "./dist/i18n.js",
+      "require": "./dist/i18n.cjs"
     }
   },
   "files": [

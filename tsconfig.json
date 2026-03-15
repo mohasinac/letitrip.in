@@ -123,6 +123,7 @@
     "node_modules",
     "src/sw.ts",
     "functions",
+    "packages/create-app",
     "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx",
