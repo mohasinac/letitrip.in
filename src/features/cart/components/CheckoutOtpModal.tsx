@@ -13,7 +13,15 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SideDrawer, Button, Text, Heading, TextLink } from "@/components";
+import {
+  SideDrawer,
+  Button,
+  Input,
+  Label,
+  Text,
+  Heading,
+  TextLink,
+} from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { usePaymentOtp } from "../hooks/usePaymentOtp";
 
@@ -154,13 +162,13 @@ export function CheckoutOtpModal({
             </Text>
 
             <div className="space-y-1">
-              <label
+              <Label
                 htmlFor="otp-code-input"
                 className="block text-sm font-medium"
               >
                 {t("otpInputLabel")}
-              </label>
-              <input
+              </Label>
+              <Input
                 id="otp-code-input"
                 type="text"
                 inputMode="numeric"

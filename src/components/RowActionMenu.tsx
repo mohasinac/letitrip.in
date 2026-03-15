@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { useClickOutside, useKeyPress } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button, Span } from "@/components";
 
 export interface RowAction {
   label: string;
@@ -44,8 +45,8 @@ export function RowActionMenu({
       className="relative inline-block"
       onClick={(e) => e.stopPropagation()}
     >
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         aria-label="Row actions"
         aria-expanded={open}
         aria-haspopup="menu"
@@ -53,7 +54,7 @@ export function RowActionMenu({
         className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:text-zinc-200 dark:hover:bg-slate-700 transition-colors"
       >
         <MoreHorizontal className="w-4 h-4" strokeWidth={1.5} />
-      </button>
+      </Button>
 
       {open && (
         <div
@@ -65,9 +66,9 @@ export function RowActionMenu({
               {action.separator && idx > 0 && (
                 <div className={`my-1 h-px ${themed.border}`} />
               )}
-              <button
+              <Button
+                variant="ghost"
                 role="menuitem"
-                type="button"
                 onClick={() => {
                   action.onClick();
                   setOpen(false);
@@ -79,10 +80,10 @@ export function RowActionMenu({
                 }`}
               >
                 {action.icon && (
-                  <span className="flex-shrink-0 w-4 h-4">{action.icon}</span>
+                  <Span className="flex-shrink-0 w-4 h-4">{action.icon}</Span>
                 )}
                 {action.label}
-              </button>
+              </Button>
             </div>
           ))}
         </div>

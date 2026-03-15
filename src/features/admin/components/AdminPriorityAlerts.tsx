@@ -3,7 +3,7 @@
 import { AlertTriangle, AlertCircle, Clock, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Stack } from "@/components";
+import { Span, Stack } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 interface AdminPriorityAlertsProps {
@@ -42,9 +42,9 @@ function AlertCard({
           className={`h-5 w-5 flex-shrink-0 ${textColor}`}
           strokeWidth={1.5}
         />
-        <span className={`text-sm font-medium ${textColor} truncate`}>
+        <Span className={`text-sm font-medium ${textColor} truncate`}>
           {message.replace("{count}", String(count))}
-        </span>
+        </Span>
       </div>
       <Link
         href={href}

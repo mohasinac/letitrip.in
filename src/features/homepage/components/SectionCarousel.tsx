@@ -8,6 +8,7 @@ import {
   HorizontalScroller,
   MediaImage,
   Section,
+  Span,
   Text,
   TextLink,
   type PerViewConfig,
@@ -187,7 +188,7 @@ export function SectionCarousel<T = unknown>({
           {/* Editorial pill */}
           {headingVariant === "editorial" && pillLabel && (
             <div className="mb-3">
-              <span
+              <Span
                 className={
                   useLightText
                     ? "inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 py-1.5 text-xs font-medium tracking-[0.2em] uppercase text-white backdrop-blur-sm"
@@ -195,7 +196,7 @@ export function SectionCarousel<T = unknown>({
                 }
               >
                 {pillLabel}
-              </span>
+              </Span>
             </div>
           )}
 
@@ -218,14 +219,14 @@ export function SectionCarousel<T = unknown>({
             <div
               className={`${THEME_CONSTANTS.sectionHeader.ornament} justify-center mt-2`}
             >
-              <span
+              <Span
                 className={`h-px w-8 ${useLightText ? "bg-white/40" : "bg-zinc-300 dark:bg-slate-600"}`}
                 aria-hidden="true"
               />
-              <span className="text-primary text-sm" aria-hidden="true">
-                ✦
-              </span>
-              <span
+              <Span className="text-primary text-sm" aria-hidden="true">
+                ✶
+              </Span>
+              <Span
                 className={`h-px w-8 ${useLightText ? "bg-white/40" : "bg-zinc-300 dark:bg-slate-600"}`}
                 aria-hidden="true"
               />

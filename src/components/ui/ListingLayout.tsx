@@ -45,7 +45,7 @@
 
 import { ReactNode, useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Button, BulkActionBar, Span, Text } from "@/components";
+import { Aside, Button, BulkActionBar, Span, Text } from "@/components";
 import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -293,7 +293,7 @@ export function ListingLayout({
       <div className="flex gap-4 lg:gap-6 items-start">
         {/* Desktop filter sidebar */}
         {hasFilter && (
-          <aside
+          <Aside
             aria-label={panelTitle}
             className={[
               "hidden lg:block flex-shrink-0 self-start",
@@ -351,7 +351,7 @@ export function ListingLayout({
                 </Button>
               </div>
             </div>
-          </aside>
+          </Aside>
         )}
 
         {/* Main content */}

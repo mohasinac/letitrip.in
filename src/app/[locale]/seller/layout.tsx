@@ -35,14 +35,14 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
           {/* Top bar */}
           <header className="h-14 flex-shrink-0 flex items-center px-4 md:px-6 justify-between border-b border-zinc-200 dark:border-slate-800 bg-white dark:bg-slate-950">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => setMobileOpen(true)}
                 className={`md:hidden ${THEME_CONSTANTS.flex.center} w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors`}
                 aria-label={t("mobileNav")}
               >
                 <Menu className="h-5 w-5" />
-              </button>
+              </Button>
               <AutoBreadcrumbs />
             </div>
           </header>

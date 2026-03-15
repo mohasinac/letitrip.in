@@ -112,7 +112,7 @@ function TreeNode({
               style={{ backgroundColor: node.display?.color ?? "#94a3b8" }}
             >
               {node.display?.icon ? (
-                <span>{node.display.icon}</span>
+                <Span>{node.display.icon}</Span>
               ) : hasChildren ? (
                 <svg
                   className="w-4 h-4 text-white"

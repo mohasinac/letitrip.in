@@ -8,6 +8,7 @@ import { useOrderDetail } from "../hooks";
 import {
   Card,
   Heading,
+  Span,
   Text,
   Button,
   StatusBadge,
@@ -175,7 +176,7 @@ export function OrderDetailView() {
                       {isDone ? (
                         <Check className="w-4 h-4" strokeWidth={2.5} />
                       ) : (
-                        <span className="text-xs font-bold">{idx + 1}</span>
+                        <Span className="text-xs font-bold">{idx + 1}</Span>
                       )}
                     </div>
                     <Text

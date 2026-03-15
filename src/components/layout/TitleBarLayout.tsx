@@ -123,15 +123,15 @@ export function TitleBarLayout({
         <div
           className={`${THEME_CONSTANTS.accentBanner.gradient} text-white text-xs py-1 text-center relative ${THEME_CONSTANTS.flex.center} px-8`}
         >
-          <span>{promoStripText}</span>
-          <button
-            type="button"
+          <Span>{promoStripText}</Span>
+          <Button
+            variant="ghost"
             onClick={() => setPromoVisible(false)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
             aria-label="Dismiss promo"
           >
             <X className="w-3.5 h-3.5" />
-          </button>
+          </Button>
         </div>
       )}
       <div

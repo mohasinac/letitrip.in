@@ -10,6 +10,7 @@ import {
   Card,
   FormGroup,
   Heading,
+  Select,
   Text,
   Label,
   Input,
@@ -180,15 +181,16 @@ export function SellerCouponForm() {
             <Label htmlFor="type" className="block text-sm font-medium mb-1.5">
               {t("fieldType")}
             </Label>
-            <select
+            <Select
               id="type"
               {...register("type")}
               className={`w-full rounded-lg border ${themed.border} ${themed.bgPrimary} px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary`}
-            >
-              <option value="percentage">{t("typePercentage")}</option>
-              <option value="fixed">{t("typeFixed")}</option>
-              <option value="free_shipping">{t("typeFreeShipping")}</option>
-            </select>
+              options={[
+                { value: "percentage", label: t("typePercentage") },
+                { value: "fixed", label: t("typeFixed") },
+                { value: "free_shipping", label: t("typeFreeShipping") },
+              ]}
+            />
           </div>
 
           {/* Value */}
@@ -256,7 +258,7 @@ export function SellerCouponForm() {
                 {...register("applicableToAuctions")}
                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
-              <span className="text-sm">{t("fieldApplicableToAuctions")}</span>
+              <Span className="text-sm">{t("fieldApplicableToAuctions")}</Span>
             </Label>
             <Text className={`mt-1 text-xs ${themed.textSecondary}`}>
               {applicableToAuctions
@@ -357,7 +359,7 @@ export function SellerCouponForm() {
                 {...register("validity.isActive")}
                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
               />
-              <span className="text-sm">{t("fieldIsActive")}</span>
+              <Span className="text-sm">{t("fieldIsActive")}</Span>
             </Label>
           </div>
         </FormGroup>

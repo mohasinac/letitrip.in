@@ -417,27 +417,27 @@ export function DynamicSelect<V = string, Multi extends boolean = false>({
               themed.textSecondary,
             )}
           >
-            {opt?.icon && <span className="flex-shrink-0">{opt.icon}</span>}
+            {opt?.icon && <Span className="flex-shrink-0">{opt.icon}</Span>}
             {opt?.label ?? String(v)}
           </Span>
         );
       });
       return (
-        <span className="flex flex-wrap gap-1 min-w-0 flex-1">{chips}</span>
+        <Span className="flex flex-wrap gap-1 min-w-0 flex-1">{chips}</Span>
       );
     }
 
     const allOpts = isAsync ? asyncOptions : (staticOptions ?? []);
     const selected = allOpts.find((o) => o.value === (value as V));
     return (
-      <span className="flex items-center gap-1.5 min-w-0 flex-1 truncate">
+      <Span className="flex items-center gap-1.5 min-w-0 flex-1 truncate">
         {selected?.icon && (
-          <span className="flex-shrink-0">{selected.icon}</span>
+          <Span className="flex-shrink-0">{selected.icon}</Span>
         )}
         <Span className={`text-sm truncate ${themed.textPrimary}`}>
           {selected?.label ?? String(value)}
         </Span>
-      </span>
+      </Span>
     );
   }
 
@@ -695,9 +695,9 @@ export function DynamicSelect<V = string, Multi extends boolean = false>({
                             </div>
                           )}
                           {opt.icon && (
-                            <span className="flex-shrink-0">{opt.icon}</span>
+                            <Span className="flex-shrink-0">{opt.icon}</Span>
                           )}
-                          <span className="truncate">{opt.label}</span>
+                          <Span className="truncate">{opt.label}</Span>
                           {/* Single check mark */}
                           {!multi && isSelected && (
                             <svg

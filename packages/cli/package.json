@@ -1,0 +1,50 @@
+{
+  "name": "@mohasinac/cli",
+  "version": "0.1.0",
+  "description": "CLI and Next.js helpers for the @mohasinac/* pluggable feature library",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "bin": {
+    "mohasinac": "./dist/esm/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./next": {
+      "import": "./dist/esm/next.js",
+      "require": "./dist/cjs/next.cjs",
+      "types": "./dist/types/next.d.ts"
+    },
+    "./i18n": {
+      "import": "./dist/esm/i18n.js",
+      "require": "./dist/cjs/i18n.cjs",
+      "types": "./dist/types/i18n.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/cli.ts src/next.ts src/i18n.ts --format esm,cjs --dts",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "eslint": "^9.37.0"
+  },
+  "peerDependencies": {
+    "@mohasinac/contracts": "workspace:*"
+  }
+}

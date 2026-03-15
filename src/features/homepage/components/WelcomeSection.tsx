@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, Section, Text } from "@/components";
+import { Button, Heading, Section, Span, Text } from "@/components";
 import type { WelcomeSectionConfig } from "@/db/schema";
 
 // ─── Trust chip keys (order matters for display) ────────────────────────────
@@ -70,17 +70,17 @@ export function WelcomeSection() {
           <div className="text-center lg:text-left">
             {/* Pill badge */}
             <div className="stagger-1">
-              <span className={THEME_CONSTANTS.sectionHeader.pill}>
-                <span
+              <Span className={THEME_CONSTANTS.sectionHeader.pill}>
+                <Span
                   className="w-1.5 h-1.5 rounded-full bg-primary-500 inline-block"
                   aria-hidden="true"
                 />
                 {t("welcomePill")}
-                <span
+                <Span
                   className="w-1.5 h-1.5 rounded-full bg-primary-500 inline-block"
                   aria-hidden="true"
                 />
-              </span>
+              </Span>
             </div>
 
             {/* H1 */}
@@ -120,12 +120,12 @@ export function WelcomeSection() {
             {/* Trust chips */}
             <div className="stagger-5 mt-6 flex flex-wrap gap-2 justify-center lg:justify-start">
               {TRUST_CHIP_KEYS.map((key) => (
-                <span
+                <Span
                   key={key}
                   className="bg-zinc-100 dark:bg-slate-800 rounded-full px-3 py-1 text-xs text-zinc-600 dark:text-zinc-400"
                 >
                   {TRUST_CHIP_EMOJIS[key]} {t(key)}
-                </span>
+                </Span>
               ))}
             </div>
           </div>
@@ -137,9 +137,9 @@ export function WelcomeSection() {
               <div
                 className={`absolute inset-0 ${THEME_CONSTANTS.flex.center}`}
               >
-                <span className="font-display text-8xl text-primary/20 select-none">
+                <Span className="font-display text-8xl text-primary/20 select-none">
                   LIR
-                </span>
+                </Span>
               </div>
             </div>
           </div>

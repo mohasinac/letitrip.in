@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useCallback, useRef, useState } from "react";
-import { Button, Caption } from "@/components";
+import { Button, Caption, Span } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
@@ -386,13 +386,13 @@ export function MediaLightbox({
           </Button>
         )}
         {/* Divider */}
-        <span className="w-px h-6 bg-white/15 mx-1 shrink-0" aria-hidden />
+        <Span className="w-px h-6 bg-white/15 mx-1 shrink-0" aria-hidden />
         {/* Counter */}
         <Caption className="text-white/60 w-12 text-center tabular-nums">
           {index + 1} / {items.length}
         </Caption>
         {/* Divider */}
-        <span className="w-px h-6 bg-white/15 mx-1 shrink-0" aria-hidden />
+        <Span className="w-px h-6 bg-white/15 mx-1 shrink-0" aria-hidden />
         {/* Fullscreen */}
         <Button
           variant="ghost"

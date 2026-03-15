@@ -385,7 +385,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
             >
               {/* Progress fill on active dot */}
               {index === currentSlide && (
-                <span
+                <Span
                   className="absolute inset-y-0 left-0 bg-black/20 rounded-full animate-[progress-fill_4s_linear_forwards]"
                   aria-hidden="true"
                 />

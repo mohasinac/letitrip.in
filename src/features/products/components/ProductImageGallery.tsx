@@ -120,8 +120,8 @@ export function ProductImageGallery({
                 className="group-hover:scale-105 transition-transform duration-500"
               />
               {/* Click overlay to open lightbox */}
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 aria-label={t("gallery.openLightbox")}
                 onClick={() => setLightboxOpen(true)}
                 className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"

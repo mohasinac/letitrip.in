@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button, Card, Heading, Text } from "@/components";
+import { Button, Card, Heading, Span, Text } from "@/components";
 import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 
@@ -59,9 +59,9 @@ export function NavbarConfigForm({
             return (
               <div key={key} className={`${THEME_CONSTANTS.flex.between} py-3`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-xl" aria-hidden>
+                  <Span className="text-xl" aria-hidden>
                     {item.icon}
-                  </span>
+                  </Span>
                   <Text size="sm" weight="medium">
                     {t(key)}
                   </Text>
@@ -78,7 +78,7 @@ export function NavbarConfigForm({
                     isVisible ? "bg-primary" : "bg-zinc-300 dark:bg-zinc-600"
                   }`}
                 >
-                  <span
+                  <Span
                     className={`inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform ${
                       isVisible ? "translate-x-4" : "translate-x-0"
                     }`}

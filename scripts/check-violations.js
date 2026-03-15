@@ -190,6 +190,7 @@ const RULE_META = {
   "COMP-007": { severity: "warning", autoFixable: false },
   "COMP-008": { severity: "warning", autoFixable: false },
   "COMP-009": { severity: "warning", autoFixable: false },
+  "COMP-010": { severity: "warning", autoFixable: false },
   "MEDIA-001": { severity: "warning", autoFixable: false },
   "MEDIA-002": { severity: "warning", autoFixable: false },
   "MEDIA-003": { severity: "warning", autoFixable: false },
@@ -704,7 +705,8 @@ const RULES = [
     fileFilter: (p) => p.endsWith(".tsx") && !isTestFile(p) && !isApiRoute(p),
     check(filePath, lines, rawLines) {
       const violations = [];
-      const pat = /<h([1-6])[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<h1 class) and end-of-line (<h1\n  class)
+      const pat = /<h([1-6])(?:[\s>/]|$)/g;
       lines.forEach((line, i) => {
         let m;
         while ((m = pat.exec(line)) !== null) {
@@ -730,7 +732,8 @@ const RULES = [
     check(filePath, lines, rawLines) {
       const violations = [];
       // <p> or <p  but NOT <progress, <pre, <path etc.
-      const pat = /<p[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<p class) and end-of-line (<p\n  class)
+      const pat = /<p(?:[\s>/]|$)/g;
       lines.forEach((line, i) => {
         let m;
         while ((m = pat.exec(line)) !== null) {
@@ -758,9 +761,13 @@ const RULES = [
       // Exclude form primitive implementations (Checkbox wraps <label> intentionally)
       const n = norm(filePath);
       if (n.includes("/src/components/forms/")) return violations;
+      // Exclude FilterFacetSection which uses the intentional <label> radio-wrapping pattern
+      if (n.endsWith("/src/components/ui/FilterFacetSection.tsx"))
+        return violations;
       // Use rawLines (not lowercased) so <Label> (React component) is not falsely flagged;
       // skip JSDoc/block-comment content lines (start with optional space + *)
-      const pat = /<label[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<label class) and end-of-line (<label\n  class)
+      const pat = /<label(?:[\s>/]|$)/g;
       rawLines.forEach((line, i) => {
         if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
         const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
@@ -788,8 +795,12 @@ const RULES = [
     fileFilter: (p) => p.endsWith(".tsx") && !isTestFile(p) && !isApiRoute(p),
     check(filePath, lines, rawLines) {
       const violations = [];
+      // Exclude typography primitives (TextLink.tsx IS the <a> wrapper)
+      const n = norm(filePath);
+      if (n.includes("/src/components/typography/")) return violations;
       // <a> or <a  — not <abbr, <acronym
-      const pat = /<a[\s>]/g;
+      // (?:[\s>]|$) catches both inline (<a href) and end-of-line (<a\n  href)
+      const pat = /<a(?:[\s>]|$)/g;
       lines.forEach((line, i) => {
         let m;
         while ((m = pat.exec(line)) !== null) {
@@ -816,9 +827,18 @@ const RULES = [
     fileFilter: (p) => p.endsWith(".tsx") && !isTestFile(p) && !isApiRoute(p),
     check(filePath, lines, rawLines) {
       const violations = [];
+      // Exclude button/toggle primitive implementations and specialized carousel arrow
+      const n = norm(filePath);
+      if (
+        n.endsWith("/src/components/ui/Button.tsx") ||
+        n.includes("/src/components/forms/") ||
+        n.endsWith("/src/components/ui/HorizontalScroller.tsx")
+      )
+        return violations;
       // Use rawLines so <Button> (React component) is not falsely flagged;
       // skip JSDoc/block-comment content lines (start with optional space + *)
-      const pat = /<button[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<button class) and end-of-line (<button\n  class)
+      const pat = /<button(?:[\s>/]|$)/g;
       rawLines.forEach((line, i) => {
         if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
         const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
@@ -854,7 +874,9 @@ const RULES = [
         n.includes("/src/components/forms/") ||
         n.includes("/src/components/typography/") ||
         n.endsWith("/src/components/admin/ImageUpload.tsx") ||
-        n.endsWith("/src/components/admin/MediaUploadField.tsx")
+        n.endsWith("/src/components/admin/MediaUploadField.tsx") ||
+        n.endsWith("/src/components/AvatarUpload.tsx") ||
+        n.endsWith("/src/components/utility/Search.tsx")
       )
         return violations;
       // Use rawLines; skip JSDoc comment lines
@@ -862,14 +884,15 @@ const RULES = [
       // must remain raw when used inside a <Label> wrapper for implicit label association,
       // since <Checkbox>/<RadioGroup> components have their own internal <label> wrapper
       // which would produce invalid nested labels.
-      const pat = /<input[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<input type) and end-of-line (<input\n  type)
+      const pat = /<input(?:[\s>/]|$)/g;
       rawLines.forEach((line, i) => {
         if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
         const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
         // skip checkbox / radio inputs (must stay raw for label-wrapping pattern)
         // The type attribute may be on the same line OR on a nearby continuation line
         const lookahead = rawLines.slice(i, i + 8).join(" ");
-        if (/type=["'](?:checkbox|radio)["']/.test(lookahead)) return;
+        if (/type=["'](?:checkbox|radio|range)["']/.test(lookahead)) return;
         let m;
         while ((m = pat.exec(cleaned)) !== null) {
           violations.push({
@@ -899,7 +922,8 @@ const RULES = [
       const n = norm(filePath);
       if (n.includes("/src/components/forms/")) return violations;
       // Use rawLines; skip JSDoc comment lines
-      const pat = /<(select|textarea)[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<select name) and end-of-line (<select\n  name)
+      const pat = /<(select|textarea)(?:[\s>/]|$)/g;
       rawLines.forEach((line, i) => {
         if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
         const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
@@ -946,7 +970,8 @@ const RULES = [
         main: "Main",
         aside: "Aside",
       };
-      const pat = /<(section|nav|ul|ol|li|article|main|aside)[\s>/]/g;
+      // (?:[\s>/]|$) catches both inline (<section class) and end-of-line (<section\n  class)
+      const pat = /<(section|nav|ul|ol|li|article|main|aside)(?:[\s>/]|$)/g;
       rawLines.forEach((line, i) => {
         if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
         const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
@@ -1004,6 +1029,40 @@ const RULES = [
               snippet: rawLines[i].trim(),
             });
           }
+        }
+        pat.lastIndex = 0;
+      });
+      return violations;
+    },
+  },
+
+  {
+    code: "COMP-010",
+    name: "Raw HTML span tag",
+    description: "Never use <span> in TSX. Use <Span> from @/components.",
+    ruleRef: "rules-components.instructions.md — RULE 7 & 8",
+    fileFilter: (p) => p.endsWith(".tsx") && !isTestFile(p) && !isApiRoute(p),
+    check(filePath, lines, rawLines) {
+      const violations = [];
+      // Exclude form primitive implementations and Button.tsx (uses <span> for loading state)
+      const n = norm(filePath);
+      if (n.includes("/src/components/forms/")) return violations;
+      if (n.endsWith("/src/components/ui/Button.tsx")) return violations;
+      // Use rawLines so <Span> (React component) is not falsely flagged;
+      // skip JSDoc/block-comment content lines.
+      // (?:[\s>/]|$) catches both inline (<span class) and end-of-line (<span\n  class)
+      const pat = /<span(?:[\s>/]|$)/g;
+      rawLines.forEach((line, i) => {
+        if (/^\s*\*/.test(line)) return; // skip JSDoc comment lines
+        const cleaned = line.replace(/\/\*.*?\*\//g, "").replace(/\/\/.*/g, "");
+        let m;
+        while ((m = pat.exec(cleaned)) !== null) {
+          violations.push({
+            line: i + 1,
+            col: m.index + 1,
+            message: "Raw <span> — use <Span> from @/components",
+            snippet: line.trim(),
+          });
         }
         pat.lastIndex = 0;
       });

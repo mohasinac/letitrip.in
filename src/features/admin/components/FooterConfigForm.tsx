@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Button, Card, FormField, Heading, Text } from "@/components";
+import { Button, Card, FormField, Heading, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { SiteSettingsDocument, TrustBarItem } from "@/db/schema";
@@ -31,7 +31,7 @@ function ToggleSwitch({
           checked ? "bg-primary" : "bg-zinc-300 dark:bg-zinc-600"
         }`}
       >
-        <span
+        <Span
           className={`inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform ${
             checked ? "translate-x-4" : "translate-x-0"
           }`}

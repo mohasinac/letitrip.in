@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, MediaImage, Section, Text } from "@/components";
+import { Button, Heading, MediaImage, Section, Span, Text } from "@/components";
 import type { BannerSectionConfig } from "@/db/schema";
 
 const { position } = THEME_CONSTANTS;
@@ -157,9 +157,9 @@ export function AdvertisementBanner({
             >
               <div className="inline-flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-white/80" />
-                <span className="text-white font-semibold text-sm">
+                <Span className="text-white font-semibold text-sm">
                   {title}
-                </span>
+                </Span>
               </div>
               <Button
                 variant="secondary"

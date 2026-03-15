@@ -299,7 +299,7 @@ export default function BottomActions() {
                   .join(" ")}
               >
                 {action.icon && (
-                  <span
+                  <Span
                     className={[
                       "flex-shrink-0",
                       action.label ? "mr-1.5" : "",
@@ -307,7 +307,7 @@ export default function BottomActions() {
                     aria-hidden="true"
                   >
                     {action.icon}
-                  </span>
+                  </Span>
                 )}
                 {action.label && (
                   <Span className="truncate leading-none">{action.label}</Span>

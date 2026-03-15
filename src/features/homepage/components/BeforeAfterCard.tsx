@@ -3,7 +3,7 @@
 import { useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeftRight } from "lucide-react";
-import { MediaImage, Text } from "@/components";
+import { MediaImage, Span, Text } from "@/components";
 import type { FeaturedResult } from "@/db/schema";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -101,20 +101,20 @@ export function BeforeAfterCard({
         </div>
 
         {/* ── BEFORE label ── */}
-        <span
+        <Span
           className="pointer-events-none absolute left-3 top-3 select-none rounded-full bg-black/50 px-3 py-1 text-xs text-white backdrop-blur-sm"
           aria-hidden="true"
         >
           {t("beforeLabel")}
-        </span>
+        </Span>
 
         {/* ── AFTER label ── */}
-        <span
+        <Span
           className="pointer-events-none absolute right-3 top-3 select-none rounded-full bg-black/50 px-3 py-1 text-xs text-white backdrop-blur-sm"
           aria-hidden="true"
         >
           {t("afterLabel")}
-        </span>
+        </Span>
 
         {/* ── Divider line + drag knob ── */}
         <div

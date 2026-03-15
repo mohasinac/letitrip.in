@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { siteSettingsRepository } from "@/repositories";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Text } from "@/components";
+import { Heading, Section, Span, Text } from "@/components";
 import { BeforeAfterCard } from "./BeforeAfterCard";
 
 /**
@@ -26,13 +26,13 @@ export async function FeaturedResultsSection() {
       {/* ── Section header (editorial variant) ── */}
       <div className="mb-12 text-center">
         {/* Pill badge */}
-        <span className={THEME_CONSTANTS.sectionHeader.pill}>
-          <span
+        <Span className={THEME_CONSTANTS.sectionHeader.pill}>
+          <Span
             className="inline-block h-1.5 w-1.5 rounded-full bg-primary-500"
             aria-hidden="true"
           />
           {t("realResultsPill")}
-        </span>
+        </Span>
 
         {/* Heading */}
         <Heading
@@ -47,9 +47,9 @@ export async function FeaturedResultsSection() {
           className={`mt-3 ${THEME_CONSTANTS.flex.center} gap-2 text-zinc-400 dark:text-zinc-500`}
           aria-hidden="true"
         >
-          <span className="h-px w-6 bg-current" />
-          <span className="text-xs">✦</span>
-          <span className="h-px w-6 bg-current" />
+          <Span className="h-px w-6 bg-current" />
+          <Span className="text-xs">✶</Span>
+          <Span className="h-px w-6 bg-current" />
         </div>
 
         {/* Subtitle */}

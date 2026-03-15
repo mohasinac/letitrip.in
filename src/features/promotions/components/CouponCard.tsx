@@ -123,10 +123,10 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
           onClick={handleCopy}
           className="shrink-0 text-xs px-2 py-2 sm:text-xs sm:px-3"
         >
-          <span className="hidden sm:inline">
+          <Span className="hidden sm:inline">
             {copied ? t("copied") : t("copyCode")}
-          </span>
-          <span className="sm:hidden">{copied ? "✓" : "Copy"}</span>
+          </Span>
+          <Span className="sm:hidden">{copied ? "✓" : "Copy"}</Span>
         </Button>
       </div>
 

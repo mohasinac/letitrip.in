@@ -10,7 +10,7 @@ import type { SiteSettingsDocument } from "@/db/schema";
 import { FooterLayout } from "./FooterLayout";
 import type { FooterSocialLink, FooterLinkGroup } from "./FooterLayout";
 import { THEME_CONSTANTS } from "@/constants";
-import { Text } from "@/components";
+import { Button, Input, Text } from "@/components";
 
 interface FooterProps {
   footerConfig?: SiteSettingsDocument["footerConfig"];
@@ -133,20 +133,20 @@ export default function Footer({ footerConfig }: FooterProps) {
             {t("newsletterLabel")}
           </Text>
           <div className="flex gap-2">
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("newsletterPlaceholder")}
               className="flex-1 min-w-0 rounded-lg px-3 py-1.5 text-sm text-zinc-900 bg-white/95 placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-white/50"
             />
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => setEmail("")}
               className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white text-primary-700 text-sm font-semibold hover:bg-zinc-100 transition-colors"
             >
               {t("newsletterCta")}
-            </button>
+            </Button>
           </div>
         </div>
       }

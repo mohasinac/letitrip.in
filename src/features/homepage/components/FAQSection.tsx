@@ -68,7 +68,8 @@ export function FAQSection() {
               (typeof FAQ_CATEGORIES)[FAQCategoryKey],
             ][]
           ).map(([key, category]) => (
-            <button
+            <Button
+              variant="ghost"
               key={key}
               role="tab"
               aria-selected={activeCategory === key}
@@ -81,7 +82,7 @@ export function FAQSection() {
             >
               <Span className="mr-1">{category.icon}</Span>
               {category.label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -131,11 +132,11 @@ export function FAQSection() {
                   }`}
                 >
                   <div className="p-6 pt-0">
-                    <p
+                    <Text
                       className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
                     >
                       {faq.answer}
-                    </p>
+                    </Text>
                   </div>
                 </div>
               </div>

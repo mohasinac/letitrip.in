@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Ul, Li, Text, Ol } from "@/components";
+import { Button, Ul, Li, Text, Ol } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 interface ProductTabsProps {
@@ -49,7 +49,8 @@ export function ProductTabs({ product }: ProductTabsProps) {
         aria-label={t("tabDescription")}
       >
         {tabs.map(({ key, label }) => (
-          <button
+          <Button
+            variant="ghost"
             key={key}
             role={key !== "reviews" ? "tab" : undefined}
             aria-selected={key !== "reviews" ? activeTab === key : undefined}
@@ -62,7 +63,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
             ].join(" ")}
           >
             {label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -98,12 +99,12 @@ export function ProductTabs({ product }: ProductTabsProps) {
           (product.howToUse?.length ? (
             <Ol className="space-y-2 list-decimal ml-4">
               {product.howToUse.map((step, i) => (
-                <li
+                <Li
                   key={i}
                   className="text-sm text-zinc-700 dark:text-zinc-300"
                 >
                   {step}
-                </li>
+                </Li>
               ))}
             </Ol>
           ) : (

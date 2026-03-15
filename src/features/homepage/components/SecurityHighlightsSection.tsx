@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Lock, Globe, KeyRound, Database } from "lucide-react";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Text, TextLink } from "@/components";
+import { Heading, Section, Span, Text, TextLink } from "@/components";
 
 // ─── Security items config ──────────────────────────────────────────────────
 
@@ -120,9 +120,9 @@ export function SecurityHighlightsSection() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <span className={THEME_CONSTANTS.sectionHeader.pill}>
+          <Span className={THEME_CONSTANTS.sectionHeader.pill}>
             🔒 {t("securityPill")}
-          </span>
+          </Span>
           <Heading
             level={2}
             className={`mt-4 ${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary}`}

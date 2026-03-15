@@ -221,9 +221,9 @@ export function AlgoliaDashboardView() {
                   disabled={syncState.loading || anyLoading}
                 >
                   {syncState.loading ? (
-                    <span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
+                    <Span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
                       <Spinner size="sm" /> Syncing…
-                    </span>
+                    </Span>
                   ) : (
                     `${action.emoji} Run Sync`
                   )}
@@ -238,9 +238,9 @@ export function AlgoliaDashboardView() {
                     disabled={clearState.loading || anyLoading}
                   >
                     {clearState.loading ? (
-                      <span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
+                      <Span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
                         <Spinner size="sm" /> Clearing…
-                      </span>
+                      </Span>
                     ) : (
                       "🗑 Clear Index"
                     )}

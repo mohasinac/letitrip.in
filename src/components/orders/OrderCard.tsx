@@ -79,8 +79,8 @@ export function OrderCard({
     >
       {/* ── SELECTION CHECKBOX ── */}
       {selectable && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           aria-label={isSelected ? "Deselect order" : "Select order"}
           aria-pressed={isSelected}
           onClick={handleSelect}
@@ -105,7 +105,7 @@ export function OrderCard({
               />
             </svg>
           )}
-        </button>
+        </Button>
       )}
 
       <div

@@ -27,7 +27,16 @@ import { ChevronDown } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { TrustBarItem } from "@/db/schema";
-import { BlockFooter, Caption, Li, Text, TextLink, Ul } from "@/components";
+import {
+  BlockFooter,
+  Button,
+  Caption,
+  Li,
+  Span,
+  Text,
+  TextLink,
+  Ul,
+} from "@/components";
 
 export interface FooterLinkGroup {
   heading: string;
@@ -96,9 +105,9 @@ export function FooterLayout({
                   key={item.label}
                   className="flex items-center gap-1.5 px-4 first:pl-0 last:pr-0"
                 >
-                  <span className="text-base" aria-hidden>
+                  <Span className="text-base" aria-hidden>
                     {item.icon}
-                  </span>
+                  </Span>
                   <Text
                     size="xs"
                     variant="none"
@@ -157,8 +166,8 @@ export function FooterLayout({
               key={group.heading}
               className="border-b border-zinc-200 dark:border-white/5 sm:border-none py-1 sm:py-0 sm:mb-8"
             >
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => toggleGroup(idx)}
                 className="flex w-full items-center justify-between py-3 sm:py-0 sm:mb-4 sm:cursor-default sm:pointer-events-none"
                 aria-expanded={openGroups[idx] ?? false}
@@ -175,7 +184,7 @@ export function FooterLayout({
                   className={`w-4 h-4 sm:hidden shrink-0 transition-transform duration-200 ${openGroups[idx] ? "rotate-180" : ""} text-zinc-400 dark:text-zinc-500`}
                   aria-hidden
                 />
-              </button>
+              </Button>
               <div
                 className={`${openGroups[idx] ? "pb-3" : "hidden"} sm:block`}
               >

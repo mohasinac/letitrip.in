@@ -1,0 +1,33 @@
+{
+  "name": "@mohasinac/email-resend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Resend implementation of @mohasinac/contracts IEmailProvider",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mohasinac/contracts": "workspace:*"
+  },
+  "peerDependencies": {
+    "resend": ">=3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "resend": "^6.9.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "@mohasinac/security",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CSP helpers, rate limiter, and authorization guards",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mohasinac/errors": "workspace:*"
+  },
+  "peerDependencies": {
+    "next": ">=14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@upstash/redis": {
+      "optional": true
+    },
+    "@upstash/ratelimit": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "next": "15.3.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -2,7 +2,7 @@
 
 import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { Text } from "./typography";
+import { Span, Text } from "./typography";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface DashboardStatsCardProps {
@@ -80,7 +80,7 @@ export function DashboardStatsCard({
                   strokeWidth={1.5}
                 />
               )}
-              <span
+              <Span
                 className={
                   trend.value >= 0
                     ? "text-xs font-medium text-primary-600 dark:text-primary-400"
@@ -90,7 +90,7 @@ export function DashboardStatsCard({
                 {trend.value >= 0 ? "+" : ""}
                 {trend.value}
                 {trend.suffix ?? "%"}
-              </span>
+              </Span>
             </div>
           )}
         </div>

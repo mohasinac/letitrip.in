@@ -56,7 +56,7 @@ export default function NavItem({
       >
         {/* Active gradient glow (Phase 6 / C15-adjacent) */}
         {isActive && (
-          <span
+          <Span
             className="absolute inset-0 rounded-t-xl bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"
             aria-hidden
           />

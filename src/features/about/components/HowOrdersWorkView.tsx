@@ -1,5 +1,12 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
+import {
+  Heading,
+  Span,
+  Text,
+  Section,
+  TextLink,
+  FlowDiagram,
+} from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";
@@ -187,11 +194,11 @@ export async function HowOrdersWorkView() {
                 <div className="text-2xl flex-shrink-0 mt-0.5">{icon}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span
+                    <Span
                       className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}
                     >
                       {label}
-                    </span>
+                    </Span>
                   </div>
                   <Text variant="secondary" className="text-sm leading-relaxed">
                     {desc}
@@ -207,9 +214,9 @@ export async function HowOrdersWorkView() {
               <div className="text-2xl flex-shrink-0 mt-0.5">❌</div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
+                  <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
                     {t("sCancelLabel")}
-                  </span>
+                  </Span>
                 </div>
                 <Text variant="secondary" className="text-sm leading-relaxed">
                   {t("sCancelDesc")}

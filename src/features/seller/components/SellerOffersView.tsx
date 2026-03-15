@@ -18,6 +18,7 @@ import {
   Input,
   Label,
   SideDrawer,
+  Span,
   Spinner,
   StatusBadge,
   Text,
@@ -219,12 +220,12 @@ export function SellerOffersView() {
           {respondingTo && (
             <Text className="text-sm">
               {t("buyerOffered")}:{" "}
-              <span className="font-semibold">
+              <Span className="font-semibold">
                 {formatCurrency(
                   respondingTo.offerAmount,
                   respondingTo.currency,
                 )}
-              </span>
+              </Span>
             </Text>
           )}
 
@@ -232,9 +233,9 @@ export function SellerOffersView() {
             <div className="space-y-1">
               <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                <Span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
                   ₹
-                </span>
+                </Span>
                 <Input
                   id="counterAmount"
                   type="number"
