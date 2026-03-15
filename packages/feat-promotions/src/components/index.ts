@@ -1,1 +1,0 @@
-export { CouponCard } from "./CouponCard";
