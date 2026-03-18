@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -18,7 +19,9 @@ export function useAdminCategories() {
   const query = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "tree"],
     queryFn: async () => ({
-      categories: await apiClient.get<Category[]>("/api/categories"),
+      categories: await apiClient.get<Category[]>(
+        API_ENDPOINTS.CATEGORIES.LIST,
+      ),
     }),
   });
 

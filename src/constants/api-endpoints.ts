@@ -283,6 +283,8 @@ export const API_ENDPOINTS = {
     COUPON_BY_ID: (id: string) => `/api/seller/coupons/${id}`, // GET - Single coupon (seller-owned)
     /** ✅ Seller offers endpoints */
     OFFERS: "/api/seller/offers", // GET - Incoming offers for seller's products
+    STORE_ADDRESSES: "/api/seller/store/addresses", // GET/POST - List/create store pickup addresses
+    STORE_ADDRESS_BY_ID: (id: string) => `/api/seller/store/addresses/${id}`, // PATCH/DELETE - Seller store address
   },
 
   // Blog endpoints — public
@@ -350,6 +352,13 @@ export const API_ENDPOINTS = {
   OFFERS: {
     BUYER_LIST: "/api/user/offers", // GET - Buyer's own offers
     SELLER_LIST: "/api/seller/offers", // GET - Offers received by seller
+  },
+
+  // AI Copilot endpoints (staff only)
+  COPILOT: {
+    CHAT: "/api/copilot/chat", // POST — send prompt, get AI response
+    HISTORY: "/api/copilot/history", // GET  — conversation history
+    FEEDBACK: (logId: string) => `/api/copilot/feedback/${logId}`, // PATCH — rate response
   },
 
   // Internal / tooling endpoints

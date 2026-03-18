@@ -3,6 +3,7 @@
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import { updatePayoutSettingsAction } from "@/actions";
 import { useTranslations } from "next-intl";
 import type { SellerPayoutDetails } from "@/db/schema";
@@ -44,7 +45,9 @@ export function useSellerPayoutSettings() {
     useQuery<SellerPayoutSettingsData>({
       queryKey: ["seller-payout-settings"],
       queryFn: () =>
-        apiClient.get<SellerPayoutSettingsData>("/api/seller/payout-settings"),
+        apiClient.get<SellerPayoutSettingsData>(
+          API_ENDPOINTS.SELLER.PAYOUT_SETTINGS,
+        ),
       enabled: !authLoading && !!user,
     });
 

@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
 
 interface UseCategoriesListOptions {
@@ -17,7 +18,9 @@ export function useCategoriesList(options?: UseCategoriesListOptions) {
   const { data, isLoading, error } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () =>
-      apiClient.get<CategoryDocument[]>("/api/categories?flat=true"),
+      apiClient.get<CategoryDocument[]>(
+        `${API_ENDPOINTS.CATEGORIES.LIST}?flat=true`,
+      ),
     initialData: options?.initialData,
   });
 

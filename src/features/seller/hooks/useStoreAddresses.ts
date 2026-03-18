@@ -9,6 +9,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import {
   createStoreAddressAction,
   updateStoreAddressAction,
@@ -21,7 +22,9 @@ export function useStoreAddresses(options?: { enabled?: boolean }) {
   return useQuery<StoreAddressDocument[]>({
     queryKey: ["store-addresses"],
     queryFn: () =>
-      apiClient.get<StoreAddressDocument[]>("/api/seller/store/addresses"),
+      apiClient.get<StoreAddressDocument[]>(
+        API_ENDPOINTS.SELLER.STORE_ADDRESSES,
+      ),
     enabled: options?.enabled,
   });
 }

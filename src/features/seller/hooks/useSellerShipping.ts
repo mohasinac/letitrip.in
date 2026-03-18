@@ -3,6 +3,7 @@
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import {
   updateSellerShippingAction,
   verifyShiprocketPickupOtpAction,
@@ -50,7 +51,8 @@ export function useSellerShipping() {
 
   const { data, isLoading, error, refetch } = useQuery<SellerShippingData>({
     queryKey: ["seller-shipping"],
-    queryFn: () => apiClient.get<SellerShippingData>("/api/seller/shipping"),
+    queryFn: () =>
+      apiClient.get<SellerShippingData>(API_ENDPOINTS.SELLER.SHIPPING),
     enabled: !authLoading && !!user,
   });
 

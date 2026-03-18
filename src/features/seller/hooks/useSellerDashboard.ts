@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
 export interface SellerDashboardProductsResponse {
@@ -37,7 +38,7 @@ export function useSellerDashboard(userId: string | undefined) {
     queryKey: ["seller-products", userId ?? ""],
     queryFn: async () => {
       const result = await apiClient.get<SellerProductsApiResult>(
-        "/api/seller/products?pageSize=200",
+        `${API_ENDPOINTS.SELLER.PRODUCTS}?pageSize=200`,
       );
       return {
         items: result.products,

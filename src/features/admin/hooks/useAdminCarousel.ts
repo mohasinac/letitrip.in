@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import {
   createCarouselSlideAction,
   updateCarouselSlideAction,
@@ -18,7 +19,9 @@ export function useAdminCarousel() {
   const query = useQuery<CarouselSlide[]>({
     queryKey: ["carousel", "list"],
     queryFn: () =>
-      apiClient.get<CarouselSlide[]>("/api/carousel?includeInactive=true"),
+      apiClient.get<CarouselSlide[]>(
+        `${API_ENDPOINTS.CAROUSEL.LIST}?includeInactive=true`,
+      ),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import {
   createHomepageSectionAction,
   updateHomepageSectionAction,
@@ -19,7 +20,7 @@ export function useAdminSections() {
     queryKey: ["homepage-sections", "list"],
     queryFn: () =>
       apiClient.get<HomepageSection[]>(
-        "/api/homepage-sections?includeDisabled=true",
+        `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?includeDisabled=true`,
       ),
   });
 

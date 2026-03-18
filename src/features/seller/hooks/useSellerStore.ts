@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import { createStoreAction, updateStoreAction } from "@/actions";
 import type { StoreDocument } from "@/db/schema";
 
@@ -23,7 +24,9 @@ export function useSellerStore() {
   }>({
     queryKey: ["seller-store"],
     queryFn: () =>
-      apiClient.get<{ store: StoreDocument | null }>("/api/seller/store"),
+      apiClient.get<{ store: StoreDocument | null }>(
+        API_ENDPOINTS.SELLER.STORE,
+      ),
     enabled: !authLoading && !!user,
   });
 

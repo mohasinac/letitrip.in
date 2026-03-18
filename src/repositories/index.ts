@@ -83,3 +83,5 @@ export * from "./sms-counter.repository";
 export { smsCounterRepository } from "./sms-counter.repository";
 export * from "./failed-checkout.repository";
 export { failedCheckoutRepository } from "./failed-checkout.repository";
+export * from "./copilot-log.repository";
+export { copilotLogRepository } from "./copilot-log.repository";

@@ -135,6 +135,7 @@ export const ROUTES = {
     EVENT_ENTRIES: (id: string) => `/admin/events/${id}/entries`,
     STORES: "/admin/stores",
     FEATURE_FLAGS: "/admin/feature-flags",
+    COPILOT: "/admin/copilot",
   },
 
   // Demo Routes (dev-only)

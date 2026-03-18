@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import { requestPayoutAction } from "@/actions";
 import type { PayoutSummary } from "../components/SellerPayoutStats";
 import type { PayoutRecord } from "../components/SellerPayoutHistoryTable";
@@ -21,7 +22,8 @@ export function useSellerPayouts() {
 
   const { data, isLoading, error, refetch } = useQuery<SellerPayoutsResponse>({
     queryKey: ["seller-payouts", user?.uid ?? ""],
-    queryFn: () => apiClient.get<SellerPayoutsResponse>("/api/seller/payouts"),
+    queryFn: () =>
+      apiClient.get<SellerPayoutsResponse>(API_ENDPOINTS.SELLER.PAYOUTS),
     enabled: !!user,
     staleTime: 0,
   });

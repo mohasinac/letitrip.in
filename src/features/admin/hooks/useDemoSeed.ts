@@ -2,48 +2,18 @@
 
 import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
+import { demoSeedAction } from "@/actions";
+import type { SeedCollectionName, SeedOperationResult } from "@/actions";
+
+export type { SeedCollectionName, SeedOperationResult };
 
 export interface SeedCollectionStatus {
   name: string;
   seedCount: number;
   existingCount: number;
 }
-
-export interface SeedOperationResult {
-  message: string;
-  details: {
-    created?: number;
-    updated?: number;
-    deleted?: number;
-    skipped?: number;
-    errors?: number;
-    collections?: string[];
-  };
-}
-
-export type SeedCollectionName =
-  | "users"
-  | "addresses"
-  | "categories"
-  | "stores"
-  | "products"
-  | "orders"
-  | "reviews"
-  | "bids"
-  | "coupons"
-  | "carouselSlides"
-  | "homepageSections"
-  | "siteSettings"
-  | "faqs"
-  | "notifications"
-  | "payouts"
-  | "blogPosts"
-  | "events"
-  | "eventEntries"
-  | "sessions"
-  | "carts";
 
 export interface SeedActionResult extends SeedOperationResult {
   success: boolean;
@@ -70,11 +40,7 @@ export function useDemoSeed() {
     Error,
     { action: "load" | "delete"; collections?: SeedCollectionName[] }
   >({
-    mutationFn: (vars) =>
-      apiClient.post(
-        API_ENDPOINTS.DEMO.SEED,
-        vars,
-      ) as Promise<SeedOperationResult>,
+    mutationFn: (vars) => demoSeedAction(vars),
     onSuccess: (data, vars) => {
       setLastAction(vars.action);
       setActionResult({ ...data, success: true });

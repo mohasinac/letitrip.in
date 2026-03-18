@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
 export interface WishlistItem {
@@ -23,7 +24,8 @@ export interface WishlistResponse {
 export function useWishlist(enabled = true) {
   return useQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
-    queryFn: () => apiClient.get<WishlistResponse>("/api/user/wishlist"),
+    queryFn: () =>
+      apiClient.get<WishlistResponse>(API_ENDPOINTS.USER.WISHLIST.LIST),
     enabled,
   });
 }

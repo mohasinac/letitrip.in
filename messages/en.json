@@ -4028,5 +4028,19 @@
     "feesLink": "Fees & Commission",
     "helpLink": "Help Center",
     "contactLink": "Contact Support"
+  },
+  "copilot": {
+    "title": "AI Copilot",
+    "metaDescription": "Staff AI assistant for LetItRip.",
+    "placeholder": "Ask me anything about orders, products, sellers…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "newConversation": "New conversation",
+    "history": "History",
+    "helpful": "Helpful",
+    "notHelpful": "Not helpful",
+    "errorGeneration": "Failed to get a response. Please try again.",
+    "noMessages": "No messages yet",
+    "noMessagesDesc": "Start a conversation by typing a question above."
   }
 }

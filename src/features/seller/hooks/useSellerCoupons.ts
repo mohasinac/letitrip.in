@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 import { sellerDeleteCouponAction, sellerUpdateCouponAction } from "@/actions";
 import { nowISO } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
@@ -20,7 +21,8 @@ export function useSellerCoupons(enabled = true) {
 
   const query = useQuery<SellerCouponsResponse>({
     queryKey: ["seller-coupons"],
-    queryFn: () => apiClient.get<SellerCouponsResponse>("/api/seller/coupons"),
+    queryFn: () =>
+      apiClient.get<SellerCouponsResponse>(API_ENDPOINTS.SELLER.COUPONS),
     enabled,
   });
 
