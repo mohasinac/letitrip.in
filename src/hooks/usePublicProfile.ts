@@ -1,11 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  getPublicProfileAction,
-  getSellerReviewsAction,
-  getSellerProductsAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import { hasRole } from "@/helpers";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 
@@ -46,10 +42,10 @@ export function usePublicProfile(userId: string) {
     error: fetchError,
   } = useQuery<{ user: UserDocument }>({
     queryKey: ["public-profile", userId],
-    queryFn: () =>
-      getPublicProfileAction(userId) as unknown as Promise<{
-        user: UserDocument;
-      }>,
+    queryFn: async () => {
+      const user = await apiClient.get<UserDocument>(`/api/profile/${userId}`);
+      return { user };
+    },
     enabled: !!userId,
   });
 
@@ -60,10 +56,24 @@ export function usePublicProfile(userId: string) {
   const { data: productsData, isLoading: productsLoading } =
     useQuery<ProductsApiResponse>({
       queryKey: ["profile-products", userId],
-      queryFn: () =>
-        getSellerProductsAction(
-          userId,
-        ) as unknown as Promise<ProductsApiResponse>,
+      queryFn: async () => {
+        const result = await apiClient.get<{
+          items: ProductDocument[];
+          total: number;
+          page: number;
+          pageSize: number;
+        }>(
+          `/api/products?filters=sellerId%3D%3D${userId}%2Cstatus%3D%3Dpublished`,
+        );
+        return {
+          data: result.items,
+          meta: {
+            total: result.total,
+            page: result.page,
+            pageSize: result.pageSize,
+          },
+        } as ProductsApiResponse;
+      },
       enabled: !!userId && isSeller,
       staleTime: 60000,
     });
@@ -72,7 +82,7 @@ export function usePublicProfile(userId: string) {
     useQuery<SellerReviewsData>({
       queryKey: ["profile-reviews", userId],
       queryFn: () =>
-        getSellerReviewsAction(userId) as unknown as Promise<SellerReviewsData>,
+        apiClient.get<SellerReviewsData>(`/api/profile/${userId}/reviews`),
       enabled: !!userId && isSeller,
       staleTime: 60000,
     });

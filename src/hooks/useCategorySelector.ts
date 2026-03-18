@@ -1,13 +1,9 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { createCategoryAction, listCategoriesAction } from "@/actions";
+import { createCategoryAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { CategoryDocument } from "@/db/schema";
-
-interface CategoriesResponse {
-  data?: CategoryDocument[];
-  items?: CategoryDocument[];
-}
 
 /**
  * useCategorySelector
@@ -27,12 +23,13 @@ export function useCategorySelector(options?: {
     data: raw,
     isLoading,
     refetch,
-  } = useQuery<CategoriesResponse>({
+  } = useQuery<CategoryDocument[]>({
     queryKey: ["categories"],
-    queryFn: () => listCategoriesAction() as Promise<CategoriesResponse>,
+    queryFn: () =>
+      apiClient.get<CategoryDocument[]>("/api/categories?flat=true"),
   });
 
-  const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
+  const categories: CategoryDocument[] = raw ?? [];
 
   const { mutate: createCategory, isPending: isCreating } = useMutation<
     CategoryDocument,
@@ -62,11 +59,12 @@ export function useCategories() {
     data: raw,
     isLoading,
     refetch,
-  } = useQuery<CategoriesResponse>({
+  } = useQuery<CategoryDocument[]>({
     queryKey: ["categories"],
-    queryFn: () => listCategoriesAction() as Promise<CategoriesResponse>,
+    queryFn: () =>
+      apiClient.get<CategoryDocument[]>("/api/categories?flat=true"),
   });
-  const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
+  const categories: CategoryDocument[] = raw ?? [];
   return { categories, isLoading, refetch };
 }
 

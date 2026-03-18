@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listBrandCategoriesAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { CategoryDocument } from "@/db/schema";
 
 /**
@@ -13,7 +13,10 @@ import type { CategoryDocument } from "@/db/schema";
 export function useTopBrands(limit = 12) {
   return useQuery<CategoryDocument[]>({
     queryKey: ["categories", "brands", String(limit)],
-    queryFn: () => listBrandCategoriesAction(limit),
+    queryFn: () =>
+      apiClient.get<CategoryDocument[]>(
+        `/api/categories?isBrand=true&pageSize=${limit}`,
+      ),
     staleTime: 15 * 60 * 1000, // 15 minutes
   });
 }

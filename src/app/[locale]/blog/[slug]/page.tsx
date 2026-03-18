@@ -2,6 +2,7 @@
 import { blogRepository } from "@/repositories";
 import { BlogPostView } from "@/features/blog";
 import type { Metadata } from "next";
+import type { BlogPostDetailResponse } from "@mohasinac/feat-blog";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -27,5 +28,17 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const related = await blogRepository.findRelated(post.category, post.id, 3);
 
-  return <BlogPostView slug={slug} initialData={{ post, related }} />;
+  const serialize = (p: typeof post) => ({
+    ...p,
+    publishedAt: p.publishedAt?.toISOString(),
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt?.toISOString(),
+  });
+
+  const initialData: BlogPostDetailResponse = {
+    post: serialize(post),
+    related: related.map(serialize),
+  };
+
+  return <BlogPostView slug={slug} initialData={initialData} />;
 }

@@ -6,10 +6,10 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
-import type { EventDocument } from "@/db/schema";
+import type { EventItem } from "@mohasinac/feat-events";
 
 interface SurveyEventSectionProps {
-  event: EventDocument;
+  event: EventItem;
   userEntryStatus?: "pending" | "approved" | "flagged" | null;
 }
 

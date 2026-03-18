@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listProductsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument } from "@/db/schema";
 
 export type ProductItem = Pick<
@@ -40,26 +40,17 @@ interface UseProductsOptions {
 
 /**
  * useProducts
- * Wraps `productService.list(params)` for the public products list page.
+ * Fetches the paginated, filtered products list via GET /api/products.
  * `params` is a pre-built URLSearchParams query string produced by `useUrlTable`.
  * `options.initialData` — server-prefetched first page; prevents initial client fetch.
  */
 export function useProducts(params?: string, options?: UseProductsOptions) {
   const { data, isLoading, error, refetch } = useQuery<ProductsListResult>({
     queryKey: ["products", params ?? ""],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params ?? "");
-      return listProductsAction({
-        filters: sp.get("filters")
-          ? decodeURIComponent(sp.get("filters")!)
-          : undefined,
-        sorts: sp.get("sorts")
-          ? decodeURIComponent(sp.get("sorts")!)
-          : undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-    },
+    queryFn: () =>
+      apiClient.get<ProductsListResult>(
+        `/api/products${params ? `?${params}` : ""}`,
+      ) as Promise<ProductsListResult>,
     initialData: options?.initialData,
   });
 

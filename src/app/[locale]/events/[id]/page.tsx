@@ -4,6 +4,7 @@ import { EventDetailView } from "@/features/events";
 import { SITE_CONFIG } from "@/constants";
 import { resolveDate } from "@/utils";
 import type { Metadata } from "next";
+import type { EventItem } from "@mohasinac/feat-events";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 
@@ -62,7 +63,30 @@ export default async function EventDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <EventDetailView id={id} initialData={event} />
+      <EventDetailView
+        id={id}
+        initialData={
+          {
+            ...event,
+            startsAt:
+              event.startsAt instanceof Date
+                ? event.startsAt.toISOString()
+                : String(event.startsAt),
+            endsAt:
+              event.endsAt instanceof Date
+                ? event.endsAt.toISOString()
+                : String(event.endsAt),
+            createdAt:
+              event.createdAt instanceof Date
+                ? event.createdAt.toISOString()
+                : String(event.createdAt),
+            updatedAt:
+              event.updatedAt instanceof Date
+                ? event.updatedAt.toISOString()
+                : String(event.updatedAt),
+          } satisfies EventItem
+        }
+      />
     </>
   );
 }

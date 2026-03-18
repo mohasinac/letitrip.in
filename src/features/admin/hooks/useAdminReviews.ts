@@ -1,27 +1,19 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import {
-  listAdminReviewsAction,
-  adminUpdateReviewAction,
-  adminDeleteReviewAction,
-} from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { adminUpdateReviewAction, adminDeleteReviewAction } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { Review } from "../components";
 
 export function useAdminReviews(sieveParams: string) {
-  const query = createAdminListQuery<
-    unknown,
-    { reviews: Review[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    reviews: Review[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "reviews"],
     sieveParams,
-    action: listAdminReviewsAction,
-    transform: (result) => ({
-      reviews: result.items as unknown as Review[],
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/reviews",
   });
 
   const updateMutation = useMutation<

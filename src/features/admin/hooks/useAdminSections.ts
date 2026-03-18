@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  listHomepageSectionsAction,
   createHomepageSectionAction,
   updateHomepageSectionAction,
   deleteHomepageSectionAction,
@@ -17,10 +17,10 @@ import type { HomepageSection } from "../components";
 export function useAdminSections() {
   const query = useQuery<HomepageSection[]>({
     queryKey: ["homepage-sections", "list"],
-    queryFn: async () => {
-      const result = await listHomepageSectionsAction();
-      return result.items as unknown as HomepageSection[];
-    },
+    queryFn: () =>
+      apiClient.get<HomepageSection[]>(
+        "/api/homepage-sections?includeDisabled=true",
+      ),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -2,10 +2,8 @@
 
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  getSellerPayoutSettingsAction,
-  updatePayoutSettingsAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { updatePayoutSettingsAction } from "@/actions";
 import { useTranslations } from "next-intl";
 import type { SellerPayoutDetails } from "@/db/schema";
 
@@ -45,9 +43,8 @@ export function useSellerPayoutSettings() {
   const { data, isLoading, error, refetch } =
     useQuery<SellerPayoutSettingsData>({
       queryKey: ["seller-payout-settings"],
-      queryFn: async () => ({
-        payoutDetails: (await getSellerPayoutSettingsAction()) as any,
-      }),
+      queryFn: () =>
+        apiClient.get<SellerPayoutSettingsData>("/api/seller/payout-settings"),
       enabled: !authLoading && !!user,
     });
 

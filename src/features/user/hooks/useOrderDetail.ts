@@ -2,12 +2,12 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { getOrderByIdAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { OrderDocument } from "@/db/schema";
 
 /**
  * useOrderDetail
- * Fetches an order via Server Action (2-hop).
+ * Fetches an order via GET /api/user/orders/[id].
  * Only fetches when the user is authenticated and `id` is available.
  */
 export function useOrderDetail(id: string) {
@@ -15,7 +15,7 @@ export function useOrderDetail(id: string) {
 
   const { data, isLoading, error, refetch } = useQuery<OrderDocument | null>({
     queryKey: ["user-order", id],
-    queryFn: () => getOrderByIdAction(id),
+    queryFn: () => apiClient.get<OrderDocument>(`/api/user/orders/${id}`),
     enabled: !!user && !loading && !!id,
   });
 

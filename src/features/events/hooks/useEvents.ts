@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { adminListEventsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResult {
@@ -24,15 +24,10 @@ export function useEvents({
 }: UseEventsOptions = {}) {
   const { data, isLoading, error, refetch } = useQuery<EventsListResult>({
     queryKey: ["admin-events", params],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params);
-      return adminListEventsAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-    },
+    queryFn: () =>
+      apiClient.get<EventsListResult>(
+        `/api/admin/events${params ? `?${params}` : ""}`,
+      ),
     enabled,
   });
 

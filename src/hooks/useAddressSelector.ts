@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { createAddressAction, listAddressesAction } from "@/actions";
+import { createAddressAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { AddressFormData } from "./useAddresses";
 
 interface SavedAddress {
@@ -37,7 +38,7 @@ export function useAddressSelector(options?: {
 }) {
   const { data, isLoading, refetch } = useQuery<SavedAddress[]>({
     queryKey: ["user-addresses"],
-    queryFn: () => listAddressesAction() as Promise<SavedAddress[]>,
+    queryFn: () => apiClient.get<SavedAddress[]>("/api/user/addresses"),
   });
 
   const addresses: SavedAddress[] = data ?? [];

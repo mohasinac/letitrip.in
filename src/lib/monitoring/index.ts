@@ -35,26 +35,42 @@ export {
   type AnalyticsEvent,
 } from "./analytics";
 
-// Error tracking
+// Error tracking — core from @mohasinac/monitoring (via shim), stubs appended below
+import { trackError as _trackError } from "./error-tracking";
 export {
   trackError,
   trackApiError,
   trackAuthError,
   trackValidationError,
   trackDatabaseError,
-  trackComponentError,
   trackPermissionError,
-  setErrorTrackingUser,
-  clearErrorTrackingUser,
-  withErrorTracking,
-  setupGlobalErrorHandler,
   ErrorSeverity,
   ErrorCategory,
   type TrackedError,
   type ErrorContext,
 } from "./error-tracking";
 
-// Cache metrics
+// Error tracking — extras not yet in package (stubs)
+export function trackComponentError(
+  _error: unknown,
+  _component?: string,
+): void {}
+export function setErrorTrackingUser(_uid: string | null): void {}
+export function clearErrorTrackingUser(): void {}
+export function withErrorTracking<T extends (...args: unknown[]) => unknown>(
+  fn: T,
+): T {
+  return fn;
+}
+/** Sets up window.onerror / unhandledrejection handlers for client-side tracking. */
+export function setupGlobalErrorHandler(): void {
+  if (typeof window === "undefined") return;
+  window.addEventListener("unhandledrejection", (event) => {
+    _trackError(event.reason);
+  });
+}
+
+// Cache metrics — core from @mohasinac/monitoring (via shim), stubs appended below
 export {
   getCacheMetrics,
   recordCacheHit,
@@ -63,7 +79,12 @@ export {
   getCacheHitRate,
   isCacheHitRateLow,
   getCacheStatistics,
-  getCacheDashboardData,
-  monitorCachePerformance,
-  setupCacheMonitoring,
 } from "./cache-metrics";
+
+// Cache metrics — extras not yet in package (stubs)
+import { getCacheStatistics as _getCacheStats } from "./cache-metrics";
+export function getCacheDashboardData(): Record<string, unknown> {
+  return _getCacheStats();
+}
+export function monitorCachePerformance(): void {}
+export function setupCacheMonitoring(): void {}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getProductByIdAction, listBidsByProductAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument, BidDocument } from "@/db/schema";
 import type { FirebaseSieveResult } from "@/lib/query";
 
@@ -21,14 +21,26 @@ type BidsListResult = FirebaseSieveResult<PublicBid>;
 export function useAuctionDetail(id: string) {
   const productQuery = useQuery<ProductDocument | null>({
     queryKey: ["product", id],
-    queryFn: () => getProductByIdAction(id),
+    queryFn: () => apiClient.get<ProductDocument | null>(`/api/products/${id}`),
   });
 
   const product = productQuery.data ?? null;
 
   const bidsQuery = useQuery<BidsListResult>({
     queryKey: ["bids", id],
-    queryFn: () => listBidsByProductAction(id),
+    queryFn: async () => {
+      const bids = await apiClient.get<PublicBid[]>(
+        `/api/bids?productId=${id}`,
+      );
+      return {
+        items: bids,
+        total: bids.length,
+        page: 1,
+        pageSize: bids.length,
+        totalPages: 1,
+        hasMore: false,
+      } as BidsListResult;
+    },
     enabled: !!product?.isAuction,
     refetchInterval: 60000,
   });

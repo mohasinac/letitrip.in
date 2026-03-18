@@ -3,12 +3,12 @@
 /**
  * useAdminStats
  *
- * Fetch admin dashboard statistics.
+ * Fetch admin dashboard statistics via GET /api/admin/dashboard.
  * Moved from src/hooks/useAdminStats.ts — admin-only, belongs in features/admin.
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getAdminDashboardStatsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 
 interface AdminStats {
   users: {
@@ -30,7 +30,7 @@ interface AdminStats {
 export function useAdminStats() {
   const { data, isLoading, error, refetch } = useQuery<AdminStats>({
     queryKey: ["admin-stats"],
-    queryFn: () => getAdminDashboardStatsAction(),
+    queryFn: () => apiClient.get<AdminStats>("/api/admin/dashboard"),
   });
 
   return {

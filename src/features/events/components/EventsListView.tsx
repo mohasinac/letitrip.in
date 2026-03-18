@@ -36,13 +36,13 @@ import {
   useMessage,
 } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { EventDocument } from "@/db/schema";
+import type { EventItem } from "@mohasinac/feat-events";
 import { EventCard } from "@/components";
 
 const PAGE_SIZE = 24;
 
 interface EventsListResult {
-  items: EventDocument[];
+  items: EventItem[];
   total: number;
   page: number;
   pageSize: number;

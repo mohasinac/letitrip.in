@@ -2,8 +2,8 @@
 
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  getSellerShippingAction,
   updateSellerShippingAction,
   verifyShiprocketPickupOtpAction,
 } from "@/actions";
@@ -50,9 +50,7 @@ export function useSellerShipping() {
 
   const { data, isLoading, error, refetch } = useQuery<SellerShippingData>({
     queryKey: ["seller-shipping"],
-    queryFn: async () => ({
-      shippingConfig: (await getSellerShippingAction()) as any,
-    }),
+    queryFn: () => apiClient.get<SellerShippingData>("/api/seller/shipping"),
     enabled: !authLoading && !!user,
   });
 

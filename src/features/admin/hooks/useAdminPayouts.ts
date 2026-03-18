@@ -1,23 +1,19 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { listAdminPayoutsAction, adminUpdatePayoutAction } from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { adminUpdatePayoutAction } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { PayoutDocument } from "@/db/schema";
 
 export function useAdminPayouts(sieveParams: string) {
-  const query = createAdminListQuery<
-    PayoutDocument,
-    { payouts: PayoutDocument[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    payouts: PayoutDocument[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "payouts"],
     sieveParams,
-    action: listAdminPayoutsAction,
-    transform: (result) => ({
-      payouts: result.items,
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/payouts",
   });
 
   const updateMutation = useMutation<

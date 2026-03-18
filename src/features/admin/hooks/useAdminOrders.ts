@@ -1,23 +1,19 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { listAdminOrdersAction, adminUpdateOrderAction } from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { adminUpdateOrderAction } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { OrderDocument } from "@/db/schema";
 
 export function useAdminOrders(sieveParams: string) {
-  const query = createAdminListQuery<
-    OrderDocument,
-    { orders: OrderDocument[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    orders: OrderDocument[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "orders"],
     sieveParams,
-    action: listAdminOrdersAction,
-    transform: (result) => ({
-      orders: result.items,
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/orders",
   });
 
   const updateMutation = useMutation<

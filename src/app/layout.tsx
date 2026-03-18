@@ -1,4 +1,5 @@
 import "./globals.css";
+import "@/providers.config";
 import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";

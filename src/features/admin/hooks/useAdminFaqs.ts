@@ -2,7 +2,6 @@
 
 import { useMutation } from "@tanstack/react-query";
 import {
-  listFaqsAction,
   adminCreateFaqAction,
   adminUpdateFaqAction,
   adminDeleteFaqAction,
@@ -19,17 +18,10 @@ interface FAQsListResponse {
 }
 
 export function useAdminFaqs(paramsString: string) {
-  const query = createAdminListQuery<FAQ, FAQsListResponse>({
+  const query = createAdminListQuery<FAQsListResponse>({
     queryKey: ["faqs", "list"],
     sieveParams: paramsString,
-    action: listFaqsAction as any,
-    transform: (result) => ({
-      items: result.items as unknown as FAQ[],
-      total: result.total,
-      page: result.page,
-      totalPages: result.totalPages,
-      pageSize: result.pageSize,
-    }),
+    endpoint: "/api/faqs",
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

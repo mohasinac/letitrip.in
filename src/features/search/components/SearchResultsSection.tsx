@@ -8,32 +8,21 @@ import {
 } from "@/components";
 import { useTranslations } from "next-intl";
 import type { ProductSortValue } from "@/components";
-import type { ProductDocument } from "@/db/schema";
+import type { SearchProductItem } from "@mohasinac/feat-search";
 import type { ViewMode } from "@/components";
 
 const PAGE_SIZE = 24;
 
-type ProductCardData = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "availableQuantity"
->;
+// Local type distinct from ProductGrid's internal ProductCardData to avoid TS2719
+type SearchProductData = SearchProductItem & {
+  video?: string;
+  featured?: boolean;
+  availableQuantity?: number;
+  images?: string[];
+};
 
 interface SearchResultsSectionProps {
-  products: ProductCardData[];
+  products: SearchProductData[];
   total: number;
   totalPages: number;
   urlQ: string;
@@ -82,7 +71,8 @@ export function SearchResultsSection({
         />
       ) : (
         <ProductGrid
-          products={products}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          products={products as any[]}
           variant={variant}
           selectable={selectable}
           selectedIds={selectedIds}

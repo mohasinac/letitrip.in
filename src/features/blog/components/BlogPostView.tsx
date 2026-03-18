@@ -15,7 +15,7 @@ import {
 } from "@/components";
 import { BlogCard } from "@/components";
 import { formatDate, proseMirrorToHtml } from "@/utils";
-import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
+import type { BlogPostCategory } from "@mohasinac/feat-blog";
 
 const { themed, typography, flex, page } = THEME_CONSTANTS;
 
@@ -32,7 +32,7 @@ const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
 
 interface BlogPostViewProps {
   slug: string;
-  initialData?: import("../hooks/useBlogPost").BlogPostQueryResult;
+  initialData?: import("@mohasinac/feat-blog").BlogPostDetailResponse;
 }
 
 export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
@@ -127,24 +127,28 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
             className={`flex flex-wrap items-center gap-4 text-sm ${themed.textSecondary}`}
           >
             <Span variant="secondary">
-              {t("author")}: <Span weight="bold">{post.authorName}</Span>
+              {t("author")}: <Span weight="bold">{post.authorName ?? ""}</Span>
             </Span>
-            <Span variant="secondary">
-              {post.readTimeMinutes} {t("readTime")}
-            </Span>
+            {post.readTimeMinutes != null && (
+              <Span variant="secondary">
+                {post.readTimeMinutes} {t("readTime")}
+              </Span>
+            )}
             {post.publishedAt && (
               <Span variant="secondary">
                 {t("publishedOn")} {formatDate(post.publishedAt)}
               </Span>
             )}
-            <Span variant="secondary">
-              {post.views} {t("viewsLabel")}
-            </Span>
+            {post.views != null && (
+              <Span variant="secondary">
+                {post.views} {t("viewsLabel")}
+              </Span>
+            )}
           </div>
         </div>
 
         {/* Tags */}
-        {post.tags.length > 0 && (
+        {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
             {post.tags.map((tag) => (
               <Span
@@ -165,7 +169,7 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
           <div
             className={`prose dark:prose-invert max-w-none ${themed.textPrimary}`}
             dangerouslySetInnerHTML={{
-              __html: proseMirrorToHtml(post.content),
+              __html: proseMirrorToHtml(post.content ?? ""),
             }}
           />
         </Card>

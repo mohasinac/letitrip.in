@@ -106,7 +106,9 @@ export function SessionProvider({
     async (authUser: AuthUser): Promise<SessionUser> => {
       try {
         // Use apiClient with credentials instead of raw fetch
-        const data = await apiClient.get(API_ENDPOINTS.USER.PROFILE);
+        const data = await apiClient.get<Partial<SessionUser>>(
+          API_ENDPOINTS.USER.PROFILE,
+        );
         const currentSessionId = getSessionIdFromCookie();
 
         // Return session user with data from API
@@ -156,10 +158,12 @@ export function SessionProvider({
   const fetchUserProfileFromServer =
     useCallback(async (): Promise<SessionUser | null> => {
       try {
-        const data = await apiClient.get(API_ENDPOINTS.USER.PROFILE);
+        const data = await apiClient.get<Partial<SessionUser>>(
+          API_ENDPOINTS.USER.PROFILE,
+        );
         const currentSessionId = getSessionIdFromCookie();
         return {
-          uid: data.uid,
+          uid: data.uid ?? "",
           email: data.email || null,
           emailVerified: data.emailVerified || false,
           displayName: data.displayName || null,
@@ -229,7 +233,7 @@ export function SessionProvider({
   // Refresh session (validate with server)
   const refreshSession = useCallback(async () => {
     try {
-      const data = await apiClient.post(
+      const data = await apiClient.post<{ valid: boolean; sessionId: string }>(
         API_ENDPOINTS.AUTH.SESSION_VALIDATE,
         {},
       );
@@ -313,7 +317,7 @@ export function SessionProvider({
           try {
             const idToken = await authUser.getIdToken(true);
             if (thisVersion !== authVersion) return; // stale, discard
-            const data = await apiClient.post(
+            const data = await apiClient.post<{ sessionId?: string }>(
               API_ENDPOINTS.AUTH.CREATE_SESSION,
               { idToken },
             );

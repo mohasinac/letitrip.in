@@ -4,8 +4,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   markNotificationReadAction,
   markAllNotificationsReadAction,
-  listNotificationsAction,
 } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { NotificationDocument } from "@/db/schema";
 
 interface NotificationsResponse {
@@ -23,7 +23,8 @@ interface NotificationsResponse {
 export function useNotifications(limit = 10) {
   const { data, isLoading, refetch } = useQuery<NotificationsResponse>({
     queryKey: ["notifications", "list", String(limit)],
-    queryFn: () => listNotificationsAction(limit),
+    queryFn: () =>
+      apiClient.get<NotificationsResponse>(`/api/notifications?limit=${limit}`),
     staleTime: 30_000, // 30 seconds
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { listAdminStoresAction, adminUpdateStoreStatusAction } from "@/actions";
+import { adminUpdateStoreStatusAction } from "@/actions";
 import { createAdminListQuery } from "./createAdminListQuery";
 
 export interface AdminStoreItem {
@@ -46,18 +46,10 @@ interface StoreListResponse {
 }
 
 export function useAdminStores(sieveParams: string) {
-  const query = createAdminListQuery<unknown, StoreListResponse>({
+  const query = createAdminListQuery<StoreListResponse>({
     queryKey: ["admin", "stores"],
     sieveParams,
-    action: listAdminStoresAction,
-    transform: (result) => ({
-      items: result.items as unknown as AdminStoreItem[],
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalPages: result.totalPages,
-      hasMore: result.hasMore ?? false,
-    }),
+    endpoint: "/api/admin/stores",
   });
 
   const updateStoreMutation = useMutation<

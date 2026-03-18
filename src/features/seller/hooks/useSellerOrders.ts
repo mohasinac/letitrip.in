@@ -2,7 +2,8 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { listSellerOrdersAction, shipOrderAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { shipOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 
 interface SellerOrdersResult {
@@ -27,25 +28,10 @@ export function useSellerOrders(params?: string) {
 
   const { data, isLoading, error, refetch } = useQuery<SellerOrdersResult>({
     queryKey: ["seller-orders", params ?? ""],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params ?? "");
-      const result = await listSellerOrdersAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        orders: result.items,
-        meta: {
-          page: result.page,
-          limit: result.pageSize,
-          total: result.total,
-          totalPages: result.totalPages,
-          hasMore: result.hasMore,
-        },
-      };
-    },
+    queryFn: () =>
+      apiClient.get<SellerOrdersResult>(
+        `/api/seller/orders${params ? `?${params}` : ""}`,
+      ),
     enabled: !loading && !!user,
   });
 

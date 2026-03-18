@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listProductsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument } from "@/db/schema";
 
 type RelatedProduct = Pick<
@@ -47,14 +47,18 @@ export function useRelatedProducts(
   limit = 8,
   isAuction = false,
 ) {
+  const params = new URLSearchParams({
+    filters: `status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}`,
+    sorts: "-createdAt",
+    pageSize: String(limit),
+  });
+
   return useQuery<RelatedProductsResponse>({
     queryKey: ["related-products", category, excludeId, String(isAuction)],
     queryFn: () =>
-      listProductsAction({
-        filters: `status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}`,
-        sorts: "-createdAt",
-        pageSize: limit,
-      }) as unknown as Promise<RelatedProductsResponse>,
+      apiClient.get<RelatedProductsResponse>(
+        `/api/products?${params.toString()}`,
+      ),
     enabled: Boolean(category),
     staleTime: 5 * 60 * 1000,
   });

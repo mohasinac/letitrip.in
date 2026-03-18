@@ -1,7 +1,21 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { adminGetEventStatsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
+
+interface EventStats {
+  totalEntries: number;
+  approvedEntries: number;
+  flaggedEntries: number;
+  pendingEntries: number;
+  pollResults: {
+    optionId: string;
+    label: string;
+    count: number;
+    percent: number;
+  }[];
+  leaderboard: unknown[];
+}
 
 interface UseEventStatsOptions {
   eventId: string;
@@ -12,9 +26,10 @@ export function useEventStats({
   eventId,
   enabled = true,
 }: UseEventStatsOptions) {
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<EventStats>({
     queryKey: ["admin-event-stats", eventId],
-    queryFn: () => adminGetEventStatsAction(eventId),
+    queryFn: () =>
+      apiClient.get<EventStats>(`/api/admin/events/${eventId}/stats`),
     enabled: enabled && !!eventId,
   });
 

@@ -11,7 +11,8 @@ import {
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatDate } from "@/utils";
-import type { EventType, EventDocument } from "@/db/schema";
+import type { EventType } from "@/db/schema";
+import type { EventItem } from "@mohasinac/feat-events";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 
@@ -42,7 +43,7 @@ const EVENT_TYPE_CONFIG: Record<
 };
 
 interface EventCardProps {
-  event: EventDocument;
+  event: EventItem;
   /** Show checkbox for bulk selection */
   selectable?: boolean;
   /** Whether this card is selected */

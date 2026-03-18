@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getSiteSettingsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 
 /**
  * useSiteSettings
@@ -14,7 +14,7 @@ import { getSiteSettingsAction } from "@/actions";
 export function useSiteSettings<T = unknown>() {
   return useQuery<T>({
     queryKey: ["site-settings"],
-    queryFn: () => getSiteSettingsAction() as Promise<T>,
+    queryFn: () => apiClient.get<T>("/api/site-settings"),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }

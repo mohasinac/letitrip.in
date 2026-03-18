@@ -1,12 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  getStoreBySlugAction,
-  getStoreReviewsAction,
-  getStoreProductsAction,
-  getStoreAuctionsAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type {
   StoreDetail,
   StoreReviewsData,
@@ -15,67 +10,54 @@ import type {
 } from "../types";
 
 /**
- * Fetches a single store by its storeSlug.
+ * Fetches a single store by its storeSlug via GET /api/stores/[storeSlug].
  */
 export function useStoreBySlug(storeSlug: string) {
   return useQuery<StoreDetail>({
     queryKey: ["stores", "detail", storeSlug],
-    queryFn: () =>
-      getStoreBySlugAction(storeSlug) as unknown as Promise<StoreDetail>,
+    queryFn: () => apiClient.get<StoreDetail>(`/api/stores/${storeSlug}`),
     enabled: !!storeSlug,
   });
 }
 
 /**
- * Fetches the aggregated reviews for a store.
+ * Fetches the aggregated reviews for a store via GET /api/stores/[storeSlug]/reviews.
  */
 export function useStoreReviews(storeSlug: string) {
   return useQuery<StoreReviewsData>({
     queryKey: ["stores", "reviews", storeSlug],
     queryFn: () =>
-      getStoreReviewsAction(storeSlug) as unknown as Promise<StoreReviewsData>,
+      apiClient.get<StoreReviewsData>(`/api/stores/${storeSlug}/reviews`),
     enabled: !!storeSlug,
   });
 }
 
 /**
- * Fetches published products for a store.
+ * Fetches published products for a store via GET /api/stores/[storeSlug]/products.
  * @param params URLSearchParams string
  */
 export function useStoreProducts(storeSlug: string, params?: string) {
   return useQuery<StoreProductsResponse>({
     queryKey: ["stores", "products", storeSlug, params ?? ""],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params ?? "");
-      const result = await getStoreProductsAction(storeSlug, {
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return result as unknown as StoreProductsResponse;
-    },
+    queryFn: () =>
+      apiClient.get<StoreProductsResponse>(
+        `/api/stores/${storeSlug}/products${params ? `?${params}` : ""}`,
+      ),
     enabled: !!storeSlug,
   });
 }
 
 /**
- * Fetches auction listings for a store.
+ * Fetches auction listings for a store via GET /api/stores/[storeSlug]/auctions.
  * @param params URLSearchParams string
  */
 export function useStoreAuctions(storeSlug: string, params?: string) {
   return useQuery<StoreAuctionsResponse>({
     queryKey: ["stores", "auctions", storeSlug, params ?? ""],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params ?? "");
-      const result = await getStoreAuctionsAction(storeSlug, {
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return result as unknown as StoreAuctionsResponse;
-    },
+    queryFn: () =>
+      apiClient.get<StoreAuctionsResponse>(
+        `/api/stores/${storeSlug}/auctions${params ? `?${params}` : ""}`,
+      ),
     enabled: !!storeSlug,
   });
 }

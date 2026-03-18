@@ -1,53 +1,47 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { listBlogPostsAction } from "@/actions";
-import type { BlogPostDocument } from "@/db/schema";
+import {
+  useBlogPosts as _useBlogPosts,
+  type BlogListParams,
+  type BlogListResponse,
+} from "@mohasinac/feat-blog";
 
-interface BlogPostsResult {
-  posts: BlogPostDocument[];
-  meta: { total: number; page: number; pageSize: number; totalPages: number };
-}
+export type { BlogListResponse as BlogPostsResult };
 
 /**
- * useBlogPosts
- * Wraps `blogService.list()` for top-level blog page consumption.
- * Cache key includes the full params string so any filter/sort/page
- * change triggers a new fetch.
+ * Adapter shim — delegates to @mohasinac/feat-blog's useBlogPosts.
+ * Accepts the legacy `string` URLSearchParams format for backward compatibility.
  */
 export function useBlogPosts(
   params?: string,
-  options?: { initialData?: BlogPostsResult },
+  options?: { initialData?: BlogListResponse },
 ) {
-  const { data, isLoading, error, refetch } = useQuery<BlogPostsResult>({
-    queryKey: ["blog", params ?? ""],
-    queryFn: async () => {
-      const sp = params ? new URLSearchParams(params) : null;
-      const result = await listBlogPostsAction({
-        page: sp?.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp?.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-        category: sp?.get("category") ?? undefined,
-        sorts: sp?.get("sorts") ?? undefined,
-      });
-      return {
-        posts: result.items,
-        meta: {
-          total: result.total,
-          page: result.page,
-          pageSize: result.pageSize,
-          totalPages: result.totalPages,
-        },
-      };
-    },
-    initialData: options?.initialData,
-  });
+  const parsed: BlogListParams = {};
+  if (params) {
+    const sp = new URLSearchParams(params);
+    const p = sp.get("page");
+    if (p) parsed.page = Number(p);
+    const ps = sp.get("pageSize") ?? sp.get("perPage");
+    if (ps) parsed.perPage = Number(ps);
+    const cat = sp.get("category");
+    if (cat) parsed.category = cat as BlogListParams["category"];
+    const q = sp.get("q");
+    if (q) parsed.q = q;
+    const sort = sp.get("sort");
+    if (sort) parsed.sort = sort;
+    const tags = sp.get("tags");
+    if (tags) parsed.tags = tags;
+    const featured = sp.get("featured");
+    if (featured) parsed.featured = featured === "true";
+  }
+
+  const result = _useBlogPosts(parsed, options);
 
   return {
-    data,
-    posts: data?.posts ?? [],
-    meta: data?.meta,
-    isLoading,
-    error,
-    refetch,
+    data: result.meta ? { posts: result.posts, meta: result.meta } : undefined,
+    posts: result.posts,
+    meta: result.meta,
+    isLoading: result.isLoading,
+    error: result.error,
   };
 }

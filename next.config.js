@@ -65,53 +65,139 @@ const nextConfig = {
   // Allow Next.js webpack to transpile workspace packages (@mohasinac/*).
   // These packages resolve via tsconfig paths to packages/*/src/ TypeScript
   // source — not pre-compiled dist — so webpack must transform them.
-  transpilePackages: [
-    "@mohasinac/contracts",
-    "@mohasinac/core",
-    "@mohasinac/react",
-    "@mohasinac/ui",
-    "@mohasinac/http",
-    "@mohasinac/next",
-    "@mohasinac/tokens",
-    "@mohasinac/css-tailwind",
-    "@mohasinac/css-vanilla",
-    "@mohasinac/cli",
-    "@mohasinac/db-firebase",
-    "@mohasinac/auth-firebase",
-    "@mohasinac/email-resend",
-    "@mohasinac/storage-firebase",
-    "@mohasinac/errors",
-    "@mohasinac/security",
-    "@mohasinac/validation",
-    "@mohasinac/utils",
-    "@mohasinac/seo",
-    "@mohasinac/monitoring",
-    "@mohasinac/feat-layout",
-    "@mohasinac/feat-forms",
-    "@mohasinac/feat-filters",
-    "@mohasinac/feat-media",
-    "@mohasinac/feat-search",
-    "@mohasinac/feat-categories",
-    "@mohasinac/feat-blog",
-    "@mohasinac/feat-reviews",
-    "@mohasinac/feat-faq",
-    "@mohasinac/feat-auth",
-    "@mohasinac/feat-account",
-    "@mohasinac/feat-homepage",
-    "@mohasinac/feat-products",
-    "@mohasinac/feat-wishlist",
-    "@mohasinac/feat-cart",
-    "@mohasinac/feat-payments",
-    "@mohasinac/feat-checkout",
-    "@mohasinac/feat-orders",
-    "@mohasinac/feat-admin",
-    "@mohasinac/feat-events",
-    "@mohasinac/feat-auctions",
-    "@mohasinac/feat-promotions",
-    "@mohasinac/feat-seller",
-    "@mohasinac/feat-stores",
-    "@mohasinac/feat-pre-orders",
-  ],
+  //
+  // The list is derived from features.config.ts (see src/features.config.ts)
+  // using the same ALWAYS_TRANSPILE + FEATURE_PACKAGE_MAP logic as
+  // @mohasinac/cli/next withFeatures(). next.config.js runs as plain Node.js
+  // (before webpack), so we inline the resolution here rather than requiring
+  // the TypeScript source of @mohasinac/cli/next.
+  transpilePackages: (() => {
+    // Packages always needed regardless of which features are enabled.
+    const ALWAYS = [
+      "@mohasinac/contracts",
+      "@mohasinac/core",
+      "@mohasinac/react",
+      "@mohasinac/ui",
+      "@mohasinac/http",
+      "@mohasinac/next",
+      "@mohasinac/tokens",
+      "@mohasinac/css-tailwind",
+      "@mohasinac/css-vanilla",
+      "@mohasinac/cli",
+      "@mohasinac/db-firebase",
+      "@mohasinac/auth-firebase",
+      "@mohasinac/email-resend",
+      "@mohasinac/storage-firebase",
+      "@mohasinac/errors",
+      "@mohasinac/security",
+      "@mohasinac/validation",
+      "@mohasinac/utils",
+      "@mohasinac/seo",
+      "@mohasinac/monitoring",
+    ];
+
+    // Maps features.config.ts keys → @mohasinac/feat-* package names.
+    // Keep in sync with packages/cli/src/next.ts FEATURE_PACKAGE_MAP.
+    /** @type {Record<string, string>} */
+    const FEATURE_PACKAGE_MAP = {
+      layout: "@mohasinac/feat-layout",
+      forms: "@mohasinac/feat-forms",
+      filters: "@mohasinac/feat-filters",
+      media: "@mohasinac/feat-media",
+      auth: "@mohasinac/feat-auth",
+      account: "@mohasinac/feat-account",
+      products: "@mohasinac/feat-products",
+      categories: "@mohasinac/feat-categories",
+      cart: "@mohasinac/feat-cart",
+      wishlist: "@mohasinac/feat-wishlist",
+      checkout: "@mohasinac/feat-checkout",
+      orders: "@mohasinac/feat-orders",
+      payments: "@mohasinac/feat-payments",
+      blog: "@mohasinac/feat-blog",
+      reviews: "@mohasinac/feat-reviews",
+      faq: "@mohasinac/feat-faq",
+      search: "@mohasinac/feat-search",
+      homepage: "@mohasinac/feat-homepage",
+      admin: "@mohasinac/feat-admin",
+      events: "@mohasinac/feat-events",
+      auctions: "@mohasinac/feat-auctions",
+      promotions: "@mohasinac/feat-promotions",
+      seller: "@mohasinac/feat-seller",
+      stores: "@mohasinac/feat-stores",
+      "pre-orders": "@mohasinac/feat-pre-orders",
+      consultation: "@mohasinac/feat-consultation",
+      concern: "@mohasinac/feat-concern",
+      corporate: "@mohasinac/feat-corporate",
+      "before-after": "@mohasinac/feat-before-after",
+      loyalty: "@mohasinac/feat-loyalty",
+      collections: "@mohasinac/feat-collections",
+      preorders: "@mohasinac/feat-preorders",
+      "whatsapp-bot": "@mohasinac/feat-whatsapp-bot",
+    };
+
+    // features.config.ts (mirrored as a JS-safe value here; the canonical
+    // source of truth is src/features.config.ts — keep both in sync).
+    // true  = feature enabled for this project
+    // false = feature disabled (no transpilePackages entry added)
+    /** @type {Record<string, boolean>} */
+    const features = {
+      // Shell (always on)
+      layout: true,
+      forms: true,
+      filters: true,
+      media: true,
+      // Shared domain
+      auth: true,
+      account: true,
+      products: true,
+      categories: true,
+      cart: true,
+      wishlist: true,
+      checkout: true,
+      orders: true,
+      payments: true,
+      blog: true,
+      reviews: true,
+      faq: true,
+      search: true,
+      homepage: true,
+      admin: true,
+      // letitrip-specific
+      events: true,
+      auctions: true,
+      promotions: true,
+      seller: true,
+      stores: true,
+      "pre-orders": true,
+      // Other projects — not used here
+      consultation: false,
+      concern: false,
+      corporate: false,
+      "before-after": false,
+      loyalty: false,
+      collections: false,
+      preorders: false,
+      "whatsapp-bot": false,
+    };
+
+    const featPkgs = Object.entries(features)
+      .filter(([, enabled]) => enabled)
+      .map(([key]) => FEATURE_PACKAGE_MAP[key])
+      .filter(Boolean);
+
+    return [...ALWAYS, ...featPkgs];
+  })(),
+
+  // Workspace packages use ESM-style `.js` extensions in TS imports
+  // (e.g. `from "./provider.js"`). Webpack needs extensionAlias so it
+  // can resolve `.js` → `.ts` / `.tsx` when transpiling from source.
+  webpack(config) {
+    config.resolve.extensionAlias = {
+      ".js": [".ts", ".tsx", ".js"],
+      ".mjs": [".mts", ".mjs"],
+    };
+    return config;
+  },
 
   // Turbopack is used for `next dev --turbopack` only.
   // Production builds use webpack via `next build --webpack` because Turbopack

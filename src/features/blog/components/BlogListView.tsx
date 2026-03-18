@@ -38,16 +38,11 @@ import {
   useMessage,
 } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { BlogPostDocument } from "@/db/schema";
+import type { BlogListResponse } from "@mohasinac/feat-blog";
 
 const PAGE_SIZE = 24;
 
-interface BlogPostsResult {
-  posts: BlogPostDocument[];
-  meta: { total: number; page: number; pageSize: number; totalPages: number };
-}
-
-function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
+function BlogListContent({ initialData }: { initialData?: BlogListResponse }) {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
   const tFilters = useTranslations("filters");
@@ -267,7 +262,7 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
 
 export function BlogListView({
   initialData,
-}: { initialData?: BlogPostsResult } = {}) {
+}: { initialData?: BlogListResponse } = {}) {
   return (
     <Suspense>
       <BlogListContent initialData={initialData} />

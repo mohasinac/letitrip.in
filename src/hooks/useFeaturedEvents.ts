@@ -1,29 +1,26 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { listPublicEventsAction } from "@/actions";
-import type { EventDocument } from "@/db/schema";
-
-interface PaginatedResult {
-  items: EventDocument[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+import { useEvents } from "@mohasinac/feat-events";
+import type { EventItem } from "@mohasinac/feat-events";
 
 /**
  * useFeaturedEvents
  * Fetches active/upcoming events for the homepage featured events section.
+ * Delegates to @mohasinac/feat-events.
  */
 export function useFeaturedEvents() {
-  return useQuery<PaginatedResult>({
-    queryKey: ["events", "featured"],
-    queryFn: () =>
-      listPublicEventsAction({
-        pageSize: 12,
-        sorts: "-createdAt",
-      }) as Promise<PaginatedResult>,
+  const { events, total, isLoading, error } = useEvents({
+    pageSize: 12,
+    sort: "-createdAt",
   });
+
+  return {
+    data: events.length > 0 ? { items: events, total } : undefined,
+    isLoading,
+    error,
+  } as {
+    data: { items: EventItem[]; total: number } | undefined;
+    isLoading: boolean;
+    error: string | null;
+  };
 }

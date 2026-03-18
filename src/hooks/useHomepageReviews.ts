@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getHomepageReviewsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ReviewDocument } from "@/db/schema";
 
 /**
@@ -13,7 +13,8 @@ export function useHomepageReviews(options?: {
 }) {
   return useQuery<ReviewDocument[]>({
     queryKey: ["reviews", "latest"],
-    queryFn: () => getHomepageReviewsAction(),
+    queryFn: () =>
+      apiClient.get<ReviewDocument[]>("/api/reviews?featured=true"),
     staleTime: 10 * 60 * 1000, // 10 minutes
     initialData: options?.initialData,
   });

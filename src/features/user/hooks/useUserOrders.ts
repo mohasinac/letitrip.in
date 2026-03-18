@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { listOrdersAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { OrderDocument } from "@/db/schema";
 
 interface UserOrdersResult {
@@ -14,7 +14,7 @@ interface UserOrdersResult {
 
 /**
  * useUserOrders
- * Fetches user orders via Server Action (2-hop).
+ * Fetches user orders via GET /api/user/orders.
  * Only fetches when the user is authenticated.
  */
 export function useUserOrders(params?: string) {
@@ -23,8 +23,16 @@ export function useUserOrders(params?: string) {
   const { data, isLoading, error, refetch } = useQuery<UserOrdersResult>({
     queryKey: ["user-orders", params ?? ""],
     queryFn: async () => {
-      const orders = await listOrdersAction();
-      return { orders, total: orders.length, page: 1, totalPages: 1 };
+      const result = await apiClient.get<{
+        orders: OrderDocument[];
+        total: number;
+      }>(`/api/user/orders${params ? `?${params}` : ""}`);
+      return {
+        orders: result.orders,
+        total: result.total,
+        page: 1,
+        totalPages: 1,
+      };
     },
     enabled: !loading && !!user,
   });

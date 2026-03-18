@@ -3,23 +3,19 @@
 /**
  * createAdminListQuery
  *
- * Factory that eliminates the repeated URLSearchParams-parsing + useQuery
+ * Factory that eliminates the repeated URLSearchParams-building + useQuery
  * boilerplate across admin list hooks. Each hook only needs to declare:
  * - queryKey prefix
- * - server action to call
- * - how to map the result to { data, meta }
+ * - endpoint to call (GET)
+ * - (optionally) how to map the API result to a different shape
  *
  * @example
  * ```ts
  * export function useAdminBids(sieveParams: string) {
- *   return createAdminListQuery({
+ *   return createAdminListQuery<{ bids: BidDocument[]; meta: AdminListMeta }>({
  *     queryKey: ["admin", "bids"],
  *     sieveParams,
- *     action: listAdminBidsAction,
- *     transform: (result) => ({
- *       bids: result.items,
- *       meta: extractBasicMeta(result),
- *     }),
+ *     endpoint: "/api/admin/bids",
  *   });
  * }
  * ```
@@ -27,28 +23,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 
-interface SieveActionParams {
-  filters?: string;
-  sorts?: string;
-  page?: number;
-  pageSize?: number;
-}
-
-interface SieveActionResult<TItem> {
-  items: TItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore?: boolean;
-}
-
-interface CreateAdminListQueryOptions<TItem, TResult> {
+interface CreateAdminListQueryOptions<TApiResult, TResult = TApiResult> {
   queryKey: string[];
+  endpoint: string;
   sieveParams: string;
-  action: (params: SieveActionParams) => Promise<SieveActionResult<TItem>>;
-  transform: (result: SieveActionResult<TItem>) => TResult;
+  transform?: (result: TApiResult) => TResult;
   defaultPageSize?: number;
 }
 
@@ -75,27 +56,13 @@ export function extractBasicMeta(result: {
   };
 }
 
-/** Parses a sieve params string into the params object expected by server actions. */
-function parseSieveParams(
-  sieveParams: string,
-  defaultPageSize: number,
-): SieveActionParams {
-  const sp = new URLSearchParams(sieveParams);
-  return {
-    filters: sp.get("filters") ?? undefined,
-    sorts: sp.get("sorts") ?? undefined,
-    page: sp.has("page") ? Number(sp.get("page")) : undefined,
-    pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : defaultPageSize,
-  };
-}
-
-export function createAdminListQuery<TItem, TResult>(
-  options: CreateAdminListQueryOptions<TItem, TResult>,
+export function createAdminListQuery<TApiResult, TResult = TApiResult>(
+  options: CreateAdminListQueryOptions<TApiResult, TResult>,
 ): UseQueryResult<TResult> {
   const {
     queryKey,
+    endpoint,
     sieveParams,
-    action,
     transform,
     defaultPageSize = 50,
   } = options;
@@ -104,9 +71,12 @@ export function createAdminListQuery<TItem, TResult>(
   return useQuery<TResult>({
     queryKey: [...queryKey, sieveParams],
     queryFn: async () => {
-      const params = parseSieveParams(sieveParams, defaultPageSize);
-      const result = await action(params);
-      return transform(result);
+      const sp = new URLSearchParams(sieveParams);
+      if (!sp.has("pageSize")) sp.set("pageSize", String(defaultPageSize));
+      const result = await apiClient.get<TApiResult>(
+        `${endpoint}?${sp.toString()}`,
+      );
+      return transform ? transform(result) : (result as unknown as TResult);
     },
   });
 }

@@ -2,11 +2,8 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  getSellerStoreAction,
-  createStoreAction,
-  updateStoreAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { createStoreAction, updateStoreAction } from "@/actions";
 import type { StoreDocument } from "@/db/schema";
 
 /**
@@ -25,7 +22,8 @@ export function useSellerStore() {
     store: StoreDocument | null;
   }>({
     queryKey: ["seller-store"],
-    queryFn: async () => ({ store: await getSellerStoreAction() }),
+    queryFn: () =>
+      apiClient.get<{ store: StoreDocument | null }>("/api/seller/store"),
     enabled: !authLoading && !!user,
   });
 

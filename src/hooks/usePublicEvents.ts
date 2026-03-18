@@ -1,53 +1,53 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { listPublicEventsAction } from "@/actions";
-import type { EventDocument } from "@/db/schema";
+import {
+  useEvents as _useEvents,
+  type EventListParams,
+  type EventListResponse,
+} from "@mohasinac/feat-events";
 
-interface EventsListResult {
-  items: EventDocument[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+export type { EventListResponse as EventsListResult };
 
 interface UsePublicEventsOptions {
   params?: string;
   enabled?: boolean;
   cacheTTL?: number;
-  initialData?: EventsListResult;
+  initialData?: EventListResponse;
 }
 
 /**
- * usePublicEvents  (Tier 1 — shared hook)
- * Fetches public-facing events with optional filtering.
- * Uses the Tier 1 eventService (TASK-27: consolidated from Tier-2 duplicate).
- *
- *
- * @example
- * const { events } = usePublicEvents({ params: 'types=sale,offer&status=active&pageSize=1' });
+ * Adapter shim — delegates to @mohasinac/feat-events's useEvents.
+ * Accepts the legacy `params` URLSearchParams string format for backward compatibility.
  */
 export function usePublicEvents({
   params = "",
   enabled = true,
-  cacheTTL = 5 * 60 * 1000,
   initialData,
 }: UsePublicEventsOptions = {}) {
-  const { data, isLoading, error, refetch } = useQuery<EventsListResult>({
-    queryKey: ["public-events", params],
-    queryFn: () => listPublicEventsAction(params),
-    enabled,
-    staleTime: cacheTTL,
-    initialData,
-  });
+  const parsed: EventListParams = {};
+  if (params) {
+    const sp = new URLSearchParams(params);
+    const page = sp.get("page");
+    if (page) parsed.page = Number(page);
+    const pageSize = sp.get("pageSize");
+    if (pageSize) parsed.pageSize = Number(pageSize);
+    const status = sp.get("status");
+    if (status) parsed.status = status as EventListParams["status"];
+    const type = sp.get("types") ?? sp.get("type");
+    if (type) parsed.type = type as EventListParams["type"];
+    const sort = sp.get("sorts") ?? sp.get("sort");
+    if (sort) parsed.sort = sort;
+    const filters = sp.get("filters");
+    if (filters) parsed.filters = filters;
+  }
+
+  const result = _useEvents(parsed, { enabled, initialData });
 
   return {
-    events: data?.items ?? [],
-    total: data?.total ?? 0,
-    isLoading,
-    error: error?.message ?? null,
-    refetch,
+    events: result.events,
+    total: result.total,
+    isLoading: result.isLoading,
+    error: result.error,
+    refetch: result.refetch,
   };
 }

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { listOrdersAction, listAddressesAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import type { OrderDocument } from "@/db/schema";
 
 export interface ProfileStats {
   orderCount: number;
@@ -14,18 +15,21 @@ export interface ProfileStats {
 export function useProfileStats(enabled: boolean): ProfileStats {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ["user-orders-count"],
-    queryFn: () => listOrdersAction(),
+    queryFn: () =>
+      apiClient.get<{ orders: OrderDocument[]; total: number }>(
+        "/api/user/orders",
+      ),
     enabled,
   });
 
   const { data: addressesData, isLoading: addressesLoading } = useQuery({
     queryKey: ["user-addresses-count"],
-    queryFn: () => listAddressesAction(),
+    queryFn: () => apiClient.get<unknown[]>("/api/user/addresses"),
     enabled,
   });
 
   return {
-    orderCount: Array.isArray(ordersData) ? ordersData.length : 0,
+    orderCount: ordersData?.total ?? 0,
     addressCount: Array.isArray(addressesData) ? addressesData.length : 0,
     isLoading: ordersLoading || addressesLoading,
   };

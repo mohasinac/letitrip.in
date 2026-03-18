@@ -2,27 +2,22 @@
 
 import { useMutation } from "@tanstack/react-query";
 import {
-  listAdminProductsAction,
   adminCreateProductAction,
   adminUpdateProductAction,
   adminDeleteProductAction,
 } from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { AdminProduct } from "../components";
 
 export function useAdminProducts(sieveParams: string) {
-  const query = createAdminListQuery<
-    unknown,
-    { products: AdminProduct[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    products: AdminProduct[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "products"],
     sieveParams,
-    action: listAdminProductsAction,
-    transform: (result) => ({
-      products: result.items as unknown as AdminProduct[],
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/products",
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { useUrlTable } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  listSellerMyProductsAction,
   createSellerProductAction,
   sellerUpdateProductAction,
   sellerDeleteProductAction,
@@ -13,11 +13,21 @@ import type { AdminProduct } from "@/components";
 
 const PAGE_SIZE = 25;
 
+interface SellerProductsApiResult {
+  products: AdminProduct[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
 /**
  * useSellerProducts
  *
  * Handles data fetching and CRUD mutations for the seller products page.
- * Uses productService — no direct apiClient calls.
  */
 export function useSellerProducts(
   userId: string | undefined,
@@ -69,13 +79,17 @@ export function useSellerProducts(
   }>({
     queryKey: ["seller-products-list", table.params.toString(), userId ?? ""],
     queryFn: async () => {
-      const sp = new URLSearchParams(queryParams!);
-      return listSellerMyProductsAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      }) as any;
+      const result = await apiClient.get<SellerProductsApiResult>(
+        `/api/seller/products?${queryParams!}`,
+      );
+      return {
+        items: result.products,
+        total: result.meta.total,
+        page: result.meta.page,
+        pageSize: result.meta.limit,
+        totalPages: result.meta.totalPages,
+        hasMore: result.meta.hasMore,
+      };
     },
     enabled: !!queryParams,
   });

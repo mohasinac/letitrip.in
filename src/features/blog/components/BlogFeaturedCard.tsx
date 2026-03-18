@@ -4,12 +4,12 @@ import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { CATEGORY_BADGE } from "@/components";
-import type { BlogPostDocument } from "@/db/schema";
+import type { BlogPost } from "@mohasinac/feat-blog";
 
 const LABELS = UI_LABELS.ADMIN.BLOG;
 const { themed, typography } = THEME_CONSTANTS;
 
-export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
+export function BlogFeaturedCard({ post }: { post: BlogPost }) {
   return (
     <div className="mb-10">
       <TextLink href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`} className="block">
@@ -48,10 +48,12 @@ export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
               <div
                 className={`flex items-center gap-4 text-xs ${themed.textSecondary}`}
               >
-                <Span>{post.authorName}</Span>
-                <Span>
-                  {post.readTimeMinutes} {LABELS.READ_TIME}
-                </Span>
+                <Span>{post.authorName ?? ""}</Span>
+                {post.readTimeMinutes != null && (
+                  <Span>
+                    {post.readTimeMinutes} {LABELS.READ_TIME}
+                  </Span>
+                )}
                 {post.publishedAt && (
                   <Span>{formatDate(post.publishedAt)}</Span>
                 )}

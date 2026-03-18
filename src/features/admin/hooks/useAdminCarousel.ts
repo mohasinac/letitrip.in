@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  listAllCarouselSlidesAction,
   createCarouselSlideAction,
   updateCarouselSlideAction,
   deleteCarouselSlideAction,
@@ -17,7 +17,8 @@ import type { CarouselSlide } from "../components";
 export function useAdminCarousel() {
   const query = useQuery<CarouselSlide[]>({
     queryKey: ["carousel", "list"],
-    queryFn: () => listAllCarouselSlidesAction(),
+    queryFn: () =>
+      apiClient.get<CarouselSlide[]>("/api/carousel?includeInactive=true"),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -13,11 +13,8 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  updateProfileAction,
-  getMyProfileAction,
-  type UpdateProfileInput,
-} from "@/actions";
+import { updateProfileAction, type UpdateProfileInput } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { UserDocument } from "@/db/schema";
 
 // ============================================================================
@@ -50,7 +47,7 @@ export function useProfile(options?: {
 }) {
   return useQuery<UserProfile>({
     queryKey: ["profile"],
-    queryFn: () => getMyProfileAction() as unknown as Promise<UserProfile>,
+    queryFn: () => apiClient.get<UserProfile>("/api/user/profile"),
     enabled: options?.enabled,
   });
 }

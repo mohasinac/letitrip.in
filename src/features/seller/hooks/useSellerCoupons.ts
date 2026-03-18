@@ -1,11 +1,8 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  listSellerCouponsAction,
-  sellerDeleteCouponAction,
-  sellerUpdateCouponAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { sellerDeleteCouponAction, sellerUpdateCouponAction } from "@/actions";
 import { nowISO } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
@@ -16,17 +13,14 @@ export interface SellerCouponsResponse {
 
 /**
  * useSellerCoupons
- * Fetches the authenticated seller's own coupons.
+ * Fetches the authenticated seller's own coupons via GET /api/seller/coupons.
  */
 export function useSellerCoupons(enabled = true) {
   const queryClient = useQueryClient();
 
   const query = useQuery<SellerCouponsResponse>({
     queryKey: ["seller-coupons"],
-    queryFn: async () => {
-      const items = await listSellerCouponsAction();
-      return { coupons: items, total: items.length };
-    },
+    queryFn: () => apiClient.get<SellerCouponsResponse>("/api/seller/coupons"),
     enabled,
   });
 

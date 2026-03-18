@@ -13,9 +13,6 @@ import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { SessionUser } from "@/types/auth";
 
-/**
- * Verify Firebase ID token from request
- */
 /** Firebase error codes that represent a normal "not authenticated" state. */
 const EXPECTED_AUTH_CODES = new Set([
   "auth/argument-error",
@@ -42,9 +39,6 @@ export async function verifyIdToken(
   }
 }
 
-/**
- * Verify session cookie
- */
 export async function verifySessionCookie(
   sessionCookie: string,
 ): Promise<DecodedIdToken | null> {

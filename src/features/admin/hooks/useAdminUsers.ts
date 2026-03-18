@@ -1,27 +1,19 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import {
-  listAdminUsersAction,
-  adminUpdateUserAction,
-  adminDeleteUserAction,
-} from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { adminUpdateUserAction, adminDeleteUserAction } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { AdminUser } from "../components";
 
 export function useAdminUsers(sieveParams: string) {
-  const query = createAdminListQuery<
-    unknown,
-    { users: AdminUser[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    users: AdminUser[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "users"],
     sieveParams,
-    action: listAdminUsersAction,
-    transform: (result) => ({
-      users: result.items as unknown as AdminUser[],
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/users",
   });
 
   const updateUserMutation = useMutation<

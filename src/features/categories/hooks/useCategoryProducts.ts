@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCategoryBySlugAction, listProductsAction } from "@/actions";
+import { apiClient, ApiClientError } from "@mohasinac/http";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 
 export type CategoryProductItem = Pick<
@@ -26,8 +26,12 @@ export type CategoryProductItem = Pick<
 >;
 
 interface ProductsResponse {
-  data: CategoryProductItem[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
+  items: CategoryProductItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 interface UseCategoryProductsOptions {
@@ -60,7 +64,16 @@ export function useCategoryProducts(
   const { data: catData, isLoading: catLoading } =
     useQuery<CategoryDocument | null>({
       queryKey: ["categories", "slug", slug],
-      queryFn: () => getCategoryBySlugAction(slug),
+      queryFn: async () => {
+        try {
+          return await apiClient.get<CategoryDocument>(
+            `/api/categories?slug=${encodeURIComponent(slug)}`,
+          );
+        } catch (e) {
+          if (e instanceof ApiClientError && e.status === 404) return null;
+          throw e;
+        }
+      },
       enabled: !!slug,
     });
 
@@ -83,36 +96,18 @@ export function useCategoryProducts(
     error,
   } = useQuery<ProductsResponse>({
     queryKey: ["products", "by-category", category?.id ?? "", cacheKey],
-    queryFn: async () => {
-      const sp = new URLSearchParams(productsParams!);
-      const result = await listProductsAction({
-        filters: sp.get("filters")
-          ? decodeURIComponent(sp.get("filters")!)
-          : undefined,
-        sorts: sp.get("sorts")
-          ? decodeURIComponent(sp.get("sorts")!)
-          : undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        data: result.items,
-        meta: {
-          page: result.page,
-          limit: result.pageSize,
-          total: result.total,
-          totalPages: result.totalPages,
-        },
-      };
-    },
+    queryFn: () =>
+      apiClient.get<ProductsResponse>(
+        `/api/products?${productsParams!}`,
+      ) as Promise<ProductsResponse>,
     enabled: !!productsParams,
   });
 
   return {
     category: category ?? null,
-    products: prodData?.data ?? [],
-    totalProducts: prodData?.meta?.total ?? 0,
-    totalPages: prodData?.meta?.totalPages ?? 1,
+    products: prodData?.items ?? [],
+    totalProducts: prodData?.total ?? 0,
+    totalPages: prodData?.totalPages ?? 1,
     catLoading,
     prodLoading,
     isLoading: catLoading || prodLoading,

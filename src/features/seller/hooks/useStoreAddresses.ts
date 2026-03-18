@@ -8,8 +8,8 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  listStoreAddressesAction,
   createStoreAddressAction,
   updateStoreAddressAction,
   deleteStoreAddressAction,
@@ -20,7 +20,8 @@ import type { StoreAddressInput } from "@/actions";
 export function useStoreAddresses(options?: { enabled?: boolean }) {
   return useQuery<StoreAddressDocument[]>({
     queryKey: ["store-addresses"],
-    queryFn: () => listStoreAddressesAction(),
+    queryFn: () =>
+      apiClient.get<StoreAddressDocument[]>("/api/seller/store/addresses"),
     enabled: options?.enabled,
   });
 }

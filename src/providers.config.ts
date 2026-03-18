@@ -21,9 +21,11 @@ import {
 } from "@mohasinac/auth-firebase";
 import { createResendProvider } from "@mohasinac/email-resend";
 import { firebaseStorageProvider } from "@mohasinac/storage-firebase";
+import { firebaseDbProvider } from "@mohasinac/db-firebase";
 import { tailwindAdapter } from "@mohasinac/css-tailwind";
 
 registerProviders({
+  db: firebaseDbProvider,
   auth: firebaseAuthProvider,
   session: firebaseSessionProvider,
   email: createResendProvider({

@@ -8,11 +8,8 @@
  */
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  listAdminSessionsAction,
-  revokeSessionAction,
-  revokeUserSessionsAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { revokeSessionAction, revokeUserSessionsAction } from "@/actions";
 import type { SessionDocument } from "@/db/schema/sessions";
 
 interface SessionWithUser extends SessionDocument {
@@ -25,7 +22,6 @@ interface SessionWithUser extends SessionDocument {
 }
 
 interface SessionsResponse {
-  success: boolean;
   sessions: SessionWithUser[];
   stats: {
     totalActive: number;
@@ -40,15 +36,8 @@ interface SessionsResponse {
 export function useAdminSessions(limit = 100) {
   return useQuery<SessionsResponse>({
     queryKey: ["admin-sessions", limit.toString()],
-    queryFn: async () => {
-      const result = await listAdminSessionsAction({ limit });
-      return {
-        success: true as const,
-        sessions: result.sessions,
-        stats: result.stats,
-        count: result.sessions.length,
-      } as unknown as SessionsResponse;
-    },
+    queryFn: () =>
+      apiClient.get<SessionsResponse>(`/api/admin/sessions?limit=${limit}`),
     refetchInterval: 30000,
   });
 }

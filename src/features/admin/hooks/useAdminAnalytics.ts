@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getAdminAnalyticsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,22 +28,26 @@ interface AnalyticsSummary {
   publishedProducts: number;
 }
 
+interface AnalyticsData {
+  summary: AnalyticsSummary;
+  ordersByMonth: MonthEntry[];
+  topProducts: TopProduct[];
+}
+
 export interface AnalyticsResponse {
-  data: {
-    summary: AnalyticsSummary;
-    ordersByMonth: MonthEntry[];
-    topProducts: TopProduct[];
-  };
+  data: AnalyticsData;
 }
 
 /**
  * useAdminAnalytics
- * Wraps `adminService.getAnalytics()` with a 5-min client-side cache.
+ * Fetches admin analytics via GET /api/admin/analytics with a 5-min client-side cache.
  */
 export function useAdminAnalytics() {
   return useQuery<AnalyticsResponse>({
     queryKey: ["admin-analytics"],
-    queryFn: async () => ({ data: await getAdminAnalyticsAction() }),
+    queryFn: async () => ({
+      data: await apiClient.get<AnalyticsData>("/api/admin/analytics"),
+    }),
     staleTime: 5 * 60 * 1000,
   });
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { listStoreAddressesAction, createStoreAddressAction } from "@/actions";
+import { createStoreAddressAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { AddressFormData } from "./useAddresses";
 
 interface SavedAddress {
@@ -30,7 +31,7 @@ export function useStoreAddressSelector(options?: {
 }) {
   const { data, isLoading, refetch } = useQuery<SavedAddress[]>({
     queryKey: ["store-addresses"],
-    queryFn: () => listStoreAddressesAction() as Promise<SavedAddress[]>,
+    queryFn: () => apiClient.get<SavedAddress[]>("/api/seller/store/addresses"),
   });
 
   const addresses: SavedAddress[] = data ?? [];

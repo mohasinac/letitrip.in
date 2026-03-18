@@ -1,9 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
-import { listPreOrdersAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 export type PreOrderItem = Pick<
@@ -55,19 +54,10 @@ export function usePreOrders(
 ) {
   const { data, isLoading, error, refetch } = useQuery<PreOrdersListResult>({
     queryKey: ["pre-orders", params ?? ""],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params ?? "");
-      return listPreOrdersAction({
-        filters: sp.get("filters")
-          ? decodeURIComponent(sp.get("filters")!)
-          : undefined,
-        sorts: sp.get("sorts")
-          ? decodeURIComponent(sp.get("sorts")!)
-          : undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-    },
+    queryFn: () =>
+      apiClient.get<PreOrdersListResult>(
+        `/api/products${params ? `?${params}` : ""}`,
+      ) as Promise<PreOrdersListResult>,
     initialData: options?.initialData,
   });
 

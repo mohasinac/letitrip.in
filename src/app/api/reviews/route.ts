@@ -155,7 +155,8 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const response = successResponse(sieveResult.items, undefined, 200, {
+    const response = successResponse({
+      items: sieveResult.items,
       page: sieveResult.page,
       limit: sieveResult.pageSize,
       total: sieveResult.total,

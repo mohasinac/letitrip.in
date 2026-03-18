@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useUrlTable } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { listStoresAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { StoreListItem } from "../types";
 
 interface FirebaseSieveResult {
@@ -43,16 +43,10 @@ export function useStores(options?: UseStoresOptions) {
 
   const query = useQuery<FirebaseSieveResult>({
     queryKey: ["stores", "list", params],
-    queryFn: async () => {
-      const sp = new URLSearchParams(params);
-      const result = await listStoresAction({
-        q: sp.get("q") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return result as unknown as FirebaseSieveResult;
-    },
+    queryFn: () =>
+      apiClient.get<FirebaseSieveResult>(
+        `/api/stores${params ? `?${params}` : ""}`,
+      ) as Promise<FirebaseSieveResult>,
     initialData: options?.initialData,
   });
 

@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
 import {
   makeOfferAction,
@@ -21,8 +21,10 @@ export function useUserOffers() {
   const { data, isLoading, error, refetch } = useQuery<OfferDocument[]>({
     queryKey: ["user-offers"],
     queryFn: async () => {
-      const res = await apiClient.get(API_ENDPOINTS.OFFERS.BUYER_LIST);
-      return (res as { items: OfferDocument[] }).items ?? [];
+      const res = await apiClient.get<{ items: OfferDocument[] }>(
+        API_ENDPOINTS.OFFERS.BUYER_LIST,
+      );
+      return res.items ?? [];
     },
     enabled: !loading && !!user,
     staleTime: 30_000,

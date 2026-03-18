@@ -208,12 +208,15 @@ export function useRegister(options?: {
   return useMutation<any, Error, RegisterData>({
     mutationFn: async (data) => {
       // Server-side registration: Admin SDK creates user, stores profile, creates session, sends verification
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
-        email: data.email.trim(),
-        password: data.password,
-        displayName: data.displayName?.trim() || "",
-        acceptTerms: data.acceptTerms,
-      });
+      const response = await apiClient.post<Record<string, unknown>>(
+        API_ENDPOINTS.AUTH.REGISTER,
+        {
+          email: data.email.trim(),
+          password: data.password,
+          displayName: data.displayName?.trim() || "",
+          acceptTerms: data.acceptTerms,
+        },
+      );
 
       // Sync Firebase client SDK so onAuthStateChanged fires in SessionContext.
       // The server already created the session cookie — syncFirebaseAuth only

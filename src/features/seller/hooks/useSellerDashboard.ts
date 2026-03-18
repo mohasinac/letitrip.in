@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listSellerMyProductsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument } from "@/db/schema";
 
 export interface SellerDashboardProductsResponse {
@@ -16,17 +16,37 @@ export interface SellerDashboardProductsResponse {
   hasMore: boolean;
 }
 
+interface SellerProductsApiResult {
+  products: SellerDashboardProductsResponse["items"];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
 /**
  * useSellerDashboard
- * Wraps `sellerService.listProducts(userId)` for the seller dashboard stats.
- * Returns all seller products to compute status-based counts.
+ * Fetches the seller's products via GET /api/seller/products for dashboard stats.
+ * Returns all seller products (up to 200) to compute status-based counts.
  */
 export function useSellerDashboard(userId: string | undefined) {
   const { data, isLoading, error } = useQuery<SellerDashboardProductsResponse>({
     queryKey: ["seller-products", userId ?? ""],
     queryFn: async () => {
-      const result = await listSellerMyProductsAction({ pageSize: 200 });
-      return result as SellerDashboardProductsResponse;
+      const result = await apiClient.get<SellerProductsApiResult>(
+        "/api/seller/products?pageSize=200",
+      );
+      return {
+        items: result.products,
+        total: result.meta.total,
+        page: result.meta.page,
+        pageSize: result.meta.limit,
+        totalPages: result.meta.totalPages,
+        hasMore: result.meta.hasMore,
+      };
     },
     enabled: !!userId,
   });

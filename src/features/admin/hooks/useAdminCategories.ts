@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
-  buildCategoryTreeAction,
   createCategoryAction,
   updateCategoryAction,
   deleteCategoryAction,
@@ -13,13 +13,12 @@ import type { Category } from "../components";
 /**
  * useAdminCategories
  * Fetches the full category tree and exposes create, update, and delete mutations.
- * Create uses a Server Action; update/delete still use the API route (no actions yet).
  */
 export function useAdminCategories() {
   const query = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "tree"],
     queryFn: async () => ({
-      categories: (await buildCategoryTreeAction()) as unknown as Category[],
+      categories: await apiClient.get<Category[]>("/api/categories"),
     }),
   });
 

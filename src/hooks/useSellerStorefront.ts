@@ -1,11 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  getPublicProfileAction,
-  getSellerProductsAction,
-  getSellerReviewsAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { UserDocument } from "@/db/schema";
 import type {
   SellerReviewsData,
@@ -36,10 +32,12 @@ export function useSellerStorefront(
     error: fetchError,
   } = useQuery<{ user: UserDocument }>({
     queryKey: ["seller-profile", sellerId],
-    queryFn: () =>
-      getPublicProfileAction(sellerId) as unknown as Promise<{
-        user: UserDocument;
-      }>,
+    queryFn: async () => {
+      const user = await apiClient.get<UserDocument>(
+        `/api/profile/${sellerId}`,
+      );
+      return { user };
+    },
     enabled: !!sellerId,
     initialData: initialProfileData,
   });
@@ -57,10 +55,24 @@ export function useSellerStorefront(
   const { data: productsData, isLoading: productsLoading } =
     useQuery<ProductsApiResponse>({
       queryKey: ["storefront-products", sellerId],
-      queryFn: () =>
-        getSellerProductsAction(
-          sellerId,
-        ) as unknown as Promise<ProductsApiResponse>,
+      queryFn: async () => {
+        const result = await apiClient.get<{
+          items: import("@/db/schema").ProductDocument[];
+          total: number;
+          page: number;
+          pageSize: number;
+        }>(
+          `/api/products?filters=sellerId%3D%3D${sellerId}%2Cstatus%3D%3Dpublished`,
+        );
+        return {
+          data: result.items,
+          meta: {
+            total: result.total,
+            page: result.page,
+            pageSize: result.pageSize,
+          },
+        } as ProductsApiResponse;
+      },
       enabled: isReady,
       staleTime: 60000,
     });
@@ -69,9 +81,7 @@ export function useSellerStorefront(
     useQuery<SellerReviewsData>({
       queryKey: ["storefront-reviews", sellerId],
       queryFn: () =>
-        getSellerReviewsAction(
-          sellerId,
-        ) as unknown as Promise<SellerReviewsData>,
+        apiClient.get<SellerReviewsData>(`/api/profile/${sellerId}/reviews`),
       enabled: isReady,
       staleTime: 60000,
     });

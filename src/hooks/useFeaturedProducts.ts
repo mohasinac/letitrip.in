@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listProductsAction, getLatestProductsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -25,18 +25,17 @@ export function useFeaturedProducts() {
   return useQuery<PaginatedResult>({
     queryKey: ["products", "featured"],
     queryFn: async () => {
-      const promotedRes = await listProductsAction({
-        filters: "isPromoted==true,status==published",
-        pageSize: 18,
-      });
+      const promotedRes = await apiClient.get<PaginatedResult>(
+        "/api/products?filters=isPromoted%3D%3Dtrue%2Cstatus%3D%3Dpublished&pageSize=18",
+      );
       const promoted = promotedRes?.items ?? [];
 
       if (promoted.length >= MIN_COUNT) return promotedRes;
 
       // Fill remaining slots with latest products
       const remaining = MIN_COUNT - promoted.length;
-      const latestRes = await getLatestProductsAction(
-        remaining + promoted.length,
+      const latestRes = await apiClient.get<PaginatedResult>(
+        `/api/products?filters=status%3D%3Dpublished&sorts=-createdAt&pageSize=${remaining + promoted.length}`,
       );
       const latest = latestRes?.items ?? [];
 

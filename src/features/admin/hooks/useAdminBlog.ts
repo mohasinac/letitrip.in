@@ -2,7 +2,6 @@
 
 import { useMutation } from "@tanstack/react-query";
 import {
-  listAdminBlogAction,
   createBlogPostAction,
   updateBlogPostAction,
   deleteBlogPostAction,
@@ -23,35 +22,14 @@ interface BlogListMeta {
 }
 
 export function useAdminBlog(sieveParams: string) {
-  const query = createAdminListQuery<
-    BlogPostDocument,
-    { posts: BlogPostDocument[]; meta: BlogListMeta }
-  >({
+  const query = createAdminListQuery<{
+    posts: BlogPostDocument[];
+    meta: BlogListMeta;
+  }>({
     queryKey: ["admin", "blog"],
     sieveParams,
-    action: listAdminBlogAction,
+    endpoint: "/api/admin/blog",
     defaultPageSize: 200,
-    transform: (result) => {
-      const published = result.items.filter(
-        (p) => p.status === "published",
-      ).length;
-      const drafts = result.items.filter((p) => p.status === "draft").length;
-      const featured = result.items.filter((p) => p.isFeatured).length;
-      return {
-        posts: result.items,
-        meta: {
-          total: result.total,
-          published,
-          drafts,
-          featured,
-          filteredTotal: result.total,
-          page: result.page,
-          pageSize: result.pageSize,
-          totalPages: result.totalPages,
-          hasMore: result.hasMore ?? false,
-        },
-      };
-    },
   });
 
   const createMutation = useMutation<BlogPostDocument, Error, unknown>({

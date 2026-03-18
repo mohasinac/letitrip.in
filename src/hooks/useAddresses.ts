@@ -23,7 +23,7 @@ import {
   deleteAddressAction,
   setDefaultAddressAction,
 } from "@/actions";
-import { listAddressesAction, getAddressByIdAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 
 // ============================================================================
 // Types
@@ -74,7 +74,7 @@ export function useAddresses(options?: {
 }) {
   return useQuery<Address[]>({
     queryKey: ["addresses"],
-    queryFn: () => listAddressesAction() as Promise<Address[]>,
+    queryFn: () => apiClient.get<Address[]>("/api/user/addresses"),
     enabled: options?.enabled,
   });
 }
@@ -92,7 +92,10 @@ export function useAddress(
 ) {
   return useQuery<Address>({
     queryKey: ["address", id],
-    queryFn: () => getAddressByIdAction(id) as Promise<Address>,
+    queryFn: async () => {
+      const addresses = await apiClient.get<Address[]>("/api/user/addresses");
+      return (addresses.find((a) => a.id === id) ?? null) as Address;
+    },
     enabled: options?.enabled !== false && !!id,
   });
 }

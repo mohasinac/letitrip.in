@@ -212,7 +212,8 @@ export const GET = createApiHandler({
     }));
 
     // Return with cache headers
-    const response = successResponse(interpolatedFAQs, undefined, undefined, {
+    const response = successResponse({
+      items: interpolatedFAQs,
       total: sieveResult.total,
       page: sieveResult.page,
       pageSize: sieveResult.pageSize,
@@ -226,7 +227,7 @@ export const GET = createApiHandler({
         "account_security",
         "technical_support",
         "general",
-      ],
+      ] as const,
     });
     response.headers.set(
       "Cache-Control",

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { listBrandCategoriesAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { CategoryDocument } from "@/db/schema";
 
 /**
@@ -13,7 +13,10 @@ import type { CategoryDocument } from "@/db/schema";
 export function useBrands() {
   const { data, isLoading } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "brands", "all"],
-    queryFn: () => listBrandCategoriesAction(100),
+    queryFn: () =>
+      apiClient.get<CategoryDocument[]>(
+        "/api/categories?isBrand=true&pageSize=100",
+      ),
     staleTime: 15 * 60 * 1000, // 15 minutes
   });
 

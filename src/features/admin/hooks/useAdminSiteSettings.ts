@@ -1,13 +1,14 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { getSiteSettingsAction, updateSiteSettingsAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
+import { updateSiteSettingsAction } from "@/actions";
 import type { SiteSettingsDocument } from "@/db/schema";
 
 export function useAdminSiteSettings() {
   const query = useQuery<SiteSettingsDocument>({
     queryKey: ["site-settings"],
-    queryFn: () => getSiteSettingsAction() as Promise<SiteSettingsDocument>,
+    queryFn: () => apiClient.get<SiteSettingsDocument>("/api/site-settings"),
   });
 
   const updateMutation = useMutation<any, Error, Partial<SiteSettingsDocument>>(

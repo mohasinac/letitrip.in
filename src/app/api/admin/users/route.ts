@@ -79,7 +79,7 @@ export const GET = createApiHandler({
       total: sieveResult.total,
       meta: {
         page: sieveResult.page,
-        limit: sieveResult.pageSize,
+        pageSize: sieveResult.pageSize,
         total: sieveResult.total,
         totalPages: sieveResult.totalPages,
         hasMore: sieveResult.hasMore,

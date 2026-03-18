@@ -12,7 +12,7 @@ import { useTranslations } from "next-intl";
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
+import type { BlogPost, BlogPostCategory } from "@mohasinac/feat-blog";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -39,7 +39,7 @@ const CATEGORY_ICON: Record<
 };
 
 interface BlogCardProps {
-  post: BlogPostDocument;
+  post: BlogPost;
   selectable?: boolean;
   selected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;

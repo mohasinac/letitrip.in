@@ -4,6 +4,111 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased] — 2026-03-17
+
+### Hook Migration — Server Actions → apiClient (Rule 20/21 compliance)
+
+All public-facing and admin read hooks migrated from Server Actions to `apiClient.get()` calls.
+Rule 20/21: reads in hooks must use `Hook → apiClient`, not `Hook → Server Action`.
+
+**Public hooks migrated (17 hooks across 14 files):**
+
+- `useProductDetail` → `GET /api/products/[id]`
+- `useAuctions` → `GET /api/products?${params}` (view already includes `isAuction==true,status==published`)
+- `usePreOrders` → `GET /api/products?${params}` (view already includes `isPreOrder==true,status==published`)
+- `usePublicEvent` → `GET /api/events/[id]`
+- `useEventLeaderboard` → `GET /api/events/[id]/leaderboard`
+- `useOrder` → `GET /api/user/orders/[id]`
+- `useCategoriesList` → `GET /api/categories?flat=true`
+- `useCategoryDetail` → `GET /api/categories?slug=` + `GET /api/categories?parentId=`
+- `useCategoryProducts` → `GET /api/categories?slug=` + `GET /api/products?${params}` (fixed `ProductsResponse` type to match `{ items, total, ... }`)
+- `useBlogArticles` → `GET /api/blog?featured=true` with fallback to `GET /api/blog?sort=-publishedAt`
+- `useSearch` → `GET /api/categories?flat=true` + `GET /api/search?${params}`
+
+**Admin hooks migrated:**
+
+- `useAdminAnalytics` → `GET /api/admin/analytics`
+- `useAdminStats` → `GET /api/admin/dashboard`
+- `useEvents` → `GET /api/admin/events?${params}`
+- `useEvent` → `GET /api/admin/events/[id]`
+- `useEventStats` → `GET /api/admin/events/[id]/stats` (added `EventStats` type with `totalEntries` etc.)
+- `useEventEntries` → `GET /api/admin/events/[id]/entries?${params}` (now properly paginated vs. previous single-fetch)
+
+**Pattern for 404 handling:** hooks that previously returned `null` on not-found now use `catch(e instanceof ApiClientError && e.status === 404 → return null)`.
+
+**Verification:** `npx tsc --noEmit` → clean; `npm run build` → compiled with pre-existing warnings only
+
+---
+
+## [Unreleased] — 2026-03-16
+
+### API Route Migration + Hook Migration (Session 2)
+
+**New package handlers:**
+
+- `feat-blog/src/api/[slug]/route.ts` — GET `/api/blog/[slug]`: returns `BlogPostDetailResponse { post, related }` via `BlogRepository.findBySlug` + `findByCategory`
+- `feat-stores/src/api/[storeSlug]/route.ts` — GET `/api/stores/[storeSlug]`: returns `StoreDetail` directly (no outer wrapper) via Sieve filter `storeSlug==x,status==active,isPublic==true`
+
+**Local route stubs added:**
+
+- `/api/blog/[slug]` → `export { blogSlugGET as GET } from "@mohasinac/feat-blog"`
+- `/api/stores/[storeSlug]` → `export { storeSlugGET as GET } from "@mohasinac/feat-stores"`
+
+**Read hook migration (Rule 20/21: reads must use apiClient, not Server Actions):**
+
+- `src/hooks/useBlogPosts.ts` — migrated from `listBlogPostsAction` to `apiClient.get('/api/blog?...')`
+- `src/features/blog/hooks/useBlogPost.ts` — migrated from dual Server Actions to single `apiClient.get('/api/blog/${slug}')` returning `BlogPostDetailResponse`
+- `src/features/stores/hooks/useStores.ts` — migrated from `listStoresAction` to `apiClient.get('/api/stores?...')`
+- `src/features/products/hooks/useProducts.ts` — migrated from `listProductsAction` to `apiClient.get('/api/products?...')`
+- `src/features/stores/hooks/useStoreBySlug.ts` — migrated 4 hooks (`useStoreBySlug`, `useStoreReviews`, `useStoreProducts`, `useStoreAuctions`) from Server Actions to `apiClient.get()`
+
+**Package fix — route params type:**
+
+- Both new handlers updated from `Promise<T> | T` union to strict `Promise<T>` for `params` (required by Next.js 15 type checker)
+- Packages rebuilt: `feat-blog` ✅, `feat-stores` ✅
+
+**Verification:** `npx tsc --noEmit` → clean; `npm run build` → compiled with pre-existing warnings only
+
+---
+
+## [Unreleased] — 2026-03-15
+
+### API Route Migration — Package Delegation + Build Fix
+
+Migrated 3 public GET API routes to 2-line re-export stubs that delegate to `@mohasinac/feat-*` package handlers.
+
+**Migrated routes:**
+
+- `/api/blog` → `export { GET } from "@mohasinac/feat-blog"`
+- `/api/stores` → `export { GET } from "@mohasinac/feat-stores"`
+- `/api/events` → `export { GET } from "@mohasinac/feat-events"`
+
+**Package handler updates (response shape harmonisation):**
+
+- `feat-blog`: Changed `BlogListResponse` from `{ items }` to `{ posts, meta: { total, page, pageSize, totalPages, hasMore } }` to match local consumers
+- `feat-stores`: Added field mapping to strip sensitive fields (`createdBy`, raw stats) for public safety
+- `feat-events`: Created new `src/api/route.ts` handler with `status==active` default filter, search support, `createdBy` stripping
+- `feat-products`: Updated to use `pageSize`/`hasMore`, added `brand`/`isPreOrder`/`inStock` filters, `Cache-Control` header
+- `feat-reviews`: Updated to use `pageSize`/`hasMore`/`ratingDistribution`, `sorts` param support
+- All 8 package indexes updated with direct `GET` export alongside aliased exports
+
+**Build fix — webpack `extensionAlias`:**
+
+- Packages moved to `D:\proj\packages` (commit `3519efa1`) caused `Module not found` errors for `.js` extension imports in `auth-firebase`, `contracts`, `db-firebase`
+- Added `webpack.resolve.extensionAlias` to `next.config.js` mapping `.js` → `[.ts, .tsx, .js]` and `.mjs` → `[.mts, .mjs]`
+- Production build now passes cleanly
+
+**Routes assessed as too complex for stub migration:**
+
+- `categories` (211 lines) — tree building, brands, tiers, slug lookup
+- `reviews` (237 lines) — email notifications, rating distribution, featured/latest modes
+- `faqs` (268 lines) — variable interpolation, tags, in-memory Sieve
+- `products` (164 lines) — `categoriesIn` with Firestore `whereIn`, POST with email/auth
+- `homepage-sections` (106 lines) — admin `includeDisabled` logic
+- `search` (123 lines) — Algolia integration
+
+---
+
 ## [Unreleased] — 2026-03-15
 
 ### Packages — `@mohasinac/create-app` scaffolder + dist/tsconfig fixes

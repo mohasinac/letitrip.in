@@ -1,10 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  getFeaturedPreOrdersAction,
-  getLatestPreOrdersAction,
-} from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { ProductDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -28,15 +25,17 @@ export function useFeaturedPreOrders() {
   return useQuery<ProductDocument[]>({
     queryKey: ["pre-orders", "featured"],
     queryFn: async () => {
-      const featuredRes = await getFeaturedPreOrdersAction();
+      const featuredRes = await apiClient.get<PaginatedResult>(
+        "/api/products?filters=isPreOrder%3D%3Dtrue%2Cstatus%3D%3Dpublished&sorts=preOrderDeliveryDate&pageSize=6",
+      );
       const featured = featuredRes?.items ?? [];
 
       if (featured.length >= MIN_COUNT) return featured;
 
       // Fill remaining slots with latest pre-orders
       const remaining = MIN_COUNT - featured.length;
-      const latestRes = await getLatestPreOrdersAction(
-        remaining + featured.length,
+      const latestRes = await apiClient.get<PaginatedResult>(
+        `/api/products?filters=isPreOrder%3D%3Dtrue%2Cstatus%3D%3Dpublished&sorts=-createdAt&pageSize=${remaining + featured.length}`,
       );
       const latest = latestRes?.items ?? [];
 

@@ -2,27 +2,22 @@
 
 import { useMutation } from "@tanstack/react-query";
 import {
-  listAdminCouponsAction,
   adminCreateCouponAction,
   adminUpdateCouponAction,
   adminDeleteCouponAction,
 } from "@/actions";
-import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { AdminListMeta } from "./createAdminListQuery";
 import type { CouponDocument } from "@/db/schema";
 
 export function useAdminCoupons(sieveParams: string) {
-  const query = createAdminListQuery<
-    CouponDocument,
-    { coupons: CouponDocument[]; meta: AdminListMeta }
-  >({
+  const query = createAdminListQuery<{
+    coupons: CouponDocument[];
+    meta: AdminListMeta;
+  }>({
     queryKey: ["admin", "coupons"],
     sieveParams,
-    action: listAdminCouponsAction,
-    transform: (result) => ({
-      coupons: result.items,
-      meta: extractBasicMeta(result),
-    }),
+    endpoint: "/api/admin/coupons",
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

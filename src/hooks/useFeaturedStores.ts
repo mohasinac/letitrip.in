@@ -1,29 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { listStoresAction } from "@/actions";
+import { useStores } from "@mohasinac/feat-stores";
 import type { StoreListItem } from "@/types/stores";
-
-interface PaginatedResult<T = unknown> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
 
 /**
  * useFeaturedStores
  * Fetches top approved stores for the homepage featured stores section.
+ * Delegates to @mohasinac/feat-stores.
  */
 export function useFeaturedStores() {
-  return useQuery<PaginatedResult<StoreListItem>>({
-    queryKey: ["stores", "featured"],
-    queryFn: () =>
-      listStoresAction({
-        pageSize: 12,
-        sorts: "-createdAt",
-      }) as unknown as Promise<PaginatedResult<StoreListItem>>,
+  const { stores, total, isLoading, error } = useStores({
+    pageSize: 12,
+    sort: "-createdAt",
   });
+
+  return {
+    data:
+      stores.length > 0 || !isLoading
+        ? { items: stores as StoreListItem[], total }
+        : undefined,
+    isLoading,
+    error,
+  };
 }

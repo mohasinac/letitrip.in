@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listTopLevelCategoriesAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { CategoryDocument } from "@/db/schema";
 
 /**
@@ -16,7 +16,10 @@ export function useTopCategories(
 ) {
   return useQuery<CategoryDocument[]>({
     queryKey: ["categories", "top", String(limit)],
-    queryFn: () => listTopLevelCategoriesAction(limit),
+    queryFn: () =>
+      apiClient.get<CategoryDocument[]>(
+        `/api/categories?tier=0&pageSize=${limit}`,
+      ),
     staleTime: 15 * 60 * 1000, // 15 minutes — categories change infrequently
     initialData: options?.initialData,
   });

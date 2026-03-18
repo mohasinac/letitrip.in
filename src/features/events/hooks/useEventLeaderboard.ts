@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getEventLeaderboardAction } from "@/actions";
+import { apiClient } from "@mohasinac/http";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface LeaderboardResponse {
@@ -11,7 +11,7 @@ interface LeaderboardResponse {
 
 /**
  * useEventLeaderboard
- * Fetches the leaderboard (top entries) for a public event.
+ * Fetches the leaderboard via GET /api/events/[id]/leaderboard.
  *
  * @param eventId - The event to fetch the leaderboard for
  * @param enabled - Whether the query should run (default: true)
@@ -19,10 +19,8 @@ interface LeaderboardResponse {
 export function useEventLeaderboard(eventId: string, enabled = true) {
   const { data, isLoading, error, refetch } = useQuery<LeaderboardResponse>({
     queryKey: ["event-leaderboard", eventId],
-    queryFn: async () => {
-      const leaderboard = await getEventLeaderboardAction(eventId);
-      return { leaderboard, pointsLabel: "Points" };
-    },
+    queryFn: () =>
+      apiClient.get<LeaderboardResponse>(`/api/events/${eventId}/leaderboard`),
     enabled: enabled && Boolean(eventId),
   });
 

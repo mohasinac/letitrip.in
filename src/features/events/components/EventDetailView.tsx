@@ -8,14 +8,14 @@ import { SurveyEventSection } from "./SurveyEventSection";
 import { FeedbackEventSection } from "./FeedbackEventSection";
 import { EventLeaderboard } from "./EventLeaderboard";
 import { formatDate } from "@/utils";
-import type { EventDocument } from "@/db/schema";
+import type { EventItem } from "@mohasinac/feat-events";
 import { usePublicEvent } from "../hooks/usePublicEvent";
 
 const { spacing, typography } = THEME_CONSTANTS;
 
 interface EventDetailViewProps {
   id: string;
-  initialData?: EventDocument;
+  initialData?: EventItem;
 }
 
 export function EventDetailView({ id, initialData }: EventDetailViewProps) {

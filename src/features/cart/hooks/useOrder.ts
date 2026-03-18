@@ -1,17 +1,26 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getOrderByIdAction } from "@/actions";
+import { apiClient, ApiClientError } from "@mohasinac/http";
 import type { OrderDocument } from "@/db/schema";
 
 /**
  * useOrder
- * Wraps `orderService.getById(orderId)` for the checkout success view.
+ * Fetches a user's order via GET /api/user/orders/[id].
  */
 export function useOrder(orderId: string | null) {
   const { data, isLoading, error } = useQuery<OrderDocument | null>({
     queryKey: ["order", orderId ?? ""],
-    queryFn: () => getOrderByIdAction(orderId!),
+    queryFn: async () => {
+      try {
+        return await apiClient.get<OrderDocument>(
+          `/api/user/orders/${orderId}`,
+        );
+      } catch (e) {
+        if (e instanceof ApiClientError && e.status === 404) return null;
+        throw e;
+      }
+    },
     enabled: !!orderId,
   });
 

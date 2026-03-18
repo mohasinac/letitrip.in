@@ -1,92 +1,37 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { searchProductsAction, listCategoriesAction } from "@/actions";
-import type { CategoryDocument, ProductDocument } from "@/db/schema";
+import {
+  useSearch as _useSearch,
+  type SearchCategoryOption,
+  type SearchResponse,
+} from "@mohasinac/feat-search";
+import type { CategoryDocument } from "@/db/schema";
 
-type ProductCardData = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "availableQuantity"
->;
-
-export interface SearchResponse {
-  items: ProductCardData[];
-  q: string;
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-  backend: "algolia" | "in-memory";
-}
+export type { SearchResponse } from "@mohasinac/feat-search";
 
 interface UseSearchOptions {
-  initialCategories?: CategoryDocument[];
+  initialCategories?: CategoryDocument[] | SearchCategoryOption[];
 }
 
 /**
  * useSearch
- * Wraps `searchService.query(params)` + `categoryService.list()` for
- * the search page facets. `searchParams` is a pre-built URLSearchParams
- * query string produced by `useUrlTable` / `useMemo` in the component.
- * `options.initialCategories` — server-prefetched category list for filter facets.
+ * Fetches search results via GET /api/search and category facets via GET /api/categories?flat=true.
+ * Delegates to @mohasinac/feat-search.
  */
 export function useSearch(searchParams: string, options?: UseSearchOptions) {
-  const { data: catData } = useQuery<CategoryDocument[]>({
-    queryKey: ["categories", "flat"],
-    queryFn: async () => (await listCategoriesAction({ pageSize: 500 })).items,
-    initialData: options?.initialCategories,
-  });
-
-  const { data: searchData, isLoading } = useQuery<SearchResponse>({
-    queryKey: ["search", searchParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(searchParams);
-      return searchProductsAction({
-        q: sp.get("q") ?? undefined,
-        category: sp.get("category") ?? undefined,
-        subcategory: sp.get("subcategory") ?? undefined,
-        minPrice: sp.has("minPrice") ? Number(sp.get("minPrice")) : undefined,
-        maxPrice: sp.has("maxPrice") ? Number(sp.get("maxPrice")) : undefined,
-        condition: sp.get("condition") ?? undefined,
-        isAuction:
-          sp.get("isAuction") === "true"
-            ? true
-            : sp.get("isAuction") === "false"
-              ? false
-              : undefined,
-        isPreOrder: sp.get("isPreOrder") === "true" ? true : undefined,
-        inStock: sp.get("inStock") === "true" ? true : undefined,
-        minRating: sp.has("minRating")
-          ? Number(sp.get("minRating"))
-          : undefined,
-        sort: sp.get("sort") ?? sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-    },
-  });
+  const { results, items, total, totalPages, isLoading, categories } =
+    _useSearch(searchParams, {
+      initialCategories: options?.initialCategories as
+        | SearchCategoryOption[]
+        | undefined,
+    });
 
   return {
-    catData: catData ?? [],
-    searchData,
-    products: searchData?.items ?? [],
-    total: searchData?.total ?? 0,
-    totalPages: searchData?.totalPages ?? 1,
+    catData: categories,
+    searchData: results,
+    products: items,
+    total,
+    totalPages,
     isLoading,
   };
 }
