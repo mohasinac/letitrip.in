@@ -11,13 +11,28 @@ import type { AdminListMeta } from "./createAdminListQuery";
 import type { CouponDocument } from "@/db/schema";
 
 export function useAdminCoupons(sieveParams: string) {
-  const query = createAdminListQuery<{
-    coupons: CouponDocument[];
-    meta: AdminListMeta;
-  }>({
+  const query = createAdminListQuery<
+    {
+      items: CouponDocument[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+    },
+    { coupons: CouponDocument[]; meta: AdminListMeta }
+  >({
     queryKey: ["admin", "coupons"],
     sieveParams,
     endpoint: "/api/admin/coupons",
+    transform: (result) => ({
+      coupons: result.items,
+      meta: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

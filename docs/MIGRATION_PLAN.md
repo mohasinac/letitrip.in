@@ -4,7 +4,7 @@
 > packages. App-specific configuration, overrides, and letitrip-only business
 > logic stay local.
 >
-> **Start date**: 2026-03-19 | **Last updated**: 2026-03-24
+> **Start date**: 2026-03-19 | **Last updated**: 2026-03-24 (admin/seller GET stubs)
 > **Active workspace**: `D:\proj\letitrip.in`
 
 ---
@@ -13,17 +13,16 @@
 
 Before reading the phase-by-phase tracker, understand WHY certain routes stay local permanently:
 
-| Blocker                               | Affected routes                                                                                         | Explanation                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **PII encryption**                    | `/api/user/profile`, `/api/user/addresses`, `/api/user/orders`, `/api/admin/users`, `/api/admin/orders` | letitrip encrypts PII fields (email, phone, address) at rest via AES. Package repos use raw `IRepository<T>` with no encryption layer. Encrypted reads/writes must stay in local Firebase-backed repos.                                                                                                                                  |
-| **Firebase session tracking**         | All `/api/auth/*` routes                                                                                | letitrip maintains a `sessions` Firestore collection tracking device info, revocation status, and activity. This is letitrip-specific. The packages handle cookie creation/verification via `ISessionProvider` but do NOT manage the sessions collection.                                                                                |
-| **Firebase REST API for passwords**   | `/api/auth/login`, `/api/auth/register`                                                                 | Password verification uses `accounts:signInWithPassword` REST endpoint (requires `FIREBASE_API_KEY`). `IAuthProvider` does not abstract this — it's Firebase-specific. Creating a session cookie requires a Firebase ID token; `ISessionProvider.createSession(AuthPayload)` cannot create a Firebase session cookie from payload alone. |
-| **Cart schema mismatch**              | `/api/cart/*`                                                                                           | letitrip stores the cart as a **single document per user** (doc ID = userId, items array inside). The `feat-cart` package is designed for a **collection per item** (one doc per cart item). Not compatible without a schema migration.                                                                                                  |
-| **Subcollection pattern**             | `/api/user/wishlist`, `/api/user/addresses`                                                             | These use Firestore subcollections (`users/{uid}/wishlist/{productId}`). `IRepository<T>` targets top-level collections; subcollection paths are not supported without a provider-level extension.                                                                                                                                       |
-| **Razorpay / Shiprocket**             | `/api/payment/*`, `/api/seller/shipping`, `/api/seller/payouts`                                         | These providers are not yet wrapped in `IPaymentProvider` / `IShippingProvider` implementations. Stub packages (`@mohasinac/payment-razorpay`, `@mohasinac/shipping-shiprocket`) don't exist yet.                                                                                                                                        |
-| **Auction schema mismatch**           | `/api/bids/*`, `/api/auctions/*`                                                                        | letitrip bid documents use `productId` field; `feat-auctions` uses `auctionId`. Different field name causes Sieve filter `auctionId=={value}` to return no results. Requires a Firestore schema migration.                                                                                                                               |
-| **Complex aggregation**               | `/api/admin/dashboard`, `/api/admin/analytics`, `/api/promotions`                                       | These routes combine reads from multiple repositories and compute derived stats. No general-purpose aggregation abstraction exists in packages.                                                                                                                                                                                          |
-| **letitrip-specific response shapes** | Admin list routes                                                                                       | Admin list endpoints return `{ products: [...], meta: {...} }` (field name `products`). Package handlers return `{ items: [...], ... }`. Changing the shape requires updating all admin hooks/views simultaneously — a larger refactor.                                                                                                  |
+| Blocker                             | Affected routes                                                                                         | Explanation                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **PII encryption**                  | `/api/user/profile`, `/api/user/addresses`, `/api/user/orders`, `/api/admin/users`, `/api/admin/orders` | letitrip encrypts PII fields (email, phone, address) at rest via AES. Package repos use raw `IRepository<T>` with no encryption layer. Encrypted reads/writes must stay in local Firebase-backed repos.                                                                                                                                  |
+| **Firebase session tracking**       | All `/api/auth/*` routes                                                                                | letitrip maintains a `sessions` Firestore collection tracking device info, revocation status, and activity. This is letitrip-specific. The packages handle cookie creation/verification via `ISessionProvider` but do NOT manage the sessions collection.                                                                                |
+| **Firebase REST API for passwords** | `/api/auth/login`, `/api/auth/register`                                                                 | Password verification uses `accounts:signInWithPassword` REST endpoint (requires `FIREBASE_API_KEY`). `IAuthProvider` does not abstract this — it's Firebase-specific. Creating a session cookie requires a Firebase ID token; `ISessionProvider.createSession(AuthPayload)` cannot create a Firebase session cookie from payload alone. |
+| **Cart schema mismatch**            | `/api/cart/*`                                                                                           | letitrip stores the cart as a **single document per user** (doc ID = userId, items array inside). The `feat-cart` package is designed for a **collection per item** (one doc per cart item). Not compatible without a schema migration.                                                                                                  |
+| **Subcollection pattern**           | `/api/user/wishlist`, `/api/user/addresses`                                                             | These use Firestore subcollections (`users/{uid}/wishlist/{productId}`). `IRepository<T>` targets top-level collections; subcollection paths are not supported without a provider-level extension.                                                                                                                                       |
+| **Razorpay / Shiprocket**           | `/api/payment/*`, `/api/seller/shipping`, `/api/seller/payouts`                                         | These providers are not yet wrapped in `IPaymentProvider` / `IShippingProvider` implementations. Stub packages (`@mohasinac/payment-razorpay`, `@mohasinac/shipping-shiprocket`) don't exist yet.                                                                                                                                        |
+| **Auction schema mismatch**         | `/api/bids/*`, `/api/auctions/*`                                                                        | letitrip bid documents use `productId` field; `feat-auctions` uses `auctionId`. Different field name causes Sieve filter `auctionId=={value}` to return no results. Requires a Firestore schema migration.                                                                                                                               |
+| **Complex aggregation**             | `/api/admin/dashboard`, `/api/admin/analytics`, `/api/promotions`                                       | These routes combine reads from multiple repositories and compute derived stats. No general-purpose aggregation abstraction exists in packages.                                                                                                                                                                                          |
 
 ---
 
@@ -286,29 +285,44 @@ This enables hobson, licorice, and future projects to share these components.
 
 ## Migration Completion Tracker
 
-| Phase           | Description                               | Status                                                 | Routes affected      |
-| --------------- | ----------------------------------------- | ------------------------------------------------------ | -------------------- |
-| Infra           | Infrastructure shims + wiring             | ✅ Done                                                | —                    |
-| Stubs-A         | Blog/Events/Stores 2-line stubs           | ✅ Done                                                | 5 routes             |
-| Phase 1 partial | products + products/[id] GET stubs        | ✅ Done                                                | +2 routes (7 total)  |
-| Phase 1 blocked | reviews/faqs/categories/homepage-sections | ✅ Done (faqs permanently local)                       | +9 routes (16 total) |
-| Phase 1 ext     | carousel + homepage-sections item GETs    | ✅ Done                                                | +4 routes (20 total) |
-| Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)     | —                    |
-| Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)  | —                    |
-| Phase 2-C       | feat-pre-orders stub wired                | ✅ Done (new `api/pre-orders/route.ts` stub)           | +1 route             |
-| Phase 2-E       | feat-search api handler + stub            | ✅ Done (Firestore search; Firestore-only, no Algolia) | +1 route             |
-| Phase 2-F       | feat-events [id] api handler + stub       | ✅ Done (poll results + leaderboard in package)        | +1 route             |
-| Phase 2-G       | feat-stores sub-route handlers + stubs    | ✅ Done (products, auctions, reviews)                  | +3 routes            |
-| Auth-me         | feat-auth GET /api/auth/me                | ✅ Done (`authMeGET` via `IAuthProvider.getUser()`)    | +1 route (28 total)  |
-| Phase 2-D       | feat-seller api handlers                  | 🔲 Future (Razorpay/Shiprocket blocker)                | +9                   |
-| Phase 3         | Repository migration to packages          | ⚠️ Partial — see below                                 | —                    |
-| Phase 4         | Auth + complex routes                     | 🔲 Future — see blockers above                         | ~71                  |
-| Phase 5         | Domain hooks migration to packages        | 🔲 Future                                              | —                    |
-| Phase 6         | Feature component migration               | 🔲 Future                                              | —                    |
+| Phase           | Description                               | Status                                                                       | Routes affected      |
+| --------------- | ----------------------------------------- | ---------------------------------------------------------------------------- | -------------------- |
+| Infra           | Infrastructure shims + wiring             | ✅ Done                                                                      | —                    |
+| Stubs-A         | Blog/Events/Stores 2-line stubs           | ✅ Done                                                                      | 5 routes             |
+| Phase 1 partial | products + products/[id] GET stubs        | ✅ Done                                                                      | +2 routes (7 total)  |
+| Phase 1 blocked | reviews/faqs/categories/homepage-sections | ✅ Done (faqs permanently local)                                             | +9 routes (16 total) |
+| Phase 1 ext     | carousel + homepage-sections item GETs    | ✅ Done                                                                      | +4 routes (20 total) |
+| Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)                           | —                    |
+| Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)                        | —                    |
+| Phase 2-C       | feat-pre-orders stub wired                | ✅ Done (new `api/pre-orders/route.ts` stub)                                 | +1 route             |
+| Phase 2-E       | feat-search api handler + stub            | ✅ Done (Firestore search; Firestore-only, no Algolia)                       | +1 route             |
+| Phase 2-F       | feat-events [id] api handler + stub       | ✅ Done (poll results + leaderboard in package)                              | +1 route             |
+| Phase 2-G       | feat-stores sub-route handlers + stubs    | ✅ Done (products, auctions, reviews)                                        | +3 routes            |
+| Auth-me         | feat-auth GET /api/auth/me                | ✅ Done (`authMeGET` via `IAuthProvider.getUser()`)                          | +1 route (28 total)  |
+| NW-1            | feat-admin GET handlers + stubs           | ✅ Done (products, coupons, reviews, bids) — transforms added to hooks       | +4 routes (32 total) |
+| NW-Seller       | feat-seller products GET handler + stub   | ✅ Done (`sellerProductsGET`, enforces sellerId)                             | +1 route (33 total)  |
+| Phase 2-D       | feat-seller remaining api handlers        | 🔲 Future (Razorpay/Shiprocket blocker for payouts/shipping; PII for orders) | +6                   |
+| Phase 3         | Repository migration to packages          | ⚠️ Partial — see below                                                       | —                    |
+| Phase 4         | Auth + complex routes                     | 🔲 Future — see blockers above                                               | ~71                  |
+| Phase 5         | Domain hooks migration to packages        | 🔲 Future                                                                    | —                    |
+| Phase 6         | Feature component migration               | 🔲 Future                                                                    | —                    |
 
-**Progress (2026-03-24)**: 28 / ~100 delegatable routes = **~28%**
+**Progress (2026-03-24)**: 33 / ~100 delegatable routes = **~33%**
 **After Phase 4 (unblocked auth + account + orders)**: ~70 / ~100 = ~70%
 **Permanently local** (~30 routes): auth login/register/logout/session, cart, wishlist, addresses, orders, payments, seller-payouts, admin-dashboard
+
+### NW-1 Implementation Notes
+
+- `feat-admin` now exports `adminProductsGET`, `adminCouponsGET`, `adminReviewsGET`, `adminBidsGET`
+- Package response shape: `{ items: T[], total, page, pageSize, totalPages, hasMore }` (apiClient unwraps `data` wrapper)
+- Letitrip hooks added `transform` to map to old `{ products/coupons/reviews/bids: [...], meta: {...} }` shape so views need no changes
+- Routes that stay local: `GET /api/admin/blog` (aggregation stats), `GET /api/admin/stores` (complex user+store join), `GET /api/admin/orders`+`/users` (PII), `GET /api/admin/dashboard` (multi-repo)
+
+### NW-Seller Implementation Notes
+
+- `feat-seller` now exports `sellerProductsGET`
+- Handler enforces `sellerId=={uid}` server-side (security: client-supplied filters merged AFTER seller filter)
+- Response shape matches local route exactly: `{ products: [...], meta: { page, limit, total, totalPages, hasMore } }`
 
 ### Phase 3 Repository Status
 
@@ -388,26 +402,15 @@ These routes will **never** be 2-line stubs because they require letitrip-specif
 
 ## Next Unblocked Work
 
-### NW-1: Admin list GET stubs (response shape migration + hook update required)
+### ~~NW-1: Admin list GET stubs~~ ✅ DONE
 
-Before wiring admin list stubs, the response shape mismatch must be resolved:
+Admin `GET` handlers added to `feat-admin` for products, coupons, reviews, bids.
+Hooks updated with `transform`. Local routes now use 2-line stubs.
 
-- **Package returns**: `{ success: true, data: { items: [], total, page, ... } }`
-- **letitrip hooks expect**: `{ data: { products: [] } }` or `{ data: { posts: [] } }` etc.
+### ~~NW-Seller: Seller products GET stub~~ ✅ DONE
 
-**Resolution**: Update letitrip admin hooks to use the package field name `items` instead of domain-specific names. Then create admin package handlers + stubs for:
-
-| Route                     | Notes                                     |
-| ------------------------- | ----------------------------------------- |
-| `GET /api/admin/products` | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/blog`     | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/events`   | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/stores`   | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/coupons`  | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/reviews`  | No PII; Sieve-compatible; admin role only |
-| `GET /api/admin/sessions` | No PII; letitrip-specific tracking        |
-
-**Estimated effort**: 1 session — update 5-6 package handlers + 6 hooks + 6 stubs.
+`sellerProductsGET` added to `feat-seller`. Enforces `sellerId=={uid}` server-side.
+Local `/api/seller/products` route is now a 2-line stub.
 
 ### NW-2: Migrate local `createApiHandler` to `createRouteHandler` (non-PII routes)
 

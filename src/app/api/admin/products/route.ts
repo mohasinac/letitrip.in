@@ -1,17 +1,12 @@
 /**
  * Admin Products API Route
- * GET  /api/admin/products — List all products with pagination & filtering
- * POST /api/admin/products — Create a new product (admin)
+ * GET  /api/admin/products — Delegated to @mohasinac/feat-admin
+ * POST /api/admin/products — Create a new product (admin, local)
  */
 
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@/lib/api/request-helpers";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -20,57 +15,9 @@ import {
   formatZodErrors,
   productCreateSchema,
 } from "@/lib/validation/schemas";
-import { errorResponse } from "@/lib/api-response";
 
-/**
- * GET /api/admin/products
- *
- * Query params:
- *  - filters  (string)  — Sieve filters (e.g. status==published)
- *  - sorts    (string)  — Sieve sorts (e.g. -createdAt)
- *  - page     (number)  — page number (default 1)
- *  - pageSize (number)  — results per page (default 50)
- */
-export const GET = createApiHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
-    const searchParams = getSearchParams(request);
-
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
-      min: 1,
-      max: 200,
-    });
-    const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-
-    serverLogger.info("Admin products list requested", {
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
-
-    const sieveResult = await productRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
-
-    return successResponse({
-      products: sieveResult.items,
-      meta: {
-        page: sieveResult.page,
-        pageSize: sieveResult.pageSize,
-        total: sieveResult.total,
-        totalPages: sieveResult.totalPages,
-        hasMore: sieveResult.hasMore,
-      },
-    });
-  },
-});
+// GET delegated to package (uses session auth + Sieve query via IRepository)
+export { adminProductsGET as GET } from "@mohasinac/feat-admin";
 
 /**
  * POST /api/admin/products

@@ -11,13 +11,28 @@ import type { AdminListMeta } from "./createAdminListQuery";
 import type { AdminProduct } from "../components";
 
 export function useAdminProducts(sieveParams: string) {
-  const query = createAdminListQuery<{
-    products: AdminProduct[];
-    meta: AdminListMeta;
-  }>({
+  const query = createAdminListQuery<
+    {
+      items: AdminProduct[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+    },
+    { products: AdminProduct[]; meta: AdminListMeta }
+  >({
     queryKey: ["admin", "products"],
     sieveParams,
     endpoint: "/api/admin/products",
+    transform: (result) => ({
+      products: result.items,
+      meta: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

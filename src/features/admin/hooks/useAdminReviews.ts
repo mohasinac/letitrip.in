@@ -7,13 +7,28 @@ import type { AdminListMeta } from "./createAdminListQuery";
 import type { Review } from "../components";
 
 export function useAdminReviews(sieveParams: string) {
-  const query = createAdminListQuery<{
-    reviews: Review[];
-    meta: AdminListMeta;
-  }>({
+  const query = createAdminListQuery<
+    {
+      items: Review[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+    },
+    { reviews: Review[]; meta: AdminListMeta }
+  >({
     queryKey: ["admin", "reviews"],
     sieveParams,
     endpoint: "/api/admin/reviews",
+    transform: (result) => ({
+      reviews: result.items,
+      meta: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+    }),
   });
 
   const updateMutation = useMutation<
