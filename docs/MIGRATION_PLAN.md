@@ -31,23 +31,29 @@
 
 ### ✅ COMPLETE — API Route Delegation
 
-| Route                             | Package                      | Status                                                                 |
-| --------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
-| `GET /api/blog`                   | `@mohasinac/feat-blog`       | ✅ 2-line stub                                                         |
-| `GET /api/blog/[slug]`            | `@mohasinac/feat-blog`       | ✅ 2-line stub (`blogSlugGET as GET`)                                  |
-| `GET /api/events`                 | `@mohasinac/feat-events`     | ✅ 2-line stub                                                         |
-| `GET /api/stores`                 | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
-| `GET /api/stores/[storeSlug]`     | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
-| `GET /api/products`               | `@mohasinac/feat-products`   | ✅ hybrid stub (POST local)                                            |
-| `GET /api/products/[id]`          | `@mohasinac/feat-products`   | ✅ hybrid stub (PATCH+DELETE local)                                    |
-| `GET /api/reviews`                | `@mohasinac/feat-reviews`    | ✅ hybrid stub (POST local) — supports featured/latest/aggregate modes |
-| `GET /api/reviews/[id]`           | `@mohasinac/feat-reviews`    | ✅ hybrid stub (PATCH+DELETE local)                                    |
-| `GET /api/categories`             | `@mohasinac/feat-categories` | ✅ hybrid stub (POST local) — flat/tree/tier/brand/slug modes added    |
-| `GET /api/categories/[id]`        | `@mohasinac/feat-categories` | ✅ 2-line stub (`categoryItemGET as GET`)                              |
-| `GET /api/homepage-sections`      | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — admin session auth for ?includeDisabled  |
-| `GET /api/homepage-sections/[id]` | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `homepageSectionItemGET`         |
-| `GET /api/carousel`               | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — `carouselGET`                            |
-| `GET /api/carousel/[id]`          | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `carouselItemGET`                |
+| Route                                  | Package                      | Status                                                                 |
+| -------------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `GET /api/blog`                        | `@mohasinac/feat-blog`       | ✅ 2-line stub                                                         |
+| `GET /api/blog/[slug]`                 | `@mohasinac/feat-blog`       | ✅ 2-line stub (`blogSlugGET as GET`)                                  |
+| `GET /api/events`                      | `@mohasinac/feat-events`     | ✅ 2-line stub                                                         |
+| `GET /api/stores`                      | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/stores/[storeSlug]`          | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/products`                    | `@mohasinac/feat-products`   | ✅ hybrid stub (POST local)                                            |
+| `GET /api/products/[id]`               | `@mohasinac/feat-products`   | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/reviews`                     | `@mohasinac/feat-reviews`    | ✅ hybrid stub (POST local) — supports featured/latest/aggregate modes |
+| `GET /api/reviews/[id]`                | `@mohasinac/feat-reviews`    | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/categories`                  | `@mohasinac/feat-categories` | ✅ hybrid stub (POST local) — flat/tree/tier/brand/slug modes added    |
+| `GET /api/categories/[id]`             | `@mohasinac/feat-categories` | ✅ 2-line stub (`categoryItemGET as GET`)                              |
+| `GET /api/homepage-sections`           | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — admin session auth for ?includeDisabled  |
+| `GET /api/homepage-sections/[id]`      | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `homepageSectionItemGET`         |
+| `GET /api/carousel`                    | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — `carouselGET`                            |
+| `GET /api/carousel/[id]`               | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `carouselItemGET`                |
+| `GET /api/search`                      | `@mohasinac/feat-search`     | ✅ 2-line stub (Firestore only; Algolia via `ISearchProvider` future)  |
+| `GET /api/events/[id]`                 | `@mohasinac/feat-events`     | ✅ 2-line stub (poll results + survey leaderboard in package handler)  |
+| `GET/POST /api/pre-orders`             | `@mohasinac/feat-pre-orders` | ✅ 2-line stub                                                         |
+| `GET /api/stores/[storeSlug]/products` | `@mohasinac/feat-stores`     | ✅ 2-line stub (`storeProductsGET`)                                    |
+| `GET /api/stores/[storeSlug]/auctions` | `@mohasinac/feat-stores`     | ✅ 2-line stub (`storeAuctionsGET`)                                    |
+| `GET /api/stores/[storeSlug]/reviews`  | `@mohasinac/feat-stores`     | ✅ 2-line stub (`storeReviewsGET`)                                     |
 
 ---
 
@@ -83,10 +89,10 @@ export const POST = createApiHandler<...>({ ... }); // keep local
 
 **Permanently local routes** (letitrip-specific business logic that cannot be generalised):
 
-- `GET /api/faqs` + `GET /api/faqs/[id]` — variable interpolation from `siteSettingsRepository`
-- `GET /api/stores/[storeSlug]/products|reviews|auctions` — multi-repo joins (stores + products + reviews)
-- `GET /api/events/[id]` — complex poll results + survey leaderboard from `eventEntryRepository`
-- `GET /api/search` — Algolia integration with letitrip-specific product field mapping
+- `GET /api/faqs` + `GET /api/faqs/[id]` — variable interpolation from `siteSettingsRepository` (keeps `{{companyName}}` etc.)
+
+> Previously listed as permanently local but now **migrated to packages**: search, events/[id], stores sub-routes.
+> Algolia search can be re-enabled by registering `@mohasinac/search-algolia` as `ISearchProvider`.
 
 ---
 
@@ -117,11 +123,11 @@ coupons — incompatible response shape.
 
 ### 2-C: feat-pre-orders
 
-**Status**: ✅ Package handler added (`packages/packages/feat-pre-orders/src/api/route.ts`)
+**Status**: ✅ Package handler added + letitrip stub wired (`src/app/api/pre-orders/route.ts`)
 
-**Note**: letitrip pre-orders are products with `isPreOrder: true` flag, not a
-dedicated `preOrders` Firestore collection. No `/api/pre-orders` local route exists
-and none is needed until a dedicated collection is introduced.
+Delegates GET + POST to `@mohasinac/feat-pre-orders`. Uses the `preOrders` Firestore
+collection. When letitrip records pre-orders, use this collection (not the `isPreOrder`
+product flag for the list endpoint).
 
 ### 2-D: feat-seller (complex — deferred to Phase 4)
 
@@ -250,16 +256,18 @@ This enables hobson, licorice, and future projects to share these components.
 | Phase 1 ext     | carousel + homepage-sections item GETs    | ✅ Done                                                | +4 routes (20 total) |
 | Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)     | —                    |
 | Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)  | —                    |
-| Phase 2-C       | feat-pre-orders api handler               | ✅ Handler added; no stub needed (no local collection) | —                    |
+| Phase 2-C       | feat-pre-orders stub wired                | ✅ Done (new `api/pre-orders/route.ts` stub)           | +1 route             |
+| Phase 2-E       | feat-search api handler + stub            | ✅ Done (Firestore search; Firestore-only, no Algolia) | +1 route             |
+| Phase 2-F       | feat-events [id] api handler + stub       | ✅ Done (poll results + leaderboard in package)        | +1 route             |
+| Phase 2-G       | feat-stores sub-route handlers + stubs    | ✅ Done (products, auctions, reviews)                  | +3 routes            |
 | Phase 2-D       | feat-seller api handlers                  | 🔲 Future                                              | +9                   |
 | Phase 3         | Repository migration                      | 🔲 Future                                              | —                    |
 | Phase 4         | Auth + complex routes                     | 🔲 Future (needs auth in packages)                     | +71                  |
 | Phase 5         | Hooks migration                           | 🔲 Future                                              | —                    |
 | Phase 6         | Component migration                       | 🔲 Future                                              | —                    |
 
-**Progress**: 7 / ~100 delegatable routes = ~7%
-**After Phase 1 unblocked**: 11 / ~100 = ~11%
-**After Phase 4**: ~82 / ~100 = ~82%
+**Progress (2026-03-24)**: 27 / ~100 delegatable routes = ~27%
+**After Phase 4 (auth + cart + orders + payments)**: ~82 / ~100 = ~82%
 
 ---
 
