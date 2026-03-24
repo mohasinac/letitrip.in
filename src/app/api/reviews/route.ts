@@ -1,16 +1,11 @@
 /**
  * Reviews API Routes
  *
- * Handles product review creation and listing.
- * GET uses a two-phase approach:
- *  1. reviewRepository.findByProduct()  — full product reviews for aggregate stats
- *  2. reviewRepository.listForProduct() — Firestore-native Sieve page (offset+limit)
+ * GET  /api/reviews — delegated to @mohasinac/feat-reviews
+ *   Supports: ?featured=true (flat array), ?latest=true (paginated),
+ *             ?productId=<id> (paginated + averageRating + ratingDistribution)
  *
- * TODO (Future):
- * - Review voting (helpful/not helpful)
- * - Spam detection with ML/AI
- * - Review response from sellers
- * - Review analytics
+ * POST /api/reviews — local: auth, purchase verification, email notification
  */
 
 import {
@@ -19,12 +14,6 @@ import {
   productRepository,
 } from "@/repositories";
 import { errorResponse, successResponse } from "@/lib/api-response";
-import {
-  getBooleanParam,
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@/lib/api/request-helpers";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
 import { reviewCreateSchema } from "@/lib/validation/schemas";
@@ -33,145 +22,8 @@ import { sendNewReviewNotificationEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { createApiHandler } from "@/lib/api/api-handler";
 
-/**
- * GET /api/reviews
- *
- * Get reviews with filtering
- *
- * Query Parameters:
- * - productId: string (required)
- * - filters: string (Sieve filters)
- * - sorts: string (Sieve sorts)
- * - page: number (default: 1)
- * - pageSize: number (default: 10, max: 50)
- *
- * ✅ Fetches reviews via reviewRepository.findByProduct(productId)
- * ✅ productId required parameter (returns 400 if missing)
- * ✅ Pagination via Sieve (page/pageSize params, max 50)
- * ✅ Returns ratingDistribution (1-5 stars count) and averageRating in meta
- * ✅ Cache-Control headers set (2 min public)
- * ✅ Featured reviews shortcut (featured=true param, no productId required)
- */
-export const GET = createApiHandler({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-    const productId = getStringParam(searchParams, "productId");
-    const featured = getBooleanParam(searchParams, "featured") === true;
-    const latest = getBooleanParam(searchParams, "latest") === true;
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 10, {
-      min: 1,
-      max: 50,
-    });
-    const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-
-    // Handle featured reviews query (no productId required)
-    if (featured) {
-      const featuredReviews = await reviewRepository.findFeatured(pageSize);
-      const response = successResponse(featuredReviews, undefined, 200, {
-        page: 1,
-        limit: pageSize,
-        total: featuredReviews.length,
-        totalPages: 1,
-        hasMore: false,
-      });
-      response.headers.set(
-        "Cache-Control",
-        "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-      );
-      return response;
-    }
-
-    // Handle latest/all approved reviews (no productId required)
-    // Supports sorts, filters (merged with status==approved), and higher pageSize
-    if (latest) {
-      const latestPageSize = getNumberParam(searchParams, "pageSize", 24, {
-        min: 1,
-        max: 200,
-      });
-      const baseFilter = "status==approved";
-      const combinedFilters = filters ? `${baseFilter},${filters}` : baseFilter;
-      const sieveResult = await reviewRepository.listAll({
-        filters: combinedFilters,
-        sorts,
-        page,
-        pageSize: latestPageSize,
-      });
-      const latestResponse = successResponse(
-        sieveResult.items,
-        undefined,
-        200,
-        {
-          page: sieveResult.page,
-          limit: sieveResult.pageSize,
-          total: sieveResult.total,
-          totalPages: sieveResult.totalPages,
-          hasMore: sieveResult.hasMore,
-        },
-      );
-      latestResponse.headers.set(
-        "Cache-Control",
-        "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
-      );
-      return latestResponse;
-    }
-
-    // Require productId parameter for product-specific reviews
-    if (!productId) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.PRODUCT_ID_REQUIRED, 400);
-    }
-
-    // Fetch all reviews for rating stats (aggregate calculations use all docs)
-    const allReviews = await reviewRepository.findByProduct(productId);
-
-    // Calculate rating distribution (1-5 stars)
-    const ratingDistribution: Record<number, number> = {
-      5: 0,
-      4: 0,
-      3: 0,
-      2: 0,
-      1: 0,
-    };
-    let totalRating = 0;
-    let approvedCount = 0;
-
-    allReviews.forEach((review) => {
-      if (review.status === "approved") {
-        ratingDistribution[review.rating]++;
-        totalRating += review.rating;
-        approvedCount++;
-      }
-    });
-
-    const averageRating = approvedCount > 0 ? totalRating / approvedCount : 0;
-
-    // Firestore-native paginated list scoped to this product
-    const sieveResult = await reviewRepository.listForProduct(productId, {
-      filters: filters || "status==approved",
-      sorts,
-      page,
-      pageSize,
-    });
-
-    const response = successResponse({
-      items: sieveResult.items,
-      page: sieveResult.page,
-      limit: sieveResult.pageSize,
-      total: sieveResult.total,
-      totalPages: sieveResult.totalPages,
-      hasMore: sieveResult.hasMore,
-      ratingDistribution,
-      averageRating: Math.round(averageRating * 10) / 10,
-    });
-    response.headers.set(
-      "Cache-Control",
-      "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
-    );
-    return response;
-  },
-});
+// GET delegated to package — supports featured, latest, and product-specific modes
+export { GET } from "@mohasinac/feat-reviews";
 
 /**
  * POST /api/reviews
