@@ -34,7 +34,11 @@ export const PATCH = createApiHandler<
         error: error instanceof Error ? error.message : String(error),
         logId,
       });
-      throw new AppError(ERROR_MESSAGES.COPILOT.FEEDBACK_FAILED, 500);
+      throw new AppError(
+        500,
+        ERROR_MESSAGES.COPILOT.FEEDBACK_FAILED,
+        "FEEDBACK_FAILED",
+      );
     }
   },
 });

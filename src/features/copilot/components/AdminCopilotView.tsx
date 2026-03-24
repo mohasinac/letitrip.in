@@ -42,14 +42,11 @@ export function AdminCopilotView() {
   };
 
   return (
-    <section className={spacing.page}>
+    <section className={spacing.pageY}>
       <AdminPageHeader
         title={t("title")}
-        actions={
-          <Button variant="outline" size="sm" onClick={startNewConversation}>
-            {t("newConversation")}
-          </Button>
-        }
+        actionLabel={t("newConversation")}
+        onAction={startNewConversation}
       />
 
       <Card className="flex flex-col h-[calc(100vh-220px)] xl:h-[calc(100vh-180px)]">
@@ -57,7 +54,7 @@ export function AdminCopilotView() {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className={`${flex.center} flex-col h-full text-center`}>
-              <Heading as="h3" className={typography.heading.sm}>
+              <Heading level={3} className={typography.h5}>
                 {t("noMessages")}
               </Heading>
               <Text className="text-muted-foreground mt-2">
@@ -72,7 +69,7 @@ export function AdminCopilotView() {
 
           {isLoading && (
             <div className="flex items-start gap-3">
-              <div className={`rounded-lg p-3 ${themed.surface}`}>
+              <div className={`rounded-lg p-3 ${themed.bgElevated}`}>
                 <Span className="text-muted-foreground animate-pulse">
                   {t("thinking")}
                 </Span>
@@ -100,7 +97,7 @@ export function AdminCopilotView() {
             onChange={(e) => setInput(e.target.value)}
             placeholder={t("placeholder")}
             disabled={isLoading}
-            className={`flex-1 rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${themed.input}`}
+            className={`flex-1 rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${themed.bgInput}`}
             maxLength={4000}
           />
           <Button type="submit" disabled={isLoading || !input.trim()}>
@@ -125,7 +122,7 @@ function ChatBubble({ message }: { message: CopilotMessage }) {
         className={`max-w-[80%] rounded-lg p-3 ${
           isUser
             ? "bg-primary text-primary-foreground"
-            : `${themed.surface} border`
+            : `${themed.bgElevated} border`
         }`}
       >
         <Text className="whitespace-pre-wrap text-sm">{message.content}</Text>

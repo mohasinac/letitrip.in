@@ -21,7 +21,11 @@ export const GET = createApiHandler({
     const conversationId = url.searchParams.get("conversationId");
 
     if (!conversationId) {
-      throw new AppError("conversationId query parameter is required", 400);
+      throw new AppError(
+        400,
+        "conversationId query parameter is required",
+        "VALIDATION_ERROR",
+      );
     }
 
     try {
@@ -35,7 +39,11 @@ export const GET = createApiHandler({
         error: error instanceof Error ? error.message : String(error),
         conversationId,
       });
-      throw new AppError(ERROR_MESSAGES.COPILOT.HISTORY_FAILED, 500);
+      throw new AppError(
+        500,
+        ERROR_MESSAGES.COPILOT.HISTORY_FAILED,
+        "HISTORY_FAILED",
+      );
     }
   },
 });

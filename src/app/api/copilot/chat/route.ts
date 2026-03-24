@@ -35,7 +35,11 @@ function getGenAI(): GoogleGenerativeAI {
   if (!_genAI) {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-      throw new AppError(ERROR_MESSAGES.COPILOT.MODEL_UNAVAILABLE, 503);
+      throw new AppError(
+        503,
+        ERROR_MESSAGES.COPILOT.MODEL_UNAVAILABLE,
+        "MODEL_UNAVAILABLE",
+      );
     }
     _genAI = new GoogleGenerativeAI(key);
   }
@@ -131,7 +135,11 @@ export const POST = createApiHandler<(typeof chatSchema)["_output"]>({
         error: error instanceof Error ? error.message : String(error),
         conversationId,
       });
-      throw new AppError(ERROR_MESSAGES.COPILOT.GENERATION_FAILED, 502);
+      throw new AppError(
+        502,
+        ERROR_MESSAGES.COPILOT.GENERATION_FAILED,
+        "GENERATION_FAILED",
+      );
     }
   },
 });
