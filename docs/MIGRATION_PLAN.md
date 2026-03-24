@@ -31,15 +31,18 @@
 
 ### ✅ COMPLETE — API Route Delegation
 
-| Route                         | Package                    | Status                                |
-| ----------------------------- | -------------------------- | ------------------------------------- |
-| `GET /api/blog`               | `@mohasinac/feat-blog`     | ✅ 2-line stub                        |
-| `GET /api/blog/[slug]`        | `@mohasinac/feat-blog`     | ✅ 2-line stub (`blogSlugGET as GET`) |
-| `GET /api/events`             | `@mohasinac/feat-events`   | ✅ 2-line stub                        |
-| `GET /api/stores`             | `@mohasinac/feat-stores`   | ✅ 2-line stub                        |
-| `GET /api/stores/[storeSlug]` | `@mohasinac/feat-stores`   | ✅ 2-line stub                        |
-| `GET /api/products`           | `@mohasinac/feat-products` | ✅ hybrid stub (POST local)           |
-| `GET /api/products/[id]`      | `@mohasinac/feat-products` | ✅ hybrid stub (PATCH+DELETE local)   |
+| Route                         | Package                      | Status                                                                 |
+| ----------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `GET /api/blog`               | `@mohasinac/feat-blog`       | ✅ 2-line stub                                                         |
+| `GET /api/blog/[slug]`        | `@mohasinac/feat-blog`       | ✅ 2-line stub (`blogSlugGET as GET`)                                  |
+| `GET /api/events`             | `@mohasinac/feat-events`     | ✅ 2-line stub                                                         |
+| `GET /api/stores`             | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/stores/[storeSlug]` | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/products`           | `@mohasinac/feat-products`   | ✅ hybrid stub (POST local)                                            |
+| `GET /api/products/[id]`      | `@mohasinac/feat-products`   | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/reviews`            | `@mohasinac/feat-reviews`    | ✅ hybrid stub (POST local) — supports featured/latest/aggregate modes |
+| `GET /api/reviews/[id]`       | `@mohasinac/feat-reviews`    | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/categories`         | `@mohasinac/feat-categories` | ✅ hybrid stub (POST local) — flat/tree/tier/brand/slug modes added    |
 
 ---
 
@@ -49,20 +52,19 @@ These packages already have GET handlers exported. Create 2-line stubs in letitr
 to delegate the public read endpoint. **POST/PATCH/DELETE stay local** because they
 contain auth, validation, and complex business logic specific to letitrip.
 
-| Action          | Route                    | Package                      | Method | Status     | Blocker                                                                                             |
-| --------------- | ------------------------ | ---------------------------- | ------ | ---------- | --------------------------------------------------------------------------------------------------- |
-| ~~Create stub~~ | `/api/products`          | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                                   |
-| ~~Create stub~~ | `/api/products/[id]`     | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                                   |
-| Create stub     | `/api/reviews`           | `@mohasinac/feat-reviews`    | GET    | 🔴 Blocked | Package missing `featured=true`, `latest=true` modes + `averageRating`/`ratingDistribution` in meta |
-| Create stub     | `/api/faqs`              | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation from site settings                         |
-| Create stub     | `/api/categories`        | `@mohasinac/feat-categories` | GET    | 🔴 Blocked | Local returns hierarchical tree; package returns flat list                                          |
-| Create stub     | `/api/homepage-sections` | `@mohasinac/feat-homepage`   | GET    | 🟡 Partial | Public GET compatible; admin `?includeDisabled=true` not supported in package                       |
+| Action          | Route                    | Package                      | Method | Status     | Blocker                                                                                   |
+| --------------- | ------------------------ | ---------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------- |
+| ~~Create stub~~ | `/api/products`          | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
+| ~~Create stub~~ | `/api/products/[id]`     | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
+| ~~Create stub~~ | `/api/reviews`           | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | Package enhanced: featured/latest modes + aggregate stats added                           |
+| ~~Create stub~~ | `/api/reviews/[id]`      | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | reviewItemGET added to package                                                            |
+| ~~Create stub~~ | `/api/categories`        | `@mohasinac/feat-categories` | GET    | ✅ Done    | Package enhanced: flat/tier/brand/showOnHomepage/tree modes; hook updated to expect array |
+| Create stub     | `/api/faqs`              | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation from site settings               |
+| Create stub     | `/api/homepage-sections` | `@mohasinac/feat-homepage`   | GET    | 🟡 Partial | Public GET compatible; admin `?includeDisabled=true` not supported in package             |
 
-**Package enhancements needed to unblock:**
+**Package enhancements needed to unblock remaining routes:**
 
-- `feat-reviews`: Add `featured` + `latest` query modes; add aggregate stats to response meta
 - `feat-faq`: Accept site-settings-style variable map; interpolate in handler
-- `feat-categories`: Add `?tree=true` mode that builds nested tree from flat list
 - `feat-homepage`: Add `?includeDisabled=true` with admin auth guard
 
 **Note**: Routes that also have POST currently will keep the POST handler local.

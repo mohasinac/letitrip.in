@@ -2,7 +2,10 @@
  * Reviews API - Individual Review Routes
  *
  * Handles individual review operations
+ * GET delegated to @mohasinac/feat-reviews; PATCH + DELETE stay local.
  */
+
+export { reviewItemGET as GET } from "@mohasinac/feat-reviews";
 
 import { reviewRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -13,19 +16,6 @@ import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
-
-/**
- * GET /api/reviews/[id] — Public access
- */
-export const GET = createApiHandler<never, IdParams>({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
-    const { id } = params!;
-    const review = await reviewRepository.findById(id);
-    if (!review) throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
-    return successResponse(review);
-  },
-});
 
 /**
  * PATCH /api/reviews/[id] — Requires auth + ownership or moderator/admin
