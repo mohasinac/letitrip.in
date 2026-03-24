@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased] — 2026-03-24
+
+### Package Migration — Seller GET routes delegated to @mohasinac/feat-seller
+
+Three new GET handler stubs wired, delegating to `@mohasinac/feat-seller`:
+
+- `GET /api/seller/store` → `sellerStoreGET` (stores collection, `ownerId=={uid}`)
+- `GET /api/seller/coupons` → `sellerCouponsGET` (coupons collection, `sellerId=={uid}`)
+- `GET /api/seller/offers` → `sellerOffersGET` (offers collection, `sellerId=={uid}`)
+
+All three handlers use `createRouteHandler` from `@mohasinac/next` (session claims only — no Firestore user read overhead). Response shapes verified against `useSellerStore`, `useSellerCoupons`, `useSellerOffers` hooks.
+
+**`feat-seller` additions** (`packages/packages/feat-seller/`):
+
+- `src/api/store/route.ts` — `sellerStoreGET`
+- `src/api/coupons/route.ts` — `sellerCouponsGET`
+- `src/api/offers/route.ts` — `sellerOffersGET`
+- `src/index.ts` — exports all three new handlers
+
+**Package migration progress**: 36 / ~100 delegatable routes (~36%)
+
+---
+
 ## [Unreleased] — 2026-03-17
 
 ### Hook Migration — Server Actions → apiClient (Rule 20/21 compliance)

@@ -4,7 +4,7 @@
 > packages. App-specific configuration, overrides, and letitrip-only business
 > logic stay local.
 >
-> **Start date**: 2026-03-19 | **Last updated**: 2026-03-24 (admin/seller GET stubs)
+> **Start date**: 2026-03-19 | **Last updated**: 2026-03-24 (seller store/coupons/offers GET stubs + NW-2 audit + NW-3/4/5 detail)
 > **Active workspace**: `D:\proj\letitrip.in`
 
 ---
@@ -285,29 +285,30 @@ This enables hobson, licorice, and future projects to share these components.
 
 ## Migration Completion Tracker
 
-| Phase           | Description                               | Status                                                                       | Routes affected      |
-| --------------- | ----------------------------------------- | ---------------------------------------------------------------------------- | -------------------- |
-| Infra           | Infrastructure shims + wiring             | ✅ Done                                                                      | —                    |
-| Stubs-A         | Blog/Events/Stores 2-line stubs           | ✅ Done                                                                      | 5 routes             |
-| Phase 1 partial | products + products/[id] GET stubs        | ✅ Done                                                                      | +2 routes (7 total)  |
-| Phase 1 blocked | reviews/faqs/categories/homepage-sections | ✅ Done (faqs permanently local)                                             | +9 routes (16 total) |
-| Phase 1 ext     | carousel + homepage-sections item GETs    | ✅ Done                                                                      | +4 routes (20 total) |
-| Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)                           | —                    |
-| Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)                        | —                    |
-| Phase 2-C       | feat-pre-orders stub wired                | ✅ Done (new `api/pre-orders/route.ts` stub)                                 | +1 route             |
-| Phase 2-E       | feat-search api handler + stub            | ✅ Done (Firestore search; Firestore-only, no Algolia)                       | +1 route             |
-| Phase 2-F       | feat-events [id] api handler + stub       | ✅ Done (poll results + leaderboard in package)                              | +1 route             |
-| Phase 2-G       | feat-stores sub-route handlers + stubs    | ✅ Done (products, auctions, reviews)                                        | +3 routes            |
-| Auth-me         | feat-auth GET /api/auth/me                | ✅ Done (`authMeGET` via `IAuthProvider.getUser()`)                          | +1 route (28 total)  |
-| NW-1            | feat-admin GET handlers + stubs           | ✅ Done (products, coupons, reviews, bids) — transforms added to hooks       | +4 routes (32 total) |
-| NW-Seller       | feat-seller products GET handler + stub   | ✅ Done (`sellerProductsGET`, enforces sellerId)                             | +1 route (33 total)  |
-| Phase 2-D       | feat-seller remaining api handlers        | 🔲 Future (Razorpay/Shiprocket blocker for payouts/shipping; PII for orders) | +6                   |
-| Phase 3         | Repository migration to packages          | ⚠️ Partial — see below                                                       | —                    |
-| Phase 4         | Auth + complex routes                     | 🔲 Future — see blockers above                                               | ~71                  |
-| Phase 5         | Domain hooks migration to packages        | 🔲 Future                                                                    | —                    |
-| Phase 6         | Feature component migration               | 🔲 Future                                                                    | —                    |
+| Phase           | Description                                | Status                                                                       | Routes affected      |
+| --------------- | ------------------------------------------ | ---------------------------------------------------------------------------- | -------------------- |
+| Infra           | Infrastructure shims + wiring              | ✅ Done                                                                      | —                    |
+| Stubs-A         | Blog/Events/Stores 2-line stubs            | ✅ Done                                                                      | 5 routes             |
+| Phase 1 partial | products + products/[id] GET stubs         | ✅ Done                                                                      | +2 routes (7 total)  |
+| Phase 1 blocked | reviews/faqs/categories/homepage-sections  | ✅ Done (faqs permanently local)                                             | +9 routes (16 total) |
+| Phase 1 ext     | carousel + homepage-sections item GETs     | ✅ Done                                                                      | +4 routes (20 total) |
+| Phase 2-A       | feat-auctions api handler                  | ✅ Handler added; stub not wired (schema mismatch)                           | —                    |
+| Phase 2-B       | feat-promotions api handler                | ✅ Handler added; stub not wired (aggregate response)                        | —                    |
+| Phase 2-C       | feat-pre-orders stub wired                 | ✅ Done (new `api/pre-orders/route.ts` stub)                                 | +1 route             |
+| Phase 2-E       | feat-search api handler + stub             | ✅ Done (Firestore search; Firestore-only, no Algolia)                       | +1 route             |
+| Phase 2-F       | feat-events [id] api handler + stub        | ✅ Done (poll results + leaderboard in package)                              | +1 route             |
+| Phase 2-G       | feat-stores sub-route handlers + stubs     | ✅ Done (products, auctions, reviews)                                        | +3 routes            |
+| Auth-me         | feat-auth GET /api/auth/me                 | ✅ Done (`authMeGET` via `IAuthProvider.getUser()`)                          | +1 route (28 total)  |
+| NW-1            | feat-admin GET handlers + stubs            | ✅ Done (products, coupons, reviews, bids) — transforms added to hooks       | +4 routes (32 total) |
+| NW-Seller       | feat-seller products GET handler + stub    | ✅ Done (`sellerProductsGET`, enforces sellerId)                             | +1 route (33 total)  |
+| NW-Seller-2     | feat-seller store/coupons/offers GET stubs | ✅ Done (`sellerStoreGET`, `sellerCouponsGET`, `sellerOffersGET`)            | +3 routes (36 total) |
+| Phase 2-D       | feat-seller remaining api handlers         | 🔲 Future (Razorpay/Shiprocket blocker for payouts/shipping; PII for orders) | +6                   |
+| Phase 3         | Repository migration to packages           | ⚠️ Partial — see below                                                       | —                    |
+| Phase 4         | Auth + complex routes                      | 🔲 Future — see blockers above                                               | ~71                  |
+| Phase 5         | Domain hooks migration to packages         | 🔲 Future                                                                    | —                    |
+| Phase 6         | Feature component migration                | 🔲 Future                                                                    | —                    |
 
-**Progress (2026-03-24)**: 33 / ~100 delegatable routes = **~33%**
+**Progress (2026-03-24)**: 36 / ~100 delegatable routes = **~36%**
 **After Phase 4 (unblocked auth + account + orders)**: ~70 / ~100 = ~70%
 **Permanently local** (~30 routes): auth login/register/logout/session, cart, wishlist, addresses, orders, payments, seller-payouts, admin-dashboard
 
@@ -412,6 +413,32 @@ Hooks updated with `transform`. Local routes now use 2-line stubs.
 `sellerProductsGET` added to `feat-seller`. Enforces `sellerId=={uid}` server-side.
 Local `/api/seller/products` route is now a 2-line stub.
 
+### ~~NW-Seller-2: Seller store/coupons/offers GET stubs~~ ✅ DONE (2026-03-24)
+
+Three new GET handlers added to `feat-seller`:
+
+| Handler            | Collection | Filter            | Response shape                     |
+| ------------------ | ---------- | ----------------- | ---------------------------------- |
+| `sellerStoreGET`   | `stores`   | `ownerId=={uid}`  | `{ store: StoreDocument \| null }` |
+| `sellerCouponsGET` | `coupons`  | `sellerId=={uid}` | `{ coupons: [], total }`           |
+| `sellerOffersGET`  | `offers`   | `sellerId=={uid}` | `{ items: [], total, page, … }`    |
+
+All use `createRouteHandler` from `@mohasinac/next` (session claims only — no Firestore user read).
+Matched to existing hook response shapes: `useSellerStore`, `useSellerCoupons`, `useSellerOffers`.
+
+**Seller routes that stay permanently local:**
+
+| Route                             | Reason                                                  |
+| --------------------------------- | ------------------------------------------------------- |
+| `GET /api/seller/orders`          | Multi-collection query (products→orders) + customer PII |
+| `GET /api/seller/payouts`         | Aggregates 3 repos + earnings computation               |
+| `GET /api/seller/analytics`       | Complex aggregation                                     |
+| `GET /api/seller/payout-settings` | Reads `user.payoutDetails` from UserDocument            |
+| `GET /api/seller/shipping`        | Shiprocket dependency                                   |
+| `GET /api/seller/store/addresses` | Firestore subcollection pattern                         |
+
+---
+
 ### NW-2: Migrate local `createApiHandler` to `createRouteHandler` (non-PII routes)
 
 letitrip's local `createApiHandler` is functionally equivalent to `createRouteHandler` from
@@ -420,24 +447,133 @@ letitrip's local `createApiHandler` is functionally equivalent to `createRouteHa
 1. `createApiHandler` fetches the full `UserDocument` from Firestore on each authenticated request
 2. `createRouteHandler` only provides the session claims (`uid`, `email`, `role`) — no Firestore read
 
-Routes that only need `user.uid` and `user.role` (the majority) can switch to `createRouteHandler`
-without behavior change. Routes that need `user.displayName` or letitrip-specific fields (`user.seller`, etc.)
-must either do their own repo lookup or stay with `createApiHandler`.
+**Audit result (2026-03-24):** 72 routes use `createApiHandler`.
 
-**Estimated effort**: 2-3 sessions — audit all ~60 local routes, switch ~40 to `createRouteHandler`.
+- **65 candidates**: only access `user.uid` — safe to switch to `createRouteHandler`
+- **7 must keep `createApiHandler`**: access extra user fields
+
+| Route (must keep)                 | User fields accessed                              |
+| --------------------------------- | ------------------------------------------------- |
+| `bids/route.ts`                   | `user.role` check in handler body                 |
+| `checkout/route.ts`               | `user.displayName`, `user.email` — order creation |
+| `copilot/chat/route.ts`           | Full user context for AI assistant                |
+| `payment/verify/route.ts`         | `user.email`, `user.displayName` — receipt        |
+| `seller/payout-settings/route.ts` | `user.payoutDetails` — masked bank account        |
+| `user/become-seller/route.ts`     | `user.seller`, `user.status` — eligibility check  |
+| `user/profile/route.ts`           | Full profile update including all user fields     |
+
+**Migration steps (per route):**
+
+```ts
+// BEFORE
+import { createApiHandler } from "@/lib/api/api-handler";
+export const GET = createApiHandler({
+  auth: true,
+  roles: ["seller"],
+  handler: async ({ user }) => {
+    /* user.uid available */
+  },
+});
+
+// AFTER
+import { createRouteHandler } from "@mohasinac/next";
+export const GET = createRouteHandler({
+  roles: ["seller"],
+  handler: async ({ user }) => {
+    /* user.uid available — no Firestore read */
+  },
+});
+```
+
+Note: `createRouteHandler` handler receives `request: Request` (not `NextRequest`).
+If a route uses `NextRequest` features (like `nextUrl`), import and cast: `const req = request as NextRequest`.
+
+**Estimated effort**: 1 session — mechanical switch across 65 routes.
+**Impact**: Eliminates ~65 Firestore user document reads per authenticated request cycle.
+
+---
 
 ### NW-3: Cart schema migration (unblocks feat-cart delegation)
 
 Current: `carts/{userId}` — single doc with `items: CartItem[]` array.  
 Required: `carts/{docId}` — one doc per cart item, `userId` field for querying.
 
-This is a Firestore data migration (needs a script + dual-read period). After the migration,
-`GET /api/cart`, `POST /api/cart`, `DELETE /api/cart/[itemId]` can be delegated to `feat-cart`.
+**Migration steps:**
+
+1. Write migration script `scripts/migrate-carts.ts`:
+   - Read all `carts/*` documents
+   - For each document, write N documents to `cart_items/{docId}` (one per item) with `userId` field
+   - Use batched Firestore writes (500 per batch)
+2. Deploy new code that reads from `cart_items` instead of `carts`
+3. After 7-day dual-read period, drop old `carts` collection
+
+After migration, `GET /api/cart`, `POST /api/cart`, `DELETE /api/cart/[itemId]` can be delegated
+to `feat-cart`. Unblocks +3 routes.
+
+**Schema comparison:**
+
+```
+// Current (single-doc per user)
+carts/{userId}: { items: CartItem[] }
+
+// Required (one doc per item)
+cart_items/{autoId}: { userId, productId, quantity, variantId, addedAt }
+```
+
+---
 
 ### NW-4: Auction schema fix (unblocks feat-auctions)
 
 Rename Firestore `bids/{docId}.productId` → `bids/{docId}.auctionId`. After migration,
 `GET /api/bids?productId=` stub can delegate to `feat-auctions`.
+
+**Migration steps:**
+
+1. Write migration script `scripts/migrate-bids.ts`:
+   - Read all `bids/*` documents
+   - For each, write `auctionId: doc.productId` and delete `productId`
+   - Use batched writes
+2. Update all local callers of `bidRepository` that use `.productId` to use `.auctionId`
+3. Wire `GET /api/bids` as 2-line stub to `feat-auctions`
+
+**Estimated effort**: 1 session (script) + 1 session (caller updates). Unblocks +1 route.
+
+---
+
+### NW-5: Add @mohasinac/payment-razorpay and @mohasinac/shipping-shiprocket
+
+Creating these two provider packages (Layer 3) unblocks:
+
+- All `payment/*` routes → delegates to `feat-payments`
+- `seller/shipping` and `seller/payouts` → delegates to `feat-seller`
+
+**`@mohasinac/payment-razorpay`**: Implements `IPaymentProvider`.
+
+```ts
+// packages/payment-razorpay/src/index.ts
+import type { IPaymentProvider, PaymentOrder, PaymentCapture, Refund } from "@mohasinac/contracts";
+export class RazorpayPaymentProvider implements IPaymentProvider { ... }
+```
+
+**`@mohasinac/shipping-shiprocket`**: Implements `IShippingProvider`.
+
+```ts
+// packages/shipping-shiprocket/src/index.ts
+import type { IShippingProvider } from "@mohasinac/contracts";
+export class ShiprocketShippingProvider implements IShippingProvider { ... }
+```
+
+After implementing, wire them in `providers.config.ts`:
+
+```ts
+registerProviders({
+  ...,
+  payment: new RazorpayPaymentProvider({ keyId: ..., keySecret: ... }),
+  shipping: new ShiprocketShippingProvider({ email: ..., password: ... }),
+});
+```
+
+**Estimated effort**: 3-5 sessions per provider. High complexity — deferred.
 
 ---
 
