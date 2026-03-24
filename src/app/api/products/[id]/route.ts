@@ -1,37 +1,25 @@
 /**
  * Product Detail API Routes
  *
- * Handles individual product operations (get, update, delete)
+ * GET    /api/products/[id] — delegated to @mohasinac/feat-products (ID or slug, public)
+ * PATCH  /api/products/[id] — local (auth required; status-machine validation)
+ * DELETE /api/products/[id] — local (auth required; soft-delete)
  */
 
+// ── GET /api/products/[id] ── delegated to package (ID or slug lookup) ────────
+export { productItemGET as GET } from "@mohasinac/feat-products";
+
+// ── PATCH / DELETE ── local (auth + letitrip-specific business logic) ─────────
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { PRODUCT_STATUS_TRANSITIONS } from "@/db/schema";
 import { productUpdateSchema } from "@/lib/validation/schemas";
 import { AuthorizationError, NotFoundError } from "@/lib/errors";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { serverLogger } from "@/lib/server-logger";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
-
-/**
- * GET /api/products/[id] — Get single product by ID or slug (public)
- */
-export const GET = createApiHandler<never, IdParams>({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
-    const { id } = params!;
-    const product = await productRepository.findByIdOrSlug(id);
-    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-
-    // Track view asynchronously — analytics must not block the response
-    productRepository.incrementViewCount(product.id).catch(() => {});
-
-    return successResponse(product);
-  },
-});
 
 /**
  * PATCH /api/products/[id] — Update product (owner, moderator, or admin)
