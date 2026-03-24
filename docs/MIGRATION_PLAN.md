@@ -31,18 +31,23 @@
 
 ### ✅ COMPLETE — API Route Delegation
 
-| Route                         | Package                      | Status                                                                 |
-| ----------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
-| `GET /api/blog`               | `@mohasinac/feat-blog`       | ✅ 2-line stub                                                         |
-| `GET /api/blog/[slug]`        | `@mohasinac/feat-blog`       | ✅ 2-line stub (`blogSlugGET as GET`)                                  |
-| `GET /api/events`             | `@mohasinac/feat-events`     | ✅ 2-line stub                                                         |
-| `GET /api/stores`             | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
-| `GET /api/stores/[storeSlug]` | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
-| `GET /api/products`           | `@mohasinac/feat-products`   | ✅ hybrid stub (POST local)                                            |
-| `GET /api/products/[id]`      | `@mohasinac/feat-products`   | ✅ hybrid stub (PATCH+DELETE local)                                    |
-| `GET /api/reviews`            | `@mohasinac/feat-reviews`    | ✅ hybrid stub (POST local) — supports featured/latest/aggregate modes |
-| `GET /api/reviews/[id]`       | `@mohasinac/feat-reviews`    | ✅ hybrid stub (PATCH+DELETE local)                                    |
-| `GET /api/categories`         | `@mohasinac/feat-categories` | ✅ hybrid stub (POST local) — flat/tree/tier/brand/slug modes added    |
+| Route                             | Package                      | Status                                                                 |
+| --------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| `GET /api/blog`                   | `@mohasinac/feat-blog`       | ✅ 2-line stub                                                         |
+| `GET /api/blog/[slug]`            | `@mohasinac/feat-blog`       | ✅ 2-line stub (`blogSlugGET as GET`)                                  |
+| `GET /api/events`                 | `@mohasinac/feat-events`     | ✅ 2-line stub                                                         |
+| `GET /api/stores`                 | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/stores/[storeSlug]`     | `@mohasinac/feat-stores`     | ✅ 2-line stub                                                         |
+| `GET /api/products`               | `@mohasinac/feat-products`   | ✅ hybrid stub (POST local)                                            |
+| `GET /api/products/[id]`          | `@mohasinac/feat-products`   | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/reviews`                | `@mohasinac/feat-reviews`    | ✅ hybrid stub (POST local) — supports featured/latest/aggregate modes |
+| `GET /api/reviews/[id]`           | `@mohasinac/feat-reviews`    | ✅ hybrid stub (PATCH+DELETE local)                                    |
+| `GET /api/categories`             | `@mohasinac/feat-categories` | ✅ hybrid stub (POST local) — flat/tree/tier/brand/slug modes added    |
+| `GET /api/categories/[id]`        | `@mohasinac/feat-categories` | ✅ 2-line stub (`categoryItemGET as GET`)                              |
+| `GET /api/homepage-sections`      | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — admin session auth for ?includeDisabled  |
+| `GET /api/homepage-sections/[id]` | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `homepageSectionItemGET`         |
+| `GET /api/carousel`               | `@mohasinac/feat-homepage`   | ✅ hybrid stub (POST local) — `carouselGET`                            |
+| `GET /api/carousel/[id]`          | `@mohasinac/feat-homepage`   | ✅ hybrid stub (PATCH+DELETE local) — `carouselItemGET`                |
 
 ---
 
@@ -52,17 +57,20 @@ These packages already have GET handlers exported. Create 2-line stubs in letitr
 to delegate the public read endpoint. **POST/PATCH/DELETE stay local** because they
 contain auth, validation, and complex business logic specific to letitrip.
 
-| Action          | Route                    | Package                      | Method | Status     | Blocker                                                                                   |
-| --------------- | ------------------------ | ---------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------- |
-| ~~Create stub~~ | `/api/products`          | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
-| ~~Create stub~~ | `/api/products/[id]`     | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
-| ~~Create stub~~ | `/api/reviews`           | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | Package enhanced: featured/latest modes + aggregate stats added                           |
-| ~~Create stub~~ | `/api/reviews/[id]`      | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | reviewItemGET added to package                                                            |
-| ~~Create stub~~ | `/api/categories`        | `@mohasinac/feat-categories` | GET    | ✅ Done    | Package enhanced: flat/tier/brand/showOnHomepage/tree modes; hook updated to expect array |
-| ~~Create stub~~ | `/api/categories/[id]`   | `@mohasinac/feat-categories` | GET    | ✅ Done    | categoryItemGET added to package                                                          |
-| ~~Create stub~~ | `/api/homepage-sections` | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | Package enhanced: admin session cookie auth for ?includeDisabled=true                     |
-| Create stub     | `/api/faqs`              | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation — **keep local permanently**     |
-| n/a             | `/api/faqs/[id]`         | n/a                          | GET    | 🔴 Blocked | Same interpolation blocker — **keep local permanently**                                   |
+| Action          | Route                         | Package                      | Method | Status     | Blocker                                                                                   |
+| --------------- | ----------------------------- | ---------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------- |
+| ~~Create stub~~ | `/api/products`               | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
+| ~~Create stub~~ | `/api/products/[id]`          | `@mohasinac/feat-products`   | GET    | ✅ Done    | —                                                                                         |
+| ~~Create stub~~ | `/api/reviews`                | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | Package enhanced: featured/latest modes + aggregate stats added                           |
+| ~~Create stub~~ | `/api/reviews/[id]`           | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | reviewItemGET added to package                                                            |
+| ~~Create stub~~ | `/api/categories`             | `@mohasinac/feat-categories` | GET    | ✅ Done    | Package enhanced: flat/tier/brand/showOnHomepage/tree modes; hook updated to expect array |
+| ~~Create stub~~ | `/api/categories/[id]`        | `@mohasinac/feat-categories` | GET    | ✅ Done    | categoryItemGET added to package                                                          |
+| ~~Create stub~~ | `/api/homepage-sections`      | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | Package enhanced: admin session cookie auth for ?includeDisabled=true                     |
+| ~~Create stub~~ | `/api/homepage-sections/[id]` | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | homepageSectionItemGET added to package                                                   |
+| ~~Create stub~~ | `/api/carousel`               | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | carouselGET added to package; CarouselSlide + CarouselSlideCard types added               |
+| ~~Create stub~~ | `/api/carousel/[id]`          | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | carouselItemGET added to package                                                          |
+| Create stub     | `/api/faqs`                   | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation — **keep local permanently**     |
+| n/a             | `/api/faqs/[id]`              | n/a                          | GET    | 🔴 Blocked | Same interpolation blocker — **keep local permanently**                                   |
 
 **Note**: Routes that also have POST currently will keep the POST handler local.
 The 2-line file becomes a hybrid:
@@ -233,20 +241,21 @@ This enables hobson, licorice, and future projects to share these components.
 
 ## Migration Completion Tracker
 
-| Phase           | Description                               | Status                                                 | Routes affected     |
-| --------------- | ----------------------------------------- | ------------------------------------------------------ | ------------------- |
-| Infra           | Infrastructure shims + wiring             | ✅ Done                                                | —                   |
-| Stubs-A         | Blog/Events/Stores 2-line stubs           | ✅ Done                                                | 5 routes            |
-| Phase 1 partial | products + products/[id] GET stubs        | ✅ Done                                                | +2 routes (7 total) |
-| Phase 1 blocked | reviews/faqs/categories/homepage-sections | 🔴 Blocked                                             | see blocker notes   |
-| Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)     | —                   |
-| Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)  | —                   |
-| Phase 2-C       | feat-pre-orders api handler               | ✅ Handler added; no stub needed (no local collection) | —                   |
-| Phase 2-D       | feat-seller api handlers                  | 🔲 Future                                              | +9                  |
-| Phase 3         | Repository migration                      | 🔲 Future                                              | —                   |
-| Phase 4         | Auth + complex routes                     | 🔲 Future (needs auth in packages)                     | +71                 |
-| Phase 5         | Hooks migration                           | 🔲 Future                                              | —                   |
-| Phase 6         | Component migration                       | 🔲 Future                                              | —                   |
+| Phase           | Description                               | Status                                                 | Routes affected      |
+| --------------- | ----------------------------------------- | ------------------------------------------------------ | -------------------- |
+| Infra           | Infrastructure shims + wiring             | ✅ Done                                                | —                    |
+| Stubs-A         | Blog/Events/Stores 2-line stubs           | ✅ Done                                                | 5 routes             |
+| Phase 1 partial | products + products/[id] GET stubs        | ✅ Done                                                | +2 routes (7 total)  |
+| Phase 1 blocked | reviews/faqs/categories/homepage-sections | ✅ Done (faqs permanently local)                       | +9 routes (16 total) |
+| Phase 1 ext     | carousel + homepage-sections item GETs    | ✅ Done                                                | +4 routes (20 total) |
+| Phase 2-A       | feat-auctions api handler                 | ✅ Handler added; stub not wired (schema mismatch)     | —                    |
+| Phase 2-B       | feat-promotions api handler               | ✅ Handler added; stub not wired (aggregate response)  | —                    |
+| Phase 2-C       | feat-pre-orders api handler               | ✅ Handler added; no stub needed (no local collection) | —                    |
+| Phase 2-D       | feat-seller api handlers                  | 🔲 Future                                              | +9                   |
+| Phase 3         | Repository migration                      | 🔲 Future                                              | —                    |
+| Phase 4         | Auth + complex routes                     | 🔲 Future (needs auth in packages)                     | +71                  |
+| Phase 5         | Hooks migration                           | 🔲 Future                                              | —                    |
+| Phase 6         | Component migration                       | 🔲 Future                                              | —                    |
 
 **Progress**: 7 / ~100 delegatable routes = ~7%
 **After Phase 1 unblocked**: 11 / ~100 = ~11%
