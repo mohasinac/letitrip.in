@@ -1,77 +1,17 @@
 /**
  * Homepage Sections API Routes
  *
- * Handles dynamic homepage section configuration
- *
- * TODO (Future) - Phase 2:
- * - Implement section management (create, update, delete, reorder)
- * - Add section templates/presets
- * - Implement section A/B testing
- * - Track section analytics (engagement, conversions)
- * - Add section scheduling (show between dates)
- * - Implement section targeting (user segments)
- * - Add section preview mode
- * - Implement drag-and-drop reordering
+ * GET delegated to @mohasinac/feat-homepage (supports ?includeDisabled=true with admin auth).
+ * POST stays local (admin auth, order auto-assignment).
  */
+
+export { GET } from "@mohasinac/feat-homepage";
 
 import { homepageSectionsRepository } from "@/repositories";
-import { errorResponse, successResponse } from "@/lib/api-response";
-import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
-import { getUserFromRequest } from "@/lib/security/authorization";
+import { successResponse } from "@/lib/api-response";
 import { homepageSectionCreateSchema } from "@/lib/validation/schemas";
-import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@/constants";
 import { createApiHandler } from "@/lib/api/api-handler";
-
-/**
- * GET /api/homepage-sections
- *
- * Get active homepage sections
- *
- * Query Parameters:
- * - includeDisabled: boolean (optional, admin only)
- *
- * ✅ Fetches enabled sections via homepageSectionsRepository.findAll()
- * ✅ Returns only enabled sections by default; all for admins (includeDisabled=true)
- * ✅ Sorted by order field ascending
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
- * TODO (Future): Support personalization based on user segments
- */
-export const GET = createApiHandler({
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-    const includeDisabled =
-      getBooleanParam(searchParams, "includeDisabled") === true;
-
-    // Check authorization for disabled sections (admin only)
-    if (includeDisabled) {
-      const user = await getUserFromRequest(request);
-      if (user?.role !== "admin") {
-        return errorResponse(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED, 403);
-      }
-    }
-
-    // Query sections from repository
-    const sections = includeDisabled
-      ? await homepageSectionsRepository.findAll()
-      : await homepageSectionsRepository.getEnabledSections();
-
-    // Sort by order field (ascending - top to bottom)
-    sections.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-
-    const sectionsResponse = successResponse(sections, undefined, 200, {
-      totalSections: sections.length,
-      enabledSections: sections.filter((s: any) => s.enabled).length,
-    });
-    sectionsResponse.headers.set(
-      "Cache-Control",
-      includeDisabled
-        ? "private, no-cache"
-        : "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-    );
-    return sectionsResponse;
-  },
-});
 
 /**
  * POST /api/homepage-sections

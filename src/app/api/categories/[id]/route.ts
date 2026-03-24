@@ -1,33 +1,22 @@
 /**
  * Category Detail API Routes
  *
- * Handles individual category operations (get, update, delete)
+ * GET delegated to @mohasinac/feat-categories.
+ * PATCH + DELETE stay local (admin auth, hierarchy validation).
  */
+
+export { categoryItemGET as GET } from "@mohasinac/feat-categories";
 
 import { categoriesRepository } from "@/repositories";
 import { categoryUpdateSchema } from "@/lib/validation/schemas";
 import type { CategoryDocument } from "@/db/schema/categories";
 import { NotFoundError } from "@/lib/errors";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
-
-/**
- * GET /api/categories/[id] — Get single category (public)
- */
-export const GET = createApiHandler<never, IdParams>({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
-    const { id } = params!;
-    const category = await categoriesRepository.findById(id);
-    if (!category) throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
-    return successResponse(category);
-  },
-});
 
 /**
  * PATCH /api/categories/[id] — Update category (admin)

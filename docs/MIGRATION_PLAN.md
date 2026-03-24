@@ -59,13 +59,10 @@ contain auth, validation, and complex business logic specific to letitrip.
 | ~~Create stub~~ | `/api/reviews`           | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | Package enhanced: featured/latest modes + aggregate stats added                           |
 | ~~Create stub~~ | `/api/reviews/[id]`      | `@mohasinac/feat-reviews`    | GET    | ✅ Done    | reviewItemGET added to package                                                            |
 | ~~Create stub~~ | `/api/categories`        | `@mohasinac/feat-categories` | GET    | ✅ Done    | Package enhanced: flat/tier/brand/showOnHomepage/tree modes; hook updated to expect array |
-| Create stub     | `/api/faqs`              | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation from site settings               |
-| Create stub     | `/api/homepage-sections` | `@mohasinac/feat-homepage`   | GET    | 🟡 Partial | Public GET compatible; admin `?includeDisabled=true` not supported in package             |
-
-**Package enhancements needed to unblock remaining routes:**
-
-- `feat-faq`: Accept site-settings-style variable map; interpolate in handler
-- `feat-homepage`: Add `?includeDisabled=true` with admin auth guard
+| ~~Create stub~~ | `/api/categories/[id]`   | `@mohasinac/feat-categories` | GET    | ✅ Done    | categoryItemGET added to package                                                          |
+| ~~Create stub~~ | `/api/homepage-sections` | `@mohasinac/feat-homepage`   | GET    | ✅ Done    | Package enhanced: admin session cookie auth for ?includeDisabled=true                     |
+| Create stub     | `/api/faqs`              | `@mohasinac/feat-faq`        | GET    | 🔴 Blocked | Package missing `{{companyName}}` variable interpolation — **keep local permanently**     |
+| n/a             | `/api/faqs/[id]`         | n/a                          | GET    | 🔴 Blocked | Same interpolation blocker — **keep local permanently**                                   |
 
 **Note**: Routes that also have POST currently will keep the POST handler local.
 The 2-line file becomes a hybrid:
@@ -75,6 +72,13 @@ The 2-line file becomes a hybrid:
 export { GET } from "@mohasinac/feat-categories";
 export const POST = createApiHandler<...>({ ... }); // keep local
 ```
+
+**Permanently local routes** (letitrip-specific business logic that cannot be generalised):
+
+- `GET /api/faqs` + `GET /api/faqs/[id]` — variable interpolation from `siteSettingsRepository`
+- `GET /api/stores/[storeSlug]/products|reviews|auctions` — multi-repo joins (stores + products + reviews)
+- `GET /api/events/[id]` — complex poll results + survey leaderboard from `eventEntryRepository`
+- `GET /api/search` — Algolia integration with letitrip-specific product field mapping
 
 ---
 
