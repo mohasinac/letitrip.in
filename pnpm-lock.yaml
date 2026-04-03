@@ -20,143 +20,143 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.72.1(react@19.2.4))
       '@mohasinac/auth-firebase':
-        specifier: ^0.1.0
-        version: 0.1.0(firebase-admin@13.7.0)
+        specifier: ^1.0.0
+        version: 1.0.0(firebase-admin@13.7.0)
       '@mohasinac/cli':
-        specifier: ^0.1.0
-        version: 0.1.0(@mohasinac/contracts@0.1.0)
+        specifier: ^1.0.0
+        version: 1.0.0(@mohasinac/contracts@1.0.0)
       '@mohasinac/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/core':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/css-tailwind':
-        specifier: ^0.1.0
-        version: 0.1.0(@mohasinac/contracts@0.1.0)
+        specifier: ^1.0.0
+        version: 1.0.0(@mohasinac/contracts@1.0.0)
       '@mohasinac/css-vanilla':
-        specifier: ^0.1.0
-        version: 0.1.0(@mohasinac/contracts@0.1.0)
+        specifier: ^1.0.0
+        version: 1.0.0(@mohasinac/contracts@1.0.0)
       '@mohasinac/db-firebase':
-        specifier: ^0.1.0
-        version: 0.1.0(firebase-admin@13.7.0)
+        specifier: ^1.0.0
+        version: 1.0.0(firebase-admin@13.7.0)
       '@mohasinac/email-resend':
-        specifier: ^0.1.0
-        version: 0.1.0(resend@6.10.0)
+        specifier: ^1.0.0
+        version: 1.0.0(resend@6.10.0)
       '@mohasinac/errors':
-        specifier: ^0.1.0
-        version: 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+        specifier: ^1.0.0
+        version: 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       '@mohasinac/feat-account':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-admin':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-auctions':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-auth':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-blog':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-cart':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-categories':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-checkout':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/feat-events':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-faq':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-filters':
-        specifier: ^0.1.0
-        version: 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/feat-forms':
-        specifier: ^0.1.0
-        version: 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/feat-homepage':
-        specifier: ^0.1.0
-        version: 0.1.0(@mohasinac/react@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mohasinac/ui@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3)))(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@mohasinac/react@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mohasinac/ui@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3)))(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-layout':
-        specifier: ^0.1.0
-        version: 0.1.0(lucide-react@0.575.0(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(lucide-react@0.575.0(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/feat-media':
-        specifier: ^0.1.0
-        version: 0.1.0(lucide-react@0.575.0(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(lucide-react@0.575.0(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/feat-orders':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-payments':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-pre-orders':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-products':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-promotions':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-reviews':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-search':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-seller':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-stores':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/feat-wishlist':
-        specifier: ^0.1.0
-        version: 0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/http':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/monitoring':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/next':
-        specifier: ^0.1.0
-        version: 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+        specifier: ^1.0.0
+        version: 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@mohasinac/react':
-        specifier: ^0.1.0
-        version: 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^1.0.0
+        version: 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@mohasinac/security':
-        specifier: ^0.1.0
-        version: 0.1.0(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+        specifier: ^1.0.0
+        version: 1.0.0(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       '@mohasinac/seo':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/sievejs':
         specifier: ^1.0.0
         version: 1.0.0
       '@mohasinac/storage-firebase':
-        specifier: ^0.1.0
-        version: 0.1.0(firebase-admin@13.7.0)
+        specifier: ^1.0.0
+        version: 1.0.0(firebase-admin@13.7.0)
       '@mohasinac/tokens':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/ui':
-        specifier: ^0.1.0
-        version: 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))
+        specifier: ^1.0.0
+        version: 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))
       '@mohasinac/utils':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@mohasinac/validation':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@serwist/next':
         specifier: ^9.5.6
         version: 9.5.7(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -1624,50 +1624,50 @@ packages:
   '@manypkg/get-packages@1.1.3':
     resolution: {integrity: sha512-fo+QhuU3qE/2TQMQmbVMqaQ6EWbMhi4ABWP+O4AM1NqPBuy0OrApV5LO6BrrgnhtAHS2NH6RrVk9OL181tTi8A==}
 
-  '@mohasinac/auth-firebase@0.1.0':
-    resolution: {integrity: sha512-VpaJaBUBXLLFqe51n+/saHM917p/qnN/OQ24ugjrYFMM1o81QjT4KRmg2dkKBHiq3/Rj/ziIZ1uy2ta8IazDZA==}
+  '@mohasinac/auth-firebase@1.0.0':
+    resolution: {integrity: sha512-u1MBuI6FT77zCXmuNhF+YCMucdNd7CD9o1tQPnhhMRV2jT09XcRg4Thp/eRnXm56fowCxtKz98ENlmvVpfgwOw==}
     peerDependencies:
       firebase-admin: '>=12.0.0'
 
-  '@mohasinac/cli@0.1.0':
-    resolution: {integrity: sha512-SIE4i6LpTfBeKC1neOpoUMP9JCvVZUkpUGI00NVo41LeUR+p+PiOm8j+y5WXA/Hg/SSOEHoAWNd7Xym65kYuTw==}
+  '@mohasinac/cli@1.0.0':
+    resolution: {integrity: sha512-UWccbOwQKoxlutor0lhFjl9Fp7Bo+KSfizbLKkU2OTGhr0QUf6Dp/jqVpSEiyk1IGHP7QDGXw1Wh38QzTQkQeg==}
     hasBin: true
     peerDependencies:
-      '@mohasinac/contracts': ^0.1.0
+      '@mohasinac/contracts': ^1.0.0
 
-  '@mohasinac/contracts@0.1.0':
-    resolution: {integrity: sha512-HX1SvMhP5XJuUJQHuiuDs4C5+MnGyd6YfmFrdmeXHWQPEMk9JH3fcqh08sWsnuwm6kXbRSujwwczfCghbfInrA==}
+  '@mohasinac/contracts@1.0.0':
+    resolution: {integrity: sha512-5+0hjKt5qcsVKf46DfwfHtrrelg1oyk2KXrdMAptq9QCqw0HQ+54/jS3kAgFcXPox+ICCXTKP4LH4TeXHprInA==}
 
-  '@mohasinac/core@0.1.0':
-    resolution: {integrity: sha512-h5VORximpX81M3sAreDdvc5734m/qCSCMpLQMRZc9qCffReJlkTt1qm5eRQOCJL5sIh8aR0n4Emjh2zexKmrsQ==}
+  '@mohasinac/core@1.0.0':
+    resolution: {integrity: sha512-oxu41t/oaAi3JDzOm3/WZdPZNC02o2i05dpEH/kOuQTsn7ALaqlcL2KBOtUMA7gTMetQPZPuVBNrXQR5qHVrmg==}
 
-  '@mohasinac/css-tailwind@0.1.0':
-    resolution: {integrity: sha512-Bt/Z5d2CALiDizdTFoYFJNapmn3lN9L1jxfi2bqoma0kXZXNiWjCgY3upespTRZXYeqytqpLu/VGGE1oRkyzzw==}
+  '@mohasinac/css-tailwind@1.0.0':
+    resolution: {integrity: sha512-SekLbRZXzmcnhpbeL5pzcFMU2Pnv83mLO9Xt9aUTvt6L5OfzLD+7Api09ZitgSzNRexCtMahqOyVYwqKhAnE8g==}
     peerDependencies:
-      '@mohasinac/contracts': ^0.1.0
+      '@mohasinac/contracts': ^1.0.0
 
-  '@mohasinac/css-vanilla@0.1.0':
-    resolution: {integrity: sha512-0E47ut03Vzdrls0GERg5Zl9ClotuG/UDxSL5rOmjDlNFhNmw2v15NLfco8omDrncaBeweZBfIDWPvXz6p2gNAA==}
+  '@mohasinac/css-vanilla@1.0.0':
+    resolution: {integrity: sha512-wVv0BPw9m/Bp5Q1MD/GGRmzSFGOkWmsjjm88oIbjomQylJXFz04jOnLAZNWOh8H3u5Kncg0PnXX+exgJqHJRhQ==}
     peerDependencies:
-      '@mohasinac/contracts': ^0.1.0
+      '@mohasinac/contracts': ^1.0.0
 
-  '@mohasinac/db-firebase@0.1.0':
-    resolution: {integrity: sha512-Lfh+jpH2c8+n4YcTsHk5Me2WMkjBKi9kwAIIOYve4EJ+xWxiQwo67tPpafxqKtR3fa4/U+nrg294TMEHwM9gvw==}
+  '@mohasinac/db-firebase@1.0.0':
+    resolution: {integrity: sha512-+nyiDpNHGvhE2ZjYMYn+mGjxiszDS8iR1Pm5nn2DFkD7SwRdNjcXD9jrGO4LqSr7fwqA4go1kXryIsALq0sl+A==}
     peerDependencies:
       firebase-admin: '>=12.0.0'
 
-  '@mohasinac/email-resend@0.1.0':
-    resolution: {integrity: sha512-eUiMgQSRcVzVhBqYEQokVMAskuVrtNhE6BzdbROnpUltOOPtTKq4pL/zzJy2+CMHlbe/D93tXJrutgpe6q6ocw==}
+  '@mohasinac/email-resend@1.0.0':
+    resolution: {integrity: sha512-9Sep2oUWVxJmeRxNgGZOn5hTdjkBPLuY2eQxejW9JH/H47R7ME1PW4chqrxfyS6HK40Um/WQmf2ZKAowBlPDNA==}
     peerDependencies:
       resend: '>=3.0.0'
 
-  '@mohasinac/errors@0.1.0':
-    resolution: {integrity: sha512-fUGHJfXwxxlPhiPVO4iVv39225qwZ5QTxD2XnspFSdvj702e7djrb6RXUEd2Kgh2R8rGSvQjMCCQtP4lI2UmnA==}
+  '@mohasinac/errors@1.0.0':
+    resolution: {integrity: sha512-eOILMYHUA9DOf8KqVwA+btXOygTjwvOqf3xMwEsN/KU+yzH9wl+FKOSb5VPrJHFe3spEr+RpOLAJI+CmRBaDXg==}
     peerDependencies:
       next: '>=14.0.0'
 
-  '@mohasinac/feat-account@0.1.0':
-    resolution: {integrity: sha512-b1yM7L+RAn9rajP3lsSr1j/6ixOBHfv61Y9Z5mWXnp7frz+RsWkk7M62JRvAwH/wwLHkz/6mwmfKVPwRP4N64g==}
+  '@mohasinac/feat-account@1.0.0':
+    resolution: {integrity: sha512-bUwgZVHWSpgh+ap8Jlo1cce1nkBb1qHWekemPCKZcNy+Kbi/Oa7778baQk/YinKV1xgckyvbeF9BU4qnJ4kylA==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1676,8 +1676,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-admin@0.1.0':
-    resolution: {integrity: sha512-6/4MxUhjmO8J4xG0AaMX41GfbXM5lrstRT571UQvIqeHOS4EhNOAewL4dg5xjGLAvsIjKbkh6udOX00ScrWFLQ==}
+  '@mohasinac/feat-admin@1.0.0':
+    resolution: {integrity: sha512-8Prh/xxt2P7qygapcjIvykoL3mp20GJGC2RYA8pw6EMI3ubmyYjV1o4Nj+R1ewPGEpg5utWpM/R1WDOV28CXvQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1685,8 +1685,8 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-auctions@0.1.0':
-    resolution: {integrity: sha512-TUCxrbwYCfI4lq8YZ5TkSmgnkNELKwHI/UbHN4pCSTGuvtL7aa2TYeRxOfm1F+ov2pNKgP6DTFhDsjh4lSmkBQ==}
+  '@mohasinac/feat-auctions@1.0.0':
+    resolution: {integrity: sha512-XGi2Ux+V9rE7nMngW9wXSvFuOSocrCrqKw3rWpgkOZ1cGf2iIp3At3sEApd8BVgxp+Aozx6Jny0dBh5XMObIqw==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1694,18 +1694,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-auth@0.1.0':
-    resolution: {integrity: sha512-4VYSgDdId0hSrfrW41TWkBN4WyqGiHPoxJJaVHFWyM04ASp/8MtLYHzfJHpqwaF7ppKGKVOdSLqGcnE28qiU9Q==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      next-intl: '>=3.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-blog@0.1.0':
-    resolution: {integrity: sha512-ZE2ToJ6LppdopI8D3x8Mu4Y0a4m511wpgXTCNkCGQbzx6FFIvaPzsENqqtvmnBxK1nDucXZvgpR8rjGqva17jw==}
+  '@mohasinac/feat-auth@1.0.0':
+    resolution: {integrity: sha512-D27eZ9H1lKYqYQqaJFDx3vtzlJEFGCKNt3SBbyOKMIVznClGFvqR+pKpNBYiAQ7iGLjXfnrfPXlslFpAoX77PA==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1714,8 +1704,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-cart@0.1.0':
-    resolution: {integrity: sha512-2afjTYyPwnEQAUyeO8TQ9+Qegonp5G4gmh+ZDVWA9eSdFARrWwpq1ok37fd+ZACpNwuVzWR9Z+lS96lylTtAwQ==}
+  '@mohasinac/feat-blog@1.0.0':
+    resolution: {integrity: sha512-+oQez/VCDBZeRma0QIOnegFXG6AfcomqHRX0nHKP9+yQmT7e3dlpVJrcdhF0RTPw3gNUc5uGnDvbZVhwOBz4vg==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1724,8 +1714,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-categories@0.1.0':
-    resolution: {integrity: sha512-Y6vulNol/BXT1XaUwPyViZzsBItNfHoLyM6rNELMaX5kEFOdCqlSpD4vZqAnHuXh53bEl+KNQtjfwVE9X66Bgg==}
+  '@mohasinac/feat-cart@1.0.0':
+    resolution: {integrity: sha512-TC+UcGAF0vLsZCOkv1DTMqDxWhQPjd1y7eUcnSPXZHoWEMQel99sdDb4ubUhoIa8bCisqJRNF194QRdqIFLJaA==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1734,26 +1724,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-checkout@0.1.0':
-    resolution: {integrity: sha512-z1A7P7A6Ko3nVtKzPTTSkG3XNPOY/RVGXhOp1DmwYXIZtA9T9Z5y+vaXoSTCz6MSbZIX9y1sm8dbYvCHjzkSaw==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      next-intl: '>=3.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-
-  '@mohasinac/feat-events@0.1.0':
-    resolution: {integrity: sha512-5Zhc+wz+03KUX11yUMoheiVnNivRPAE/v9kxtb00eqx+0grZxFwogz5d9aOlPqwGlUU5Jd0qa4+rR0+tDCIXBQ==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-faq@0.1.0':
-    resolution: {integrity: sha512-rzSuQVal5NDT+AaRrrWvl+cYI8mjWOJGGalhmydUdAUl25gtRJacj6YE03yC9pjjrdC+mAjYwzErHGu5JF0uDw==}
+  '@mohasinac/feat-categories@1.0.0':
+    resolution: {integrity: sha512-0C/CQ84mZnkHUNIwPvpY11nj9vHbsgE+kPpUgZhK62gxsmHdPfq8loEdyGTIn36PyIuS65LP6oA+QxybGu+huQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1762,20 +1734,48 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-filters@0.1.0':
-    resolution: {integrity: sha512-/SOmo743uN7DHkr2nu7/QXqo92XDRnV8OQ1Q87lT/Ow8EAUwJEbcXcQ1Cta3a/H4l5eBjg4SMXAKwr9xcbg9SA==}
+  '@mohasinac/feat-checkout@1.0.0':
+    resolution: {integrity: sha512-rfrM365esW3glqcNLZz+86bSoLnsKkm0C+um9ihfNVxAzqttbpn1WjuzCss6tv1GUhdZKjfwrrq+r9A0ieWgzw==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      next-intl: '>=3.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  '@mohasinac/feat-events@1.0.0':
+    resolution: {integrity: sha512-0h7Dc0uCnEk2Tw0PLRTV+HDSq9z/G0HiNRSdGj4bkbfmHS0S+aJ7EG6inq3MqG6xOZ9mOLJtGCY5JHEZKd+R9A==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
+
+  '@mohasinac/feat-faq@1.0.0':
+    resolution: {integrity: sha512-8uten1NL6irbTIKtgigqAdsOnE6AhZjvXOEeswv7BGw5q4SDldYf0k6wMpEnBCs4Tc1VyVsY7EyYPKrzeT/kKw==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      next-intl: '>=3.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
+
+  '@mohasinac/feat-filters@1.0.0':
+    resolution: {integrity: sha512-nDh1jcoIjnQm8KsIC/D1kdQwhmP0Sew2u+cd7Q3xzVzVcxwOgEBfvswanX9/yIt+VYsuHYpr+qML0hspMYhSRQ==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-forms@0.1.0':
-    resolution: {integrity: sha512-P8TBjngvzjD0gG3KwLmEU0oj45seNuxixVNnpFS4i8Hy0qytEHA3LoToBQvA7alZNrBh4BV77/YtnytFLpwO7A==}
+  '@mohasinac/feat-forms@1.0.0':
+    resolution: {integrity: sha512-uTtS+DcfZQuzobNwF++oxDx0ZoJ5bqGYCCqOTKF+2hhSbpOlW7Qt1Bphx7WyZe1ubYP3rYjJRinUOoYjWCwarA==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-homepage@0.1.0':
-    resolution: {integrity: sha512-EsZZvk82gIT+TFyHypjDe9CUvrSuMiKXa98Ophx4iPMlqfce9rXnk4t/XbprM5IwNxJiWrkEol0/G7Kj3cBSuA==}
+  '@mohasinac/feat-homepage@1.0.0':
+    resolution: {integrity: sha512-xwSIfkVJHPnYE4NFx+6j6DLy7wZheZAtlPFthNJGqZ7ITX3zqQrqeOZza5x6UjhF20JTsSa5zn5Fn4QxUM6p7w==}
     peerDependencies:
       '@mohasinac/react': '>=0.1.0'
       '@mohasinac/ui': '>=0.1.0'
@@ -1785,8 +1785,8 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-layout@0.1.0':
-    resolution: {integrity: sha512-AtBNg/tHt32PnPNGkrRS60NsexftUcLSvWwKJqLSBzRoWkX5IAJkpH9eBnP4YNkCN4xHCdF4zDq+rop67aG+XA==}
+  '@mohasinac/feat-layout@1.0.0':
+    resolution: {integrity: sha512-3uZMAJCVME8baPdydlE9M496EwQVQ6+d4Vu5H03dk7Z/AdifRDEh0c+atP5N1l1/fjIAKvqAs73+1MIUZb3rag==}
     peerDependencies:
       lucide-react: '>=0.400.0'
       next: '>=14.0.0'
@@ -1794,16 +1794,16 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-media@0.1.0':
-    resolution: {integrity: sha512-/vsq7uCb9GN1fgSN6LN7Lge8oF8SKevCB3p+SdncCVYoBkzV3ITLiKS8nIEg9Mzy03ODhAB93xZXQ5gIBiyh2A==}
+  '@mohasinac/feat-media@1.0.0':
+    resolution: {integrity: sha512-st0ST7oIZIhPvTpoV/dIUYPpiGrLUiix58WZ7KLG09wIlm7d0ThrZx9a5ml5nZoBddL7O3hQ277ceZJwqiKCiQ==}
     peerDependencies:
       lucide-react: '>=0.400.0'
       next: '>=14.0.0'
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@mohasinac/feat-orders@0.1.0':
-    resolution: {integrity: sha512-KHhylXPy+LhDk08JV/hWoLc9nac0BXUXMwjStN2gmet7x7Me6cWCL8mOQKq1EDFqD71ss4OhMHDt4YhanY+azQ==}
+  '@mohasinac/feat-orders@1.0.0':
+    resolution: {integrity: sha512-kbpaR+Q3vBRZYkJI0BCbTuxXvm4Uj9rkkMrb5Q3ZUwFHyyR3NJMZbhh00B8mVBiVGQdHWbOQu1r3gj/S5tufmA==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1812,8 +1812,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-payments@0.1.0':
-    resolution: {integrity: sha512-kTGZ4036QTgDBYmXEhAj9vibEVMb/7DsygCo9YltueMKwhdsYylYaj2TdaBMT8faQk7FOxwfD/96UBW++/az4w==}
+  '@mohasinac/feat-payments@1.0.0':
+    resolution: {integrity: sha512-vovSyVsz59F4lYuHCmUg1BDqLE0GTsTJZqSuKdp/y9lDxT4WEuKueWN3QbgWYgj0ufAL8xWHoNyhH3ZYAqY3GQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1822,8 +1822,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-pre-orders@0.1.0':
-    resolution: {integrity: sha512-ZvM/zk2FfYT5JoWq4TnGrKYKozVs62C/AZw5JUdjPRilYh5Lq2f19ygaADXp2uXV3oV/7YGf4w3YRX0+jKPEMA==}
+  '@mohasinac/feat-pre-orders@1.0.0':
+    resolution: {integrity: sha512-Z7UG7d4+brC0hJVFqmq7dWG/biK5QujF788mtyB8MECgPabJ228AtfamjvClKhvs7Wvn/YfQ8BAldSvwVtngxg==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1831,27 +1831,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-products@0.1.0':
-    resolution: {integrity: sha512-Ygt95NLKv+qfz9LI6SqR0ObUNUQ4lqaujVkNS+izZuCV1fAV+RgdYrDeUtrs/mcVkpu8L9tgVYNmSaiODyb0gw==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      next-intl: '>=3.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-promotions@0.1.0':
-    resolution: {integrity: sha512-iGYWJZhwKT3EdSDno8dyODCEi3dBb55koyyU38Rx4pFbvMGGNulImd+k7GuTbjYodhm4nNd7iMRVIbyBdV3G5A==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-reviews@0.1.0':
-    resolution: {integrity: sha512-4goa7hjIDsS7EtQjQtU1t+V9YRycs7XHiFzqxHYSX9BbHerwXn098ZDZP3Ow6QOej75boHu6jmee0NYsD6Vi3Q==}
+  '@mohasinac/feat-products@1.0.0':
+    resolution: {integrity: sha512-3L5aN8Aoz+Zh9Rx8laoxFXFBtu84oFthgOXMd8v/d5ni6wm4EYMW5qoOVM04udaYQb4lAZ2AM2pjnlSAehD+Hg==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1860,8 +1841,17 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-search@0.1.0':
-    resolution: {integrity: sha512-wZ1TGAceXbtpITWzGk+dYPVYohU6YHVlTtFFFrsvWZZteaOSMzg0EWrYHJi3BnOEFBICze8H+1LbbsYKXDnQ4w==}
+  '@mohasinac/feat-promotions@1.0.0':
+    resolution: {integrity: sha512-F0U1jNTLP8zfa7Y6A1tkm5tEjMt0uQUHgGnNio7ZN7X9OQjmwGbL9olIDEXfHUmjgErr5NvdmzcLzy/4zIP9Iw==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
+
+  '@mohasinac/feat-reviews@1.0.0':
+    resolution: {integrity: sha512-kg2GmLlU93SYmx1+enNObB/V4CfJYaNZlj46Y8i2sIgQHfncGiM9ehaGBiujqW8lF+91Pzi2aaI3nAIlO97Dpg==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1870,26 +1860,8 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/feat-seller@0.1.0':
-    resolution: {integrity: sha512-vup/V/VWRmuJptaGp++pTh/WUsnXurW2ewBM1ygyLJxSe/iXTXJizbJg83xWBrGlk78H30zuxTOazgnySrEObg==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-stores@0.1.0':
-    resolution: {integrity: sha512-cE8O2E+cKhJyg88mykMvw+aMUEDVIwkfP0sxereU8I5E6+cwZfAQ8GOwZl4DV7Hr41Mg5L5IGb4tHFfA97uK3Q==}
-    peerDependencies:
-      '@tanstack/react-query': '>=5.0.0'
-      next: '>=14.0.0'
-      react: '>=18.0.0'
-      react-dom: '>=18.0.0'
-      zod: '>=3.0.0'
-
-  '@mohasinac/feat-wishlist@0.1.0':
-    resolution: {integrity: sha512-zAY+ZBSv+FCI0ViWdsiNUxkBE2mWGr5u59zLwVv3fRfHGWLTY/0rrCbLM3fJ/A5NRi7r08v5peqMAEVifNRGCA==}
+  '@mohasinac/feat-search@1.0.0':
+    resolution: {integrity: sha512-dI4u+J7p7I9x1+611DKub0JB/fofeCYqOZX/RnjrT+1ZIy5bym64PNSVNRN+ihqnOGE23IQnYiGnaVhxsqbfGQ==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       next: '>=14.0.0'
@@ -1898,27 +1870,55 @@ packages:
       react-dom: '>=18.0.0'
       zod: '>=3.0.0'
 
-  '@mohasinac/http@0.1.0':
-    resolution: {integrity: sha512-5KhNMpGbUk1YZ6tXtPkIfFQjSNwI2iHH6m2ICqa9BvRmZaACmYRfqSARZ9OgIcL4egGNTGAu8nhJYbh3TeTSYA==}
+  '@mohasinac/feat-seller@1.0.0':
+    resolution: {integrity: sha512-TdMsvmTVJ77BLyO6zweF69nhr1z1N0VzqbPgFy+4lQFe6WO9fAVPNhA1RONM7zJ0dHm9S8lb/n/lvpzrbK5sRA==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
 
-  '@mohasinac/monitoring@0.1.0':
-    resolution: {integrity: sha512-AvfRXaRGQgXzO34u5WHa2w/SKj3BU4Wxkc6njrC1DLEJc435xi/d9FxEJ0I02VSkcvrS+pFpNNEXZ9QSBJXbQg==}
+  '@mohasinac/feat-stores@1.0.0':
+    resolution: {integrity: sha512-HVpRoab2txkEEQB032EpJuOaDNsmLhLN2MpEuPG+CstNGe/b1+ldGwOmze5BZW7NBiqN9JjxbvkigIewl17sgw==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
 
-  '@mohasinac/next@0.1.0':
-    resolution: {integrity: sha512-/C8JA7f2wAK1Uud/znPCrMlTdn9FHXJ2yZtzfUxs3PjSyY08WUUWDLj8b/2OpnEO373Fn9+KEF7BF6VRiCuopQ==}
+  '@mohasinac/feat-wishlist@1.0.0':
+    resolution: {integrity: sha512-klMzX7kkR+6p74XDn/q7VBLawL/UHT0UcuFqar+2fnxL7hTknr01z2ik8tLYt+Y0mtBpfKE+wmK16PAPvD4uUg==}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.0.0'
+      next: '>=14.0.0'
+      next-intl: '>=3.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      zod: '>=3.0.0'
+
+  '@mohasinac/http@1.0.0':
+    resolution: {integrity: sha512-A5Byq9gRhbC9t3xH+BpE3y8wxbw1Y750pNbeYHWfJnKqJi/eH6Um3GpLrhMT2U8hshErblrisVp0XxNanaLYYQ==}
+
+  '@mohasinac/monitoring@1.0.0':
+    resolution: {integrity: sha512-pkVboal/maXzc6RdAiSc4qmeFAhoEUFgR+DsR6O6o9cu6prlaMuWQ3TSbPoHLhDT5XIp60pHjXrFwoEEfjgk0Q==}
+
+  '@mohasinac/next@1.0.0':
+    resolution: {integrity: sha512-QDMoe9AU/gcM7rzLnb7FWzPiq8HWyIEFm0npoKwoW8qGTkGgIehvGKjH2/PaBzv02Iiffn8nSSA3ZzWBXutPxw==}
     peerDependencies:
       next: '>=14'
       react: '>=18'
       zod: '>=3'
 
-  '@mohasinac/react@0.1.0':
-    resolution: {integrity: sha512-TpGS6dL3vYeLTn8LM0RBbpDSmRgBM2lC3xqX0t1LQycIjzNgahxUMmlngKU7BOEvtNf/mceClC0jFENWbmVzNQ==}
+  '@mohasinac/react@1.0.0':
+    resolution: {integrity: sha512-WAHKlWCylLbyuktPuI5YN1IA9/cl6UnrxsSIshZKikLDNbuttSf81RuWUFRvUvnupMVVTriqnhuaVNKTCuQG6Q==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
 
-  '@mohasinac/security@0.1.0':
-    resolution: {integrity: sha512-CKdyCxklaOm02/i/0Beu9XEHUJxzKoay11nKRAuUI3qwYHQgWHtBfDEq8+mAYWBHk+3wmwyXAHtulvzUCRXnCA==}
+  '@mohasinac/security@1.0.0':
+    resolution: {integrity: sha512-hD5MBfQQFsavNcURYNGHxH8f9WPxqRgBVYHq/LSl0rA1iD2cI/nzmefUn3Vn0FsTnBQ4J+RzFtab7AbrLrQlbw==}
     peerDependencies:
       '@upstash/ratelimit': '*'
       '@upstash/redis': '*'
@@ -1929,32 +1929,32 @@ packages:
       '@upstash/redis':
         optional: true
 
-  '@mohasinac/seo@0.1.0':
-    resolution: {integrity: sha512-5zBd3zycrxin533tejxLbV/abeLyBX5UKytSq6vtHLcTb9qitwvosSPh29be2d/eo1ERGbBD0OC1vxuz8pIWaQ==}
+  '@mohasinac/seo@1.0.0':
+    resolution: {integrity: sha512-XCNUux4OhtqTeJvJXkTONo9IddSJPHToaqTmLcqIzcwuQoG3/U6oMBoWzXyCI/QloW50K6vxGjYKNBAfTngpPA==}
 
   '@mohasinac/sievejs@1.0.0':
     resolution: {integrity: sha512-Xy/K9btAdOmqHd0GE+faMXJBteGRXwJbGHDt8a/TwxtnPdFQgL2OtexZxzqrY//ydFyyRBdXDqXxfxu422svXg==}
 
-  '@mohasinac/storage-firebase@0.1.0':
-    resolution: {integrity: sha512-8D8MLlvfVNdzqfYDqA5N4gcZ05U6GPvTBIMPgcVK6NGh8uwx4hfJo+4guXv6rkqEa7/CFqiLVoTBXaHmJ8I5zA==}
+  '@mohasinac/storage-firebase@1.0.0':
+    resolution: {integrity: sha512-igQbkXlpbAqHG7k8HN3MnMuz0g0o/PnOcZDSZN0jRjnUN4rhSG2I32jVXD24tAebHWjqEszfjJFAuuzEv0y/3w==}
     peerDependencies:
       firebase-admin: '>=12.0.0'
 
-  '@mohasinac/tokens@0.1.0':
-    resolution: {integrity: sha512-JKStJGeW+XCJ4Oh0rVmKSyc5QRIlslEphK+JvHAosVw4BF0+MGdr2kQl/MXMaQHT5PJwcb75GQQIZR1pTY/oEQ==}
+  '@mohasinac/tokens@1.0.0':
+    resolution: {integrity: sha512-cDuCklSJImTkQbvl8Y/nE9VjMjwQfUaRzOZlT6TbZ9OOiHbrA4HuvmE0XHdgvDq8CvgwD72R2IP+tXADYIyD3g==}
 
-  '@mohasinac/ui@0.1.0':
-    resolution: {integrity: sha512-Y8+7TyT9QUDmGjKC6M68nM/S5/mKLEkeUBajtr7T5UlsTXO2xa+oV79atLPeXJxnFTtl0yLSQefn1OPeagC2Dg==}
+  '@mohasinac/ui@1.0.0':
+    resolution: {integrity: sha512-6gyVM2fA8EBV51UtOKXf49akvY+fPCXtY0iHhOe1ZsjYMN/ERCc7dLYCCYgWPsRVxSTDo+gwhCfF7PvR4XSazg==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
       tailwindcss: '>=3'
 
-  '@mohasinac/utils@0.1.0':
-    resolution: {integrity: sha512-HEi5MeaykZ37tevCyE3pjLCauJRpikRhpfswtasZPPEpA/AfU8gX3zzXU0ncJqZ1ovUwFe1QPiPcgM5WaqIzxQ==}
+  '@mohasinac/utils@1.0.0':
+    resolution: {integrity: sha512-2nbu/0QjwrHXLNrOVVJNGzje+744ZaHgKWOqPtLCBFHbcixPyWfN2WYjvjx7t+ELzYt8AHfFcqJzZ1aUXjWwpg==}
 
-  '@mohasinac/validation@0.1.0':
-    resolution: {integrity: sha512-lcda4PrUMoKaCwVjodBLZsJBbF5bpIlkYXrThOik8fYlH/VyE9VxxJ1moygHTgfIfMV8qiVNe2gcFqv0gVz71A==}
+  '@mohasinac/validation@1.0.0':
+    resolution: {integrity: sha512-AOoPiEBgze7Swmuskc4ht74KBMWyhBxRqwE6gofIFu5HsxXAunI+YA4k1DEf0xV6dR8Orh1d6ak+Zw8WWvyzIQ==}
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -7889,46 +7889,46 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@mohasinac/auth-firebase@0.1.0(firebase-admin@13.7.0)':
+  '@mohasinac/auth-firebase@1.0.0(firebase-admin@13.7.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/db-firebase': 0.1.0(firebase-admin@13.7.0)
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/db-firebase': 1.0.0(firebase-admin@13.7.0)
       firebase-admin: 13.7.0
 
-  '@mohasinac/cli@0.1.0(@mohasinac/contracts@0.1.0)':
+  '@mohasinac/cli@1.0.0(@mohasinac/contracts@1.0.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
       commander: 14.0.3
 
-  '@mohasinac/contracts@0.1.0': {}
+  '@mohasinac/contracts@1.0.0': {}
 
-  '@mohasinac/core@0.1.0': {}
+  '@mohasinac/core@1.0.0': {}
 
-  '@mohasinac/css-tailwind@0.1.0(@mohasinac/contracts@0.1.0)':
+  '@mohasinac/css-tailwind@1.0.0(@mohasinac/contracts@1.0.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
       tailwind-merge: 3.5.0
 
-  '@mohasinac/css-vanilla@0.1.0(@mohasinac/contracts@0.1.0)':
+  '@mohasinac/css-vanilla@1.0.0(@mohasinac/contracts@1.0.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
 
-  '@mohasinac/db-firebase@0.1.0(firebase-admin@13.7.0)':
+  '@mohasinac/db-firebase@1.0.0(firebase-admin@13.7.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
       '@mohasinac/sievejs': 1.0.0
       firebase-admin: 13.7.0
 
-  '@mohasinac/email-resend@0.1.0(resend@6.10.0)':
+  '@mohasinac/email-resend@1.0.0(resend@6.10.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
       resend: 6.10.0
 
-  '@mohasinac/errors@0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+  '@mohasinac/errors@1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
     dependencies:
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
 
-  '@mohasinac/feat-account@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-account@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -7937,105 +7937,10 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-admin@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-admin@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-    transitivePeerDependencies:
-      - zod
-
-  '@mohasinac/feat-auctions@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-auth@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-blog@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-cart@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-categories@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-checkout@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-
-  '@mohasinac/feat-events@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-faq@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-filters@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-
-  '@mohasinac/feat-forms@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-
-  '@mohasinac/feat-homepage@0.1.0(@mohasinac/react@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mohasinac/ui@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3)))(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
-      '@mohasinac/react': 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@mohasinac/ui': 0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -8044,7 +7949,102 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  '@mohasinac/feat-layout@0.1.0(lucide-react@0.575.0(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@mohasinac/feat-auctions@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-auth@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-blog@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-cart@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-categories@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-checkout@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@mohasinac/feat-events@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-faq@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-filters@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@mohasinac/feat-forms@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@mohasinac/feat-homepage@1.0.0(@mohasinac/react@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@mohasinac/ui@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3)))(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+      '@mohasinac/react': 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@mohasinac/ui': 1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    transitivePeerDependencies:
+      - zod
+
+  '@mohasinac/feat-layout@1.0.0(lucide-react@0.575.0(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       lucide-react: 0.575.0(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -8052,14 +8052,14 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@mohasinac/feat-media@0.1.0(lucide-react@0.575.0(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@mohasinac/feat-media@1.0.0(lucide-react@0.575.0(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       lucide-react: 0.575.0(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@mohasinac/feat-orders@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-orders@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -8068,7 +8068,7 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-payments@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-payments@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -8077,7 +8077,7 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-pre-orders@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-pre-orders@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -8085,29 +8085,10 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-products@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-products@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-promotions@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-reviews@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -8115,8 +8096,18 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-search@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-promotions@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-reviews@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -8124,25 +8115,7 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/feat-seller@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/next': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-stores@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
-    dependencies:
-      '@tanstack/react-query': 5.96.2(react@19.2.4)
-      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      zod: 4.3.6
-
-  '@mohasinac/feat-wishlist@0.1.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-search@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
       '@tanstack/react-query': 5.96.2(react@19.2.4)
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -8151,54 +8124,81 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
       zod: 4.3.6
 
-  '@mohasinac/http@0.1.0': {}
-
-  '@mohasinac/monitoring@0.1.0': {}
-
-  '@mohasinac/next@0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+  '@mohasinac/feat-seller@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/next': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-stores@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/feat-wishlist@1.0.0(@tanstack/react-query@5.96.2(react@19.2.4))(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@tanstack/react-query': 5.96.2(react@19.2.4)
+      next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-intl: 4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      zod: 4.3.6
+
+  '@mohasinac/http@1.0.0': {}
+
+  '@mohasinac/monitoring@1.0.0': {}
+
+  '@mohasinac/next@1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(zod@4.3.6)':
+    dependencies:
+      '@mohasinac/contracts': 1.0.0
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       zod: 4.3.6
 
-  '@mohasinac/react@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@mohasinac/react@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
-  '@mohasinac/security@0.1.0(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+  '@mohasinac/security@1.0.0(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
     dependencies:
-      '@mohasinac/errors': 0.1.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+      '@mohasinac/errors': 1.0.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       next: 16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     optionalDependencies:
       '@upstash/ratelimit': 2.0.8(@upstash/redis@1.37.0)
       '@upstash/redis': 1.37.0
 
-  '@mohasinac/seo@0.1.0': {}
+  '@mohasinac/seo@1.0.0': {}
 
   '@mohasinac/sievejs@1.0.0': {}
 
-  '@mohasinac/storage-firebase@0.1.0(firebase-admin@13.7.0)':
+  '@mohasinac/storage-firebase@1.0.0(firebase-admin@13.7.0)':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
-      '@mohasinac/db-firebase': 0.1.0(firebase-admin@13.7.0)
+      '@mohasinac/contracts': 1.0.0
+      '@mohasinac/db-firebase': 1.0.0(firebase-admin@13.7.0)
       firebase-admin: 13.7.0
 
-  '@mohasinac/tokens@0.1.0': {}
+  '@mohasinac/tokens@1.0.0': {}
 
-  '@mohasinac/ui@0.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))':
+  '@mohasinac/ui@1.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@3.4.19(yaml@2.8.3))':
     dependencies:
-      '@mohasinac/contracts': 0.1.0
+      '@mohasinac/contracts': 1.0.0
       lucide-react: 0.479.0(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
       tailwind-merge: 3.5.0
       tailwindcss: 3.4.19(yaml@2.8.3)
 
-  '@mohasinac/utils@0.1.0': {}
+  '@mohasinac/utils@1.0.0': {}
 
-  '@mohasinac/validation@0.1.0':
+  '@mohasinac/validation@1.0.0':
     dependencies:
       zod: 3.25.76
 
