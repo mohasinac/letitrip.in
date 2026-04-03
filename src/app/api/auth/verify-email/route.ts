@@ -8,12 +8,12 @@
 
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const token = getStringParam(searchParams, "token");

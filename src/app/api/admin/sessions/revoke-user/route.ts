@@ -12,7 +12,7 @@ import { successResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const revokeUserSchema = z.object({
   userId: z.string().min(1, "userId is required"),
@@ -25,7 +25,7 @@ const revokeUserSchema = z.object({
  *
  * Revokes all active sessions for the given user and returns the count.
  */
-export const POST = createApiHandler<(typeof revokeUserSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof revokeUserSchema)["_output"]>({
   auth: true,
   roles: ["admin", "moderator"],
   schema: revokeUserSchema,

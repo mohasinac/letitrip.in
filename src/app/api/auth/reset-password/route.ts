@@ -13,9 +13,9 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const PUT = createApiHandler<(typeof resetPasswordSchema)["_output"]>({
+export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,
   handler: async ({ body }) => {
     const { newPassword } = body!;

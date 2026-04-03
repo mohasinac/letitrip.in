@@ -7,16 +7,17 @@
  */
 
 import { addressRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
-export const POST = createApiHandler<never, { id: string }>({
+export const POST = createRouteHandler<never, { id: string }>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ user, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const address = await addressRepository.setDefault(user!.uid, id);

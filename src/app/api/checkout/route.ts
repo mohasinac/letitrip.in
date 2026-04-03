@@ -35,7 +35,7 @@ import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
 import { getAdminDb } from "@/lib/firebase/admin";
@@ -78,7 +78,7 @@ function formatShippingAddress(a: AddressDocument): string {
 
 // ─── POST Handler ─────────────────────────────────────────────────────────────
 
-export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
@@ -272,7 +272,10 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
     }
 
     // 7. Create orders from the products that were successfully reserved
-    const userName = user!.displayName ?? user!.email ?? "Unknown User";
+    const userName =
+      (user!["displayName"] as string | null | undefined) ??
+      user!.email ??
+      "Unknown User";
     const userEmail = user!.email ?? "";
 
     const orderGroups = splitCartIntoOrderGroups(available);

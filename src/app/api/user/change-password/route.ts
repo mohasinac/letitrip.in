@@ -10,9 +10,11 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { changePasswordSchema } from "@/lib/validation/schemas";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const POST = createApiHandler<(typeof changePasswordSchema)["_output"]>({
+export const POST = createRouteHandler<
+  (typeof changePasswordSchema)["_output"]
+>({
   auth: true,
   schema: changePasswordSchema,
   handler: async ({ user, body }) => {

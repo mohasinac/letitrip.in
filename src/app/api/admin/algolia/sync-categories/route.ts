@@ -7,7 +7,7 @@
  * Algolia categories index. Admin-only. Idempotent.
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { categoriesRepository } from "@/repositories";
 import {
@@ -19,7 +19,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async () => {

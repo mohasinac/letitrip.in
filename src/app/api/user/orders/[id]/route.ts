@@ -9,13 +9,14 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { RateLimitPresets, applyRateLimit } from "@/lib/security/rate-limit";
 
-export const GET = createApiHandler<never, { id: string }>({
+export const GET = createRouteHandler<never, { id: string }>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const order = await orderRepository.findById(id);

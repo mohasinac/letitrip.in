@@ -7,9 +7,9 @@ import { z } from "zod";
 import { sendContactEmail } from "@/lib/email";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -21,10 +21,11 @@ const contactSchema = z.object({
     .max(5000),
 });
 
-export const POST = createApiHandler<(typeof contactSchema)["_output"]>({
-  rateLimit: RateLimitPresets.STRICT,
+export const POST = createRouteHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
-  handler: async ({ body }) => {
+  handler: async ({ request, body }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { name, email, subject, message } = body!;
     serverLogger.info("Contact form submission received", { subject });
     const result = await sendContactEmail({ name, email, subject, message });

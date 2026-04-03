@@ -3,8 +3,9 @@
  * DELETE /api/profile/delete-account
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { createRouteHandler } from "@mohasinac/next";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { deleteAccountSchema } from "@/lib/validation/schemas";
 import {
   userRepository,
@@ -15,11 +16,12 @@ import {
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { SUCCESS_MESSAGES } from "@/constants";
 
-export const DELETE = createApiHandler({
+export const DELETE = createRouteHandler({
   auth: true,
-  rateLimit: { limit: 3, window: 60 * 60 },
   schema: deleteAccountSchema,
-  handler: async ({ user }) => {
+  handler: async ({ user, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     // Delete all user data (cascade delete)
     await tokenRepository.email.deleteAllForUser(user!.uid);
     await tokenRepository.password.deleteAllForUser(user!.uid);

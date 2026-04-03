@@ -9,7 +9,7 @@ import { successResponse } from "@/lib/api-response";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const validateSchema = z.object({
   code: z.string().min(1),
@@ -23,7 +23,7 @@ const validateSchema = z.object({
  * Body: { code: string, orderTotal: number }
  * Returns: { valid: boolean, discountAmount: number, coupon?, error? }
  */
-export const POST = createApiHandler<(typeof validateSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof validateSchema)["_output"]>({
   auth: true,
   schema: validateSchema,
   handler: async ({ user, body }) => {

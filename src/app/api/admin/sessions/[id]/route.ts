@@ -10,18 +10,19 @@ import { sessionRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
 /**
  * DELETE /api/admin/sessions/[id] — Revoke a session (admin/moderator)
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id: sessionId } = params!;
 
     const session = await sessionRepository.findById(sessionId);

@@ -12,7 +12,7 @@
 
 import { orderRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
 import type { OrderStatus } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -32,7 +32,7 @@ const VALID_STATUSES: OrderStatus[] = [
  * Returns all orders for the authenticated user.
  * Optional query param: ?status=<OrderStatus>
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);

@@ -9,7 +9,7 @@
 
 import { addressRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { userAddressCreateSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
@@ -21,7 +21,7 @@ const MAX_ADDRESSES_PER_USER = 10;
  *
  * Returns all addresses for the authenticated user, ordered by createdAt desc.
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const addresses = await addressRepository.findByUser(user!.uid);
@@ -36,7 +36,7 @@ export const GET = createApiHandler({
  * Enforces a maximum of 10 addresses per user.
  * If isDefault is true, clears the default flag from all existing addresses.
  */
-export const POST = createApiHandler<
+export const POST = createRouteHandler<
   (typeof userAddressCreateSchema)["_output"]
 >({
   auth: true,

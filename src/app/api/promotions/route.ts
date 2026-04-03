@@ -6,7 +6,7 @@
 import { productRepository, couponsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 /**
  * GET /api/promotions
@@ -16,7 +16,7 @@ import { createApiHandler } from "@/lib/api/api-handler";
  *  - featuredProducts: published products with featured=true (limit 8)
  *  - activeCoupons: coupons with validity.isActive=true
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   handler: async () => {
     serverLogger.info("Promotions page data requested");
 

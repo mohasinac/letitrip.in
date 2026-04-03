@@ -32,13 +32,13 @@ import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { OrderDocument } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async () => {

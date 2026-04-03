@@ -5,7 +5,7 @@
  */
 
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { faqUpdateSchema } from "@/lib/validation/schemas";
 import { NotFoundError } from "@/lib/errors";
@@ -19,7 +19,7 @@ type IdParams = { id: string };
  * GET /api/faqs/[id]
  * Public — returns interpolated FAQ with site-setting variable substitution.
  */
-export const GET = createApiHandler<never, IdParams>({
+export const GET = createRouteHandler<never, IdParams>({
   handler: async ({ params }) => {
     const { id } = params!;
 
@@ -76,7 +76,7 @@ export const GET = createApiHandler<never, IdParams>({
  * PATCH /api/faqs/[id]
  * Admin only — update FAQ fields.
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   Partial<(typeof faqUpdateSchema)["_output"]>,
   IdParams
 >({
@@ -95,7 +95,7 @@ export const PATCH = createApiHandler<
  * DELETE /api/faqs/[id]
  * Admin only — hard delete FAQ.
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   roles: ["admin"],
   handler: async ({ params }) => {
     const { id } = params!;

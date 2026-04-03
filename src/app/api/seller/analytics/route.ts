@@ -12,7 +12,7 @@
 
 import { orderRepository, productRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { serverLogger } from "@/lib/server-logger";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
@@ -22,7 +22,7 @@ function normalizeDate(raw: Date | string | number): Date {
   return new Date(raw as string | number);
 }
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const sellerId = user!.uid;

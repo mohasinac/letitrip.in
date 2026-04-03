@@ -5,13 +5,13 @@
  */
 
 import { z } from "zod";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 import { userRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type UidParams = { uid: string };
 
@@ -25,14 +25,15 @@ const updateUserSchema = z.object({
 /**
  * PATCH /api/admin/users/:uid
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof updateUserSchema)["_output"],
   UidParams
 >({
   roles: ["admin"],
-  rateLimit: RateLimitPresets.STRICT,
   schema: updateUserSchema,
-  handler: async ({ body, params }) => {
+  handler: async ({ request, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { uid } = params!;
     if (!uid)
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
@@ -70,10 +71,11 @@ export const PATCH = createApiHandler<
 /**
  * DELETE /api/admin/users/:uid
  */
-export const DELETE = createApiHandler<never, UidParams>({
+export const DELETE = createRouteHandler<never, UidParams>({
   roles: ["admin"],
-  rateLimit: RateLimitPresets.STRICT,
-  handler: async ({ params }) => {
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { uid } = params!;
     if (!uid)
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);

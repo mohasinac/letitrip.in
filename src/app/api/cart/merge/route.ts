@@ -8,14 +8,13 @@
  * Skips any products that no longer exist or are unavailable.
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const mergeCartSchema = z.object({
   items: z
@@ -29,7 +28,7 @@ const mergeCartSchema = z.object({
     .max(50), // Reasonable cap to prevent abuse
 });
 
-export const POST = createApiHandler<(typeof mergeCartSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
   schema: mergeCartSchema,
   handler: async ({ user, body }) => {

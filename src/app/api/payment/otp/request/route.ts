@@ -14,7 +14,7 @@
 import { successResponse } from "@/lib/api-response";
 import { ApiError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { smsCounterRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 
@@ -25,7 +25,7 @@ function getTodayIST(): string {
   return new Date(istMs).toISOString().split("T")[0];
 }
 
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     // 1. Per-user 15-minute cooldown — checked via Firestore so it persists across

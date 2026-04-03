@@ -5,8 +5,7 @@
  * Uses storeRepository (stores collection) as the source of truth.
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -17,10 +16,10 @@ import { storeRepository } from "@/repositories";
 import type { StoreDocument } from "@/db/schema";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

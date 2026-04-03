@@ -3,8 +3,7 @@
  * GET /api/admin/newsletter — List subscribers with stats
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -27,10 +26,10 @@ import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
  * meta.total / active / unsubscribed are always computed from the
  * full unfiltered dataset so stat cards remain accurate.
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin"],
-  handler: async ({ request }: { request: NextRequest }) => {
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

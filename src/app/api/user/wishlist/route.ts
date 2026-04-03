@@ -8,7 +8,7 @@
 import { wishlistRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
@@ -22,7 +22,7 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const items = await wishlistRepository.getWishlistItems(user!.uid);
@@ -53,7 +53,7 @@ export const GET = createApiHandler({
  * Body: { productId: string }
  * Adds a product to the user's wishlist (idempotent).
  */
-export const POST = createApiHandler<(typeof addSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,
   handler: async ({ user, body }) => {

@@ -8,12 +8,12 @@
 
 import { sessionRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 /**
  * Get current user's sessions
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const sessions = await sessionRepository.findAllByUser(user!.uid, 20);

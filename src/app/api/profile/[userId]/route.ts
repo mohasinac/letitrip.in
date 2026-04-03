@@ -1,14 +1,15 @@
 import type { UserDocument } from "@/db/schema";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError, AuthorizationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { userRepository } from "@/repositories";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
-export const GET = createApiHandler<never, { userId: string }>({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+export const GET = createRouteHandler<never, { userId: string }>({
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { userId } = params!;
 
     const userData = await userRepository.findById(userId);

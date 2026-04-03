@@ -10,8 +10,8 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import {
   formatFileSize,
   generateMediaFilename,
@@ -31,11 +31,12 @@ import {
  * - context: string (optional) - JSON-encoded MediaFilenameContext for SEO filename
  *   e.g. {"type":"product-image","name":"iPhone 15 Pro","category":"Smartphones","store":"TechStore","index":1}
  */
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
-  rateLimit: RateLimitPresets.API,
   // No JSON schema — body is multipart/form-data; parsed below via request.formData()
   handler: async ({ user, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     // Parse form data
     const formData = await request.formData();
     const file = formData.get("file") as File;

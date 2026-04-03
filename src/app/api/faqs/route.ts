@@ -26,7 +26,7 @@ import {
 import { applySieveToArray } from "@/helpers/data/sieve.helper"; // @rule-ignore ARCH-001
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@/lib/api/cache-middleware";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
 import type { FAQDocument } from "@/db/schema";
@@ -49,7 +49,7 @@ import type { FAQDocument } from "@/db/schema";
  * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
  * ✅ Caching implemented with LONG preset (30 min TTL)
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   handler: async ({ request }) => {
     // Parse query parameters
     const searchParams = getSearchParams(request);
@@ -259,7 +259,7 @@ export const GET = createApiHandler({
  * ✅ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
-export const POST = createApiHandler<(typeof faqCreateSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof faqCreateSchema)["_output"]>({
   auth: true,
   roles: ["admin"],
   schema: faqCreateSchema,

@@ -3,7 +3,7 @@
  * GET /api/admin/dashboard
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   userRepository,
@@ -11,7 +11,7 @@ import {
   orderRepository,
 } from "@/repositories";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {

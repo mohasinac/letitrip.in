@@ -8,10 +8,10 @@ import { randomBytes } from "crypto";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { trimDataSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { generateTrimmedVideoFilename } from "@/utils";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
@@ -33,11 +33,12 @@ import axios from "axios";
  * - outputFormat?: 'mp4' | 'webm' - Output format (default: 'mp4')
  * - quality?: 'low' | 'medium' | 'high' - Output quality (default: 'medium')
  */
-export const POST = createApiHandler<(typeof trimDataSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof trimDataSchema)["_output"]>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
   schema: trimDataSchema,
-  handler: async ({ user, body }) => {
+  handler: async ({ request, user, body }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     let tempInputFile: string | null = null;
     let tempOutputFile: string | null = null;
 

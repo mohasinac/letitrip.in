@@ -12,9 +12,9 @@ import { successResponse } from "@/lib/api-response";
 import { verifyPhoneSchema } from "@/lib/validation/schemas";
 import { ValidationError } from "@/lib/errors";
 import { userRepository } from "@/repositories";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const POST = createApiHandler<(typeof verifyPhoneSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,
   schema: verifyPhoneSchema,
   handler: async ({ user }) => {

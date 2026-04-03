@@ -12,7 +12,7 @@
  * after initial setup.
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   isAlgoliaConfigured,
@@ -314,7 +314,7 @@ async function fetchStoreRecords(): Promise<AlgoliaNavRecord[]> {
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async () => {

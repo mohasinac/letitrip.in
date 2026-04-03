@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -51,7 +51,7 @@ const createNotificationSchema = z.object({
 /**
  * GET /api/notifications — List authenticated user's notifications
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
@@ -71,7 +71,7 @@ export const GET = createApiHandler({
 /**
  * POST /api/notifications — Create a notification (admin only, or internal system calls)
  */
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   schema: createNotificationSchema,

@@ -5,7 +5,7 @@
  */
 
 import { faqsRepository } from "@/repositories";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { faqVoteSchema } from "@/lib/validation/schemas";
 import { NotFoundError } from "@/lib/errors";
@@ -17,7 +17,7 @@ type IdParams = { id: string };
  * POST /api/faqs/[id]/vote
  * Requires authentication — vote helpful or not-helpful on a FAQ.
  */
-export const POST = createApiHandler<
+export const POST = createRouteHandler<
   (typeof faqVoteSchema)["_output"],
   IdParams
 >({

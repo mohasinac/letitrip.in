@@ -8,13 +8,14 @@
 import { wishlistRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
-export const GET = createApiHandler<never, { productId: string }>({
+export const GET = createRouteHandler<never, { productId: string }>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { productId } = params!;
     const inWishlist = await wishlistRepository.isInWishlist(
       user!.uid,
@@ -24,10 +25,11 @@ export const GET = createApiHandler<never, { productId: string }>({
   },
 });
 
-export const DELETE = createApiHandler<never, { productId: string }>({
+export const DELETE = createRouteHandler<never, { productId: string }>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { productId } = params!;
 
     const inWishlist = await wishlistRepository.isInWishlist(

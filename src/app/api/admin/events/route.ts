@@ -4,9 +4,8 @@
  * POST /api/admin/events — Create a new event
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -92,10 +91,10 @@ const createEventSchema = z.object({
 // ---------------------------------------------------------------------------
 // GET — list events
 // ---------------------------------------------------------------------------
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -139,7 +138,7 @@ export const GET = createApiHandler({
 // ---------------------------------------------------------------------------
 // POST — create event
 // ---------------------------------------------------------------------------
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   schema: createEventSchema,

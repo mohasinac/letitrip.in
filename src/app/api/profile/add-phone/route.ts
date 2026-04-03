@@ -13,9 +13,9 @@ import { addPhoneSchema } from "@/lib/validation/schemas";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const POST = createApiHandler<(typeof addPhoneSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,
   schema: addPhoneSchema,
   handler: async ({ user, body }) => {

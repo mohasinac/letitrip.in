@@ -4,7 +4,7 @@
 > packages. App-specific configuration, overrides, and letitrip-only business
 > logic stay local.
 >
-> **Start date**: 2026-03-19 | **Last updated**: 2026-03-24 (seller store/coupons/offers GET stubs + NW-2 audit + NW-3/4/5 detail)
+> **Start date**: 2026-03-19 | **Last updated**: 2026-06-18 (NW-2 complete — createRouteHandler migration done)
 > **Active workspace**: `D:\proj\letitrip.in`
 
 ---
@@ -439,7 +439,7 @@ Matched to existing hook response shapes: `useSellerStore`, `useSellerCoupons`, 
 
 ---
 
-### NW-2: Migrate local `createApiHandler` to `createRouteHandler` (non-PII routes)
+### NW-2: Migrate local `createApiHandler` to `createRouteHandler` (non-PII routes) ✅
 
 letitrip's local `createApiHandler` is functionally equivalent to `createRouteHandler` from
 `@mohasinac/next` except:
@@ -447,49 +447,31 @@ letitrip's local `createApiHandler` is functionally equivalent to `createRouteHa
 1. `createApiHandler` fetches the full `UserDocument` from Firestore on each authenticated request
 2. `createRouteHandler` only provides the session claims (`uid`, `email`, `role`) — no Firestore read
 
-**Audit result (2026-03-24):** 72 routes use `createApiHandler`.
+**Status: COMPLETE (2026-06-18)**. All migratable routes switched. ~75+ route handlers migrated.
 
-- **65 candidates**: only access `user.uid` — safe to switch to `createRouteHandler`
-- **7 must keep `createApiHandler`**: access extra user fields
+**Routes that MUST keep `createApiHandler`** (access full UserDocument fields):
 
-| Route (must keep)                 | User fields accessed                              |
-| --------------------------------- | ------------------------------------------------- |
-| `bids/route.ts`                   | `user.role` check in handler body                 |
-| `checkout/route.ts`               | `user.displayName`, `user.email` — order creation |
-| `copilot/chat/route.ts`           | Full user context for AI assistant                |
-| `payment/verify/route.ts`         | `user.email`, `user.displayName` — receipt        |
-| `seller/payout-settings/route.ts` | `user.payoutDetails` — masked bank account        |
-| `user/become-seller/route.ts`     | `user.seller`, `user.status` — eligibility check  |
-| `user/profile/route.ts`           | Full profile update including all user fields     |
+| Route                                    | Reason                                            |
+| ---------------------------------------- | ------------------------------------------------- |
+| `bids/route.ts`                          | `user.displayName`, `user.email` for bid creation |
+| `admin/products/route.ts` (POST)         | `user.displayName`, `user.email` for sellerName   |
+| `events/[id]/enter/route.ts`             | `user.displayName` + `request.nextUrl`            |
+| `copilot/chat/route.ts`                  | `user.displayName` for AI assistant               |
+| `chat/*.ts` (3 files)                    | letitrip-specific real-time chat                  |
+| `seller/shipping/route.ts`               | `user.shippingConfig`                             |
+| `seller/shipping/verify-pickup/route.ts` | `user.shippingConfig`                             |
+| `seller/payout-settings/route.ts`        | `user.payoutDetails`                              |
+| `seller/orders/[id]/ship/route.ts`       | `user.shippingConfig`                             |
+| `user/become-seller/route.ts`            | `user.storeStatus`                                |
+| `user/profile/route.ts`                  | Full profile (displayName, photoURL, etc.)        |
+| `site-settings/route.ts` (GET only)      | Calls `getUserFromRequest(request: NextRequest)`  |
 
-**Migration steps (per route):**
+**`@mohasinac/next` package fixes applied during migration:**
 
-```ts
-// BEFORE
-import { createApiHandler } from "@/lib/api/api-handler";
-export const GET = createApiHandler({
-  auth: true,
-  roles: ["seller"],
-  handler: async ({ user }) => {
-    /* user.uid available */
-  },
-});
+- `ParseableSchema<TOutput>` structural interface replaces `z.ZodType` — Zod v3/v4 compatible
+- `handler` return type changed to `Promise<any>` — accepts any `NextResponse<T>` return
 
-// AFTER
-import { createRouteHandler } from "@mohasinac/next";
-export const GET = createRouteHandler({
-  roles: ["seller"],
-  handler: async ({ user }) => {
-    /* user.uid available — no Firestore read */
-  },
-});
-```
-
-Note: `createRouteHandler` handler receives `request: Request` (not `NextRequest`).
-If a route uses `NextRequest` features (like `nextUrl`), import and cast: `const req = request as NextRequest`.
-
-**Estimated effort**: 1 session — mechanical switch across 65 routes.
-**Impact**: Eliminates ~65 Firestore user document reads per authenticated request cycle.
+**Impact**: Eliminated ~75 Firestore user document reads per authenticated request cycle.
 
 ---
 

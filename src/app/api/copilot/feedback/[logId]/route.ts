@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
@@ -17,7 +17,7 @@ const feedbackSchema = z.object({
   feedback: z.enum(["positive", "negative"]),
 });
 
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof feedbackSchema)["_output"],
   { logId: string }
 >({

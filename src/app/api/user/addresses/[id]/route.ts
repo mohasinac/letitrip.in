@@ -11,18 +11,19 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { userAddressUpdateSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
 /**
  * GET /api/user/addresses/[id]
  */
-export const GET = createApiHandler<never, IdParams>({
+export const GET = createRouteHandler<never, IdParams>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ user, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const address = await addressRepository.findById(user!.uid, id);
     if (!address) return errorResponse(ERROR_MESSAGES.ADDRESS.NOT_FOUND, 404);
@@ -33,14 +34,15 @@ export const GET = createApiHandler<never, IdParams>({
 /**
  * PATCH /api/user/addresses/[id]
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof userAddressUpdateSchema)["_output"],
   IdParams
 >({
   auth: true,
-  rateLimit: RateLimitPresets.API,
   schema: userAddressUpdateSchema,
-  handler: async ({ user, body, params }) => {
+  handler: async ({ user, body, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const address = await addressRepository.update(user!.uid, id, body!);
@@ -56,10 +58,11 @@ export const PATCH = createApiHandler<
 /**
  * DELETE /api/user/addresses/[id]
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ user, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     await addressRepository.delete(user!.uid, id);

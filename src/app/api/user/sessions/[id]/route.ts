@@ -8,14 +8,15 @@
 import { AuthorizationError, NotFoundError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
-export const DELETE = createApiHandler<never, { id: string }>({
+export const DELETE = createRouteHandler<never, { id: string }>({
   auth: true,
-  rateLimit: RateLimitPresets.STRICT,
-  handler: async ({ user, params }) => {
+  handler: async ({ user, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id: sessionId } = params!;
 
     const session = await sessionRepository.findById(sessionId);

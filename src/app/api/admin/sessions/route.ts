@@ -6,7 +6,6 @@
  * Supports filtering by userId and limiting results.
  */
 
-import { NextRequest } from "next/server";
 import { getAdminAuth } from "@/lib/firebase/admin";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
@@ -17,9 +16,9 @@ import {
 } from "@/lib/api/request-helpers";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);

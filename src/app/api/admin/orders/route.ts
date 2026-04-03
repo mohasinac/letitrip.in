@@ -3,8 +3,7 @@
  * GET  /api/admin/orders — List all orders with pagination & filtering
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -23,10 +22,10 @@ import { serverLogger } from "@/lib/server-logger";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — results per page (default 50)
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

@@ -37,7 +37,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { getAdminRealtimeDb, getAdminDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
 import { consentOtpRef } from "@/lib/consent-otp";
@@ -68,7 +68,7 @@ function formatShippingAddress(a: AddressDocument): string {
     .join(", ");
 }
 
-export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
+export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
   auth: true,
   schema: verifySchema,
   handler: async ({ user, body }) => {
@@ -242,7 +242,10 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
     //    • auction items   → 1 order per item
     //    • pre-order items → 1 order per seller
     //    • standard items  → 1 order per seller
-    const userName = user!.displayName ?? user!.email ?? "Unknown User";
+    const userName =
+      (user!["displayName"] as string | null | undefined) ??
+      user!.email ??
+      "Unknown User";
     const userEmail = user!.email ?? "";
 
     const orderGroups = splitCartIntoOrderGroups(productChecks);

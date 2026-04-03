@@ -5,14 +5,14 @@
  */
 
 import { z } from "zod";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError } from "@/lib/errors";
 import { payoutRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { PayoutStatus } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
@@ -24,14 +24,15 @@ const updateSchema = z.object({
 /**
  * PATCH /api/admin/payouts/[id]
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof updateSchema)["_output"],
   IdParams
 >({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
   schema: updateSchema,
-  handler: async ({ user, body, params }) => {
+  handler: async ({ request, user, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const payout = await payoutRepository.findById(id);
     if (!payout) throw new NotFoundError(ERROR_MESSAGES.PAYOUT.NOT_FOUND);

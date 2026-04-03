@@ -8,9 +8,9 @@ import { reviewRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { reviewVoteSchema } from "@/lib/validation/schemas";
 import { NotFoundError } from "@/lib/errors";
-import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 /**
  * POST /api/reviews/[id]/vote
@@ -18,14 +18,15 @@ import { RateLimitPresets } from "@/lib/security/rate-limit";
  * Vote on a review (helpful / not helpful).
  * Requires authentication. Rate-limited to prevent vote stuffing.
  */
-export const POST = createApiHandler<
+export const POST = createRouteHandler<
   (typeof reviewVoteSchema)["_output"],
   { id: string }
 >({
   auth: true,
-  rateLimit: RateLimitPresets.STRICT,
   schema: reviewVoteSchema,
-  handler: async ({ user: _user, body, params }) => {
+  handler: async ({ request, user: _user, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const review = await reviewRepository.findById(id);

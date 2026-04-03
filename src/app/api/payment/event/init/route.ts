@@ -31,13 +31,13 @@
  */
 
 import { getAdminAuth, getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 /** Client-side hard timeout communicated via expiresAt. */
 const EVENT_TTL_MS = 5 * 60 * 1000;
@@ -46,11 +46,12 @@ const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
-export const POST = createApiHandler<(typeof bodySchema)["_output"]>({
+export const POST = createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
-  rateLimit: RateLimitPresets.AUTH,
   schema: bodySchema,
-  handler: async ({ user, body }) => {
+  handler: async ({ request, user, body }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { razorpayOrderId } = body!;
     const db = getAdminRealtimeDb();
     await db

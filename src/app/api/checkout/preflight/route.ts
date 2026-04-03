@@ -19,7 +19,7 @@ import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { unitOfWork } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import type { CartItemDocument } from "@/db/schema";
@@ -41,7 +41,7 @@ export interface UnavailableItem {
 
 // ─── POST Handler ─────────────────────────────────────────────────────────────
 
-export const POST = createApiHandler<(typeof schema)["_output"]>({
+export const POST = createRouteHandler<(typeof schema)["_output"]>({
   auth: true,
   schema,
   handler: async ({ user }) => {

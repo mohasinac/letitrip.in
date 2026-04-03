@@ -6,7 +6,6 @@
  * DELETE /api/cart        — Clear entire cart (auth required)
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
@@ -14,7 +13,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({
@@ -22,7 +21,7 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.getOrCreate(user!.uid);
@@ -34,7 +33,7 @@ export const GET = createApiHandler({
   },
 });
 
-export const POST = createApiHandler<(typeof addToCartSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof addToCartSchema)["_output"]>({
   auth: true,
   schema: addToCartSchema,
   handler: async ({ user, body }) => {
@@ -83,7 +82,7 @@ export const POST = createApiHandler<(typeof addToCartSchema)["_output"]>({
   },
 });
 
-export const DELETE = createApiHandler({
+export const DELETE = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.clearCart(user!.uid);

@@ -5,15 +5,13 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { newsletterRepository } from "@/repositories";
 import { NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
-
-type RouteContext = { params: Promise<{ id: string }> };
 
 const updateSubscriberSchema = z.object({
   status: z
@@ -28,12 +26,15 @@ const updateSubscriberSchema = z.object({
 /**
  * PATCH /api/admin/newsletter/[id]
  */
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler<
+  (typeof updateSubscriberSchema)["_output"],
+  { id: string }
+>({
   auth: true,
   roles: ["admin"],
   schema: updateSubscriberSchema,
-  handler: async ({ body }, ctx?: RouteContext) => {
-    const { id } = await ctx!.params;
+  handler: async ({ body, params }) => {
+    const { id } = params!;
 
     const existing = await newsletterRepository.findById(id);
     if (!existing) throw new NotFoundError(ERROR_MESSAGES.NEWSLETTER.NOT_FOUND);
@@ -51,11 +52,11 @@ export const PATCH = createApiHandler({
 /**
  * DELETE /api/admin/newsletter/[id]
  */
-export const DELETE = createApiHandler({
+export const DELETE = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin"],
-  handler: async (_req, ctx?: RouteContext) => {
-    const { id } = await ctx!.params;
+  handler: async ({ params }) => {
+    const { id } = params!;
 
     const existing = await newsletterRepository.findById(id);
     if (!existing) throw new NotFoundError(ERROR_MESSAGES.NEWSLETTER.NOT_FOUND);

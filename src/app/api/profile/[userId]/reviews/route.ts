@@ -8,10 +8,10 @@
  */
 
 import { productRepository, reviewRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 /**
  * GET /api/profile/[userId]/reviews
@@ -19,9 +19,10 @@ import { createApiHandler } from "@/lib/api/api-handler";
  * Returns up to 10 most recent approved reviews across all seller's products.
  * No auth required — public endpoint.
  */
-export const GET = createApiHandler<never, { userId: string }>({
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+export const GET = createRouteHandler<never, { userId: string }>({
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { userId } = params!;
 
     const sellerProducts = await productRepository.findBySeller(userId);

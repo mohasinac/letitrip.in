@@ -15,7 +15,7 @@ import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
 import { siteSettingsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const createOrderSchema = z.object({
   amount: z.number().positive("Amount must be positive"),
@@ -23,7 +23,7 @@ const createOrderSchema = z.object({
   receipt: z.string().optional(),
 });
 
-export const POST = createApiHandler<(typeof createOrderSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {

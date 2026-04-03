@@ -4,23 +4,24 @@
  * DELETE /api/notifications/[id] — Delete a notification
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError, AuthorizationError } from "@/lib/errors";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
 /**
  * PATCH /api/notifications/[id] — Mark as read
  */
-export const PATCH = createApiHandler<never, IdParams>({
+export const PATCH = createRouteHandler<never, IdParams>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const notification = await notificationRepository.findById(id);
@@ -43,10 +44,11 @@ export const PATCH = createApiHandler<never, IdParams>({
 /**
  * DELETE /api/notifications/[id] — Delete a notification
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const notification = await notificationRepository.findById(id);

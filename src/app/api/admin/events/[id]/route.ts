@@ -5,9 +5,8 @@
  * DELETE /api/admin/events/[id] — Hard-delete drafts; soft-delete (ended) for active
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -17,11 +16,11 @@ import { serverLogger } from "@/lib/server-logger";
 // ---------------------------------------------------------------------------
 // GET — fetch single event
 // ---------------------------------------------------------------------------
-export const GET = createApiHandler({
+export const GET = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
-    const id = request.nextUrl.pathname.split("/").at(-1)!;
+  handler: async ({ params }) => {
+    const id = params!.id;
     const event = await eventRepository.findById(id);
     if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
     return successResponse(event);
@@ -44,13 +43,16 @@ const updateEventSchema = z.object({
   feedbackConfig: z.any().optional(),
 });
 
-export const PUT = createApiHandler({
+export const PUT = createRouteHandler<
+  (typeof updateEventSchema)["_output"],
+  { id: string }
+>({
   auth: true,
   roles: ["admin"],
   schema: updateEventSchema,
-  handler: async ({ request, body: rawBody }) => {
+  handler: async ({ body: rawBody, params }) => {
     const body = rawBody!;
-    const id = request.nextUrl.pathname.split("/").at(-1)!;
+    const id = params!.id;
     const existing = await eventRepository.findById(id);
     if (!existing) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
 
@@ -67,11 +69,11 @@ export const PUT = createApiHandler({
 // ---------------------------------------------------------------------------
 // DELETE — remove event
 // ---------------------------------------------------------------------------
-export const DELETE = createApiHandler({
+export const DELETE = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin"],
-  handler: async ({ request }) => {
-    const id = request.nextUrl.pathname.split("/").at(-1)!;
+  handler: async ({ params }) => {
+    const id = params!.id;
     const event = await eventRepository.findById(id);
     if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
 

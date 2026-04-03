@@ -11,7 +11,7 @@
  *  - Top 5 products by total revenue
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { orderRepository, productRepository } from "@/repositories";
 import { formatMonthYear } from "@/utils";
@@ -21,7 +21,7 @@ function normalizeDate(raw: Date | string | number): Date {
   return new Date(raw as string | number);
 }
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {

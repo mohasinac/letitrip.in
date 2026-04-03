@@ -4,9 +4,8 @@
  * POST /api/admin/blog — Create a new blog post
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
@@ -48,10 +47,10 @@ const createBlogPostSchema = z.object({
  * meta.total / published / drafts / featured are always computed from the
  * full unfiltered dataset so stat cards remain accurate regardless of filter.
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -128,7 +127,7 @@ export const GET = createApiHandler({
 /**
  * POST /api/admin/blog — Create a new blog post
  */
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   schema: createBlogPostSchema,

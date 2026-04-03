@@ -9,10 +9,9 @@
  *   action: "approve" | "reject"
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { createRouteHandler } from "@mohasinac/next";
+import { successResponse } from "@/lib/api-response";
 import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { userRepository, storeRepository } from "@/repositories";
@@ -22,34 +21,22 @@ const storeActionSchema = z.object({
   action: z.enum(["approve", "reject"]),
 });
 
-interface RouteContext {
-  params: Promise<{ uid: string }>;
-}
-
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler<
+  (typeof storeActionSchema)["_output"],
+  { uid: string }
+>({
   auth: true,
   roles: ["admin"],
-  handler: async ({
-    request,
-    context,
-  }: {
-    request: NextRequest;
-    context?: RouteContext;
-  }) => {
-    const { uid } = await context!.params;
-
-    const body = await request.json();
-    const validation = storeActionSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
+  schema: storeActionSchema,
+  handler: async ({ body, params }) => {
+    const { uid } = params!;
 
     const seller = await userRepository.findById(uid);
     if (!seller || (seller.role !== "seller" && seller.role !== "admin")) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
-    const { action } = validation.data;
+    const { action } = body!;
     const storeStatus: "approved" | "rejected" =
       action === "approve" ? "approved" : "rejected";
     const storeDocStatus: "active" | "rejected" =

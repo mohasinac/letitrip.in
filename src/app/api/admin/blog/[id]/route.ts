@@ -5,16 +5,13 @@
  * DELETE /api/admin/blog/[id] — Delete a blog post
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { blogRepository } from "@/repositories";
 import { NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-
-type RouteContext = { params: Promise<{ id: string }> };
 
 const updateBlogPostSchema = z.object({
   title: z.string().min(1).optional(),
@@ -39,11 +36,11 @@ const updateBlogPostSchema = z.object({
 /**
  * GET /api/admin/blog/[id]
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request: _request }, ctx?: RouteContext) => {
-    const { id } = await ctx!.params;
+  handler: async ({ params }) => {
+    const { id } = params!;
 
     const post = await blogRepository.findById(id);
     if (!post) throw new NotFoundError(ERROR_MESSAGES.BLOG.NOT_FOUND);
@@ -55,12 +52,15 @@ export const GET = createApiHandler({
 /**
  * PATCH /api/admin/blog/[id]
  */
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler<
+  (typeof updateBlogPostSchema)["_output"],
+  { id: string }
+>({
   auth: true,
   roles: ["admin", "moderator"],
   schema: updateBlogPostSchema,
-  handler: async ({ body }, ctx?: RouteContext) => {
-    const { id } = await ctx!.params;
+  handler: async ({ body, params }) => {
+    const { id } = params!;
 
     const existing = await blogRepository.findById(id);
     if (!existing) throw new NotFoundError(ERROR_MESSAGES.BLOG.NOT_FOUND);
@@ -86,11 +86,11 @@ export const PATCH = createApiHandler({
 /**
  * DELETE /api/admin/blog/[id]
  */
-export const DELETE = createApiHandler({
+export const DELETE = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request: _request }, ctx?: RouteContext) => {
-    const { id } = await ctx!.params;
+  handler: async ({ params }) => {
+    const { id } = params!;
 
     const existing = await blogRepository.findById(id);
     if (!existing) throw new NotFoundError(ERROR_MESSAGES.BLOG.NOT_FOUND);

@@ -25,6 +25,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { sendSiteSettingsChangedEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 
 /**
@@ -117,7 +118,7 @@ export const GET = createApiHandler({
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({
   auth: true,

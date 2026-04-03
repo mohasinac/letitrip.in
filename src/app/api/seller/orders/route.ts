@@ -8,7 +8,7 @@
 
 import { orderRepository, productRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import {
   getNumberParam,
   getSearchParams,
@@ -27,7 +27,7 @@ import { serverLogger } from "@/lib/server-logger";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — results per page (default 20)
  */
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);

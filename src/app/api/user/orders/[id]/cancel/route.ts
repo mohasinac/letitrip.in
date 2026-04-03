@@ -12,8 +12,8 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { z } from "zod";
 
 const cancelSchema = z.object({
@@ -29,14 +29,15 @@ const CANCELLABLE_STATUSES = ["pending", "confirmed"] as const;
  * Requires a cancellation reason in the request body.
  * Rate-limited to prevent cancel-spam attacks.
  */
-export const POST = createApiHandler<
+export const POST = createRouteHandler<
   (typeof cancelSchema)["_output"],
   { id: string }
 >({
   auth: true,
-  rateLimit: RateLimitPresets.STRICT,
   schema: cancelSchema,
-  handler: async ({ user, body, params }) => {
+  handler: async ({ user, body, params, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
 
     const order = await orderRepository.findById(id);

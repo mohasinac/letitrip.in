@@ -9,11 +9,11 @@
 
 import { storeRepository, storeAddressRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["seller", "admin"],
   handler: async ({ user }) => {

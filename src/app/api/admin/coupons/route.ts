@@ -4,8 +4,7 @@
  * POST /api/admin/coupons — Create a new coupon (admin, local)
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -59,10 +58,10 @@ export { adminCouponsGET as GET } from "@mohasinac/feat-admin";
 /**
  * POST /api/admin/coupons
  */
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
-  handler: async ({ request, user }: { request: NextRequest; user?: any }) => {
+  handler: async ({ request, user }) => {
     const body = await request.json();
 
     const validation = couponCreateSchema.safeParse(body);
@@ -72,7 +71,7 @@ export const POST = createApiHandler({
 
     const input: CouponCreateInput = {
       ...validation.data,
-      createdBy: user.uid,
+      createdBy: user!.uid,
       scope: "admin",
     };
 
@@ -87,7 +86,7 @@ export const POST = createApiHandler({
     serverLogger.info("Admin coupon created", {
       couponId: created.id,
       code: created.code,
-      adminUid: user.uid,
+      adminUid: user!.uid,
     });
 
     return successResponse(created, SUCCESS_MESSAGES.COUPON.CREATED);

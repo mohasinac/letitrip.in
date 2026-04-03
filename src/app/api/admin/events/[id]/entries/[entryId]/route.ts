@@ -3,9 +3,8 @@
  * PATCH /api/admin/events/[id]/entries/[entryId] — Approve or flag an entry
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -17,18 +16,16 @@ const reviewEntrySchema = z.object({
   reviewNote: z.string().optional(),
 });
 
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler<
+  (typeof reviewEntrySchema)["_output"],
+  { id: string; entryId: string }
+>({
   auth: true,
   roles: ["admin", "moderator"],
   schema: reviewEntrySchema,
-  handler: async (data) => {
-    const body = data.body!;
-    const user = data.user!;
-    const request = data.request;
-    const parts = request.nextUrl.pathname.split("/");
-    // path: /api/admin/events/[id]/entries/[entryId]
-    const entryId = parts[parts.length - 1];
-    const eventId = parts[parts.length - 3];
+  handler: async ({ body, user, params }) => {
+    const entryId = params!.entryId;
+    const eventId = params!.id;
 
     const [event, entry] = await Promise.all([
       eventRepository.findById(eventId),
@@ -40,13 +37,13 @@ export const PATCH = createApiHandler({
 
     const updatedEntry = await eventEntryRepository.reviewEntry(
       entryId,
-      body.reviewStatus,
-      user.uid,
-      body.reviewNote,
+      body!.reviewStatus,
+      user!.uid,
+      body!.reviewNote,
     );
 
     // Atomically update event stats
-    if (body.reviewStatus === "approved") {
+    if (body!.reviewStatus === "approved") {
       await eventRepository.incrementApprovedEntries(eventId);
     } else {
       await eventRepository.incrementFlaggedEntries(eventId);
@@ -55,12 +52,12 @@ export const PATCH = createApiHandler({
     serverLogger.info("Admin event entry reviewed", {
       entryId,
       eventId,
-      reviewStatus: body.reviewStatus,
-      reviewedBy: user.uid,
+      reviewStatus: body!.reviewStatus,
+      reviewedBy: user!.uid,
     });
 
     const message =
-      body.reviewStatus === "approved"
+      body!.reviewStatus === "approved"
         ? SUCCESS_MESSAGES.EVENT.ENTRY_APPROVED
         : SUCCESS_MESSAGES.EVENT.ENTRY_FLAGGED;
 

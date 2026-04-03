@@ -3,7 +3,7 @@
  * PATCH /api/notifications/read-all — Mark all user notifications as read
  */
 
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -12,7 +12,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 /**
  * PATCH /api/notifications/read-all
  */
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     serverLogger.info("Marking all notifications as read", {

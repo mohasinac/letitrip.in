@@ -5,13 +5,13 @@
  * DELETE /api/admin/coupons/[id] — Delete coupon
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError } from "@/lib/errors";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
@@ -29,10 +29,11 @@ const COUPON_ALLOWED_FIELDS = [
 /**
  * GET /api/admin/coupons/[id]
  */
-export const GET = createApiHandler<never, IdParams>({
+export const GET = createRouteHandler<never, IdParams>({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const coupon = await couponsRepository.findById(id);
     if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);
@@ -43,10 +44,11 @@ export const GET = createApiHandler<never, IdParams>({
 /**
  * PATCH /api/admin/coupons/[id] — Update allowed coupon fields
  */
-export const PATCH = createApiHandler<Record<string, unknown>, IdParams>({
+export const PATCH = createRouteHandler<Record<string, unknown>, IdParams>({
   roles: ["admin"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, body, params }) => {
+  handler: async ({ request, user, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const coupon = await couponsRepository.findById(id);
     if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);
@@ -71,10 +73,11 @@ export const PATCH = createApiHandler<Record<string, unknown>, IdParams>({
 /**
  * DELETE /api/admin/coupons/[id]
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   roles: ["admin"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ user, params }) => {
+  handler: async ({ request, user, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const coupon = await couponsRepository.findById(id);
     if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);

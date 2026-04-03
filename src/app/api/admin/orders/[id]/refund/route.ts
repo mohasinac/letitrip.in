@@ -7,7 +7,7 @@
 
 import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { adminPartialRefundAction } from "@/actions";
 import { SUCCESS_MESSAGES } from "@/constants";
 
@@ -16,7 +16,7 @@ const refundSchema = z.object({
   refundNote: z.string().max(500).optional(),
 });
 
-export const POST = createApiHandler<
+export const POST = createRouteHandler<
   z.infer<typeof refundSchema>,
   { id: string }
 >({

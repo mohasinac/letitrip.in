@@ -8,10 +8,10 @@ import { randomBytes } from "crypto";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { cropDataSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { generateCroppedImageFilename } from "@/utils";
 import sharp from "sharp";
 import axios from "axios";
@@ -32,11 +32,12 @@ import axios from "axios";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
-export const POST = createApiHandler<(typeof cropDataSchema)["_output"]>({
+export const POST = createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
-  rateLimit: RateLimitPresets.API,
   schema: cropDataSchema,
-  handler: async ({ user, body }) => {
+  handler: async ({ request, user, body }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const {
       sourceUrl,
       x,

@@ -7,7 +7,7 @@
  */
 
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import {
   productRepository,
   orderRepository,
@@ -60,7 +60,7 @@ async function computeSellerEarnings(sellerId: string) {
 
 // ─── GET — List payouts + earnings summary ─────────────────────────────────
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const uid = user!.uid;

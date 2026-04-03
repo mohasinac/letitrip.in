@@ -8,7 +8,9 @@ import { NextRequest } from "next/server";
 import { ERROR_MESSAGES } from "@/constants";
 import { AuthenticationError } from "@/lib/errors";
 
-export function getSearchParams(request: NextRequest): URLSearchParams {
+export function getSearchParams(
+  request: Request | NextRequest,
+): URLSearchParams {
   return new URL(request.url).searchParams;
 }
 

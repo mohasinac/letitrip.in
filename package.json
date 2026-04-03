@@ -25,6 +25,51 @@
     "release": "changeset publish"
   },
   "dependencies": {
+    "@mohasinac/auth-firebase": "^0.1.0",
+    "@mohasinac/cli": "^0.1.0",
+    "@mohasinac/contracts": "^0.1.0",
+    "@mohasinac/core": "^0.1.0",
+    "@mohasinac/css-tailwind": "^0.1.0",
+    "@mohasinac/css-vanilla": "^0.1.0",
+    "@mohasinac/db-firebase": "^0.1.0",
+    "@mohasinac/email-resend": "^0.1.0",
+    "@mohasinac/errors": "^0.1.0",
+    "@mohasinac/feat-account": "^0.1.0",
+    "@mohasinac/feat-admin": "^0.1.0",
+    "@mohasinac/feat-auctions": "^0.1.0",
+    "@mohasinac/feat-auth": "^0.1.0",
+    "@mohasinac/feat-blog": "^0.1.0",
+    "@mohasinac/feat-cart": "^0.1.0",
+    "@mohasinac/feat-categories": "^0.1.0",
+    "@mohasinac/feat-checkout": "^0.1.0",
+    "@mohasinac/feat-events": "^0.1.0",
+    "@mohasinac/feat-faq": "^0.1.0",
+    "@mohasinac/feat-filters": "^0.1.0",
+    "@mohasinac/feat-forms": "^0.1.0",
+    "@mohasinac/feat-homepage": "^0.1.0",
+    "@mohasinac/feat-layout": "^0.1.0",
+    "@mohasinac/feat-media": "^0.1.0",
+    "@mohasinac/feat-orders": "^0.1.0",
+    "@mohasinac/feat-payments": "^0.1.0",
+    "@mohasinac/feat-pre-orders": "^0.1.0",
+    "@mohasinac/feat-products": "^0.1.0",
+    "@mohasinac/feat-promotions": "^0.1.0",
+    "@mohasinac/feat-reviews": "^0.1.0",
+    "@mohasinac/feat-search": "^0.1.0",
+    "@mohasinac/feat-seller": "^0.1.0",
+    "@mohasinac/feat-stores": "^0.1.0",
+    "@mohasinac/feat-wishlist": "^0.1.0",
+    "@mohasinac/http": "^0.1.0",
+    "@mohasinac/monitoring": "^0.1.0",
+    "@mohasinac/next": "^0.1.0",
+    "@mohasinac/react": "^0.1.0",
+    "@mohasinac/security": "^0.1.0",
+    "@mohasinac/seo": "^0.1.0",
+    "@mohasinac/storage-firebase": "^0.1.0",
+    "@mohasinac/tokens": "^0.1.0",
+    "@mohasinac/ui": "^0.1.0",
+    "@mohasinac/utils": "^0.1.0",
+    "@mohasinac/validation": "^0.1.0",
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
@@ -98,6 +143,17 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md}": [
       "prettier --write"
+    ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "@parcel/watcher",
+      "@swc/core",
+      "esbuild",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
     ]
   }
 }

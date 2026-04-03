@@ -8,9 +8,8 @@
  *   paused  -> active | ended
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -28,30 +27,29 @@ const changeStatusSchema = z.object({
   status: z.enum(["draft", "active", "paused", "ended"]),
 });
 
-export const PATCH = createApiHandler({
+export const PATCH = createRouteHandler<
+  (typeof changeStatusSchema)["_output"],
+  { id: string }
+>({
   auth: true,
   roles: ["admin"],
   schema: changeStatusSchema,
-  handler: async (data) => {
-    const body = data.body!;
-    const request = data.request;
-    const parts = request.nextUrl.pathname.split("/");
-    // path: /api/admin/events/[id]/status
-    const id = parts[parts.length - 2];
+  handler: async ({ body, params }) => {
+    const id = params!.id;
 
     const event = await eventRepository.findById(id);
     if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
 
     const allowed = ALLOWED_TRANSITIONS[event.status] ?? [];
-    if (!allowed.includes(body.status)) {
+    if (!allowed.includes(body!.status)) {
       throw new ValidationError(ERROR_MESSAGES.EVENT.INVALID_STATUS_TRANSITION);
     }
 
-    const updated = await eventRepository.changeStatus(id, body.status);
+    const updated = await eventRepository.changeStatus(id, body!.status);
     serverLogger.info("Admin event status changed", {
       eventId: id,
       from: event.status,
-      to: body.status,
+      to: body!.status,
     });
 
     return successResponse(updated, SUCCESS_MESSAGES.EVENT.STATUS_CHANGED);

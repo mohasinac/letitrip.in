@@ -3,20 +3,17 @@
  * GET /api/events/[id]/leaderboard — Top 50 approved entries by points
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler<never, { id: string }>({
   auth: false,
-  handler: async ({ request }: { request: NextRequest }) => {
-    const parts = request.nextUrl.pathname.split("/");
-    // path: /api/events/[id]/leaderboard
-    const id = parts[parts.length - 2];
+  handler: async ({ params }) => {
+    const id = params!.id;
 
     const event = await eventRepository.findById(id);
     if (!event || event.status === "draft" || event.status === "paused") {

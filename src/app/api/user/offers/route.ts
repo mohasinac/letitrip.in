@@ -5,10 +5,10 @@
  */
 
 import { successResponse } from "@/lib/api-response";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { offerRepository } from "@/repositories";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const result = await offerRepository.findByBuyer(user!.uid);

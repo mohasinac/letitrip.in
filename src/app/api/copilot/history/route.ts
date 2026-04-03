@@ -6,14 +6,14 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { AppError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {

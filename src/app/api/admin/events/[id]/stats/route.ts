@@ -3,21 +3,18 @@
  * GET /api/admin/events/[id]/stats — Summary stats, poll results, leaderboard
  */
 
-import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
-export const GET = createApiHandler({
+export const GET = createRouteHandler<never, { id: string }>({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request }: { request: NextRequest }) => {
-    const parts = request.nextUrl.pathname.split("/");
-    // path: /api/admin/events/[id]/stats
-    const id = parts[parts.length - 2];
+  handler: async ({ params }) => {
+    const id = params!.id;
 
     const event = await eventRepository.findById(id);
     if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);

@@ -5,14 +5,14 @@
  */
 
 import { z } from "zod";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 import { orderRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { OrderStatus, PaymentStatus } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
@@ -63,10 +63,11 @@ const adminOrderUpdateSchema = z.object({
 /**
  * GET /api/admin/orders/[id]
  */
-export const GET = createApiHandler<never, IdParams>({
+export const GET = createRouteHandler<never, IdParams>({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const order = await orderRepository.findById(id);
     if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);
@@ -77,14 +78,15 @@ export const GET = createApiHandler<never, IdParams>({
 /**
  * PATCH /api/admin/orders/[id] — Update order status/tracking
  */
-export const PATCH = createApiHandler<
+export const PATCH = createRouteHandler<
   (typeof adminOrderUpdateSchema)["_output"],
   IdParams
 >({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
   schema: adminOrderUpdateSchema,
-  handler: async ({ user, body, params }) => {
+  handler: async ({ request, user, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const order = await orderRepository.findById(id);
     if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);

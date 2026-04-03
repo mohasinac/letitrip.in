@@ -8,9 +8,9 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { chatRepository } from "@/repositories";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
-export const POST = createApiHandler({
+export const POST = createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     let chatIds: Record<string, boolean> = {};

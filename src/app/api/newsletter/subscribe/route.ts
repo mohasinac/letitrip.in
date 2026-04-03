@@ -5,12 +5,12 @@
 
 import { z } from "zod";
 import { newsletterRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/next";
 
 const subscribeSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -24,10 +24,11 @@ const subscribeSchema = z.object({
     .optional(),
 });
 
-export const POST = createApiHandler<(typeof subscribeSchema)["_output"]>({
-  rateLimit: RateLimitPresets.STRICT,
+export const POST = createRouteHandler<(typeof subscribeSchema)["_output"]>({
   schema: subscribeSchema,
   handler: async ({ request, body }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { email, source } = body!;
     const ipAddress =
       request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??

@@ -5,23 +5,24 @@
  * DELETE /api/admin/products/[id] — Hard delete product (admin)
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError } from "@/lib/errors";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/next";
+import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type IdParams = { id: string };
 
 /**
  * GET /api/admin/products/[id]
  */
-export const GET = createApiHandler<never, IdParams>({
+export const GET = createRouteHandler<never, IdParams>({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const product = await productRepository.findById(id);
     if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
@@ -32,10 +33,11 @@ export const GET = createApiHandler<never, IdParams>({
 /**
  * PATCH /api/admin/products/[id] — Admin can update any field
  */
-export const PATCH = createApiHandler<Record<string, unknown>, IdParams>({
+export const PATCH = createRouteHandler<Record<string, unknown>, IdParams>({
   roles: ["admin", "moderator"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ body, params }) => {
+  handler: async ({ request, body, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const product = await productRepository.findById(id);
     if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
@@ -55,10 +57,11 @@ export const PATCH = createApiHandler<Record<string, unknown>, IdParams>({
 /**
  * DELETE /api/admin/products/[id] — Hard delete (admin only)
  */
-export const DELETE = createApiHandler<never, IdParams>({
+export const DELETE = createRouteHandler<never, IdParams>({
   roles: ["admin"],
-  rateLimit: RateLimitPresets.API,
-  handler: async ({ params }) => {
+  handler: async ({ request, params }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.API);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { id } = params!;
     const product = await productRepository.findById(id);
     if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
