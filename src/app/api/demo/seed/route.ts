@@ -23,7 +23,7 @@ import {
   isAlgoliaConfigured,
   clearAlgoliaIndex,
   ALGOLIA_PAGES_INDEX_NAME,
-} from "@/lib/search/algolia";
+} from "@mohasinac/search-algolia";
 import {
   usersSeedData,
   addressesSeedData,

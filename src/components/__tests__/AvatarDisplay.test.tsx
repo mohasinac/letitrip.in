@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import type { ImageCropData } from "@mohasinac/feat-media";
 import { AvatarDisplay } from "../AvatarDisplay";
 import { UI_LABELS } from "@/constants";
-import type { ImageCropData } from "../modals/ImageCropModal";
 
 describe("AvatarDisplay", () => {
   describe("With Avatar Image", () => {

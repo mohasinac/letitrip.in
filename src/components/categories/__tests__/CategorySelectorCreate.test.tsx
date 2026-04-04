@@ -28,7 +28,7 @@ jest.mock("@/hooks", () => ({
   })),
 }));
 
-jest.mock("@/lib/api-client", () => ({
+jest.mock("@mohasinac/http", () => ({
   apiClient: { get: jest.fn(), post: jest.fn() },
 }));
 

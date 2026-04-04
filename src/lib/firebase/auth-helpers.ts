@@ -45,7 +45,7 @@ import { auth } from "./config";
 import { AuthenticationError, ApiError } from "@/lib/errors";
 import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
 import { logger } from "@/classes";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 
 /**
  * Helper: Create session via API call

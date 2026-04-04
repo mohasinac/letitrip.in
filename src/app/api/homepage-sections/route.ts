@@ -1,1 +1,1 @@
-﻿export { GET, POST } from "@mohasinac/feat-homepage";
+﻿export { GET, POST } from "@mohasinac/feat-homepage/server";

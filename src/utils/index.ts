@@ -1,8 +1,7 @@
 /**
  * Utils Barrel Export
  *
- * Existing local files remain for backward compatibility.
- * New generic helpers (array, object, pagination, sorting, filter) from @mohasinac/utils.
+ * App-specific utilities live locally. Generic helpers come from @mohasinac/utils.
  */
 
 // ------- Existing local exports (unchanged) -------
@@ -23,7 +22,7 @@ export * from "./order-splitter";
 // Business Day (10:00 AM IST day-boundary logic)
 export * from "./business-day";
 // PII Redaction (sanitize objects before logging)
-export * from "./pii-redact";
+export { redactPii } from "@mohasinac/security/pii-redact";
 
 // ------- New helpers from @mohasinac/utils (not previously in this barrel) -------
 export {

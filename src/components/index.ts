@@ -51,12 +51,16 @@ export { ErrorBoundary } from "./ErrorBoundary";
 
 // ==================== MODALS ====================
 export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
-export { ImageCropModal } from "./modals/ImageCropModal";
-export type { ImageCropData } from "./modals/ImageCropModal";
-export { VideoTrimModal } from "./modals/VideoTrimModal";
-export type { VideoTrimModalProps } from "./modals/VideoTrimModal";
-export { VideoThumbnailSelector } from "./modals/VideoThumbnailSelector";
-export type { VideoThumbnailSelectorProps } from "./modals/VideoThumbnailSelector";
+export {
+  ImageCropModal,
+  VideoTrimModal,
+  VideoThumbnailSelector,
+} from "@mohasinac/feat-media";
+export type {
+  ImageCropData,
+  VideoTrimModalProps,
+  VideoThumbnailSelectorProps,
+} from "@mohasinac/feat-media";
 export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================

@@ -23,7 +23,7 @@ jest.mock("@/repositories", () => ({
   },
 }));
 
-jest.mock("@/lib/search/algolia", () => ({
+jest.mock("@mohasinac/search-algolia", () => ({
   isAlgoliaConfigured: () => false,
   algoliaSearch: jest.fn(),
 }));

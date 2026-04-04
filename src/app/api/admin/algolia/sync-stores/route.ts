@@ -14,7 +14,7 @@ import {
   isAlgoliaConfigured,
   indexStores,
   ALGOLIA_STORES_INDEX_NAME,
-} from "@/lib/search/algolia";
+} from "@mohasinac/search-algolia";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";

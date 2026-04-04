@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
 import { useCheckoutReadQueries } from "@mohasinac/feat-cart";
 import type {

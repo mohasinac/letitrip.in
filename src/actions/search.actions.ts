@@ -8,7 +8,7 @@
  */
 
 import { productRepository } from "@/repositories";
-import { isAlgoliaConfigured, algoliaSearch } from "@/lib/search/algolia";
+import { isAlgoliaConfigured, algoliaSearch } from "@mohasinac/search-algolia";
 import { serverLogger } from "@/lib/server-logger";
 import type { FirebaseSieveResult } from "@/lib/query";
 

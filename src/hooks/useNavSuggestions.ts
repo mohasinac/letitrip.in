@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { searchNavPages, type AlgoliaNavRecord } from "@/lib/search/algolia";
+import {
+  searchNavPages,
+  type AlgoliaNavRecord,
+} from "@mohasinac/search-algolia/browser";
 
 export type { AlgoliaNavRecord };
 

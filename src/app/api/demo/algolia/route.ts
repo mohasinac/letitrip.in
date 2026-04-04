@@ -20,7 +20,7 @@ import {
   ALGOLIA_INDEX_NAME,
   ALGOLIA_PAGES_INDEX_NAME,
   type AlgoliaNavRecord,
-} from "@/lib/search/algolia";
+} from "@mohasinac/search-algolia";
 import { productRepository } from "@/repositories";
 import {
   CATEGORIES_COLLECTION,

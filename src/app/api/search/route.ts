@@ -1,1 +1,1 @@
-export { GET } from "@mohasinac/feat-search";
+export { GET } from "@mohasinac/feat-search/server";

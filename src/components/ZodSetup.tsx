@@ -9,7 +9,7 @@
  */
 
 import { useEffect } from "react";
-import { setupZodErrorMap } from "@/lib/zod-error-map";
+import { setupZodErrorMap } from "@mohasinac/validation";
 
 export default function ZodSetup() {
   // Run synchronously to cover cases before first render

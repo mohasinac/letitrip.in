@@ -8,7 +8,7 @@
  * Complies with Rule 11 — no Firebase Storage client SDK in frontend.
  *
  * For ALL other image fields (products, blog, categories, carousel),
- * use <ImageUpload> (src/components/admin/ImageUpload.tsx) instead.
+ * use <ImageUpload> from @mohasinac/feat-media instead.
  */
 "use client";
 import { useTranslations } from "next-intl";
