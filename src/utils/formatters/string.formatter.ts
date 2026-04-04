@@ -1,10 +1,4 @@
 /**
- * String Formatting Utilities
- *
- * Centralized string formatting and manipulation functions
- */
-
-/**
  * Capitalizes the first letter of a string and lowercases the rest
  *
  * @param str - The string to capitalize

@@ -7,6 +7,7 @@
 
 import { getAdminAuth } from "./admin";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
@@ -153,74 +154,79 @@ export async function revokeUserTokens(uid: string): Promise<void> {
  *
  * Returns null if the cookie is absent, expired, or if the Firestore profile
  * cannot be retrieved — the client will fall back to onAuthStateChanged.
+ *
+ * Wrapped with React `cache()` so multiple callers within the same RSC request
+ * (e.g. root layout + page component) share a single Firebase Admin round-trip.
  */
-export async function getServerSessionUser(): Promise<SessionUser | null> {
-  try {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get("__session")?.value;
-    if (!sessionCookie) return null;
+export const getServerSessionUser = cache(
+  async (): Promise<SessionUser | null> => {
+    try {
+      const cookieStore = await cookies();
+      const sessionCookie = cookieStore.get("__session")?.value;
+      if (!sessionCookie) return null;
 
-    const decoded = await verifySessionCookie(sessionCookie);
-    if (!decoded) return null;
+      const decoded = await verifySessionCookie(sessionCookie);
+      if (!decoded) return null;
 
-    // Lazy-import the repository to avoid bloating every module that imports
-    // auth-server.ts (repository pulls in the full Admin SDK chain).
-    const { userRepository } = await import("@/repositories");
-    const profile = await userRepository.findById(decoded.uid);
-    if (!profile) return null;
+      // Lazy-import the repository to avoid bloating every module that imports
+      // auth-server.ts (repository pulls in the full Admin SDK chain).
+      const { userRepository } = await import("@/repositories");
+      const profile = await userRepository.findById(decoded.uid);
+      if (!profile) return null;
 
-    const sessionId = cookieStore.get("__session_id")?.value;
+      const sessionId = cookieStore.get("__session_id")?.value;
 
-    return {
-      uid: profile.uid,
-      email: profile.email,
-      emailVerified: profile.emailVerified,
-      displayName: profile.displayName,
-      photoURL: profile.photoURL,
-      phoneNumber: profile.phoneNumber,
-      role: profile.role,
-      disabled: profile.disabled,
-      createdAt: profile.createdAt,
-      updatedAt: profile.updatedAt,
-      sessionId: sessionId ?? undefined,
-      phoneVerified: profile.phoneVerified,
-      avatarMetadata: profile.avatarMetadata ?? null,
-      publicProfile: profile.publicProfile
-        ? {
-            isPublic: profile.publicProfile.isPublic,
-            showEmail: profile.publicProfile.showEmail,
-            showPhone: profile.publicProfile.showPhone,
-            showOrders: profile.publicProfile.showOrders,
-            showWishlist: profile.publicProfile.showWishlist,
-            bio: profile.publicProfile.bio,
-            location: profile.publicProfile.location,
-            website: profile.publicProfile.website,
-            socialLinks: profile.publicProfile.socialLinks,
-          }
-        : undefined,
-      stats: profile.stats
-        ? {
-            totalOrders: profile.stats.totalOrders,
-            auctionsWon: profile.stats.auctionsWon,
-            itemsSold: profile.stats.itemsSold,
-            reviewsCount: profile.stats.reviewsCount,
-            rating: profile.stats.rating,
-          }
-        : undefined,
-      metadata: profile.metadata
-        ? {
-            lastSignInTime: profile.metadata.lastSignInTime
-              ? String(profile.metadata.lastSignInTime)
-              : undefined,
-            creationTime: profile.metadata.creationTime,
-            loginCount: profile.metadata.loginCount,
-          }
-        : undefined,
-    };
-  } catch (error) {
-    serverLogger.debug("getServerSessionUser: could not resolve session", {
-      error,
-    });
-    return null;
-  }
-}
+      return {
+        uid: profile.uid,
+        email: profile.email,
+        emailVerified: profile.emailVerified,
+        displayName: profile.displayName,
+        photoURL: profile.photoURL,
+        phoneNumber: profile.phoneNumber,
+        role: profile.role,
+        disabled: profile.disabled,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
+        sessionId: sessionId ?? undefined,
+        phoneVerified: profile.phoneVerified,
+        avatarMetadata: profile.avatarMetadata ?? null,
+        publicProfile: profile.publicProfile
+          ? {
+              isPublic: profile.publicProfile.isPublic,
+              showEmail: profile.publicProfile.showEmail,
+              showPhone: profile.publicProfile.showPhone,
+              showOrders: profile.publicProfile.showOrders,
+              showWishlist: profile.publicProfile.showWishlist,
+              bio: profile.publicProfile.bio,
+              location: profile.publicProfile.location,
+              website: profile.publicProfile.website,
+              socialLinks: profile.publicProfile.socialLinks,
+            }
+          : undefined,
+        stats: profile.stats
+          ? {
+              totalOrders: profile.stats.totalOrders,
+              auctionsWon: profile.stats.auctionsWon,
+              itemsSold: profile.stats.itemsSold,
+              reviewsCount: profile.stats.reviewsCount,
+              rating: profile.stats.rating,
+            }
+          : undefined,
+        metadata: profile.metadata
+          ? {
+              lastSignInTime: profile.metadata.lastSignInTime
+                ? String(profile.metadata.lastSignInTime)
+                : undefined,
+              creationTime: profile.metadata.creationTime,
+              loginCount: profile.metadata.loginCount,
+            }
+          : undefined,
+      };
+    } catch (error) {
+      serverLogger.debug("getServerSessionUser: could not resolve session", {
+        error,
+      });
+      return null;
+    }
+  },
+);

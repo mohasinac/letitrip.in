@@ -1,32 +1,52 @@
 /**
  * Utils Barrel Export
  *
- * Centralized export for all utility functions organized by category
+ * Existing local files remain for backward compatibility.
+ * New generic helpers (array, object, pagination, sorting, filter) from @mohasinac/utils.
  */
 
-// Validators
+// ------- Existing local exports (unchanged) -------
+// Validators (pure function validators)
 export * from "./validators";
-
-// Formatters
+// Formatters (date, number, string)
 export * from "./formatters";
-
-// Converters
+// Converters (cookie, type)
 export * from "./converters";
-
+// ID Generators — app-specific superset of @mohasinac/utils generators
+export * from "./id-generators";
 // Event Management
 export * from "./events";
-
-// ID Generators
-export * from "./id-generators";
-
 // Guest Cart (localStorage storage for unauthenticated users)
 export * from "./guest-cart";
-
 // Order Splitter (cart → order group segmentation)
 export * from "./order-splitter";
-
-// Business Day (10:00 AM IST day-boundary logic for countdowns and eligibility)
+// Business Day (10:00 AM IST day-boundary logic)
 export * from "./business-day";
-
 // PII Redaction (sanitize objects before logging)
 export * from "./pii-redact";
+
+// ------- New helpers from @mohasinac/utils (not previously in this barrel) -------
+export {
+  groupBy,
+  unique,
+  uniqueBy,
+  sortBy,
+  chunk,
+  paginate,
+  deepMerge,
+  pick,
+  omit,
+  isEmptyObject,
+  deepClone,
+  isEqual,
+  cleanObject,
+  buildSieveFilters,
+  calculatePagination,
+  sort,
+  formatCustomDate,
+} from "@mohasinac/utils";
+export type {
+  PaginationOptions,
+  PaginationResult,
+  SortOrder,
+} from "@mohasinac/utils";

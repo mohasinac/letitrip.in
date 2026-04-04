@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { AuthStatusPanel } from "@mohasinac/feat-auth";
 import {
   Card,
   Button,
@@ -46,55 +47,37 @@ export function ForgotPasswordView() {
   if (success) {
     return (
       <div className={`${flex.center} ${page.authPad} w-full`}>
-        <Card className="max-w-md w-full p-6 sm:p-8">
-          <div className="text-center mb-6">
-            <div className="mb-4 text-green-500 dark:text-green-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-16 w-16 mx-auto"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <Heading level={4} className="mb-2">
-              {t("forgotPassword.checkEmail")}
-            </Heading>
-            <Text variant="secondary" className="mb-6">
-              {t("forgotPassword.resetLinkSentTo", { email })}
-            </Text>
-            <Text variant="secondary" size="sm" className="mb-6 block">
-              {t("forgotPassword.linkExpires")}
-            </Text>
-          </div>
-
-          <div className={THEME_CONSTANTS.spacing.stackSmall}>
-            <Button
-              variant="primary"
-              onClick={() => router.push(ROUTES.AUTH.LOGIN)}
-              className="w-full"
-            >
-              {t("forgotPassword.returnToLogin")}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setSuccess(false);
-                setEmail("");
-                setTouched(false);
-              }}
-              className="w-full"
-            >
-              {t("forgotPassword.sendAnotherEmail")}
-            </Button>
-          </div>
+        <Card className="max-w-md w-full p-6 sm:p-8 text-center">
+          <AuthStatusPanel
+            tone="success"
+            title={t("forgotPassword.checkEmail")}
+            message={t("forgotPassword.resetLinkSentTo", { email })}
+            actions={
+              <div className={THEME_CONSTANTS.spacing.stackSmall}>
+                <Text variant="secondary" size="sm" className="mb-2 block">
+                  {t("forgotPassword.linkExpires")}
+                </Text>
+                <Button
+                  variant="primary"
+                  onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+                  className="w-full"
+                >
+                  {t("forgotPassword.returnToLogin")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setSuccess(false);
+                    setEmail("");
+                    setTouched(false);
+                  }}
+                  className="w-full"
+                >
+                  {t("forgotPassword.sendAnotherEmail")}
+                </Button>
+              </div>
+            }
+          />
         </Card>
       </div>
     );

@@ -166,7 +166,7 @@ export function UserAccountHub() {
         >
           {t("quickNav")}
         </Heading>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className={THEME_CONSTANTS.grid.navTiles}>
           {QUICK_NAV_ITEMS.map((item) => (
             <Link
               key={item.href}

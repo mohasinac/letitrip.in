@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
-import { listAddressesAction, getCartAction } from "@/actions";
+import { useCheckoutReadQueries } from "@mohasinac/feat-cart";
 import type {
   AddressDocument,
   CartDocument,
@@ -84,15 +84,14 @@ interface UseCheckoutOptions {
 export function useCheckout(options?: UseCheckoutOptions) {
   const queryClient = useQueryClient();
 
-  const addressQuery = useQuery<AddressListResponse>({
-    queryKey: ["addresses"],
-    queryFn: () =>
-      listAddressesAction() as unknown as Promise<AddressListResponse>,
-  });
-
-  const cartQuery = useQuery<CartApiResponse>({
-    queryKey: ["cart"],
-    queryFn: () => getCartAction() as unknown as Promise<CartApiResponse>,
+  const { addressQuery, cartQuery } = useCheckoutReadQueries<
+    AddressDocument,
+    CartApiResponse
+  >({
+    addressesEndpoint: API_ENDPOINTS.ADDRESSES.LIST,
+    cartEndpoint: API_ENDPOINTS.CART.GET,
+    addressesQueryKey: ["addresses"],
+    cartQueryKey: ["cart"],
   });
 
   const preflightMutation = useMutation<PreflightResponse, Error, string>({

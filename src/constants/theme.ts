@@ -961,6 +961,20 @@ export const THEME_CONSTANTS = {
     twoThird: "grid grid-cols-1 md:grid-cols-[2fr_1fr]",
     /** One-third / two-thirds split */
     oneThird: "grid grid-cols-1 md:grid-cols-[1fr_2fr]",
+    /** Auto-fill coupon/promo cards — min 264 px, gap-6 (3 cols at 1024 px, 2 at 600 px, 1 on mobile) */
+    couponCards: "grid grid-cols-[repeat(auto-fill,minmax(264px,1fr))] gap-6",
+    /** Auto-fill product cards — min 200 px, gap-6 (4–5 cols on desktop, 2 on mobile) */
+    productCards: "grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-6",
+    /** Auto-fill category icon+label cards — min 130 px, gap-4 (6 cols on desktop, 2 on mobile) */
+    categoryCards: "grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-4",
+    /** Auto-fill store cards — min 220 px, gap-6 (4–5 cols on desktop, 2 on mobile) */
+    storeCards: "grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6",
+    /** Auto-fill address/wide-coupon cards — min 300 px, gap-4 (3 cols on desktop, 1 on mobile) */
+    addressCards: "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4",
+    /** Auto-fill KPI / stat tiles — min 180 px, gap-4 (4 cols on desktop, 2 on mobile) */
+    statTiles: "grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4",
+    /** Auto-fill account nav / quick-action link tiles — min 160 px, gap-4 */
+    navTiles: "grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4",
   },
 
   /**

@@ -18,7 +18,7 @@
  * ```
  */
 
-import { NextResponse } from "next/server";
+import { createApiErrorHandler } from "@mohasinac/next";
 import { AppError } from "./base-error";
 import { ERROR_CODES, ERROR_MESSAGES } from "./error-codes";
 import { serverLogger } from "@/lib/server-logger";
@@ -26,57 +26,18 @@ import { serverLogger } from "@/lib/server-logger";
 /**
  * Handle API errors with consistent response format
  */
-export function handleApiError(error: unknown): NextResponse {
-  // Handle known AppError instances
-  if (error instanceof AppError) {
-    // Log non-400 errors to file
-    if (error.statusCode >= 500) {
-      serverLogger.error("API Error", {
-        code: error.code,
-        message: error.message,
-        statusCode: error.statusCode,
-        data: error.data,
-      });
-    }
-
-    return NextResponse.json(error.toJSON(), { status: error.statusCode });
-  }
-
-  // Handle validation errors (Zod, etc.)
-  if (error && typeof error === "object" && "issues" in error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Validation failed",
-        code: ERROR_CODES.VALIDATION_INVALID_INPUT,
-        data: error,
-      },
-      { status: 400 },
-    );
-  }
-
-  // Log unexpected errors for debugging
-  serverLogger.error("Unexpected API error", {
-    error:
-      error instanceof Error
-        ? {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
-          }
-        : error,
-  });
-
-  // Return generic error response
-  return NextResponse.json(
-    {
-      success: false,
-      error: ERROR_MESSAGES[ERROR_CODES.GEN_INTERNAL_ERROR],
-      code: ERROR_CODES.GEN_INTERNAL_ERROR,
-    },
-    { status: 500 },
-  );
+export function handleApiError(error: unknown): Response {
+  return apiErrorHandler(error);
 }
+
+const apiErrorHandler = createApiErrorHandler<AppError>({
+  isAppError,
+  getStatusCode: (err) => err.statusCode,
+  toJSON: (err) => err.toJSON(),
+  logger: serverLogger,
+  internalErrorCode: ERROR_CODES.GEN_INTERNAL_ERROR,
+  internalErrorMessage: ERROR_MESSAGES[ERROR_CODES.GEN_INTERNAL_ERROR],
+});
 
 /**
  * Log errors with context

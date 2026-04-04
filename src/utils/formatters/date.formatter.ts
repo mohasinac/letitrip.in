@@ -1,10 +1,4 @@
 /**
- * Date Formatting Utilities
- *
- * Centralized date formatting functions
- */
-
-/**
  * Resolve any date-like value (Date, ISO string, number, or Firestore Timestamp JSON)
  * into a native Date object. Returns null for falsy or unparseable input.
  */

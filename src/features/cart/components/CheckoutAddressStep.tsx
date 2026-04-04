@@ -2,8 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import type { AddressDocument } from "@/db/schema";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Span, TextLink, Badge, Button } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+import { Heading, Text, Span, Badge, Button } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -11,6 +11,8 @@ interface CheckoutAddressStepProps {
   addresses: AddressDocument[];
   selectedAddressId: string | null;
   onSelect: (addressId: string) => void;
+  /** Called when the user wants to add a new address inline. */
+  onAddNew: () => void;
   /** Display name of the signed-in user for third-party detection. */
   currentUserDisplayName?: string | null;
 }
@@ -33,6 +35,7 @@ export function CheckoutAddressStep({
   addresses,
   selectedAddressId,
   onSelect,
+  onAddNew,
   currentUserDisplayName,
 }: CheckoutAddressStepProps) {
   const t = useTranslations("checkout");
@@ -54,13 +57,12 @@ export function CheckoutAddressStep({
           <Text variant="secondary" className="mb-4">
             {t("noAddresses")}
           </Text>
-          <TextLink
-            href={ROUTES.USER.ADDRESSES_ADD}
-            variant="inherit"
+          <Button
+            onClick={onAddNew}
             className="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium transition-colors"
           >
             {t("addNewAddress")}
-          </TextLink>
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -128,10 +130,10 @@ export function CheckoutAddressStep({
             );
           })}
 
-          {/* Add new address link */}
-          <TextLink
-            href={ROUTES.USER.ADDRESSES_ADD}
-            variant="inherit"
+          {/* Add new address inline trigger */}
+          <Button
+            onClick={onAddNew}
+            variant="ghost"
             className={`flex items-center gap-2 w-full p-4 rounded-xl border-2 border-dashed ${themed.border} ${themed.textSecondary} hover:border-primary hover:text-primary transition-colors text-sm font-medium`}
           >
             <svg
@@ -148,7 +150,7 @@ export function CheckoutAddressStep({
               />
             </svg>
             {t("addNewAddress")}
-          </TextLink>
+          </Button>
         </div>
       )}
     </div>

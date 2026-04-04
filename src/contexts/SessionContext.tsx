@@ -77,8 +77,12 @@ export function SessionProvider({
   initialUser,
 }: SessionProviderProps) {
   const [user, setUser] = useState<SessionUser | null>(initialUser ?? null);
-  // If the server already provided the user, we can start without loading.
-  const [loading, setLoading] = useState(initialUser === undefined);
+  // loading is true until Firebase confirms auth state on the client.
+  // Exception: server provided a confirmed non-null user — trust it immediately.
+  // When initialUser is null the server session cookie may not reflect a login that
+  // just happened (the layout RSC runs once; client-side Firebase SDK can be ahead),
+  // so we wait for onAuthStateChanged before allowing ProtectedRoute to redirect.
+  const [loading, setLoading] = useState(initialUser == null);
   const [sessionId, setSessionId] = useState<string | null>(
     initialUser?.sessionId ?? null,
   );
@@ -88,6 +92,9 @@ export function SessionProvider({
     undefined,
   );
   const signOutRef = useRef<(() => Promise<void>) | undefined>(undefined);
+  // Tracks whether the first onAuthStateChanged for the SSR-hydrated user has
+  // already been handled — lets us skip the redundant /api/user/profile fetch.
+  const serverHydratedUid = useRef<string | null>(initialUser?.uid ?? null);
 
   // Get session ID from cookie
   const getSessionIdFromCookie = useCallback((): string | null => {
@@ -332,6 +339,23 @@ export function SessionProvider({
         }
 
         if (thisVersion !== authVersion) return;
+
+        // If the server already hydrated this exact user, skip the extra
+        // /api/user/profile round-trip — the data is already in state.
+        if (serverHydratedUid.current === authUser.uid) {
+          serverHydratedUid.current = null; // only skip once per mount
+          const currentSessionId = getSessionIdFromCookie();
+          if (currentSessionId) setSessionId(currentSessionId);
+          // Start activity tracking without re-fetching the profile.
+          if (activityUpdateRef.current)
+            clearInterval(activityUpdateRef.current);
+          activityUpdateRef.current = setInterval(
+            () => updateSessionActivityRef.current?.(),
+            5 * 60 * 1000,
+          );
+          setLoading(false);
+          return;
+        }
 
         // Fetch user profile
         const userData = await fetchUserProfile(authUser);

@@ -18,6 +18,7 @@ import {
   FormGroup,
   Label,
   Li,
+  TagInput,
   Text,
   Ul,
 } from "@/components";
@@ -151,19 +152,10 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         </div>
       </FormGroup>
 
-      <FormField
-        name="tags"
+      <TagInput
         label={t("tags")}
-        type="text"
-        value={(faq.tags || []).join(", ")}
-        onChange={(value) =>
-          update({
-            tags: value
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter(Boolean),
-          })
-        }
+        value={faq.tags ?? []}
+        onChange={(tags) => update({ tags })}
         disabled={isReadonly}
         placeholder={t("tagsPlaceholder")}
       />

@@ -1,14 +1,31 @@
 /**
  * Data Helpers Barrel Export
  *
- * Centralized export for data manipulation helpers
+ * Re-exported from @mohasinac/utils — do not add implementations here.
+ * For sieve.helper (Node.js built-ins), import directly:
+ *   import { applySieveToArray } from '@/helpers/data/sieve.helper'
  */
 
-export * from "./array.helper";
-export * from "./filter.helper";
-export * from "./object.helper";
-export * from "./pagination.helper";
-export * from "./sorting.helper";
-// sieve.helper is intentionally NOT exported from this barrel.
-// It uses @mohasinac/sievejs which requires Node.js built-ins (node:url).
-// Import directly in API routes: import { applySieveToArray } from '@/helpers/data/sieve.helper';
+export {
+  groupBy,
+  unique,
+  uniqueBy,
+  sortBy,
+  chunk,
+  paginate,
+  deepMerge,
+  pick,
+  omit,
+  isEmptyObject,
+  deepClone,
+  isEqual,
+  cleanObject,
+  buildSieveFilters,
+  calculatePagination,
+  sort,
+} from "@mohasinac/utils";
+export type {
+  PaginationOptions,
+  PaginationResult,
+  SortOrder,
+} from "@mohasinac/utils";

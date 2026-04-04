@@ -143,16 +143,18 @@ function WishlistContent() {
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
-      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+      showSuccess(
+        tActions("bulkRemoveFromWishlistSuccess", { count: succeeded }),
+      );
     } else if (succeeded > 0) {
       showError(
-        tActions("bulkPartialSuccess", {
+        tActions("bulkRemoveFromWishlistPartial", {
           success: succeeded,
           total: selectedIds.length,
         }),
       );
     } else {
-      showError(tActions("bulkFailed"));
+      showError(tActions("bulkRemoveFromWishlistFailed"));
     }
     setSelectedIds([]);
   }, [selectedIds, showSuccess, showError, tActions]);
@@ -180,19 +182,19 @@ function WishlistContent() {
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded > 0) queryClient.invalidateQueries({ queryKey: ["cart"] });
     if (succeeded === selectedIds.length) {
-      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+      showSuccess(tActions("bulkAddToCartSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
       showError(
-        tActions("bulkPartialSuccess", {
+        tActions("bulkAddToCartPartial", {
           success: succeeded,
           total: selectedIds.length,
         }),
       );
     } else {
-      showError(tActions("bulkFailed"));
+      showError(tActions("bulkAddToCartFailed"));
     }
     setSelectedIds([]);
-  }, [selectedIds, showSuccess, showError, tActions]);
+  }, [selectedIds, showSuccess, showError, tActions, queryClient]);
 
   // Move isProductTab before the early return so hooks are unconditional
   const isProductTab = activeTab === "products";
@@ -355,7 +357,9 @@ function WishlistContent() {
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 absolute inset-0 pointer-events-none">
+              <div
+                className={`${THEME_CONSTANTS.grid.productCards} absolute inset-0 pointer-events-none`}
+              >
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

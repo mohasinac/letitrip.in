@@ -1,5 +1,8 @@
-import { MediaImage, Text, Caption } from "@/components";
-import { classNames } from "@/helpers";
+import { MediaImage } from "@/components";
+import {
+  ItemRow as PackageItemRow,
+  type ItemRowProps as PackageItemRowProps,
+} from "@mohasinac/ui";
 
 export interface ItemRowProps {
   image?: string;
@@ -13,6 +16,8 @@ export interface ItemRowProps {
   className?: string;
 }
 
+type ForwardedItemRowProps = Omit<PackageItemRowProps, "thumbnail">;
+
 export function ItemRow({
   image,
   imageAlt,
@@ -22,24 +27,22 @@ export function ItemRow({
   actions,
   className,
 }: ItemRowProps) {
+  const forwardedProps: ForwardedItemRowProps = {
+    title,
+    subtitle,
+    rightSlot,
+    actions,
+    className,
+  };
+
   return (
-    <div className={classNames("flex gap-4 items-start", className)}>
-      {/* Thumbnail */}
-      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-800">
-        <MediaImage src={image} alt={imageAlt} size="thumbnail" />
-      </div>
-
-      {/* Title + subtitle */}
-      <div className="flex-1 min-w-0">
-        <Text size="sm" weight="medium" className="line-clamp-2">
-          {title}
-        </Text>
-        {subtitle && <Caption className="mt-0.5">{subtitle}</Caption>}
-        {actions && <div className="mt-2">{actions}</div>}
-      </div>
-
-      {/* Right slot */}
-      {rightSlot && <div className="flex-shrink-0">{rightSlot}</div>}
-    </div>
+    <PackageItemRow
+      {...forwardedProps}
+      thumbnail={
+        <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:h-20 sm:w-20 dark:bg-slate-800">
+          <MediaImage src={image} alt={imageAlt} size="thumbnail" />
+        </div>
+      }
+    />
   );
 }

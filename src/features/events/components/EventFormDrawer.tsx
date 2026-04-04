@@ -10,6 +10,7 @@ import {
   Input,
   Label,
   Select,
+  TagInput,
   Text,
 } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -49,6 +50,7 @@ interface FormState {
   startsAt: string;
   endsAt: string;
   isActive: boolean;
+  tags: string[];
   maxEntriesPerUser: string;
   bannerImageUrl: string;
   badgeImageUrl: string;
@@ -68,6 +70,7 @@ function emptyForm(): FormState {
     startsAt: "",
     endsAt: "",
     isActive: false,
+    tags: [],
     maxEntriesPerUser: "1",
     bannerImageUrl: "",
     badgeImageUrl: "",
@@ -103,6 +106,7 @@ function eventToForm(e: EventDocument): FormState {
     startsAt: toIso(e.startsAt),
     endsAt: toIso(e.endsAt),
     isActive: e.status === "active",
+    tags: e.tags ?? [],
     maxEntriesPerUser: String(
       (e.surveyConfig as SurveyConfig | undefined)?.maxEntriesPerUser ?? 1,
     ),
@@ -172,6 +176,7 @@ export function EventFormDrawer({
       startsAt: form.startsAt ? new Date(form.startsAt) : undefined,
       endsAt: form.endsAt ? new Date(form.endsAt) : undefined,
       coverImageUrl: form.bannerImageUrl || undefined,
+      tags: form.tags.length > 0 ? form.tags : undefined,
       [typeConfigKey]: (form as unknown as Record<string, unknown>)[
         typeConfigKey
       ],
@@ -348,7 +353,13 @@ export function EventFormDrawer({
           />
         </div>
 
-        {/* Separator */}
+        <TagInput
+          label="Tags"
+          value={form.tags}
+          onChange={(tags) => set("tags", tags)}
+          placeholder="Add a tag…"
+        />
+
         <div className={`border-t ${themed.border} pt-4`}>
           <Text weight="semibold" size="sm" className="mb-3 capitalize">
             {form.type} Configuration

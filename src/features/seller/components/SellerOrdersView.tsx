@@ -420,7 +420,7 @@ function SellerOrdersContent() {
             <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
             {/* Summary stats */}
             {!isLoading && orders.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
                 {(
                   [
                     {

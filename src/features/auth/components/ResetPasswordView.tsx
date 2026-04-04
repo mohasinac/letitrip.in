@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { AuthStatusPanel } from "@mohasinac/feat-auth";
 import {
   Card,
   Button,
@@ -80,34 +81,20 @@ export function ResetPasswordView() {
     return (
       <div className={`min-h-screen ${flex.center} px-4 py-8`}>
         <Card className="max-w-md w-full p-8 text-center">
-          <div className="mb-4 text-green-500 dark:text-green-400">
-            <svg
-              className="w-16 h-16 mx-auto"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <Heading level={4} className="mb-2">
-            {t("resetPassword.success")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("resetPassword.successMessage")}
-          </Text>
-          <Button
-            variant="primary"
-            onClick={() => router.push(ROUTES.AUTH.LOGIN)}
-            className="w-full"
-          >
-            {t("resetPassword.goToLogin")}
-          </Button>
+          <AuthStatusPanel
+            tone="success"
+            title={t("resetPassword.success")}
+            message={t("resetPassword.successMessage")}
+            actions={
+              <Button
+                variant="primary"
+                onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+                className="w-full"
+              >
+                {t("resetPassword.goToLogin")}
+              </Button>
+            }
+          />
         </Card>
       </div>
     );

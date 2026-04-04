@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useBottomActionsContext } from "@/contexts/BottomActionsContext";
@@ -45,6 +45,12 @@ export default function LayoutClient({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isAdminRoute =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/seller") ||
+    pathname.startsWith("/user");
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -110,6 +116,10 @@ export default function LayoutClient({
     });
   };
 
+  if (isAdminRoute) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex flex-col min-h-screen w-full overflow-x-clip transition-colors duration-300">
       {/* Dynamic Background */}
@@ -151,7 +161,7 @@ export default function LayoutClient({
       <AutoBreadcrumbs />
 
       {/* Content with Sidebar */}
-      <div className="flex flex-1 relative w-full overflow-x-hidden">
+      <div className="flex flex-1 relative w-full overflow-x-clip">
         <Sidebar
           isOpen={sidebarOpen}
           isDark={isDark}

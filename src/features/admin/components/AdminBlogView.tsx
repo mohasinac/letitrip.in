@@ -264,7 +264,7 @@ export function AdminBlogView() {
               onAction={openCreate}
             />
             {/* Stat cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
               {[
                 { label: t("totalPosts"), value: totalPosts },
                 { label: t("publishedPosts"), value: publishedCount },

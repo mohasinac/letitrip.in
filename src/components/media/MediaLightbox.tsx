@@ -44,9 +44,9 @@ export interface MediaLightboxProps {
   onClose: () => void;
 }
 
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 0.5;
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 2;
+const ZOOM_STEP = 0.25;
 
 export function MediaLightbox({
   items,
@@ -97,7 +97,7 @@ export function MediaLightbox({
   const zoomOut = useCallback(() => {
     setZoom((prev) => {
       const next = Math.max(prev - ZOOM_STEP, MIN_ZOOM);
-      if (next <= MIN_ZOOM) setOffset({ x: 0, y: 0 });
+      if (next <= 1) setOffset({ x: 0, y: 0 });
       return next;
     });
   }, []);
@@ -165,7 +165,7 @@ export function MediaLightbox({
       } else {
         setZoom((prev) => {
           const next = Math.max(prev - ZOOM_STEP, MIN_ZOOM);
-          if (next <= MIN_ZOOM) setOffset({ x: 0, y: 0 });
+          if (next <= 1) setOffset({ x: 0, y: 0 });
           return next;
         });
       }
@@ -364,6 +364,21 @@ export function MediaLightbox({
         <Caption className="text-white/70 w-14 text-center tabular-nums">
           {Math.round(zoom * 100)}%
         </Caption>
+        {/* Zoom slider */}
+        <input
+          type="range"
+          min={MIN_ZOOM}
+          max={MAX_ZOOM}
+          step={0.05}
+          value={zoom}
+          onChange={(e) => {
+            const val = parseFloat(e.target.value);
+            setZoom(val);
+            if (val <= 1) setOffset({ x: 0, y: 0 });
+          }}
+          aria-label={t("gallery.zoomSlider")}
+          className="w-20 sm:w-28 cursor-pointer accent-white"
+        />
         {/* Zoom in */}
         <Button
           variant="ghost"
@@ -374,8 +389,8 @@ export function MediaLightbox({
         >
           <ZoomIn className="w-7 h-7" />
         </Button>
-        {/* Reset zoom (visible only when zoomed) */}
-        {zoom > 1 && (
+        {/* Reset zoom (visible at any non-100% zoom) */}
+        {zoom !== 1 && (
           <Button
             variant="ghost"
             onClick={resetZoom}

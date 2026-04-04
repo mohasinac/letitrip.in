@@ -53,6 +53,10 @@ export { ErrorBoundary } from "./ErrorBoundary";
 export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
 export { ImageCropModal } from "./modals/ImageCropModal";
 export type { ImageCropData } from "./modals/ImageCropModal";
+export { VideoTrimModal } from "./modals/VideoTrimModal";
+export type { VideoTrimModalProps } from "./modals/VideoTrimModal";
+export { VideoThumbnailSelector } from "./modals/VideoThumbnailSelector";
+export type { VideoThumbnailSelectorProps } from "./modals/VideoThumbnailSelector";
 export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================

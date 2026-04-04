@@ -4,6 +4,139 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased] — 2026-04-04
+
+### Next and validation adapters — package-backed wrappers
+
+- Migrated `src/lib/api/cache-middleware.ts` to a thin adapter over `@mohasinac/next` cache middleware exports while preserving local `CachePresets` usage.
+- Migrated `src/lib/errors/error-handler.ts` to `createApiErrorHandler` from `@mohasinac/next`, retaining local AppError semantics, status extraction, serializer, and `serverLogger` integration.
+- Migrated `src/lib/zod-error-map.ts` to a direct shim re-exporting `zodErrorMap` and `setupZodErrorMap` from `@mohasinac/validation`.
+- Added generic `createApiHandlerFactory` to `@mohasinac/next` (`packages/packages/next/src/api/apiHandler.ts`) and exported it from package index for reuse by consumer projects.
+- Linked `@mohasinac/next` to local workspace package in `letitrip.in/package.json` and migrated `src/lib/api/api-handler.ts` to use `createApiHandlerFactory` while preserving local auth/rate-limit/error semantics.
+- Updated `@mohasinac/next` request-facing types to structural `Request`/`Response` signatures (instead of hard `NextRequest`) to avoid cross-install Next.js nominal type conflicts in monorepo file-link mode.
+- Linked `@mohasinac/ui`, `@mohasinac/utils`, `@mohasinac/security`, `@mohasinac/react`, `@mohasinac/feat-auth`, `@mohasinac/feat-cart`, `@mohasinac/feat-products`, and `@mohasinac/feat-wishlist` to local workspace packages so letitrip consumes the extracted feature/hook/helper exports directly.
+
+**Verification:**
+
+- IDE diagnostics (`get_errors`) on all three changed files ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+- `npm run build --workspace @mohasinac/next` in `d:\proj\packages` ✅
+- `npm install --package-lock=false` in `letitrip.in` after local package links ✅
+
+### UI primitives extraction continuation — TagInput
+
+- Added generic `TagInput` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/TagInput.tsx`) and exported it from package index.
+- Converted local `src/components/ui/TagInput.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `StepperNav` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/StepperNav.tsx`) and exported it from package index.
+- Converted local `src/components/ui/StepperNav.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `ViewToggle` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/ViewToggle.tsx`) and exported it from package index.
+- Converted local `src/components/ui/ViewToggle.tsx` to a thin i18n adapter over package primitive (labels injected via `next-intl`).
+- Added generic `RatingDisplay` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/RatingDisplay.tsx`) and exported it from package index.
+- Converted local `src/components/ui/RatingDisplay.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `PriceDisplay` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/PriceDisplay.tsx`) and exported it from package index.
+- Converted local `src/components/ui/PriceDisplay.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `StatsGrid` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/StatsGrid.tsx`) and exported it from package index.
+- Converted local `src/components/ui/StatsGrid.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `SummaryCard` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/SummaryCard.tsx`) and exported it from package index.
+- Converted local `src/components/ui/SummaryCard.tsx` to a thin re-export shim over `@mohasinac/ui`.
+- Added generic `CountdownDisplay` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/CountdownDisplay.tsx`) and kept local `src/components/ui/CountdownDisplay.tsx` as a thin re-export shim.
+- Added generic `ItemRow` primitive to `@mohasinac/ui` (`packages/packages/ui/src/components/ItemRow.tsx`) and converted local `src/components/ui/ItemRow.tsx` to a thin media-aware adapter over the package primitive.
+
+**Verification:**
+
+- `npm run build --workspace @mohasinac/ui` in `d:\proj\packages` ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+
+---
+
+### Package extraction batch — utils/security/react shims
+
+- Added `redactPii` to `@mohasinac/security` and converted local `src/utils/pii-redact.ts` to a package re-export shim.
+- Added `animation.helper`, `color.helper`, and full `event-manager` utility set to `@mohasinac/utils` and converted local helper files to package re-export shims.
+- Added reusable hooks to `@mohasinac/react`: `useBulkAction`, `usePendingFilters`, `usePendingTable`, and `useUnsavedChanges`.
+- Converted local hooks `src/hooks/useBulkAction.ts`, `src/hooks/usePendingFilters.ts`, `src/hooks/usePendingTable.ts` to re-export shims.
+- Kept `src/hooks/useUnsavedChanges.ts` as a thin local adapter that wires `eventBus` confirmation behavior into package hook `useUnsavedChanges`.
+
+**Verification:**
+
+- `npm run build --workspace @mohasinac/utils` ✅
+- `npm run build --workspace @mohasinac/security` ✅
+- `npm run build --workspace @mohasinac/react` ✅
+- IDE diagnostics (`get_errors`) on all changed files ✅
+
+### Auth UI-only continuation — forgot/reset success panels
+
+- Updated `src/features/auth/components/ForgotPasswordView.tsx` success state to use `AuthStatusPanel` from `@mohasinac/feat-auth`.
+- Updated `src/features/auth/components/ResetPasswordView.tsx` success state to use `AuthStatusPanel` from `@mohasinac/feat-auth`.
+- Auth logic, mutations, routing, and session handling remain local; only presentational status UI was extracted.
+
+**Verification:**
+
+- `npm run build --workspace @mohasinac/feat-auth` ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+
+---
+
+### Cart + Products + Auth extraction continuation
+
+**Cart (read-wrapper extraction):**
+
+- Added `useCheckoutReadQueries` to `@mohasinac/feat-cart` for query-only checkout reads (addresses + cart via `apiClient.get`).
+- Updated local `src/hooks/useCheckout.ts` to delegate checkout read queries to package wrapper while keeping checkout mutation/payment flow local.
+
+**Products (component-level extraction):**
+
+- Added package-level `ProductFeatureBadges` in `@mohasinac/feat-products` and exported via component barrel.
+- Converted local `src/features/products/components/ProductFeatureBadges.tsx` into a thin translation/theming adapter over package component.
+
+**Auth (UI-only extraction):**
+
+- Added `AuthStatusPanel` to `@mohasinac/feat-auth` and exported via component barrel.
+- Updated local `src/features/auth/components/VerifyEmailView.tsx` to use package status panel while retaining page-specific verification logic and routing locally.
+
+**Verification:**
+
+- `npm run build --workspace @mohasinac/feat-cart` ✅
+- `npm run build --workspace @mohasinac/feat-products` ✅
+- `npm run build --workspace @mohasinac/feat-auth` ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+
+---
+
+## [Unreleased] — 2026-04-04
+
+### Cart batch continuation — read hook wrapper extraction
+
+- Added `useCartQuery` to `@mohasinac/feat-cart` (`src/hooks/useCartQuery.ts`) as a generic read-only query wrapper over `apiClient`.
+- Exported `useCartQuery` from `@mohasinac/feat-cart` public API.
+- Updated local `src/features/cart/hooks/useCartMutations.ts` so `useCart` delegates to `useCartQuery`, preserving existing endpoint/query key/return behavior while removing local read-query implementation details.
+
+**Verification:**
+
+- `npm run build --workspace @mohasinac/feat-cart` ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+
+---
+
+## [Unreleased] — 2026-04-03
+
+### Package Extraction Continuation — auth + products wrappers
+
+Continued B/C extraction with thin local adapters over `@mohasinac/feat-*` exports.
+
+**Auth migration:**
+
+- `src/features/auth/components/AuthSocialButtons.tsx` now delegates rendering to `SocialAuthButtons` from `@mohasinac/feat-auth` and keeps only local translations/prop wiring.
+
+**Products migration:**
+
+- `src/features/products/hooks/useProducts.ts` now delegates list querying to `useProducts` from `@mohasinac/feat-products`.
+- Local hook API preserved (`params` string input, `ProductsListResult` return shape) via a compatibility adapter that parses URL params and bridges package/local types.
+
+**Verification:** `npx tsc --noEmit` → clean
+
+---
+
 ## [Unreleased] — 2026-03-24
 
 ### Package Migration — Seller GET routes delegated to @mohasinac/feat-seller

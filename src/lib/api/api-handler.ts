@@ -29,8 +29,9 @@
  * ```
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import type { NextRequest, NextResponse } from "next/server";
+import { createApiHandlerFactory } from "@mohasinac/next";
 import { applyRateLimit } from "@/lib/security/rate-limit";
 import {
   requireAuthFromRequest,
@@ -74,97 +75,50 @@ interface ApiHandlerOptions<TInput = any, TParams = Record<string, string>> {
  */
 export function createApiHandler<
   TInput = any,
-  TParams = Record<string, string>,
+  TParams extends Record<string, string> = Record<string, string>,
 >(options: ApiHandlerOptions<TInput, TParams>) {
-  return async (
-    request: NextRequest,
-    context: { params: Promise<TParams> },
-  ): Promise<NextResponse> => {
-    const startMs = performance.now();
-    try {
-      // 1. Rate limiting
-      let rateLimitHeaders: Record<string, string> | undefined;
-      if (options.rateLimit) {
-        const rateLimitResult = await applyRateLimit(
-          request,
-          options.rateLimit,
-        );
-        rateLimitHeaders = {
-          "RateLimit-Limit": String(rateLimitResult.limit),
-          "RateLimit-Remaining": String(rateLimitResult.remaining),
-          "RateLimit-Reset": String(rateLimitResult.reset),
-        };
-        if (!rateLimitResult.success) {
-          return NextResponse.json(
-            { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
-            { status: 429, headers: rateLimitHeaders },
-          );
-        }
-      }
-
-      // 2. Authentication / authorisation
-      let user: UserDocument | undefined;
-      if (options.roles && options.roles.length > 0) {
-        user = await requireRoleFromRequest(request, options.roles);
-      } else if (options.auth) {
-        user = await requireAuthFromRequest(request);
-      }
-
-      // 3. Body validation
-      let validatedBody: TInput | undefined;
-      if (options.schema) {
-        if (typeof (options.schema as any).safeParse === "function") {
-          const body = await request.json();
-          const result = options.schema.safeParse(body);
-          if (!result.success) {
-            return errorResponse("Validation failed", 400, result.error.issues);
-          }
-          validatedBody = result.data;
-        } else {
-          // Schema stub without safeParse (test environment) — pass raw body
-          try {
-            validatedBody = (await request.json()) as TInput;
-          } catch {
-            // no body — leave validatedBody as undefined
-          }
-        }
-      }
-
-      // 4. Resolve dynamic route params
-      const resolvedParams = (context as any)?.params
-        ? await context.params
-        : undefined;
-
-      const response = await options.handler({
-        request,
+  return localCreateApiHandler<TInput, TParams>({
+    ...options,
+    handler: ({ request, user, body, params }) =>
+      options.handler({
+        request: request as NextRequest,
         user,
-        body: validatedBody,
-        params: resolvedParams,
-      });
-
-      // Attach rate-limit headers to the response so clients can track their quota
-      if (rateLimitHeaders) {
-        for (const [key, value] of Object.entries(rateLimitHeaders)) {
-          response.headers.set(key, value);
-        }
-      }
-
-      serverLogger.info("api.timing", {
-        method: request.method,
-        path: request.nextUrl.pathname,
-        status: response.status,
-        durationMs: Math.round(performance.now() - startMs),
-      });
-
-      return response;
-    } catch (error) {
-      serverLogger.error("api.timing", {
-        method: request.method,
-        path: request.nextUrl.pathname,
-        durationMs: Math.round(performance.now() - startMs),
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return handleApiError(error);
-    }
-  };
+        body,
+        params,
+      }),
+  });
 }
+
+const localCreateApiHandler = createApiHandlerFactory<
+  UserRole,
+  RateLimitConfig,
+  UserDocument
+>({
+  applyRateLimit: (request, config) =>
+    applyRateLimit(request as NextRequest, config),
+  requireAuthFromRequest: (request) =>
+    requireAuthFromRequest(request as NextRequest),
+  requireRoleFromRequest: (request, roles) =>
+    requireRoleFromRequest(request as NextRequest, roles as UserRole[]),
+  errorResponse,
+  handleApiError,
+  getRateLimitExceededMessage: () => UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED,
+  logTiming: ({ method, path, status, durationMs, error }) => {
+    if (error) {
+      serverLogger.error("api.timing", {
+        method,
+        path,
+        durationMs,
+        error,
+      });
+      return;
+    }
+
+    serverLogger.info("api.timing", {
+      method,
+      path,
+      status,
+      durationMs,
+    });
+  },
+});

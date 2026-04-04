@@ -1,10 +1,4 @@
 /**
- * Number Formatting Utilities
- *
- * Centralized number formatting functions
- */
-
-/**
  * Formats a number as currency with locale-specific formatting
  *
  * @param amount - The numeric amount to format

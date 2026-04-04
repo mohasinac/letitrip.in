@@ -98,7 +98,7 @@ export function ProductImageGallery({
       <div
         className={`relative group overflow-hidden rounded-xl bg-zinc-100 dark:bg-slate-800`}
       >
-        <div className="aspect-square sm:aspect-[4/3] lg:aspect-square">
+        <div className="aspect-square sm:aspect-[4/3] lg:aspect-[4/5]">
           {!selected ? (
             <MediaImage src={undefined} alt={title} size="hero" />
           ) : selected.type === "video" ? (

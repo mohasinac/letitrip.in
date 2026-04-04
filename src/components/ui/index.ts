@@ -110,3 +110,7 @@ export type {
   AsyncPage,
   DynamicSelectProps,
 } from "./DynamicSelect";
+
+// Tag / chip input
+export { TagInput } from "./TagInput";
+export type { TagInputProps } from "./TagInput";

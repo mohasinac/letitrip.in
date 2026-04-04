@@ -37,7 +37,7 @@ export function SellerPayoutStats({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 mb-8">
       <Card className="p-4">
         <Text size="sm" variant="secondary">
           {t("availableEarnings")}

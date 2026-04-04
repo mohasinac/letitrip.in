@@ -48,6 +48,8 @@ import { useTranslations } from "next-intl";
 import { Aside, Button, BulkActionBar, Span, Text } from "@/components";
 import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+import { useBottomActions } from "@/hooks";
+import type { BottomAction } from "@/contexts/BottomActionsContext";
 
 export interface ListingLayoutProps {
   // ── Header ──────────────────────────────────────────────────────────────
@@ -150,6 +152,20 @@ export function ListingLayout({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
+  // Register bulk actions with the mobile BottomActions bar (md:hidden sticky bar).
+  // Feature components that already call useBottomActions for bulk will
+  // overwrite this registration (parent effects run after child effects in React).
+  useBottomActions({
+    bulk:
+      selectedCount > 0 && bulkActionItems && bulkActionItems.length > 0
+        ? {
+            selectedCount,
+            onClearSelection: onClearSelection ?? (() => {}),
+            actions: bulkActionItems as BottomAction[],
+          }
+        : undefined,
+  });
+
   const { themed, flex, spacing } = THEME_CONSTANTS;
 
   const hasFilter = Boolean(filterContent);
@@ -198,7 +214,7 @@ export function ListingLayout({
       <div
         className={[
           "sticky z-20 py-2",
-          "top-20",
+          "top-14 md:top-[120px]",
           THEME_CONSTANTS.layout.titleBarBg,
         ].join(" ")}
       >
@@ -284,7 +300,10 @@ export function ListingLayout({
               {viewToggleSlot}
               {actionsSlot}
             </div>
-            {toolbarPaginationSlot}
+            {/* Toolbar pagination — desktop only; mobile gets the sticky bottom bar below */}
+            {toolbarPaginationSlot && (
+              <div className="hidden md:flex">{toolbarPaginationSlot}</div>
+            )}
           </div>
         </div>
       </div>
@@ -297,7 +316,7 @@ export function ListingLayout({
             aria-label={panelTitle}
             className={[
               "hidden lg:block flex-shrink-0 self-start",
-              "sticky top-[8.5rem]",
+              "sticky top-[176px]",
               "transition-all duration-200 ease-in-out overflow-hidden",
               sidebarOpen
                 ? "w-60 xl:w-64 2xl:w-72 opacity-100"
@@ -356,13 +375,15 @@ export function ListingLayout({
 
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Bulk action bar — picker + apply (matches BottomActions) */}
+          {/* Bulk action bar — desktop inline only; mobile uses BottomActions sticky bar */}
           {selectedCount > 0 && (
-            <BulkActionBar
-              selectedCount={selectedCount}
-              onClearSelection={onClearSelection}
-              actions={bulkActionItems}
-            />
+            <div className="hidden md:block">
+              <BulkActionBar
+                selectedCount={selectedCount}
+                onClearSelection={onClearSelection}
+                actions={bulkActionItems}
+              />
+            </div>
           )}
 
           {/* Active filter chips */}
@@ -380,6 +401,24 @@ export function ListingLayout({
           )}
         </div>
       </div>
+
+      {/* ─────────── Mobile sticky pagination bar ─────────── */}
+      {/* Sits at bottom-14 (above BottomNavbar). BottomActions (z-40) naturally covers it during bulk mode. */}
+      {toolbarPaginationSlot && (
+        <nav
+          aria-label="Pagination"
+          className={[
+            "fixed left-0 right-0 md:hidden",
+            "bottom-14",
+            "z-[39]",
+            THEME_CONSTANTS.layout.bottomNavBg,
+            "shadow-[0_-2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_8px_rgba(0,0,0,0.20)]",
+            "h-10 flex items-center justify-center px-3 overflow-x-auto",
+          ].join(" ")}
+        >
+          {toolbarPaginationSlot}
+        </nav>
+      )}
 
       {/* ─────────── Mobile fullscreen filter overlay ─────────── */}
       {hasFilter && mobileFilterOpen && (

@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, Text } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { Link } from "@/i18n/navigation";
 
 /**
  * ProfileStatsGrid Component
@@ -43,6 +44,7 @@ export function ProfileStatsGrid({
       label: "Orders",
       value: stats.orders,
       variant: "stat-indigo" as const,
+      href: ROUTES.USER.ORDERS,
       icon: (
         <svg
           className="w-6 h-6"
@@ -63,6 +65,7 @@ export function ProfileStatsGrid({
       label: "Wishlist",
       value: stats.wishlist,
       variant: "stat-rose" as const,
+      href: ROUTES.USER.WISHLIST,
       icon: (
         <svg
           className="w-6 h-6"
@@ -83,6 +86,7 @@ export function ProfileStatsGrid({
       label: "Addresses",
       value: stats.addresses,
       variant: "stat-teal" as const,
+      href: ROUTES.USER.ADDRESSES,
       icon: (
         <svg
           className="w-6 h-6"
@@ -109,26 +113,29 @@ export function ProfileStatsGrid({
 
   return (
     <div
-      className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4 ${className}`}
+      className={`grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 ${className}`}
     >
       {statItems.map((stat) => (
-        <Card
-          key={stat.label}
-          variant={stat.variant}
-          className={spacing.cardPadding}
-        >
-          <div className={flex.between}>
-            <div>
-              <Text
-                className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
-              >
-                {stat.label}
-              </Text>
-              <Text className="text-3xl font-bold mt-1">{stat.value}</Text>
+        <Link key={stat.label} href={stat.href} className="group block">
+          <Card
+            variant={stat.variant}
+            className={`${spacing.cardPadding} cursor-pointer group-hover:shadow-md transition-shadow duration-200`}
+          >
+            <div className={flex.between}>
+              <div>
+                <Text
+                  className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
+                >
+                  {stat.label}
+                </Text>
+                <Text className="text-3xl font-bold mt-1">{stat.value}</Text>
+              </div>
+              <div className="text-zinc-400 dark:text-zinc-500">
+                {stat.icon}
+              </div>
             </div>
-            <div className="text-zinc-400 dark:text-zinc-500">{stat.icon}</div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
       ))}
     </div>
   );

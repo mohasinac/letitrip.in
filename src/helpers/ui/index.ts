@@ -1,9 +1,14 @@
 /**
  * UI Helpers Barrel Export
  *
- * Centralized export for UI helpers
+ * Re-exported from @mohasinac/ui — do not add implementations here.
  */
 
-export * from "./color.helper";
-export * from "./style.helper";
-export * from "./animation.helper";
+export {
+  hexToRgb,
+  rgbToHex,
+  getContrastColor,
+  classNames,
+  mergeTailwindClasses,
+  easings,
+} from "@mohasinac/ui";

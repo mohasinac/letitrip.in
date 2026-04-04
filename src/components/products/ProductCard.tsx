@@ -203,7 +203,7 @@ export function ProductCard({
             variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-primary-500 dark:hover:border-primary-400 transition-colors z-10 p-0`}
+            className={`absolute top-2 right-2 w-8 h-8 !min-h-0 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-primary-500 dark:hover:border-primary-400 transition-colors z-10 p-0`}
           >
             {isSelected ? (
               <Span
@@ -343,7 +343,7 @@ export function ProductCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
+                className="flex-1 min-w-0 text-xs px-2 gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
                 isLoading={cartLoading}
                 onClick={handleAddToCart}
               >
@@ -353,15 +353,15 @@ export function ProductCard({
                 />
                 <Span
                   variant="inherit"
-                  className="hidden sm:inline xl:hidden min-w-0 truncate"
+                  className={`min-w-0 truncate ${variant === "list" ? "inline" : "hidden md:inline"}`}
                 >
-                  {t("addToCart")}
+                  {t("addToCartShort")}
                 </Span>
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
-                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 rounded-xl active:scale-95"
+                className="flex-1 min-w-0 text-xs px-2 gap-1 rounded-xl active:scale-95"
                 onClick={handleBuyNow}
               >
                 <Zap
@@ -370,7 +370,7 @@ export function ProductCard({
                 />
                 <Span
                   variant="inherit"
-                  className="hidden sm:inline xl:hidden min-w-0 truncate"
+                  className={`min-w-0 truncate ${variant === "list" ? "inline" : "hidden md:inline"}`}
                 >
                   {t("buyNow")}
                 </Span>

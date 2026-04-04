@@ -16,6 +16,7 @@ import {
   FormGroup,
   Label,
   Span,
+  TagInput,
   Text,
 } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
@@ -200,19 +201,10 @@ export function BlogForm({
 
       {/* Tags + Read time — side by side */}
       <FormGroup columns={2}>
-        <FormField
-          name="tags"
+        <TagInput
           label={t("formTags")}
-          type="text"
-          value={(post.tags || []).join(", ")}
-          onChange={(value) =>
-            update({
-              tags: value
-                .split(",")
-                .map((tag) => tag.trim())
-                .filter(Boolean),
-            })
-          }
+          value={post.tags ?? []}
+          onChange={(tags) => update({ tags })}
           disabled={isReadonly}
         />
 

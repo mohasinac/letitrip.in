@@ -146,7 +146,7 @@ export function AdminPayoutsView() {
 
       {/* Stats row */}
       {!statusFilter && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
           <Card className="p-4">
             <Caption className="uppercase tracking-wide font-medium mb-1">
               {t("totalPending")}

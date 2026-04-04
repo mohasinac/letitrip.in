@@ -29,7 +29,12 @@ import {
 } from "@/components";
 import { AddressCard } from "@/components";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import {
+  ROUTES,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+  THEME_CONSTANTS,
+} from "@/constants";
 import type { Address } from "@/hooks";
 
 export function UserAddressesView() {
@@ -131,7 +136,7 @@ export function UserAddressesView() {
             onAction={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+          <div className={THEME_CONSTANTS.grid.addressCards}>
             {addresses!.map((address: Address) => (
               <AddressCard
                 key={address.id}

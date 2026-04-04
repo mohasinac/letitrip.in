@@ -164,16 +164,16 @@ export function CategoryProductsView({
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
-      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+      showSuccess(tActions("bulkAddToCartSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
       showError(
-        tActions("bulkPartialSuccess", {
+        tActions("bulkAddToCartPartial", {
           success: succeeded,
           total: selectedIds.length,
         }),
       );
     } else {
-      showError(tActions("bulkFailed"));
+      showError(tActions("bulkAddToCartFailed"));
     }
     setSelectedIds([]);
   }, [selectedIds, products, showSuccess, showError, tActions]);
@@ -184,16 +184,16 @@ export function CategoryProductsView({
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
-      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+      showSuccess(tActions("bulkAddToWishlistSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
       showError(
-        tActions("bulkPartialSuccess", {
+        tActions("bulkAddToWishlistPartial", {
           success: succeeded,
           total: selectedIds.length,
         }),
       );
     } else {
-      showError(tActions("bulkFailed"));
+      showError(tActions("bulkAddToWishlistFailed"));
     }
     setSelectedIds([]);
   }, [selectedIds, showSuccess, showError, tActions]);
@@ -433,11 +433,24 @@ export function CategoryProductsView({
                     ]
                   : undefined
               }
+              toolbarPaginationSlot={
+                totalPages > 1 ? (
+                  <TablePagination
+                    compact
+                    total={totalProducts}
+                    currentPage={page}
+                    totalPages={totalPages}
+                    pageSize={PAGE_SIZE}
+                    onPageChange={(p) => table.set("page", String(p))}
+                  />
+                ) : undefined
+              }
             >
               <DataTable
                 data={products}
                 keyExtractor={(item) => item.id}
                 loading={prodLoading}
+                externalPagination
                 columns={[
                   { key: "title", header: tProducts("colTitle") },
                   { key: "price", header: tProducts("colPrice") },

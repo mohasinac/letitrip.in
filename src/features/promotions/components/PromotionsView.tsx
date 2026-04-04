@@ -4,7 +4,7 @@ import { CouponCard, ProductSection } from "@/features/promotions";
 import { Heading, Text, Section } from "@/components";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 
-const { themed, typography, spacing, page } = THEME_CONSTANTS;
+const { themed, typography, spacing, page, grid } = THEME_CONSTANTS;
 
 interface PromotionsViewProps {
   promotedProducts: ProductDocument[];
@@ -68,7 +68,7 @@ export async function PromotionsView({
                 )}
               </div>
               {activeCoupons.length > 0 ? (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+                <div className={grid.couponCards}>
                   {activeCoupons.map((coupon) => (
                     <CouponCard key={coupon.id} coupon={coupon} />
                   ))}

@@ -54,7 +54,7 @@ interface SellerAnalyticsStatsProps {
 export function SellerAnalyticsStats({ summary }: SellerAnalyticsStatsProps) {
   const t = useTranslations("sellerAnalytics");
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
       <StatCard
         label={t("totalRevenue")}
         value={formatCurrency(summary.totalRevenue)}

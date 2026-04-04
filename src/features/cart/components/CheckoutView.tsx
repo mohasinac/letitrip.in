@@ -16,6 +16,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
 import { StepperNav } from "@/components";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
@@ -30,10 +31,11 @@ import {
   useRazorpay,
   useSiteSettings,
   useAuth,
+  useAddressSelector,
 } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Button, Heading, Main } from "@/components";
+import { Button, Heading, Main, SideDrawer, AddressForm } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { SiteSettingsDocument } from "@/db/schema";
 import type { UnavailableItem } from "@/hooks";
@@ -120,6 +122,7 @@ export function CheckoutView() {
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [sellerNotes, setSellerNotes] = useState("");
   const [platformFee, setPlatformFee] = useState(0);
+  const [addAddressOpen, setAddAddressOpen] = useState(false);
 
   // ── Partial order state ───────────────────────────────────────────────────
   const [excludedProductIds, setExcludedProductIds] = useState<string[]>([]);
@@ -175,8 +178,20 @@ export function CheckoutView() {
     },
   });
 
+  // ── Inline add-address (avoids navigating away from checkout) ────────────
+  const queryClient = useQueryClient();
+  const { createAddress: createNewAddress, isSaving: isSavingAddress } =
+    useAddressSelector({
+      onCreated: (id) => {
+        setAddAddressOpen(false);
+        setSelectedAddressId(id);
+        // Refresh the checkout address list
+        queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      },
+    });
+
   // Derive values needed by hooks (must be above useCallback)
-  const addresses = addrData?.data ?? [];
+  const addresses = addrData ?? [];
   const items = cartData?.cart?.items ?? [];
   const subtotal = cartData?.subtotal ?? 0;
   const itemCount = cartData?.itemCount ?? 0;
@@ -392,6 +407,20 @@ export function CheckoutView() {
         }}
       />
 
+      {/* Inline add-address drawer */}
+      <SideDrawer
+        isOpen={addAddressOpen}
+        onClose={() => setAddAddressOpen(false)}
+        title={t("addNewAddress")}
+        mode="create"
+      >
+        <AddressForm
+          onSubmit={(data) => createNewAddress(data)}
+          onCancel={() => setAddAddressOpen(false)}
+          isLoading={isSavingAddress}
+        />
+      </SideDrawer>
+
       {/* Heading */}
       <Heading level={1} className="mb-6">
         {t("title")}
@@ -409,6 +438,7 @@ export function CheckoutView() {
                 addresses={addresses}
                 selectedAddressId={selectedAddressId}
                 onSelect={setSelectedAddressId}
+                onAddNew={() => setAddAddressOpen(true)}
                 currentUserDisplayName={user?.displayName}
               />
               {/* Next button */}

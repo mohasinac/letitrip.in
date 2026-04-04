@@ -92,6 +92,7 @@ export interface EventDocument {
   startsAt: Date;
   endsAt: Date;
   coverImageUrl?: string;
+  tags?: string[];
 
   // Only one of these is populated per event
   saleConfig?: SaleConfig;
@@ -195,6 +196,7 @@ export const EVENT_FIELDS = {
   STARTS_AT: "startsAt",
   ENDS_AT: "endsAt",
   COVER_IMAGE_URL: "coverImageUrl",
+  TAGS: "tags",
   CREATED_BY: "createdBy",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",

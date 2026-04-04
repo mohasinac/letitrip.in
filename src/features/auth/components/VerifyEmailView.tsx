@@ -9,6 +9,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { AuthStatusPanel } from "@mohasinac/feat-auth";
 import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useVerifyEmail } from "@/hooks";
@@ -51,58 +52,25 @@ function VerifyEmailContent() {
         )}
 
         {isSuccess && (
-          <>
-            <div className="mb-4 text-green-500 dark:text-green-400">
-              <svg
-                className="w-16 h-16 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <AuthStatusPanel
+            tone="success"
+            title={t("verifyEmail.success")}
+            message={t("verifyEmail.successMessage")}
+            actions={
+              <Button
+                variant="primary"
+                onClick={() => router.push(ROUTES.USER.PROFILE)}
+                className="w-full"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <Heading level={4} className="mb-2">
-              {t("verifyEmail.success")}
-            </Heading>
-            <Text variant="secondary" className="mb-6">
-              {t("verifyEmail.successMessage")}
-            </Text>
-            <Button
-              variant="primary"
-              onClick={() => router.push(ROUTES.USER.PROFILE)}
-              className="w-full"
-            >
-              {t("verifyEmail.goToProfile")}
-            </Button>
-          </>
+                {t("verifyEmail.goToProfile")}
+              </Button>
+            }
+          />
         )}
 
         {error && !isLoading && !isSuccess && (
           <>
-            <div className="mb-4 text-red-500 dark:text-red-400">
-              <svg
-                className="w-16 h-16 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </div>
-            <Heading level={4} className="mb-2">
-              {t("verifyEmail.failed")}
-            </Heading>
+            <AuthStatusPanel tone="error" title={t("verifyEmail.failed")} />
             <Alert variant="error" className="mb-6">
               {error}
             </Alert>

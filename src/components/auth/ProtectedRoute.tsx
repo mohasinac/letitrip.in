@@ -14,15 +14,10 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useSession } from "@/contexts";
-import {
-  hasRouteAccess,
-  getRouteAccessConfig,
-  ROUTES,
-  UI_LABELS,
-} from "@/constants";
+import { getRouteAccessConfig, ROUTES, UI_LABELS } from "@/constants";
 import { UserRole } from "@/types/auth";
 import { Spinner, Button, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
@@ -64,64 +59,54 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Wait for loading to complete
-    if (loading) {
-      return;
-    }
+  // Compute authorization synchronously — all inputs are already available in state.
+  // When `initialUser` is provided by the server, `loading` starts as `false` so
+  // authorized users never see a spinner on any navigation.
+  const { isAuthorized, redirectPath } = useMemo(() => {
+    if (loading) return { isAuthorized: null, redirectPath: null };
 
-    // Check if authentication is required
     if (requireAuth && !user) {
-      setIsAuthorized(false);
-      setRedirectPath(redirectTo || ROUTES.AUTH.LOGIN);
-      return;
+      return {
+        isAuthorized: false,
+        redirectPath: redirectTo ?? ROUTES.AUTH.LOGIN,
+      };
     }
 
-    // If authentication not required and no user, allow access
     if (!requireAuth && !user) {
-      setIsAuthorized(true);
-      return;
+      return { isAuthorized: true, redirectPath: null };
     }
 
-    // User is authenticated, check other requirements
     if (user) {
-      // Check active account
       if (requireActiveAccount && user.disabled) {
-        setIsAuthorized(false);
-        setRedirectPath(redirectTo || ROUTES.ERRORS.UNAUTHORIZED);
-        return;
+        return {
+          isAuthorized: false,
+          redirectPath: redirectTo ?? ROUTES.ERRORS.UNAUTHORIZED,
+        };
       }
 
-      // Check email verification
       if (requireEmailVerified && !user.emailVerified) {
-        setIsAuthorized(false);
-        setRedirectPath(redirectTo || ROUTES.AUTH.VERIFY_EMAIL);
-        return;
+        return {
+          isAuthorized: false,
+          redirectPath: redirectTo ?? ROUTES.AUTH.VERIFY_EMAIL,
+        };
       }
 
-      // Check role if specified
       if (requireRole) {
         const roles = Array.isArray(requireRole) ? requireRole : [requireRole];
         const userRole = (user.role as UserRole) || UI_LABELS.AUTH.DEFAULT_ROLE;
-
         if (!roles.includes(userRole)) {
-          setIsAuthorized(false);
-          setRedirectPath(redirectTo || ROUTES.ERRORS.UNAUTHORIZED);
-          return;
+          return {
+            isAuthorized: false,
+            redirectPath: redirectTo ?? ROUTES.ERRORS.UNAUTHORIZED,
+          };
         }
       }
 
-      // All checks passed
-      setIsAuthorized(true);
-      return;
+      return { isAuthorized: true, redirectPath: null };
     }
 
-    // Default to authorized if we get here
-    setIsAuthorized(true);
+    return { isAuthorized: true, redirectPath: null };
   }, [
     user,
     loading,
@@ -132,14 +117,14 @@ export function ProtectedRoute({
     redirectTo,
   ]);
 
-  // Redirect if not authorized
+  // Side-effect: navigate away when not authorized
   useEffect(() => {
     if (isAuthorized === false && redirectPath && !showUnauthorized) {
       router.push(redirectPath);
     }
   }, [isAuthorized, redirectPath, router, showUnauthorized]);
 
-  // Show loading state
+  // Still resolving auth state
   if (loading || isAuthorized === null) {
     if (loadingComponent) {
       return <>{loadingComponent}</>;
@@ -178,15 +163,9 @@ export function ProtectedRoute({
     );
   }
 
-  // Not authorized and should redirect (in progress)
+  // Not authorized — redirect is in progress, render nothing
   if (isAuthorized === false) {
-    return (
-      <div
-        className={`${THEME_CONSTANTS.layout.fullScreen} ${THEME_CONSTANTS.layout.flexCenter}`}
-      >
-        <Spinner size="lg" />
-      </div>
-    );
+    return null;
   }
 
   // Authorized - render children
