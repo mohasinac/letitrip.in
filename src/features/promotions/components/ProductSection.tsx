@@ -1,13 +1,13 @@
 import { ProductCard, Heading, Text, Section } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductCardData } from "@/components";
 
 const { themed, typography } = THEME_CONSTANTS;
 
 interface ProductSectionProps {
   title: string;
   subtitle: string;
-  products: ProductDocument[];
+  products: ProductCardData[];
 }
 
 export function ProductSection({

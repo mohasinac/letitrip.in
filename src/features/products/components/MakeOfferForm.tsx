@@ -20,13 +20,13 @@ import {
   Text,
   Textarea,
 } from "@/components";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 const { themed } = THEME_CONSTANTS;
 
 interface MakeOfferFormProps {
   product: Pick<
-    ProductDocument,
+    ProductItem,
     "id" | "price" | "currency" | "title" | "minOfferPercent"
   >;
   onSuccess?: () => void;

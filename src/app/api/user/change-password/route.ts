@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Change Password API Route
  * POST /api/user/change-password

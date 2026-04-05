@@ -2,36 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ProductDocument } from "@/db/schema";
+import type {
+  ProductItem,
+  ProductListResponse,
+} from "@mohasinac/feat-products";
 
-type RelatedProduct = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "category"
-  | "availableQuantity"
->;
-
-interface RelatedProductsResponse {
-  items: RelatedProduct[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+type RelatedProduct = ProductItem;
+type RelatedProductsResponse = ProductListResponse;
 
 /**
  * useRelatedProducts

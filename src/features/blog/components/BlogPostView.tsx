@@ -2,7 +2,7 @@
 
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useBlogPost } from "../hooks/useBlogPost";
+import { useBlogPost } from "../hooks";
 import {
   Card,
   Button,

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Seller Orders API Route
  *

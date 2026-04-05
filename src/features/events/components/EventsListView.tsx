@@ -28,32 +28,22 @@ import {
 import type { ActiveFilter } from "@/components";
 import { EventFilters } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  useUrlTable,
-  usePublicEvents,
-  usePendingTable,
-  useAuth,
-  useMessage,
-} from "@/hooks";
+import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { EventItem } from "@mohasinac/feat-events";
+import {
+  useEvents,
+  type EventItem,
+  type EventListParams,
+  type EventListResponse,
+} from "@mohasinac/feat-events";
 import { EventCard } from "@/components";
 
 const PAGE_SIZE = 24;
 
-interface EventsListResult {
-  items: EventItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
-
 function EventsListContent({
   initialData,
 }: {
-  initialData?: EventsListResult;
+  initialData?: EventListResponse;
 }) {
   const t = useTranslations("events");
   const tActions = useTranslations("actions");
@@ -104,19 +94,19 @@ function EventsListContent({
     usePendingTable(table, ["status", "type"]);
 
   // ── API params ─────────────────────────────────────────────────────────
-  const apiParams = useMemo(() => {
+  const apiParams = useMemo<EventListParams>(() => {
     const filterParts: string[] = [];
     if (statusFilter) filterParts.push(`status==${statusFilter}`);
     if (typeFilter) filterParts.push(`type==${typeFilter}`);
-    const sp = new URLSearchParams({
-      sorts: sortParam,
-      page: String(page),
-      pageSize: String(PAGE_SIZE),
-    });
-    if (filterParts.length) sp.set("filters", filterParts.join(","));
     const q = table.get("q");
-    if (q) sp.set("q", q);
-    return sp.toString();
+    if (q) filterParts.push(`title@=*${q}`);
+
+    return {
+      sort: sortParam,
+      page,
+      pageSize: PAGE_SIZE,
+      filters: filterParts.length ? filterParts.join(",") : undefined,
+    };
   }, [statusFilter, typeFilter, sortParam, page, table]);
 
   const handleBulkAddToWishlist = useCallback(async () => {
@@ -139,8 +129,7 @@ function EventsListContent({
     setSelectedIds([]);
   }, [selectedIds, showSuccess, showError, tActions]);
 
-  const { events, total, isLoading } = usePublicEvents({
-    params: apiParams,
+  const { events, total, isLoading } = useEvents(apiParams, {
     initialData,
   });
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
@@ -279,7 +268,7 @@ function EventsListContent({
 
 export function EventsListView({
   initialData,
-}: { initialData?: EventsListResult } = {}) {
+}: { initialData?: EventListResponse } = {}) {
   return (
     <Suspense>
       <EventsListContent initialData={initialData} />

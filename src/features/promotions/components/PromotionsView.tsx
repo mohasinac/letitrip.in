@@ -2,13 +2,14 @@ import { THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
 import { CouponCard, ProductSection } from "@/features/promotions";
 import { Heading, Text, Section } from "@/components";
-import type { ProductDocument, CouponDocument } from "@/db/schema";
+import type { ProductCardData } from "@/components";
+import type { CouponDocument } from "@/db/schema";
 
 const { themed, typography, spacing, page, grid } = THEME_CONSTANTS;
 
 interface PromotionsViewProps {
-  promotedProducts: ProductDocument[];
-  featuredProducts: ProductDocument[];
+  promotedProducts: ProductCardData[];
+  featuredProducts: ProductCardData[];
   activeCoupons: CouponDocument[];
 }
 

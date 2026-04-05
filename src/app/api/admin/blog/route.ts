@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Blog API Route
  * GET  /api/admin/blog — List all blog posts

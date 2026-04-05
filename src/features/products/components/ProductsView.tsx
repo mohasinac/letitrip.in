@@ -119,7 +119,9 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
 
   const allCategoryOptions = useMemo(() => {
     if (!products.length) return [];
-    const cats = new Set(products.map((p) => p.category).filter(Boolean));
+    const cats = new Set(
+      products.map((p) => p.category).filter((c): c is string => Boolean(c)),
+    );
     return [...cats].sort().map((id) => ({
       value: id,
       label: categoryNameMap.get(id) ?? id,
@@ -171,8 +173,8 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
           price: p.price,
           currency: p.currency || "INR",
           quantity: 1,
-          sellerId: p.sellerId,
-          sellerName: p.sellerName,
+          sellerId: p.sellerId ?? "",
+          sellerName: p.sellerName ?? "",
         }),
       ),
     );

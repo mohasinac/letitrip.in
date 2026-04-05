@@ -2,13 +2,13 @@
 
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatRelativeTime } from "@/utils";
-import type { BidDocument } from "@/db/schema";
+import type { PublicBid } from "@/hooks";
 import { Heading, Li, Span, Text, Ul } from "@/components";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
 interface BidHistoryProps {
-  bids: Omit<BidDocument, "userEmail">[];
+  bids: PublicBid[];
   loading?: boolean;
   /** When provided, bids matching this userId show the full name instead of anonymised. */
   currentUserId?: string | null;
@@ -75,7 +75,7 @@ export function BidHistory({
                       : anonymizeName(bid.userName)}
                   </Span>
                   <Span className={`text-xs ${themed.textSecondary}`}>
-                    {formatRelativeTime(bid.bidDate || bid.createdAt)}
+                    {formatRelativeTime(bid.bidDate)}
                   </Span>
                 </div>
                 {index === 0 && (

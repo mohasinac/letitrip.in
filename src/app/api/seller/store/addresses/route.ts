@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * GET /api/seller/store/addresses — List pickup addresses for the seller's store.
  *

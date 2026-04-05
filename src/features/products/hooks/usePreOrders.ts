@@ -3,30 +3,9 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
-import type { ProductDocument } from "@/db/schema";
+import type { PreOrderCardData } from "@/components";
 
-export type PreOrderItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "isPreOrder"
-  | "preOrderDeliveryDate"
-  | "preOrderDepositPercent"
-  | "preOrderDepositAmount"
-  | "preOrderMaxQuantity"
-  | "preOrderCurrentCount"
-  | "preOrderProductionStatus"
-  | "preOrderCancellable"
-  | "featured"
-  | "stockQuantity"
-  | "availableQuantity"
->;
+export type PreOrderItem = PreOrderCardData;
 
 /**
  * The /api/products endpoint returns successResponse({ items, total, page, pageSize, totalPages, hasMore }).

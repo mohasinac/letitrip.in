@@ -3,6 +3,7 @@ import { productRepository } from "@/repositories";
 import { ProductDetailView } from "@/features/products";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 
@@ -77,7 +78,10 @@ export default async function ProductDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductDetailView slug={slug} initialData={product} />
+      <ProductDetailView
+        slug={slug}
+        initialData={product as unknown as ProductItem}
+      />
     </>
   );
 }

@@ -26,20 +26,8 @@ import {
   useMessage,
   useUrlTable,
 } from "@/hooks";
-import type { ReviewDocument } from "@/db/schema";
 
 const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
-
-interface ReviewsResponse {
-  data: ReviewDocument[];
-  meta: {
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-    averageRating: number;
-    ratingDistribution: Record<number, number>;
-  };
-}
 
 interface ProductReviewsProps {
   productId: string;
@@ -313,17 +301,19 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const page = table.getNumber("page", 1);
   const pageSize = 10;
 
-  const { data, isLoading, refetch } = useProductReviews(
-    productId,
-    page,
-    pageSize,
-  );
+  const {
+    reviews,
+    total: totalReviews,
+    totalPages,
+    hasMore,
+    averageRating,
+    ratingDistribution: dist,
+    isLoading,
+    refetch,
+  } = useProductReviews(productId, { page, pageSize });
 
-  const reviews = data?.data ?? [];
-  const meta = data?.meta;
-  const totalReviews = meta?.total ?? 0;
-  const avgRating = meta?.averageRating ?? 0;
-  const dist = meta?.ratingDistribution ?? {};
+  const avgRating = averageRating ?? 0;
+  const distMap = dist ?? {};
 
   return (
     <Section id="write-review">
@@ -362,7 +352,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               <RatingBar
                 key={star}
                 star={star}
-                count={dist[star] ?? 0}
+                count={distMap[star] ?? 0}
                 total={totalReviews}
               />
             ))}
@@ -437,7 +427,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                   </div>
                 </div>
                 <Span className={`text-xs ${themed.textSecondary} shrink-0`}>
-                  {formatRelativeTime(review.createdAt)}
+                  {review.createdAt ? formatRelativeTime(review.createdAt) : ""}
                 </Span>
               </div>
 
@@ -453,20 +443,20 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
               {/* Images */}
               {review.images && review.images.length > 0 && (
-                <ReviewImages images={review.images} />
+                <ReviewImages images={review.images.map((img) => img.url)} />
               )}
 
               {/* Helpful */}
-              {review.helpfulCount > 0 && (
+              {(review.helpfulCount ?? 0) > 0 && (
                 <Text size="xs" variant="secondary">
-                  {t("helpful", { count: review.helpfulCount })}
+                  {t("helpful", { count: review.helpfulCount ?? 0 })}
                 </Text>
               )}
             </div>
           ))}
 
           {/* Pagination */}
-          {meta && meta.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className={`${flex.center} gap-2 pt-2`}>
               <Button
                 onClick={() => table.setPage(Math.max(1, page - 1))}
@@ -476,11 +466,11 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 {tActions("back")}
               </Button>
               <Span className={`text-sm ${themed.textSecondary}`}>
-                {page} / {meta.totalPages}
+                {page} / {totalPages}
               </Span>
               <Button
                 onClick={() => table.setPage(page + 1)}
-                disabled={!meta.hasMore}
+                disabled={!hasMore}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
                 {tActions("next")}

@@ -3,7 +3,42 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
 import { hasRole } from "@/helpers";
-import type { UserDocument, ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
+
+export interface PublicUserProfile {
+  uid: string;
+  displayName: string | null;
+  photoURL: string | null;
+  avatarMetadata?: {
+    url: string;
+    position: { x: number; y: number };
+    zoom: number;
+  } | null;
+  role: string;
+  email?: string | null;
+  phoneNumber?: string | null;
+  createdAt?: Date | string;
+  publicProfile?: {
+    bio?: string;
+    location?: string;
+    website?: string;
+    showEmail?: boolean;
+    showPhone?: boolean;
+    showOrders?: boolean;
+    socialLinks?: {
+      twitter?: string;
+      instagram?: string;
+      linkedin?: string;
+    };
+  };
+  stats?: {
+    totalOrders?: number;
+    auctionsWon?: number;
+    itemsSold?: number;
+    reviewsCount?: number;
+    rating?: number;
+  };
+}
 
 export interface SellerReviewItem {
   id: string;
@@ -25,7 +60,7 @@ export interface SellerReviewsData {
 }
 
 export interface ProductsApiResponse {
-  data: ProductDocument[];
+  data: ProductItem[];
   meta: { total: number; page: number; pageSize: number };
 }
 
@@ -40,10 +75,12 @@ export function usePublicProfile(userId: string) {
     data: profileData,
     isLoading: loading,
     error: fetchError,
-  } = useQuery<{ user: UserDocument }>({
+  } = useQuery<{ user: PublicUserProfile }>({
     queryKey: ["public-profile", userId],
     queryFn: async () => {
-      const user = await apiClient.get<UserDocument>(`/api/profile/${userId}`);
+      const user = await apiClient.get<PublicUserProfile>(
+        `/api/profile/${userId}`,
+      );
       return { user };
     },
     enabled: !!userId,
@@ -51,14 +88,17 @@ export function usePublicProfile(userId: string) {
 
   const user = profileData?.user;
   const profileError: string | null = (fetchError as Error)?.message ?? null;
-  const isSeller = hasRole(user?.role ?? "user", "seller");
+  const isSeller = hasRole(
+    (user?.role ?? "user") as import("@/types/auth").UserRole,
+    "seller",
+  );
 
   const { data: productsData, isLoading: productsLoading } =
     useQuery<ProductsApiResponse>({
       queryKey: ["profile-products", userId],
       queryFn: async () => {
         const result = await apiClient.get<{
-          items: ProductDocument[];
+          items: ProductItem[];
           total: number;
           page: number;
           pageSize: number;

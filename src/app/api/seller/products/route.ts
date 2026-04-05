@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Seller Products API Route
  * GET /api/seller/products — Delegated to @mohasinac/feat-seller

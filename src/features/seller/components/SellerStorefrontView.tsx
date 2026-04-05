@@ -13,14 +13,15 @@ import {
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatMonthYear, formatCurrency, formatNumber } from "@/utils";
-import type { UserDocument, ProductDocument } from "@/db/schema";
+import type { PublicUserProfile } from "@/hooks";
+import type { ProductItem } from "@mohasinac/feat-products";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
 
 const { flex, page } = THEME_CONSTANTS;
 
 interface SellerStorefrontViewProps {
-  seller: UserDocument;
+  seller: PublicUserProfile;
   sellerId: string;
   productsData?: ProductsApiResponse;
   productsLoading: boolean;
@@ -64,7 +65,7 @@ export function SellerStorefrontView({
 
   const sellerName =
     seller.displayName || seller.email?.split("@")[0] || "Seller";
-  const memberSince = formatMonthYear(seller.createdAt);
+  const memberSince = formatMonthYear(seller.createdAt ?? new Date());
 
   const avatarCropData: ImageCropData | null =
     seller.avatarMetadata ||
@@ -195,7 +196,7 @@ export function SellerStorefrontView({
             </div>
           ) : hasProducts ? (
             <div className={THEME_CONSTANTS.grid.productCards}>
-              {productsData!.data.map((product: ProductDocument) => (
+              {productsData!.data.map((product: ProductItem) => (
                 <TextLink
                   key={product.id}
                   href={`/products/${product.id}`}

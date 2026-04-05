@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Reset Password API Route
  * PUT /api/auth/reset-password

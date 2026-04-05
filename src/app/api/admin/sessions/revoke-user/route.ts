@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Session Management — Revoke All Sessions For a User
  *

@@ -35,11 +35,11 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
-import { useProductDetail } from "../hooks/useProductDetail";
+import { useProductDetail } from "../hooks";
 import { usePreOrderPayment } from "../hooks/usePreOrders";
 import { listAddressesAction } from "@/actions";
 import { formatCurrency, formatDate } from "@/utils";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 import type { Address } from "@/hooks";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
@@ -71,7 +71,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
   const { openRazorpay } = useRazorpay();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const productQuery = useProductDetail(id);
+  const productQuery = useProductDetail<ProductItem>(id);
   const product = productQuery.product;
 
   const { data: addressesData } = useQuery<Address[]>({
@@ -240,9 +240,13 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
           <div>
             <ProductImageGallery
-              mainImage={product!.mainImage}
+              mainImage={product!.mainImage ?? ""}
               images={product!.images}
-              video={product!.video}
+              video={
+                product!.video as
+                  | { url: string; thumbnailUrl?: string }
+                  | undefined
+              }
               title={product!.title}
               slug={product!.slug}
             />
@@ -268,7 +272,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
               {t("soldBy")}{" "}
               <TextLink
                 href={ROUTES.PUBLIC.STORE_DETAIL(
-                  product!.storeId ?? product!.sellerId,
+                  product!.storeId ?? product!.sellerId ?? "",
                 )}
                 className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
               >

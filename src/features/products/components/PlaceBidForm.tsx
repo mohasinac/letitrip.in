@@ -15,7 +15,7 @@ import {
   Text,
   TextLink,
 } from "@/components";
-import type { BidDocument } from "@/db/schema";
+import type { BidResult } from "@/hooks";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -25,7 +25,7 @@ interface PlaceBidFormProps {
   currency?: string;
   isEnded?: boolean;
   isAuthenticated?: boolean;
-  onBidPlaced?: (bid: BidDocument) => void;
+  onBidPlaced?: (bid: BidResult) => void;
 }
 
 export function PlaceBidForm({

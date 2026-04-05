@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * GET /api/copilot/history
  *

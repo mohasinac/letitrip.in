@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Bids API Route
  * GET /api/admin/bids — Delegated to @mohasinac/feat-admin

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Sessions API Route
  * GET /api/admin/sessions

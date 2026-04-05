@@ -6,6 +6,18 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-04-04
 
+### Hook adapter cleanup — direct feat-\* hook usage
+
+- Migrated public blog listing to use `useBlogPosts` directly from `@mohasinac/feat-blog` in `src/features/blog/components/BlogListView.tsx` and removed the local shim `src/hooks/useBlogPosts.ts`.
+- Migrated events listing and event banner to use `useEvents` directly from `@mohasinac/feat-events` in `src/features/events/components/EventsListView.tsx` and `src/components/EventBanner.tsx`; removed local shim `src/hooks/usePublicEvents.ts`.
+- Updated shared hook barrel `src/hooks/index.ts` to drop exports of removed shim hooks.
+- Preserved URL-driven filter behavior in events listing by building `filters` directly in the package hook params object.
+
+**Verification:**
+
+- `npx tsc --noEmit` in `letitrip.in` ✅
+- `USE_LOCAL_PACKAGES='true' npm run build` in `letitrip.in` ✅
+
 ### Next and validation adapters — package-backed wrappers
 
 - Migrated `src/lib/api/cache-middleware.ts` to a thin adapter over `@mohasinac/next` cache middleware exports while preserving local `CachePresets` usage.

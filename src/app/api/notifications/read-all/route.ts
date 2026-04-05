@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Notifications Read-All API
  * PATCH /api/notifications/read-all — Mark all user notifications as read

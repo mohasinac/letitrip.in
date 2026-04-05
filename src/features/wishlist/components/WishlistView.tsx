@@ -37,7 +37,7 @@ import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { removeFromWishlistAction, addToCartAction } from "@/actions";
 import { useWishlist } from "../hooks/useWishlist";
 import type { WishlistItem } from "../hooks/useWishlist";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductCardData } from "@/components";
 
 const WISHLIST_SORT_OPTIONS_KEYS = [
   { value: "-addedAt", key: "sortNewest" },
@@ -119,7 +119,7 @@ function WishlistContent() {
     () =>
       displayedProducts
         .map((i) => i.product)
-        .filter((p): p is ProductDocument => p !== null),
+        .filter((p) => p !== null) as ProductCardData[],
     [displayedProducts],
   );
 

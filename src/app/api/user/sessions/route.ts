@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * User Sessions API - My Sessions
  * GET /api/user/sessions - Get my active sessions

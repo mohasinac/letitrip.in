@@ -15,7 +15,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfileAction, type UpdateProfileInput } from "@/actions";
 import { apiClient } from "@mohasinac/http";
-import type { UserDocument } from "@/db/schema";
 
 // ============================================================================
 // Types
@@ -56,13 +55,13 @@ export function useProfile(options?: {
  * Hook to update user profile
  */
 export function useUpdateProfile(options?: {
-  onSuccess?: (data: UserDocument) => void;
+  onSuccess?: (data: unknown) => void;
   onError?: (error: Error) => void;
 }) {
   const queryClient = useQueryClient();
 
-  return useMutation<UserDocument, Error, UpdateProfileInput>({
-    mutationFn: (data) => updateProfileAction(data),
+  return useMutation({
+    mutationFn: (data: UpdateProfileInput) => updateProfileAction(data),
     onSuccess: async (data) => {
       // Invalidate profile cache so the updated data is re-fetched
       await queryClient.invalidateQueries({ queryKey: ["profile"] });

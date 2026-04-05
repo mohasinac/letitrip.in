@@ -1,1 +1,2 @@
-﻿export { GET, POST } from "@mohasinac/feat-categories";
+﻿import "@/providers.config";
+export { GET, POST } from "@mohasinac/feat-categories";

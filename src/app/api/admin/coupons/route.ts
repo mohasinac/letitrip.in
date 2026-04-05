@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Coupons API Route
  * GET  /api/admin/coupons — Delegated to @mohasinac/feat-admin

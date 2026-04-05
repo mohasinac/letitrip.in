@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * API Route: Admin Users Management
  * GET /api/admin/users - List users with search, role filter, disabled filter

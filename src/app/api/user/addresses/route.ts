@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * User Addresses API — Collection
  *

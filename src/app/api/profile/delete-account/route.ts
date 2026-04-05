@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * API Route: Delete User Account
  * DELETE /api/profile/delete-account

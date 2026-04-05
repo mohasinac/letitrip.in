@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Analytics API Route
  *

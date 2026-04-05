@@ -6,7 +6,7 @@ import { StoresListView } from "@/features/stores";
 import { THEME_CONSTANTS } from "@/constants";
 import { storeRepository } from "@/repositories";
 import type { StoreDocument } from "@/db/schema";
-import type { StoreListItem } from "@/types/stores";
+import type { StoreListItem } from "@mohasinac/feat-stores";
 
 const { page, flex } = THEME_CONSTANTS;
 

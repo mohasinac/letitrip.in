@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Coupon Validate API Route
  * POST /api/coupons/validate — Validate a coupon code against a purchase amount

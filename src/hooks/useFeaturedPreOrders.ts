@@ -2,10 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 interface PaginatedResult {
-  items: ProductDocument[];
+  items: ProductItem[];
   total: number;
   page: number;
   pageSize: number;
@@ -22,7 +22,7 @@ const MIN_COUNT = 12;
  * slots with the latest published pre-orders (deduped).
  */
 export function useFeaturedPreOrders() {
-  return useQuery<ProductDocument[]>({
+  return useQuery<ProductItem[]>({
     queryKey: ["pre-orders", "featured"],
     queryFn: async () => {
       const featuredRes = await apiClient.get<PaginatedResult>(

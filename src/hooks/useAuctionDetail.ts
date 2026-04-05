@@ -2,10 +2,22 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ProductDocument, BidDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 import type { FirebaseSieveResult } from "@/lib/query";
 
-type PublicBid = Omit<BidDocument, "userEmail">;
+export interface PublicBid {
+  id: string;
+  productId: string;
+  productTitle: string;
+  userId: string;
+  userName: string;
+  bidAmount: number;
+  currency: string;
+  status: string;
+  isWinning: boolean;
+  bidDate: Date | string;
+  autoMaxBid?: number;
+}
 type BidsListResult = FirebaseSieveResult<PublicBid>;
 
 /**
@@ -19,9 +31,9 @@ type BidsListResult = FirebaseSieveResult<PublicBid>;
  * const { productQuery, product, bidsQuery, bids } = useAuctionDetail(id);
  */
 export function useAuctionDetail(id: string) {
-  const productQuery = useQuery<ProductDocument | null>({
+  const productQuery = useQuery<ProductItem | null>({
     queryKey: ["product", id],
-    queryFn: () => apiClient.get<ProductDocument | null>(`/api/products/${id}`),
+    queryFn: () => apiClient.get<ProductItem | null>(`/api/products/${id}`),
   });
 
   const product = productQuery.data ?? null;

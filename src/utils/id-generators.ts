@@ -19,7 +19,7 @@
  * - Payout: payout-{seller-slug}-{YYYYMMDD}-{random}
  */
 
-import { slugify } from "./formatters/string.formatter";
+import { slugify } from "@mohasinac/utils";
 
 /**
  * Generate random alphanumeric string

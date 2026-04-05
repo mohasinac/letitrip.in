@@ -30,15 +30,13 @@ import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  useUrlTable,
-  useBlogPosts,
-  usePendingTable,
-  useAuth,
-  useMessage,
-} from "@/hooks";
+import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { BlogListResponse } from "@mohasinac/feat-blog";
+import {
+  useBlogPosts,
+  type BlogListParams,
+  type BlogListResponse,
+} from "@mohasinac/feat-blog";
 
 const PAGE_SIZE = 24;
 
@@ -85,21 +83,21 @@ function BlogListContent({ initialData }: { initialData?: BlogListResponse }) {
     usePendingTable(table, ["category"]);
 
   // ── API params ─────────────────────────────────────────────────────────
-  const queryParams = useMemo(() => {
-    const sp = new URLSearchParams({
-      page: String(page),
-      pageSize: String(PAGE_SIZE),
-    });
-    if (categoryFilter) sp.set("category", categoryFilter);
-    if (sortParam) sp.set("sorts", sortParam);
-    const q = table.get("q");
-    if (q) sp.set("q", q);
-    return sp.toString();
+  const queryParams = useMemo<BlogListParams>(() => {
+    const q = table.get("q") || undefined;
+
+    return {
+      page,
+      perPage: PAGE_SIZE,
+      category: categoryFilter as BlogListParams["category"] | undefined,
+      sort: sortParam,
+      q,
+    };
   }, [page, categoryFilter, sortParam, table]);
 
-  const { posts, data, isLoading } = useBlogPosts(queryParams, { initialData });
-  const total = data?.meta?.total ?? 0;
-  const totalPages = data?.meta?.totalPages ?? 1;
+  const { posts, total, totalPages, isLoading } = useBlogPosts(queryParams, {
+    initialData,
+  });
 
   const featuredPost = page === 1 ? posts.find((p) => p.isFeatured) : undefined;
   const regularPosts = featuredPost

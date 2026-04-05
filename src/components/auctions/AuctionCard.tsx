@@ -16,29 +16,31 @@ import { useRouter } from "@/i18n/navigation";
 import { useCountdown, useWishlistToggle } from "@/hooks";
 import type { CountdownRemaining } from "@/hooks";
 import { formatCurrency } from "@/utils";
-import type { ProductDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 
+/** Minimal structural type — satisfied by both AuctionItem (from packages) and ProductDocument (from repositories) */
+export interface AuctionCardData {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  currency?: string;
+  mainImage?: string;
+  images?: string[];
+  video?: { url?: string; thumbnailUrl?: string };
+  isAuction?: boolean;
+  auctionEndDate?: string | Date;
+  startingBid?: number;
+  currentBid?: number;
+  bidCount?: number;
+  featured?: boolean;
+  status?: string;
+  slug?: string;
+}
+
 export interface AuctionCardProps {
-  product: Pick<
-    ProductDocument,
-    | "id"
-    | "title"
-    | "description"
-    | "price"
-    | "currency"
-    | "mainImage"
-    | "images"
-    | "video"
-    | "isAuction"
-    | "auctionEndDate"
-    | "startingBid"
-    | "currentBid"
-    | "bidCount"
-    | "featured"
-    | "status"
-  >;
+  product: AuctionCardData;
   /** Optional buyout price — if provided shows a Buyout button */
   buyoutPrice?: number;
   className?: string;

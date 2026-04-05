@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Payment - Create Razorpay Order
  *

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoryProductsView } from "@/features/categories";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -57,8 +58,8 @@ export default async function CategoryProductsPage({ params }: PageProps) {
   return (
     <CategoryProductsView
       slug={slug}
-      initialCategory={category}
-      initialChildren={children}
+      initialCategory={category as unknown as CategoryItem}
+      initialChildren={children as unknown as CategoryItem[]}
     />
   );
 }

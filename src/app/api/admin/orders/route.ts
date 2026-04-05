@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Orders API Route
  * GET  /api/admin/orders — List all orders with pagination & filtering

@@ -23,7 +23,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import { useSearch } from "@/features/search";
+import { useSearch } from "@mohasinac/feat-search";
 import type { CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 import { SearchResultsSection } from "./SearchResultsSection";
@@ -86,14 +86,14 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
     urlPage,
   ]);
 
-  const { catData, products, total, totalPages, isLoading } = useSearch(
+  const { categories, items, total, totalPages, isLoading } = useSearch(
     searchParams,
     { initialCategories },
   );
 
   const topCategories = useMemo(
-    () => catData.filter((c) => c.tier === 1),
-    [catData],
+    () => categories.filter((c) => c.tier === 1),
+    [categories],
   );
 
   const categoryOptions = useMemo(
@@ -316,7 +316,7 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
             />
           )}
           <SearchResultsSection
-            products={products}
+            products={items}
             total={total}
             totalPages={totalPages}
             urlQ={urlQ}

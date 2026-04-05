@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * FAQs API Routes
  *

@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Ul, Li, Text, Ol } from "@/components";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 interface ProductTabsProps {
-  product: ProductDocument;
+  product: ProductItem;
 }
 
 type TabKey = "description" | "ingredients" | "howToUse" | "reviews";

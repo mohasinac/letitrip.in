@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedAuctions } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { ProductDocument } from "@/db/schema";
 import { AuctionCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
@@ -12,7 +11,7 @@ export function FeaturedAuctionsSection() {
   const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedAuctions();
 
-  const auctions: ProductDocument[] = data ?? [];
+  const auctions = data ?? [];
 
   // Hide section entirely when there are no auctions and not loading
   if (!isLoading && auctions.length === 0) return null;

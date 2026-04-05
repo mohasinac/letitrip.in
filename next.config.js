@@ -31,7 +31,10 @@ const PACKAGES_ROOT = path.resolve(__dirname, "../packages/packages");
 const MOHASINAC_PACKAGES = [
   "auth-firebase",
   "cli",
-  "contracts",
+  // NOTE: "contracts" is intentionally excluded from webpack aliases.
+  // It must always be loaded as a Node.js native ESM external via
+  // serverExternalPackages so that both (instrument) and (rsc) webpack
+  // contexts receive the SAME cached module instance and share _registry.
   "core",
   "css-tailwind",
   "css-vanilla",
@@ -71,6 +74,7 @@ const MOHASINAC_PACKAGES = [
   "feat-whatsapp-bot",
   "feat-wishlist",
   "http",
+  "instrumentation",
   "monitoring",
   "next",
   "react",
@@ -170,6 +174,7 @@ const nextConfig = {
     "@mohasinac/feat-whatsapp-bot",
     "@mohasinac/feat-wishlist",
     "@mohasinac/http",
+    "@mohasinac/instrumentation",
     "@mohasinac/monitoring",
     "@mohasinac/next",
     "@mohasinac/payment-razorpay",
@@ -191,17 +196,65 @@ const nextConfig = {
     },
   },
 
-  // Turbopack is used for `next dev --turbopack` only.
-  // Production builds use webpack via `next build --webpack` because Turbopack
-  // has a chunk-generation bug in Next.js 16 with large deeply-nested `as const`
-  // objects (EcmascriptModuleContent::new_merged) — tracked in TECH_DEBT.md.
+  // Turbopack is available via `next dev --turbopack` (npm run dev:turbo).
+  // The default `npm run dev` uses webpack to avoid Turbopack's chunk-generation
+  // bug in Next.js 16 with large deeply-nested `as const` objects
+  // (EcmascriptModuleContent::new_merged) — tracked in TECH_DEBT.md.
+  // `turbopack: {}` below preserves any Turbopack-specific config for when it is used.
   turbopack: {},
 
   // webpack is used for production builds only (`next build`).
   // When USE_LOCAL_PACKAGES=true we alias @mohasinac/* to the local dist/
   // so the production bundle uses the same compiled output as node_modules
   // but resolves through the workspace source tree for easier debugging.
-  webpack(config) {
+  webpack(config, { isServer }) {
+    // Force singleton resolution for packages that use React context.
+    // Junction-symlinked @mohasinac/* packages resolve their peer dependencies
+    // from D:\proj\packages\node_modules (different instances), which breaks
+    // React context (e.g. TanStack Query's QueryClientProvider).
+    // Aliasing to the app's node_modules ensures a single module instance.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@tanstack/react-query": path.resolve(
+        __dirname,
+        "node_modules/@tanstack/react-query",
+      ),
+    };
+
+    if (isServer) {
+      // Windows NTFS junctions cause webpack to follow symlinks to the real
+      // path (outside the app root), which bypasses Next.js's path-based
+      // serverExternalPackages check and bundles @mohasinac/* packages inline.
+      // Each inline copy has its own isolated _registry variable, so
+      // registerProviders() in the (instrument) context and getProviders() in
+      // the (rsc) context never share state.
+      //
+      // Fix: add a custom externals function that matches the REQUEST string
+      // (not the resolved path), forcing all @mohasinac/* imports to become
+      // native CJS require() calls. Node.js's global require.cache ensures
+      // one module instance is shared across all webpack VM contexts.
+      const existingExternals = Array.isArray(config.externals)
+        ? config.externals
+        : config.externals
+          ? [config.externals]
+          : [];
+      config.externals = [
+        function mohasinacExternals({ request }, callback) {
+          // Only externalize @mohasinac/contracts.  feat-* and other packages
+          // are bundled inline (they need peer deps from letitrip.in's
+          // node_modules, which aren't available from their real paths when
+          // required natively).  But contracts itself has no React peer deps
+          // and must be a single shared CJS module so both the (instrument)
+          // and (rsc) webpack contexts share the same _registry instance.
+          if (request === "@mohasinac/contracts") {
+            return callback(null, `commonjs @mohasinac/contracts`);
+          }
+          callback();
+        },
+        ...existingExternals,
+      ];
+    }
+
     if (USE_LOCAL_PACKAGES) {
       config.resolve.alias = {
         ...config.resolve.alias,

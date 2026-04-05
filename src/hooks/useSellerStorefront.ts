@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { UserDocument } from "@/db/schema";
 import type {
+  PublicUserProfile,
   SellerReviewsData,
   ProductsApiResponse,
 } from "./usePublicProfile";
@@ -21,19 +21,19 @@ export { SellerReviewsData, ProductsApiResponse };
  */
 export function useSellerStorefront(
   sellerId: string,
-  options?: { initialSeller?: UserDocument },
+  options?: { initialSeller?: PublicUserProfile },
 ) {
-  const initialProfileData: { user: UserDocument } | undefined =
+  const initialProfileData: { user: PublicUserProfile } | undefined =
     options?.initialSeller ? { user: options.initialSeller } : undefined;
 
   const {
     data: sellerData,
     isLoading: loading,
     error: fetchError,
-  } = useQuery<{ user: UserDocument }>({
+  } = useQuery<{ user: PublicUserProfile }>({
     queryKey: ["seller-profile", sellerId],
     queryFn: async () => {
-      const user = await apiClient.get<UserDocument>(
+      const user = await apiClient.get<PublicUserProfile>(
         `/api/profile/${sellerId}`,
       );
       return { user };
@@ -57,7 +57,7 @@ export function useSellerStorefront(
       queryKey: ["storefront-products", sellerId],
       queryFn: async () => {
         const result = await apiClient.get<{
-          items: import("@/db/schema").ProductDocument[];
+          items: import("@mohasinac/feat-products").ProductItem[];
           total: number;
           page: number;
           pageSize: number;

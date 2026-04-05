@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 import {
   carouselRepository,
   categoriesRepository,
@@ -162,7 +163,9 @@ export async function HomepageView() {
       <StatsCounterSection />
       <TrustFeaturesSection />
       <HowItWorksSection />
-      <TopCategoriesSection initialCategories={categories} />
+      <TopCategoriesSection
+        initialCategories={categories as unknown as CategoryItem[]}
+      />
       <TopBrandsSection />
       <FeaturedProductsSection />
       <FeaturedAuctionsSection />

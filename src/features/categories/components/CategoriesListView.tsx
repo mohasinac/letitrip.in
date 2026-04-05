@@ -24,12 +24,12 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 import { CategoryGrid } from "./CategoryGrid";
 import { useCategoriesList } from "../hooks/useCategoriesList";
 
 interface CategoriesListContentProps {
-  initialData?: CategoryDocument[];
+  initialData?: CategoryItem[];
 }
 
 function CategoriesListContent({ initialData }: CategoriesListContentProps) {
@@ -162,7 +162,7 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
 }
 
 interface CategoriesListViewProps {
-  initialData?: CategoryDocument[];
+  initialData?: CategoryItem[];
 }
 
 export function CategoriesListView({

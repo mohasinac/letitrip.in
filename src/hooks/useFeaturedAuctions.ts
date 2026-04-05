@@ -2,16 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ProductDocument } from "@/db/schema";
+import type {
+  ProductItem,
+  ProductListResponse,
+} from "@mohasinac/feat-products";
 
-interface PaginatedResult {
-  items: ProductDocument[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+type PaginatedResult = ProductListResponse;
 
 const MIN_COUNT = 12;
 
@@ -22,7 +18,7 @@ const MIN_COUNT = 12;
  * slots with the latest published auctions (deduped).
  */
 export function useFeaturedAuctions() {
-  return useQuery<ProductDocument[]>({
+  return useQuery<ProductItem[]>({
     queryKey: ["auctions", "featured"],
     queryFn: async () => {
       const promotedRes = await apiClient.get<PaginatedResult>(

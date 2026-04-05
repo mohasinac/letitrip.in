@@ -2,39 +2,13 @@
 
 import {
   useProducts as useFeatureProducts,
+  type ProductItem,
+  type ProductListResponse,
   type ProductListParams,
 } from "@mohasinac/feat-products";
-import type { ProductDocument } from "@/db/schema";
 
-export type ProductItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "category"
-  | "sellerId"
-  | "sellerName"
->;
-
-export interface ProductsListResult {
-  items: ProductItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+export type { ProductItem };
+export type ProductsListResult = ProductListResponse;
 
 interface UseProductsOptions {
   initialData?: ProductsListResult;
@@ -87,12 +61,10 @@ export function useProducts(params?: string, options?: UseProductsOptions) {
     isLoading,
     error,
   } = useFeatureProducts(parsedParams, {
-    initialData: options?.initialData as unknown as
-      | import("@mohasinac/feat-products").ProductListResponse
-      | undefined,
+    initialData: options?.initialData,
   });
 
-  const products = featureProducts as unknown as ProductItem[];
+  const products = featureProducts;
 
   const data: ProductsListResult = {
     items: products,

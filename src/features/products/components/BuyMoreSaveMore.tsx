@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { Heading, Text, Span } from "@/components";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 interface BuyMoreSaveMoreProps {
-  product: ProductDocument;
+  product: ProductItem;
   currentQty?: number;
 }
 

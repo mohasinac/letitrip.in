@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Notifications Unread Count API
  * GET /api/notifications/unread-count — Get unread notification count for current user

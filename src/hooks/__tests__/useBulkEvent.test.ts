@@ -22,7 +22,7 @@ import {
   type RTDBEventPayload,
 } from "../useRealtimeEvent";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
-import type { BulkActionResult } from "@/types/api";
+import type { BulkActionResult } from "@mohasinac/react";
 
 // ─── Mock useRealtimeEvent ────────────────────────────────────────────────────
 

@@ -7,7 +7,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Span, Text } from "@/components";
 import { CategoryCard } from "@/components";
@@ -15,7 +15,7 @@ import { CategoryCard } from "@/components";
 const { spacing } = THEME_CONSTANTS;
 
 interface CategoryGridProps {
-  categories: CategoryDocument[];
+  categories: CategoryItem[];
   className?: string;
   selectable?: boolean;
   selectedIds?: string[];

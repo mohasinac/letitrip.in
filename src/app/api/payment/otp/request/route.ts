@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Payment OTP - Request Gate
  *

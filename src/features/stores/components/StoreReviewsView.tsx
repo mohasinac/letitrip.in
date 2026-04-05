@@ -35,7 +35,14 @@ function StarRow({ rating }: { rating: number }) {
 
 export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
   const t = useTranslations("storePage");
-  const { data, isLoading, error } = useStoreReviews(storeSlug);
+  const {
+    reviews,
+    averageRating,
+    totalReviews,
+    ratingDistribution,
+    isLoading,
+    error,
+  } = useStoreReviews(storeSlug);
 
   if (isLoading) {
     return (
@@ -54,7 +61,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
     );
   }
 
-  if (!data || data.totalReviews === 0) {
+  if (!reviews.length || totalReviews === 0) {
     return (
       <EmptyState
         title={t("reviews.empty.title")}
@@ -62,8 +69,6 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
       />
     );
   }
-
-  const { reviews, averageRating, totalReviews, ratingDistribution } = data;
 
   return (
     <div className={spacing.stack}>
@@ -104,7 +109,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
 
       {/* Review list */}
       <Stack gap="md">
-        {reviews.map((review) => (
+        {reviews.map((review: (typeof reviews)[number]) => (
           <div
             key={review.id}
             className={`${themed.bgPrimary} border ${themed.border} rounded-xl p-4 sm:p-5`}

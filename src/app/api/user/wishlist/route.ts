@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * User Wishlist API — Collection
  *

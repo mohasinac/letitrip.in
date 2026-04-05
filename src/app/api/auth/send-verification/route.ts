@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Send Verification Email API Route
  * POST /api/auth/send-verification

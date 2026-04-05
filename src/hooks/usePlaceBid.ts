@@ -2,7 +2,15 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { placeBidAction } from "@/actions";
-import type { BidDocument } from "@/db/schema";
+
+export interface BidResult {
+  id: string;
+  productId: string;
+  bidAmount: number;
+  isWinning: boolean;
+  currency: string;
+  [key: string]: unknown;
+}
 
 interface PlaceBidPayload {
   productId: string;
@@ -23,10 +31,10 @@ interface PlaceBidPayload {
 export function usePlaceBid() {
   const queryClient = useQueryClient();
 
-  return useMutation<BidDocument, Error, PlaceBidPayload>({
+  return useMutation<BidResult, Error, PlaceBidPayload>({
     mutationFn: async (data) => {
       const result = await placeBidAction(data);
-      return result.bid;
+      return result.bid as unknown as BidResult;
     },
     onSuccess: async (_, { productId }) => {
       // Refresh bid list and auction product detail so current bid + bid count update

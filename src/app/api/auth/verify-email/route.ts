@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Verify Email API Route
  * GET /api/auth/verify-email?token=xxxxx

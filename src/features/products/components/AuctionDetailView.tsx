@@ -208,9 +208,13 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           {/* Column 1 — Gallery */}
           <div className="relative">
             <ProductImageGallery
-              mainImage={product.mainImage}
+              mainImage={product.mainImage ?? ""}
               images={product.images}
-              video={product.video}
+              video={
+                product.video as
+                  | { url: string; thumbnailUrl?: string }
+                  | undefined
+              }
               title={product.title}
               slug={product.slug}
             />
@@ -268,7 +272,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               </TextLink>
               <Span variant="muted">•</Span>
               <TextLink
-                href={`${ROUTES.PUBLIC.AUCTIONS}?filters=category==${encodeURIComponent(product.category)}`}
+                href={`${ROUTES.PUBLIC.AUCTIONS}?filters=category==${encodeURIComponent(product.category ?? "")}`}
                 className="hover:underline"
               >
                 {product.category}

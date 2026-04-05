@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Promotions API Route
  * GET /api/promotions — Returns promoted products, featured products and active coupons

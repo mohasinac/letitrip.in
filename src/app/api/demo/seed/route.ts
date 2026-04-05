@@ -1,3 +1,4 @@
+import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";

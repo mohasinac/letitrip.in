@@ -11,7 +11,7 @@ import { getTranslations } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoriesListView } from "@/features/categories";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("categories");
@@ -28,8 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CategoriesPage() {
   const initialData = await categoriesRepository
     .findAll()
-    .then((cats: CategoryDocument[]) => cats.filter((c) => !c.isBrand))
-    .catch(() => [] as CategoryDocument[]);
+    .then((cats) => cats.filter((c) => !c.isBrand) as unknown as CategoryItem[])
+    .catch(() => [] as CategoryItem[]);
 
   return <CategoriesListView initialData={initialData} />;
 }

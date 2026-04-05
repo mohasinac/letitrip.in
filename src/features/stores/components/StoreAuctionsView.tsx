@@ -80,10 +80,13 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
     return sp.toString();
   }, [pageParam, sortParam, table]);
 
-  const { data, isLoading, error } = useStoreAuctions(storeSlug, apiParams);
+  const {
+    auctions: items,
+    total,
+    isLoading,
+    error,
+  } = useStoreAuctions(storeSlug, apiParams);
 
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const totalPages = Math.ceil(total / pageSize) || 1;
 
@@ -176,7 +179,9 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
       )}
       {!isLoading && !error && items.length > 0 && (
         <AuctionGrid
-          auctions={items}
+          auctions={
+            items as unknown as Parameters<typeof AuctionGrid>[0]["auctions"]
+          }
           variant={viewMode}
           selectable={!!user}
           selectedIds={selectedIds}

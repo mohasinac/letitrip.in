@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePublicEvents } from "@/hooks";
+import { useEvents } from "@mohasinac/feat-events";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Button, TextLink } from "@/components";
@@ -27,9 +27,9 @@ export function EventBanner() {
     setMounted(true);
   }, []);
 
-  const { events } = usePublicEvents({
-    params: "types=sale,offer&status=active&pageSize=1",
-    cacheTTL: 5 * 60 * 1000, // 5 minutes
+  const { events } = useEvents({
+    pageSize: 1,
+    sort: "-startsAt",
   });
 
   if (!mounted) return null;

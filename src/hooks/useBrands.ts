@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 /**
  * useBrands
@@ -11,10 +11,10 @@ import type { CategoryDocument } from "@/db/schema";
  * Returns mapped { value, label } options ready for FilterFacetSection.
  */
 export function useBrands() {
-  const { data, isLoading } = useQuery<CategoryDocument[]>({
+  const { data, isLoading } = useQuery<CategoryItem[]>({
     queryKey: ["categories", "brands", "all"],
     queryFn: () =>
-      apiClient.get<CategoryDocument[]>(
+      apiClient.get<CategoryItem[]>(
         "/api/categories?isBrand=true&pageSize=100",
       ),
     staleTime: 15 * 60 * 1000, // 15 minutes

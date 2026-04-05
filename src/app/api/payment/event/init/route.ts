@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * POST /api/payment/event/init
  *

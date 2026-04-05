@@ -1,11 +1,31 @@
-/**
- * Validators Barrel Export
- *
- * Centralized export for all validation utilities
- */
-
-export * from "./email.validator";
-export * from "./password.validator";
-export * from "./phone.validator";
-export * from "./url.validator";
-export * from "./input.validator";
+export {
+  isValidEmail,
+  isValidEmailDomain,
+  normalizeEmail,
+  isDisposableEmail,
+  meetsPasswordRequirements,
+  calculatePasswordStrength,
+  isCommonPassword,
+  isValidPhone,
+  normalizePhone,
+  formatPhone,
+  extractCountryCode,
+  isValidIndianMobile,
+  isValidIndianPincode,
+  isValidUrl,
+  isValidUrlWithProtocol,
+  isExternalUrl,
+  sanitizeUrl,
+  isRequired,
+  minLength,
+  maxLength,
+  exactLength,
+  isNumeric,
+  inRange,
+  matchesPattern,
+  isInList,
+} from "@mohasinac/validation";
+export type {
+  PasswordStrength,
+  PasswordRequirements,
+} from "@mohasinac/validation";

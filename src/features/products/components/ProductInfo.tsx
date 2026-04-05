@@ -28,7 +28,7 @@ import {
   AccordionItem,
 } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductStatus } from "@mohasinac/feat-products";
 import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";
 
 const { themed, flex } = THEME_CONSTANTS;
@@ -38,7 +38,7 @@ interface ProductInfoProps {
   description: string;
   price: number;
   currency: string;
-  status: ProductDocument["status"];
+  status: ProductStatus;
   featured: boolean;
   isAuction?: boolean;
   currentBid?: number;
@@ -53,7 +53,7 @@ interface ProductInfoProps {
   sellerName: string;
   sellerId?: string;
   tags: string[];
-  specifications?: ProductDocument["specifications"];
+  specifications?: { name: string; value: string; unit?: string }[];
   features?: string[];
   shippingInfo?: string;
   returnPolicy?: string;

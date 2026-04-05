@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Newsletter Subscribe API Route
  * POST /api/newsletter/subscribe — Subscribe an email to the newsletter

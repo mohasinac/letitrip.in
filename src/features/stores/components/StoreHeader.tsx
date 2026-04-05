@@ -22,7 +22,7 @@ interface StoreHeaderProps {
 
 export function StoreHeader({ storeSlug }: StoreHeaderProps) {
   const t = useTranslations("storePage");
-  const { data: store, isLoading } = useStoreBySlug(storeSlug);
+  const { store, isLoading } = useStoreBySlug(storeSlug);
 
   if (isLoading) {
     return (
@@ -69,10 +69,10 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
             <div
               className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-slate-900 ${overflow.hidden} bg-primary/5 dark:bg-primary/10 ${flex.noShrink} ${flex.center} shadow-sm`}
             >
-              {store.storeLogoURL || store.photoURL ? (
+              {store.storeLogoURL ? (
                 <AvatarDisplay
                   cropData={{
-                    url: store.storeLogoURL ?? store.photoURL ?? "",
+                    url: store.storeLogoURL ?? "",
                     position: { x: 50, y: 50 },
                     zoom: 1,
                   }}
@@ -91,7 +91,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
                   level={1}
                   className="text-xl sm:text-2xl leading-tight truncate"
                 >
-                  {store.storeName || store.displayName}
+                  {store.storeName}
                 </Heading>
 
                 {/* Ratings badge */}

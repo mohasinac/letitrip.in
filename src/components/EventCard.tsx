@@ -11,8 +11,7 @@ import {
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatDate } from "@/utils";
-import type { EventType } from "@/db/schema";
-import type { EventItem } from "@mohasinac/feat-events";
+import type { EventType, EventItem } from "@mohasinac/feat-events";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Notifications API Route
  * GET  /api/notifications         — List user's notifications (paginated)

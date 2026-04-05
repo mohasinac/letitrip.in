@@ -1,26 +1,41 @@
 "use client";
 
-import { useProductDetail as useFeatProductDetail } from "@mohasinac/feat-products";
-import type { ProductDocument } from "@/db/schema";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient, ApiClientError } from "@mohasinac/http";
+import type { ProductItem } from "@mohasinac/feat-products";
 
-interface UseProductDetailOptions {
-  initialData?: ProductDocument;
+interface UseProductDetailOptions<TProduct = ProductItem> {
+  initialData?: TProduct;
+  enabled?: boolean;
+  endpoint?: string;
+  queryKeyPrefix?: string;
+  transform?: (item: ProductItem) => TProduct;
 }
 
-/**
- * useProductDetail
- * Fetches a single product by ID or slug via GET /api/products/[id].
- * `options.initialData` — server-prefetched post data; prevents initial client fetch.
- */
-export function useProductDetail(
+export function useProductDetail<TProduct = ProductItem>(
   slug: string,
-  options?: UseProductDetailOptions,
+  options?: UseProductDetailOptions<TProduct>,
 ) {
-  return useFeatProductDetail<ProductDocument>(slug, {
-    enabled: Boolean(slug),
-    endpoint: `/api/products/${slug}`,
-    queryKeyPrefix: "product",
-    initialData: options?.initialData,
-    transform: (item) => item as unknown as ProductDocument,
+  const endpoint = options?.endpoint ?? `/api/products/${slug}`;
+  const queryKeyPrefix = options?.queryKeyPrefix ?? "product";
+  const { data, isLoading, error, refetch } = useQuery<ProductItem | null>({
+    queryKey: [queryKeyPrefix, slug],
+    queryFn: async () => {
+      try {
+        return await apiClient.get<ProductItem>(endpoint);
+      } catch (e) {
+        if (e instanceof ApiClientError && e.status === 404) return null;
+        throw e;
+      }
+    },
+    enabled: (options?.enabled ?? true) && Boolean(slug),
+    initialData:
+      (options?.initialData as ProductItem | null | undefined) ?? undefined,
   });
+  const product = data
+    ? options?.transform
+      ? options.transform(data as ProductItem)
+      : (data as TProduct)
+    : null;
+  return { product, isLoading, error, refetch };
 }

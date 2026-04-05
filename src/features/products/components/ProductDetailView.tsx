@@ -19,8 +19,8 @@ import { ProductTabs } from "./ProductTabs";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
-import { useProductDetail } from "../hooks/useProductDetail";
-import type { ProductDocument } from "@/db/schema";
+import { useProductDetail } from "../hooks";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 function formatCategoryLabel(label: string): string {
   if (label.startsWith("category-")) {
@@ -33,7 +33,7 @@ const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
 interface ProductDetailViewProps {
   slug: string;
-  initialData?: ProductDocument;
+  initialData?: ProductItem;
 }
 
 export function ProductDetailView({
@@ -150,9 +150,13 @@ export function ProductDetailView({
           {/* Column 1 — Gallery */}
           <div>
             <ProductImageGallery
-              mainImage={product.mainImage}
+              mainImage={product.mainImage ?? ""}
               images={product.images}
-              video={product.video}
+              video={
+                product.video as
+                  | { url: string; thumbnailUrl?: string }
+                  | undefined
+              }
               title={product.title}
               slug={product.slug}
             />
@@ -162,24 +166,30 @@ export function ProductDetailView({
           <div>
             <ProductInfo
               title={product.title}
-              description={product.description}
+              description={product.description ?? ""}
               price={product.price}
-              currency={product.currency}
+              currency={product.currency ?? "INR"}
               status={product.status}
-              featured={product.featured}
+              featured={product.featured ?? false}
               isAuction={product.isAuction}
               currentBid={product.currentBid}
               startingBid={product.startingBid}
               bidCount={product.bidCount}
-              auctionEndDate={product.auctionEndDate}
-              stockQuantity={product.stockQuantity}
-              availableQuantity={product.availableQuantity}
+              auctionEndDate={
+                product.auctionEndDate
+                  ? new Date(product.auctionEndDate as string | Date)
+                  : undefined
+              }
+              stockQuantity={
+                product.stockQuantity ?? product.availableQuantity ?? 0
+              }
+              availableQuantity={product.availableQuantity ?? 0}
               brand={product.brand}
-              category={product.category}
+              category={product.category ?? ""}
               subcategory={product.subcategory}
-              sellerName={product.sellerName}
+              sellerName={product.sellerName ?? ""}
               sellerId={product.sellerId}
-              tags={product.tags}
+              tags={product.tags ?? []}
               specifications={product.specifications}
               features={product.features}
               shippingInfo={product.shippingInfo}
@@ -218,7 +228,7 @@ export function ProductDetailView({
 
         {/* ——— Related Products ——— */}
         <RelatedProducts
-          category={product.category}
+          category={product.category ?? ""}
           excludeId={product.id}
           isAuction={product.isAuction}
         />

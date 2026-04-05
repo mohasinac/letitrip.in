@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedPreOrders } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductItem } from "@mohasinac/feat-products";
 import { PreOrderCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
@@ -12,7 +12,7 @@ export function FeaturedPreOrdersSection() {
   const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedPreOrders();
 
-  const preOrders: ProductDocument[] = data ?? [];
+  const preOrders: ProductItem[] = data ?? [];
 
   // Hide section entirely when there are no pre-orders and not loading
   if (!isLoading && preOrders.length === 0) return null;

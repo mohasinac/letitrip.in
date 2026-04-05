@@ -22,12 +22,25 @@ import {
   TextLink,
 } from "@/components";
 import { generateInitials } from "@/helpers";
-import type { ReviewDocument } from "@/db/schema";
 
 const { themed, flex } = THEME_CONSTANTS;
 
+export interface ReviewCardData {
+  id: string;
+  productId: string;
+  productTitle?: string;
+  userId: string;
+  userName?: string;
+  userAvatar?: string;
+  rating: number;
+  title?: string;
+  comment?: string;
+  images?: string[];
+  verified?: boolean;
+}
+
 interface ReviewCardProps {
-  review: ReviewDocument;
+  review: ReviewCardData;
   className?: string;
 }
 

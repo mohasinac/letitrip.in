@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Cart API Routes
  *

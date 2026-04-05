@@ -17,7 +17,7 @@ const { themed, flex } = THEME_CONSTANTS;
 
 interface VideoData {
   url: string;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   trimStart?: number;
   trimEnd?: number;
 }

@@ -20,6 +20,7 @@ export { useProfile } from "./useProfile";
 export { useProfileStats } from "./useProfileStats";
 export { usePublicProfile } from "./usePublicProfile";
 export type {
+  PublicUserProfile,
   SellerReviewsData,
   SellerReviewItem,
   ProductsApiResponse,
@@ -128,8 +129,6 @@ export { useHeroCarousel } from "./useHeroCarousel";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
 export { useFeaturedPreOrders } from "./useFeaturedPreOrders";
-export { useFeaturedStores } from "./useFeaturedStores";
-export { useFeaturedEvents } from "./useFeaturedEvents";
 export { useHomepageReviews } from "./useHomepageReviews";
 export { useTopCategories } from "./useTopCategories";
 export { useTopBrands } from "./useTopBrands";
@@ -146,13 +145,8 @@ export { useAddToCart } from "./useAddToCart";
 export { useWishlistToggle } from "./useWishlistToggle";
 export { useNotifications } from "./useNotifications";
 export { useCategorySelector } from "./useCategorySelector";
-export { usePublicEvents } from "./usePublicEvents";
 export { useCountdown } from "./useCountdown";
 export type { CountdownRemaining } from "./useCountdown";
-
-// Phase 58.1: Public page hooks
-export { useBlogPosts } from "./useBlogPosts";
-export { usePromotions } from "./usePromotions";
 
 // Phase 58.7: Shared component hooks
 export { useContactSubmit } from "./useContactSubmit";
@@ -174,7 +168,9 @@ export type { UseCameraOptions, UseCameraReturn } from "./useCamera";
 export { useFaqVote } from "./useFaqVote";
 export { useNewsletter } from "./useNewsletter";
 export { useAuctionDetail } from "./useAuctionDetail";
+export type { PublicBid } from "./useAuctionDetail";
 export { usePlaceBid } from "./usePlaceBid";
+export type { BidResult } from "./usePlaceBid";
 export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";

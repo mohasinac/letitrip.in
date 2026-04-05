@@ -96,10 +96,13 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     table,
   ]);
 
-  const { data, isLoading, error } = useStoreProducts(storeSlug, apiParams);
+  const {
+    products: items,
+    total,
+    isLoading,
+    error,
+  } = useStoreProducts(storeSlug, apiParams);
 
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const totalPages = Math.ceil(total / pageSize) || 1;
 
@@ -109,7 +112,10 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     const cats = new Set(
       items
         .map(
-          (p) => (p as Record<string, unknown>).category as string | undefined,
+          (p) =>
+            (p as unknown as Record<string, unknown>).category as
+              | string
+              | undefined,
         )
         .filter(Boolean),
     );
@@ -307,7 +313,9 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
       )}
       {!isLoading && !error && items.length > 0 && (
         <ProductGrid
-          products={items}
+          products={
+            items as unknown as Parameters<typeof ProductGrid>[0]["products"]
+          }
           loading={false}
           variant={viewMode}
           selectable={!!user}

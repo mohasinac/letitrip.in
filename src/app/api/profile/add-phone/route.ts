@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Add Phone Number API Route
  * POST /api/profile/add-phone

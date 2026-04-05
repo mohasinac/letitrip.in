@@ -3,29 +3,10 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { ProductCard } from "./ProductCard";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductCardData } from "./ProductCard";
 import { Heading, Span, Text } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
-
-type ProductCardData = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "availableQuantity"
->;
 
 interface ProductGridProps {
   products: ProductCardData[];

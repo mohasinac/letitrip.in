@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Payment - Verify Razorpay Payment
  *

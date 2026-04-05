@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Events API Route
  * GET /api/admin/events  — Paginated list with Sieve filtering

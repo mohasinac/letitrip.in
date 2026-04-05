@@ -12,14 +12,15 @@
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
-import type { UserDocument, ProductDocument } from "@/db/schema";
+import type { PublicUserProfile } from "@/hooks";
+import type { ProductItem } from "@mohasinac/feat-products";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
 
 const { flex, page } = THEME_CONSTANTS;
 
 interface PublicProfileViewProps {
-  user: UserDocument;
+  user: PublicUserProfile;
   isSeller: boolean;
   profileName: string;
   memberSince: string;
@@ -73,7 +74,7 @@ async function SellerProductsSection({
         </div>
       ) : productsData?.data && productsData.data.length > 0 ? (
         <div className={THEME_CONSTANTS.grid.productCards}>
-          {productsData.data.map((product: ProductDocument) => (
+          {productsData.data.map((product: ProductItem) => (
             <TextLink
               key={product.id}
               href={`/products/${product.id}`}

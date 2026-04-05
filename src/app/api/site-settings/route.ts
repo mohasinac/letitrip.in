@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Site Settings API Routes
  *

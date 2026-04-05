@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useFeaturedStores } from "@/hooks";
+import { useStores } from "@mohasinac/feat-stores";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { StoreCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
@@ -9,9 +9,7 @@ import { SectionCarousel } from "./SectionCarousel";
 export function FeaturedStoresSection() {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
-  const { data, isLoading } = useFeaturedStores();
-
-  const stores = data?.items ?? [];
+  const { stores, isLoading } = useStores({ pageSize: 12, sort: "-createdAt" });
 
   if (!isLoading && stores.length === 0) return null;
 

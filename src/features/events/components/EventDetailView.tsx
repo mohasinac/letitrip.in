@@ -9,7 +9,7 @@ import { FeedbackEventSection } from "./FeedbackEventSection";
 import { EventLeaderboard } from "./EventLeaderboard";
 import { formatDate } from "@/utils";
 import type { EventItem } from "@mohasinac/feat-events";
-import { usePublicEvent } from "../hooks/usePublicEvent";
+import { useEvent as usePublicEvent } from "@mohasinac/feat-events";
 
 const { spacing, typography } = THEME_CONSTANTS;
 

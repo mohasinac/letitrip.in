@@ -186,7 +186,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                   ))
                 : stores.map((store) => (
                     <StoreCard
-                      key={store.uid}
+                      key={store.id}
                       store={store}
                       selectable={!!user}
                       selected={selectedIds.includes(store.ownerId)}
@@ -209,7 +209,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                   ))
                 : stores.map((store) => (
                     <StoreCard
-                      key={store.uid}
+                      key={store.id}
                       store={store}
                       selectable={!!user}
                       selected={selectedIds.includes(store.ownerId)}

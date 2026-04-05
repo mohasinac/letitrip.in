@@ -1,3 +1,2 @@
-export { useBlogPost } from "./useBlogPost";
-export type { BlogPostQueryResult } from "./useBlogPost";
-// BlogPostQueryResult is now BlogPostDetailResponse from @mohasinac/feat-blog
+export { useBlogPost } from "@mohasinac/feat-blog";
+export type { BlogPostDetailResponse as BlogPostQueryResult } from "@mohasinac/feat-blog";

@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createCategoryAction } from "@/actions";
 import { apiClient } from "@mohasinac/http";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 /**
  * useCategorySelector
@@ -23,21 +23,22 @@ export function useCategorySelector(options?: {
     data: raw,
     isLoading,
     refetch,
-  } = useQuery<CategoryDocument[]>({
+  } = useQuery<CategoryItem[]>({
     queryKey: ["categories"],
-    queryFn: () =>
-      apiClient.get<CategoryDocument[]>("/api/categories?flat=true"),
+    queryFn: () => apiClient.get<CategoryItem[]>("/api/categories?flat=true"),
   });
 
-  const categories: CategoryDocument[] = raw ?? [];
+  const categories: CategoryItem[] = raw ?? [];
 
   const { mutate: createCategory, isPending: isCreating } = useMutation<
-    CategoryDocument,
+    CategoryItem,
     Error,
     Record<string, unknown>
   >({
     mutationFn: (data) =>
-      createCategoryAction(data as Parameters<typeof createCategoryAction>[0]),
+      createCategoryAction(
+        data as Parameters<typeof createCategoryAction>[0],
+      ) as unknown as Promise<CategoryItem>,
     onSuccess: (res) => {
       refetch();
       const id = res?.id ?? "";
@@ -59,12 +60,11 @@ export function useCategories() {
     data: raw,
     isLoading,
     refetch,
-  } = useQuery<CategoryDocument[]>({
+  } = useQuery<CategoryItem[]>({
     queryKey: ["categories"],
-    queryFn: () =>
-      apiClient.get<CategoryDocument[]>("/api/categories?flat=true"),
+    queryFn: () => apiClient.get<CategoryItem[]>("/api/categories?flat=true"),
   });
-  const categories: CategoryDocument[] = raw ?? [];
+  const categories: CategoryItem[] = raw ?? [];
   return { categories, isLoading, refetch };
 }
 
@@ -74,12 +74,14 @@ export function useCategories() {
  * Used by the inner CreateCategoryContent sub-component.
  */
 export function useCreateCategory(options?: {
-  onSuccess?: (res: CategoryDocument) => void;
+  onSuccess?: (res: CategoryItem) => void;
   onError?: (err: Error) => void;
 }) {
-  return useMutation<CategoryDocument, Error, Record<string, unknown>>({
+  return useMutation<CategoryItem, Error, Record<string, unknown>>({
     mutationFn: (data) =>
-      createCategoryAction(data as Parameters<typeof createCategoryAction>[0]),
+      createCategoryAction(
+        data as Parameters<typeof createCategoryAction>[0],
+      ) as unknown as Promise<CategoryItem>,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

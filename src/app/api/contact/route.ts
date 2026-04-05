@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Contact API Route
  * POST /api/contact — Send a contact message to support

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * POST /api/auth/event/init
  *

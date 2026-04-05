@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 /**
  * useTopCategories
@@ -12,14 +12,12 @@ import type { CategoryDocument } from "@/db/schema";
  */
 export function useTopCategories(
   limit = 12,
-  options?: { initialData?: CategoryDocument[] },
+  options?: { initialData?: CategoryItem[] },
 ) {
-  return useQuery<CategoryDocument[]>({
+  return useQuery<CategoryItem[]>({
     queryKey: ["categories", "top", String(limit)],
     queryFn: () =>
-      apiClient.get<CategoryDocument[]>(
-        `/api/categories?tier=0&pageSize=${limit}`,
-      ),
+      apiClient.get<CategoryItem[]>(`/api/categories?tier=0&pageSize=${limit}`),
     staleTime: 15 * 60 * 1000, // 15 minutes — categories change infrequently
     initialData: options?.initialData,
   });

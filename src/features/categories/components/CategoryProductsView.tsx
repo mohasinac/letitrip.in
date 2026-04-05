@@ -35,7 +35,7 @@ import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 import { useCategoryDetail } from "../hooks/useCategoryDetail";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";
-import type { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
 const { themed, flex, spacing } = THEME_CONSTANTS;
 
@@ -43,8 +43,8 @@ const PAGE_SIZE = 24;
 
 interface Props {
   slug: string;
-  initialCategory?: CategoryDocument;
-  initialChildren?: CategoryDocument[];
+  initialCategory?: CategoryItem;
+  initialChildren?: CategoryItem[];
 }
 
 export function CategoryProductsView({
@@ -157,8 +157,8 @@ export function CategoryProductsView({
           price: p.price,
           currency: p.currency || "INR",
           quantity: 1,
-          sellerId: p.sellerId,
-          sellerName: p.sellerName,
+          sellerId: p.sellerId ?? "",
+          sellerName: p.sellerName ?? "",
         }),
       ),
     );
@@ -281,7 +281,7 @@ export function CategoryProductsView({
 
           <Text size="sm" variant="muted">
             {t("productsCount", {
-              count: category.metrics?.totalProductCount ?? 0,
+              count: category.metrics?.productCount ?? 0,
             })}
           </Text>
         </div>
@@ -291,8 +291,8 @@ export function CategoryProductsView({
       {children.length > 0 && (
         <HorizontalScroller
           items={children}
-          keyExtractor={(cat: CategoryDocument) => cat.id}
-          renderItem={(child: CategoryDocument) => (
+          keyExtractor={(cat: CategoryItem) => cat.id}
+          renderItem={(child: CategoryItem) => (
             <TextLink
               href={`${ROUTES.PUBLIC.CATEGORIES}/${child.slug}`}
               variant="inherit"

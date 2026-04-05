@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Media Upload API Route
  *

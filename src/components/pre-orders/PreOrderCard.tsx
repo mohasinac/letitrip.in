@@ -15,33 +15,33 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useWishlistToggle } from "@/hooks";
 import { formatCurrency, formatDate } from "@/utils";
-import type { ProductDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 
+export interface PreOrderCardData {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  currency?: string;
+  mainImage?: string;
+  images?: string[];
+  video?: { url?: string; thumbnailUrl?: string };
+  isPreOrder?: boolean;
+  preOrderDeliveryDate?: string | Date | null;
+  preOrderDepositPercent?: number | null;
+  preOrderDepositAmount?: number | null;
+  preOrderMaxQuantity?: number | null;
+  preOrderCurrentCount?: number | null;
+  preOrderProductionStatus?: string | null;
+  preOrderCancellable?: boolean | null;
+  featured?: boolean;
+  stockQuantity?: number;
+  availableQuantity?: number;
+}
+
 export interface PreOrderCardProps {
-  product: Pick<
-    ProductDocument,
-    | "id"
-    | "title"
-    | "description"
-    | "price"
-    | "currency"
-    | "mainImage"
-    | "images"
-    | "video"
-    | "isPreOrder"
-    | "preOrderDeliveryDate"
-    | "preOrderDepositPercent"
-    | "preOrderDepositAmount"
-    | "preOrderMaxQuantity"
-    | "preOrderCurrentCount"
-    | "preOrderProductionStatus"
-    | "preOrderCancellable"
-    | "featured"
-    | "stockQuantity"
-    | "availableQuantity"
-  >;
+  product: PreOrderCardData;
   className?: string;
   /** "grid" (default): vertical card. "list": horizontal card. */
   variant?: "grid" | "list";

@@ -13,29 +13,30 @@ import {
 } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useAddToCart, useWishlistToggle, useMessage } from "@/hooks";
-import type { ProductDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 
+/** Minimal structural type — satisfied by both ProductItem (from packages) and ProductDocument (from repositories) */
+export interface ProductCardData {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  currency?: string;
+  mainImage?: string;
+  images?: string[];
+  video?: { url?: string; thumbnailUrl?: string };
+  status?: string;
+  featured?: boolean;
+  isAuction?: boolean;
+  currentBid?: number;
+  isPromoted?: boolean;
+  slug?: string;
+  availableQuantity?: number;
+}
+
 export interface ProductCardProps {
-  product: Pick<
-    ProductDocument,
-    | "id"
-    | "title"
-    | "description"
-    | "price"
-    | "currency"
-    | "mainImage"
-    | "images"
-    | "video"
-    | "status"
-    | "featured"
-    | "isAuction"
-    | "currentBid"
-    | "isPromoted"
-    | "slug"
-    | "availableQuantity"
-  >;
+  product: ProductCardData;
   className?: string;
   /** "grid" (default): vertical card. "list": horizontal card. */
   variant?: "grid" | "list";

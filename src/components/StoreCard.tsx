@@ -13,7 +13,7 @@ import {
   Span,
   TextLink,
 } from "@/components";
-import type { StoreListItem } from "@/types/stores";
+import type { StoreListItem } from "@mohasinac/feat-stores";
 
 const { flex, themed } = THEME_CONSTANTS;
 
@@ -33,7 +33,7 @@ export function StoreCard({
   const t = useTranslations("storesPage");
 
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
-  const name = store.storeName || store.displayName || "";
+  const name = store.storeName || "";
 
   return (
     <TextLink href={href} className="group block focus:outline-none">
@@ -109,10 +109,10 @@ export function StoreCard({
           <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20">
             <div className="relative">
               <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-slate-900 overflow-hidden shadow-md">
-                {(store.storeLogoURL ?? store.photoURL) ? (
+                {store.storeLogoURL ? (
                   <AvatarDisplay
                     cropData={{
-                      url: (store.storeLogoURL ?? store.photoURL)!,
+                      url: store.storeLogoURL,
                       position: { x: 50, y: 50 },
                       zoom: 1,
                     }}

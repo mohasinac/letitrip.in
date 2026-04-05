@@ -2,34 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ProductDocument } from "@/db/schema";
+import type {
+  AuctionItem,
+  AuctionListResponse,
+} from "@mohasinac/feat-auctions";
 
-export type AuctionItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "isAuction"
-  | "auctionEndDate"
-  | "startingBid"
-  | "currentBid"
-  | "bidCount"
-  | "featured"
->;
-
-export interface AuctionsListResult {
-  items: AuctionItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+export type { AuctionItem };
+export type AuctionsListResult = AuctionListResponse;
 
 /**
  * useAuctions

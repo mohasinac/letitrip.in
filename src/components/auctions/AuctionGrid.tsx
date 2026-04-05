@@ -1,33 +1,16 @@
 ﻿"use client";
 
 import { AuctionCard } from "./AuctionCard";
+import type { AuctionCardData } from "./AuctionCard";
 import { Span, Text } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
-import type { ProductDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
 
-type AuctionItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "isAuction"
-  | "auctionEndDate"
-  | "startingBid"
-  | "currentBid"
-  | "bidCount"
-  | "featured"
-  | "status"
->;
+type AuctionGridItem = AuctionCardData;
 
 interface AuctionGridProps {
-  auctions: AuctionItem[];
+  auctions: AuctionGridItem[];
   loading?: boolean;
   skeletonCount?: number;
   /** "grid" (default): responsive grid. "list": stacked horizontal cards. */

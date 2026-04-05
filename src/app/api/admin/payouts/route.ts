@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Payouts API
  *

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * API Route: Password Reset Request (Backend-Only)
  * POST /api/auth/forgot-password

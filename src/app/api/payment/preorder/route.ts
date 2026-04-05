@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Pre-Order Deposit Payment
  *

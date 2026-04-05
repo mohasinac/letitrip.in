@@ -6,8 +6,10 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { CategoryCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
+import type { CategoryItem } from "@mohasinac/feat-categories";
+
 interface TopCategoriesSectionProps {
-  initialCategories?: import("@/db/schema").CategoryDocument[];
+  initialCategories?: CategoryItem[];
 }
 
 export function TopCategoriesSection({

@@ -2,19 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { ReviewDocument } from "@/db/schema";
+import type { ReviewCardData } from "@/components";
 
 /**
  * useHomepageReviews
  * Fetches latest approved customer reviews for the homepage testimonials section.
  */
 export function useHomepageReviews(options?: {
-  initialData?: ReviewDocument[];
+  initialData?: ReviewCardData[];
 }) {
-  return useQuery<ReviewDocument[]>({
+  return useQuery<ReviewCardData[]>({
     queryKey: ["reviews", "latest"],
     queryFn: () =>
-      apiClient.get<ReviewDocument[]>("/api/reviews?featured=true"),
+      apiClient.get<ReviewCardData[]>("/api/reviews?featured=true"),
     staleTime: 10 * 60 * 1000, // 10 minutes
     initialData: options?.initialData,
   });

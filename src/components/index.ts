@@ -143,6 +143,7 @@ export { default as ZodSetup } from "./ZodSetup";
 // so shared-tier layout components and other features can import them.
 export { BlogCard, CATEGORY_BADGE } from "./BlogCard";
 export { ReviewCard } from "./ReviewCard";
+export type { ReviewCardData } from "./ReviewCard";
 export { EventCard } from "./EventCard";
 export { EventBanner } from "./EventBanner";
 export { StoreCard } from "./StoreCard";

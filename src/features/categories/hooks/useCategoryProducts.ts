@@ -3,36 +3,15 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient, ApiClientError } from "@mohasinac/http";
-import type { CategoryDocument, ProductDocument } from "@/db/schema";
+import type {
+  ProductItem,
+  ProductListResponse,
+} from "@mohasinac/feat-products";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 
-export type CategoryProductItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "sellerId"
-  | "sellerName"
->;
+export type CategoryProductItem = ProductItem;
 
-interface ProductsResponse {
-  items: CategoryProductItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+interface ProductsResponse extends ProductListResponse {}
 
 interface UseCategoryProductsOptions {
   sort: string;
@@ -62,11 +41,11 @@ export function useCategoryProducts(
 
   /* ---- Fetch category by slug ---- */
   const { data: catData, isLoading: catLoading } =
-    useQuery<CategoryDocument | null>({
+    useQuery<CategoryItem | null>({
       queryKey: ["categories", "slug", slug],
       queryFn: async () => {
         try {
-          return await apiClient.get<CategoryDocument>(
+          return await apiClient.get<CategoryItem>(
             `/api/categories?slug=${encodeURIComponent(slug)}`,
           );
         } catch (e) {

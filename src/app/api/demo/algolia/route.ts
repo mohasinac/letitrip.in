@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Dev-Only Algolia Operations Route
  *

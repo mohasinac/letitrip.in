@@ -17,6 +17,7 @@ import { buildSellerReviews } from "@/features/user/server";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
+import type { ProductItem } from "@mohasinac/feat-products";
 
 interface Props {
   params: Promise<{ userId: string; locale: string }>;
@@ -71,7 +72,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
     if (productsResult) {
       productsData = {
-        data: productsResult.items as ProductDocument[],
+        data: productsResult.items as unknown as ProductItem[],
         meta: {
           total: productsResult.total,
           page: productsResult.page,
@@ -84,7 +85,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   return (
     <PublicProfileView
-      user={userData as UserDocument}
+      user={userData as unknown as import("@/hooks").PublicUserProfile}
       isSeller={isSeller}
       profileName={profileName}
       memberSince={memberSince}

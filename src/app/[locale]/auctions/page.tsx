@@ -32,7 +32,8 @@ export default async function AuctionsPage() {
     .catch(() => null);
   const initialData = result
     ? {
-        items: result.items,
+        items:
+          result.items as unknown as import("@mohasinac/feat-auctions").AuctionItem[],
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,

@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * API Route: Admin Dashboard Statistics
  * GET /api/admin/dashboard

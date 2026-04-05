@@ -28,7 +28,8 @@ export default async function ProductsPage() {
     })
     .then(
       (r): ProductsListResult => ({
-        items: r.items,
+        items:
+          r.items as unknown as import("@mohasinac/feat-products").ProductItem[],
         total: r.total,
         page: r.page,
         pageSize: r.pageSize,

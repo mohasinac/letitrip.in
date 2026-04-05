@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Algolia Clear Pages Route
  *

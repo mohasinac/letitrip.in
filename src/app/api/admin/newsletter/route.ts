@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Newsletter API Route
  * GET /api/admin/newsletter — List subscribers with stats

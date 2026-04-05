@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useFeaturedEvents } from "@/hooks";
+import { useEvents } from "@mohasinac/feat-events";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { EventCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
@@ -9,9 +9,7 @@ import { SectionCarousel } from "./SectionCarousel";
 export function FeaturedEventsSection() {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
-  const { data, isLoading } = useFeaturedEvents();
-
-  const events = data?.items ?? [];
+  const { events, isLoading } = useEvents({ pageSize: 12, sort: "-createdAt" });
 
   if (!isLoading && events.length === 0) return null;
 

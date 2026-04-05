@@ -22,7 +22,7 @@ interface StoreAboutViewProps {
 
 export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
   const t = useTranslations("storePage");
-  const { data: store, isLoading, error } = useStoreBySlug(storeSlug);
+  const { store, isLoading, error } = useStoreBySlug(storeSlug);
 
   if (isLoading) {
     return (
@@ -46,7 +46,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
       <Card className={`p-6 ${spacing.stack}`}>
         {/* Store name + description */}
         <div>
-          <Heading level={2}>{store.storeName || store.displayName}</Heading>
+          <Heading level={2}>{store.storeName}</Heading>
           {store.storeDescription && (
             <Text variant="secondary" className="mt-2">
               {store.storeDescription}

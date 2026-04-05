@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Verify Phone Number API Route
  * POST /api/profile/verify-phone

@@ -10,14 +10,14 @@
 
 import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { CategoryDocument } from "@/db/schema";
+import type { CategoryItem } from "@mohasinac/feat-categories";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
 interface CategoryCardProps {
-  category: CategoryDocument;
+  category: CategoryItem;
   selectable?: boolean;
   selected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;
@@ -36,7 +36,7 @@ export function CategoryCard({
 }: CategoryCardProps) {
   const t = useTranslations("categories");
   const { name, slug, display, metrics, isFeatured, isBrand } = category;
-  const productCount = metrics?.totalProductCount ?? metrics?.productCount ?? 0;
+  const productCount = metrics?.productCount ?? 0;
   const href = `${ROUTES.PUBLIC.CATEGORIES}/${slug}`;
 
   /* ── Pill variant ─────────────────────────────────────── */

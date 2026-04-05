@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
-import type { OrderDocument } from "@/db/schema";
 
 export interface ProfileStats {
   orderCount: number;
@@ -16,9 +15,7 @@ export function useProfileStats(enabled: boolean): ProfileStats {
   const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ["user-orders-count"],
     queryFn: () =>
-      apiClient.get<{ orders: OrderDocument[]; total: number }>(
-        "/api/user/orders",
-      ),
+      apiClient.get<{ orders: unknown[]; total: number }>("/api/user/orders"),
     enabled,
   });
 

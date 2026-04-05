@@ -6,8 +6,8 @@
  */
 
 import type { AvatarMetadata } from "@/db/schema";
-
-export type UserRole = "user" | "seller" | "moderator" | "admin";
+import { UserRole } from "@mohasinac/feat-auth";
+export type { UserRole };
 
 /**
  * Minimal Firebase Auth user shape used in client-side context.

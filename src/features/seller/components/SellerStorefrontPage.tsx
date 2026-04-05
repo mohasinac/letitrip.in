@@ -5,12 +5,12 @@ import { SellerStorefrontView } from "./SellerStorefrontView";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useSellerStorefront } from "@/hooks";
 import { useTranslations } from "next-intl";
-import type { UserDocument } from "@/db/schema";
+import type { PublicUserProfile } from "@/hooks";
 
 interface SellerStorefrontPageProps {
   sellerId: string;
   /** Pre-fetched seller document from the server (SSR). Prevents loading flash. */
-  initialSeller?: UserDocument;
+  initialSeller?: PublicUserProfile;
 }
 
 /**

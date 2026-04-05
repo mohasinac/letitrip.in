@@ -1,3 +1,4 @@
+import "@/providers.config";
 /**
  * Admin Products API Route
  * GET  /api/admin/products — Delegated to @mohasinac/feat-admin
