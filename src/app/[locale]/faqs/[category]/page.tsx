@@ -10,6 +10,8 @@ interface Props {
   params: Promise<{ locale: string; category: string }>;
 }
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return Object.keys(FAQ_CATEGORIES).map((category) => ({ category }));
 }
