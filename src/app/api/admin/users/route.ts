@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/users - List users with search, role filter, disabled filter
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,

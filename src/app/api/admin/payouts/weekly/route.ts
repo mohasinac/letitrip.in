@@ -33,7 +33,7 @@ import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { OrderDocument } from "@/db/schema";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 

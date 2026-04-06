@@ -13,7 +13,7 @@ import "@/providers.config";
  * after initial setup.
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   isAlgoliaConfigured,

@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import {
   productRepository,
   orderRepository,

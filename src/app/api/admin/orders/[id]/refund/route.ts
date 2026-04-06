@@ -7,7 +7,7 @@
 
 import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { adminPartialRefundAction } from "@/actions";
 import { SUCCESS_MESSAGES } from "@/constants";
 

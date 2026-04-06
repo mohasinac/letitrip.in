@@ -10,7 +10,7 @@ import { NotFoundError, ValidationError } from "@/lib/errors";
 import { userRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 type UidParams = { uid: string };

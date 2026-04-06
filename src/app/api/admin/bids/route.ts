@@ -1,6 +1,34 @@
 import "@/providers.config";
 /**
  * Admin Bids API Route
- * GET /api/admin/bids — Delegated to @mohasinac/feat-admin
+ * GET /api/admin/bids
  */
-export { adminBidsGET as GET } from "@mohasinac/feat-admin";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse } from "@/lib/api-response";
+import { bidRepository } from "@/repositories";
+
+export const GET = createApiHandler({
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      200,
+      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
+    );
+    const filters = url.searchParams.get("filters") ?? undefined;
+    const sorts =
+      url.searchParams.get("sorts") ??
+      url.searchParams.get("sort") ??
+      "-bidDate";
+    const result = await bidRepository.list({ filters, sorts, page, pageSize });
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore,
+    });
+  },
+});

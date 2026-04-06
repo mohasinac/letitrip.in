@@ -5,7 +5,7 @@ import "@/providers.config";
  * GET /api/admin/payouts — List all payouts (filterable by status)
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,

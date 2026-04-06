@@ -13,7 +13,7 @@ import { successResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 
 const revokeUserSchema = z.object({
   userId: z.string().min(1, "userId is required"),

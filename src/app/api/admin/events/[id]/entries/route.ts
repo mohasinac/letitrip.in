@@ -3,7 +3,7 @@
  * GET /api/admin/events/[id]/entries — Paginated entry list with review-status filter
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,

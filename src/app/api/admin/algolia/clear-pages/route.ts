@@ -10,7 +10,7 @@ import "@/providers.config";
  * Use with caution — run a sync-pages immediately after to repopulate.
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   isAlgoliaConfigured,

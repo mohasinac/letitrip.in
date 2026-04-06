@@ -17,7 +17,7 @@ import {
 } from "@/lib/api/request-helpers";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 
 export const GET = createRouteHandler({
   roles: ["admin", "moderator"],

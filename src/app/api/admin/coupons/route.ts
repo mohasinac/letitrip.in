@@ -5,7 +5,7 @@ import "@/providers.config";
  * POST /api/admin/coupons — Create a new coupon (admin, local)
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
@@ -53,8 +53,39 @@ const couponCreateSchema = z.object({
   createdBy: z.string().optional().default("admin"),
 });
 
-// GET delegated to package (uses session auth + Sieve query via IRepository)
-export { adminCouponsGET as GET } from "@mohasinac/feat-admin";
+/**
+ * GET /api/admin/coupons
+ */
+export const GET = createRouteHandler({
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      200,
+      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
+    );
+    const filters = url.searchParams.get("filters") ?? undefined;
+    const sorts =
+      url.searchParams.get("sorts") ??
+      url.searchParams.get("sort") ??
+      "-createdAt";
+    const result = await couponsRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore,
+    });
+  },
+});
 
 /**
  * POST /api/admin/coupons

@@ -12,7 +12,7 @@ import "@/providers.config";
  *  - Top 5 products by total revenue
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { orderRepository, productRepository } from "@/repositories";
 import { formatMonthYear } from "@/utils";

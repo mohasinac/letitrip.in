@@ -11,7 +11,7 @@ import "@/providers.config";
  * index drift between Firestore and Algolia.
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { productRepository } from "@/repositories";
 import {

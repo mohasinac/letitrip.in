@@ -10,7 +10,7 @@ import "@/providers.config";
 
 import { storeRepository, storeAddressRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 

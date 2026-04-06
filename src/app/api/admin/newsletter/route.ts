@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/newsletter — List subscribers with stats
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,

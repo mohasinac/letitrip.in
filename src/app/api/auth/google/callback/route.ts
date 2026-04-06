@@ -249,6 +249,7 @@ export async function GET(request: NextRequest) {
 
     // Step 4: custom token → Firebase ID token → session cookie
     // (createSessionCookie requires a Firebase ID token, not a custom token)
+    // Embed role in custom token claims so the resulting session cookie carries the correct role
     const apiKey =
       process.env.FIREBASE_API_KEY ?? process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
@@ -261,7 +262,9 @@ export async function GET(request: NextRequest) {
         origin,
       );
     }
-    const customToken = await adminAuth.createCustomToken(firebaseUid);
+    const customToken = await adminAuth.createCustomToken(firebaseUid, {
+      role: userRole,
+    });
     const signInRes = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`,
       {

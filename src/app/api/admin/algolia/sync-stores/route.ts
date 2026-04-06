@@ -8,7 +8,7 @@ import "@/providers.config";
  * the Algolia stores index. Admin-only. Idempotent.
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { storeRepository } from "@/repositories";
 import {

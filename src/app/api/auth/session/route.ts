@@ -68,6 +68,13 @@ export async function POST(request: NextRequest) {
         emailVerified: authUser.emailVerified,
         role,
       });
+
+      // Sync role to Firebase custom claims so JWT carries correct role on next token refresh
+      await auth.setCustomUserClaims(decodedToken.uid, { role });
+    } else {
+      // Sync existing Firestore role to custom claims (no-op if already correct)
+      const currentRole = userProfile.role ?? SCHEMA_DEFAULTS.USER_ROLE;
+      await auth.setCustomUserClaims(decodedToken.uid, { role: currentRole });
     }
 
     // Create session cookie (5 days expiry)

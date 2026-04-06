@@ -17,8 +17,39 @@ import {
   productCreateSchema,
 } from "@/lib/validation/schemas";
 
-// GET delegated to package (uses session auth + Sieve query via IRepository)
-export { adminProductsGET as GET } from "@mohasinac/feat-admin";
+/**
+ * GET /api/admin/products
+ */
+export const GET = createApiHandler({
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      200,
+      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
+    );
+    const filters = url.searchParams.get("filters") ?? undefined;
+    const sorts =
+      url.searchParams.get("sorts") ??
+      url.searchParams.get("sort") ??
+      "-createdAt";
+    const result = await productRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore,
+    });
+  },
+});
 
 /**
  * POST /api/admin/products

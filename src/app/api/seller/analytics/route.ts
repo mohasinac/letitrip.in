@@ -13,7 +13,7 @@ import "@/providers.config";
 
 import { orderRepository, productRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";

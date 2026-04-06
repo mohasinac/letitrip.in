@@ -107,6 +107,10 @@ export async function POST(request: NextRequest) {
     // Get user data from Firestore
     const userData = await userRepository.findById(userRecord.uid);
 
+    // Sync Firestore role to Firebase custom claims so JWT carries correct role on next token refresh
+    const currentRole = userData?.role ?? SCHEMA_DEFAULTS.USER_ROLE;
+    await auth.setCustomUserClaims(userRecord.uid, { role: currentRole });
+
     // Update login metadata
     await userRepository.updateLoginMetadata(userRecord.uid);
 

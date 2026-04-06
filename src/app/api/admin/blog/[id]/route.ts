@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { blogRepository } from "@/repositories";
 import { NotFoundError } from "@/lib/errors";

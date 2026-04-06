@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/dashboard
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import {
   userRepository,
