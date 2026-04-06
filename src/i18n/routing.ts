@@ -17,6 +17,10 @@ export const routing = defineRouting({
   locales: ["en"] as const,
   defaultLocale: "en",
   localePrefix: "never",
+  // Disable locale cookie — it sets Set-Cookie on every response which forces
+  // cache-control: private, no-store and prevents Vercel ISR caching entirely.
+  // Since we only have one locale (en), the cookie is unnecessary.
+  localeCookie: false,
 });
 
 export type Locale = (typeof routing.locales)[number];
