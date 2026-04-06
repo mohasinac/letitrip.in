@@ -141,8 +141,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? origin;
     const redirectUri = `${appUrl}/api/auth/google/callback`;
 

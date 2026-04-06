@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
     if (!clientId) {
       serverLogger.error("GOOGLE_CLIENT_ID env var not set");
       throw new AppError(
