@@ -15,7 +15,7 @@ import {
 import { GuestCartMergerEffect } from "@/features/cart";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = genMetadata({
@@ -43,8 +43,11 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   // Load messages for the resolved locale — locale from URL params (static,
-  // avoids headers() which would force all routes into dynamic SSR)
+  // avoids headers() which would force all routes into dynamic SSR).
+  // setRequestLocale populates async local storage so all subsequent
+  // getTranslations() / getMessages() calls use params locale, not headers.
   const { locale } = await params;
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   return (
