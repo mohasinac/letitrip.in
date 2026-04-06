@@ -7,7 +7,7 @@
  */
 
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoriesListView } from "@/features/categories";
@@ -15,8 +15,11 @@ import type { CategoryItem } from "@mohasinac/feat-categories";
 
 export const revalidate = 60;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("categories");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "categories" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
     description: t("metaDescription"),
@@ -27,7 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const initialData = await categoriesRepository
     .findAll()
     .then((cats) => cats.filter((c) => !c.isBrand) as unknown as CategoryItem[])

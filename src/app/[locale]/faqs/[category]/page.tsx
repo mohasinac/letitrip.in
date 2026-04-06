@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -18,8 +18,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category } = await params;
-  const t = await getTranslations("faq");
+  const { locale, category } = await params;
+  const t = await getTranslations({ locale, namespace: "faq" });
 
   if (!(category in FAQ_CATEGORIES)) {
     return { title: t("metaTitle"), description: t("metaDescription") };
@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FAQCategoryPage({ params }: Props) {
   const { locale, category } = await params;
+  setRequestLocale(locale);
 
   if (!(category in FAQ_CATEGORIES)) {
     redirect({ href: ROUTES.PUBLIC.FAQS, locale });

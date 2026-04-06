@@ -16,6 +16,7 @@ import { GuestCartMergerEffect } from "@/features/cart";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = genMetadata({
@@ -23,6 +24,13 @@ export const metadata: Metadata = genMetadata({
   description: SEO_CONFIG.defaultDescription,
   path: "/",
 });
+
+/** Tell Next.js all valid [locale] values so routes can be pre-rendered at
+    build time and served from Vercel's CDN (ISR). Without this, all routes
+    are treated as on-demand dynamic and never cached. */
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 /**
  * Locale-aware application layout.

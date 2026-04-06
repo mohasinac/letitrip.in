@@ -1,6 +1,6 @@
 ﻿import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { productRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { ProductsView } from "@/features/products";
@@ -8,8 +8,11 @@ import type { ProductsListResult } from "@/features/products";
 
 export const revalidate = 60;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("products");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "products" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
     description: t("metaDescription"),
@@ -20,7 +23,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const initialData = await productRepository
     .list({
       filters: "status==published,isAuction==false",

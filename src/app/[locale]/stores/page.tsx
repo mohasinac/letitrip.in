@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { Spinner } from "@/components";
 import { StoresListView } from "@/features/stores";
@@ -12,8 +12,11 @@ export const revalidate = 60;
 
 const { page, flex } = THEME_CONSTANTS;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("storesPage");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "storesPage" });
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
@@ -40,7 +43,9 @@ function mapStore(store: StoreDocument): StoreListItem {
   };
 }
 
-export default async function StoresPage() {
+export default async function StoresPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const initialData = await storeRepository
     .listStores({ sorts: "-createdAt", page: 1, pageSize: 24 })
     .then((r) => ({

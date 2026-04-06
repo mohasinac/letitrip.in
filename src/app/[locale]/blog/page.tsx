@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { BlogListView } from "@/features/blog";
 import { blogRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
@@ -7,8 +7,11 @@ import type { BlogListResponse } from "@mohasinac/feat-blog";
 
 export const revalidate = 60;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("blog");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "blog" });
   const title = `${t("title")} — ${SITE_CONFIG.brand.name}`;
   return {
     title,
@@ -16,7 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const result = await blogRepository
     .listPublished({}, { sorts: "-publishedAt", page: 1, pageSize: 24 })
     .catch(() => null);

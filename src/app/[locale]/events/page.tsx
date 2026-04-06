@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EventsListView } from "@/features/events";
 import { eventRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
@@ -6,8 +6,12 @@ import type { Metadata } from "next";
 import type { EventListResponse } from "@mohasinac/feat-events";
 
 export const revalidate = 60;
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("events");
+
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "events" });
   const title = `${t("title")} — ${SITE_CONFIG.brand.name}`;
   return {
     title,
@@ -15,7 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function EventsPage() {
+export default async function EventsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const result = await eventRepository
     .list({
       filters: "status==active",
