@@ -3268,6 +3268,8 @@
     "category": {
       "general": "General",
       "products": "Products",
+      "auctions": "Auctions & Bidding",
+      "preorders": "Pre-Orders",
       "shipping": "Shipping & Delivery",
       "returns": "Returns & Refunds",
       "payment": "Payment",
@@ -3277,6 +3279,8 @@
     "categoryDescription": {
       "general": "About our platform, services, and policies",
       "products": "Product listings, auctions, bidding, and quality",
+      "auctions": "How auctions work, bidding rules, winning, and payment",
+      "preorders": "Pre-order process, deposits, production timelines, and cancellations",
       "shipping": "Delivery times, tracking, shipping options, and COD",
       "returns": "Return policy, refund process, and timelines",
       "payment": "Payment methods, COD deposit, coupons, and pricing",
