@@ -155,7 +155,7 @@ export default function SideDrawer({
   const positionClass =
     side === "left"
       ? "left-0 w-full sm:w-96 md:w-[420px]"
-      : "right-0 w-full md:w-1/2 md:min-w-[50vw]";
+      : "right-0 w-full md:w-1/2 md:max-w-[560px]";
 
   const modeHeaderStyles: Record<DrawerMode, string> = {
     delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",
@@ -218,12 +218,12 @@ export default function SideDrawer({
         </div>
 
         {/* Content */}
-        <div className={`flex-1 overflow-y-auto p-6`}>{children}</div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</div>
 
         {/* Footer */}
         {footer && (
           <div
-            className={`p-6 ${themed.border} border-t ${themed.bgSecondary}`}
+            className={`px-4 sm:px-6 py-4 sm:py-5 border-t ${themed.border} ${themed.bgSecondary} flex-shrink-0`}
           >
             {footer}
           </div>

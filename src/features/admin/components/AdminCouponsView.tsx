@@ -286,17 +286,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
         onClose={handleCloseDrawer}
         title={drawerTitle}
         side="right"
-      >
-        <div className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto p-4">
-            {isDrawerOpen && (
-              <CouponForm
-                initialData={selectedCoupon ?? undefined}
-                onChange={setFormState}
-                isEdit={drawerMode === "edit"}
-              />
-            )}
-          </div>
+        footer={
           <DrawerFormFooter
             onCancel={handleCloseDrawer}
             onSubmit={handleSave}
@@ -306,7 +296,15 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
               drawerMode === "create" ? t("create") : tActions("save")
             }
           />
-        </div>
+        }
+      >
+        {isDrawerOpen && (
+          <CouponForm
+            initialData={selectedCoupon ?? undefined}
+            onChange={setFormState}
+            isEdit={drawerMode === "edit"}
+          />
+        )}
       </SideDrawer>
 
       {/* Delete confirm modal */}

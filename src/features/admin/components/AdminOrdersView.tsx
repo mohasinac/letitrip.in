@@ -254,19 +254,19 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
         onClose={handleCloseDrawer}
         title={t("updateStatus")}
         side="right"
-      >
-        {selectedOrder && (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto p-4">
-              <OrderStatusForm order={selectedOrder} onChange={setFormState} />
-            </div>
+        footer={
+          selectedOrder ? (
             <DrawerFormFooter
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
               isLoading={updateMutation.isPending}
               submitLabel={t("updateOrder")}
             />
-          </div>
+          ) : undefined
+        }
+      >
+        {selectedOrder && (
+          <OrderStatusForm order={selectedOrder} onChange={setFormState} />
         )}
       </SideDrawer>
     </>

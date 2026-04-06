@@ -41,6 +41,13 @@ interface DrawerFormFooterProps {
   isLoading?: boolean;
   isSubmitDisabled?: boolean;
   className?: string;
+  /**
+   * "footer" (default) — placed in SideDrawer footer prop; the drawer wrapper
+   * supplies the border and background, so none are added here.
+   * "inline" — placed inside the scrollable content area; adds its own
+   * top border separator.
+   */
+  variant?: "footer" | "inline";
 }
 
 export function DrawerFormFooter({
@@ -53,10 +60,11 @@ export function DrawerFormFooter({
   isLoading = false,
   isSubmitDisabled = false,
   className = "",
+  variant = "footer",
 }: DrawerFormFooterProps) {
   const t = useTranslations("actions");
   const tLoading = useTranslations("loading");
-  const { themed, flex } = THEME_CONSTANTS;
+  const { themed } = THEME_CONSTANTS;
 
   const resolvedSubmitLabel = submitLabel ?? t("save");
   const resolvedDeleteLabel = deleteLabel ?? t("delete");
@@ -64,35 +72,22 @@ export function DrawerFormFooter({
 
   return (
     <div
-      className={`
-        flex gap-3 
-        pt-6 border-t ${themed.border}
-        ${className}
-      `}
+      className={`flex items-center gap-3${
+        variant === "inline" ? ` pt-4 border-t ${themed.border}` : ""
+      } ${className}`}
     >
-      <div>
-        {onDelete && (
-          <Button
-            variant="danger"
-            onClick={onDelete}
-            disabled={isLoading}
-            size="md"
-          >
-            {resolvedDeleteLabel}
-          </Button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-3">
+      {onDelete && (
         <Button
-          variant="primary"
-          onClick={onSubmit}
-          disabled={isLoading || isSubmitDisabled}
+          variant="danger"
+          onClick={onDelete}
+          disabled={isLoading}
           size="md"
         >
-          {isLoading ? tLoading("saving") : resolvedSubmitLabel}
+          {resolvedDeleteLabel}
         </Button>
+      )}
 
+      <div className={`flex items-center gap-3${!onDelete ? " ml-auto" : ""}`}>
         <Button
           variant="outline"
           onClick={onCancel}
@@ -100,6 +95,15 @@ export function DrawerFormFooter({
           size="md"
         >
           {resolvedCancelLabel}
+        </Button>
+
+        <Button
+          variant="primary"
+          onClick={onSubmit}
+          disabled={isLoading || isSubmitDisabled}
+          size="md"
+        >
+          {isLoading ? tLoading("saving") : resolvedSubmitLabel}
         </Button>
       </div>
     </div>

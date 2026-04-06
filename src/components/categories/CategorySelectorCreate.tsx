@@ -87,6 +87,7 @@ function CreateCategoryContent({
         onChange={setDraft}
       />
       <DrawerFormFooter
+        variant="inline"
         isLoading={isLoading}
         onSubmit={handleSave}
         onCancel={onCancel}

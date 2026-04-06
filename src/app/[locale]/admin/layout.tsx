@@ -11,9 +11,11 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(true);
   const { registerNav, unregisterNav } = useDashboardNav();
 
   const openMobile = useCallback(() => setMobileOpen(true), []);
+  const toggleDesktop = useCallback(() => setDesktopOpen((prev) => !prev), []);
 
   useEffect(() => {
     registerNav(openMobile);
@@ -26,9 +28,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <AdminSidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}
+          desktopOpen={desktopOpen}
         />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <AdminTopBar onMenuOpen={openMobile} />
+        <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
+          <AdminTopBar
+            onMenuOpen={openMobile}
+            onDesktopToggle={toggleDesktop}
+            desktopSidebarOpen={desktopOpen}
+          />
           <Main className="flex-1 overflow-y-auto p-4 md:p-6 bg-zinc-100/50 dark:bg-slate-950/30">
             {children}
           </Main>

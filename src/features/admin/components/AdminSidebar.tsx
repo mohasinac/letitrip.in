@@ -107,9 +107,15 @@ interface SidebarContentProps {
   pathname: string;
   t: (key: string) => string;
   tNav: (key: string) => string;
+  onNavClick?: () => void;
 }
 
-function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
+function SidebarContent({
+  pathname,
+  t,
+  tNav,
+  onNavClick,
+}: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo row */}
@@ -146,6 +152,7 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onNavClick}
                   className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors mb-0.5 ${
                     isActive
                       ? "bg-primary-500/15 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20"
@@ -170,16 +177,21 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
 interface AdminSidebarProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
+  desktopOpen?: boolean;
 }
 
 /**
  * AdminSidebar
  *
  * Fixed left-sidebar for the admin portal.
- * Desktop: always visible w-64, theme-aware bg.
+ * Desktop: always visible w-64 when desktopOpen, collapsible via toggle in AdminTopBar.
  * Mobile: slide-in Drawer triggered from AdminTopBar.
  */
-export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
+export function AdminSidebar({
+  mobileOpen,
+  onMobileClose,
+  desktopOpen = true,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const t = useTranslations("adminNav");
   const tNav = useTranslations("nav");
@@ -187,7 +199,11 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <Aside className="hidden md:flex w-64 bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-white/5">
+      <Aside
+        className={`${
+          desktopOpen ? "hidden md:flex w-64" : "hidden"
+        } bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-white/5`}
+      >
         <SidebarContent pathname={pathname} t={t} tNav={tNav} />
       </Aside>
 
@@ -199,7 +215,12 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
         size="sm"
         title="Admin Navigation"
       >
-        <SidebarContent pathname={pathname} t={t} tNav={tNav} />
+        <SidebarContent
+          pathname={pathname}
+          t={t}
+          tNav={tNav}
+          onNavClick={onMobileClose}
+        />
       </Drawer>
     </>
   );

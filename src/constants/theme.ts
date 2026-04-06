@@ -76,7 +76,7 @@ export const THEME_CONSTANTS = {
    */
   // Input/Form styles — clean borders, lime green focus in dark mode
   input: {
-    base: "rounded-lg border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-secondary-400/20 focus:border-primary-500 dark:focus:border-secondary-400 focus:outline-none transition-colors duration-150 placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+    base: "rounded-lg border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 px-3.5 py-2.5 text-base sm:text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/40 dark:focus:ring-secondary-400/40 focus:border-primary-500 dark:focus:border-secondary-400 focus:outline-none transition-colors duration-150 placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
     error:
       "border-red-400 dark:border-red-500 focus:ring-red-500/20 focus:border-red-500 bg-red-50/30 dark:bg-red-950/10",
     success:

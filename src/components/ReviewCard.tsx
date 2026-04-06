@@ -48,6 +48,13 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
   const t = useTranslations("reviews");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // Strip PII-encrypted values — stored as "pii:v1:..." in Firestore when the
+  // email was accidentally saved into the userName field.
+  const safeUserName =
+    review.userName && !review.userName.startsWith("pii:")
+      ? review.userName
+      : undefined;
   const lightboxItems = (review.images ?? []).map((src, i) => ({
     src,
     alt: t("reviewImageAlt", { index: i + 1 }),
@@ -146,13 +153,13 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
               {review.userAvatar ? (
                 <MediaImage
                   src={review.userAvatar}
-                  alt={review.userName || t("anonymous")}
+                  alt={safeUserName || t("anonymous")}
                   size="avatar"
                 />
               ) : (
                 <div className={`${flex.center} w-full h-full`}>
                   <Span className="text-sm font-bold text-primary-500">
-                    {generateInitials(review.userName || "A")}
+                    {generateInitials(safeUserName || "A")}
                   </Span>
                 </div>
               )}
@@ -164,7 +171,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                 href={userHref}
                 className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 truncate transition-colors leading-snug"
               >
-                {review.userName || t("anonymous")}
+                {safeUserName || t("anonymous")}
               </TextLink>
               {review.verified && (
                 <div className={`${flex.rowCenter} gap-1 mt-0.5`}>

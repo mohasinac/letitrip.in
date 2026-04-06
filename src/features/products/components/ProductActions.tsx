@@ -72,27 +72,24 @@ export function ProductActions({
   });
 
   const handleAddToCart = () => {
-    if (!user) {
-      showError(t("loginToAddToCart"));
-      router.push(ROUTES.AUTH.LOGIN);
-      return;
-    }
     if (isAuction || isOutOfStock) return;
-    addToCart({ productId, quantity: 1 });
+    // useAddToCart routes guests to localStorage automatically.
+    addToCart({ productId, quantity: 1, productTitle, price });
   };
 
   const handleBuyNow = () => {
-    if (!user) {
-      showError(t("loginToAddToCart"));
-      router.push(ROUTES.AUTH.LOGIN);
-      return;
-    }
     if (isOutOfStock) return;
     if (isAuction) {
-      // Navigate to auction/bid flow — for now same as add to cart
+      // Navigate to auction/bid flow — for now requires auth
+      if (!user) {
+        showError(t("loginToAddToCart"));
+        router.push(ROUTES.AUTH.LOGIN);
+        return;
+      }
       return;
     }
-    addToCart({ productId, quantity: 1 });
+    // useAddToCart routes guests to localStorage automatically.
+    addToCart({ productId, quantity: 1, productTitle, price });
     router.push(ROUTES.USER.CART);
   };
 

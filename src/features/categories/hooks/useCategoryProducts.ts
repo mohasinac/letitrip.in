@@ -61,7 +61,9 @@ export function useCategoryProducts(
   /* ---- Build products query params from category + options ---- */
   const productsParams = useMemo(() => {
     if (!category) return null;
-    const filterParts = ["status==published", `category==${category.id}`];
+    // Products store the category display name in the `category` field (e.g. "Home & Kitchen"),
+    // NOT the Firestore document ID. Use category.name for the Sieve filter.
+    const filterParts = ["status==published", `category==${category.name}`];
     if (minPrice) filterParts.push(`price>=${minPrice}`);
     if (maxPrice) filterParts.push(`price<=${maxPrice}`);
     if (search) filterParts.push(`title_=${search}`);

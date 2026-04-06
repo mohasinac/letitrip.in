@@ -4,12 +4,19 @@ import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { ProductCard } from "@/components";
+import type { ProductListResponse } from "@mohasinac/feat-products";
 import { SectionCarousel } from "./SectionCarousel";
 
-export function FeaturedProductsSection() {
+interface FeaturedProductsSectionProps {
+  initialData?: ProductListResponse;
+}
+
+export function FeaturedProductsSection({
+  initialData,
+}: FeaturedProductsSectionProps) {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
-  const { data, isLoading } = useFeaturedProducts();
+  const { data, isLoading } = useFeaturedProducts({ initialData });
 
   const products = data?.items ?? [];
 

@@ -1,9 +1,11 @@
 import dynamic from "next/dynamic";
 import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { ProductListResponse } from "@mohasinac/feat-products";
 import {
   carouselRepository,
   categoriesRepository,
   reviewRepository,
+  productRepository,
 } from "@/repositories";
 import { HeroCarousel } from "./HeroCarousel";
 import { WelcomeSection } from "./WelcomeSection";
@@ -135,7 +137,7 @@ function firestoreTimestampToDate(val: unknown): Date {
 }
 
 export async function HomepageView() {
-  const [slides, categories, reviews] = await Promise.all([
+  const [slides, categories, reviews, featuredProducts] = await Promise.all([
     carouselRepository.getActiveSlides().catch(() => []),
     categoriesRepository
       .getCategoriesByTier(0)
@@ -154,6 +156,25 @@ export async function HomepageView() {
         })),
       )
       .catch(() => []),
+    // Pre-fetch featured products server-side so client skips the first fetch.
+    productRepository
+      .list({
+        filters: "status==published",
+        sorts: "-createdAt",
+        pageSize: "18",
+      })
+      .then(
+        (r) =>
+          ({
+            items: r.items as unknown as ProductListResponse["items"],
+            total: r.total,
+            page: r.page,
+            pageSize: r.pageSize,
+            totalPages: r.totalPages,
+            hasMore: r.hasMore,
+          }) satisfies ProductListResponse,
+      )
+      .catch(() => undefined),
   ]);
 
   return (
@@ -167,7 +188,7 @@ export async function HomepageView() {
         initialCategories={categories as unknown as CategoryItem[]}
       />
       <TopBrandsSection />
-      <FeaturedProductsSection />
+      <FeaturedProductsSection initialData={featuredProducts} />
       <FeaturedAuctionsSection />
       <FeaturedPreOrdersSection />
       <FeaturedStoresSection />

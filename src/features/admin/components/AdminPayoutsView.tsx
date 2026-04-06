@@ -252,22 +252,19 @@ export function AdminPayoutsView() {
         onClose={handleCloseDrawer}
         title={t("updateStatus")}
         side="right"
-      >
-        {selectedPayout && (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto p-4">
-              <PayoutStatusForm
-                payout={selectedPayout}
-                onChange={setFormState}
-              />
-            </div>
+        footer={
+          selectedPayout ? (
             <DrawerFormFooter
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
               isLoading={updateMutation.isPending}
               submitLabel={t("updatePayout")}
             />
-          </div>
+          ) : undefined
+        }
+      >
+        {selectedPayout && (
+          <PayoutStatusForm payout={selectedPayout} onChange={setFormState} />
         )}
       </SideDrawer>
     </div>

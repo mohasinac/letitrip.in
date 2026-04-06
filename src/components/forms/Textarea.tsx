@@ -63,6 +63,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           className={classNames(
+            "w-full",
             input.base,
             "resize-y min-h-[80px]",
             error ? input.error : "",

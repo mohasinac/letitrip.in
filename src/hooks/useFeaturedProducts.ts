@@ -16,8 +16,13 @@ const MIN_COUNT = 12;
  * Fetches promoted/featured products for the homepage featured section.
  * If fewer than MIN_COUNT promoted products exist, fills the remaining
  * slots with the latest published products (deduped).
+ *
+ * Accepts optional `initialData` for SSR hydration — when provided the
+ * client skips the first fetch (staleTime covers the cache window).
  */
-export function useFeaturedProducts() {
+export function useFeaturedProducts(options?: {
+  initialData?: PaginatedResult;
+}) {
   return useQuery<PaginatedResult>({
     queryKey: ["products", "featured"],
     queryFn: async () => {
@@ -47,6 +52,7 @@ export function useFeaturedProducts() {
         total: merged.length,
       };
     },
+    initialData: options?.initialData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
