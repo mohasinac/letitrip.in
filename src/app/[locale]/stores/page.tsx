@@ -8,6 +8,8 @@ import { storeRepository } from "@/repositories";
 import type { StoreDocument } from "@/db/schema";
 import type { StoreListItem } from "@mohasinac/feat-stores";
 
+export const revalidate = 60;
+
 const { page, flex } = THEME_CONSTANTS;
 
 export async function generateMetadata(): Promise<Metadata> {

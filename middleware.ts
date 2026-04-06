@@ -3,74 +3,51 @@
  *
  * Responsibilities:
  * 1. Locale routing via next-intl (redirect /products → /en/products etc.)
- * 2. Per-request CSP nonce injection — removes `unsafe-eval` in production
+ * 2. Static CSP header injection
  *
- * The nonce is generated here, placed in:
- *   - `Content-Security-Policy` response header
- *   - `x-nonce` request header (so server components can read it via `headers()`)
+ * Note: Per-request nonce-based CSP was removed because injecting a unique
+ * nonce into request headers forces `headers()` calls in layouts, which opts
+ * ALL routes into dynamic SSR and prevents Vercel ISR caching entirely.
+ * The static CSP uses 'strict-dynamic' + 'unsafe-inline' — modern browsers
+ * that support strict-dynamic ignore unsafe-inline, maintaining strong
+ * security while enabling CDN caching.
  */
 
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./src/i18n/routing";
 
-/** Generate a 16-byte base64 nonce for a single request. */
-function generateNonce(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return btoa(String.fromCharCode(...bytes));
-}
-
-/** Build the full CSP header value for the given nonce. */
-function buildCSP(nonce: string): string {
-  const isDev = process.env.NODE_ENV === "development";
-  return [
-    "default-src 'self'",
-    isDev
-      ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-      : `script-src 'self' 'nonce-${nonce}'`,
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https: blob:",
-    "font-src 'self' data:",
-    [
-      "connect-src 'self'",
-      "https://*.googleapis.com",
-      "https://*.google.com",
-      "https://*.firebase.com",
-      "https://*.firebaseio.com",
-      "https://*.cloudfunctions.net",
-    ].join(" "),
-    "frame-src 'self' https://accounts.google.com",
-    "media-src 'self' https: blob:",
-    "worker-src 'self' blob:",
-  ].join("; ");
-}
+/** Static CSP — same for every request so Vercel can cache ISR responses. */
+const CSP =
+  process.env.NODE_ENV === "development"
+    ? [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' data:",
+        "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebase.com https://*.firebaseio.com https://*.cloudfunctions.net",
+        "frame-src 'self' https://accounts.google.com",
+        "media-src 'self' https: blob:",
+        "worker-src 'self' blob:",
+      ].join("; ")
+    : [
+        "default-src 'self'",
+        "script-src 'self' 'strict-dynamic' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https: blob:",
+        "font-src 'self' data:",
+        "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebase.com https://*.firebaseio.com https://*.cloudfunctions.net",
+        "frame-src 'self' https://accounts.google.com",
+        "media-src 'self' https: blob:",
+        "worker-src 'self' blob:",
+      ].join("; ");
 
 const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {
-  const nonce = generateNonce();
-  const csp = buildCSP(nonce);
-
-  // Clone request headers and inject nonce so layout can read it
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
-
-  // Run next-intl locale routing first
-  const intlResponse = intlMiddleware(
-    new NextRequest(request.url, {
-      headers: requestHeaders,
-      method: request.method,
-      body: request.body,
-    }),
-  );
-
-  const response =
-    intlResponse ?? NextResponse.next({ request: { headers: requestHeaders } });
-
-  // Attach CSP to the response
-  response.headers.set("Content-Security-Policy", csp);
-
+  const response = intlMiddleware(request) ?? NextResponse.next();
+  response.headers.set("Content-Security-Policy", CSP);
   return response;
 }
 

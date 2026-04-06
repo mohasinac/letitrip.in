@@ -13,6 +13,8 @@ import { PromotionsView } from "@/features/promotions";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 import { nowMs } from "@/utils";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const { title, description, keywords } = SEO_CONFIG.pages.promotions;
   return {

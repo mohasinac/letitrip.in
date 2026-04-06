@@ -11,6 +11,7 @@ interface Props {
 }
 
 export const dynamicParams = false;
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return Object.keys(FAQ_CATEGORIES).map((category) => ({ category }));

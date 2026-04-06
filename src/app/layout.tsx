@@ -1,8 +1,6 @@
 import "./globals.css";
 import "@/providers.config";
 import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
-import { cookies, headers } from "next/headers";
-import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { organizationJsonLd, searchBoxJsonLd } from "@/lib/seo";
@@ -106,33 +104,20 @@ export const metadata: Metadata = {
  * All providers (ThemeProvider, SessionProvider, NextIntlClientProvider…)
  * live in src/app/[locale]/layout.tsx so they receive the locale param.
  */
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // getLocale() reads the locale set by the next-intl middleware from headers
-  const locale = await getLocale();
-
-  // Read theme cookie set by ThemeContext on toggle — eliminates dark-mode flash
-  const cookieStore = await cookies();
-  const themeCookie = cookieStore.get("theme")?.value;
-  const themeClass = themeCookie === "dark" ? "dark" : "";
-
-  // Read the CSP nonce injected by middleware so inline scripts are allowed
-  const headerStore = await headers();
-  const nonce = headerStore.get("x-nonce") ?? undefined;
-
   return (
     <html
-      lang={locale}
+      lang="en"
       suppressHydrationWarning
-      className={`h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}${themeClass ? ` ${themeClass}` : ""}`}
+      className={`h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}`}
     >
       <head>
         <script
           type="application/ld+json"
-          nonce={nonce}
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationJsonLd()),
@@ -140,25 +125,15 @@ export default async function RootLayout({
         />
         <script
           type="application/ld+json"
-          nonce={nonce}
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(searchBoxJsonLd()),
           }}
         />
         <script
-          nonce={nonce}
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                var m = document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);
-                var theme = (m && m[1]) || localStorage.getItem('theme') ||
-                  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.classList.toggle('dark', theme === 'dark');
-                document.documentElement.setAttribute('data-theme', theme);
-              } catch (e) {}
-            `,
+            __html: `try{var m=document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);var t=(m&&m[1])||localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
           }}
         />
       </head>

@@ -6,6 +6,8 @@ import { SITE_CONFIG } from "@/constants";
 import { ProductsView } from "@/features/products";
 import type { ProductsListResult } from "@/features/products";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("products");
   return {

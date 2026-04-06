@@ -13,6 +13,8 @@ import { SITE_CONFIG } from "@/constants";
 import { CategoriesListView } from "@/features/categories";
 import type { CategoryItem } from "@mohasinac/feat-categories";
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("categories");
   return {
