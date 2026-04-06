@@ -7,7 +7,10 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    "./packages/*/src/**/*.{js,ts,jsx,tsx}",
+    // @mohasinac/* packages are published to npm (no longer local pnpm
+    // workspaces), so Tailwind must scan their dist bundles directly so
+    // dark-mode and other utility classes aren't purged.
+    "./node_modules/@mohasinac/*/dist/index.js",
   ],
   safelist: [
     // Zinc neutrals (light mode)

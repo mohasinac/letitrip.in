@@ -61,7 +61,7 @@ function ArrowButton({
         disabled={disabled}
         aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
         className={[
-          `${flex.noShrink} self-stretch`,
+          `${flex.noShrink} self-stretch !h-auto`,
           THEME_CONSTANTS.carousel.arrow,
           disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
@@ -502,7 +502,16 @@ export function HorizontalScroller<T = unknown>({
       }
 
       if (perViewProp) {
-        const n = resolvePerView(perViewProp, available);
+        let n = resolvePerView(perViewProp, available);
+        // Reduce n until items are at least minItemWidth wide (show fewer, larger items)
+        if (minItemWidth > 0) {
+          while (
+            n > 1 &&
+            Math.floor((available - (n - 1) * gap) / n) < minItemWidth
+          ) {
+            n--;
+          }
+        }
         const computed = Math.floor((available - (n - 1) * gap) / n);
         const w =
           minItemWidth > 0 ? Math.max(minItemWidth, computed) : computed;
@@ -589,6 +598,7 @@ export function HorizontalScroller<T = unknown>({
 
   const innerClassName = [
     overflow.xAuto,
+    "touch-pan-x",
     isGrid ? "" : "flex items-stretch",
     snapToItems ? "snap-x snap-mandatory" : "",
     showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
@@ -609,14 +619,16 @@ export function HorizontalScroller<T = unknown>({
       role="region"
       aria-label="Scrollable content"
     >
-      {/* ── Left arrow ─────────────────────────────────────────────────── */}
+      {/* ── Left arrow — hidden on mobile, visible on sm+ ── */}
       {showArrows && (
-        <ArrowButton
-          direction="left"
-          onClick={scrollLeft}
-          size={arrowSize}
-          disabled={!canScrollLeft}
-        />
+        <div className="hidden sm:flex self-stretch">
+          <ArrowButton
+            direction="left"
+            onClick={scrollLeft}
+            size={arrowSize}
+            disabled={!canScrollLeft}
+          />
+        </div>
       )}
 
       {/* ── Scroll viewport ────────────────────────────────────────────── */}
@@ -692,14 +704,16 @@ export function HorizontalScroller<T = unknown>({
         )}
       </div>
 
-      {/* ── Right arrow ────────────────────────────────────────────────── */}
+      {/* ── Right arrow — hidden on mobile, visible on sm+ ── */}
       {showArrows && (
-        <ArrowButton
-          direction="right"
-          onClick={scrollRight}
-          size={arrowSize}
-          disabled={!canScrollRight}
-        />
+        <div className="hidden sm:flex self-stretch">
+          <ArrowButton
+            direction="right"
+            onClick={scrollRight}
+            size={arrowSize}
+            disabled={!canScrollRight}
+          />
+        </div>
       )}
     </div>
   );

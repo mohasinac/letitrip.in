@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <ProtectedRoute requireAuth requireRole="admin">
-      <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-slate-950">
+      <div className="flex h-full w-full overflow-hidden bg-zinc-50 dark:bg-slate-950">
         <AdminSidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}

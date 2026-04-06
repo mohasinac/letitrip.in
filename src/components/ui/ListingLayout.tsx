@@ -45,6 +45,7 @@
 
 import { ReactNode, useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import { Aside, Button, BulkActionBar, Span, Text } from "@/components";
 import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
@@ -152,6 +153,13 @@ export function ListingLayout({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
+  // Dashboard layouts (admin / seller) scroll inside an overflow-y-auto container.
+  // Sticky offsets are relative to that scroll container so top-0 is correct.
+  // Public pages have a sticky TitleBar+Navbar above, requiring top-14/top-[120px].
+  const pathname = usePathname();
+  const isDashboard =
+    pathname.startsWith("/admin") || pathname.startsWith("/seller");
+
   // Register bulk actions with the mobile BottomActions bar (md:hidden sticky bar).
   // Feature components that already call useBottomActions for bulk will
   // overwrite this registration (parent effects run after child effects in React).
@@ -203,109 +211,152 @@ export function ListingLayout({
   };
 
   return (
-    <div className={`w-full ${spacing.stack} ${className}`}>
+    <div
+      className={[
+        "w-full",
+        spacing.stack,
+        // On mobile the pagination sits in a fixed bar (h-10). Add bottom
+        // padding so the last row of the table/grid is never hidden behind it.
+        toolbarPaginationSlot ? "pb-12 md:pb-0" : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {/* ─────────────────────── Header ─────────────────────── */}
       {headerSlot}
 
       {/* ─────────────────────── Status tabs ───────────────── */}
       {statusTabsSlot}
 
-      {/* ─────────────────── Sticky toolbar header ──────────── */}
+      {/* ─────────────────── Sticky toolbar ─────────────── */}
       <div
         className={[
           "sticky z-20 py-2",
-          "top-14 md:top-[120px]",
+          isDashboard ? "top-0" : "top-14 md:top-[120px]",
           THEME_CONSTANTS.layout.titleBarBg,
         ].join(" ")}
       >
-        {/* Two-row layout on mobile; collapses to single row on sm+ */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          {/* Row 1 on mobile / left group on sm+: filter trigger + search */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* Filter trigger */}
+        {/* ── Desktop (md+): single flex row ─────────────────────────────── */}
+        <div className="hidden md:flex items-center gap-2 min-w-0">
+          {/* Filter sidebar toggle — visible at lg+ (sidebar appears at lg) */}
+          {hasFilter && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
+              aria-expanded={sidebarOpen}
+              className="hidden lg:flex flex-shrink-0 items-center gap-1.5"
+            >
+              <FilterIcon />
+              {t("title")}
+              {filterActiveCount > 0 && (
+                <Span
+                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                  aria-label={t("activeCount", { count: filterActiveCount })}
+                >
+                  {filterActiveCount}
+                </Span>
+              )}
+              <svg
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  sidebarOpen ? "rotate-90" : "-rotate-90"
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Button>
+          )}
+
+          {/* Search — grows to fill available space */}
+          {searchSlot && <div className="flex-1 min-w-0">{searchSlot}</div>}
+
+          {/* Sort + view + actions — shrink-0 so they never compress */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {sortSlot}
+            {viewToggleSlot}
+            {actionsSlot}
+          </div>
+
+          {/* Pagination — pushed to far right with a subtle divider */}
+          {toolbarPaginationSlot && (
+            <div
+              className={`ml-auto flex-shrink-0 pl-3 border-l ${themed.border}`}
+            >
+              {toolbarPaginationSlot}
+            </div>
+          )}
+        </div>
+
+        {/* ── Mobile (< md): two stacked rows ────────────────────────────── */}
+        <div className="flex flex-col gap-2 md:hidden">
+          {/* Row 1: filter trigger + search */}
+          <div className="flex items-center gap-2">
             {hasFilter && (
-              <>
-                {/* Mobile: opens fullscreen overlay */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setMobileFilterOpen(true)}
-                  aria-label={t("title")}
-                  className="lg:hidden flex-shrink-0 flex items-center gap-1.5"
-                >
-                  <FilterIcon />
-                  {t("title")}
-                  {filterActiveCount > 0 && (
-                    <Span
-                      className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-                      aria-label={t("activeCount", {
-                        count: filterActiveCount,
-                      })}
-                    >
-                      {filterActiveCount}
-                    </Span>
-                  )}
-                </Button>
-
-                {/* Desktop: collapses/expands the sidebar */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSidebarOpen((prev) => !prev)}
-                  aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
-                  aria-expanded={sidebarOpen}
-                  className="hidden lg:flex flex-shrink-0 items-center gap-1.5"
-                >
-                  <FilterIcon />
-                  {t("title")}
-                  {filterActiveCount > 0 && (
-                    <Span
-                      className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-                      aria-label={t("activeCount", {
-                        count: filterActiveCount,
-                      })}
-                    >
-                      {filterActiveCount}
-                    </Span>
-                  )}
-                  {/* Chevron */}
-                  <svg
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${sidebarOpen ? "rotate-90" : "-rotate-90"}`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                    aria-hidden="true"
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMobileFilterOpen(true)}
+                aria-label={t("title")}
+                className="flex-shrink-0 flex items-center gap-1.5"
+              >
+                <FilterIcon />
+                {t("title")}
+                {filterActiveCount > 0 && (
+                  <Span
+                    className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                    aria-label={t("activeCount", { count: filterActiveCount })}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </Button>
-              </>
+                    {filterActiveCount}
+                  </Span>
+                )}
+              </Button>
             )}
-
-            {/* Search — grows to fill remaining space */}
             {searchSlot && <div className="flex-1 min-w-0">{searchSlot}</div>}
           </div>
 
-          {/* Row 2 on mobile / right group on sm+: sort · view toggle · actions · toolbar pagination */}
-          <div className="flex items-center gap-2 flex-shrink-0 justify-between sm:justify-start">
-            <div className="flex items-center gap-2">
-              {sortSlot}
-              {viewToggleSlot}
-              {actionsSlot}
+          {/* Row 2: sort + view + actions — scrollable so nothing squishes */}
+          {(sortSlot || viewToggleSlot || actionsSlot) && (
+            <div
+              className={[
+                "flex items-stretch min-h-[44px] gap-2 overflow-x-auto",
+                THEME_CONSTANTS.utilities.scrollbarThinX,
+              ].join(" ")}
+            >
+              <div className="flex items-center gap-2 flex-shrink-0 pb-px">
+                {sortSlot}
+                {viewToggleSlot}
+                {actionsSlot}
+              </div>
             </div>
-            {/* Toolbar pagination — desktop only; mobile gets the sticky bottom bar below */}
-            {toolbarPaginationSlot && (
-              <div className="hidden md:flex">{toolbarPaginationSlot}</div>
-            )}
-          </div>
+          )}
         </div>
+
+        {/* ── Bulk action bar — sticky inside toolbar on desktop ──────────── */}
+        {/* Mobile bulk actions are handled by useBottomActions → BottomActions bar */}
+        {selectedCount > 0 && (
+          <div
+            className={`hidden md:block pt-2 mt-2 border-t ${themed.border}`}
+          >
+            <BulkActionBar
+              selectedCount={selectedCount}
+              onClearSelection={onClearSelection}
+              actions={bulkActionItems}
+            />
+          </div>
+        )}
       </div>
 
       {/* ─────────────── Sidebar + Content area ─────────────── */}
@@ -316,7 +367,7 @@ export function ListingLayout({
             aria-label={panelTitle}
             className={[
               "hidden lg:block flex-shrink-0 self-start",
-              "sticky top-[176px]",
+              isDashboard ? "sticky top-16" : "sticky top-[176px]",
               "transition-all duration-200 ease-in-out overflow-hidden",
               sidebarOpen
                 ? "w-60 xl:w-64 2xl:w-72 opacity-100"
@@ -375,17 +426,6 @@ export function ListingLayout({
 
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Bulk action bar — desktop inline only; mobile uses BottomActions sticky bar */}
-          {selectedCount > 0 && (
-            <div className="hidden md:block">
-              <BulkActionBar
-                selectedCount={selectedCount}
-                onClearSelection={onClearSelection}
-                actions={bulkActionItems}
-              />
-            </div>
-          )}
-
           {/* Active filter chips */}
           {activeFiltersSlot}
 
@@ -409,11 +449,12 @@ export function ListingLayout({
           aria-label="Pagination"
           className={[
             "fixed left-0 right-0 md:hidden",
-            "bottom-14",
+            isDashboard ? "bottom-0" : "bottom-14",
             "z-[39]",
             THEME_CONSTANTS.layout.bottomNavBg,
             "shadow-[0_-2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_8px_rgba(0,0,0,0.20)]",
-            "h-10 flex items-center justify-center px-3 overflow-x-auto",
+            "h-10 flex items-center justify-center px-3 overflow-x-auto pb-px",
+            THEME_CONSTANTS.utilities.scrollbarThinX,
           ].join(" ")}
         >
           {toolbarPaginationSlot}

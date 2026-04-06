@@ -26,7 +26,7 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
 
   return (
     <ProtectedRoute requireAuth requireRole={["seller", "admin"]}>
-      <div className="flex h-screen overflow-hidden bg-white dark:bg-slate-950">
+      <div className="flex h-full w-full overflow-hidden bg-white dark:bg-slate-950">
         <SellerSidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}

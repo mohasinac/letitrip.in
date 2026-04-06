@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Button, MediaImage, Span, Text } from "@/components";
+import { BaseListingCard, Button, MediaImage, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -54,10 +54,8 @@ export function SellerProductCard({
   const revenue = sold * product.price;
 
   return (
-    <div
-      className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full flex flex-col transition-all duration-300 hover:shadow-md`}
-    >
-      <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
+    <BaseListingCard>
+      <BaseListingCard.Hero aspect="square">
         <MediaImage
           src={product.video?.thumbnailUrl || product.mainImage || undefined}
           alt={product.title}
@@ -80,8 +78,8 @@ export function SellerProductCard({
         >
           {product.status.replace(/_/g, " ")}
         </Span>
-      </div>
-      <div className="p-3 space-y-2 flex-1 flex flex-col">
+      </BaseListingCard.Hero>
+      <BaseListingCard.Info className="gap-2">
         <Text size="sm" weight="semibold" className="truncate">
           {product.title}
         </Text>
@@ -117,7 +115,7 @@ export function SellerProductCard({
             {tActions("delete")}
           </Button>
         </div>
-      </div>
-    </div>
+      </BaseListingCard.Info>
+    </BaseListingCard>
   );
 }

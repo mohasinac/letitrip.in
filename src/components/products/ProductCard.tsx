@@ -4,7 +4,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, ShoppingCart, Zap, Package, Gavel } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { MediaImage, Span, Text, TextLink, Button } from "@/components";
+import {
+  BaseListingCard,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+  Button,
+} from "@/components";
 import {
   ROUTES,
   THEME_CONSTANTS,
@@ -144,12 +151,16 @@ export function ProductCard({
   }, [router, productHref]);
 
   return (
-    <div
-      className={`h-full ${themed.bgPrimary} rounded-2xl overflow-hidden border transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-primary-500 dark:ring-primary-400 border-primary-300 dark:border-primary-700" : `border-zinc-100 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700`} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 group ${className}`}
+    <BaseListingCard
+      isSelected={isSelected}
+      isDisabled={isOutOfStock}
+      variant={variant}
+      className={className}
     >
       {/* ── IMAGE SECTION ── */}
-      <div
-        className={`relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-[4/5] w-full"}`}
+      <BaseListingCard.Hero
+        aspect="4/5"
+        variant={variant}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -200,39 +211,11 @@ export function ProductCard({
 
         {/* Checkbox — top-right */}
         {selectable && (
-          <Button
-            variant="ghost"
-            onClick={handleSelect}
-            aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-8 h-8 !min-h-0 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-primary-500 dark:hover:border-primary-400 transition-colors z-10 p-0`}
-          >
-            {isSelected ? (
-              <Span
-                variant="inherit"
-                className={`w-4 h-4 rounded bg-primary-600 ${flex.center}`}
-              >
-                <svg
-                  viewBox="0 0 10 8"
-                  className="w-2.5 h-2 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M1 4l2.5 2.5L9 1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Span>
-            ) : (
-              <Span
-                variant="inherit"
-                className="w-4 h-4 rounded border-2 border-zinc-400 dark:border-slate-500 block"
-              />
-            )}
-          </Button>
+          <BaseListingCard.Checkbox
+            selected={isSelected}
+            onSelect={handleSelect}
+            label={isSelected ? t("deselectItem") : t("selectItem")}
+          />
         )}
 
         {/* Status badges — below featured star */}
@@ -275,12 +258,10 @@ export function ProductCard({
             {product.isAuction ? t("auction") : t("typeBadge")}
           </Span>
         </div>
-      </div>
+      </BaseListingCard.Hero>
 
       {/* ── INFO SECTION ── */}
-      <div
-        className={`flex-1 flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3" : "p-3"}`}
-      >
+      <BaseListingCard.Info variant={variant}>
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
           <TextLink
@@ -298,7 +279,7 @@ export function ProductCard({
                 ? tWishlist("removeFromWishlist")
                 : tWishlist("addToWishlist")
             }
-            className={`flex-shrink-0 -mt-0.5 p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-200 disabled:opacity-50 ${inWishlist ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+            className={`flex-shrink-0 -mt-0.5 p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-200 disabled:opacity-50 ${inWishlist ? "opacity-100" : "sm:opacity-0 sm:group-hover:opacity-100"}`}
           >
             <Heart
               className={`w-4 h-4 transition-colors ${inWishlist ? "fill-rose-500 text-rose-500" : "text-zinc-400 dark:text-zinc-500"}`}
@@ -379,7 +360,7 @@ export function ProductCard({
             </>
           )}
         </div>
-      </div>
-    </div>
+      </BaseListingCard.Info>
+    </BaseListingCard>
   );
 }

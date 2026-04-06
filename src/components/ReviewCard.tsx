@@ -1,8 +1,9 @@
 /**
  * ReviewCard
  *
- * Displays a review with reviewer avatar, name (profile link), verified badge,
- * rating star badge, comment, item link, and optional images.
+ * Same visual dimensions as ProductCard: aspect-[4/5] hero area + info strip.
+ * Displays reviewer avatar, name (profile link), verified badge, rating stars,
+ * comment, item link, and optional images.
  */
 
 "use client";
@@ -10,10 +11,11 @@
 import { useState } from "react";
 import { Star, BadgeCheck, Quote } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
+  BaseListingCard,
   Button,
-  Card,
   Caption,
   MediaImage,
   MediaLightbox,
@@ -46,6 +48,7 @@ interface ReviewCardProps {
 
 export function ReviewCard({ review, className = "" }: ReviewCardProps) {
   const t = useTranslations("reviews");
+  const router = useRouter();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -65,21 +68,30 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
 
   return (
     <>
-      <Card
-        className={`h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${className}`}
-      >
-        <div className="flex flex-col flex-1 p-4 gap-3">
-          {/* Quote icon */}
-          <Quote className="h-8 w-8 text-primary-500/10" aria-hidden="true" />
+      <BaseListingCard className={className}>
+        {/* ── HERO SECTION (matches ProductCard image aspect ratio) ── */}
+        <BaseListingCard.Hero
+          aspect="4/5"
+          className="bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-primary-950 dark:via-slate-900 dark:to-primary-900/40 flex flex-col items-center justify-center gap-4 p-6"
+        >
+          {/* Decorative quote marks */}
+          <Quote
+            className="absolute top-4 left-4 h-14 w-14 text-primary-500/10"
+            aria-hidden="true"
+          />
+          <Quote
+            className="absolute bottom-14 right-3 h-10 w-10 text-primary-500/5 rotate-180"
+            aria-hidden="true"
+          />
 
-          {/* Star rating row */}
-          <div className="flex gap-0.5">
+          {/* Star rating */}
+          <div className="flex gap-1.5 z-10">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
-                className={`w-4 h-4 ${
+                className={`w-6 h-6 ${
                   star <= review.rating
-                    ? "fill-amber-400 text-amber-400"
+                    ? "fill-amber-400 text-amber-400 drop-shadow-sm"
                     : "text-zinc-200 dark:text-slate-700"
                 }`}
                 aria-hidden="true"
@@ -87,27 +99,39 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
             ))}
           </div>
 
-          {/* ── Review comment ── */}
-          <Text size="sm" variant="secondary" className="line-clamp-4 flex-1">
-            {review.comment || review.title}
+          {/* Review title */}
+          {review.title && (
+            <Text className="text-center font-semibold text-primary-700 dark:text-primary-300 line-clamp-2 leading-snug z-10">
+              {review.title}
+            </Text>
+          )}
+
+          {/* Comment body */}
+          <Text
+            size="sm"
+            variant="secondary"
+            className="text-center line-clamp-5 leading-relaxed z-10"
+          >
+            {review.comment ?? review.title ?? ""}
           </Text>
 
-          {/* ── Item link ── */}
-          <TextLink
-            href={productHref}
-            className={`text-xs ${themed.textSecondary} hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1`}
-          >
-            <Span
-              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[50%] hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors`}
-            >
-              {review.productTitle || t("viewItem")}
-            </Span>
-          </TextLink>
+          {/* Verified badge — top right */}
+          {review.verified && (
+            <div className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-full px-2 py-0.5 z-10">
+              <BadgeCheck
+                className="w-3 h-3 text-emerald-500"
+                aria-hidden="true"
+              />
+              <Caption className="text-emerald-600 dark:text-emerald-400 text-[11px]">
+                {t("verified")}
+              </Caption>
+            </div>
+          )}
 
-          {/* ── Images ── */}
+          {/* Review images — pinned to bottom */}
           {review.images && review.images.length > 0 && (
-            <div className={`${flex.rowCenter} gap-2`}>
-              {review.images.slice(0, 2).map((img, i) => (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {review.images.slice(0, 3).map((img, i) => (
                 <Button
                   key={i}
                   onClick={() => {
@@ -115,7 +139,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                     setLightboxOpen(true);
                   }}
                   aria-label={t("reviewImageAlt", { index: i + 1 })}
-                  className="relative w-14 h-14 p-0 min-h-0 rounded-lg overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 cursor-zoom-in border-0 shadow-none"
+                  className="relative w-10 h-10 p-0 min-h-0 rounded-lg overflow-hidden bg-zinc-200 dark:bg-slate-700 flex-shrink-0 border-0 shadow-sm cursor-zoom-in"
                 >
                   <MediaImage
                     src={img}
@@ -124,32 +148,29 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                   />
                 </Button>
               ))}
-              {review.images.length > 2 && (
+              {review.images.length > 3 && (
                 <Button
                   onClick={() => {
-                    setLightboxIndex(2);
+                    setLightboxIndex(3);
                     setLightboxOpen(true);
                   }}
                   aria-label={t("moreImages", {
-                    count: review.images.length - 2,
+                    count: review.images.length - 3,
                   })}
-                  className={`${flex.center} w-14 h-14 p-0 min-h-0 rounded-lg bg-zinc-100 dark:bg-slate-800 text-xs ${themed.textSecondary} flex-shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-slate-700`}
+                  className={`${flex.center} w-10 h-10 p-0 min-h-0 rounded-lg bg-zinc-200 dark:bg-slate-700 border-0 shadow-sm hover:bg-zinc-300 dark:hover:bg-slate-600`}
                 >
-                  <Caption>
-                    {t("moreImages", { count: review.images.length - 2 })}
-                  </Caption>
+                  <Caption>+{review.images.length - 3}</Caption>
                 </Button>
               )}
             </div>
           )}
+        </BaseListingCard.Hero>
 
-          {/* Divider */}
-          <div className="bg-primary-500/30 my-1 h-px w-full" />
-
-          {/* ── Reviewer row ── */}
-          <div className={`${flex.rowCenter} gap-3`}>
-            {/* Avatar */}
-            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-900/30 flex-shrink-0">
+        {/* ── INFO SECTION ── */}
+        <BaseListingCard.Info>
+          {/* Reviewer row */}
+          <div className={`${flex.rowCenter} gap-2`}>
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-900/30 flex-shrink-0">
               {review.userAvatar ? (
                 <MediaImage
                   src={review.userAvatar}
@@ -158,36 +179,43 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                 />
               ) : (
                 <div className={`${flex.center} w-full h-full`}>
-                  <Span className="text-sm font-bold text-primary-500">
+                  <Span className="text-xs font-bold text-primary-500">
                     {generateInitials(safeUserName || "A")}
                   </Span>
                 </div>
               )}
             </div>
-
-            {/* Name + verified */}
-            <div className="flex flex-col min-w-0">
-              <TextLink
-                href={userHref}
-                className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 truncate transition-colors leading-snug"
-              >
-                {safeUserName || t("anonymous")}
-              </TextLink>
-              {review.verified && (
-                <div className={`${flex.rowCenter} gap-1 mt-0.5`}>
-                  <BadgeCheck
-                    className="w-3 h-3 text-emerald-500"
-                    aria-hidden="true"
-                  />
-                  <Caption className="text-emerald-600 dark:text-emerald-400 text-[11px]">
-                    {t("verified")}
-                  </Caption>
-                </div>
-              )}
-            </div>
+            <TextLink
+              href={userHref}
+              className="flex-1 min-w-0 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 truncate transition-colors leading-snug"
+            >
+              {safeUserName || t("anonymous")}
+            </TextLink>
           </div>
-        </div>
-      </Card>
+
+          {/* Product link */}
+          <TextLink
+            href={productHref}
+            className={`text-xs ${themed.textSecondary} hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex`}
+          >
+            <Span className="inline-block px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-full hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">
+              {review.productTitle || t("viewItem")}
+            </Span>
+          </TextLink>
+
+          {/* CTA button */}
+          <div className="mt-auto">
+            <Button
+              variant="primary"
+              size="sm"
+              className="w-full text-xs gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
+              onClick={() => router.push(productHref)}
+            >
+              {t("viewItem")}
+            </Button>
+          </div>
+        </BaseListingCard.Info>
+      </BaseListingCard>
       <MediaLightbox
         items={lightboxItems}
         initialIndex={lightboxIndex}

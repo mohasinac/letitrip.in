@@ -102,6 +102,14 @@ export interface SectionCarouselProps<T = unknown> {
    * Default: false
    */
   showPeek?: boolean;
+
+  /**
+   * Minimum item width in px. When the computed per-view item width would fall
+   * below this value, the number of visible items is reduced so each item is
+   * at least this wide — preventing squished cards on small screens.
+   * Default: 220
+   */
+  minItemWidth?: number;
 }
 
 // ─── Skeleton ───────────────────────────────────────────────────────────────
@@ -145,6 +153,7 @@ export function SectionCarousel<T = unknown>({
   skeletonCount = 4,
   lightText,
   showPeek = false,
+  minItemWidth = 220,
 }: SectionCarouselProps<T>) {
   const tActions = useTranslations("actions");
   const hasBg = Boolean(backgroundImage);
@@ -271,6 +280,7 @@ export function SectionCarousel<T = unknown>({
               showScrollbar
               showFadeEdges={false}
               snapToItems
+              minItemWidth={minItemWidth}
             />
           )}
         </div>

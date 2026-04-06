@@ -4,7 +4,7 @@ import { Star, ShoppingBag, BadgeCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
-  Card,
+  BaseListingCard,
   Heading,
   MediaImage,
   Text,
@@ -37,13 +37,12 @@ export function StoreCard({
 
   return (
     <TextLink href={href} className="group block focus:outline-none">
-      <Card
-        className={`overflow-hidden h-full flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group-focus-visible:ring-2 group-focus-visible:ring-primary-500${
-          selected ? " ring-2 ring-primary-500" : ""
-        }`}
-      >
+      <BaseListingCard isSelected={selected}>
         {/* ── Banner ── */}
-        <div className="relative aspect-[2/1] overflow-hidden bg-gradient-to-br from-primary-400 via-cobalt-500 to-secondary-400 flex-shrink-0">
+        <BaseListingCard.Hero
+          aspect="2/1"
+          className="bg-gradient-to-br from-primary-400 via-cobalt-500 to-secondary-400"
+        >
           {store.storeBannerURL && (
             <MediaImage src={store.storeBannerURL} alt="" size="card" />
           )}
@@ -53,40 +52,16 @@ export function StoreCard({
 
           {/* Checkbox — top left */}
           {selectable && (
-            <div
-              className="absolute top-2 left-2 z-10"
-              onClick={(e) => {
+            <BaseListingCard.Checkbox
+              selected={selected}
+              onSelect={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onSelect?.(store.ownerId, !selected);
               }}
-            >
-              <div
-                className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
-                  selected
-                    ? "bg-primary border-primary"
-                    : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
-                }`}
-                aria-label={selected ? `Deselect ${name}` : `Select ${name}`}
-              >
-                {selected && (
-                  <svg
-                    className="absolute inset-0 m-auto w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-              </div>
-            </div>
+              label={selected ? `Deselect ${name}` : `Select ${name}`}
+              position="top-2 left-2"
+            />
           )}
 
           {/* Category badge — top right */}
@@ -140,10 +115,10 @@ export function StoreCard({
               </div>
             </div>
           </div>
-        </div>
+        </BaseListingCard.Hero>
 
         {/* ── Content ── */}
-        <div className="flex flex-col flex-1 items-center text-center px-3 pt-9 pb-4 gap-1">
+        <BaseListingCard.Info className="items-center text-center pt-9 pb-4">
           {/* Name */}
           <Heading
             level={3}
@@ -185,8 +160,8 @@ export function StoreCard({
                 </div>
               )}
           </div>
-        </div>
-      </Card>
+        </BaseListingCard.Info>
+      </BaseListingCard>
     </TextLink>
   );
 }

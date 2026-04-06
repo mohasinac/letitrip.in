@@ -117,7 +117,36 @@ export default function LayoutClient({
   };
 
   if (isAdminRoute) {
-    return <>{children}</>;
+    return (
+      <div className="flex flex-col h-screen w-full overflow-hidden">
+        <div className={`shrink-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}>
+          <TitleBar
+            onToggleSidebar={() => {}}
+            sidebarOpen={false}
+            onSearchToggle={() => setSearchOpen(!searchOpen)}
+            searchOpen={searchOpen}
+            isDark={isDark}
+            onToggleTheme={toggleTheme}
+          />
+          <MainNavbar
+            hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems}
+          />
+          <Search
+            isOpen={searchOpen}
+            onOpen={() => setSearchOpen(true)}
+            onClose={() => setSearchOpen(false)}
+            onSearch={(query) => {
+              setSearchOpen(false);
+              router.push(
+                `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
+              );
+            }}
+          />
+        </div>
+        <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
+        <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
+      </div>
+    );
   }
 
   return (

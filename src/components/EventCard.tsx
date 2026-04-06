@@ -8,7 +8,14 @@ import {
   MessageSquare,
   Tag,
 } from "lucide-react";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  BaseListingCard,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatDate } from "@/utils";
 import type { EventType, EventItem } from "@mohasinac/feat-events";
@@ -74,13 +81,9 @@ export function EventCard({
     : "";
 
   return (
-    <Card
-      className={`group h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300${
-        selected ? " ring-2 ring-primary-500" : ""
-      }`}
-    >
+    <BaseListingCard isSelected={selected}>
       {/* ── Image area ── */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
+      <BaseListingCard.Hero aspect="4/3">
         <TextLink
           href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
           className={`${position.fill} block z-0`}
@@ -106,42 +109,18 @@ export function EventCard({
 
         {/* Checkbox — top left */}
         {selectable && (
-          <div
-            className="absolute top-2 left-2 z-10"
-            onClick={(e) => {
+          <BaseListingCard.Checkbox
+            selected={!!selected}
+            onSelect={(e) => {
               e.preventDefault();
               e.stopPropagation();
               onSelect?.(event.id, !selected);
             }}
-          >
-            <div
-              className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
-                selected
-                  ? "bg-primary border-primary"
-                  : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
-              }`}
-              aria-label={
-                selected ? `Deselect ${event.title}` : `Select ${event.title}`
-              }
-            >
-              {selected && (
-                <svg
-                  className="absolute inset-0 m-auto w-3 h-3 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-          </div>
+            label={
+              selected ? `Deselect ${event.title}` : `Select ${event.title}`
+            }
+            position="top-2 left-2"
+          />
         )}
 
         {/* Type / category badge */}
@@ -201,11 +180,11 @@ export function EventCard({
             </Span>
           </div>
         )}
-      </div>
+      </BaseListingCard.Hero>
 
       {/* ── Content (standard variant only) ── */}
       {variant === "standard" && (
-        <div className="flex flex-col flex-1 p-4 gap-2">
+        <BaseListingCard.Info className="p-4">
           {/* Event title */}
           <TextLink href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}>
             <Heading
@@ -231,8 +210,8 @@ export function EventCard({
               {t("visitEvent")}
             </TextLink>
           </div>
-        </div>
+        </BaseListingCard.Info>
       )}
-    </Card>
+    </BaseListingCard>
   );
 }

@@ -9,7 +9,14 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  BaseListingCard,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import type { BlogPost, BlogPostCategory } from "@mohasinac/feat-blog";
@@ -61,14 +68,11 @@ export function BlogCard({
       href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`}
       className="block group/card focus:outline-none"
     >
-      <Card
-        className={`h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300${
-          selected ? " ring-2 ring-primary-500" : ""
-        }`}
-      >
+      <BaseListingCard isSelected={selected}>
         {/* ── Image area ── */}
-        <div
-          className={`group/img relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "overlay" ? "aspect-video" : "aspect-[4/3]"}`}
+        <BaseListingCard.Hero
+          aspect={variant === "overlay" ? "4/3" : "4/3"}
+          className="group/img"
         >
           {post.coverImage ? (
             <MediaImage
@@ -85,42 +89,18 @@ export function BlogCard({
 
           {/* Checkbox — top left */}
           {selectable && (
-            <div
-              className="absolute top-2 left-2 z-10"
-              onClick={(e) => {
+            <BaseListingCard.Checkbox
+              selected={selected}
+              onSelect={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onSelect?.(post.id, !selected);
               }}
-            >
-              <div
-                className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
-                  selected
-                    ? "bg-primary border-primary"
-                    : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
-                }`}
-                aria-label={
-                  selected ? `Deselect ${post.title}` : `Select ${post.title}`
-                }
-              >
-                {selected && (
-                  <svg
-                    className="absolute inset-0 m-auto w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-              </div>
-            </div>
+              label={
+                selected ? `Deselect ${post.title}` : `Select ${post.title}`
+              }
+              position="top-2 left-2"
+            />
           )}
 
           {/* Featured star — top right */}
@@ -178,11 +158,11 @@ export function BlogCard({
               </Heading>
             </div>
           )}
-        </div>
+        </BaseListingCard.Hero>
 
         {/* ── Content (standard variant only) ── */}
         {variant === "standard" && (
-          <div className="flex flex-col flex-1 p-4 gap-2">
+          <BaseListingCard.Info className="p-4">
             <Heading
               level={3}
               className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 group-hover/img:text-primary-600 dark:group-hover/img:text-primary-400 transition-colors`}
@@ -218,9 +198,9 @@ export function BlogCard({
             >
               {t("continueReading")}
             </div>
-          </div>
+          </BaseListingCard.Info>
         )}
-      </Card>
+      </BaseListingCard>
     </TextLink>
   );
 }

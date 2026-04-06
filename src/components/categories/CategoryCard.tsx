@@ -12,7 +12,14 @@ import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CategoryItem } from "@mohasinac/feat-categories";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  BaseListingCard,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -185,13 +192,9 @@ export function CategoryCard({
       href={href}
       className={`block group/card focus:outline-none ${className}`}
     >
-      <Card
-        className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
-          selected ? " ring-2 ring-primary-500" : ""
-        }`}
-      >
+      <BaseListingCard isSelected={selected}>
         {/* ── Image area ── */}
-        <div className="group/img relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
+        <BaseListingCard.Hero aspect="4/3" className="group/img">
           {display?.coverImage ? (
             <MediaImage
               src={display.coverImage}
@@ -221,40 +224,16 @@ export function CategoryCard({
 
           {/* Checkbox — card variant top left */}
           {selectable && (
-            <div
-              className="absolute top-2 left-2 z-10"
-              onClick={(e) => {
+            <BaseListingCard.Checkbox
+              selected={selected}
+              onSelect={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onSelect?.(category.id, !selected);
               }}
-            >
-              <div
-                className={`w-6 h-6 rounded-md shadow-md ${flex.center} relative border-2 transition-colors cursor-pointer ${
-                  selected
-                    ? "bg-primary border-primary"
-                    : "bg-white/95 dark:bg-slate-800/95 border-zinc-500 dark:border-slate-400 hover:border-primary"
-                }`}
-                aria-label={selected ? `Deselect ${name}` : `Select ${name}`}
-              >
-                {selected && (
-                  <svg
-                    className="absolute inset-0 m-auto w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-              </div>
-            </div>
+              label={selected ? `Deselect ${name}` : `Select ${name}`}
+              position="top-2 left-2"
+            />
           )}
 
           {/* Featured star — top right */}
@@ -286,10 +265,10 @@ export function CategoryCard({
               {isBrand ? t("brandBadge") : t("categoryBadge")}
             </Span>
           </div>
-        </div>
+        </BaseListingCard.Hero>
 
         {/* ── Content ── */}
-        <div className="flex flex-col flex-1 p-4 gap-1">
+        <BaseListingCard.Info className="p-4 gap-1">
           <Heading
             level={3}
             className={`text-base font-semibold ${themed.textPrimary} line-clamp-1 group-hover/img:text-primary-600 dark:group-hover/img:text-primary-400 transition-colors`}
@@ -310,8 +289,8 @@ export function CategoryCard({
               {t("view")}
             </Span>
           </div>
-        </div>
-      </Card>
+        </BaseListingCard.Info>
+      </BaseListingCard>
     </TextLink>
   );
 }

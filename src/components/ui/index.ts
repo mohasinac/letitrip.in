@@ -11,6 +11,7 @@
 
 export { default as Button } from "./Button";
 export { default as Card, CardHeader, CardBody, CardFooter } from "./Card";
+export { BaseListingCard } from "./BaseListingCard";
 export { default as Badge } from "./Badge";
 export { default as Spinner } from "./Spinner";
 export { default as Divider } from "./Divider";

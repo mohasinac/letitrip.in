@@ -27,7 +27,7 @@ export default function UserLayout({ children }: UserLayoutProps) {
 
   return (
     <ProtectedRoute requireAuth>
-      <div className="flex min-h-screen bg-zinc-50 dark:bg-slate-900">
+      <div className="flex h-full w-full bg-zinc-50 dark:bg-slate-900">
         <UserSidebar
           mobileOpen={mobileOpen}
           onMobileClose={() => setMobileOpen(false)}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, CalendarCheck, ShoppingCart, Clock } from "lucide-react";
 import {
+  BaseListingCard,
   Caption,
   MediaImage,
   Span,
@@ -141,12 +142,16 @@ export function PreOrderCard({
   }, [router, preOrderHref]);
 
   return (
-    <div
-      className={`${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isSoldOut ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-purple-500 dark:ring-purple-400" : ""} ${className}`}
+    <BaseListingCard
+      isSelected={isSelected}
+      isDisabled={isSoldOut}
+      variant={variant}
+      className={className}
     >
       {/* ── IMAGE SECTION ── */}
-      <div
-        className={`relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-square w-full"}`}
+      <BaseListingCard.Hero
+        aspect="square"
+        variant={variant}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -198,39 +203,11 @@ export function PreOrderCard({
 
         {/* Checkbox */}
         {selectable && (
-          <Button
-            variant="ghost"
-            onClick={handleSelect}
-            aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-purple-500 dark:hover:border-purple-400 transition-colors z-10 p-0`}
-          >
-            {isSelected ? (
-              <Span
-                variant="inherit"
-                className={`w-4 h-4 rounded bg-purple-600 ${flex.center}`}
-              >
-                <svg
-                  viewBox="0 0 10 8"
-                  className="w-2.5 h-2 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M1 4l2.5 2.5L9 1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Span>
-            ) : (
-              <Span
-                variant="inherit"
-                className="w-4 h-4 rounded border-2 border-zinc-400 dark:border-slate-500 block"
-              />
-            )}
-          </Button>
+          <BaseListingCard.Checkbox
+            selected={isSelected}
+            onSelect={handleSelect}
+            label={isSelected ? t("deselectItem") : t("selectItem")}
+          />
         )}
 
         {/* Status badges */}
@@ -261,11 +238,12 @@ export function PreOrderCard({
             {t("preOrderBadge")}
           </Span>
         </div>
-      </div>
+      </BaseListingCard.Hero>
 
       {/* ── INFO SECTION ── */}
-      <div
-        className={`flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3 justify-between" : "p-3"}`}
+      <BaseListingCard.Info
+        variant={variant}
+        className={variant === "list" ? "justify-between" : ""}
       >
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
@@ -367,7 +345,7 @@ export function PreOrderCard({
             </Button>
           )}
         </div>
-      </div>
-    </div>
+      </BaseListingCard.Info>
+    </BaseListingCard>
   );
 }
