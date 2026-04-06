@@ -75,7 +75,7 @@
     "@mohasinac/shipping-shiprocket": "^0.1.0",
     "@mohasinac/sievejs": "^1.0.0",
     "@mohasinac/storage-firebase": "^1.1.1",
-    "@mohasinac/tokens": "^1.1.0",
+    "@mohasinac/tokens": "^1.2.0",
     "@mohasinac/ui": "^1.1.0",
     "@mohasinac/utils": "^1.1.0",
     "@mohasinac/validation": "^1.1.0",
