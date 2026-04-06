@@ -1,8 +1,7 @@
 import { ImageResponse } from "next/og";
 // Import directly from source file (not the barrel) to avoid pulling
-// src/constants/messages.ts into the edge runtime — Turbopack cannot
-// merge that large module across runtimes (chunk generation error).
-import { SEO_CONFIG } from "@/constants";
+// incompatible modules into the edge runtime.
+import { SEO_CONFIG } from "@/constants/seo";
 
 export const runtime = "edge";
 

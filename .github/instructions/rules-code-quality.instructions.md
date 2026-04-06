@@ -1,6 +1,6 @@
 ---
 applyTo: "src/**"
-description: "No alert/confirm, structured logging, no backward compatibility, build verification, tests as you go, encoding corruption prevention. Rules 22, 23, 24, 26, 27, 28-B, 28-C."
+description: "No alert/confirm, structured logging, no backward compatibility, build verification, tests as you go, encoding corruption prevention, Vercel deploy checklist. Rules 22, 23, 24, 26, 27, 28-B, 28-C, 36, 37."
 ---
 
 # Code Quality Rules
@@ -140,3 +140,49 @@ describe("useProducts", () => {
   });
 });
 ```
+
+---
+
+## RULE 36: Vercel Deployment Checklist
+
+Before every `git push origin main` (which auto-triggers a Vercel production deploy):
+
+1. **Local `vercel build --prod` must pass** — this exactly replicates the Vercel cloud build including `npm ci --legacy-peer-deps` + `npm run build`. If it fails locally, it will fail on Vercel.
+2. **No `file:` paths in `package-lock.json`** — run: `Select-String -Path package-lock.json -Pattern '"link": true'` — must return zero results. `"link": true` entries are pnpm workspace artefacts that break npm ci on a clean Vercel machine.
+3. **Check for `NEXT_MISSING_LAMBDA`** — any page that has `generateStaticParams()` returning ALL possible values must also export `export const dynamicParams = false;`. Without it, Next.js emits a dynamic route entry in `prerender-manifest.json` that `@vercel/next` cannot locate a lambda for.
+4. **`npm ci` not `npm install`** — `vercel.json` `installCommand` must be `npm ci --legacy-peer-deps` to guarantee a clean install from the lockfile; `npm install` only updates deltas and may reuse stale Junction symlinks from a cached `node_modules`.
+
+```powershell
+# Pre-deploy verification sequence:
+netstat -ano | Select-String ":3000.*LISTENING"   # check dev server first
+npx tsc --noEmit                                   # type check
+vercel build --prod                                # simulates Vercel cloud
+git add . ; git commit -m "..." ; git push origin main
+
+# Monitor deployment:
+vercel ls --prod 2>&1 | Select-Object -First 6
+```
+
+### vercel.json install command rule
+
+```json
+{
+  "installCommand": "npm ci --legacy-peer-deps",
+  "buildCommand": "npm run build"
+}
+```
+
+---
+
+## RULE 37: Dev Server — Reuse, Don’t Restart
+
+Before running `npm run dev`, always check if port 3000 is already occupied:
+
+```powershell
+netstat -ano | Select-String ":3000.*LISTENING"
+```
+
+- **Non-empty output** → port 3000 is in use; use `http://localhost:3000` for testing directly.
+- **Empty output** → safe to start `npm run dev`.
+
+Never start a second dev server. Two Next.js processes on port 3000 cause silent request routing errors that are very hard to debug.

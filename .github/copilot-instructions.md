@@ -19,8 +19,8 @@
 
 Next.js 16.1.6 (App Router) · React 19.2 · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · Server Actions · React Context + hooks
 
-**Workspace packages** (`packages/`): `@lir/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@lir/http` (ApiClient, apiClient singleton) · `@lir/next` (IAuthVerifier, createApiErrorHandler) · `@lir/react` (10 UI hooks) · `@lir/ui` (Semantic + Typography primitives with inlined tokens)  
-Linked via `tsconfig` path aliases + `transpilePackages` — **not** npm install.
+**npm packages** (`@mohasinac/*` scope, v1.1.0 on npmjs.org): `@mohasinac/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@mohasinac/http` (ApiClient, apiClient singleton) · `@mohasinac/next` (IAuthVerifier, createApiErrorHandler) · `@mohasinac/react` (10 UI hooks) · `@mohasinac/ui` (Semantic + Typography primitives) · `@mohasinac/contracts` (all interfaces: IRepository, IAuthProvider, IEmailProvider, IStyleAdapter, ProviderRegistry) · 50+ `@mohasinac/feat-*` packages  
+Installed from npm registry (`^1.1.0`) — letitrip.in's `package.json` uses published npm tarballs, not local `file:` references.
 
 ---
 
@@ -80,47 +80,33 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Cron/triggers in `functions/src/`** — never inside Next.js API routes
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
-- **No mojibake** — if garbled characters appear (`ãÆ`, `â€™`, `Ã©`, `ï¿½`), stop and fix with `replace_string_in_file` before continuing; see Rule 28-C
-
-## Migration State (as of 2026-03-14)
+- **No mojibake** — if garbled characters appear (`ãÆ`, `â€™`, `Ã©`, `ï¿½`), stop and fix with `replace_string_in_file` before continuing; see Rule 28-C- **Dev server — reuse existing**: before starting `npm run dev`, run `netstat -ano | Select-String ":3000.*LISTENING"` — if output is non-empty, port 3000 is already in use; use it for testing instead of starting a second server
+- **`dynamicParams = false` for fully-static dynamic routes** — any page that has `generateStaticParams()` returning ALL possible values must also export `export const dynamicParams = false;` to avoid Vercel `NEXT_MISSING_LAMBDA` build errors
+## Migration State (as of 2026-04-06)
 
 | Stage | Description | Status |
 |-------|-------------|--------|
 | A | Security fixes — rate-limit (Upstash Redis), HMAC `timingSafeEqual`, magic-byte MIME, nonce-based CSP, apiClient SSR fix, hydration fixes | ✅ Complete |
 | B1 | Monorepo bootstrap — `pnpm-workspace.yaml`, `turbo.json`, `packages/*` stubs | ✅ Complete |
-| B2 | `@lir/core` extracted — Logger, Queue, StorageManager, EventBus, CacheManager | ✅ Complete |
-| B3 | `@lir/http` extracted — ApiClient, ApiClientError, apiClient singleton | ✅ Complete |
-| B4 | `@lir/next` extracted — IAuthVerifier interface, createApiErrorHandler factory | ✅ Complete |
+| B2–B4 | `@lir/*` extracted → renamed to `@mohasinac/*` scope | ✅ Complete |
 | C | TanStack Query v5 — `useApiQuery`/`useApiMutation` adapters **deleted**; all hooks use `useQuery`/`useMutation` from `@tanstack/react-query` directly; `QueryProvider` in root layout | ✅ Complete |
 | D | react-hook-form — `useForm` from `react-hook-form` + `zodResolver`; custom `useForm.ts` deleted | ✅ Complete |
-| E1 | SSR Phase 1 — blog/products/events/sellers/promotions: async RSC + `generateMetadata` | ✅ Complete |
-| E2 | SSR Phase 2 — homepage `initialData` pre-fetch | ✅ Complete |
-| E3 | SSR Phase 3 — listing pages (products, categories, stores, search) | ✅ Complete |
-| E4 | SSR Phase 6 — static pages ISR | ✅ Complete |
-| E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
-| E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
-| E7 | SSR Phase 5 + E8 — real-time SSE islands; profile SSR | ✅ Complete |
-| F1 | Styling cleanup — `globals.css` dead vars removed; `gray-*` purged; `THEME_CONSTANTS` pure aliases deleted | ✅ Complete |
-| F2 | `@lir/react` extracted — 10 UI hooks (useMediaQuery, useBreakpoint, useClickOutside, useKeyPress, useLongPress, useGesture, useSwipe, useCamera, usePullToRefresh, useCountdown) | ✅ Complete |
-| F3 | `@lir/ui` extracted — Semantic.tsx (10 components) + Typography.tsx (Heading/Text/Label/Caption/Span) with inlined UI_THEME tokens | ✅ Complete |
-| F4 | `@lir/ui` extended + tsconfig wired — Spinner, Skeleton, Button, Badge, Alert, Divider, Progress; `@lir/*` path aliases + `transpilePackages`; `src/classes/*` + `src/hooks/*` re-export packages | ✅ Complete |
-| G1 | Server Actions — 20+ actions in `src/actions/`; all mutations → Server Actions (`useMutation` wraps Server Action); dead pure-passthrough service methods deleted | ✅ Complete |
-| G2 | FilterPanel config-driven — all 14 admin filter components use `FilterPanel` pattern | ✅ Complete |
-| G3 | Repository fixes — dead `category-metrics.ts` deleted; metrics wired in products API | ✅ Complete |
-| G4 | Schema adapters — dead `schema.adapter.ts` deleted | ✅ Complete |
-| G5 | AES-256-GCM encrypted provider credentials in `siteSettings`; `SiteCredentialsForm`; DB-first `razorpay.ts`/`email.ts` | ✅ Complete |
-| H1–H7 | Dead barrel exports removed; `animation.*` aliases deleted; dead services deleted (contact, newsletter, payment-event, demo); snippets moved to `docs/snippets/`; `TECH_DEBT.md` created; per-package `CHANGELOG.md` files added | ✅ Complete |
-| I1 | Service layer deleted — all 33 `*.service.ts` files removed; `src/services/` gone; callers migrated to direct `apiClient` in hooks or Server Actions | ✅ Complete |
-| Sec | TD-005: media/crop + media/trim migrated to `createApiHandler`; SSRF fix on `sourceUrl`; Stored XSS fix in `renderProseMirrorNode` (escapeHtml + link allowlist) | ✅ Complete |
-| J1 | Admin hooks factory — `createAdminListQuery` extracts repeated URLSearchParams+useQuery; 9 hooks refactored; `buildSieveFilters` helper; `admin.actions.ts` split into mutations + `admin-read.actions.ts` reads | ✅ Complete |
-| H8 | Publish `@lir/*` to npm registry (build pipeline, `dist/` output, set `private: false`) | 🔲 Optional |
+| E1–E8 | SSR Phases 1–8 — async RSC, `generateMetadata`, ISR, auth cookie, SSE islands, profile SSR | ✅ Complete |
+| F1–F4 | Styling cleanup, `@mohasinac/react` (10 hooks), `@mohasinac/ui` (Semantic + Typography + primitives) extracted | ✅ Complete |
+| G1–G5 | Server Actions, FilterPanel, Repository fixes, Schema adapters, AES-256-GCM credentials | ✅ Complete |
+| H1–H7 | Dead exports/services removed; snippets → docs; `TECH_DEBT.md`; per-package `CHANGELOG.md` | ✅ Complete |
+| I1 | Service layer deleted — all 33 `*.service.ts` removed; `src/services/` gone | ✅ Complete |
+| Sec | SSRF fix; Stored XSS fix in `renderProseMirrorNode` | ✅ Complete |
+| J1 | Admin hooks factory — `createAdminListQuery`; `buildSieveFilters`; actions split | ✅ Complete |
+| K1 | **npm publish** — all 58 `@mohasinac/*` packages published at v1.1.0; `letitrip.in` updated to use `^1.1.0` npm tarballs; `pnpm-lock.yaml` → `package-lock.json` (clean npm ci); Vercel deploy green | ✅ Complete |
+| K2 | `dynamicParams = false` added to `src/app/[locale]/faqs/[category]/page.tsx` — fixes Vercel `NEXT_MISSING_LAMBDA` for fully-static dynamic routes | ✅ Complete |
 
 ---
 
 ## Development Commands
 
 ```bash
-npm run dev          # dev server (Turbopack)
+npm run dev          # dev server (webpack) — check port 3000 first!
 npm run build        # production build
 npx tsc --noEmit     # type-check only
 npm test             # run tests
@@ -128,6 +114,19 @@ npm run lint         # lint
 ```
 
 ```powershell
+# Before starting dev server — reuse existing if running:
+netstat -ano | Select-String ":3000.*LISTENING"   # non-empty = already running
+
+# Vercel deploy (auto-triggered by git push to main):
+git add . ; git commit -m "..."; git push origin main
+
+# Check Vercel deployment status:
+vercel ls --prod 2>&1 | Select-Object -First 8
+
+# Simulate Vercel cloud build locally:
+vercel build --prod
+
+# Firebase infra:
 .\scripts\deploy-firestore-indices.ps1   # Firestore composite indices
 .\scripts\deploy-firestore-rules.ps1     # Firestore/Storage/DB rules
 .\scripts\deploy-functions.ps1           # Firebase Functions
