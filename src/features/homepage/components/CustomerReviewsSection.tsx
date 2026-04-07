@@ -11,6 +11,7 @@ import {
   TextLink,
 } from "@/components";
 import { ReviewCard } from "@/components";
+import type { ReviewCardData } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
 
 interface CustomerReviewsSectionProps {
@@ -23,7 +24,7 @@ export function CustomerReviewsSection({
   const t = useTranslations("homepage");
 
   const { data, isLoading } = useHomepageReviews({
-    initialData: initialReviews,
+    initialData: initialReviews as unknown as ReviewCardData[],
   });
 
   const reviews = data || [];

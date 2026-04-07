@@ -3,9 +3,10 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
-import type { PreOrderCardData } from "@/components";
+import type { ProductItem } from "@mohasinac/feat-products";
 
-export type PreOrderItem = PreOrderCardData;
+/** Pre-order cards show products with isPreOrder==true — they are ProductItems */
+export type PreOrderItem = ProductItem;
 
 /**
  * The /api/products endpoint returns successResponse({ items, total, page, pageSize, totalPages, hasMore }).

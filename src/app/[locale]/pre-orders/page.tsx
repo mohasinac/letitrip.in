@@ -10,7 +10,10 @@ import { PreOrdersView } from "@/features/products";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 import { productRepository } from "@/repositories";
-import type { PreOrdersListResult } from "@/features/products/hooks/usePreOrders";
+import type {
+  PreOrdersListResult,
+  PreOrderItem,
+} from "@/features/products/hooks/usePreOrders";
 
 export const revalidate = 60;
 
@@ -32,7 +35,7 @@ export default async function PreOrdersPage() {
     pageSize: 24,
   });
   const initialData: PreOrdersListResult = {
-    items: result.items,
+    items: result.items as unknown as PreOrderItem[],
     total: result.total,
     page: result.page,
     pageSize: result.pageSize,

@@ -1,26 +1,58 @@
 ﻿"use client";
 
 import { EventCard as PkgEventCard } from "@mohasinac/feat-events";
-import type { EventCardProps as PkgEventCardProps } from "@mohasinac/feat-events";
 import { Link } from "@/i18n/navigation";
 import { ROUTES } from "@/constants";
 import type { EventItem, EventType } from "@mohasinac/feat-events";
 
 export type { EventItem, EventType };
 
-type EventCardProps = Omit<PkgEventCardProps, "href" | "LinkComponent">;
+export interface EventCardProps {
+  event: EventItem;
+  className?: string;
+  labels?: { participate?: string; viewResults?: string; entries?: string };
+  onParticipate?: (event: EventItem) => void;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelect?: (id: string, selected: boolean) => void;
+}
 
 /**
  * Locale-aware wrapper around @mohasinac/feat-events's EventCard.
- * Pre-configures the href from ROUTES and uses next-intl's Link.
+ * Handles navigation via next-intl Link.
  */
-export function EventCard({ event, ...props }: EventCardProps) {
+export function EventCard({
+  event,
+  selectable,
+  selected,
+  onSelect,
+  ...props
+}: EventCardProps) {
   return (
-    <PkgEventCard
-      event={event}
+    <Link
       href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
-      LinkComponent={Link}
-      {...props}
-    />
+      className="block relative"
+      onClick={
+        selectable && onSelect
+          ? (e) => {
+              e.preventDefault();
+              onSelect(event.id, !selected);
+            }
+          : undefined
+      }
+    >
+      {selectable && (
+        <span
+          className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 inline-flex items-center justify-center pointer-events-none
+            ${selected ? "bg-primary border-primary" : "bg-white/90 border-gray-300"}`}
+          aria-hidden="true"
+        >
+          {selected && (
+            <span className="text-white text-xs leading-none">✓</span>
+          )}
+        </span>
+      )}
+      <PkgEventCard event={event} {...props} />
+    </Link>
   );
 }

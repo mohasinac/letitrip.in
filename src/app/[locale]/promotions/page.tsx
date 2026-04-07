@@ -11,6 +11,7 @@ import { productRepository, couponsRepository } from "@/repositories";
 import { SEO_CONFIG, SITE_CONFIG } from "@/constants";
 import { PromotionsView } from "@/features/promotions";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
+import type { ProductCardData } from "@/components";
 import { nowMs } from "@/utils";
 
 export const revalidate = 60;
@@ -52,8 +53,8 @@ export default async function PromotionsPage() {
 
   return (
     <PromotionsView
-      promotedProducts={promotedProducts}
-      featuredProducts={featuredProducts}
+      promotedProducts={promotedProducts as unknown as ProductCardData[]}
+      featuredProducts={featuredProducts as unknown as ProductCardData[]}
       activeCoupons={activeCoupons}
     />
   );

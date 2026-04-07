@@ -117,7 +117,7 @@ function WishlistContent() {
     () =>
       displayedProducts
         .map((i) => i.product)
-        .filter((p) => p !== null) as ProductCardData[],
+        .filter((p) => p !== null) as unknown as ProductCardData[],
     [displayedProducts],
   );
 
