@@ -6,6 +6,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-04-04
 
+### Locale fallback hardening across localized routes
+
+- Added shared resolver `src/i18n/resolve-locale.ts` to coerce missing/invalid locale values to `en`.
+- Updated locale-aware app shell and localized pages to resolve `params.locale` through the shared resolver before calling `setRequestLocale()` and `getTranslations({ locale, ... })`.
+- Updated localized redirect routes (FAQ category fallback and store index redirect) to pass a validated locale to navigation redirects.
+- Updated nested store pages (`about`, `products`, `auctions`, `reviews`) to use explicit locale in translation lookup and request-locale setup.
+
+**Verification:**
+
+- IDE diagnostics (`get_errors`) on all edited locale files ✅
+
 ### UI extraction continuation — generic controls and stats cards
 
 - Moved shared `Accordion`, `Dropdown`, `Menu`, `Pagination`, and `DashboardStatsCard` implementations into `@mohasinac/ui`.

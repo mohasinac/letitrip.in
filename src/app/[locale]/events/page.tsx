@@ -5,13 +5,15 @@ import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";
 import type { EventListResponse } from "@mohasinac/feat-events";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "events" });
   const title = `${t("title")} — ${SITE_CONFIG.brand.name}`;
   return {
@@ -21,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function EventsPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const result = await eventRepository
     .list({

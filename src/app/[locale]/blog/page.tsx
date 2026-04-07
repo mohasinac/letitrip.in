@@ -4,13 +4,15 @@ import { blogRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 import type { BlogListResponse } from "@mohasinac/feat-blog";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "blog" });
   const title = `${t("title")} — ${SITE_CONFIG.brand.name}`;
   return {
@@ -20,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const result = await blogRepository
     .listPublished({}, { sorts: "-publishedAt", page: 1, pageSize: 24 })

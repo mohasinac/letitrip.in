@@ -5,13 +5,15 @@ import { productRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { ProductsView } from "@/features/products";
 import type { ProductsListResult } from "@/features/products";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "products" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
@@ -24,7 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductsPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const initialData = await productRepository
     .list({

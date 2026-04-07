@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { FAQPageContent } from "@/features/faq";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 interface Props {
   params: Promise<{ locale: string; category: string }>;
@@ -18,7 +19,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, category } = await params;
+  const { locale: rawLocale, category } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "faq" });
 
   if (!(category in FAQ_CATEGORIES)) {
@@ -33,7 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function FAQCategoryPage({ params }: Props) {
-  const { locale, category } = await params;
+  const { locale: rawLocale, category } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
 
   if (!(category in FAQ_CATEGORIES)) {

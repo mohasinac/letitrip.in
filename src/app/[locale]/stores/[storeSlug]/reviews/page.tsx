@@ -5,6 +5,8 @@ import { StoreReviewsView } from "@/features/stores";
 import { storeRepository } from "@/repositories";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 const { flex, page } = THEME_CONSTANTS;
 
@@ -13,10 +15,11 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { storeSlug } = await params;
+  const { locale: rawLocale, storeSlug } = await params;
+  const locale = resolveLocale(rawLocale);
   const [store, t] = await Promise.all([
     storeRepository.findBySlug(storeSlug),
-    getTranslations("storePage"),
+    getTranslations({ locale, namespace: "storePage" }),
   ]);
   if (!store) return {};
   const title = `${store.storeName} — ${t("tabs.reviews")} | ${SITE_CONFIG.brand.name}`;
@@ -31,7 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function StoreReviewsPage({ params }: Props) {
-  const { storeSlug } = await params;
+  const { locale: rawLocale, storeSlug } = await params;
+  const locale = resolveLocale(rawLocale);
+  setRequestLocale(locale);
   return (
     <Suspense
       fallback={

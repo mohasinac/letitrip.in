@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { ContactInfoSidebar, ContactForm } from "@/features/contact";
 import { Heading, Text, Section } from "@/components";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 3600;
 
@@ -11,7 +12,8 @@ const { page } = THEME_CONSTANTS;
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "contact" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
@@ -20,7 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ContactPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "contact" });
   return (

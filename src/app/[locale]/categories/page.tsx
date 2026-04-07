@@ -12,13 +12,15 @@ import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoriesListView } from "@/features/categories";
 import type { CategoryItem } from "@mohasinac/feat-categories";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "categories" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
@@ -31,7 +33,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoriesPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const initialData = await categoriesRepository
     .findAll()

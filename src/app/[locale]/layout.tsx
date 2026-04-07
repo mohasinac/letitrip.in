@@ -17,6 +17,7 @@ import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { resolveLocale } from "@/i18n/resolve-locale";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = genMetadata({
@@ -55,9 +56,7 @@ export default async function LocaleLayout({
   // setRequestLocale populates async local storage so all subsequent
   // getTranslations() / getMessages() calls use params locale, not headers.
   const { locale: rawLocale } = await params;
-  // Explicit "en" fallback — rawLocale can be undefined during static
-  // pre-rendering when localePrefix is "never" and there is no URL segment.
-  const locale = (rawLocale ?? "en") as string;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const messages = await getMessages();
 

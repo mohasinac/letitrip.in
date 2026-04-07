@@ -5,6 +5,7 @@ import { Spinner } from "@/components";
 import { StoresListView, mapStoreDocument } from "@/features/stores";
 import { THEME_CONSTANTS } from "@/constants";
 import { storeRepository } from "@/repositories";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;
 
@@ -13,7 +14,8 @@ const { page, flex } = THEME_CONSTANTS;
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "storesPage" });
   return {
     title: t("metaTitle"),
@@ -22,7 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function StoresPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const initialData = await storeRepository
     .listStores({ sorts: "-createdAt", page: 1, pageSize: 24 })

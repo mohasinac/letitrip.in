@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Heading, Text, TextLink, Section } from "@/components";
+import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 3600;
 
@@ -10,7 +11,8 @@ const { themed, typography, page } = THEME_CONSTANTS;
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   const t = await getTranslations({ locale, namespace: "privacy" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
@@ -19,7 +21,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PrivacyPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "privacy" });
 
