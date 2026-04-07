@@ -1,6 +1,6 @@
 ﻿import { notFound } from "next/navigation";
 import { productRepository } from "@/repositories";
-import { ProductDetailView } from "@/features/products";
+import { ProductDetailView, ProductJsonLd } from "@/features/products";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
 import type { ProductItem } from "@mohasinac/feat-products";
@@ -46,38 +46,9 @@ export default async function ProductDetailPage({
   const product = await productRepository.findByIdOrSlug(slug);
   if (!product) notFound();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    description: product.description,
-    image: product.mainImage ? [product.mainImage] : (product.images ?? []),
-    sku: product.id,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: product.currency ?? "INR",
-      price: product.price,
-      availability:
-        (product.availableQuantity ?? 0) > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
-      url: `${APP_URL}/products/${product.slug ?? slug}`,
-      seller: {
-        "@type": "Organization",
-        name: product.sellerName ?? SITE_CONFIG.brand.name,
-      },
-    },
-    brand: product.brand
-      ? { "@type": "Brand", name: product.brand }
-      : undefined,
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <ProductJsonLd product={product} slug={slug} />
       <ProductDetailView
         slug={slug}
         initialData={product as unknown as ProductItem}
