@@ -15,6 +15,8 @@ import {
   Button,
   Card,
   Heading,
+  Input,
+  Section,
   Span,
   Text,
 } from "@/components";
@@ -42,7 +44,7 @@ export function AdminCopilotView() {
   };
 
   return (
-    <section className={spacing.pageY}>
+    <Section className={spacing.pageY}>
       <AdminPageHeader
         title={t("title")}
         actionLabel={t("newConversation")}
@@ -91,7 +93,7 @@ export function AdminCopilotView() {
           onSubmit={handleSubmit}
           className="border-t p-4 flex items-center gap-3"
         >
-          <input
+          <Input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -105,7 +107,7 @@ export function AdminCopilotView() {
           </Button>
         </form>
       </Card>
-    </section>
+    </Section>
   );
 }
 

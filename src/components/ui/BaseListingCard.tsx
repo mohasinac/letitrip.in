@@ -1,6 +1,9 @@
 ﻿"use client";
 
 import type { ReactNode, MouseEvent } from "react";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { dimensions } = THEME_CONSTANTS.card;
 
 export interface BaseListingCardRootProps {
   className?: string;
@@ -44,7 +47,7 @@ function BaseListingCardRoot({
   return (
     <div
       onClick={onClick}
-      className={`relative rounded-xl border overflow-hidden transition-shadow
+        className={`relative rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}
         ${isSelected ? "ring-2 ring-primary border-primary" : "border-gray-200 dark:border-gray-700"}
         ${isDisabled ? "opacity-60" : ""}
         ${onClick ? "cursor-pointer hover:shadow-md" : ""}
@@ -70,7 +73,7 @@ function BaseListingCardHero({
         : "aspect-[4/3]";
   return (
     <div
-      className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 ${aspectClass} ${className}`}
+        className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 ${aspectClass} ${dimensions.heroMinH} ${dimensions.heroMaxH} ${className}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >

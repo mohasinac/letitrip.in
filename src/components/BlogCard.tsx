@@ -3,7 +3,7 @@
 import { BlogCard as PkgBlogCard } from "@mohasinac/feat-blog";
 import type { BlogPostCategory } from "@mohasinac/feat-blog";
 import { Link } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { BlogPost } from "@mohasinac/feat-blog";
 
 export const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
@@ -35,6 +35,7 @@ export function BlogCard({
   selected,
   onSelect,
 }: BlogCardProps) {
+  const { dimensions } = THEME_CONSTANTS.card;
   return (
     <Link
       href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`}
@@ -59,7 +60,7 @@ export function BlogCard({
           )}
         </span>
       )}
-      <PkgBlogCard post={post} className={className} />
+      <PkgBlogCard post={post} className={`${dimensions.minW} ${dimensions.minH} ${className ?? ""}`} />
     </Link>
   );
 }

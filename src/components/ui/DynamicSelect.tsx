@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Button, Input, Li, Span, Text, Ul } from "@/components";
 
 export interface DynamicSelectOption<V = string> {
   value: V;
@@ -108,32 +109,36 @@ export function DynamicSelect<V = string>({
 
   return (
     <div ref={ref} className={`relative ${className}`} aria-label={ariaLabel}>
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
         disabled={disabled}
         onClick={() => setIsOpen((v) => !v)}
         className="w-full flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm disabled:opacity-50"
       >
-        <span className={value != null ? "" : "text-gray-400"}>
+        <Span className={value != null ? "" : "text-gray-400"}>
           {selectedLabel || placeholder}
-        </span>
-        <span>▾</span>
-      </button>
+        </Span>
+        <Span>▾</Span>
+      </Button>
 
       {isOpen && (
         <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg">
-          <input
+          <Input
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={searchPlaceholder}
             className="w-full px-3 py-2 text-sm border-b border-gray-200 dark:border-gray-700 outline-none bg-transparent"
           />
-          <ul className="max-h-48 overflow-y-auto py-1">
+          <Ul className="max-h-48 overflow-y-auto py-1">
             {filteredOptions.map((opt, i) => (
-              <li key={i}>
-                <button
+              <Li key={i}>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="md"
                   onClick={() => {
                     onChange?.(opt.value, opt);
                     setIsOpen(false);
@@ -141,29 +146,31 @@ export function DynamicSelect<V = string>({
                   className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 ${opt.value === value ? "font-medium" : ""}`}
                 >
                   {opt.label}
-                </button>
-              </li>
+                </Button>
+              </Li>
             ))}
             {filteredOptions.length === 0 && !isLoading && (
-              <li className="px-3 py-2 text-xs text-gray-400">
+              <Li className="px-3 py-2 text-xs text-gray-400">
                 {noResultsText}
-              </li>
+              </Li>
             )}
             {isLoading && (
-              <li className="px-3 py-2 text-xs text-gray-400">Loading…</li>
+              <Li className="px-3 py-2 text-xs text-gray-400">Loading…</Li>
             )}
             {hasMore && !isLoading && (
-              <li>
-                <button
+              <Li>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => load(query, page + 1)}
                   className="w-full px-3 py-2 text-xs text-primary hover:underline"
                 >
                   Load more
-                </button>
-              </li>
+                </Button>
+              </Li>
             )}
-          </ul>
+          </Ul>
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import type { ElementType } from "react";
+import { Text } from "@/components";
 
 export interface DashboardStatsCardProps {
   label: string;
@@ -41,12 +42,12 @@ export function DashboardStatsCard({
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+        <Text className="text-xs text-gray-500 dark:text-gray-400 truncate">
           {label}
-        </p>
-        <p className="text-xl font-semibold truncate">{value}</p>
+        </Text>
+        <Text className="text-xl font-semibold truncate">{value}</Text>
         {trend !== undefined && (
-          <p
+          <Text
             className={`text-xs font-medium ${
               trend.value >= 0
                 ? "text-emerald-600 dark:text-emerald-400"
@@ -55,7 +56,7 @@ export function DashboardStatsCard({
           >
             {trend.value >= 0 ? "+" : ""}
             {trend.value}%
-          </p>
+          </Text>
         )}
       </div>
     </div>

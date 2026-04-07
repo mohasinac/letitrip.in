@@ -115,10 +115,15 @@ export interface SectionCarouselProps<T = unknown> {
 // ─── Skeleton ───────────────────────────────────────────────────────────────
 
 function CarouselSkeleton({ count }: { count: number }) {
+  const { dimensions } = THEME_CONSTANTS.card;
+  const { homepage } = THEME_CONSTANTS;
   return (
     <div className="flex gap-4 overflow-hidden px-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex-none w-48 space-y-2">
+        <div
+          key={i}
+          className={`flex-none ${dimensions.railMinW} ${dimensions.railMaxW} ${homepage.reviewCardH} space-y-2`}
+        >
           <div
             className={`aspect-square rounded-xl ${THEME_CONSTANTS.skeleton.image}`}
           />
@@ -159,7 +164,8 @@ export function SectionCarousel<T = unknown>({
   const hasBg = Boolean(backgroundImage);
   const useLightText = lightText ?? hasBg;
 
-  const { themed, flex } = THEME_CONSTANTS;
+  const { themed, flex, card } = THEME_CONSTANTS;
+  const { dimensions } = card;
 
   const headingClass = useLightText
     ? "text-white"
@@ -293,7 +299,8 @@ export function SectionCarousel<T = unknown>({
                 variant="outline"
                 size="lg"
                 className={[
-                  "min-w-[200px] sm:min-w-[280px]",
+                  dimensions.railMinW,
+                  dimensions.railMaxW,
                   useLightText
                     ? "bg-transparent border-white/60 text-white hover:bg-white/10"
                     : "",

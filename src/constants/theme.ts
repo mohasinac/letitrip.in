@@ -26,7 +26,18 @@ export const THEME_CONSTANTS = {
 
   // Grid: fixed widescreen scaling + new auto-fill presets from @mohasinac/tokens.
   // cols3/4 now scale to 2xl:4/5; cards starts at 1-col on portrait mobile.
-  grid: _base.grid,
+  // Grid: fixed widescreen scaling + auto-fill presets with viewport-relative minmax.
+  // cols3/4 scale to 2xl:4/5; cards starts at 1-col on portrait mobile.
+  // productCards/storeCards use clamp() so card min-width scales with the viewport.
+  grid: {
+    ..._base.grid,
+    /** Auto-fill product cards — viewport-relative min: clamp(150px,18vw,260px) */
+    productCards:
+      "grid grid-cols-[repeat(auto-fill,minmax(clamp(150px,18vw,260px),1fr))] gap-6" as const,
+    /** Auto-fill store cards — viewport-relative min: clamp(170px,20vw,280px) */
+    storeCards:
+      "grid grid-cols-[repeat(auto-fill,minmax(clamp(170px,20vw,280px),1fr))] gap-6" as const,
+  },
 
   flex: _base.flex,
 
@@ -118,7 +129,7 @@ export const THEME_CONSTANTS = {
   },
 
   /**
-   * Card — extends base with letitrip chat bubble variants.
+   * Card — extends base with letitrip chat bubble variants and viewport-relative dimensions.
    */
   card: {
     ..._base.card,
@@ -128,6 +139,46 @@ export const THEME_CONSTANTS = {
       theirs:
         "bg-zinc-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm" as const,
     },
+    /**
+     * Viewport-relative card dimensions — applied consistently to all media cards.
+     * Values clamp between a pixel floor (small screens) and a pixel ceiling (large screens),
+     * scaling proportionally with viewport width/height in between.
+     */
+    dimensions: {
+      /** Min card width — scales from 150px at narrow viewports to 260px max */
+      minW: "min-w-[clamp(150px,18vw,260px)]" as const,
+      /** Max card width — for standalone cards not constrained by a grid column */
+      maxW: "max-w-[clamp(240px,40vw,400px)]" as const,
+      /** Min card height — ensures cards have visual presence even with no image */
+      minH: "min-h-[clamp(220px,26vh,360px)]" as const,
+      /** Max card height — caps runaway card growth on large viewports */
+      maxH: "max-h-[clamp(300px,50vh,520px)]" as const,
+      /** Min height for the card media/image hero section */
+      heroMinH: "min-h-[clamp(120px,14vh,200px)]" as const,
+      /** Max height for the card media/image hero section */
+      heroMaxH: "max-h-[clamp(160px,24vh,280px)]" as const,
+      /** Min height for list-row card layouts */
+      listMinH: "min-h-[clamp(190px,24vh,320px)]" as const,
+      /** Width for media block in horizontal list rows */
+      listMediaW: "w-[clamp(120px,18vw,220px)]" as const,
+      /** Default min width for horizontal scroller items */
+      railMinW: "min-w-[clamp(150px,18vw,260px)]" as const,
+      /** Default max width for horizontal scroller items */
+      railMaxW: "max-w-[clamp(240px,36vw,380px)]" as const,
+    },
+  },
+
+  /** Homepage section dimensions (viewport-relative + clamped). */
+  homepage: {
+    heroMinH: "min-h-[clamp(420px,72vh,680px)]" as const,
+    heroSkeletonH: "h-[clamp(420px,72vh,680px)]" as const,
+    splitBannerMinH: "min-h-[clamp(300px,40vh,420px)]" as const,
+    promoBannerMinH: "min-h-[clamp(240px,34vh,360px)]" as const,
+    promoBannerCompactH: "h-[clamp(112px,16vh,160px)]" as const,
+    newsletterH: "h-[clamp(220px,28vh,320px)]" as const,
+    trustCardH: "h-[clamp(120px,18vh,170px)]" as const,
+    categoryTileH: "h-[clamp(112px,16vh,160px)]" as const,
+    reviewCardH: "h-[clamp(180px,26vh,260px)]" as const,
   },
 
   /**

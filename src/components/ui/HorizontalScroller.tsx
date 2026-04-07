@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useRef,
@@ -7,6 +7,8 @@ import {
   type RefObject,
   type ReactNode,
 } from "react";
+import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 
 export interface PerViewConfig {
   base?: number;
@@ -47,6 +49,8 @@ export interface HorizontalScrollerProps<T = unknown> {
   autoScrollInterval?: number;
   minItemWidth?: number;
   pauseOnHover?: boolean;
+  /** Optional className for each generated item wrapper in items mode */
+  itemClassName?: string;
 }
 
 function resolvePerView(perView: number | PerViewConfig | undefined): number {
@@ -83,6 +87,7 @@ export function HorizontalScroller<T = unknown>({
   autoScroll,
   autoScrollInterval = 3500,
   minItemWidth,
+  itemClassName = "",
 }: HorizontalScrollerProps<T>) {
   const internalRef = useRef<HTMLDivElement>(null);
   const containerRef = (externalRef ??
@@ -112,6 +117,7 @@ export function HorizontalScroller<T = unknown>({
   }, [autoScroll, autoScrollInterval, scrollBy]);
 
   const itemsMode = items != null && renderItem != null;
+  const { dimensions } = THEME_CONSTANTS.card;
 
   const arrowCls = {
     sm: "w-7 h-7 text-sm",
@@ -132,7 +138,14 @@ export function HorizontalScroller<T = unknown>({
     ? items.map((item, i) => (
         <div
           key={keyExtractor ? keyExtractor(item, i) : i}
-          className={snapToItems ? "snap-start flex-none" : "flex-none"}
+          className={[
+            snapToItems ? "snap-start flex-none" : "flex-none",
+            dimensions.railMinW,
+            dimensions.railMaxW,
+            itemClassName,
+          ]
+            .filter(Boolean)
+            .join(" ")}
           style={minItemWidth ? { minWidth: minItemWidth } : undefined}
         >
           {renderItem(item, i)}
@@ -149,14 +162,16 @@ export function HorizontalScroller<T = unknown>({
             <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
           </>
         )}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => scrollBy(-1)}
           aria-label="Previous"
           className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}
         >
           ‹
-        </button>
+        </Button>
         <div
           ref={containerRef}
           onScroll={onScroll}
@@ -165,14 +180,16 @@ export function HorizontalScroller<T = unknown>({
         >
           {content}
         </div>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => scrollBy(1)}
           aria-label="Next"
           className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}
         >
           ›
-        </button>
+        </Button>
       </div>
     );
   }

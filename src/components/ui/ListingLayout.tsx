@@ -352,7 +352,7 @@ export function ListingLayout({
           {(sortSlot || viewToggleSlot || actionsSlot) && (
             <div
               className={[
-                "flex items-stretch min-h-[36px] gap-2 overflow-x-auto",
+                "flex items-stretch min-h-[44px] gap-2 overflow-x-auto",
                 THEME_CONSTANTS.utilities.scrollbarThinX,
               ].join(" ")}
             >

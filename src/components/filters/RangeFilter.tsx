@@ -96,7 +96,7 @@ function DualSlider({
           style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
         />
         {/* Min (lower) thumb */}
-        <input
+        <Input
           type="range"
           className={`drs-input-${id}`}
           min={minBound}
@@ -108,7 +108,7 @@ function DualSlider({
           aria-label="Minimum value"
         />
         {/* Max (upper) thumb */}
-        <input
+        <Input
           type="range"
           className={`drs-input-${id}`}
           min={minBound}

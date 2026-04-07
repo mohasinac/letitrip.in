@@ -8,7 +8,7 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Button, Heading, MediaImage, Section, Span, Text } from "@/components";
 import type { BannerSectionConfig } from "@/db/schema";
 
-const { position } = THEME_CONSTANTS;
+const { position, homepage } = THEME_CONSTANTS;
 
 interface AdvertisementBannerProps {
   /** When true: renders a compact single-row pill strip (h-32) */
@@ -60,9 +60,13 @@ export function AdvertisementBanner({
           <div
             className={`relative overflow-hidden rounded-2xl bg-zinc-900 shadow-xl`}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 min-h-[300px] md:min-h-[360px]">
+            <div
+              className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 ${homepage.splitBannerMinH}`}
+            >
               {/* Left: editorial image */}
-              <div className="relative aspect-[4/3] md:aspect-auto order-last md:order-first min-h-0 md:min-h-[360px]">
+              <div
+                className={`relative aspect-[4/3] md:aspect-auto order-last md:order-first min-h-0 ${homepage.splitBannerMinH}`}
+              >
                 <MediaImage
                   src={banner!.backgroundImage!}
                   alt={title}
@@ -125,7 +129,7 @@ export function AdvertisementBanner({
     <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
       <div className="w-full max-w-7xl mx-auto">
         <div
-          className={`relative overflow-hidden rounded-2xl ${compact ? "h-32 flex items-center" : "min-h-[240px] md:min-h-[300px]"} flex items-center`}
+          className={`relative overflow-hidden rounded-2xl ${compact ? `${homepage.promoBannerCompactH} flex items-center` : `${homepage.promoBannerMinH}`} flex items-center`}
           style={
             hasCmsData && banner?.backgroundColor
               ? { backgroundColor: banner.backgroundColor }

@@ -2,7 +2,7 @@
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
-import lirPlugin from "./packages/eslint-plugin-letitrip/index.js";
+import lirPlugin from "../packages/packages/eslint-plugin-letitrip/index.js";
 import reactPlugin from "eslint-plugin-react";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 
@@ -220,6 +220,13 @@ export default tseslint.config(
       // Progress.tsx and Skeleton.tsx use dangerouslySetInnerHTML for CSS injection.
       // Register the plugin so eslint-disable-next-line react/no-danger is valid.
       "react/no-danger": "warn",
+    },
+  },
+  {
+    files: ["src/**/*.tsx", "packages/*/src/**/*.tsx"],
+    rules: {
+      "lir/no-raw-html-elements": "error",
+      "lir/no-raw-media-elements": "error",
     },
   },
   {

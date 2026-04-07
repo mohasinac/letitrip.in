@@ -5,7 +5,8 @@ import type { AuctionCardData } from "./AuctionCard";
 import { Span, Text } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
-const { themed } = THEME_CONSTANTS;
+const { card } = THEME_CONSTANTS;
+const { dimensions } = card;
 
 type AuctionGridItem = AuctionCardData;
 
@@ -33,8 +34,12 @@ function AuctionCardSkeleton({
 }) {
   if (variant === "list") {
     return (
-      <div className="bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse flex flex-row">
-        <div className="w-32 sm:w-44 aspect-square bg-zinc-300 dark:bg-slate-600 flex-shrink-0" />
+      <div
+        className={`bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse flex flex-row ${dimensions.listMinH}`}
+      >
+        <div
+          className={`${dimensions.listMediaW} aspect-square bg-zinc-300 dark:bg-slate-600 flex-shrink-0`}
+        />
         <div className="flex-1 p-3 space-y-2">
           <div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-2/3" />
           <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-full" />

@@ -6,7 +6,8 @@ import { ProductCard } from "./ProductCard";
 import type { ProductCardData } from "./ProductCard";
 import { Heading, Span, Text } from "@/components";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, card } = THEME_CONSTANTS;
+const { dimensions } = card;
 
 interface ProductGridProps {
   products: ProductCardData[];
@@ -23,9 +24,11 @@ function ProductSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
   if (variant === "list") {
     return (
       <div
-        className={`${themed.bgPrimary} rounded-lg overflow-hidden animate-pulse flex flex-row`}
+        className={`${themed.bgPrimary} rounded-lg overflow-hidden animate-pulse flex flex-row ${dimensions.listMinH}`}
       >
-        <div className="w-32 sm:w-44 aspect-square bg-zinc-200 dark:bg-slate-700 flex-shrink-0" />
+        <div
+          className={`${dimensions.listMediaW} aspect-square bg-zinc-200 dark:bg-slate-700 flex-shrink-0`}
+        />
         <div className="flex-1 p-3 space-y-2">
           <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-2/3" />
           <div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-full" />
@@ -111,6 +114,7 @@ export function ProductGrid({
           key={product.id}
           product={product}
           variant={variant}
+          className={variant === "list" ? dimensions.listMinH : undefined}
           selectable={selectable}
           isSelected={selectedIds.includes(product.id)}
           onSelect={handleSelect}

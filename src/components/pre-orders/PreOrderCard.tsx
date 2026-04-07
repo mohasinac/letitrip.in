@@ -11,7 +11,7 @@ import { ROUTES } from "@/constants";
 import { useWishlistToggle } from "@/hooks";
 import { PreOrderTag } from "@mohasinac/feat-pre-orders";
 import type { ProductItem } from "@mohasinac/feat-products";
-import { Text } from "@/components";
+import { Button, Heading, Text } from "@/components";
 import { formatCurrency } from "@/utils";
 
 /** PreOrderCardData = ProductItem (products with isPreOrder==true) */
@@ -64,9 +64,12 @@ export function PreOrderCard({
         }
       >
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-sm font-medium line-clamp-2 flex-1 text-gray-900 dark:text-gray-100">
+          <Heading
+            level={3}
+            className="text-sm font-medium line-clamp-2 flex-1 text-gray-900 dark:text-gray-100"
+          >
             {product.title}
-          </h3>
+          </Heading>
           <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cobalt/10 text-cobalt dark:bg-cobalt/20">
             Pre-order
           </span>
@@ -81,8 +84,10 @@ export function PreOrderCard({
       </Link>
 
       <div className="px-4 pb-3 flex gap-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={(e) => {
             e.stopPropagation();
             toggleWishlist();
@@ -95,7 +100,7 @@ export function PreOrderCard({
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
         >
           {inWishlist ? "♥" : "♡"}
-        </button>
+        </Button>
       </div>
     </div>
   );

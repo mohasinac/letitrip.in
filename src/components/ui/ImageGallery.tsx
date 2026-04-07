@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useSwipe, useGesture } from "@/hooks";
-import { Button, HorizontalScroller, Text } from "@/components";
+import { Button, HorizontalScroller, MediaImage, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -153,11 +153,12 @@ export default function ImageGallery({
       >
         {/* Image */}
         <div className="relative aspect-video md:aspect-[16/10] overflow-hidden">
-          <img
-            src={currentImage.src}
-            alt={currentImage.alt}
-            className="w-full h-full object-contain transition-transform duration-200"
+          <div
+            role="img"
+            aria-label={currentImage.alt}
+            className="w-full h-full bg-center bg-contain bg-no-repeat transition-transform duration-200"
             style={{
+              backgroundImage: `url(${currentImage.src})`,
               transform: `scale(${scale})`,
               cursor: allowZoom
                 ? isZoomed
@@ -165,7 +166,6 @@ export default function ImageGallery({
                   : "zoom-in"
                 : "default",
             }}
-            draggable={false}
           />
 
           {/* Navigation Arrows */}
@@ -293,11 +293,11 @@ export default function ImageGallery({
               `}
               aria-label={`View image ${index + 1}`}
             >
-              <img
+              <MediaImage
                 src={image.thumbnail || image.src}
                 alt={image.alt}
+                size="thumbnail"
                 className="w-full h-full object-cover"
-                draggable={false}
               />
             </Button>
           ))}

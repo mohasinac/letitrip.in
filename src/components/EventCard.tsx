@@ -2,7 +2,7 @@
 
 import { EventCard as PkgEventCard } from "@mohasinac/feat-events";
 import { Link } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { EventItem, EventType } from "@mohasinac/feat-events";
 
 export type { EventItem, EventType };
@@ -28,6 +28,7 @@ export function EventCard({
   onSelect,
   ...props
 }: EventCardProps) {
+  const { dimensions } = THEME_CONSTANTS.card;
   return (
     <Link
       href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
@@ -52,7 +53,7 @@ export function EventCard({
           )}
         </span>
       )}
-      <PkgEventCard event={event} {...props} />
+      <PkgEventCard event={event} {...props} className={`${dimensions.minW} ${dimensions.minH} ${props.className ?? ""}`} />
     </Link>
   );
 }

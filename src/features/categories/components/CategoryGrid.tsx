@@ -12,7 +12,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Span, Text } from "@/components";
 import { CategoryCard } from "@/components";
 
-const { spacing } = THEME_CONSTANTS;
+const { grid } = THEME_CONSTANTS;
 
 interface CategoryGridProps {
   categories: CategoryItem[];
@@ -43,9 +43,7 @@ export function CategoryGrid({
   }
 
   return (
-    <div
-      className={`grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-4 ${className}`}
-    >
+    <div className={`${grid.categoryCards} ${className}`}>
       {categories.map((category) => (
         <CategoryCard
           key={category.id}

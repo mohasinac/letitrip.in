@@ -17,7 +17,7 @@ import {
 } from "@/components";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
-const { flex, position } = THEME_CONSTANTS;
+const { flex, position, homepage } = THEME_CONSTANTS;
 
 interface HeroCarouselProps {
   initialSlides?: CarouselSlideDocument[];
@@ -85,7 +85,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
   if (isLoading) {
     return (
       <div
-        className={`relative w-full min-h-[420px] md:min-h-[560px] lg:min-h-[680px] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
+        className={`relative w-full ${homepage.heroMinH} ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
       >
         <div className={`${position.fill} ${flex.center}`}>
           <Text variant="secondary">{tLoading("default")}</Text>
@@ -133,7 +133,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
   return (
     <Section
       ref={sectionRef}
-      className="relative w-full min-h-[420px] md:min-h-[560px] lg:min-h-[680px] overflow-hidden"
+      className={`relative w-full ${homepage.heroMinH} overflow-hidden`}
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}

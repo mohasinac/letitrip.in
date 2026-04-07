@@ -109,12 +109,14 @@ export function AvatarDisplay({
   return (
     <div
       className={`${sizeClasses[size]} ${className} rounded-full ${overflow.hidden} ${THEME_CONSTANTS.themed.bgTertiary} relative`}
+      role="img"
+      aria-label={resolvedAlt}
     >
-      <img
-        src={cropData.url}
-        alt={resolvedAlt}
-        className="absolute w-full h-full object-cover select-none -translate-x-1/2 -translate-y-1/2"
+      <div
+        className="absolute w-full h-full bg-no-repeat bg-center -translate-x-1/2 -translate-y-1/2"
         style={{
+          backgroundImage: `url(${cropData.url})`,
+          backgroundSize: "cover",
           width: `${(cropData.zoom || 1) * 100}%`,
           height: `${(cropData.zoom || 1) * 100}%`,
           left: `${cropData.position?.x || 50}%`,

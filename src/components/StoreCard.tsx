@@ -1,8 +1,9 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { StoreListItem } from "@mohasinac/feat-stores";
+import { Button, Heading, MediaImage, Span, Text } from "@/components";
 
 export type { StoreListItem };
 
@@ -27,14 +28,17 @@ export function StoreCard({
   className = "",
 }: StoreCardProps) {
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
+  const { dimensions } = THEME_CONSTANTS.card;
 
   return (
     <div
-      className={`relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${className}`}
+      className={`relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${dimensions.minW} ${dimensions.minH} ${className}`}
     >
       {selectable && (
-        <button
+        <Button
           type="button"
+          size="sm"
+          variant="outline"
           aria-label={selected ? "Deselect store" : "Select store"}
           onClick={(e) => {
             e.preventDefault();
@@ -43,32 +47,32 @@ export function StoreCard({
           className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 ${selected ? "bg-primary border-primary" : "bg-white border-gray-300"} flex items-center justify-center`}
         >
           {selected && (
-            <span className="text-white text-xs leading-none">✓</span>
+            <Span className="text-white text-xs leading-none">✓</Span>
           )}
-        </button>
+        </Button>
       )}
 
       <Link href={href} className="block">
         {store.storeBannerURL ? (
-          <div className="h-24 overflow-hidden bg-gray-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className={`overflow-hidden bg-gray-100 ${dimensions.heroMinH} ${dimensions.heroMaxH}`}>
+            <MediaImage
               src={store.storeBannerURL}
               alt={`${store.storeName} banner`}
+              size="banner"
               className="h-full w-full object-cover"
             />
           </div>
         ) : (
-          <div className="h-24 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20" />
+          <div className={`bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 ${dimensions.heroMinH} ${dimensions.heroMaxH}`} />
         )}
 
         <div className="px-4 pb-4">
           <div className="-mt-6 mb-3">
             {store.storeLogoURL ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <MediaImage
                 src={store.storeLogoURL}
                 alt={store.storeName}
+                size="avatar"
                 className="h-12 w-12 rounded-lg border-2 border-white object-cover shadow-sm"
               />
             ) : (
@@ -77,27 +81,27 @@ export function StoreCard({
               </div>
             )}
           </div>
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+          <Heading level={3} className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
             {store.storeName}
-          </h3>
+          </Heading>
           {store.storeDescription && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
+            <Text className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
               {store.storeDescription}
-            </p>
+            </Text>
           )}
           <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
             {store.totalProducts != null && (
-              <span>
+              <Span>
                 {store.totalProducts} {labels.products ?? "products"}
-              </span>
+              </Span>
             )}
             {store.itemsSold != null && (
-              <span>
+              <Span>
                 {store.itemsSold} {labels.sold ?? "sold"}
-              </span>
+              </Span>
             )}
             {store.averageRating != null && (
-              <span>★ {store.averageRating.toFixed(1)}</span>
+              <Span>★ {store.averageRating.toFixed(1)}</Span>
             )}
           </div>
         </div>

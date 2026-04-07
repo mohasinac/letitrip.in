@@ -22,6 +22,8 @@ export function CustomerReviewsSection({
   initialReviews,
 }: CustomerReviewsSectionProps = {}) {
   const t = useTranslations("homepage");
+  const { homepage, card } = THEME_CONSTANTS;
+  const { dimensions } = card;
 
   const { data, isLoading } = useHomepageReviews({
     initialData: initialReviews as unknown as ReviewCardData[],
@@ -40,7 +42,7 @@ export function CustomerReviewsSection({
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className={`${THEME_CONSTANTS.skeleton.card} h-48 flex-none w-72`}
+                className={`${THEME_CONSTANTS.skeleton.card} ${homepage.reviewCardH} ${dimensions.railMinW} ${dimensions.railMaxW} flex-none`}
               />
             ))}
           </div>
@@ -75,7 +77,11 @@ export function CustomerReviewsSection({
         <HorizontalScroller
           items={reviews}
           renderItem={(review) => (
-            <ReviewCard key={review.id} review={review} />
+            <ReviewCard
+              key={review.id}
+              review={review}
+              className={homepage.reviewCardH}
+            />
           )}
           perView={{ base: 1, sm: 2, md: 3, lg: 3, "2xl": 4 }}
           gap={24}
