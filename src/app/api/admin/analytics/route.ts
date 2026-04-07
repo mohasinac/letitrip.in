@@ -18,58 +18,87 @@ import { orderRepository, productRepository } from "@/repositories";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
-async function loadAllOrders(): Promise<OrderDocument[]> {
-  const items: OrderDocument[] = [];
-  let page = 1;
-
-  while (true) {
-    const result = await orderRepository.listAll({
-      sorts: "-createdAt",
-      page: String(page),
-      pageSize: "200",
-    });
-    items.push(...result.items);
-    if (!result.hasMore) {
-      return items;
-    }
-    page += 1;
-  }
-}
-
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
   return new Date(raw as string | number);
+}
+
+/**
+ * Fetch orders from past 12 months using Sieve date filtering (database-level).
+ * Bounded window prevents memory-based full scans.
+ */
+async function loadPast12MonthsOrders(): Promise<OrderDocument[]> {
+  const now = new Date();
+  const twelveMonthsAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+  const isoStart = twelveMonthsAgo.toISOString();
+
+  // Query with Sieve date filter: createdAt >= 12 months ago
+  const result = await orderRepository.listAll({
+    filters: `createdAt>=${isoStart}`,
+    sorts: "-createdAt",
+    page: "1",
+    pageSize: "500", // Reasonable bound for 12 months
+  });
+
+  // Paginate if needed (total orders last 12 months might exceed 500)
+  let allItems = result.items;
+  let page = 2;
+  while (result.hasMore && page <= 10) {
+    const nextResult = await orderRepository.listAll({
+      filters: `createdAt>=${isoStart}`,
+      sorts: "-createdAt",
+      page: String(page),
+      pageSize: "500",
+    });
+    allItems.push(...nextResult.items);
+    if (!nextResult.hasMore) break;
+    page += 1;
+  }
+
+  return allItems;
 }
 
 export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {
-    const [allOrders, totalProductsResult, publishedProductsResult] =
-      await Promise.all([
-        loadAllOrders(),
-        productRepository.list({ page: "1", pageSize: "1" }),
-        productRepository.list(
-          {
-            filters: "status==published",
-            page: "1",
-            pageSize: "1",
-          },
-          { status: "published" },
-        ),
-      ]);
+    const now = new Date();
 
-    // All-time totals
-    const totalOrders = allOrders.length;
-    const totalRevenue = allOrders.reduce(
+    // Fetch counts (all-time) and past-12-months orders in parallel
+    const [
+      allTimeTotalsResult,
+      past12MonthsOrders,
+      totalProductsResult,
+      publishedProductsResult,
+    ] = await Promise.all([
+      orderRepository.listAll({
+        page: "1",
+        pageSize: "1",
+      }),
+      loadPast12MonthsOrders(),
+      productRepository.list({ page: "1", pageSize: "1" }),
+      productRepository.list(
+        {
+          filters: "status==published",
+          page: "1",
+          pageSize: "1",
+        },
+        { status: "published" },
+      ),
+    ]);
+
+    // All-time totals (use repository result.total for accurate count)
+    const totalOrders = allTimeTotalsResult.total;
+    // For all-time revenue, we need a separate aggregation or pre-computed value
+    // For now, estimate from past 12 months (TODO: add Cloud Function for pre-aggregation)
+    const totalRevenue = past12MonthsOrders.reduce(
       (sum, o) => sum + (o.totalPrice ?? 0),
       0,
     );
 
     // This-month totals
-    const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const thisMonthOrders = allOrders.filter(
+    const thisMonthOrders = past12MonthsOrders.filter(
       (o) => normalizeDate(o.createdAt) >= monthStart,
     );
     const newOrdersThisMonth = thisMonthOrders.length;
@@ -78,7 +107,7 @@ export const GET = createRouteHandler({
       0,
     );
 
-    // Monthly breakdown — last 12 months
+    // Monthly breakdown — last 12 months (bounded aggregation on past12MonthsOrders)
     const monthMap = new Map<
       string,
       { month: string; orders: number; revenue: number; sortKey: string }
@@ -91,7 +120,7 @@ export const GET = createRouteHandler({
       monthMap.set(sortKey, { month: label, orders: 0, revenue: 0, sortKey });
     }
 
-    for (const order of allOrders) {
+    for (const order of past12MonthsOrders) {
       const d = normalizeDate(order.createdAt);
       const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       if (monthMap.has(sortKey)) {
@@ -105,13 +134,13 @@ export const GET = createRouteHandler({
       ({ month, orders, revenue }) => ({ month, orders, revenue }),
     );
 
-    // Top 5 products by total revenue
+    // Top 5 products by total revenue (aggregated from past 12 months)
     const revenueByProduct = new Map<
       string,
       { productId: string; title: string; revenue: number; orders: number }
     >();
 
-    for (const order of allOrders) {
+    for (const order of past12MonthsOrders) {
       const existing = revenueByProduct.get(order.productId);
       if (existing) {
         existing.revenue += order.totalPrice ?? 0;
