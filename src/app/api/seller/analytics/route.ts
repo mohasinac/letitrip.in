@@ -18,23 +18,41 @@ import { serverLogger } from "@/lib/server-logger";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
-async function loadSellerOrders(sellerId: string): Promise<OrderDocument[]> {
-  const items: OrderDocument[] = [];
-  let page = 1;
+/**
+ * Fetch seller orders from past 6 months using Sieve date filtering (database-level).
+ * Bounded window prevents memory-based full scans.
+ */
+async function loadSeller6MonthOrders(
+  sellerId: string,
+): Promise<OrderDocument[]> {
+  const now = new Date();
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const isoStart = sixMonthsAgo.toISOString();
 
-  while (true) {
-    const result = await orderRepository.listAll({
-      filters: `sellerId==${sellerId}`,
+  // Query with Sieve filters: sellerId AND createdAt >= 6 months ago
+  const result = await orderRepository.listAll({
+    filters: `sellerId==${sellerId},createdAt>=${isoStart}`,
+    sorts: "-createdAt",
+    page: "1",
+    pageSize: "300",
+  });
+
+  // Paginate if needed
+  let allItems = result.items;
+  let page = 2;
+  while (result.hasMore && page <= 5) {
+    const nextResult = await orderRepository.listAll({
+      filters: `sellerId==${sellerId},createdAt>=${isoStart}`,
       sorts: "-createdAt",
       page: String(page),
-      pageSize: "200",
+      pageSize: "300",
     });
-    items.push(...result.items);
-    if (!result.hasMore) {
-      return items;
-    }
+    allItems.push(...nextResult.items);
+    if (!nextResult.hasMore) break;
     page += 1;
   }
+
+  return allItems;
 }
 
 function normalizeDate(raw: Date | string | number): Date {
@@ -47,9 +65,9 @@ export const GET = createRouteHandler({
   handler: async ({ user }) => {
     const sellerId = user!.uid;
 
-    const [allOrders, totalProductsResult, publishedProductsResult] =
+    const [past6MonthOrders, totalProductsResult, publishedProductsResult] =
       await Promise.all([
-        loadSellerOrders(sellerId),
+        loadSeller6MonthOrders(sellerId),
         productRepository.list(
           {
             page: "1",
@@ -68,7 +86,7 @@ export const GET = createRouteHandler({
       ]);
 
     const productIds = Array.from(
-      new Set(allOrders.map((order) => order.productId)),
+      new Set(past6MonthOrders.map((order) => order.productId)),
     );
     const products = await Promise.all(
       productIds.map((productId) => productRepository.findById(productId)),
@@ -77,15 +95,15 @@ export const GET = createRouteHandler({
       products.filter(Boolean).map((product) => [product!.id, product!]),
     );
 
-    const totalOrders = allOrders.length;
-    const totalRevenue = allOrders.reduce(
+    const totalOrders = past6MonthOrders.length;
+    const totalRevenue = past6MonthOrders.reduce(
       (sum, o) => sum + (o.totalPrice ?? 0),
       0,
     );
     const totalProducts = totalProductsResult.total;
     const publishedProducts = publishedProductsResult.total;
 
-    // 4. Monthly revenue for last 6 months
+    // 4. Monthly revenue for last 6 months (bounded aggregation)
     const now = new Date();
     const monthMap = new Map<
       string,
@@ -99,7 +117,7 @@ export const GET = createRouteHandler({
       monthMap.set(sortKey, { month: label, orders: 0, revenue: 0, sortKey });
     }
 
-    for (const order of allOrders) {
+    for (const order of past6MonthOrders) {
       const d = normalizeDate(order.createdAt);
       const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       if (monthMap.has(sortKey)) {
@@ -125,7 +143,7 @@ export const GET = createRouteHandler({
       }
     >();
 
-    for (const order of allOrders) {
+    for (const order of past6MonthOrders) {
       const existing = revenueByProduct.get(order.productId);
       if (existing) {
         existing.revenue += order.totalPrice ?? 0;
