@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
-// Import directly from source file (not the barrel) to avoid pulling
-// incompatible modules into the edge runtime.
+// Import directly from source file (not the barrel) to keep OG image route lean.
 import { SEO_CONFIG } from "@/constants/seo";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export const alt = SEO_CONFIG.siteName;
 export const size = { width: 1200, height: 630 };

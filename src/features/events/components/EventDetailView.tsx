@@ -1,7 +1,18 @@
 "use client";
 
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
-import { Card, Spinner, EmptyState, Heading, Text } from "@/components";
+import { useState } from "react";
+import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import {
+  Card,
+  Spinner,
+  EmptyState,
+  Heading,
+  MediaImage,
+  Text,
+  Button,
+  Span,
+} from "@/components";
+import { useMessage } from "@/hooks";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
@@ -11,7 +22,7 @@ import { formatDate } from "@/utils";
 import type { EventItem } from "@mohasinac/feat-events";
 import { useEvent as usePublicEvent } from "@mohasinac/feat-events";
 
-const { spacing, typography } = THEME_CONSTANTS;
+const { spacing, typography, themed } = THEME_CONSTANTS;
 
 interface EventDetailViewProps {
   id: string;
@@ -20,6 +31,18 @@ interface EventDetailViewProps {
 
 export function EventDetailView({ id, initialData }: EventDetailViewProps) {
   const { event, isLoading } = usePublicEvent(id, { initialData });
+  const { showError } = useMessage();
+  const [codeCopied, setCodeCopied] = useState(false);
+
+  const handleCopyCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
+    } catch {
+      showError(ERROR_MESSAGES.GENERIC.TRY_AGAIN);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -43,9 +66,10 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
       {/* Header */}
       <div>
         {event.coverImageUrl && (
-          <img
+          <MediaImage
             src={event.coverImageUrl}
             alt={event.title}
+            size="hero"
             className="w-full h-56 object-cover rounded-xl mb-4"
           />
         )}
@@ -62,9 +86,10 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
             {event.endsAt && `Ends: ${formatDate(event.endsAt)}`}
           </Text>
         )}
-        <Text variant="secondary" className="mt-3">
-          {event.description}
-        </Text>
+        <div
+          className={`prose dark:prose-invert max-w-none mt-3 text-sm ${themed.textSecondary}`}
+          dangerouslySetInnerHTML={{ __html: event.description }}
+        />
       </div>
 
       {/* Type-specific participation section */}
@@ -86,14 +111,33 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
               feedbackConfig={event.feedbackConfig}
             />
           )}
-          {(event.type === "sale" || event.type === "offer") && (
+          {event.type === "sale" && event.saleConfig && (
             <Text size="sm" variant="secondary">
-              {event.type === "sale" && event.saleConfig
-                ? UI_LABELS.EVENTS.SALE_BANNER(event.saleConfig.discountPercent)
-                : event.offerConfig
-                  ? UI_LABELS.EVENTS.OFFER_BANNER(event.offerConfig.displayCode)
-                  : null}
+              {UI_LABELS.EVENTS.SALE_BANNER(event.saleConfig.discountPercent)}
             </Text>
+          )}
+          {event.type === "offer" && event.offerConfig && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-1 min-w-0 rounded-lg border border-dashed border-primary/30 bg-primary/5 dark:bg-primary/10 px-4 py-2">
+                <Span className="font-mono font-bold tracking-widest text-primary text-base select-all">
+                  {event.offerConfig.displayCode}
+                </Span>
+                <Text size="xs" variant="secondary" className="flex-1 truncate">
+                  {UI_LABELS.EVENTS.OFFER_BANNER(event.offerConfig.displayCode)}
+                </Text>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleCopyCode(event.offerConfig!.displayCode)}
+                className="shrink-0"
+              >
+                {codeCopied
+                  ? UI_LABELS.PROMOTIONS_PAGE.COPIED
+                  : UI_LABELS.PROMOTIONS_PAGE.COPY_CODE}
+              </Button>
+            </div>
           )}
         </Card>
       )}

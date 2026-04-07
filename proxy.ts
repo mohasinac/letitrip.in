@@ -1,5 +1,5 @@
 /**
- * Next.js Middleware
+ * Next.js Proxy
  *
  * Responsibilities:
  * 1. Locale routing via next-intl (redirect /products → /en/products etc.)
@@ -45,7 +45,7 @@ const CSP =
 
 const intlMiddleware = createMiddleware(routing);
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const response = intlMiddleware(request) ?? NextResponse.next();
   response.headers.set("Content-Security-Policy", CSP);
   return response;

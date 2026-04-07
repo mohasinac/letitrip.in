@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useCallback, useRef, useState } from "react";
-import { Button, Caption, Span } from "@/components";
+import { Button, Caption, Input, Span } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
@@ -365,7 +365,8 @@ export function MediaLightbox({
           {Math.round(zoom * 100)}%
         </Caption>
         {/* Zoom slider */}
-        <input
+        <Input
+          bare
           type="range"
           min={MIN_ZOOM}
           max={MAX_ZOOM}

@@ -46,7 +46,7 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
-import { Aside, Button, BulkActionBar, Span, Text } from "@/components";
+import { Aside, Button, BulkActionBar, Nav, Span, Text } from "@/components";
 import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useBottomActions } from "@/hooks";
@@ -465,7 +465,7 @@ export function ListingLayout({
           active (selectedCount > 0) the BottomActions bar occupies bottom-14,
           so we shift up to bottom-28 to stay visible above it. */}
       {toolbarPaginationSlot && (
-        <nav
+        <Nav
           aria-label="Pagination"
           className={[
             "fixed left-0 right-0 md:hidden",
@@ -482,7 +482,7 @@ export function ListingLayout({
           ].join(" ")}
         >
           {toolbarPaginationSlot}
-        </nav>
+        </Nav>
       )}
 
       {/* ─────────── Mobile fullscreen filter overlay ─────────── */}

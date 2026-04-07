@@ -17,6 +17,7 @@ import { useMediaUpload } from "@/hooks";
 import {
   Button,
   Alert,
+  Input,
   ImageCropModal,
   AvatarDisplay,
   Progress,
@@ -312,8 +313,9 @@ export function AvatarUpload({
               </div>
             )}
 
-            <input
+            <Input
               ref={fileInputRef}
+              bare
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={handleFileSelect}

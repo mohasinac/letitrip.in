@@ -255,10 +255,10 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          // Content Security Policy — set dynamically per-request in middleware.ts
+          // Content Security Policy — set dynamically per-request in proxy.ts
           // with a per-request nonce that eliminates unsafe-eval in prod.
           // Leaving an empty placeholder so the header is still explicit.
-          // The dynamic value in middleware.ts takes precedence.
+          // The dynamic value in proxy.ts takes precedence.
         ],
       },
     ];

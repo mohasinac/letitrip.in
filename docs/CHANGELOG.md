@@ -6,6 +6,29 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-04-04
 
+### Page regression fixes for wrapper migration and Next 16 proxy builds
+
+- Added a bare-render mode to `src/components/forms/Input.tsx` so file, radio, range, and search controls can keep their page-specific layouts without the component injecting extra wrapper markup.
+- Updated affected UI surfaces (`Search`, `FilterFacetSection`, `MediaLightbox`, `AvatarUpload`) to use bare input rendering where the wrapper migration had broken control layout or behavior.
+- Fixed admin/event page regressions caused by primitive swaps: category thumbnails now provide proper relative media containers, event offer buttons use the correct promotions label namespace, and background video previews wrap `MediaVideo` correctly.
+- Renamed the Next request entrypoint from `middleware.ts` to `proxy.ts` so Next 16 emits the expected `proxy.js.nft.json` trace and production builds complete successfully.
+
+**Verification:**
+
+- `npx tsc --noEmit` in letitrip.in ✅
+- `npm run build` in letitrip.in ✅
+
+### Seed data integrity alignment for carts and bids
+
+- Updated cart line-item snapshots in src/db/seed-data/cart-seed-data.ts to match current product seed records for product titles and snapshot prices.
+- Updated bid snapshots in src/db/seed-data/bids-seed-data.ts to match current auction product titles.
+- This keeps demo reseed flows consistent across products, carts, and bids without title/price drift.
+
+**Verification:**
+
+- `npx tsc --noEmit` in letitrip.in ✅
+- `npm run build` in letitrip.in ✅
+
 ### Locale fallback hardening across localized routes
 
 - Added shared resolver `src/i18n/resolve-locale.ts` to coerce missing/invalid locale values to `en`.

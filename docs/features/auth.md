@@ -108,7 +108,7 @@ Google sign-in button. Navigates to `/api/auth/google/start` which initiates the
 
 ## Middleware Auth Guard
 
-`middleware.ts` runs on every request:
+`proxy.ts` runs on every request:
 
 1. Reads `__session` cookie
 2. Calls `authVerifier.verifySessionCookie(token)`

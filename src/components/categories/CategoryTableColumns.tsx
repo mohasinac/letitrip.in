@@ -5,7 +5,7 @@
  * Column definitions for the admin categories DataTable.
  */
 
-import { Button, Span, StatusBadge } from "@/components";
+import { Button, MediaImage, Span, StatusBadge } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
@@ -21,13 +21,13 @@ export function getCategoryTableColumns(
         key: "image",
         header: "",
         render: (cat: Category) => (
-          <div className="w-9 h-9 rounded overflow-hidden flex-shrink-0">
+          <div className="relative w-9 h-9 rounded overflow-hidden flex-shrink-0">
             {cat.display?.coverImage ? (
-              <img
+              <MediaImage
                 src={cat.display.coverImage}
                 alt=""
+                size="thumbnail"
                 className="w-full h-full object-cover"
-                loading="lazy"
               />
             ) : (
               <div

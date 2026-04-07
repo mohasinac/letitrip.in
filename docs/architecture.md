@@ -62,7 +62,7 @@ Server Actions run on the server, call a repository, then call `revalidatePath` 
 ## Auth Session
 
 - Auth uses Firebase Auth tokens exchanged for an HTTP-only `__session` cookie.
-- The middleware (`middleware.ts`) validates the session cookie on every request.
+- The request proxy (`proxy.ts`) validates the session cookie on every request.
 - API routes call `authVerifier.verifySessionCookie(cookie)` (implementing `IAuthVerifier` from `@lir/next`).
 - Client reads auth state from `AuthContext` (wraps the current user from the decoded session).
 

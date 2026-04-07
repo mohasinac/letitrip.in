@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Li, Span, Text, Ul } from "@/components";
+import { Button, Input, Li, Span, Text, Ul } from "@/components";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
 import type { AlgoliaNavRecord } from "@/hooks";
@@ -297,8 +297,9 @@ export default function Search({
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-          <input
+          <Input
             ref={inputRef}
+            bare
             type="search"
             value={query}
             onChange={(e) => handleInlineChange(e.target.value)}
@@ -385,8 +386,9 @@ export default function Search({
         <div className="container mx-auto px-4 py-3 md:py-4 relative">
           <div className="flex items-center gap-2 md:gap-3">
             <div className="flex-1 relative">
-              <input
+              <Input
                 ref={inputRef}
+                bare
                 type="search"
                 placeholder={t("placeholder")}
                 value={query}

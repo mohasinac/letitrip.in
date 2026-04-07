@@ -81,7 +81,7 @@ export function TextLink({
 
   if (shouldBeExternal) {
     return (
-      <a
+      <Link
         href={href}
         className={resolvedClass}
         target="_blank"
@@ -89,7 +89,7 @@ export function TextLink({
         {...props}
       >
         {children}
-      </a>
+      </Link>
     );
   }
 

@@ -11,6 +11,7 @@ import {
   Heading,
   Input,
   Label,
+  MediaVideo,
   SectionTabs,
   Slider,
   Span,
@@ -338,13 +339,14 @@ export default function BackgroundSettings({
             }}
           >
             {config.type === "video" && config.value && (
-              <video
-                src={config.value}
-                autoPlay
-                loop
-                muted
-                className={`${position.fill} w-full h-full object-cover`}
-              />
+              <div className={position.fill}>
+                <MediaVideo
+                  src={config.value}
+                  controls={false}
+                  loop
+                  autoPlayMuted
+                />
+              </div>
             )}
             {config.overlay?.enabled && (
               <div

@@ -15,7 +15,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260120-p3q7r2",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -32,7 +32,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260121-k8m2n5",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -49,7 +49,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-mike-20260122-w4x9y1",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -66,7 +66,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260123-b7c1d4",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -84,7 +84,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260125-e2f6g3",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -102,7 +102,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-mike-20260128-h5j9k2",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -120,7 +120,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260203-l8m3n6",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -138,7 +138,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260208-p4q8r7",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
+    productTitle: "Evangelion Unit-01 Original Production Cel — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -159,7 +159,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-john-1-20260211-a1b2c3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -174,7 +174,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-mike-1-20260211-d4e5f6",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -189,7 +189,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-raj-1-20260212-g7h8i9",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -204,7 +204,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-john-2-20260213-j1k2l3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -220,7 +220,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-priya-1-20260214-m4n5o6",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -235,7 +235,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-mike-2-20260115-p7q8r9",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -251,7 +251,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-raj-2-20260219-s1t2u3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
+    productTitle: "Dragon Ball Z Complete Son Family 7-Piece Set — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",

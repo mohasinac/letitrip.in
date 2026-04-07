@@ -166,7 +166,7 @@ guest          Unauthenticated browser visitor
 
 ### 2.8 Route Guard Rules
 
-- `middleware.ts` intercepts every request and validates `__session`
+- `proxy.ts` intercepts every request and validates `__session`
 - Routes protected by `RBAC_CONFIG` â€” each protected route has a minimum required role
 - Unauthenticated requests to protected routes â†’ redirect `/auth/login`
 - Authenticated requests with insufficient role â†’ redirect `/unauthorized`

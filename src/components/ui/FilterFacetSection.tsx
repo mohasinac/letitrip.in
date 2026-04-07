@@ -3,7 +3,15 @@
 import React, { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Button, Checkbox, Input, Span, Text, Tooltip } from "@/components";
+import {
+  Button,
+  Checkbox,
+  Input,
+  Label,
+  Span,
+  Text,
+  Tooltip,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -302,11 +310,12 @@ export function FilterFacetSection({
               {visibleOptions.map((opt) => {
                 const isChecked = selected.includes(opt.value);
                 return (
-                  <label
+                  <Label
                     key={opt.value}
                     className={`flex items-center gap-2 cursor-pointer py-0.5 ${themed.textPrimary}`}
                   >
-                    <input
+                    <Input
+                      bare
                       type="radio"
                       name={`facet-radio-${groupId}`}
                       value={opt.value}
@@ -322,7 +331,7 @@ export function FilterFacetSection({
                         {formatNumber(opt.count)}
                       </Span>
                     )}
-                  </label>
+                  </Label>
                 );
               })}
             </div>

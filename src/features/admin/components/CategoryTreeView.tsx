@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
-import { Button, Span, Text } from "@/components";
+import { Button, MediaImage, Span, Text } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -98,13 +98,13 @@ function TreeNode({
         </Button>
 
         {/* Category thumbnail / icon */}
-        <div className="flex-shrink-0 w-7 h-7 rounded overflow-hidden">
+        <div className="relative flex-shrink-0 w-7 h-7 rounded overflow-hidden">
           {node.display?.coverImage ? (
-            <img
+            <MediaImage
               src={node.display.coverImage}
               alt=""
+              size="thumbnail"
               className="w-full h-full object-cover"
-              loading="lazy"
             />
           ) : (
             <div
