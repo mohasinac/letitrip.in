@@ -50,9 +50,9 @@ export const POST = createRouteHandler({
       page: "1",
       pageSize: "5000",
     });
-    const shiprocketDelivered = eligibleOrders.items.filter(
-      (o): o is OrderDocument & { id: string } => Boolean(o.id),
-    );
+    const shiprocketDelivered = eligibleOrders.items as (OrderDocument & {
+      id: string;
+    })[];
 
     if (shiprocketDelivered.length === 0) {
       return successResponse({

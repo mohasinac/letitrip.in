@@ -96,9 +96,11 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
     }
 
     // Find the user's existing active bid for this product
-    const userPriorActiveBid = (
-      await bidRepository.findBy("productId", productId)
-    ).find((b) => b.userId === user!.uid && b.status === "active");
+    const userPriorActiveBid = await bidRepository.findOneByProductAndUser(
+      productId,
+      user!.uid,
+      "active",
+    );
 
     // Create the bid
     const bid = await bidRepository.create({

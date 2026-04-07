@@ -323,6 +323,37 @@ class BidRepository extends BaseRepository<BidDocument> {
     }
   }
 
+  /**
+   * Find a single bid by product, user, and status (database-layer query)
+   * Used instead of findBy() + Array.find() for efficiency
+   */
+  async findOneByProductAndUser(
+    productId: string,
+    userId: string,
+    status: BidStatus = "active",
+  ): Promise<BidDocument | null> {
+    try {
+      const snapshot = await this.db
+        .collection(this.collection)
+        .where(BID_FIELDS.PRODUCT_ID, "==", productId)
+        .where(BID_FIELDS.USER_ID, "==", userId)
+        .where(BID_FIELDS.STATUS, "==", status)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        return null;
+      }
+
+      return this.mapDoc<BidDocument>(snapshot.docs[0]);
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to find bid for productId=${productId}, userId=${userId}`,
+        error,
+      );
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Sieve-powered list query
   // ---------------------------------------------------------------------------

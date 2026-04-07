@@ -22,7 +22,7 @@ export const GET = createRouteHandler<never, { id: string }>({
     const { totalEntries, approvedEntries, flaggedEntries } = event.stats;
     const pendingEntries = totalEntries - approvedEntries - flaggedEntries;
 
-    // For poll events: compute results per option
+    // For poll events: compute results per option (paginate to tally all votes)
     let pollResults: {
       optionId: string;
       label: string;
@@ -30,21 +30,32 @@ export const GET = createRouteHandler<never, { id: string }>({
       percent: number;
     }[] = [];
     if (event.type === "poll" && event.pollConfig) {
-      // Fetch all entries for this event and tally votes
-      const allEntriesResult = await eventEntryRepository.listForEvent(id, {
-        page: 1,
-        pageSize: 1000,
-        sorts: "-submittedAt",
-      });
+      // Paginate through all entries to ensure complete vote tally
+      let allEntries: unknown[] = [];
+      let page = 1;
+      let hasMore = true;
 
+      while (hasMore && page <= 50) {
+        // Safety limit: max 50 pages = 50k entries
+        const result = await eventEntryRepository.listForEvent(id, {
+          page,
+          pageSize: 1000,
+          sorts: "-submittedAt",
+        });
+        allEntries.push(...result.items);
+        hasMore = result.hasMore;
+        page += 1;
+      }
+
+      // Tally votes across all entries
       const voteCounts: Record<string, number> = {};
-      for (const entry of allEntriesResult.items) {
-        for (const optionId of entry.pollVotes ?? []) {
+      for (const entry of allEntries) {
+        for (const optionId of (entry as any).pollVotes ?? []) {
           voteCounts[optionId] = (voteCounts[optionId] ?? 0) + 1;
         }
       }
 
-      const total = allEntriesResult.total || 1;
+      const total = allEntries.length || 1;
       pollResults = event.pollConfig.options.map((opt) => ({
         optionId: opt.id,
         label: opt.label,
