@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Heading, Text, TextLink, Section } from "@/components";
 
 export const revalidate = 3600;
 
 const { themed, typography, page } = THEME_CONSTANTS;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("privacy");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "privacy" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
     description: t("metaDescription"),
   };
 }
 
-export default async function PrivacyPage() {
-  const t = await getTranslations("privacy");
+export default async function PrivacyPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "privacy" });
 
   const SECTIONS = [
     { title: t("introTitle"), text: t("introText") },

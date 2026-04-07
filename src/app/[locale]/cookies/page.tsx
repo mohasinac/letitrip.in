@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink } from "@/components";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const revalidate = 3600;
 
 const { themed } = THEME_CONSTANTS;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("cookies");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "cookies" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
     description: t("metaDescription"),
   };
 }
 
-export default async function CookiePolicyPage() {
-  const t = await getTranslations("cookies");
+export default async function CookiePolicyPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "cookies" });
 
   const SECTIONS = [
     { title: t("whatTitle"), text: t("whatText") },

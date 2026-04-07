@@ -2,22 +2,27 @@ import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const revalidate = 3600;
 
 const { themed, page } = THEME_CONSTANTS;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("refundPolicy");
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "refundPolicy" });
   return {
     title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
     description: t("metaDescription"),
   };
 }
 
-export default async function RefundPolicyPage() {
-  const t = await getTranslations("refundPolicy");
+export default async function RefundPolicyPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "refundPolicy" });
 
   const SECTIONS = [
     { title: t("eligibilityTitle"), text: t("eligibilityText") },
