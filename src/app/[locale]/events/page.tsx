@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EventsListView } from "@/features/events";
 import { eventRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
+import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";
 import type { EventListResponse } from "@mohasinac/feat-events";
 
@@ -34,22 +35,10 @@ export default async function EventsPage({ params }: Props) {
     ? {
         items: result.items.map((e) => ({
           ...e,
-          startsAt:
-            e.startsAt instanceof Date
-              ? e.startsAt.toISOString()
-              : String(e.startsAt),
-          endsAt:
-            e.endsAt instanceof Date
-              ? e.endsAt.toISOString()
-              : String(e.endsAt),
-          createdAt:
-            e.createdAt instanceof Date
-              ? e.createdAt.toISOString()
-              : String(e.createdAt),
-          updatedAt:
-            e.updatedAt instanceof Date
-              ? e.updatedAt.toISOString()
-              : String(e.updatedAt),
+          startsAt: dateToISOString(e.startsAt),
+          endsAt: dateToISOString(e.endsAt),
+          createdAt: dateToISOString(e.createdAt),
+          updatedAt: dateToISOString(e.updatedAt),
         })),
         total: result.total,
         page: result.page,

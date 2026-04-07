@@ -28,6 +28,7 @@ export { useEvent as usePublicEvent } from "@mohasinac/feat-events";
 export { EventStatusBadge } from "./components/EventStatusBadge";
 export { EventStatsBanner } from "./components/EventStatsBanner";
 export { EventDetailView } from "./components/EventDetailView";
+export { EventJsonLd } from "./components/EventJsonLd";
 export { useEventsTableColumns } from "./components/EventsTable";
 export { useEventEntriesTableColumns } from "./components/EventEntriesTable";
 export { EventFormDrawer } from "./components/EventFormDrawer";

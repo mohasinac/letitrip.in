@@ -2,11 +2,9 @@ import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { Spinner } from "@/components";
-import { StoresListView } from "@/features/stores";
+import { StoresListView, mapStoreDocument } from "@/features/stores";
 import { THEME_CONSTANTS } from "@/constants";
 import { storeRepository } from "@/repositories";
-import type { StoreDocument } from "@/db/schema";
-import type { StoreListItem } from "@mohasinac/feat-stores";
 
 export const revalidate = 60;
 
@@ -23,33 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function mapStore(store: StoreDocument): StoreListItem {
-  return {
-    id: store.id,
-    storeSlug: store.storeSlug,
-    ownerId: store.ownerId,
-    storeName: store.storeName,
-    storeDescription: store.storeDescription,
-    storeCategory: store.storeCategory,
-    storeLogoURL: store.storeLogoURL,
-    storeBannerURL: store.storeBannerURL,
-    status: store.status,
-    isPublic: store.isPublic,
-    totalProducts: store.stats?.totalProducts ?? 0,
-    itemsSold: store.stats?.itemsSold ?? 0,
-    totalReviews: store.stats?.totalReviews ?? 0,
-    averageRating: store.stats?.averageRating,
-    createdAt: store.createdAt.toISOString(),
-  };
-}
-
 export default async function StoresPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const initialData = await storeRepository
     .listStores({ sorts: "-createdAt", page: 1, pageSize: 24 })
     .then((r) => ({
-      items: r.items.map(mapStore),
+      items: r.items.map(mapStoreDocument),
       total: r.total,
       page: r.page,
       pageSize: r.pageSize,
