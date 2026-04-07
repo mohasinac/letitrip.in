@@ -13,6 +13,30 @@ import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
+
+async function loadPublishedProducts() {
+  const items = [] as Awaited<
+    ReturnType<typeof productRepository.list>
+  >["items"];
+  let page = 1;
+
+  while (true) {
+    const result = await productRepository.list(
+      {
+        filters: "status==published",
+        sorts: "-createdAt",
+        page: String(page),
+        pageSize: "200",
+      },
+      { status: "published" },
+    );
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return { items, total: result.total };
+    }
+    page += 1;
+  }
+}
 import {
   isAlgoliaConfigured,
   indexProducts,
@@ -319,9 +343,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "sync" && target === "products") {
-      const all = await productRepository.findAll();
-      const published = all.filter((p) => p.status === "published");
-      const result = await indexProducts(published);
+      const published = await loadPublishedProducts();
+      const result = await indexProducts(published.items);
       serverLogger.info(`[dev] Algolia products synced`, {
         indexed: result.indexed,
       });
@@ -329,8 +352,8 @@ export async function POST(request: NextRequest) {
         success: true,
         data: {
           indexed: result.indexed,
-          total: all.length,
-          skipped: all.length - published.length,
+          total: published.total,
+          skipped: published.total - result.indexed,
         },
       });
     }

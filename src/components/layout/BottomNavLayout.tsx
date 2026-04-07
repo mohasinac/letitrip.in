@@ -39,7 +39,7 @@ export function BottomNavLayout({
     <Nav
       id={id}
       aria-label={ariaLabel}
-      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} shadow-2xl ${utilities.safeAreaBottom}${className ? ` ${className}` : ""}`}
+      className={`fixed bottom-0 left-0 right-0 xl:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} shadow-2xl ${utilities.safeAreaBottom}${className ? ` ${className}` : ""}`}
     >
       <Ul className={`flex items-stretch ${layout.bottomNavHeight}`}>
         {children}

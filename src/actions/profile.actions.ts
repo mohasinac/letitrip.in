@@ -18,6 +18,7 @@ import {
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import { AuthorizationError, ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { maskPublicReview } from "@/lib/pii";
 import type { UserDocument } from "@/db/schema";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
@@ -113,7 +114,7 @@ export async function getSellerReviewsAction(sellerId: string) {
       .slice(0, 20)
       .map((p) => reviewRepository.findApprovedByProduct(p.id).catch(() => [])),
   );
-  return batches.flat();
+  return batches.flat().map(maskPublicReview);
 }
 
 export async function getSellerProductsAction(sellerId: string) {

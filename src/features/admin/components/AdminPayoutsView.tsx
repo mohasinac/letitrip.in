@@ -70,15 +70,20 @@ export function AdminPayoutsView() {
     ]);
 
   const { data, isLoading, error, refetch, updateMutation } = useAdminPayouts(
-    table.buildSieveParams(
-      buildSieveFilters(
-        ["status==", statusFilter],
-        ["paymentMethod==", paymentMethodFilter],
-        ["amount>=", minAmount],
-        ["amount<=", maxAmount],
-        ["sellerName@=*", searchTerm],
-      ),
-    ),
+    (() => {
+      // sellerName is PII-encrypted — cannot use @=* Sieve filter; pass `q` separately
+      const rawSieveParams = table.buildSieveParams(
+        buildSieveFilters(
+          ["status==", statusFilter],
+          ["paymentMethod==", paymentMethodFilter],
+          ["amount>=", minAmount],
+          ["amount<=", maxAmount],
+        ),
+      );
+      return searchTerm
+        ? `${rawSieveParams}&q=${encodeURIComponent(searchTerm)}`
+        : rawSieveParams;
+    })(),
   );
 
   const payouts = data?.payouts ?? [];

@@ -1,31 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import {
-  THEME_CONSTANTS,
-  ROUTES,
-  FAQ_CATEGORIES,
-  STATIC_FAQS,
-  getStaticFaqCategoryCounts,
-  getLocalizedFaqText,
-} from "@/constants";
-import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
+import type { FAQCategoryKey } from "@/constants";
 import { useUrlTable } from "@/hooks";
-import {
-  Button,
-  Heading,
-  HorizontalScroller,
-  Search,
-  Span,
-  Text,
-} from "@/components";
+import { Heading, Search, SectionTabs, Text } from "@/components";
+import type { SectionTab } from "@/components";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
 import { FAQAccordion } from "./FAQAccordion";
 import { ContactCTA } from "./ContactCTA";
 import type { FAQSortOption } from "./FAQSortDropdown";
+import { useFaqList } from "../hooks";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -37,7 +24,7 @@ export function FAQPageContent({
   initialCategory = "all",
 }: FAQPageContentProps) {
   const t = useTranslations("faq");
-  const locale = useLocale();
+  const tLoading = useTranslations("loading");
   const router = useRouter();
 
   // Derive directly from the URL-sourced prop — no local state.
@@ -48,52 +35,42 @@ export function FAQPageContent({
   const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
   const searchQuery = table.get("q") || "";
 
-  // Use static data — no API calls needed
-  const allFAQs: StaticFAQItem[] = STATIC_FAQS;
+  const sorts =
+    sortOption === "helpful"
+      ? "-stats.helpful,-priority,order"
+      : sortOption === "alphabetical"
+        ? "question"
+        : "-createdAt";
 
-  // Calculate category counts from static data
-  const categoryCounts = useMemo(() => getStaticFaqCategoryCounts(), []);
+  const { faqs, total, isLoading } = useFaqList({
+    category: selectedCategory === "all" ? undefined : selectedCategory,
+    search: searchQuery.trim() || undefined,
+    sorts,
+    page: 1,
+    pageSize: 100,
+  });
 
-  // Filter and sort FAQs
-  const filteredAndSortedFAQs = useMemo(() => {
-    let filtered = allFAQs;
+  const { faqs: allMatchingFaqs } = useFaqList({
+    search: searchQuery.trim() || undefined,
+    sorts: "-priority,order",
+    page: 1,
+    pageSize: 200,
+  });
 
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((faq) => faq.category === selectedCategory);
+  const categoryCounts: Record<FAQCategoryKey, number> = {
+    general: 0,
+    orders_payment: 0,
+    shipping_delivery: 0,
+    returns_refunds: 0,
+    product_information: 0,
+    account_security: 0,
+    technical_support: 0,
+  };
+  allMatchingFaqs.forEach((faq) => {
+    if (faq.category in categoryCounts) {
+      categoryCounts[faq.category as FAQCategoryKey] += 1;
     }
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((faq) => {
-        const { question, answer } = getLocalizedFaqText(faq, locale);
-        return (
-          question.toLowerCase().includes(query) ||
-          answer.toLowerCase().includes(query) ||
-          faq.tags?.some((tag) => tag.toLowerCase().includes(query))
-        );
-      });
-    }
-
-    const sorted = [...filtered];
-    if (sortOption === "helpful") {
-      sorted.sort((a, b) => {
-        const aRatio =
-          (a.stats?.helpful || 0) /
-          ((a.stats?.helpful || 0) + (a.stats?.notHelpful || 0) + 1);
-        const bRatio =
-          (b.stats?.helpful || 0) /
-          ((b.stats?.helpful || 0) + (b.stats?.notHelpful || 0) + 1);
-        return bRatio - aRatio || a.order - b.order;
-      });
-    } else if (sortOption === "alphabetical") {
-      sorted.sort((a, b) => a.question.localeCompare(b.question));
-    } else {
-      // default: priority then order
-      sorted.sort((a, b) => b.priority - a.priority || a.order - b.order);
-    }
-
-    return sorted;
-  }, [allFAQs, selectedCategory, searchQuery, sortOption]);
+  });
 
   // Navigate to the category URL path on selection
   const handleCategorySelect = (category: FAQCategoryKey | "all") => {
@@ -132,57 +109,26 @@ export function FAQPageContent({
 
       {/* Mobile category pill strip — hidden on large screens (sidebar takes over) */}
       <div className="lg:hidden mb-8">
-        <HorizontalScroller
-          items={[
-            {
-              key: "all" as const,
-              label: t("allFaqs"),
-              icon: "📚",
-              count: categoryCounts
-                ? Object.values(categoryCounts).reduce((s, c) => s + c, 0)
-                : 0,
-            },
-            ...Object.entries(FAQ_CATEGORIES).map(([k, cat]) => ({
-              key: k as FAQCategoryKey,
-              label: t(`category.${k}`),
-              icon: cat.icon,
-              count: categoryCounts[k as FAQCategoryKey] ?? 0,
-            })),
-          ]}
-          renderItem={(pill) => {
-            const isActive = selectedCategory === pill.key;
-            return (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  handleCategorySelect(pill.key as FAQCategoryKey | "all")
-                }
-                className={[
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 border",
-                  isActive
-                    ? "bg-primary text-white border-primary shadow-sm"
-                    : `${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.border} hover:border-primary/60`,
-                ].join(" ")}
-              >
-                <Span>{pill.icon}</Span>
-                <Span>{pill.label}</Span>
-                <Span
-                  className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-zinc-100 dark:bg-slate-700 text-zinc-500 dark:text-zinc-400"
-                  }`}
-                >
-                  {pill.count}
-                </Span>
-              </Button>
-            );
-          }}
-          keyExtractor={(pill) => String(pill.key)}
-          gap={8}
-          autoScroll={false}
-          showArrows={false}
-          className="px-1"
+        <SectionTabs
+          inline
+          value={selectedCategory}
+          onChange={(v) => handleCategorySelect(v as FAQCategoryKey | "all")}
+          tabs={
+            [
+              {
+                value: "all",
+                label: t("allFaqs"),
+                icon: "📚",
+                count: total,
+              },
+              ...Object.entries(FAQ_CATEGORIES).map(([k, cat]) => ({
+                value: k,
+                label: t(`category.${k}`),
+                icon: cat.icon,
+                count: categoryCounts[k as FAQCategoryKey] ?? 0,
+              })),
+            ] satisfies SectionTab[]
+          }
         />
       </div>
 
@@ -206,7 +152,7 @@ export function FAQPageContent({
             <Text
               className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {t("resultCount", { count: filteredAndSortedFAQs.length })}
+              {t("resultCount", { count: total })}
               {selectedCategory !== "all" &&
                 ` ${t("inCategory", { category: t(`category.${selectedCategory}`) })}`}
             </Text>
@@ -217,10 +163,16 @@ export function FAQPageContent({
           </div>
 
           {/* FAQ Accordion */}
-          <FAQAccordion faqs={filteredAndSortedFAQs} locale={locale} />
+          {isLoading ? (
+            <Text className={THEME_CONSTANTS.themed.textSecondary}>
+              {tLoading("default")}
+            </Text>
+          ) : (
+            <FAQAccordion faqs={faqs} />
+          )}
 
           {/* Contact CTA */}
-          {filteredAndSortedFAQs.length > 0 && (
+          {faqs.length > 0 && (
             <div className="mt-12">
               <ContactCTA />
             </div>

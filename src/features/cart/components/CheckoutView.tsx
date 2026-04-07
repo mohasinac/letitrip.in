@@ -2,7 +2,7 @@
  * CheckoutView
  *
  * Extracted from src/app/[locale]/checkout/page.tsx
- * Two-step checkout: address selection â†’ order review â†’ payment
+ * Two-step checkout: address selection → order review → payment
  * (COD, Razorpay online, or manual UPI via WhatsApp confirmation).
  *
  * Added flows:
@@ -454,7 +454,7 @@ export function CheckoutView() {
                   disabled={!selectedAddressId}
                   className="px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
-                  {t("stepReview")} â†’
+                  {t("stepReview")} →
                 </Button>
               </div>
             </div>
@@ -481,7 +481,7 @@ export function CheckoutView() {
                   onClick={() => setStep(1)}
                   className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
                 >
-                  â† {t("stepAddress")}
+                  ← {t("stepAddress")}
                 </Button>
                 <Button
                   onClick={handlePlaceOrder}

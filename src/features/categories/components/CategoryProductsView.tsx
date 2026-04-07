@@ -16,14 +16,11 @@ import {
   PRODUCT_SORT_VALUES,
   ProductCard,
   Search,
+  SectionTabs,
   SortDropdown,
   Span,
   Spinner,
   TablePagination,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
   Text,
   TextLink,
   Tooltip,
@@ -314,202 +311,201 @@ export function CategoryProductsView({
       )}
 
       {/* ═══════════════ Products / Auctions Tabs ═══════════════ */}
-      <Tabs
+      <SectionTabs
+        inline
         value={activeTab}
         onChange={(tab) => table.set("tab", tab)}
-        variant="line"
-      >
-        <TabsList>
-          <TabsTrigger value="products">{t("productsTab")}</TabsTrigger>
-          <TabsTrigger value="auctions">{t("auctionsTab")}</TabsTrigger>
-        </TabsList>
+        tabs={[
+          { value: "products", label: t("productsTab") },
+          { value: "auctions", label: t("auctionsTab") },
+        ]}
+      />
 
-        {/* ──── Products tab content ──── */}
-        <TabsContent value="products">
-          <div className="pt-4">
-            {/* Breadcrumb */}
-            <Nav
-              aria-label="Breadcrumb"
-              className={`text-sm ${themed.textSecondary} mb-4`}
+      {/* ──── Products tab content ──── */}
+      {activeTab === "products" && (
+        <div className="pt-4">
+          {/* Breadcrumb */}
+          <Nav
+            aria-label="Breadcrumb"
+            className={`text-sm ${themed.textSecondary} mb-4`}
+          >
+            <TextLink
+              href={ROUTES.PUBLIC.CATEGORIES}
+              className="hover:text-primary"
             >
-              <TextLink
-                href={ROUTES.PUBLIC.CATEGORIES}
-                className="hover:text-primary"
-              >
-                {t("title")}
-              </TextLink>
-              {category.ancestors?.map((ancestor) => (
-                <Span key={ancestor.id}>
-                  <Span className="mx-2">/</Span>
-                  <TextLink
-                    href={`${ROUTES.PUBLIC.CATEGORIES}/${ancestor.name.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="hover:text-primary"
-                  >
-                    {ancestor.name}
-                  </TextLink>
-                </Span>
-              ))}
-              <Span className="mx-2">/</Span>
-              <Span className={themed.textPrimary}>{category.name}</Span>
-            </Nav>
+              {t("title")}
+            </TextLink>
+            {category.ancestors?.map((ancestor) => (
+              <Span key={ancestor.id}>
+                <Span className="mx-2">/</Span>
+                <TextLink
+                  href={`${ROUTES.PUBLIC.CATEGORIES}/${ancestor.name.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="hover:text-primary"
+                >
+                  {ancestor.name}
+                </TextLink>
+              </Span>
+            ))}
+            <Span className="mx-2">/</Span>
+            <Span className={themed.textPrimary}>{category.name}</Span>
+          </Nav>
 
-            {/* ListingLayout — unified search/filter/sort/grid/pagination */}
-            <ListingLayout
-              searchSlot={
-                <Search
-                  value={table.get("q")}
-                  onChange={(v) => table.set("q", v)}
-                  placeholder={t("searchProducts", { name: category.name })}
-                  onClear={() => table.set("q", "")}
-                />
-              }
-              filterContent={
-                <RangeFilter
-                  title={t("filterPrice")}
-                  minValue={pendingTable.get("minPrice")}
-                  maxValue={pendingTable.get("maxPrice")}
-                  onMinChange={(v) => pendingTable.set("minPrice", v)}
-                  onMaxChange={(v) => pendingTable.set("maxPrice", v)}
-                  prefix="₹"
-                  showSlider
-                  minBound={0}
-                  maxBound={500000}
-                  step={500}
-                  defaultCollapsed={false}
-                />
-              }
-              filterActiveCount={filterActiveCount}
-              onFilterApply={onFilterApply}
-              onFilterClear={onFilterClear}
-              sortSlot={
-                <SortDropdown
-                  value={sort}
-                  onChange={(v) => table.set("sort", v)}
-                  options={sortOptions}
-                />
-              }
-              activeFiltersSlot={
-                activeFilters.length > 0 ? (
-                  <ActiveFilterChips
-                    filters={activeFilters}
-                    onRemove={handleClearFilter}
-                    onClearAll={onFilterClear}
-                  />
-                ) : undefined
-              }
-              selectedCount={selectedIds.length}
-              onClearSelection={() => setSelectedIds([])}
-              actionsSlot={
-                <Tooltip content={tActions("selectionHint")} placement="bottom">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className={`w-7 h-7 rounded-full ${flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
-                    aria-label={tActions("selectionHint")}
-                  >
-                    <Info className="w-4 h-4" />
-                  </Button>
-                </Tooltip>
-              }
-              bulkActionItems={
-                user
-                  ? [
-                      {
-                        id: "bulk-cart",
-                        label: tActions("bulkAddToCart", {
-                          count: selectedIds.length,
-                        }),
-                        variant: "secondary",
-                        onClick: handleBulkAddToCart,
-                      },
-                      {
-                        id: "bulk-wishlist",
-                        label: tActions("bulkAddToWishlist", {
-                          count: selectedIds.length,
-                        }),
-                        variant: "primary",
-                        onClick: handleBulkAddToWishlist,
-                      },
-                    ]
-                  : undefined
-              }
-              toolbarPaginationSlot={
-                totalPages > 1 ? (
-                  <TablePagination
-                    compact
-                    total={totalProducts}
-                    currentPage={page}
-                    totalPages={totalPages}
-                    pageSize={PAGE_SIZE}
-                    onPageChange={(p) => table.set("page", String(p))}
-                  />
-                ) : undefined
-              }
-            >
-              <DataTable
-                data={products}
-                keyExtractor={(item) => item.id}
-                loading={prodLoading}
-                externalPagination
-                columns={[
-                  { key: "title", header: tProducts("colTitle") },
-                  { key: "price", header: tProducts("colPrice") },
-                  { key: "category", header: tProducts("filterCategory") },
-                  { key: "status", header: tProducts("colStatus") },
-                ]}
-                showViewToggle
-                showTableView={false}
-                viewMode={
-                  (table.get("view") || "grid") as "table" | "grid" | "list"
-                }
-                onViewModeChange={(m) => table.set("view", m)}
-                labels={{
-                  gridView: tActions("gridView"),
-                  listView: tActions("listView"),
-                }}
-                emptyState={
-                  <div className={`${flex.centerCol} py-16 text-center`}>
-                    <Text size="lg" weight="medium">
-                      {t("noProductsIn", { name: category.name })}
-                    </Text>
-                    <TextLink
-                      href={ROUTES.PUBLIC.CATEGORIES}
-                      className="mt-3 text-sm text-primary hover:underline"
-                    >
-                      {t("backToCategories")}
-                    </TextLink>
-                  </div>
-                }
-                mobileCardRender={(item) => (
-                  <ProductCard
-                    product={item as any}
-                    variant={
-                      (table.get("view") || "grid") === "list" ? "list" : "grid"
-                    }
-                    selectable={!!user}
-                    isSelected={selectedIds.includes(item.id)}
-                    onSelect={(id, sel) =>
-                      setSelectedIds((prev) =>
-                        sel ? [...prev, id] : prev.filter((x) => x !== id),
-                      )
-                    }
-                  />
-                )}
+          {/* ListingLayout — unified search/filter/sort/grid/pagination */}
+          <ListingLayout
+            searchSlot={
+              <Search
+                value={table.get("q")}
+                onChange={(v) => table.set("q", v)}
+                placeholder={t("searchProducts", { name: category.name })}
+                onClear={() => table.set("q", "")}
               />
-            </ListingLayout>
-          </div>
-        </TabsContent>
+            }
+            filterContent={
+              <RangeFilter
+                title={t("filterPrice")}
+                minValue={pendingTable.get("minPrice")}
+                maxValue={pendingTable.get("maxPrice")}
+                onMinChange={(v) => pendingTable.set("minPrice", v)}
+                onMaxChange={(v) => pendingTable.set("maxPrice", v)}
+                prefix="₹"
+                showSlider
+                minBound={0}
+                maxBound={500000}
+                step={500}
+                defaultCollapsed={false}
+              />
+            }
+            filterActiveCount={filterActiveCount}
+            onFilterApply={onFilterApply}
+            onFilterClear={onFilterClear}
+            sortSlot={
+              <SortDropdown
+                value={sort}
+                onChange={(v) => table.set("sort", v)}
+                options={sortOptions}
+              />
+            }
+            activeFiltersSlot={
+              activeFilters.length > 0 ? (
+                <ActiveFilterChips
+                  filters={activeFilters}
+                  onRemove={handleClearFilter}
+                  onClearAll={onFilterClear}
+                />
+              ) : undefined
+            }
+            selectedCount={selectedIds.length}
+            onClearSelection={() => setSelectedIds([])}
+            actionsSlot={
+              <Tooltip content={tActions("selectionHint")} placement="bottom">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className={`w-7 h-7 rounded-full ${flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
+                  aria-label={tActions("selectionHint")}
+                >
+                  <Info className="w-4 h-4" />
+                </Button>
+              </Tooltip>
+            }
+            bulkActionItems={
+              user
+                ? [
+                    {
+                      id: "bulk-cart",
+                      label: tActions("bulkAddToCart", {
+                        count: selectedIds.length,
+                      }),
+                      variant: "secondary",
+                      onClick: handleBulkAddToCart,
+                    },
+                    {
+                      id: "bulk-wishlist",
+                      label: tActions("bulkAddToWishlist", {
+                        count: selectedIds.length,
+                      }),
+                      variant: "primary",
+                      onClick: handleBulkAddToWishlist,
+                    },
+                  ]
+                : undefined
+            }
+            toolbarPaginationSlot={
+              totalPages > 1 ? (
+                <TablePagination
+                  compact
+                  total={totalProducts}
+                  currentPage={page}
+                  totalPages={totalPages}
+                  pageSize={PAGE_SIZE}
+                  onPageChange={(p) => table.set("page", String(p))}
+                />
+              ) : undefined
+            }
+          >
+            <DataTable
+              data={products}
+              keyExtractor={(item) => item.id}
+              loading={prodLoading}
+              externalPagination
+              columns={[
+                { key: "title", header: tProducts("colTitle") },
+                { key: "price", header: tProducts("colPrice") },
+                { key: "category", header: tProducts("filterCategory") },
+                { key: "status", header: tProducts("colStatus") },
+              ]}
+              showViewToggle
+              showTableView={false}
+              viewMode={
+                (table.get("view") || "grid") as "table" | "grid" | "list"
+              }
+              onViewModeChange={(m) => table.set("view", m)}
+              labels={{
+                gridView: tActions("gridView"),
+                listView: tActions("listView"),
+              }}
+              emptyState={
+                <div className={`${flex.centerCol} py-16 text-center`}>
+                  <Text size="lg" weight="medium">
+                    {t("noProductsIn", { name: category.name })}
+                  </Text>
+                  <TextLink
+                    href={ROUTES.PUBLIC.CATEGORIES}
+                    className="mt-3 text-sm text-primary hover:underline"
+                  >
+                    {t("backToCategories")}
+                  </TextLink>
+                </div>
+              }
+              mobileCardRender={(item) => (
+                <ProductCard
+                  product={item as any}
+                  variant={
+                    (table.get("view") || "grid") === "list" ? "list" : "grid"
+                  }
+                  selectable={!!user}
+                  isSelected={selectedIds.includes(item.id)}
+                  onSelect={(id, sel) =>
+                    setSelectedIds((prev) =>
+                      sel ? [...prev, id] : prev.filter((x) => x !== id),
+                    )
+                  }
+                />
+              )}
+            />
+          </ListingLayout>
+        </div>
+      )}
 
-        {/* ──── Auctions tab content ──── */}
-        <TabsContent value="auctions">
-          <div className={`${flex.centerCol} py-16 text-center`}>
-            <Span className="text-5xl mb-4">🔨</Span>
-            <Text size="lg" weight="medium">
-              {t("noAuctionsIn", { name: category.name })}
-            </Text>
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* ──── Auctions tab content ──── */}
+      {activeTab === "auctions" && (
+        <div className={`${flex.centerCol} py-16 text-center`}>
+          <Span className="text-5xl mb-4">🔨</Span>
+          <Text size="lg" weight="medium">
+            {t("noAuctionsIn", { name: category.name })}
+          </Text>
+        </div>
+      )}
     </Main>
   );
 }

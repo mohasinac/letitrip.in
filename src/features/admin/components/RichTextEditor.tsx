@@ -247,7 +247,7 @@ function MenuBar({ editor }: MenuBarProps) {
         }`}
         title="Bullet List"
       >
-        â€¢ List
+        • List
       </Button>
 
       <Button
@@ -331,7 +331,7 @@ function MenuBar({ editor }: MenuBarProps) {
         className="px-3 py-1.5 text-sm font-medium rounded hover:bg-zinc-200 dark:hover:bg-slate-700 disabled:opacity-50"
         title="Undo (Ctrl+Z)"
       >
-        â†¶
+        ↶
       </Button>
 
       <Button
@@ -343,7 +343,7 @@ function MenuBar({ editor }: MenuBarProps) {
         className="px-3 py-1.5 text-sm font-medium rounded hover:bg-zinc-200 dark:hover:bg-slate-700 disabled:opacity-50"
         title="Redo (Ctrl+Shift+Z)"
       >
-        â†·
+        ↷
       </Button>
 
       <div className="w-px h-6 bg-zinc-300 dark:bg-slate-600 mx-1" />

@@ -27,6 +27,7 @@ export const USER_FIELDS = {
   // PII blind indices (HMAC-SHA256 for equality queries on encrypted fields)
   EMAIL_INDEX: "emailIndex",
   PHONE_INDEX: "phoneIndex",
+  DISPLAY_NAME_INDEX: "displayNameIndex",
   PHOTO_URL: "photoURL",
   AVATAR_METADATA: "avatarMetadata",
   ROLE: "role",
@@ -309,6 +310,7 @@ export const REVIEW_FIELDS = {
   SELLER_ID: "sellerId",
   USER_ID: "userId",
   USER_NAME: "userName",
+  USER_NAME_INDEX: "userNameIndex",
   USER_AVATAR: "userAvatar",
   RATING: "rating",
   TITLE: "title",
@@ -523,6 +525,7 @@ export const FAQ_FIELDS = {
   ORDER: "order",
   PRIORITY: "priority",
   TAGS: "tags",
+  SEARCH_TOKENS: "searchTokens",
   RELATED_FAQS: "relatedFAQs",
   USE_SITE_SETTINGS: "useSiteSettings",
   VARIABLES: "variables",

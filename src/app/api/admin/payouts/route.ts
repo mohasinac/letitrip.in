@@ -12,8 +12,11 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
+import { buildSieveFilters } from "@/helpers";
 import { payoutRepository } from "@/repositories";
+import { piiBlindIndex } from "@/lib/pii";
 import { serverLogger } from "@/lib/server-logger";
+import { PAYOUT_FIELDS } from "@/db/schema";
 
 /**
  * GET /api/admin/payouts
@@ -39,22 +42,23 @@ export const GET = createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const q = getStringParam(searchParams, "q")?.trim().toLowerCase() || "";
 
     serverLogger.info("Admin payouts list requested", {
       filters,
       sorts,
       page,
       pageSize,
+      q: q ? "[redacted]" : "",
     });
 
-    // Compute summary counts + paginated results in parallel (Rule 8 — no findAll())
+    // Summary counts always use the full unfiltered dataset (1-doc count queries)
     const [
       allResult,
       pendingResult,
       processingResult,
       completedResult,
       failedResult,
-      sieveResult,
     ] = await Promise.all([
       payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
       payoutRepository.list({
@@ -81,27 +85,41 @@ export const GET = createRouteHandler({
         page: "1",
         pageSize: "1",
       }),
-      payoutRepository.list({
-        filters,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      }),
     ]);
 
-    // Summary always computed from full dataset regardless of active filter
     const summary = {
       total: allResult.total,
       pending: pendingResult.total,
       processing: processingResult.total,
       completed: completedResult.total,
       failed: failedResult.total,
-      totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),
     };
+
+    const qFilter = q
+      ? q.includes("@")
+        ? `${PAYOUT_FIELDS.SELLER_EMAIL_INDEX}==${piiBlindIndex(q)}`
+        : `${PAYOUT_FIELDS.SELLER_NAME_INDEX}==${piiBlindIndex(q)}`
+      : undefined;
+
+    const effectiveFilters =
+      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+
+    // Avoid forcing extra composite indices for exact blind-index lookups.
+    const effectiveSorts = q ? undefined : sorts;
+
+    const sieveResult = await payoutRepository.list({
+      filters: effectiveFilters,
+      sorts: effectiveSorts,
+      page: String(page),
+      pageSize: String(pageSize),
+    });
 
     return successResponse({
       payouts: sieveResult.items,
-      summary,
+      summary: {
+        ...summary,
+        totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),
+      },
       meta: {
         total: sieveResult.total,
         page: sieveResult.page,

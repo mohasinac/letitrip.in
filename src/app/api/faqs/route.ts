@@ -23,14 +23,13 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-// eslint-disable-next-line -- sieve.helper uses node:url so is intentionally excluded from the barrel
-import { applySieveToArray } from "@/helpers/data/sieve.helper"; // @rule-ignore ARCH-001
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@/lib/api/cache-middleware";
 import { createRouteHandler } from "@mohasinac/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
 import type { FAQDocument } from "@/db/schema";
+import { errorResponse } from "@/lib/api-response";
 
 /**
  * GET /api/faqs
@@ -75,7 +74,7 @@ export const GET = createRouteHandler({
 
     // Helper: build structured Sieve filter string from legacy params
     const buildStructuredFilters = (): string | undefined => {
-      const parts: string[] = [];
+      const parts: string[] = ["isActive==true"];
       if (category) parts.push(`category==${category}`);
       if (showOnHomepageStr) parts.push(`showOnHomepage==${showOnHomepage}`);
       if (priority !== undefined) parts.push(`priority==${priority}`);
@@ -92,93 +91,30 @@ export const GET = createRouteHandler({
           : (faq.answer ?? { text: "", format: "plain" as const }),
     });
 
-    const needsPreFilter = !!(tags && tags.length > 0) || !!search;
+    if (search && tags && tags.length > 0) {
+      return errorResponse(
+        "Combining FAQ full-text token search with tag filters is not supported by the Firestore Sieve adapter",
+        400,
+      );
+    }
 
-    let sieveResult: {
-      items: FAQDocument[];
-      total: number;
-      page: number;
-      pageSize: number;
-      totalPages: number;
-      hasMore: boolean;
-    };
-
-    if (needsPreFilter) {
-      // Legacy in-memory path: required for tags array-membership + full-text search
-      let faqs = await faqsRepository.findAll();
-
-      if (tags && tags.length > 0) {
-        faqs = faqs.filter((faq) =>
-          faq.tags?.some((tag) => tags.includes(tag)),
-        );
-      }
-
-      faqs = faqs.map(normaliseAnswer);
-
-      if (search) {
-        const searchLower = search.toLowerCase();
-        faqs = faqs.filter(
-          (faq) =>
-            faq.question.toLowerCase().includes(searchLower) ||
-            (faq.answer.text ?? "").toLowerCase().includes(searchLower),
-        );
-      }
-
-      sieveResult = await applySieveToArray({
-        items: faqs,
-        model: {
-          filters: buildStructuredFilters(),
-          sorts: sieveSorts || "-priority,order",
-          page,
-          pageSize,
-        },
-        fields: {
-          id: { canFilter: true, canSort: false },
-          question: { canFilter: true, canSort: true },
-          category: { canFilter: true, canSort: true },
-          status: { canFilter: true, canSort: true },
-          priority: {
-            canFilter: true,
-            canSort: true,
-            parseValue: (v: string) => Number(v),
-          },
-          order: {
-            canFilter: true,
-            canSort: true,
-            parseValue: (v: string) => Number(v),
-          },
-          showOnHomepage: {
-            canFilter: true,
-            canSort: false,
-            parseValue: (v: string) => v === "true",
-          },
-          isPinned: {
-            canFilter: true,
-            canSort: false,
-            parseValue: (v: string) => v === "true",
-          },
-          createdAt: {
-            canFilter: true,
-            canSort: true,
-            parseValue: (v: string) => new Date(v),
-          },
-        },
-        options: { defaultPageSize: 100, maxPageSize: 200 },
-      });
-    } else {
-      // Firestore-native path: structured filters + Sieve sort + pagination
-      const rawResult = await faqsRepository.list({
+    const rawResult = await faqsRepository.list(
+      {
         filters: buildStructuredFilters(),
         sorts: sieveSorts || "-priority,order",
         page: String(page),
         pageSize: String(pageSize),
-      });
+      },
+      {
+        tags,
+        search,
+      },
+    );
 
-      sieveResult = {
-        ...rawResult,
-        items: rawResult.items.map(normaliseAnswer),
-      };
-    }
+    const sieveResult = {
+      ...rawResult,
+      items: rawResult.items.map(normaliseAnswer),
+    };
 
     // Step 7: Get site settings, then interpolate only the current page's items
     const siteSettings = await siteSettingsRepository.getSingleton();
@@ -221,13 +157,13 @@ export const GET = createRouteHandler({
       totalPages: sieveResult.totalPages,
       hasMore: sieveResult.hasMore,
       categories: [
+        "general",
         "orders_payment",
         "shipping_delivery",
         "returns_refunds",
         "product_information",
         "account_security",
         "technical_support",
-        "general",
       ] as const,
     });
     response.headers.set(

@@ -5,7 +5,7 @@
  * products and reviews because Admin-SDK writes do NOT fire Firestore triggers.
  *
  * Computed values (as of seed data version):
- *   FigureVault JP   — 18 published products, 13 approved reviews, avg 4.7
+ *   FigureVault JP   — 18 published products, 12 approved reviews, avg 4.7
  *   AnimeCraft Apparel — 10 published products,  6 approved reviews, avg 4.7
  *   OtakuShelf Co    — 12 published products,  7 approved reviews, avg 4.4
  */
@@ -63,7 +63,7 @@ export const storesSeedData: Partial<StoreDocument>[] = [
     stats: {
       totalProducts: 18,
       itemsSold: 7,
-      totalReviews: 13,
+      totalReviews: 12,
       averageRating: 4.7,
     },
     createdAt: daysAgo(647),

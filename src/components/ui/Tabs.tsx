@@ -1,192 +1,24 @@
 "use client";
 
-import React, { useState, createContext, useContext } from "react";
-import { THEME_CONSTANTS } from "@/constants";
-import { Button } from "@/components";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  type TabsProps,
+  type TabsListProps,
+  type TabsTriggerProps,
+  type TabsContentProps,
+} from "@mohasinac/ui";
 
-/**
- * Tabs Component
- *
- * A tabbed interface for switching between different content panels.
- * Supports controlled and uncontrolled modes with keyboard navigation.
- *
- * @component
- * @example
- * ```tsx
- * <Tabs defaultValue="tab1">
- *   <TabsList>
- *     <TabsTrigger value="tab1">Profile</TabsTrigger>
- *     <TabsTrigger value="tab2">Settings</TabsTrigger>
- *   </TabsList>
- *   <TabsContent value="tab1">Profile content</TabsContent>
- *   <TabsContent value="tab2">Settings content</TabsContent>
- * </Tabs>
- * ```
- */
-
-interface TabsContextValue {
-  value: string;
-  onChange: (value: string) => void;
-  variant: "default" | "line";
-}
-
-const TabsContext = createContext<TabsContextValue | undefined>(undefined);
-
-const useTabsContext = () => {
-  const context = useContext(TabsContext);
-  if (!context) {
-    throw new Error("Tabs compound components must be used within Tabs");
-  }
-  return context;
+export default Tabs;
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  type TabsProps,
+  type TabsListProps,
+  type TabsTriggerProps,
+  type TabsContentProps,
 };
-
-// Main Tabs Container
-interface TabsProps {
-  defaultValue?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  /** 'default' = pill/box style (default); 'line' = border-bottom underline style */
-  variant?: "default" | "line";
-  children: React.ReactNode;
-  className?: string;
-}
-
-export default function Tabs({
-  defaultValue,
-  value: controlledValue,
-  onChange,
-  variant = "default",
-  children,
-  className = "",
-}: TabsProps) {
-  const [internalValue, setInternalValue] = useState(defaultValue || "");
-
-  const value = controlledValue !== undefined ? controlledValue : internalValue;
-  const handleChange = onChange || setInternalValue;
-
-  return (
-    <TabsContext.Provider value={{ value, onChange: handleChange, variant }}>
-      <div className={className}>{children}</div>
-    </TabsContext.Provider>
-  );
-}
-
-// TabsList - Container for tab triggers
-interface TabsListProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export function TabsList({ children, className = "" }: TabsListProps) {
-  const { themed } = THEME_CONSTANTS;
-  const { variant } = useTabsContext();
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-    const tabs = Array.from(
-      e.currentTarget.querySelectorAll<HTMLButtonElement>(
-        '[role="tab"]:not([disabled])',
-      ),
-    );
-    const focused = document.activeElement as HTMLButtonElement;
-    const idx = tabs.indexOf(focused);
-    if (idx === -1) return;
-    e.preventDefault();
-    if (e.key === "ArrowRight") {
-      tabs[(idx + 1) % tabs.length].focus();
-    } else {
-      tabs[(idx - 1 + tabs.length) % tabs.length].focus();
-    }
-  };
-
-  return (
-    <div
-      role="tablist"
-      onKeyDown={handleKeyDown}
-      className={
-        variant === "line"
-          ? `flex items-center overflow-x-auto touch-pan-x border-b scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${themed.border} ${className}`
-          : `flex items-center gap-1 p-1 rounded-lg overflow-x-auto touch-pan-x scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${themed.bgSecondary} ${className}`
-      }
-    >
-      {children}
-    </div>
-  );
-}
-
-// TabsTrigger - Individual tab button
-interface TabsTriggerProps {
-  value: string;
-  children: React.ReactNode;
-  disabled?: boolean;
-  className?: string;
-}
-
-export function TabsTrigger({
-  value,
-  children,
-  disabled = false,
-  className = "",
-}: TabsTriggerProps) {
-  const { value: selectedValue, onChange, variant } = useTabsContext();
-  const { themed } = THEME_CONSTANTS;
-  const isSelected = value === selectedValue;
-
-  const baseClass =
-    variant === "line"
-      ? `px-4 py-2 text-sm font-medium whitespace-nowrap flex-shrink-0 border-b-2 -mb-px transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
-          isSelected
-            ? "border-primary text-primary"
-            : `border-transparent ${themed.textSecondary} hover:text-zinc-700 dark:hover:text-zinc-300`
-        }`
-      : `px-4 py-2 text-sm font-medium whitespace-nowrap flex-shrink-0 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed ${
-          isSelected
-            ? `${themed.bgPrimary} ${themed.textPrimary} shadow-sm`
-            : `${themed.textSecondary} hover:${themed.textPrimary}`
-        }`;
-
-  return (
-    <Button
-      id={`tab-${value}`}
-      variant="ghost"
-      role="tab"
-      aria-selected={isSelected}
-      aria-controls={`tabpanel-${value}`}
-      disabled={disabled}
-      onClick={() => onChange(value)}
-      className={`${baseClass} ${className}`}
-    >
-      {children}
-    </Button>
-  );
-}
-
-// TabsContent - Content panel for each tab
-interface TabsContentProps {
-  value: string;
-  children: React.ReactNode;
-  className?: string;
-}
-
-export function TabsContent({
-  value,
-  children,
-  className = "",
-}: TabsContentProps) {
-  const { value: selectedValue } = useTabsContext();
-
-  if (value !== selectedValue) {
-    return null;
-  }
-
-  return (
-    <div
-      role="tabpanel"
-      id={`tabpanel-${value}`}
-      aria-labelledby={`tab-${value}`}
-      className={`mt-4 ${className}`}
-    >
-      {children}
-    </div>
-  );
-}

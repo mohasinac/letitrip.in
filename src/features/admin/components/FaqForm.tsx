@@ -1,17 +1,8 @@
-/**
- * FaqForm Component
- * Path: src/components/admin/faqs/FaqForm.tsx
- *
- * Drawer form for creating/editing FAQs in admin panel.
- * Includes RichTextEditor for answer, variable helper, category select, etc.
- */
-
 "use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-  Article,
   Button,
   Checkbox,
   FormField,
@@ -22,9 +13,7 @@ import {
   Text,
   Ul,
 } from "@/components";
-import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
-import { proseMirrorToHtml } from "@/utils";
 import type { FAQ } from "./Faq.types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";
 
@@ -39,14 +28,19 @@ interface FaqFormProps {
 export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
   const t = useTranslations("adminFaqs");
   const [showVariableHelper, setShowVariableHelper] = useState(false);
+  const answerText = faq.answer?.text || "";
 
   const update = (partial: Partial<FAQ>) => {
     onChange({ ...faq, ...partial });
   };
 
   const insertVariable = (variable: string) => {
-    const currentAnswer = faq.answer || "";
-    update({ answer: currentAnswer + variable });
+    update({
+      answer: {
+        text: `${answerText}${variable}`,
+        format: faq.answer?.format || "plain",
+      },
+    });
   };
 
   return (
@@ -61,7 +55,6 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         placeholder={t("questionPlaceholder")}
       />
 
-      {/* Answer with variable helper */}
       <div>
         <div className={`${flex.between} mb-2`}>
           <Label className={`block ${typography.label} mb-1.5`}>
@@ -106,21 +99,23 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
           </Ul>
         </div>
 
-        {isReadonly ? (
-          <Article
-            className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[150px]`}
-            dangerouslySetInnerHTML={{
-              __html: proseMirrorToHtml(faq.answer || ""),
-            }}
-          />
-        ) : (
-          <RichTextEditor
-            content={faq.answer || ""}
-            onChange={(content) => update({ answer: content })}
-            placeholder={t("answerPlaceholder")}
-            minHeight="200px"
-          />
-        )}
+        <FormField
+          name="answer"
+          label=""
+          type="textarea"
+          value={answerText}
+          onChange={(value) =>
+            update({
+              answer: {
+                text: value,
+                format: faq.answer?.format || "plain",
+              },
+            })
+          }
+          disabled={isReadonly}
+          placeholder={t("answerPlaceholder")}
+          rows={10}
+        />
       </div>
 
       <FormGroup columns={2}>
@@ -128,12 +123,25 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
           name="category"
           label={t("category")}
           type="select"
-          value={faq.category || "General"}
-          onChange={(value) => update({ category: value })}
+          value={faq.category || "general"}
+          onChange={(value) => update({ category: value as FAQ["category"] })}
           disabled={isReadonly}
           options={FAQ_CATEGORIES.map((cat) => ({
             value: cat,
-            label: cat,
+            label:
+              cat === "orders_payment"
+                ? t("categoryOrdersPayment")
+                : cat === "shipping_delivery"
+                  ? t("categoryShippingDelivery")
+                  : cat === "returns_refunds"
+                    ? t("categoryReturnsRefunds")
+                    : cat === "product_information"
+                      ? t("categoryProductInfo")
+                      : cat === "account_security"
+                        ? t("categoryAccountSecurity")
+                        : cat === "technical_support"
+                          ? t("categoryTechSupport")
+                          : t("categoryGeneral"),
           }))}
         />
 
@@ -178,8 +186,17 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         <div className={`${flex.rowCenter} mt-6`}>
           <Checkbox
             label={t("featuredLabel")}
-            checked={faq.isPinned || false}
-            onChange={(e) => update({ isPinned: e.target.checked })}
+            checked={faq.showOnHomepage || false}
+            onChange={(e) => update({ showOnHomepage: e.target.checked })}
+            disabled={isReadonly}
+          />
+        </div>
+
+        <div className={`${flex.rowCenter} mt-6`}>
+          <Checkbox
+            label={t("filterStatusLabel")}
+            checked={faq.isActive ?? true}
+            onChange={(e) => update({ isActive: e.target.checked })}
             disabled={isReadonly}
           />
         </div>

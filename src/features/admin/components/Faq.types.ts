@@ -1,41 +1,17 @@
-/**
- * Shared FAQ types for admin FAQ management.
- */
-
-export interface FAQStats {
-  views: number;
-  helpful: number;
-  notHelpful: number;
-  lastViewed?: string;
-}
-
-export interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-  priority: number;
-  tags: string[];
-  isPinned: boolean;
-  stats: FAQStats;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { FAQCategory, FAQDocument } from "@/db/schema";
 
 export type FaqDrawerMode = "create" | "edit" | "delete" | null;
 
-export const FAQ_CATEGORIES = [
-  "General",
-  "Account",
-  "Payment",
-  "Shipping",
-  "Returns",
-  "Products",
-  "Auctions",
-  "Orders",
-  "Technical",
-  "Other",
+export type FAQ = FAQDocument;
+
+export const FAQ_CATEGORIES: readonly FAQCategory[] = [
+  "general",
+  "orders_payment",
+  "shipping_delivery",
+  "returns_refunds",
+  "product_information",
+  "account_security",
+  "technical_support",
 ] as const;
 
 export const VARIABLE_PLACEHOLDERS = [

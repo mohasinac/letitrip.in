@@ -38,31 +38,26 @@ export const GET = createRouteHandler({
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const statusParam = getStringParam(searchParams, "status");
-
-    let orders;
-
-    if (statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)) {
-      // Filter by status within this user's orders
-      const allOrders = await orderRepository.findByUser(user!.uid);
-      orders = allOrders.filter((o) => o.status === statusParam);
-    } else {
-      orders = await orderRepository.findByUser(user!.uid);
-    }
-
-    // Sort by orderDate desc (Firestore index not guaranteed here)
-    orders.sort(
-      (a, b) =>
-        new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime(),
-    );
+    const filters =
+      statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
+        ? `status==${statusParam}`
+        : undefined;
+    const result = await orderRepository.listForUser(user!.uid, {
+      filters,
+      sorts: "-orderDate",
+      page: "1",
+      pageSize: "5000",
+    });
+    const orders = result.items;
 
     serverLogger.info("Orders listed", {
       userId: user!.uid,
-      count: orders.length,
+      count: result.total,
     });
 
     return successResponse({
       orders,
-      total: orders.length,
+      total: result.total,
     });
   },
 });

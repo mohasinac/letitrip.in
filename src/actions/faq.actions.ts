@@ -91,11 +91,15 @@ export async function voteFaqAction(
 
 export type AdminCreateFaqInput = {
   question: string;
-  answer: string;
-  category?: string;
+  answer: FAQDocument["answer"];
+  category?: FAQDocument["category"];
   isActive?: boolean;
   isPinned?: boolean;
   priority?: number;
+  showOnHomepage?: boolean;
+  showInFooter?: boolean;
+  tags?: string[];
+  order?: number;
 };
 
 export type AdminUpdateFaqInput = Partial<AdminCreateFaqInput>;
@@ -124,13 +128,13 @@ export async function adminCreateFaqAction(
   const faq = await faqsRepository.createWithSlug({
     ...parsed.data,
     createdBy: admin.uid,
-    showOnHomepage: false,
-    showInFooter: false,
-    isPinned: false,
-    order: 0,
+    showOnHomepage: parsed.data.showOnHomepage ?? false,
+    showInFooter: parsed.data.showInFooter ?? false,
+    isPinned: parsed.data.isPinned ?? false,
+    order: parsed.data.order ?? 0,
     useSiteSettings: false,
-    variables: [],
-    isActive: true,
+    variables: {},
+    isActive: parsed.data.isActive ?? true,
   } as any);
 
   serverLogger.info("adminCreateFaqAction", {
@@ -217,11 +221,13 @@ export async function listPublicFaqsAction(
   category?: string,
   limit = 20,
 ): Promise<FAQDocument[]> {
+  const filters = ["isActive==true"];
   if (category) {
-    return faqsRepository.getFAQsByCategory(category as any);
+    filters.push(`category==${category}`);
   }
   const result = await faqsRepository.list({
-    sorts: "order",
+    filters: filters.join(","),
+    sorts: "-priority,order",
     page: 1,
     pageSize: limit,
   });

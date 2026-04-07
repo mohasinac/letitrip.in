@@ -108,6 +108,10 @@ export const PAYOUT_INDEXED_FIELDS = [
 // ============================================
 export const PAYOUT_FIELDS = {
   SELLER_ID: "sellerId",
+  SELLER_NAME: "sellerName",
+  SELLER_EMAIL: "sellerEmail",
+  SELLER_NAME_INDEX: "sellerNameIndex",
+  SELLER_EMAIL_INDEX: "sellerEmailIndex",
   STATUS: "status",
   REQUESTED_AT: "requestedAt",
   CREATED_AT: "createdAt",

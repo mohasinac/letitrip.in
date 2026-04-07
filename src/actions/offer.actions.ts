@@ -25,6 +25,7 @@ import {
 } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import type { CartDocument, OfferDocument } from "@/db/schema";
+import { maskOfferForSeller } from "@/lib/pii";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -430,7 +431,7 @@ export async function listBuyerOffersAction(): Promise<OfferDocument[]> {
 export async function listSellerOffersAction(): Promise<OfferDocument[]> {
   const user = await requireAuth();
   const result = await offerRepository.findBySeller(user.uid);
-  return result.items;
+  return result.items.map(maskOfferForSeller);
 }
 
 // ─── Buyer: Checkout accepted offer ────────────────────────────────────────

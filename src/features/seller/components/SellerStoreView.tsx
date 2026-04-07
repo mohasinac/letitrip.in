@@ -3,10 +3,10 @@
  *
  * Main feature view for the seller's store settings page.
  *
- * - No store yet  â†’ renders SellerStoreSetupView (create form)
- * - Store exists  â†’ renders the full edit form (StoreDocument fields)
+ * - No store yet  → renders SellerStoreSetupView (create form)
+ * - Store exists  → renders the full edit form (StoreDocument fields)
  *
- * Sections: Store Details Â· Contact & Social Â· Policies Â· Vacation Mode
+ * Sections: Store Details · Contact & Social · Policies · Vacation Mode
  */
 
 "use client";
@@ -202,12 +202,12 @@ export function SellerStoreView() {
     );
   }
 
-  // ── No store yet â†’ show setup flow ────────────────────────────────────────
+  // ── No store yet → show setup flow ────────────────────────────────────────
   if (!store) {
     return <SellerStoreSetupView />;
   }
 
-  // ── Store exists â†’ full edit form ─────────────────────────────────────────
+  // ── Store exists → full edit form ─────────────────────────────────────────
 
   const statusLabel = {
     pending: t("statusPending"),

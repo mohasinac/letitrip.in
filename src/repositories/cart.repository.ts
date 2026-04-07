@@ -9,6 +9,7 @@ import { randomUUID } from "crypto";
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { decryptPii } from "@/lib/pii";
 import type {
   CartDocument,
   CartItemDocument,
@@ -20,6 +21,23 @@ import { CART_COLLECTION } from "@/db/schema";
 class CartRepository extends BaseRepository<CartDocument> {
   constructor() {
     super(CART_COLLECTION);
+  }
+
+  /** Decrypt sellerName in every cart item on read (defensive — handles pre-encryption data). */
+  protected override mapDoc<D = CartDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<CartDocument>(snap);
+    return {
+      ...raw,
+      items: (raw.items ?? []).map((item) => ({
+        ...item,
+        sellerName:
+          typeof item.sellerName === "string"
+            ? (decryptPii(item.sellerName) ?? item.sellerName)
+            : item.sellerName,
+      })),
+    } as unknown as D;
   }
 
   /**

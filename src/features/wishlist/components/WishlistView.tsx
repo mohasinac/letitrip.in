@@ -22,11 +22,9 @@ import {
   ProductGrid,
   Row,
   Search,
+  SectionTabs,
   SortDropdown,
   Spinner,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   Text,
   Tooltip,
   ViewToggle,
@@ -252,22 +250,18 @@ function WishlistContent() {
         </div>
       }
       statusTabsSlot={
-        <Tabs
-          variant="line"
+        <SectionTabs
+          inline
           value={activeTab}
           onChange={(v) => table.setMany({ tab: v, q: "", sorts: "" })}
-        >
-          <TabsList>
-            {TAB_KEYS.map((tab) => (
-              <TabsTrigger key={tab} value={tab}>
-                {TAB_ICONS[tab]}
-                {t(
-                  `tab${tab.charAt(0).toUpperCase() + tab.slice(1)}` as `tabProducts`,
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+          tabs={TAB_KEYS.map((tab) => ({
+            value: tab,
+            label: t(
+              `tab${tab.charAt(0).toUpperCase() + tab.slice(1)}` as `tabProducts`,
+            ),
+            icon: TAB_ICONS[tab],
+          }))}
+        />
       }
       searchSlot={
         isProductTab ? (

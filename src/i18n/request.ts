@@ -16,13 +16,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // Apply custom Zod error messages on every server request (idempotent)
   setupZodErrorMap();
 
-  // Determine the locale from the request (set by middleware or [locale] segment)
+  // Determine the locale from the request (set by middleware or [locale] segment).
+  // With localePrefix:"never" and localeCookie:false, requestLocale may be
+  // undefined during ISR revalidation or static pre-render — always fall back
+  // to "en" so next-intl never receives an undefined locale.
   const requested = await requestLocale;
-
-  // Fall back to default locale if the requested locale is not supported
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+  const locale = hasLocale(routing.locales, requested) ? requested : "en";
 
   const projectMessages = (await import(`../../messages/${locale}.json`))
     .default;

@@ -111,8 +111,15 @@ jest.mock("@/lib/api-response", () => ({
 
 jest.mock("@/lib/api/request-helpers", () => ({
   getSearchParams: (req: any) => req.nextUrl.searchParams,
-  getNumberParam: (_params: any, key: string, def: number) => def,
-  getStringParam: (_params: any, key: string) => null,
+  getNumberParam: (params: any, key: string, def: number) => {
+    const raw = params.get(key);
+    return raw ? Number(raw) : def;
+  },
+  getStringParam: (params: any, key: string) => params.get(key),
+}));
+
+jest.mock("@/lib/pii", () => ({
+  piiBlindIndex: (value: string) => `hash:${value.toLowerCase().trim()}`,
 }));
 
 jest.mock("@/constants", () => ({
@@ -194,6 +201,48 @@ describe("GET /api/admin/users", () => {
     await GET(req);
     expect(mockUserList).toHaveBeenCalledWith(
       expect.objectContaining({ sorts: expect.any(String) }),
+    );
+  });
+
+  it("maps email q to blind-index filter", async () => {
+    setUser(mockAdminUser());
+    mockUserList.mockResolvedValueOnce({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 100,
+      totalPages: 0,
+      hasMore: false,
+    });
+
+    const req = buildRequest("/api/admin/users?q=admin@example.com");
+    await GET(req);
+
+    expect(mockUserList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: "emailIndex==hash:admin@example.com",
+      }),
+    );
+  });
+
+  it("maps non-email q to displayName blind-index filter", async () => {
+    setUser(mockAdminUser());
+    mockUserList.mockResolvedValueOnce({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 100,
+      totalPages: 0,
+      hasMore: false,
+    });
+
+    const req = buildRequest("/api/admin/users?q=John Doe");
+    await GET(req);
+
+    expect(mockUserList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: "displayNameIndex==hash:john doe",
+      }),
     );
   });
 });

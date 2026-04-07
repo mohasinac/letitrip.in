@@ -19,7 +19,9 @@ import { PAYOUT_COLLECTION, PAYOUT_FIELDS } from "@/db/schema";
 import {
   encryptPiiFields,
   decryptPiiFields,
+  addPiiIndices,
   PAYOUT_PII_FIELDS,
+  PAYOUT_PII_INDEX_MAP,
   encryptPayoutBankAccount,
   decryptPayoutBankAccount,
 } from "@/lib/pii";
@@ -45,7 +47,12 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
 
   /** Encrypt PII fields on payout data before Firestore write */
   private encryptPayoutData<T extends Record<string, unknown>>(data: T): T {
-    const encrypted = encryptPiiFields(data, [...PAYOUT_PII_FIELDS]);
+    let encrypted = encryptPiiFields(data, [...PAYOUT_PII_FIELDS]);
+    encrypted = addPiiIndices(data, PAYOUT_PII_INDEX_MAP) as unknown as T;
+    encrypted = {
+      ...encryptPiiFields(data, [...PAYOUT_PII_FIELDS]),
+      ...encrypted,
+    };
     if (encrypted.bankAccount) {
       (encrypted as Record<string, unknown>).bankAccount =
         encryptPayoutBankAccount(
@@ -89,6 +96,17 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
       .set(prepareForFirestore(encrypted));
 
     return { id, ...data }; // return plaintext to caller
+  }
+
+  /** Override base update to preserve encryption/indexing for changed PII fields. */
+  override async update(
+    payoutId: string,
+    data: Partial<PayoutDocument>,
+  ): Promise<PayoutDocument> {
+    const encrypted = this.encryptPayoutData(
+      data as unknown as Record<string, unknown>,
+    );
+    return super.update(payoutId, encrypted as Partial<PayoutDocument>);
   }
 
   /**
@@ -167,8 +185,10 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
   static readonly SIEVE_FIELDS = {
     id: { canFilter: true, canSort: false },
     sellerId: { canFilter: true, canSort: false },
-    sellerName: { canFilter: true, canSort: true },
-    sellerEmail: { canFilter: true, canSort: false },
+    sellerNameIndex: { canFilter: true, canSort: false },
+    sellerEmailIndex: { canFilter: true, canSort: false },
+    sellerName: { canFilter: false, canSort: false }, // encrypted — use sellerNameIndex
+    sellerEmail: { canFilter: false, canSort: false }, // encrypted — use sellerEmailIndex
     status: { canFilter: true, canSort: true },
     paymentMethod: { canFilter: true, canSort: false },
     amount: { canFilter: true, canSort: true },

@@ -43,17 +43,15 @@ export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async () => {
-    const eligibleOrders = await orderRepository.findBy(
-      "payoutStatus",
-      "eligible",
-    );
-
-    // Filter in-memory for Shiprocket + delivered
-    const shiprocketDelivered = eligibleOrders.filter(
-      (o): o is OrderDocument & { id: string } =>
-        o.shippingMethod === "shiprocket" &&
-        o.status === "delivered" &&
-        Boolean(o.id),
+    const eligibleOrders = await orderRepository.listAll({
+      filters:
+        "payoutStatus==eligible,shippingMethod==shiprocket,status==delivered",
+      sorts: "-createdAt",
+      page: "1",
+      pageSize: "5000",
+    });
+    const shiprocketDelivered = eligibleOrders.items.filter(
+      (o): o is OrderDocument & { id: string } => Boolean(o.id),
     );
 
     if (shiprocketDelivered.length === 0) {

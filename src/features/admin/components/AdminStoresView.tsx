@@ -74,14 +74,16 @@ export function AdminStoresView() {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["storeStatus"]);
 
-  // Build Sieve filter string
+  // Build Sieve filter string — storeName is plaintext in StoreDocument so the API
+  // handles it via `q` → `storeName_=` (startsWith). Do NOT embed displayName/email
+  // here; those are user fields that don't exist in the stores collection.
   const activeTab = table.get("storeStatus");
-  const sieveParams = table.buildSieveParams(
-    buildSieveFilters(
-      ["storeStatus==", activeTab],
-      ["(displayName|email|storeSlug)@=*", searchTerm],
-    ),
+  const rawSieveParams = table.buildSieveParams(
+    buildSieveFilters(["storeStatus==", activeTab]),
   );
+  const sieveParams = searchTerm
+    ? `${rawSieveParams}&q=${encodeURIComponent(searchTerm)}`
+    : rawSieveParams;
 
   const { data, isLoading, refetch, updateStoreMutation } =
     useAdminStores(sieveParams);

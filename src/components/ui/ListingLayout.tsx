@@ -174,7 +174,7 @@ export function ListingLayout({
         : undefined,
   });
 
-  const { themed, flex, spacing } = THEME_CONSTANTS;
+  const { spacing } = THEME_CONSTANTS;
 
   const hasFilter = Boolean(filterContent);
   const panelTitle = filterTitle ?? t("title");
@@ -217,7 +217,13 @@ export function ListingLayout({
         spacing.stack,
         // On mobile the pagination sits in a fixed bar (h-10). Add bottom
         // padding so the last row of the table/grid is never hidden behind it.
-        toolbarPaginationSlot ? "pb-12 md:pb-0" : "",
+        // When bulk actions are active the BottomActions bar also occupies
+        // bottom-14 → bump padding up to pb-28 so it clears both bars.
+        toolbarPaginationSlot
+          ? selectedCount > 0
+            ? "pb-28 md:pb-0"
+            : "pb-12 md:pb-0"
+          : "",
         className,
       ]
         .filter(Boolean)
@@ -227,14 +233,27 @@ export function ListingLayout({
       {headerSlot}
 
       {/* ─────────────────────── Status tabs ───────────────── */}
-      {statusTabsSlot}
+      {statusTabsSlot && (
+        <div
+          className={[
+            "overflow-x-auto touch-pan-x -mx-4 px-4 md:-mx-6 md:px-6",
+            THEME_CONSTANTS.utilities.scrollbarThinX,
+          ].join(" ")}
+        >
+          {statusTabsSlot}
+        </div>
+      )}
 
       {/* ─────────────────── Sticky toolbar ─────────────── */}
       <div
         className={[
-          "sticky z-20 py-2",
+          "sticky z-20 -mx-4 px-4 md:-mx-6 md:px-6",
           isDashboard ? "top-0" : "top-14 md:top-[120px]",
-          THEME_CONSTANTS.layout.titleBarBg,
+          // Frosted glass bar
+          "bg-white/80 dark:bg-slate-950/80 backdrop-blur-md",
+          "border-b border-zinc-200/70 dark:border-slate-800/70",
+          "shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]",
+          "py-2.5",
         ].join(" ")}
       >
         {/* ── Desktop (md+): single flex row ─────────────────────────────── */}
@@ -248,34 +267,25 @@ export function ListingLayout({
               onClick={() => setSidebarOpen((prev) => !prev)}
               aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
               aria-expanded={sidebarOpen}
-              className="hidden lg:flex flex-shrink-0 items-center gap-1.5"
+              className={[
+                "hidden lg:flex flex-shrink-0 items-center gap-1.5",
+                "rounded-full h-8 px-3 text-sm font-medium",
+                "border transition-all duration-150",
+                sidebarOpen
+                  ? "bg-primary/10 border-primary/30 text-primary dark:bg-primary/15 dark:border-primary/40"
+                  : "border-zinc-200 dark:border-slate-700 text-zinc-600 dark:text-slate-300 hover:border-zinc-300 dark:hover:border-slate-600 hover:bg-zinc-50 dark:hover:bg-slate-800/60",
+              ].join(" ")}
             >
               <FilterIcon />
               {t("title")}
               {filterActiveCount > 0 && (
                 <Span
-                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                  className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary text-white"
                   aria-label={t("activeCount", { count: filterActiveCount })}
                 >
                   {filterActiveCount}
                 </Span>
               )}
-              <svg
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  sidebarOpen ? "rotate-90" : "-rotate-90"
-                }`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
             </Button>
           )}
 
@@ -283,17 +293,19 @@ export function ListingLayout({
           {searchSlot && <div className="flex-1 min-w-0">{searchSlot}</div>}
 
           {/* Sort + view + actions — shrink-0 so they never compress */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {sortSlot}
-            {viewToggleSlot}
+            {viewToggleSlot && (
+              <div className="flex items-center gap-0.5 rounded-full border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-0.5 shadow-sm">
+                {viewToggleSlot}
+              </div>
+            )}
             {actionsSlot}
           </div>
 
-          {/* Pagination — pushed to far right with a subtle divider */}
+          {/* Pagination — pushed to far right with a faint separator */}
           {toolbarPaginationSlot && (
-            <div
-              className={`ml-auto flex-shrink-0 pl-3 border-l ${themed.border}`}
-            >
+            <div className="ml-auto flex-shrink-0 pl-3 border-l border-zinc-200/70 dark:border-slate-700/70">
               {toolbarPaginationSlot}
             </div>
           )}
@@ -310,13 +322,22 @@ export function ListingLayout({
                 size="sm"
                 onClick={() => setMobileFilterOpen(true)}
                 aria-label={t("title")}
-                className="flex-shrink-0 flex items-center gap-1.5"
+                className={[
+                  "flex-shrink-0 flex items-center gap-1.5",
+                  "rounded-full h-9 px-3 text-sm font-medium",
+                  "border border-zinc-200 dark:border-slate-700",
+                  "text-zinc-600 dark:text-slate-300",
+                  "hover:bg-zinc-50 dark:hover:bg-slate-800/60 transition-colors",
+                  filterActiveCount > 0
+                    ? "border-primary/40 bg-primary/5 text-primary"
+                    : "",
+                ].join(" ")}
               >
                 <FilterIcon />
                 {t("title")}
                 {filterActiveCount > 0 && (
                   <Span
-                    className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                    className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold rounded-full bg-primary text-white"
                     aria-label={t("activeCount", { count: filterActiveCount })}
                   >
                     {filterActiveCount}
@@ -331,7 +352,7 @@ export function ListingLayout({
           {(sortSlot || viewToggleSlot || actionsSlot) && (
             <div
               className={[
-                "flex items-stretch min-h-[44px] gap-2 overflow-x-auto",
+                "flex items-stretch min-h-[36px] gap-2 overflow-x-auto",
                 THEME_CONSTANTS.utilities.scrollbarThinX,
               ].join(" ")}
             >
@@ -347,9 +368,7 @@ export function ListingLayout({
         {/* ── Bulk action bar — sticky inside toolbar on desktop ──────────── */}
         {/* Mobile bulk actions are handled by useBottomActions → BottomActions bar */}
         {selectedCount > 0 && (
-          <div
-            className={`hidden md:block pt-2 mt-2 border-t ${themed.border}`}
-          >
+          <div className="hidden md:block pt-2 mt-2 border-t border-zinc-100 dark:border-slate-800">
             <BulkActionBar
               selectedCount={selectedCount}
               onClearSelection={onClearSelection}
@@ -376,15 +395,14 @@ export function ListingLayout({
           >
             <div
               className={[
-                "w-60 xl:w-64 2xl:w-72 border rounded-xl overflow-hidden",
-                themed.border,
-                themed.bgPrimary,
+                "w-60 xl:w-64 2xl:w-72 rounded-2xl overflow-hidden",
+                "border border-zinc-200/80 dark:border-slate-700/60",
+                "bg-white dark:bg-slate-900",
+                "shadow-sm",
               ].join(" ")}
             >
               {/* Panel header */}
-              <div
-                className={`${flex.between} px-4 py-3 border-b ${themed.border} ${themed.bgSecondary}`}
-              >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800">
                 <Text weight="semibold" size="sm">
                   {panelTitle}
                 </Text>
@@ -394,7 +412,7 @@ export function ListingLayout({
                     variant="ghost"
                     size="sm"
                     onClick={onFilterClear}
-                    className="text-xs text-primary hover:underline p-0 h-auto leading-none"
+                    className="text-xs text-primary hover:text-primary/80 hover:underline p-0 h-auto leading-none font-medium"
                   >
                     {tActions("clearAll")}
                   </Button>
@@ -403,17 +421,17 @@ export function ListingLayout({
 
               {/* Scrollable facets */}
               <div
-                className={`px-3 py-3 max-h-[calc(100vh-15rem)] overflow-y-auto ${spacing.stack}`}
+                className={`px-3 pt-5 pb-3 max-h-[calc(100vh-15rem)] overflow-y-auto ${spacing.stack}`}
               >
                 {filterContent}
               </div>
 
               {/* Apply button at sidebar bottom — filters only apply on click */}
-              <div className={`px-3 pb-3 pt-1 border-t ${themed.border}`}>
+              <div className="px-3 pb-3 pt-2 border-t border-zinc-100 dark:border-slate-800">
                 <Button
                   type="button"
                   variant="primary"
-                  className="w-full"
+                  className="w-full rounded-xl"
                   size="sm"
                   onClick={onFilterApply}
                 >
@@ -443,13 +461,19 @@ export function ListingLayout({
       </div>
 
       {/* ─────────── Mobile sticky pagination bar ─────────── */}
-      {/* Sits at bottom-14 (above BottomNavbar). BottomActions (z-40) naturally covers it during bulk mode. */}
+      {/* Sits at bottom-14 normally (above BottomNavbar). When bulk mode is
+          active (selectedCount > 0) the BottomActions bar occupies bottom-14,
+          so we shift up to bottom-28 to stay visible above it. */}
       {toolbarPaginationSlot && (
         <nav
           aria-label="Pagination"
           className={[
             "fixed left-0 right-0 md:hidden",
-            isDashboard ? "bottom-0" : "bottom-14",
+            isDashboard
+              ? "bottom-0"
+              : selectedCount > 0
+                ? "bottom-28"
+                : "bottom-14",
             "z-[39]",
             THEME_CONSTANTS.layout.bottomNavBg,
             "shadow-[0_-2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_8px_rgba(0,0,0,0.20)]",
@@ -476,19 +500,21 @@ export function ListingLayout({
             ref={mobileOverlayRef}
             className={[
               "fixed inset-0 z-50 flex flex-col lg:hidden",
-              themed.bgPrimary,
+              "bg-white dark:bg-slate-950",
             ].join(" ")}
             role="dialog"
             aria-modal="true"
             aria-label={panelTitle}
           >
             {/* Header */}
-            <div
-              className={`${flex.between} px-4 py-3 border-b ${themed.border} flex-shrink-0`}
-            >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800 flex-shrink-0">
               <Text weight="semibold">
                 {panelTitle}
-                {filterActiveCount > 0 && ` (${filterActiveCount})`}
+                {filterActiveCount > 0 && (
+                  <Span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-[11px] font-bold rounded-full bg-primary text-white">
+                    {filterActiveCount}
+                  </Span>
+                )}
               </Text>
               <Button
                 type="button"
@@ -496,10 +522,10 @@ export function ListingLayout({
                 size="sm"
                 onClick={() => setMobileFilterOpen(false)}
                 aria-label={tActions("close")}
-                className="-mr-1 p-2"
+                className="rounded-full w-8 h-8 p-0 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-slate-800"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -517,23 +543,17 @@ export function ListingLayout({
 
             {/* Scrollable facets */}
             <div
-              className={`flex-1 overflow-y-auto px-4 py-4 ${spacing.stack}`}
+              className={`flex-1 overflow-y-auto px-4 pt-6 pb-4 ${spacing.stack}`}
             >
               {filterContent}
             </div>
 
             {/* Footer actions — apply filter button */}
-            <div
-              className={[
-                "flex-shrink-0 flex gap-3 px-4 py-3 border-t",
-                themed.border,
-                themed.bgSecondary,
-              ].join(" ")}
-            >
+            <div className="flex-shrink-0 flex gap-3 px-4 py-4 border-t border-zinc-100 dark:border-slate-800 bg-white dark:bg-slate-950">
               <Button
                 type="button"
                 variant="secondary"
-                className="flex-1"
+                className="flex-1 rounded-xl"
                 onClick={() => {
                   onFilterClear?.();
                 }}
@@ -543,7 +563,7 @@ export function ListingLayout({
               <Button
                 type="button"
                 variant="primary"
-                className="flex-1"
+                className="flex-1 rounded-xl"
                 onClick={handleMobileApply}
               >
                 {tActions("applyFilters")}

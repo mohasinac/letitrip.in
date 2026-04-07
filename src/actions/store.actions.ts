@@ -16,6 +16,7 @@ import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import type { StoreDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import { maskPublicReview } from "@/lib/pii";
 
 export interface StoreListParams {
   filters?: string;
@@ -165,7 +166,7 @@ export async function getStoreReviewsAction(
   const averageRating = totalReviews > 0 ? ratingSum / totalReviews : 0;
 
   return {
-    reviews: allReviews,
+    reviews: allReviews.map(maskPublicReview),
     averageRating,
     totalReviews,
     ratingDistribution,

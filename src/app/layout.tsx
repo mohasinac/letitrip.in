@@ -113,7 +113,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}`}
+      className={`min-h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}`}
     >
       <head>
         <script
@@ -137,7 +137,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full overflow-x-hidden">{children}</body>
+      <body className="min-h-full overflow-x-hidden">{children}</body>
     </html>
   );
 }

@@ -6,6 +6,28 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-04-04
 
+### UI extraction continuation — generic controls and stats cards
+
+- Moved shared `Accordion`, `Dropdown`, `Menu`, `Pagination`, and `DashboardStatsCard` implementations into `@mohasinac/ui`.
+- Moved `HorizontalScroller` implementation into `@mohasinac/ui` and converted `src/components/ui/HorizontalScroller.tsx` into a thin re-export shim.
+- Moved `DynamicSelect` implementation into `@mohasinac/ui` and converted `src/components/ui/DynamicSelect.tsx` into a thin re-export shim.
+- Moved `Tabs` implementation into `@mohasinac/ui` and converted `src/components/ui/Tabs.tsx` into a thin re-export shim.
+- Moved `SortDropdown` implementation into `@mohasinac/ui` and converted `src/components/ui/SortDropdown.tsx` into a thin translation adapter over the package primitive.
+- Moved `Avatar` implementation into `@mohasinac/ui` and converted `src/components/ui/Avatar.tsx` into a thin re-export shim.
+- Removed local dead helper hooks `src/components/ui/useHorizontalAutoScroll.ts` and `src/components/ui/useHorizontalScrollDrag.ts` after the package extraction.
+- Converted local files `src/components/ui/Accordion.tsx`, `src/components/ui/Dropdown.tsx`, `src/components/ui/Menu.tsx`, and `src/components/ui/Pagination.tsx` into thin re-export shims over `@mohasinac/ui`.
+- Converted `src/components/DashboardStatsCard.tsx` into a thin local adapter over `@mohasinac/ui` that only injects the app's `Link` implementation.
+- Fixed mojibake in `src/db/seed-data/categories-seed-data.ts` by restoring the star icon to a valid Unicode glyph.
+- Switched `src/app/api/pre-orders/route.ts` to a new server-only `@mohasinac/feat-pre-orders/server` export so the route no longer imports the package's client surface.
+- Aligned seed data in `src/db/seed-data/stores-seed-data.ts` with current `reviews-seed-data.ts` approved-review totals (FigureVault JP: 12) to keep delete-and-reseed flows internally consistent.
+
+**Verification:**
+
+- `npm run build` in `packages/packages/ui` ✅
+- `npm run build` in `packages/packages/feat-pre-orders` ✅
+- `npx tsc --noEmit` in `letitrip.in` ✅
+- `npm run build` in `letitrip.in` ✅
+
 ### Hook adapter cleanup — direct feat-\* hook usage
 
 - Migrated public blog listing to use `useBlogPosts` directly from `@mohasinac/feat-blog` in `src/features/blog/components/BlogListView.tsx` and removed the local shim `src/hooks/useBlogPosts.ts`.

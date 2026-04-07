@@ -16,12 +16,25 @@ import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import {
   encryptPiiFields,
   decryptPiiFields,
+  addPiiIndices,
   REVIEW_PII_FIELDS,
+  REVIEW_PII_INDEX_MAP,
 } from "@/lib/pii";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
     super(REVIEW_COLLECTION);
+  }
+
+  /** Encrypt review PII and attach blind indices for queryable encrypted fields. */
+  private encryptReviewData<T extends Record<string, unknown>>(data: T): T {
+    let encrypted = encryptPiiFields(data, [...REVIEW_PII_FIELDS]);
+    encrypted = addPiiIndices(data, REVIEW_PII_INDEX_MAP) as unknown as T;
+    encrypted = {
+      ...encryptPiiFields(data, [...REVIEW_PII_FIELDS]),
+      ...encrypted,
+    };
+    return encrypted;
   }
 
   /** Override mapDoc to auto-decrypt PII on every review read */
@@ -59,9 +72,8 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
     };
 
     // Encrypt PII before persisting
-    const encrypted = encryptPiiFields(
+    const encrypted = this.encryptReviewData(
       reviewData as unknown as Record<string, unknown>,
-      [...REVIEW_PII_FIELDS],
     );
 
     await this.db
@@ -70,6 +82,17 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
       .set(prepareForFirestore(encrypted));
 
     return { id, ...reviewData }; // return plaintext to caller
+  }
+
+  /** Override base update to preserve encryption/indexing for changed PII fields. */
+  override async update(
+    reviewId: string,
+    data: Partial<ReviewDocument>,
+  ): Promise<ReviewDocument> {
+    const encrypted = this.encryptReviewData(
+      data as unknown as Record<string, unknown>,
+    );
+    return super.update(reviewId, encrypted as Partial<ReviewDocument>);
   }
 
   /**
@@ -90,10 +113,7 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
       .orderBy("createdAt", "desc")
       .get();
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ReviewDocument[];
+    return snapshot.docs.map((doc) => this.mapDoc<ReviewDocument>(doc));
   }
 
   /**
@@ -129,10 +149,7 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
       .limit(limit)
       .get();
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ReviewDocument[];
+    return snapshot.docs.map((doc) => this.mapDoc<ReviewDocument>(doc));
   }
 
   /**
@@ -238,7 +255,8 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
     productId: { canFilter: true, canSort: false },
     productTitle: { canFilter: true, canSort: true },
     userId: { canFilter: true, canSort: false },
-    userName: { canFilter: true, canSort: true },
+    userNameIndex: { canFilter: true, canSort: false },
+    userName: { canFilter: false, canSort: false }, // encrypted — use userNameIndex
     sellerId: { canFilter: true, canSort: false },
     status: { canFilter: true, canSort: true },
     rating: { canFilter: true, canSort: true },
@@ -283,6 +301,29 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
         baseQuery,
         defaultPageSize: 10,
         maxPageSize: 50,
+      },
+    );
+  }
+
+  /**
+   * Paginated, Firestore-native review list for a single seller.
+   */
+  async listForSeller(
+    sellerId: string,
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<ReviewDocument>> {
+    const baseQuery = this.getCollection().where(
+      REVIEW_FIELDS.SELLER_ID,
+      "==",
+      sellerId,
+    );
+    return this.sieveQuery<ReviewDocument>(
+      model,
+      ReviewRepository.SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 10,
+        maxPageSize: 100,
       },
     );
   }

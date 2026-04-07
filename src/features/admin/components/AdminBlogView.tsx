@@ -238,7 +238,7 @@ export function AdminBlogView() {
   const featuredCount = data?.meta.featured ?? 0;
 
   const statusTabsSlot = (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex items-center gap-2">
       {STATUS_TABS.map((tab) => (
         <Button
           key={tab.key}

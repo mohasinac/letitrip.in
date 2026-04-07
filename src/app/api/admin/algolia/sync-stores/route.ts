@@ -20,6 +20,27 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
+async function loadEligibleStores() {
+  const items = [] as Awaited<
+    ReturnType<typeof storeRepository.listAllStores>
+  >["items"];
+  let page = 1;
+
+  while (true) {
+    const result = await storeRepository.listAllStores({
+      filters: "status==active,isPublic==true",
+      sorts: "-createdAt",
+      page: String(page),
+      pageSize: "200",
+    });
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return { items, total: result.total };
+    }
+    page += 1;
+  }
+}
+
 export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
@@ -28,18 +49,15 @@ export const POST = createRouteHandler({
       throw new ValidationError(ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED);
     }
 
-    const allStores = await storeRepository.findAll();
-    const eligible = allStores.filter(
-      (s) => s.status === "active" && s.isPublic,
-    );
+    const eligible = await loadEligibleStores();
 
     serverLogger.info("Starting Algolia stores sync", {
-      total: allStores.length,
-      eligible: eligible.length,
+      total: eligible.total,
+      eligible: eligible.total,
       index: ALGOLIA_STORES_INDEX_NAME,
     });
 
-    const result = await indexStores(eligible);
+    const result = await indexStores(eligible.items);
 
     serverLogger.info("Algolia stores sync completed", {
       indexed: result.indexed,
@@ -50,7 +68,7 @@ export const POST = createRouteHandler({
       {
         indexed: result.indexed,
         index: ALGOLIA_STORES_INDEX_NAME,
-        skipped: allStores.length - eligible.length,
+        skipped: eligible.total - result.indexed,
       },
       SUCCESS_MESSAGES.ADMIN.ALGOLIA_STORES_SYNCED,
     );

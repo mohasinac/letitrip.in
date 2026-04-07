@@ -63,6 +63,7 @@ export interface FAQDocument {
 
   // Organization
   tags: string[]; // Search tags
+  searchTokens?: string[]; // Tokenized search index for Firestore-native FAQ search
   relatedFAQs: string[]; // IDs of related FAQs
 
   // Variable Interpolation
@@ -110,6 +111,7 @@ export const FAQS_INDEXED_FIELDS = [
   "isPinned", // For pinned FAQs
   "priority", // For sorting by importance
   "tags", // For tag-based search (array-contains)
+  "searchTokens", // For tokenized Firestore-native FAQ search
   "isActive", // For active FAQ filtering
   "stats.helpful", // For sorting by helpfulness
   "createdBy", // For admin filtering
@@ -163,6 +165,7 @@ export const DEFAULT_FAQ_DATA: Partial<FAQDocument> = {
   order: 0,
   priority: 0,
   tags: [],
+  searchTokens: [],
   relatedFAQs: [],
   useSiteSettings: true,
   variables: {},

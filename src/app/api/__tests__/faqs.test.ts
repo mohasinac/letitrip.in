@@ -14,6 +14,8 @@ import { buildRequest, parseResponse, mockAdminUser } from "./helpers";
 // Mocks
 // ============================================
 
+let mockRouteUser = mockAdminUser();
+
 const mockFaqsFindAll = jest.fn();
 const mockFaqsList = jest.fn();
 const mockFaqsCreate = jest.fn();
@@ -30,10 +32,81 @@ jest.mock("@/repositories", () => ({
   },
 }));
 
-const mockRequireRoleFromRequest = jest.fn();
-jest.mock("@/lib/security/authorization", () => ({
-  requireRoleFromRequest: (...args: unknown[]) =>
-    mockRequireRoleFromRequest(...args),
+jest.mock("@mohasinac/next", () => ({
+  createRouteHandler:
+    (config: any) =>
+    async (requestOrContext: Request | { request: Request }) => {
+      const request =
+        requestOrContext instanceof Request
+          ? requestOrContext
+          : requestOrContext.request;
+
+      try {
+        let body: unknown;
+
+        if (request.method !== "GET" && request.method !== "HEAD") {
+          body = await request.json();
+
+          if (config.schema?.safeParse) {
+            const parsed = config.schema.safeParse(body);
+            if (!parsed.success) {
+              return Response.json(
+                { success: false, errors: parsed.error.issues },
+                { status: 400 },
+              );
+            }
+            body = parsed.data;
+          }
+        }
+
+        const result = await config.handler({
+          request,
+          body,
+          user: config.auth ? mockRouteUser : undefined,
+        });
+
+        if (result instanceof Response) {
+          return result;
+        }
+
+        return Response.json(
+          { success: true, data: result },
+          { status: request.method === "POST" ? 201 : 200 },
+        );
+      } catch (error) {
+        return Response.json(
+          {
+            success: false,
+            message: error instanceof Error ? error.message : "Unknown error",
+          },
+          { status: 500 },
+        );
+      }
+    },
+}));
+
+jest.mock("@/lib/api/request-helpers", () => ({
+  getSearchParams: (request: Request) => new URL(request.url).searchParams,
+  getStringParam: (params: URLSearchParams, key: string) => {
+    const value = params.get(key);
+    return value === null ? undefined : value;
+  },
+  getBooleanParam: (params: URLSearchParams, key: string) => {
+    const value = params.get(key);
+    if (value === "true") return true;
+    if (value === "false") return false;
+    return undefined;
+  },
+  getNumberParam: (params: URLSearchParams, key: string, fallback: number) => {
+    const value = params.get(key);
+    if (value === null || value === "") return fallback;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  },
+}));
+
+jest.mock("@/lib/api/cache-middleware", () => ({
+  invalidateCache: jest.fn(),
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
@@ -138,6 +211,7 @@ const mockFAQs = [
 describe("FAQs API - GET /api/faqs", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRouteUser = mockAdminUser();
     // Clear cache to prevent cached responses in tests
     const { CacheManager } = require("@/classes");
     const cache = CacheManager.getInstance();
@@ -145,7 +219,7 @@ describe("FAQs API - GET /api/faqs", () => {
     mockFaqsFindAll.mockResolvedValue([...mockFAQs]);
     mockGetSingleton.mockResolvedValue(mockSiteSettings);
     // Smart mock for Firestore-native list() — returns filtered/sorted subset
-    mockFaqsList.mockImplementation(async (model: any) => {
+    mockFaqsList.mockImplementation(async (model: any, opts?: any) => {
       let items = [...mockFAQs] as any[];
       if (model?.filters) {
         const catMatch = model.filters.match(/category==([\w]+)/);
@@ -153,6 +227,19 @@ describe("FAQs API - GET /api/faqs", () => {
         if (model.filters.includes("showOnHomepage==true")) {
           items = items.filter((f) => f.showOnHomepage === true);
         }
+      }
+      if (opts?.search) {
+        const searchTerm = String(opts.search).toLowerCase();
+        items = items.filter(
+          (faq) =>
+            faq.question.toLowerCase().includes(searchTerm) ||
+            faq.answer.text.toLowerCase().includes(searchTerm),
+        );
+      }
+      if (opts?.tags?.length) {
+        items = items.filter((faq) =>
+          opts.tags.some((tag: string) => faq.tags.includes(tag)),
+        );
       }
       const sorts: string = model?.sorts ?? "-priority";
       if (sorts.includes("-priority")) {
@@ -178,7 +265,7 @@ describe("FAQs API - GET /api/faqs", () => {
 
     expect(status).toBe(200);
     expect(body.success).toBe(true);
-    expect(body.data).toHaveLength(3);
+    expect(body.data.items).toHaveLength(3);
   });
 
   it("interpolates {{supportEmail}} in answers", async () => {
@@ -186,7 +273,7 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    const faq1 = body.data.find((f: any) => f.id === "faq-1");
+    const faq1 = body.data.items.find((f: any) => f.id === "faq-1");
     expect(faq1.answer.text).toContain("support@letitrip.in");
     expect(faq1.answer.text).not.toContain("{{supportEmail}}");
   });
@@ -196,7 +283,7 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    const faq2 = body.data.find((f: any) => f.id === "faq-2");
+    const faq2 = body.data.items.find((f: any) => f.id === "faq-2");
     expect(faq2.answer.text).toContain("LetItRip");
     expect(faq2.answer.text).not.toContain("{{companyName}}");
   });
@@ -206,7 +293,7 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    const faq3 = body.data.find((f: any) => f.id === "faq-3");
+    const faq3 = body.data.items.find((f: any) => f.id === "faq-3");
     expect(faq3.answer.text).toContain("+91-1234567890");
   });
 
@@ -215,8 +302,8 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.data).toHaveLength(1);
-    expect(body.data[0].category).toBe("orders_payment");
+    expect(body.data.items).toHaveLength(1);
+    expect(body.data.items[0].category).toBe("orders_payment");
   });
 
   it("filters by showOnHomepage", async () => {
@@ -224,8 +311,8 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.data).toHaveLength(2);
-    body.data.forEach((faq: any) => {
+    expect(body.data.items).toHaveLength(2);
+    body.data.items.forEach((faq: any) => {
       expect(faq.showOnHomepage).toBe(true);
     });
   });
@@ -235,8 +322,8 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.data).toHaveLength(1);
-    expect(body.data[0].id).toBe("faq-2");
+    expect(body.data.items).toHaveLength(1);
+    expect(body.data.items[0].id).toBe("faq-2");
   });
 
   it("filters by tags", async () => {
@@ -244,8 +331,8 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.data).toHaveLength(1);
-    expect(body.data[0].id).toBe("faq-3");
+    expect(body.data.items).toHaveLength(1);
+    expect(body.data.items[0].id).toBe("faq-3");
   });
 
   it("sorts by priority (highest first)", async () => {
@@ -253,7 +340,7 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    const priorities = body.data.map((f: any) => f.priority);
+    const priorities = body.data.items.map((f: any) => f.priority);
     for (let i = 0; i < priorities.length - 1; i++) {
       expect(priorities[i]).toBeGreaterThanOrEqual(priorities[i + 1]);
     }
@@ -264,9 +351,9 @@ describe("FAQs API - GET /api/faqs", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.meta.total).toBe(3);
-    expect(body.meta.categories).toBeDefined();
-    expect(Array.isArray(body.meta.categories)).toBe(true);
+    expect(body.data.total).toBe(3);
+    expect(body.data.categories).toBeDefined();
+    expect(Array.isArray(body.data.categories)).toBe(true);
   });
 
   it("sets cache-control headers", async () => {
@@ -290,7 +377,7 @@ describe("FAQs API - GET /api/faqs", () => {
 describe("FAQs API - POST /api/faqs", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRequireRoleFromRequest.mockResolvedValue(mockAdminUser());
+    mockRouteUser = mockAdminUser();
     mockFaqsFindAll.mockResolvedValue(mockFAQs);
     // Return the highest-order FAQ so auto-assign gives maxOrder(3) + 1 = 4
     mockFaqsList.mockResolvedValue({ items: [mockFAQs[2]], total: 1 });
@@ -319,9 +406,9 @@ describe("FAQs API - POST /api/faqs", () => {
       body: { question: "Test?", answer: { text: "Test" } },
     });
     await POST(req);
-    expect(mockRequireRoleFromRequest).toHaveBeenCalledWith(expect.anything(), [
-      "admin",
-    ]);
+    expect(mockFaqsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ createdBy: mockRouteUser.uid }),
+    );
   });
 
   it("auto-assigns order position", async () => {
@@ -338,7 +425,7 @@ describe("FAQs API - POST /api/faqs", () => {
 
   it("sets createdBy from authenticated user", async () => {
     const admin = mockAdminUser();
-    mockRequireRoleFromRequest.mockResolvedValue(admin);
+    mockRouteUser = admin;
 
     const req = buildRequest("/api/faqs", {
       method: "POST",

@@ -29,6 +29,7 @@ import type {
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { resolveDate } from "@/utils";
 import { ERROR_MESSAGES } from "@/constants";
+import { maskPublicEventEntry } from "@/lib/pii";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -287,8 +288,9 @@ export async function getPublicEventByIdAction(
 
 export async function getEventLeaderboardAction(
   eventId: string,
-): Promise<EventEntryDocument[]> {
-  return eventEntryRepository.getLeaderboard(eventId);
+): Promise<ReturnType<typeof maskPublicEventEntry<EventEntryDocument>>[]> {
+  const entries = await eventEntryRepository.getLeaderboard(eventId);
+  return entries.map(maskPublicEventEntry);
 }
 
 export async function adminListEventsAction(params?: {

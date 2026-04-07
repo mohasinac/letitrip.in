@@ -23,6 +23,7 @@ import {
 } from "@/lib/errors";
 import type { ReviewDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import { maskPublicReview } from "@/lib/pii";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -86,6 +87,7 @@ export async function createReviewAction(
   return reviewRepository.create({
     productId: parsed.data.productId,
     productTitle: product.title,
+    sellerId: product.sellerId,
     userId: user.uid,
     userName: profile?.displayName ?? "Anonymous",
     userAvatar: profile?.photoURL ?? "",
@@ -255,11 +257,12 @@ export async function listReviewsByProductAction(
   page = 1,
   pageSize = 10,
 ): Promise<FirebaseSieveResult<ReviewDocument>> {
-  return reviewRepository.listForProduct(productId, {
+  const result = await reviewRepository.listForProduct(productId, {
     sorts: "-createdAt",
     page,
     pageSize,
   });
+  return { ...result, items: result.items.map(maskPublicReview) };
 }
 
 export async function listAdminReviewsAction(params?: {
@@ -291,11 +294,12 @@ export async function listReviewsBySellerAction(
       .slice(0, 20)
       .map((id) => reviewRepository.findApprovedByProduct(id).catch(() => [])),
   );
-  return reviewBatches.flat();
+  return reviewBatches.flat().map(maskPublicReview);
 }
 
 export async function getHomepageReviewsAction(): Promise<ReviewDocument[]> {
-  return reviewRepository.findFeatured(18);
+  const reviews = await reviewRepository.findFeatured(18);
+  return reviews.map(maskPublicReview);
 }
 
 export async function getReviewByIdAction(

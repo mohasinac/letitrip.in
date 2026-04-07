@@ -8,6 +8,7 @@
 import { bidRepository, productRepository, unitOfWork } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { successResponse, errorResponse } from "@/lib/api-response";
+import { maskPublicBid } from "@/lib/pii";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
@@ -35,8 +36,10 @@ export const GET = createApiHandler({
       return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
     }
     const bids = await bidRepository.findByProductSorted(productId);
-    // Strip userEmail from public response to avoid PII exposure
-    const sanitized = bids.map(({ userEmail: _strip, ...rest }) => rest);
+    // Strip userEmail and mask userName for public response
+    const sanitized = bids.map(({ userEmail: _strip, ...rest }) =>
+      maskPublicBid(rest),
+    );
     return successResponse(sanitized, undefined, 200, {
       total: sanitized.length,
     });

@@ -353,7 +353,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "â­",
+      icon: "⭐",
       coverImage:
         "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       showInMenu: true,

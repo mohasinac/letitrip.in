@@ -2,28 +2,24 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS, getLocalizedFaqText } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useMessage } from "@/hooks";
 import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
-import type { StaticFAQItem } from "@/constants";
+import type { FAQDocument } from "@/db/schema";
 import { Button, Heading, Span, Text } from "@/components";
 
 interface FAQAccordionProps {
-  faqs: StaticFAQItem[];
-  locale?: string;
+  faqs: FAQDocument[];
   expandedByDefault?: boolean;
 }
 
 export function FAQAccordion({
   faqs,
-  locale = "en",
   expandedByDefault = false,
 }: FAQAccordionProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    expandedByDefault
-      ? new Set(faqs.map((faq: StaticFAQItem) => faq.id))
-      : new Set(),
+    expandedByDefault ? new Set(faqs.map((faq) => faq.id)) : new Set(),
   );
   const t = useTranslations("faq");
   const tActions = useTranslations("actions");
@@ -66,7 +62,6 @@ export function FAQAccordion({
     <div className="space-y-5">
       {faqs.map((faq) => {
         const isExpanded = expandedIds.has(faq.id);
-        const { question, answer } = getLocalizedFaqText(faq, locale);
 
         return (
           <div
@@ -85,7 +80,7 @@ export function FAQAccordion({
                   level={3}
                   className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
                 >
-                  {question}
+                  {faq.question}
                 </Heading>
                 {faq.tags && faq.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -126,7 +121,7 @@ export function FAQAccordion({
                 <Text
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6`}
                 >
-                  {answer}
+                  {faq.answer.text}
                 </Text>
 
                 {/* Actions Row */}

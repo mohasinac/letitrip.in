@@ -3,15 +3,19 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
+import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
+import type { FAQCategoryKey } from "@/constants";
 import {
-  THEME_CONSTANTS,
-  ROUTES,
-  FAQ_CATEGORIES,
-  getStaticFaqsByCategory,
-  getStaticFaqCategoryCounts,
-} from "@/constants";
-import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
-import { Button, Heading, Section, Span, Text, TextLink } from "@/components";
+  Button,
+  Heading,
+  Section,
+  SectionTabs,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
+import type { SectionTab } from "@/components";
+import { useFaqList } from "@/features/faq";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -23,9 +27,14 @@ export function FAQSection() {
     useState<FAQCategoryKey>("general");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const categoryCounts = getStaticFaqCategoryCounts();
-  const faqs: StaticFAQItem[] = getStaticFaqsByCategory(activeCategory, 10);
-  const totalInCategory = categoryCounts[activeCategory] ?? 0;
+  const { faqs, total } = useFaqList({
+    category: activeCategory,
+    showOnHomepage: true,
+    sorts: "-priority,order",
+    page: 1,
+    pageSize: 10,
+  });
+  const totalInCategory = total;
   const hasMore = totalInCategory > faqs.length;
 
   const handleCategoryChange = (cat: FAQCategoryKey) => {
@@ -57,33 +66,25 @@ export function FAQSection() {
         </div>
 
         {/* Category Tabs — horizontal scroll, underline indicator */}
-        <div
-          role="tablist"
-          aria-label={t("title")}
-          className="flex overflow-x-auto scrollbar-hide gap-0 border-b border-zinc-200 dark:border-slate-700 mb-8 -mx-8 px-8"
-        >
-          {(
-            Object.entries(FAQ_CATEGORIES) as [
-              FAQCategoryKey,
-              (typeof FAQ_CATEGORIES)[FAQCategoryKey],
-            ][]
-          ).map(([key, category]) => (
-            <Button
-              variant="ghost"
-              key={key}
-              role="tab"
-              aria-selected={activeCategory === key}
-              onClick={() => handleCategoryChange(key)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all duration-200 ${
-                activeCategory === key
-                  ? "border-primary-700 dark:border-primary text-primary-700 dark:text-primary"
-                  : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-slate-600"
-              }`}
-            >
-              <Span className="mr-1">{category.icon}</Span>
-              {category.label}
-            </Button>
-          ))}
+        <div className="mb-8 -mx-8">
+          <SectionTabs
+            inline
+            value={activeCategory}
+            onChange={(v) => handleCategoryChange(v as FAQCategoryKey)}
+            tabs={
+              (
+                Object.entries(FAQ_CATEGORIES) as [
+                  FAQCategoryKey,
+                  (typeof FAQ_CATEGORIES)[FAQCategoryKey],
+                ][]
+              ).map(([key, category]) => ({
+                value: key,
+                label: category.label,
+                icon: category.icon,
+              })) satisfies SectionTab[]
+            }
+            className="border-b border-zinc-200 dark:border-slate-700"
+          />
         </div>
 
         {/* FAQ Accordion */}
@@ -135,7 +136,7 @@ export function FAQSection() {
                     <Text
                       className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
                     >
-                      {faq.answer}
+                      {faq.answer.text}
                     </Text>
                   </div>
                 </div>

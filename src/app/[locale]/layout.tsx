@@ -54,7 +54,10 @@ export default async function LocaleLayout({
   // avoids headers() which would force all routes into dynamic SSR).
   // setRequestLocale populates async local storage so all subsequent
   // getTranslations() / getMessages() calls use params locale, not headers.
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  // Explicit "en" fallback — rawLocale can be undefined during static
+  // pre-rendering when localePrefix is "never" and there is no URL segment.
+  const locale = (rawLocale ?? "en") as string;
   setRequestLocale(locale);
   const messages = await getMessages();
 

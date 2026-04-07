@@ -309,6 +309,29 @@ class OrderRepository extends BaseRepository<OrderDocument> {
     );
   }
 
+  /**
+   * Paginated, Firestore-native order list for a single buyer.
+   */
+  async listForUser(
+    userId: string,
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<OrderDocument>> {
+    const baseQuery = this.getCollection().where(
+      ORDER_FIELDS.USER_ID,
+      "==",
+      userId,
+    );
+    return this.sieveQuery<OrderDocument>(
+      model,
+      OrderRepository.ADMIN_SIEVE_FIELDS,
+      {
+        baseQuery,
+        defaultPageSize: 20,
+        maxPageSize: 200,
+      },
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Admin list — all orders, no seller filter
   // ---------------------------------------------------------------------------
@@ -324,6 +347,7 @@ class OrderRepository extends BaseRepository<OrderDocument> {
     status: { canFilter: true, canSort: true },
     paymentStatus: { canFilter: true, canSort: true },
     paymentMethod: { canFilter: true, canSort: true },
+    shippingMethod: { canFilter: true, canSort: true },
     payoutStatus: { canFilter: true, canSort: false },
     totalPrice: { canFilter: true, canSort: true },
     orderDate: { canFilter: true, canSort: true },

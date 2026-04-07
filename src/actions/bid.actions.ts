@@ -30,6 +30,7 @@ import { ERROR_MESSAGES } from "@/constants";
 import type { BidDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { resolveDate } from "@/utils";
+import { maskPublicBid } from "@/lib/pii";
 
 // ─── Validation schema ─────────────────────────────────────────────────────
 
@@ -184,7 +185,9 @@ export async function listBidsByProductAction(
   });
   return {
     ...result,
-    items: result.items.map(({ userEmail: _strip, ...rest }) => rest),
+    items: result.items.map(({ userEmail: _strip, ...rest }) =>
+      maskPublicBid(rest),
+    ),
   };
 }
 

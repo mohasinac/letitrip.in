@@ -1,2 +1,2 @@
 import "@/providers.config";
-export { GET, POST } from "@mohasinac/feat-pre-orders";
+export { GET, POST } from "@mohasinac/feat-pre-orders/server";

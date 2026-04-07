@@ -1,4 +1,5 @@
 import { productRepository, reviewRepository } from "@/repositories";
+import { maskName } from "@/lib/pii";
 import type { ProductDocument } from "@/db/schema";
 import type { SellerReviewsData, SellerReviewItem } from "@/hooks";
 
@@ -57,7 +58,7 @@ export async function buildSellerReviews(
 
   const reviews: SellerReviewItem[] = recentReviews.map((review) => ({
     id: review.id,
-    userName: review.userName,
+    userName: maskName(review.userName),
     rating: review.rating,
     comment: review.comment,
     createdAt:

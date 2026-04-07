@@ -11,46 +11,35 @@ export const FAQ_CATEGORIES = {
     icon: "ℹ️",
     description: "About our platform, services, and policies",
   },
-  products: {
-    label: "Products & Auctions",
-    icon: "🛍️",
-    description: "Product listings, auctions, bidding, and quality",
+  orders_payment: {
+    label: "Orders & Payment",
+    icon: "💳",
+    description: "Orders, payments, coupons, and billing help",
   },
-  auctions: {
-    label: "Auctions & Bidding",
-    icon: "🔨",
-    description: "How auctions work, bidding rules, winning, and payment",
-  },
-  preorders: {
-    label: "Pre-Orders",
-    icon: "📦",
-    description:
-      "Pre-order process, deposits, production timelines, and cancellations",
-  },
-  shipping: {
+  shipping_delivery: {
     label: "Shipping & Delivery",
     icon: "🚚",
     description: "Delivery times, tracking, shipping options, and COD",
   },
-  returns: {
+  returns_refunds: {
     label: "Returns & Refunds",
     icon: "🔄",
     description: "Return policy, refund process, and timelines",
   },
-  payment: {
-    label: "Payment & Coupons",
-    icon: "💳",
-    description: "Payment methods, COD deposit, coupons, and pricing",
+  product_information: {
+    label: "Product Information",
+    icon: "🛍️",
+    description: "Product listings, quality, authenticity, and condition",
   },
-  account: {
+  account_security: {
     label: "Account & Security",
     icon: "👤",
     description: "Registration, login, verification, and profile",
   },
-  sellers: {
-    label: "For Sellers",
-    icon: "🏪",
-    description: "Selling guidelines, fees, payouts, and dashboard",
+  technical_support: {
+    label: "Technical Support",
+    icon: "🛠️",
+    description: "App, account, and technical troubleshooting",
   },
 } as const;
 

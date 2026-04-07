@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Ul, Li, Text, Ol } from "@/components";
+import { SectionTabs, Ul, Li, Text, Ol } from "@/components";
+import type { SectionTab } from "@/components";
 import type { ProductItem } from "@mohasinac/feat-products";
 
 interface ProductTabsProps {
@@ -24,11 +25,11 @@ export function ProductTabs({ product }: ProductTabsProps) {
   const t = useTranslations("products");
   const [activeTab, setActiveTab] = useState<TabKey>("description");
 
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: "description", label: t("tabDescription") },
-    { key: "ingredients", label: t("tabIngredients") },
-    { key: "howToUse", label: t("tabHowToUse") },
-    { key: "reviews", label: t("tabReviews") },
+  const tabs: SectionTab[] = [
+    { value: "description", label: t("tabDescription") },
+    { value: "ingredients", label: t("tabIngredients") },
+    { value: "howToUse", label: t("tabHowToUse") },
+    { value: "reviews", label: t("tabReviews") },
   ];
 
   const handleTabClick = (key: TabKey) => {
@@ -42,30 +43,13 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
   return (
     <div>
-      {/* Pill tab nav */}
-      <div
-        className="rounded-full bg-zinc-100 dark:bg-slate-800 p-1 flex gap-1 overflow-x-auto scrollbar-none"
-        role="tablist"
-        aria-label={t("tabDescription")}
-      >
-        {tabs.map(({ key, label }) => (
-          <Button
-            variant="ghost"
-            key={key}
-            role={key !== "reviews" ? "tab" : undefined}
-            aria-selected={key !== "reviews" ? activeTab === key : undefined}
-            onClick={() => handleTabClick(key)}
-            className={[
-              "flex-none rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 whitespace-nowrap",
-              activeTab === key && key !== "reviews"
-                ? "bg-white dark:bg-slate-700 shadow-sm text-zinc-900 dark:text-white"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white",
-            ].join(" ")}
-          >
-            {label}
-          </Button>
-        ))}
-      </div>
+      {/* Tab nav */}
+      <SectionTabs
+        inline
+        value={activeTab}
+        onChange={(v) => handleTabClick(v as TabKey)}
+        tabs={tabs}
+      />
 
       {/* Tab panels */}
       <div className="mt-4">

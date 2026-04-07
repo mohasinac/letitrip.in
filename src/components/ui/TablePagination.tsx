@@ -66,7 +66,7 @@ export function TablePagination({
       <div
         role="navigation"
         aria-label={t("paginationLabel")}
-        className={`flex items-center gap-1 ${className}`}
+        className={`flex items-center gap-0.5 ${className}`}
       >
         <Pagination
           currentPage={currentPage}
@@ -87,54 +87,58 @@ export function TablePagination({
     <div
       role="navigation"
       aria-label={t("paginationLabel")}
-      className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t ${themed.border} ${className}`}
+      className={[
+        "flex flex-col sm:flex-row items-center gap-3 px-4 py-3",
+        "border-t border-zinc-100 dark:border-slate-800/80",
+        className,
+      ].join(" ")}
     >
       {/* Result count */}
-      <Text className={`text-sm ${themed.textSecondary} tabular-nums`}>
+      <Text className="text-xs text-zinc-400 dark:text-slate-500 tabular-nums sm:mr-auto">
         {t("showing")}{" "}
-        <Span className={`font-medium ${themed.textPrimary}`}>
+        <Span className="font-semibold text-zinc-600 dark:text-slate-300">
           {from}–{to}
         </Span>{" "}
         {t("of")}{" "}
-        <Span className={`font-medium ${themed.textPrimary}`}>
+        <Span className="font-semibold text-zinc-600 dark:text-slate-300">
           {formatNumber(total)}
         </Span>{" "}
         {t("results")}
       </Text>
 
-      <div className="flex items-center gap-4">
-        {/* Pagination */}
+      {/* Pagination pill group */}
+      <div className={`rounded-xl p-0.5 ${themed.bgSecondary} inline-flex`}>
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={onPageChange}
           disabled={isLoading}
         />
-
-        {/* Per-page selector */}
-        {onPageSizeChange && (
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor="page-size-select"
-              className={`text-sm ${themed.textSecondary} whitespace-nowrap`}
-            >
-              {t("perPage")}
-            </Label>
-            <Select
-              id="page-size-select"
-              value={String(pageSize)}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              disabled={isLoading}
-              aria-label={t("perPage")}
-              className="text-sm"
-              options={pageSizeOptions.map((s) => ({
-                value: String(s),
-                label: String(s),
-              }))}
-            />
-          </div>
-        )}
       </div>
+
+      {/* Per-page selector */}
+      {onPageSizeChange && (
+        <div className="flex items-center gap-1.5 sm:ml-1">
+          <Label
+            htmlFor="page-size-select"
+            className="text-xs text-zinc-400 dark:text-slate-500 whitespace-nowrap"
+          >
+            {t("perPage")}
+          </Label>
+          <Select
+            id="page-size-select"
+            value={String(pageSize)}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            disabled={isLoading}
+            aria-label={t("perPage")}
+            className="text-xs h-7 py-0 px-2 rounded-lg"
+            options={pageSizeOptions.map((s) => ({
+              value: String(s),
+              label: String(s),
+            }))}
+          />
+        </div>
+      )}
     </div>
   );
 }

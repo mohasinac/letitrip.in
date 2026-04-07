@@ -42,7 +42,7 @@ export function NavbarLayout({
     return (
       <Ul
         aria-label={ariaLabel}
-        className="hidden md:flex items-center gap-0.5 lg:gap-1"
+        className="hidden xl:flex items-center gap-0.5 xl:gap-1"
       >
         {items.map((item) => (
           <Li key={item.href}>
@@ -64,12 +64,12 @@ export function NavbarLayout({
     <Nav
       id={id}
       aria-label={ariaLabel}
-      className={`hidden md:block ${layout.navbarBg}`}
+      className={`hidden xl:block ${layout.navbarBg}`}
     >
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth}`}
       >
-        <Ul className={`${flex.start} gap-0.5 lg:gap-1 ${layout.navbarHeight}`}>
+        <Ul className={`${flex.start} gap-0.5 xl:gap-1 ${layout.navbarHeight}`}>
           {items.map((item) => (
             <Li key={item.href}>
               <NavItem

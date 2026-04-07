@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Button, HorizontalScroller } from "@/components";
+import { SectionTabs } from "@/components";
+import type { SectionTab } from "@/components";
 import type { BlogPostCategory } from "@/db/schema";
 
 interface BlogCategoryTabsProps {
@@ -15,37 +16,25 @@ export function BlogCategoryTabs({
   onChange,
 }: BlogCategoryTabsProps) {
   const t = useTranslations("filters");
-  const tabs = useMemo(
+  const tabs: SectionTab[] = useMemo(
     () => [
-      { key: "" as "" | BlogPostCategory, label: t("blogCategoryAll") },
-      { key: "news" as BlogPostCategory, label: t("blogCategoryNews") },
-      { key: "tips" as BlogPostCategory, label: t("blogCategoryTips") },
-      { key: "guides" as BlogPostCategory, label: t("blogCategoryGuides") },
-      { key: "updates" as BlogPostCategory, label: t("blogCategoryUpdates") },
-      {
-        key: "community" as BlogPostCategory,
-        label: t("blogCategoryCommunity"),
-      },
+      { value: "", label: t("blogCategoryAll") },
+      { value: "news", label: t("blogCategoryNews") },
+      { value: "tips", label: t("blogCategoryTips") },
+      { value: "guides", label: t("blogCategoryGuides") },
+      { value: "updates", label: t("blogCategoryUpdates") },
+      { value: "community", label: t("blogCategoryCommunity") },
     ],
     [t],
   );
 
   return (
-    <HorizontalScroller
-      items={tabs}
-      renderItem={(tab) => (
-        <Button
-          variant={activeCategory === tab.key ? "primary" : "outline"}
-          onClick={() => onChange(tab.key)}
-          className="text-sm whitespace-nowrap"
-        >
-          {tab.label}
-        </Button>
-      )}
-      keyExtractor={(tab) => tab.key}
-      gap={8}
-      autoScroll={false}
-      className="mb-8 px-5"
+    <SectionTabs
+      inline
+      value={activeCategory}
+      onChange={(v) => onChange(v as "" | BlogPostCategory)}
+      tabs={tabs}
+      className="mb-8"
     />
   );
 }

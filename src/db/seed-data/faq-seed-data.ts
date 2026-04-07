@@ -4,15 +4,17 @@
  *
  * Categories:
  * - general: 20 FAQs
- * - shipping: 15 FAQs
- * - returns: 12 FAQs
- * - payment: 18 FAQs
- * - account: 10 FAQs
- * - products: 15 FAQs
- * - sellers: 12 FAQs
+ * - shipping_delivery: 15 FAQs
+ * - returns_refunds: 12 FAQs
+ * - orders_payment: 18 FAQs
+ * - account_security: 10 FAQs
+ * - product_information: 15 FAQs
+ * - general: 12 seller FAQs merged into general guidance
  *
- * Note: answer field will be converted to FAQAnswer object by seed script
+ * Raw FAQ entries are normalized below into the runtime FAQ entity shape.
  */
+
+import type { FAQCategory, FAQDocument } from "@/db/schema";
 
 type SeedFAQ = {
   id?: string; // Optional for seedCollection compatibility
@@ -37,6 +39,72 @@ type SeedFAQ = {
   isActive: boolean;
   createdBy: string;
 };
+
+const FAQ_CATEGORY_MAP: Record<string, FAQCategory> = {
+  general: "general",
+  shipping: "shipping_delivery",
+  returns: "returns_refunds",
+  payment: "orders_payment",
+  account: "account_security",
+  products: "product_information",
+  sellers: "general",
+};
+
+function buildSearchTokens(input: {
+  question: string;
+  answer: string;
+  category: FAQCategory;
+  tags: string[];
+}): string[] {
+  const rawText = [input.question, input.answer, input.category, ...input.tags]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return Array.from(
+    new Set(
+      rawText
+        .split(/[^a-z0-9]+/i)
+        .map((token) => token.trim())
+        .filter((token) => token.length >= 2),
+    ),
+  ).slice(0, 50);
+}
+
+function normalizeFaqSeed(
+  faq: SeedFAQ,
+): Omit<FAQDocument, "createdAt" | "updatedAt"> {
+  const category = FAQ_CATEGORY_MAP[faq.category] ?? "general";
+
+  return {
+    id: faq.id ?? "",
+    question: faq.question,
+    answer: {
+      text: faq.answer,
+      format: "plain",
+    },
+    category,
+    showOnHomepage: faq.showOnHomepage,
+    showInFooter: faq.showInFooter,
+    isPinned: faq.isPinned,
+    order: faq.order,
+    priority: faq.priority,
+    tags: faq.tags,
+    searchTokens: buildSearchTokens({
+      question: faq.question,
+      answer: faq.answer,
+      category,
+      tags: faq.tags,
+    }),
+    relatedFAQs: faq.relatedFAQs,
+    useSiteSettings: faq.useSiteSettings,
+    variables: undefined,
+    stats: faq.stats,
+    seo: faq.seo,
+    isActive: faq.isActive,
+    createdBy: faq.createdBy,
+  };
+}
 
 export const FAQ_SEED_DATA: SeedFAQ[] = [
   // ============================================
@@ -2518,4 +2586,4 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
 ];
 
 // Export with camelCase name for consistency with other seed data files
-export const faqSeedData = FAQ_SEED_DATA;
+export const faqSeedData = FAQ_SEED_DATA.map(normalizeFaqSeed);

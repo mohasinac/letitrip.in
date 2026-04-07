@@ -15,6 +15,7 @@ const { themed } = THEME_CONSTANTS;
 export function getFaqTableColumns(
   onEdit: (faq: FAQ) => void,
   onDelete: (faq: FAQ) => void,
+  formatCategory: (category: FAQ["category"]) => string,
 ) {
   return {
     columns: [
@@ -28,6 +29,7 @@ export function getFaqTableColumns(
         key: "category",
         header: LABELS.CATEGORY,
         sortable: true,
+        render: (faq: FAQ) => formatCategory(faq.category),
         width: "15%",
       },
       {
@@ -37,8 +39,11 @@ export function getFaqTableColumns(
         width: "10%",
       },
       {
-        key: "viewCount",
+        key: "stats.views",
         header: LABELS.COL_VIEWS,
+        render: (faq: FAQ) => (
+          <Span className="text-sm">{faq.stats?.views ?? 0}</Span>
+        ),
         sortable: true,
         width: "10%",
       },
@@ -61,18 +66,18 @@ export function getFaqTableColumns(
         width: "15%",
       },
       {
-        key: "isPinned",
+        key: "showOnHomepage",
         header: LABELS.FEATURED,
         sortable: true,
         render: (faq: FAQ) => (
           <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
-              faq.isPinned
+              faq.showOnHomepage
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                 : `${themed.bgTertiary} ${themed.textSecondary}`
             }`}
           >
-            {faq.isPinned ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
+            {faq.showOnHomepage ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
           </Span>
         ),
         width: "15%",

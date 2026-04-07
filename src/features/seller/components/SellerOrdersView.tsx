@@ -24,14 +24,12 @@ import {
   OrderFilters,
   FormField,
   ListingLayout,
+  SectionTabs,
   SideDrawer,
   Search,
   SortDropdown,
   Spinner,
   TablePagination,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -489,21 +487,18 @@ function SellerOrdersContent() {
           ) : undefined
         }
         statusTabsSlot={
-          <Tabs
+          <SectionTabs
+            inline
             value={statusFilter}
             onChange={(id) => {
               table.set("status", id);
               setSelectedIds([]);
             }}
-          >
-            <TabsList>
-              {STATUS_TABS.map((tab) => (
-                <TabsTrigger key={tab.key} value={tab.key}>
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+            tabs={STATUS_TABS.map((tab) => ({
+              value: tab.key,
+              label: tab.label,
+            }))}
+          />
         }
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}

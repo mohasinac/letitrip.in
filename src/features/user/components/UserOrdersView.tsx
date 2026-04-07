@@ -25,14 +25,12 @@ import {
   OrderCard,
   OrderFilters,
   Search,
+  SectionTabs,
   SortDropdown,
   Row,
   Spinner,
   StatusBadge,
   TablePagination,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -250,19 +248,15 @@ function UserOrdersContent() {
         </div>
       }
       statusTabsSlot={
-        <Tabs
-          variant="line"
+        <SectionTabs
+          inline
           value={statusFilter}
           onChange={(v) => table.set("status", v)}
-        >
-          <TabsList>
-            {STATUS_TABS.map((tab) => (
-              <TabsTrigger key={tab.key} value={tab.key}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+          tabs={STATUS_TABS.map((tab) => ({
+            value: tab.key,
+            label: tab.label,
+          }))}
+        />
       }
       searchSlot={
         <Search

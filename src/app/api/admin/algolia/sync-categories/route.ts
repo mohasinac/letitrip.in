@@ -20,6 +20,27 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
+async function loadActiveCategories() {
+  const items = [] as Awaited<
+    ReturnType<typeof categoriesRepository.list>
+  >["items"];
+  let page = 1;
+
+  while (true) {
+    const result = await categoriesRepository.list({
+      filters: "isActive==true",
+      sorts: "order",
+      page: String(page),
+      pageSize: "200",
+    });
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return { items, total: result.total };
+    }
+    page += 1;
+  }
+}
+
 export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
@@ -28,16 +49,15 @@ export const POST = createRouteHandler({
       throw new ValidationError(ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED);
     }
 
-    const allCategories = await categoriesRepository.findAll();
-    const active = allCategories.filter((c) => c.isActive);
+    const active = await loadActiveCategories();
 
     serverLogger.info("Starting Algolia categories sync", {
-      total: allCategories.length,
-      active: active.length,
+      total: active.total,
+      active: active.total,
       index: ALGOLIA_CATEGORIES_INDEX_NAME,
     });
 
-    const result = await indexCategories(active);
+    const result = await indexCategories(active.items);
 
     serverLogger.info("Algolia categories sync completed", {
       indexed: result.indexed,
@@ -48,7 +68,7 @@ export const POST = createRouteHandler({
       {
         indexed: result.indexed,
         index: ALGOLIA_CATEGORIES_INDEX_NAME,
-        skipped: allCategories.length - active.length,
+        skipped: active.total - result.indexed,
       },
       SUCCESS_MESSAGES.ADMIN.ALGOLIA_CATEGORIES_SYNCED,
     );

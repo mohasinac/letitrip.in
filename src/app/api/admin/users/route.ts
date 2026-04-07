@@ -11,8 +11,11 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
+import { buildSieveFilters } from "@/helpers";
 import { userRepository } from "@/repositories";
+import { piiBlindIndex } from "@/lib/pii";
 import { serverLogger } from "@/lib/server-logger";
+import { USER_FIELDS } from "@/db/schema";
 
 /**
  * GET /api/admin/users
@@ -36,23 +39,33 @@ export const GET = createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const q = getStringParam(searchParams, "q")?.trim() || "";
 
     serverLogger.info("Admin users list requested", {
       filters,
       sorts,
       page,
       pageSize,
+      q: q ? "[redacted]" : "",
     });
 
-    const sieveResult = await userRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
+    // PII fields are encrypted, so `q` is translated into blind-index equality
+    // filters to keep the entire list path query-level (no in-memory filtering).
+    const qFilter = q
+      ? q.includes("@")
+        ? `${USER_FIELDS.EMAIL_INDEX}==${piiBlindIndex(q)}`
+        : `${USER_FIELDS.DISPLAY_NAME_INDEX}==${piiBlindIndex(q)}`
+      : undefined;
 
-    // Serialize dates and strip sensitive fields
-    const serialized = sieveResult.items.map((u) => ({
+    const effectiveFilters =
+      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+
+    // Avoid forcing extra composite indices for exact blind-index lookups.
+    const effectiveSorts = q ? undefined : sorts;
+
+    const serializeUser = (
+      u: Awaited<ReturnType<typeof userRepository.list>>["items"][number],
+    ) => ({
       id: u.id || u.uid,
       uid: u.uid,
       email: u.email,
@@ -72,10 +85,17 @@ export const GET = createRouteHandler({
           : ((u.metadata?.lastSignInTime as any)?.toDate?.()?.toISOString() ??
             u.metadata?.lastSignInTime),
       metadata: u.metadata ? { loginCount: u.metadata.loginCount } : undefined,
-    }));
+    });
+
+    const sieveResult = await userRepository.list({
+      filters: effectiveFilters,
+      sorts: effectiveSorts,
+      page,
+      pageSize,
+    });
 
     return successResponse({
-      users: serialized,
+      users: sieveResult.items.map(serializeUser),
       total: sieveResult.total,
       meta: {
         page: sieveResult.page,

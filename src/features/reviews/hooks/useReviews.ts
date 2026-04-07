@@ -5,9 +5,21 @@ import { apiClient } from "@mohasinac/http";
 import type { ReviewDocument } from "@/db/schema";
 
 /**
- * The /api/reviews endpoint returns successResponse(sieveResult.items, ...).
- * apiClient unwraps the `data` field, so the resolved value is ReviewDocument[].
+ * For ?latest=true / ?productId=... the API wraps results in a ReviewListResponse
+ * object: { items, total, page, ... }. apiClient unwraps the outer `data` envelope,
+ * so the resolved value is ReviewListResponse — not a flat array.
  */
+interface ReviewListResponse {
+  items: ReviewDocument[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+  averageRating?: number;
+  ratingDistribution?: Record<number, number>;
+}
+
 export type ReviewsApiResult = ReviewDocument[];
 
 /**
@@ -23,10 +35,21 @@ export function useReviews(
 ) {
   return useQuery<ReviewsApiResult>({
     queryKey: ["reviews", "all", queryParams],
-    queryFn: () =>
-      apiClient.get<ReviewsApiResult>(
+    queryFn: async () => {
+      const result = await apiClient.get<ReviewListResponse | ReviewDocument[]>(
         `/api/reviews${queryParams ? `?${queryParams}` : ""}`,
-      ),
+      );
+      // ?latest=true / ?productId=... return a ReviewListResponse object;
+      // ?featured=true returns a flat array.
+      if (
+        result &&
+        !Array.isArray(result) &&
+        Array.isArray((result as ReviewListResponse).items)
+      ) {
+        return (result as ReviewListResponse).items;
+      }
+      return (result as ReviewDocument[]) ?? [];
+    },
     initialData: options?.initialData,
   });
 }

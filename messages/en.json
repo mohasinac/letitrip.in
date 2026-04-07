@@ -855,7 +855,7 @@
     "filters": "Filters",
     "filterAllCategories": "All Categories",
     "filterPriceRange": "Price Range",
-    "auctionsBannerCta": "Looking for unique deals? Browse Auctions â†’",
+    "auctionsBannerCta": "Looking for unique deals? Browse Auctions →",
     "showing": "{showing} of {total} products",
     "sortNewest": "Newest First",
     "sortOldest": "Oldest First",
@@ -998,7 +998,9 @@
     "guestCreateAccount": "Create Account",
     "guestItemsSaved": "{count, plural, one {# item saved} other {# items saved}} — sign in to checkout",
     "guestProceedToCheckout": "Proceed to Checkout",
-    "promoScopeSellerItems": "Applies to eligible items from this store"
+    "promoScopeSellerItems": "Applies to eligible items from this store",
+    "soldBy": "Sold by {name}",
+    "sellerItems": "{count, plural, one {# item} other {# items}}"
   },
   "orders": {
     "metaTitle": "My Orders",
@@ -1196,7 +1198,8 @@
     "partialOrderViewCart": "Return to Cart",
     "partialOrderAllUnavailable": "Sorry, all items in your cart are now out of stock. No order was placed.",
     "partialOrderItemsUnavailable": "{count, plural, one {# item unavailable} other {# items unavailable}}",
-    "partialOrderItemsOrdered": "{count, plural, one {# item ordered} other {# items ordered}}"
+    "partialOrderItemsOrdered": "{count, plural, one {# item ordered} other {# items ordered}}",
+    "soldBy": "Sold by {name}"
   },
   "orderSuccess": {
     "fallbackTitle": "Order Placed!",
@@ -3267,6 +3270,12 @@
     },
     "category": {
       "general": "General",
+      "orders_payment": "Orders & Payment",
+      "shipping_delivery": "Shipping & Delivery",
+      "returns_refunds": "Returns & Refunds",
+      "product_information": "Product Information",
+      "account_security": "Account & Security",
+      "technical_support": "Technical Support",
       "products": "Products",
       "auctions": "Auctions & Bidding",
       "preorders": "Pre-Orders",
@@ -3278,6 +3287,12 @@
     },
     "categoryDescription": {
       "general": "About our platform, services, and policies",
+      "orders_payment": "Orders, payments, coupons, and billing help",
+      "shipping_delivery": "Delivery times, tracking, shipping options, and COD",
+      "returns_refunds": "Return policy, refund process, and timelines",
+      "product_information": "Product listings, quality, authenticity, and condition",
+      "account_security": "Registration, login, verification, and profile",
+      "technical_support": "Troubleshooting, seller guidance, and platform help",
       "products": "Product listings, auctions, bidding, and quality",
       "auctions": "How auctions work, bidding rules, winning, and payment",
       "preorders": "Pre-order process, deposits, production timelines, and cancellations",

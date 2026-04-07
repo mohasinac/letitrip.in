@@ -5,6 +5,9 @@ import "@/providers.config";
  */
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
+import { buildSieveFilters } from "@/helpers";
+import { piiBlindIndex } from "@/lib/pii";
+import { REVIEW_FIELDS } from "@/db/schema";
 import { reviewRepository } from "@/repositories";
 
 export const GET = createApiHandler({
@@ -21,9 +24,20 @@ export const GET = createApiHandler({
       url.searchParams.get("sorts") ??
       url.searchParams.get("sort") ??
       "-createdAt";
+    const q = url.searchParams.get("q")?.trim() || "";
+
+    const qFilter = q
+      ? `${REVIEW_FIELDS.USER_NAME_INDEX}==${piiBlindIndex(q)}`
+      : undefined;
+    const effectiveFilters =
+      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+
+    // Avoid forcing extra composite indices for exact blind-index lookups.
+    const effectiveSorts = q ? undefined : sorts;
+
     const result = await reviewRepository.listAll({
-      filters,
-      sorts,
+      filters: effectiveFilters,
+      sorts: effectiveSorts,
       page,
       pageSize,
     });

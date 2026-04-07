@@ -16,6 +16,29 @@ interface CartItemListProps {
   onRemove: (itemId: string) => void;
 }
 
+interface SellerGroup {
+  sellerId: string;
+  sellerName: string;
+  items: CartItemDocument[];
+}
+
+function groupBySeller(items: CartItemDocument[]): SellerGroup[] {
+  const map = new Map<string, SellerGroup>();
+  for (const item of items) {
+    const existing = map.get(item.sellerId);
+    if (existing) {
+      existing.items.push(item);
+    } else {
+      map.set(item.sellerId, {
+        sellerId: item.sellerId,
+        sellerName: item.sellerName,
+        items: [item],
+      });
+    }
+  }
+  return Array.from(map.values());
+}
+
 export function CartItemList({
   items,
   updatingItemId,
@@ -44,16 +67,42 @@ export function CartItemList({
     );
   }
 
+  const groups = groupBySeller(items);
+
   return (
-    <div className="space-y-3">
-      {items.map((item) => (
-        <CartItemRow
-          key={item.itemId}
-          item={item}
-          onUpdateQuantity={onUpdateQuantity}
-          onRemove={onRemove}
-          isUpdating={updatingItemId === item.itemId}
-        />
+    <div className="space-y-4">
+      {groups.map((group) => (
+        <div
+          key={group.sellerId}
+          className={`rounded-xl border ${themed.border} overflow-hidden`}
+        >
+          {/* Seller header */}
+          <div
+            className={`flex items-center gap-2 px-4 py-2.5 border-b ${themed.border} ${themed.bgSecondary}`}
+          >
+            <Span className="text-base">🏪</Span>
+            <Text size="sm" weight="semibold">
+              {t("soldBy", { name: group.sellerName })}
+            </Text>
+            <Text size="xs" variant="secondary" className="ml-auto">
+              {t("sellerItems", { count: group.items.length })}
+            </Text>
+          </div>
+
+          {/* Items */}
+          <div className="divide-y divide-inherit">
+            {group.items.map((item) => (
+              <CartItemRow
+                key={item.itemId}
+                item={item}
+                onUpdateQuantity={onUpdateQuantity}
+                onRemove={onRemove}
+                isUpdating={updatingItemId === item.itemId}
+                hideSeller
+              />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );

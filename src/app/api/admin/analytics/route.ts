@@ -16,6 +16,25 @@ import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { orderRepository, productRepository } from "@/repositories";
 import { formatMonthYear } from "@/utils";
+import type { OrderDocument } from "@/db/schema";
+
+async function loadAllOrders(): Promise<OrderDocument[]> {
+  const items: OrderDocument[] = [];
+  let page = 1;
+
+  while (true) {
+    const result = await orderRepository.listAll({
+      sorts: "-createdAt",
+      page: String(page),
+      pageSize: "200",
+    });
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return items;
+    }
+    page += 1;
+  }
+}
 
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
@@ -26,10 +45,19 @@ export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {
-    const [allOrders, allProducts] = await Promise.all([
-      orderRepository.findAll(),
-      productRepository.findAll(),
-    ]);
+    const [allOrders, totalProductsResult, publishedProductsResult] =
+      await Promise.all([
+        loadAllOrders(),
+        productRepository.list({ page: "1", pageSize: "1" }),
+        productRepository.list(
+          {
+            filters: "status==published",
+            page: "1",
+            pageSize: "1",
+          },
+          { status: "published" },
+        ),
+      ]);
 
     // All-time totals
     const totalOrders = allOrders.length;
@@ -101,13 +129,21 @@ export const GET = createRouteHandler({
     const topProducts = Array.from(revenueByProduct.values())
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5)
-      .map((p) => {
-        const product = allProducts.find((prod) => prod.id === p.productId);
-        return {
-          ...p,
-          mainImage: product?.mainImage ?? "",
-        };
-      });
+      .map((p) => p);
+
+    const topProductDocs = await Promise.all(
+      topProducts.map((product) =>
+        productRepository.findById(product.productId),
+      ),
+    );
+
+    const topProductsWithImages = topProducts.map((p, index) => {
+      const product = topProductDocs[index];
+      return {
+        ...p,
+        mainImage: product?.mainImage ?? "",
+      };
+    });
 
     return successResponse({
       summary: {
@@ -115,12 +151,11 @@ export const GET = createRouteHandler({
         totalRevenue,
         newOrdersThisMonth,
         revenueThisMonth,
-        totalProducts: allProducts.length,
-        publishedProducts: allProducts.filter((p) => p.status === "published")
-          .length,
+        totalProducts: totalProductsResult.total,
+        publishedProducts: publishedProductsResult.total,
       },
       ordersByMonth,
-      topProducts,
+      topProducts: topProductsWithImages,
     });
   },
 });

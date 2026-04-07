@@ -171,6 +171,7 @@ export const USER_PII_FIELDS = ["email", "phoneNumber", "displayName"] as const;
 export const USER_PII_INDEX_MAP: Record<string, string> = {
   email: "emailIndex",
   phoneNumber: "phoneIndex",
+  displayName: "displayNameIndex",
 };
 
 /** PII fields in the addresses subcollection */
@@ -196,6 +197,12 @@ export const PAYOUT_PII_FIELDS = [
   "upiId",
 ] as const;
 
+/** Blind-index mapping for queryable payout PII */
+export const PAYOUT_PII_INDEX_MAP: Record<string, string> = {
+  sellerName: "sellerNameIndex",
+  sellerEmail: "sellerEmailIndex",
+};
+
 /** PII fields in bids */
 export const BID_PII_FIELDS = ["userName", "userEmail"] as const;
 
@@ -217,6 +224,11 @@ export const TOKEN_PII_INDEX_MAP: Record<string, string> = {
 
 /** PII fields in reviews */
 export const REVIEW_PII_FIELDS = ["userName"] as const;
+
+/** Blind-index mapping for queryable review PII */
+export const REVIEW_PII_INDEX_MAP: Record<string, string> = {
+  userName: "userNameIndex",
+};
 
 /** PII fields in offers (buyer + seller data) */
 export const OFFER_PII_FIELDS = [
@@ -380,4 +392,107 @@ export function decryptPayoutBankAccount<T extends Record<string, unknown>>(
 ): T | undefined | null {
   if (!bank) return bank;
   return decryptPiiFields({ ...bank }, ["accountHolderName"]);
+}
+
+// ─── Public display masking ──────────────────────────────────────────────────
+
+/**
+ * Mask a person's name for public display.
+ * Each word is reduced to its first letter followed by "***".
+ *
+ * "John Doe"  → "J*** D***"
+ * "Alice"     → "A***"
+ *
+ * If the value is still an encrypted blob (e.g. PII_SECRET not set), returns
+ * "Anonymous" so encrypted ciphertext never leaks to the UI.
+ */
+export function maskName(name: string | null | undefined): string {
+  if (!name || typeof name !== "string") return "Anonymous";
+  if (isPiiEncrypted(name)) return "Anonymous";
+  return name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => word[0] + "***")
+    .join(" ");
+}
+
+/**
+ * Mask an email address for public display.
+ * "john.doe@example.com" → "j***@***.com"
+ */
+export function maskEmail(email: string | null | undefined): string {
+  if (!email || typeof email !== "string") return "***@***.***";
+  if (isPiiEncrypted(email)) return "***@***.***";
+  const atIdx = email.indexOf("@");
+  if (atIdx < 0) return "***";
+  const local = email.slice(0, atIdx);
+  const domain = email.slice(atIdx + 1);
+  const dotIdx = domain.lastIndexOf(".");
+  const domainMasked = dotIdx > 0 ? "***" + domain.slice(dotIdx) : "***";
+  return (local[0] ?? "*") + "***@" + domainMasked;
+}
+
+/**
+ * Return a copy of a review document with PII fields masked for public display.
+ * Admin/owner endpoints should NOT call this — use the raw document instead.
+ */
+export function maskPublicReview<T extends { userName: string }>(review: T): T {
+  return { ...review, userName: maskName(review.userName) };
+}
+
+/**
+ * Return a copy of a bid document with PII masked for public display
+ * (auction product page). userEmail is already stripped at the API boundary;
+ * this additionally masks userName so other bidders stay anonymous.
+ */
+export function maskPublicBid<T extends { userName: string }>(bid: T): T {
+  return { ...bid, userName: maskName(bid.userName) };
+}
+
+/**
+ * Return a copy of an event-entry document with PII masked for the leaderboard.
+ * ipAddress and userEmail are never sent to the client;
+ * only userDisplayName needs masking for a public leaderboard view.
+ */
+export function maskPublicEventEntry<
+  T extends {
+    userDisplayName?: string;
+    userEmail?: string;
+    ipAddress?: string;
+  },
+>(entry: T): Omit<T, "userEmail" | "ipAddress"> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {
+    userEmail: _e,
+    ipAddress: _ip,
+    ...rest
+  } = entry as T & {
+    userEmail?: string;
+    ipAddress?: string;
+  };
+  return {
+    ...rest,
+    ...(rest.userDisplayName !== undefined
+      ? { userDisplayName: maskName(rest.userDisplayName) }
+      : {}),
+  } as Omit<T, "userEmail" | "ipAddress">;
+}
+
+/**
+ * Return a copy of an offer document with buyer PII masked for the seller view.
+ * The seller needs to know an offer was made and its amount, but the buyer's
+ * full name and email should remain private until the order is confirmed.
+ *
+ * NOTE: buyerOfferView is the seller-facing shape; the buyer's own offer list
+ *       (listBuyerOffersAction) is owner-data and should NOT be masked.
+ */
+export function maskOfferForSeller<
+  T extends { buyerName: string; buyerEmail: string },
+>(offer: T): T {
+  return {
+    ...offer,
+    buyerName: maskName(offer.buyerName),
+    buyerEmail: maskEmail(offer.buyerEmail),
+  };
 }

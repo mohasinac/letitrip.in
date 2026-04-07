@@ -101,40 +101,85 @@ export function CheckoutOrderReview({
         </Text>
       </div>
 
-      {/* Order items */}
+      {/* Order items — grouped by seller */}
       <div>
         <Heading level={3} className="font-semibold mb-3">
           {t("orderItems")}
         </Heading>
-        <div className={`rounded-xl border divide-y ${themed.border}`}>
-          {items.map((item) => (
-            <div key={item.itemId} className="flex items-center gap-3 p-3">
-              {item.productImage ? (
-                <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
-                  <MediaImage
-                    src={item.productImage}
-                    alt={item.productTitle}
-                    size="thumbnail"
-                  />
-                </div>
-              ) : (
+        <div className="space-y-3">
+          {(() => {
+            const sellerMap = new Map<
+              string,
+              { sellerName: string; items: typeof items }
+            >();
+            for (const item of items) {
+              const g = sellerMap.get(item.sellerId);
+              if (g) {
+                g.items.push(item);
+              } else {
+                sellerMap.set(item.sellerId, {
+                  sellerName: item.sellerName,
+                  items: [item],
+                });
+              }
+            }
+            return Array.from(sellerMap.entries()).map(
+              ([sellerId, { sellerName, items: groupItems }]) => (
                 <div
-                  className={`w-14 h-14 rounded-lg flex-shrink-0 ${themed.bgSecondary}`}
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <Text size="sm" weight="medium" className="truncate">
-                  {item.productTitle}
-                </Text>
-                <Text size="xs" variant="secondary">
-                  {tCart("quantity")} × {item.quantity}
-                </Text>
-              </div>
-              <Text size="sm" weight="semibold" className="flex-shrink-0">
-                {formatCurrency(item.price * item.quantity)}
-              </Text>
-            </div>
-          ))}
+                  key={sellerId}
+                  className={`rounded-xl border ${themed.border} overflow-hidden`}
+                >
+                  {/* Seller header */}
+                  <div
+                    className={`flex items-center gap-2 px-3 py-2 border-b ${themed.border} ${themed.bgSecondary}`}
+                  >
+                    <Span className="text-sm">🏪</Span>
+                    <Text size="xs" weight="semibold">
+                      {t("soldBy", { name: sellerName })}
+                    </Text>
+                  </div>
+                  {/* Items */}
+                  <div className={`divide-y ${themed.border}`}>
+                    {groupItems.map((item) => (
+                      <div
+                        key={item.itemId}
+                        className="flex items-center gap-3 p-3"
+                      >
+                        {item.productImage ? (
+                          <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
+                            <MediaImage
+                              src={item.productImage}
+                              alt={item.productTitle}
+                              size="thumbnail"
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className={`w-14 h-14 rounded-lg flex-shrink-0 ${themed.bgSecondary}`}
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <Text size="sm" weight="medium" className="truncate">
+                            {item.productTitle}
+                          </Text>
+                          <Text size="xs" variant="secondary">
+                            {tCart("quantity")} × {item.quantity}
+                          </Text>
+                        </div>
+                        <Text
+                          size="sm"
+                          weight="semibold"
+                          className="flex-shrink-0"
+                        >
+                          {formatCurrency(item.price * item.quantity)}
+                        </Text>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ),
+            );
+          })()}
         </div>
       </div>
 

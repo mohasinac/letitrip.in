@@ -73,14 +73,14 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const verifiedFilter = table.get("verified");
   const featuredFilter = table.get("featured");
 
-  // Build Sieve filter string
+  // Build Sieve filter string. `q` is passed separately and API maps it to a
+  // blind-index Sieve filter so query/pagination remain DB-level.
   const filtersParam = buildSieveFilters(
     [
       "status==",
       statusFilter && statusFilter !== "all" ? statusFilter : undefined,
     ],
     ["rating==", ratingFilter],
-    ["(userName|userEmail)@=*", searchTerm],
     [
       "verified==",
       verifiedFilter === "true"
@@ -92,6 +92,11 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     ["featured==", featuredFilter === "true" ? "true" : undefined],
   );
 
+  const rawSieveParams = table.buildSieveParams(filtersParam);
+  const sieveParams = searchTerm
+    ? `${rawSieveParams}&q=${encodeURIComponent(searchTerm)}`
+    : rawSieveParams;
+
   const {
     data,
     isLoading,
@@ -99,7 +104,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     refetch,
     updateMutation: updateStatusMutation,
     deleteMutation,
-  } = useAdminReviews(table.buildSieveParams(filtersParam));
+  } = useAdminReviews(sieveParams);
 
   const reviews = data?.reviews || [];
   const total = data?.meta?.total || 0;

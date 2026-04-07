@@ -23,6 +23,30 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 
+async function loadPublishedProducts() {
+  const items = [] as Awaited<
+    ReturnType<typeof productRepository.list>
+  >["items"];
+  let page = 1;
+
+  while (true) {
+    const result = await productRepository.list(
+      {
+        filters: "status==published",
+        sorts: "-createdAt",
+        page: String(page),
+        pageSize: "200",
+      },
+      { status: "published" },
+    );
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return { items, total: result.total };
+    }
+    page += 1;
+  }
+}
+
 export const POST = createRouteHandler({
   auth: true,
   roles: ["admin"],
@@ -32,18 +56,16 @@ export const POST = createRouteHandler({
       throw new ValidationError(ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED);
     }
 
-    // Fetch all products and filter to published ones
-    const allProducts = await productRepository.findAll();
-    const published = allProducts.filter((p) => p.status === "published");
+    const published = await loadPublishedProducts();
 
     serverLogger.info("Starting Algolia sync", {
-      total: allProducts.length,
-      published: published.length,
+      total: published.total,
+      published: published.total,
       index: ALGOLIA_INDEX_NAME,
     });
 
     // Bulk index — createApiHandler catches errors and formats them
-    const result = await indexProducts(published);
+    const result = await indexProducts(published.items);
 
     serverLogger.info("Algolia sync completed", {
       indexed: result.indexed,
@@ -54,7 +76,7 @@ export const POST = createRouteHandler({
       {
         indexed: result.indexed,
         index: ALGOLIA_INDEX_NAME,
-        skipped: allProducts.length - published.length,
+        skipped: published.total - result.indexed,
       },
       SUCCESS_MESSAGES.ADMIN.ALGOLIA_SYNCED,
     );

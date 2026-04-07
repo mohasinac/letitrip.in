@@ -1,16 +1,16 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@mohasinac/http";
 import {
   adminCreateFaqAction,
   adminUpdateFaqAction,
   adminDeleteFaqAction,
 } from "@/actions";
-import { createAdminListQuery } from "./createAdminListQuery";
-import type { FAQ } from "../components";
+import type { FAQDocument } from "@/db/schema";
 
 interface FAQsListResponse {
-  items: FAQ[];
+  items: FAQDocument[];
   total: number;
   page: number;
   totalPages: number;
@@ -18,10 +18,12 @@ interface FAQsListResponse {
 }
 
 export function useAdminFaqs(paramsString: string) {
-  const query = createAdminListQuery<FAQsListResponse>({
-    queryKey: ["faqs", "list"],
-    sieveParams: paramsString,
-    endpoint: "/api/faqs",
+  const query = useQuery<FAQsListResponse>({
+    queryKey: ["admin", "faqs", paramsString],
+    queryFn: () =>
+      apiClient.get<FAQsListResponse>(
+        `/api/admin/faqs${paramsString ? `?${paramsString}` : ""}`,
+      ),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

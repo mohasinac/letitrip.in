@@ -5,7 +5,7 @@
  * Use this to generate dynamic metadata for each page.
  */
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const SEO_CONFIG = {
   // Site-wide defaults

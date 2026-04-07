@@ -130,6 +130,10 @@ jest.mock("@/lib/api/request-helpers", () => ({
   },
 }));
 
+jest.mock("@/lib/pii", () => ({
+  piiBlindIndex: (value: string) => `hash:${value.toLowerCase().trim()}`,
+}));
+
 // ─── Import route ─────────────────────────────────────────────────────────────
 
 import { GET } from "../admin/payouts/route";
@@ -224,5 +228,16 @@ describe("GET /api/admin/payouts", () => {
     );
     expect(status).toBe(200);
     expect(body.data.payouts).toHaveLength(0);
+  });
+
+  it("maps q to sellerName blind-index filter", async () => {
+    await GET(buildRequest("/api/admin/payouts?q=Acme Seller"));
+
+    expect(mockPayoutList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: "sellerNameIndex==hash:acme seller",
+        sorts: undefined,
+      }),
+    );
   });
 });

@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import type { CategoryItem } from "@mohasinac/feat-categories";
 import type { ProductListResponse } from "@mohasinac/feat-products";
 import {
@@ -11,115 +10,26 @@ import { HeroCarousel } from "./HeroCarousel";
 import { WelcomeSection } from "./WelcomeSection";
 import { TrustFeaturesSection } from "./TrustFeaturesSection";
 import { StatsCounterSection } from "./StatsCounterSection";
-
-// Below-fold sections — dynamically imported to reduce initial JS bundle
-const TopCategoriesSection = dynamic(
-  () =>
-    import("./TopCategoriesSection").then((m) => ({
-      default: m.TopCategoriesSection,
-    })),
-  { ssr: true },
-);
-const TopBrandsSection = dynamic(
-  () =>
-    import("./TopBrandsSection").then((m) => ({ default: m.TopBrandsSection })),
-  { ssr: true },
-);
-const FeaturedProductsSection = dynamic(
-  () =>
-    import("./FeaturedProductsSection").then((m) => ({
-      default: m.FeaturedProductsSection,
-    })),
-  { ssr: true },
-);
-const FeaturedAuctionsSection = dynamic(
-  () =>
-    import("./FeaturedAuctionsSection").then((m) => ({
-      default: m.FeaturedAuctionsSection,
-    })),
-  { ssr: true },
-);
-const FeaturedPreOrdersSection = dynamic(
-  () =>
-    import("./FeaturedPreOrdersSection").then((m) => ({
-      default: m.FeaturedPreOrdersSection,
-    })),
-  { ssr: true },
-);
-const FeaturedStoresSection = dynamic(
-  () =>
-    import("./FeaturedStoresSection").then((m) => ({
-      default: m.FeaturedStoresSection,
-    })),
-  { ssr: true },
-);
-const FeaturedEventsSection = dynamic(
-  () =>
-    import("./FeaturedEventsSection").then((m) => ({
-      default: m.FeaturedEventsSection,
-    })),
-  { ssr: true },
-);
-const AdvertisementBanner = dynamic(
-  () =>
-    import("./AdvertisementBanner").then((m) => ({
-      default: m.AdvertisementBanner,
-    })),
-  { ssr: true },
-);
-const CustomerReviewsSection = dynamic(
-  () =>
-    import("./CustomerReviewsSection").then((m) => ({
-      default: m.CustomerReviewsSection,
-    })),
-  { ssr: true },
-);
-const WhatsAppCommunitySection = dynamic(
-  () =>
-    import("./WhatsAppCommunitySection").then((m) => ({
-      default: m.WhatsAppCommunitySection,
-    })),
-  { ssr: true },
-);
-const FAQSection = dynamic(
-  () => import("./FAQSection").then((m) => ({ default: m.FAQSection })),
-  { ssr: true },
-);
-const BlogArticlesSection = dynamic(
-  () =>
-    import("./BlogArticlesSection").then((m) => ({
-      default: m.BlogArticlesSection,
-    })),
-  { ssr: true },
-);
-const FeaturedResultsSection = dynamic(
-  () =>
-    import("./FeaturedResultsSection").then((m) => ({
-      default: m.FeaturedResultsSection,
-    })),
-  { ssr: true },
-);
-const HowItWorksSection = dynamic(
-  () =>
-    import("./HowItWorksSection").then((m) => ({
-      default: m.HowItWorksSection,
-    })),
-  { ssr: true },
-);
-const SecurityHighlightsSection = dynamic(
-  () =>
-    import("./SecurityHighlightsSection").then((m) => ({
-      default: m.SecurityHighlightsSection,
-    })),
-  { ssr: true },
-);
-const NewsletterSection = dynamic(
-  () =>
-    import("./NewsletterSection").then((m) => ({
-      default: m.NewsletterSection,
-    })),
-  { ssr: true },
-);
+// Below-fold sections — direct imports; App Router auto-splits at "use client"
+// boundaries so separate dynamic() wrappers are redundant and cause a false-
+// positive webpack "does not contain a default export" warning for next/dynamic
+// which triggers unnecessary Fast Refresh full reloads in development.
+import { TopCategoriesSection } from "./TopCategoriesSection";
+import { TopBrandsSection } from "./TopBrandsSection";
+import { FeaturedProductsSection } from "./FeaturedProductsSection";
+import { FeaturedAuctionsSection } from "./FeaturedAuctionsSection";
+import { FeaturedPreOrdersSection } from "./FeaturedPreOrdersSection";
+import { FeaturedStoresSection } from "./FeaturedStoresSection";
+import { FeaturedEventsSection } from "./FeaturedEventsSection";
+import { AdvertisementBanner } from "./AdvertisementBanner";
+import { CustomerReviewsSection } from "./CustomerReviewsSection";
+import { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
+import { FAQSection } from "./FAQSection";
+import { BlogArticlesSection } from "./BlogArticlesSection";
+import { FeaturedResultsSection } from "./FeaturedResultsSection";
+import { HowItWorksSection } from "./HowItWorksSection";
+import { SecurityHighlightsSection } from "./SecurityHighlightsSection";
+import { NewsletterSection } from "./NewsletterSection";
 
 function firestoreTimestampToDate(val: unknown): Date {
   if (val instanceof Date) return val;

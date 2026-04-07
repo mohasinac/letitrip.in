@@ -45,6 +45,16 @@ const FALLBACK_ICONS: Record<MediaImageSize, string> = {
   avatar: "👤",
 };
 
+// ----- Default fallback image per size ---------------------------------------------------
+// Avatar → deterministic dicebear SVG seeded by alt text.
+// All others → local placeholder SVG (no broken-image jank).
+function defaultFallbackSrc(size: MediaImageSize, alt: string): string {
+  if (size === "avatar") {
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(alt)}`;
+  }
+  return "/images/placeholder.svg";
+}
+
 export type MediaImageSize =
   | "thumbnail"
   | "card"
@@ -69,10 +79,15 @@ export interface MediaImageProps {
   /** CSS object-fit applied to the underlying img element. Defaults to `'cover'`. */
   objectFit?: "cover" | "contain";
   /**
-   * Emoji or text to show when `src` is undefined.
+   * Emoji or text to show when `src` is undefined and `fallbackSrc` also fails.
    * Falls back to the per-size default icon.
    */
   fallback?: string;
+  /**
+   * URL to use when `src` fails to load (e.g. a dicebear avatar, a local
+   * placeholder image).  If this also fails the emoji icon is shown instead.
+   */
+  fallbackSrc?: string;
   /**
    * Extra Tailwind classes applied to the absolute-fill wrapper div.
    * Use for hover animations, e.g. `group-hover:scale-110 transition-transform duration-300`.
@@ -87,29 +102,51 @@ export function MediaImage({
   priority = false,
   objectFit = "cover",
   fallback,
+  fallbackSrc,
   className,
 }: MediaImageProps) {
   const [hasError, setHasError] = useState(false);
+  const [hasFallbackError, setHasFallbackError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const icon = fallback ?? FALLBACK_ICONS[size];
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
 
-  if (!src || hasError) {
+  // Resolve fallback: explicit prop wins, otherwise use the per-size default.
+  const resolvedFallbackSrc = fallbackSrc ?? defaultFallbackSrc(size, alt);
+
+  // Determine the active source: original → fallbackSrc → emoji
+  const usingFallbackSrc =
+    !!src && hasError && !!resolvedFallbackSrc && !hasFallbackError;
+  const activeSrc = usingFallbackSrc ? resolvedFallbackSrc : src;
+  const showEmoji =
+    !activeSrc || (hasError && (!resolvedFallbackSrc || hasFallbackError));
+
+  if (showEmoji) {
     return (
       <div
-        className={`absolute inset-0 ${flex.center} bg-zinc-100 dark:bg-slate-800 text-zinc-400 text-4xl${className ? ` ${className}` : ""}`}
+        className={`absolute inset-0 ${flex.center} bg-zinc-100 dark:bg-slate-800${className ? ` ${className}` : ""}`}
         role="img"
         aria-label={alt}
       >
-        <Span aria-hidden="true">{icon}</Span>
+        <span
+          className="text-zinc-400 text-2xl leading-none"
+          aria-hidden="true"
+        >
+          {icon}
+        </span>
       </div>
     );
   }
 
   const isSvg =
-    src.toLowerCase().endsWith(".svg") ||
-    src.includes("image/svg") ||
-    /[./]svg(\?|$)/i.test(src);
+    activeSrc!.toLowerCase().endsWith(".svg") ||
+    activeSrc!.includes("image/svg") ||
+    /[./]svg(\?|$)/i.test(activeSrc!);
+
+  const isGif =
+    activeSrc!.toLowerCase().endsWith(".gif") ||
+    /\.gif\?/i.test(activeSrc!) ||
+    activeSrc!.includes("image/gif");
 
   return (
     <div
@@ -122,15 +159,22 @@ export function MediaImage({
         />
       )}
       <Image
-        src={src}
+        src={activeSrc!}
         alt={alt}
         fill
         priority={priority}
         className={fitClass}
         sizes={SIZE_HINTS[size]}
         onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-        unoptimized={isSvg}
+        onError={() => {
+          if (usingFallbackSrc) {
+            setHasFallbackError(true);
+          } else {
+            setHasError(true);
+            setIsLoaded(false);
+          }
+        }}
+        unoptimized={isSvg || isGif}
       />
     </div>
   );

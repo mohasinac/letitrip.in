@@ -12,6 +12,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/next";
+import { maskPublicReview } from "@/lib/pii";
 
 /**
  * GET /api/profile/[userId]/reviews
@@ -25,12 +26,14 @@ export const GET = createRouteHandler<never, { userId: string }>({
     if (!rl.success) return errorResponse("Too many requests", 429);
     const { userId } = params!;
 
-    const sellerProducts = await productRepository.findBySeller(userId);
-    const publishedProducts = sellerProducts.filter(
-      (p) => p.status === "published",
-    );
+    const latestReviewsResult = await reviewRepository.listForSeller(userId, {
+      filters: "status==approved",
+      sorts: "-createdAt",
+      page: "1",
+      pageSize: "10",
+    });
 
-    if (publishedProducts.length === 0) {
+    if (latestReviewsResult.total === 0) {
       return successResponse({
         reviews: [],
         averageRating: 0,
@@ -39,41 +42,44 @@ export const GET = createRouteHandler<never, { userId: string }>({
       });
     }
 
-    const productSlice = publishedProducts.slice(0, 20);
-    const reviewArrays = await Promise.all(
-      productSlice.map((p) => reviewRepository.findApprovedByProduct(p.id)),
+    const ratingCounts = await Promise.all(
+      [1, 2, 3, 4, 5].map(async (rating) => {
+        const result = await reviewRepository.listForSeller(userId, {
+          filters: `status==approved,rating==${rating}`,
+          page: "1",
+          pageSize: "1",
+        });
+        return result.total;
+      }),
     );
 
-    const allReviews = reviewArrays
-      .flat()
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .slice(0, 10);
-
-    const allReviewsForStats = reviewArrays.flat();
-    const totalReviews = allReviewsForStats.length;
+    const totalReviews = latestReviewsResult.total;
     const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<
       number,
       number
     >;
     let ratingSum = 0;
 
-    for (const review of allReviewsForStats) {
-      ratingSum += review.rating;
-      if (review.rating >= 1 && review.rating <= 5) {
-        ratingDistribution[review.rating]++;
-      }
-    }
+    [1, 2, 3, 4, 5].forEach((rating, index) => {
+      ratingDistribution[rating] = ratingCounts[index];
+      ratingSum += rating * ratingCounts[index];
+    });
 
     const averageRating = totalReviews > 0 ? ratingSum / totalReviews : 0;
 
-    const productMap = new Map(publishedProducts.map((p) => [p.id, p]));
-    const reviewsWithProduct = allReviews.map((review) => ({
-      ...review,
+    const productIds = Array.from(
+      new Set(latestReviewsResult.items.map((review) => review.productId)),
+    );
+    const products = await Promise.all(
+      productIds.map((productId) => productRepository.findById(productId)),
+    );
+    const productMap = new Map(
+      products.filter(Boolean).map((product) => [product!.id, product!]),
+    );
+    const reviewsWithProduct = latestReviewsResult.items.map((review) => ({
+      ...maskPublicReview(review),
       productTitle:
-        productMap.get(review.productId)?.title || review.productTitle,
+        productMap.get(review.productId)?.title ?? review.productTitle,
       productMainImage: productMap.get(review.productId)?.mainImage || null,
     }));
 

@@ -93,12 +93,18 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
   const filtersParam = buildSieveFilters(
     ["disabled==", disabledValue],
     ["role==", roleValue],
-    ["(displayName|email)@=*", searchTerm],
     ["emailVerified==", emailVerifiedFilter || undefined],
     ["storeStatus==", storeStatusFilter],
     ["createdAt>=", createdFrom],
     ["createdAt<=", createdTo],
   );
+
+  // Append search term as a separate `q` param. API maps it to blind-index
+  // Sieve filters (email/displayName) so filtering stays at the query layer.
+  const rawSieveParams = table.buildSieveParams(filtersParam);
+  const sieveParams = searchTerm
+    ? `${rawSieveParams}&q=${encodeURIComponent(searchTerm)}`
+    : rawSieveParams;
 
   const {
     data,
@@ -107,7 +113,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
     refetch,
     updateUserMutation,
     deleteUserMutation,
-  } = useAdminUsers(table.buildSieveParams(filtersParam));
+  } = useAdminUsers(sieveParams);
 
   const users = data?.users || [];
   const total = data?.meta?.total ?? users.length;
@@ -237,7 +243,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
 
         <ListingLayout
           statusTabsSlot={
-            <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2">
               {(["all", "active", "banned", "admins"] as UserTab[]).map(
                 (tab) => (
                   <Button

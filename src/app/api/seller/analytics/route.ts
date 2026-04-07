@@ -18,6 +18,25 @@ import { serverLogger } from "@/lib/server-logger";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
+async function loadSellerOrders(sellerId: string): Promise<OrderDocument[]> {
+  const items: OrderDocument[] = [];
+  let page = 1;
+
+  while (true) {
+    const result = await orderRepository.listAll({
+      filters: `sellerId==${sellerId}`,
+      sorts: "-createdAt",
+      page: String(page),
+      pageSize: "200",
+    });
+    items.push(...result.items);
+    if (!result.hasMore) {
+      return items;
+    }
+    page += 1;
+  }
+}
+
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
   return new Date(raw as string | number);
@@ -28,31 +47,43 @@ export const GET = createRouteHandler({
   handler: async ({ user }) => {
     const sellerId = user!.uid;
 
-    // 1. Fetch seller's products
-    const products = await productRepository.findBySeller(sellerId);
-    const productIds = products.map((p) => p.id);
+    const [allOrders, totalProductsResult, publishedProductsResult] =
+      await Promise.all([
+        loadSellerOrders(sellerId),
+        productRepository.list(
+          {
+            page: "1",
+            pageSize: "1",
+          },
+          { sellerId },
+        ),
+        productRepository.list(
+          {
+            filters: "status==published",
+            page: "1",
+            pageSize: "1",
+          },
+          { sellerId, status: "published" },
+        ),
+      ]);
 
-    // 2. Fetch orders for each product in parallel (capped at 20 products)
-    let allOrders: OrderDocument[] = [];
-    if (productIds.length > 0) {
-      const orderBatches = await Promise.all(
-        productIds
-          .slice(0, 20)
-          .map((id) => orderRepository.findByProduct(id).catch(() => [])),
-      );
-      allOrders = orderBatches.flat();
-    }
+    const productIds = Array.from(
+      new Set(allOrders.map((order) => order.productId)),
+    );
+    const products = await Promise.all(
+      productIds.map((productId) => productRepository.findById(productId)),
+    );
+    const productMap = new Map(
+      products.filter(Boolean).map((product) => [product!.id, product!]),
+    );
 
-    // 3. Aggregate summary
     const totalOrders = allOrders.length;
     const totalRevenue = allOrders.reduce(
       (sum, o) => sum + (o.totalPrice ?? 0),
       0,
     );
-    const totalProducts = products.length;
-    const publishedProducts = products.filter(
-      (p) => p.status === "published",
-    ).length;
+    const totalProducts = totalProductsResult.total;
+    const publishedProducts = publishedProductsResult.total;
 
     // 4. Monthly revenue for last 6 months
     const now = new Date();
@@ -100,7 +131,7 @@ export const GET = createRouteHandler({
         existing.revenue += order.totalPrice ?? 0;
         existing.orders += 1;
       } else {
-        const product = products.find((p) => p.id === order.productId);
+        const product = productMap.get(order.productId);
         revenueByProduct.set(order.productId, {
           productId: order.productId,
           title: order.productTitle,

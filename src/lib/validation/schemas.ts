@@ -844,10 +844,16 @@ const faqBaseSchema = z.object({
     format: z.enum(["plain", "markdown", "html"]).default("plain"),
   }),
   category: z.string().min(1).max(100),
+  showOnHomepage: z.boolean().default(false),
+  showInFooter: z.boolean().default(false),
+  isActive: z.boolean().default(true),
   priority: z.number().int().min(1).max(10).default(5),
   isPinned: z.boolean().default(false),
+  order: z.number().int().min(0).default(0),
   tags: z.array(z.string().min(1).max(50)).max(10).optional(),
   relatedFAQs: z.array(objectIdSchema).max(5).optional(),
+  useSiteSettings: z.boolean().default(true),
+  variables: z.record(z.string(), z.string()).optional(),
   template: z.string().max(100).optional(),
 });
 

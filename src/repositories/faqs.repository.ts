@@ -34,8 +34,15 @@ import { FieldValue } from "firebase-admin/firestore";
 class FAQsRepository extends BaseRepository<FAQDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     question: { canFilter: true, canSort: true },
-    category: { canFilter: true, canSort: false },
+    category: { canFilter: true, canSort: true },
     isActive: { canFilter: true, canSort: false },
+    showOnHomepage: { canFilter: true, canSort: false },
+    showInFooter: { canFilter: true, canSort: false },
+    isPinned: { canFilter: true, canSort: false },
+    order: { canFilter: true, canSort: true },
+    priority: { canFilter: true, canSort: true },
+    tags: { canFilter: true, canSort: false },
+    searchTokens: { canFilter: true, canSort: false },
     "stats.helpful": {
       path: FAQ_FIELDS.STAT.HELPFUL,
       canFilter: false,
@@ -44,8 +51,119 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
     createdAt: { canFilter: true, canSort: true },
   };
 
-  async list(model: SieveModel): Promise<FirebaseSieveResult<FAQDocument>> {
-    return this.sieveQuery<FAQDocument>(model, FAQsRepository.SIEVE_FIELDS);
+  private buildSearchTokens(
+    input: Pick<FAQDocument, "question" | "answer" | "tags" | "category">,
+  ): string[] {
+    const rawText = [
+      input.question,
+      typeof input.answer === "string" ? input.answer : input.answer?.text,
+      input.category,
+      ...(input.tags ?? []),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return Array.from(
+      new Set(
+        rawText
+          .split(/[^a-z0-9]+/i)
+          .map((token) => token.trim())
+          .filter((token) => token.length >= 2),
+      ),
+    ).slice(0, 50);
+  }
+
+  override async create(
+    data: Partial<FAQDocument> | any,
+  ): Promise<FAQDocument> {
+    const searchTokens = this.buildSearchTokens({
+      question: data.question,
+      answer: data.answer,
+      tags: data.tags ?? [],
+      category: data.category,
+    });
+    return super.create({
+      ...data,
+      searchTokens,
+    });
+  }
+
+  override async update(
+    id: string,
+    data: Partial<FAQDocument>,
+  ): Promise<FAQDocument> {
+    const current = await this.findById(id);
+    if (!current) {
+      throw new DatabaseError(`Failed to update FAQ: missing document ${id}`);
+    }
+
+    const merged = {
+      ...current,
+      ...data,
+    } as FAQDocument;
+
+    return super.update(id, {
+      ...data,
+      searchTokens: this.buildSearchTokens({
+        question: merged.question,
+        answer: merged.answer,
+        tags: merged.tags ?? [],
+        category: merged.category,
+      }),
+    });
+  }
+
+  async list(
+    model: SieveModel,
+    opts?: { tags?: string[]; search?: string },
+  ): Promise<FirebaseSieveResult<FAQDocument>> {
+    let baseQuery = this.getCollection();
+    const tags = opts?.tags?.filter(Boolean) ?? [];
+    const searchTokens = (opts?.search ?? "")
+      .toLowerCase()
+      .split(/[^a-z0-9]+/i)
+      .map((token) => token.trim())
+      .filter((token) => token.length >= 2)
+      .slice(0, 10);
+
+    if (tags.length > 0 && searchTokens.length > 0) {
+      throw new DatabaseError(
+        "Combining FAQ tag filters and token search requires a dedicated search index",
+      );
+    }
+
+    if (tags.length === 1) {
+      baseQuery = baseQuery.where(
+        FAQ_FIELDS.TAGS,
+        "array-contains",
+        tags[0],
+      ) as any;
+    } else if (tags.length > 1) {
+      baseQuery = baseQuery.where(
+        FAQ_FIELDS.TAGS,
+        "array-contains-any",
+        tags.slice(0, 10),
+      ) as any;
+    }
+
+    if (searchTokens.length === 1) {
+      baseQuery = baseQuery.where(
+        FAQ_FIELDS.SEARCH_TOKENS,
+        "array-contains",
+        searchTokens[0],
+      ) as any;
+    } else if (searchTokens.length > 1) {
+      baseQuery = baseQuery.where(
+        FAQ_FIELDS.SEARCH_TOKENS,
+        "array-contains-any",
+        searchTokens,
+      ) as any;
+    }
+
+    return this.sieveQuery<FAQDocument>(model, FAQsRepository.SIEVE_FIELDS, {
+      baseQuery,
+    });
   }
 
   constructor() {
@@ -394,6 +512,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
 
       const faqData: Omit<FAQDocument, "id"> = {
         ...input,
+        searchTokens: this.buildSearchTokens(input),
         stats: {
           views: 0,
           helpful: 0,

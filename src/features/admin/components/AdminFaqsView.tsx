@@ -10,8 +10,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
-import { buildSieveFilters } from "@/helpers";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import type { FAQCategory } from "@/db/schema";
 
 const { flex } = THEME_CONSTANTS;
 import { useAdminFaqs } from "@/features/admin/hooks";
@@ -65,20 +65,22 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["category", "isActive"]);
 
-  const faqsParams = table.buildSieveParams(
-    buildSieveFilters(
-      ["question@=*", searchTerm],
-      ["category==", categoryFilter],
-      [
-        "isActive==",
-        isActiveFilter === "true"
-          ? "true"
-          : isActiveFilter === "false"
-            ? "false"
-            : undefined,
-      ],
-    ),
-  );
+  const faqsParams = useMemo(() => {
+    const params = new URLSearchParams();
+    const sort = table.get("sort") || "-priority,order";
+    const page = table.get("page") || "1";
+    const pageSize = table.get("pageSize") || "50";
+
+    if (searchTerm) params.set("q", searchTerm);
+    if (categoryFilter) params.set("category", categoryFilter);
+    if (isActiveFilter) params.set("isActive", isActiveFilter);
+
+    params.set("sorts", sort);
+    params.set("page", page);
+    params.set("pageSize", pageSize);
+
+    return `?${params.toString()}`;
+  }, [table, searchTerm, categoryFilter, isActiveFilter]);
 
   const {
     data,
@@ -101,6 +103,28 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const initialFormRef = useRef<string>("");
 
+  const formatCategory = useCallback(
+    (category: FAQCategory) => {
+      switch (category) {
+        case "orders_payment":
+          return t("categoryOrdersPayment");
+        case "shipping_delivery":
+          return t("categoryShippingDelivery");
+        case "returns_refunds":
+          return t("categoryReturnsRefunds");
+        case "product_information":
+          return t("categoryProductInfo");
+        case "account_security":
+          return t("categoryAccountSecurity");
+        case "technical_support":
+          return t("categoryTechSupport");
+        default:
+          return t("categoryGeneral");
+      }
+    },
+    [t],
+  );
+
   const isDirty = useMemo(() => {
     if (!editingFAQ || drawerMode === "delete") return false;
     return JSON.stringify(editingFAQ) !== initialFormRef.current;
@@ -114,11 +138,17 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const handleCreate = useCallback(() => {
     const newFAQ: Partial<FAQ> = {
       question: "",
-      answer: "",
-      category: "General",
+      answer: {
+        text: "",
+        format: "plain",
+      },
+      category: "general",
       priority: 5,
       tags: [],
+      showOnHomepage: false,
+      showInFooter: false,
       isPinned: false,
+      isActive: true,
       order: faqs.length + 1,
     };
     setEditingFAQ(newFAQ);
@@ -241,6 +271,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const { columns, actions } = getFaqTableColumns(
     handleEdit,
     handleDeleteDrawer,
+    formatCategory,
   );
 
   const drawerFooter =
@@ -327,8 +358,10 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                     {faq.question}
                   </Text>
                   <div className={`${flex.between}`}>
-                    <Badge>{faq.category}</Badge>
-                    {faq.isPinned && <StatusBadge status="active" />}
+                    <Badge>{formatCategory(faq.category)}</Badge>
+                    <StatusBadge
+                      status={faq.isActive ? "active" : "inactive"}
+                    />
                   </div>
                   <Caption>
                     ❤ {faq.stats?.helpful ?? 0} · 👁 {faq.stats?.views ?? 0}

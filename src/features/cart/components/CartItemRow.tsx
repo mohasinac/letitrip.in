@@ -20,6 +20,8 @@ interface CartItemRowProps {
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemove: (itemId: string) => void;
   isUpdating?: boolean;
+  /** When true, the seller name caption is hidden (already shown in the group header). */
+  hideSeller?: boolean;
 }
 
 export function CartItemRow({
@@ -27,13 +29,14 @@ export function CartItemRow({
   onUpdateQuantity,
   onRemove,
   isUpdating = false,
+  hideSeller = false,
 }: CartItemRowProps) {
   const t = useTranslations("cart");
   const lineTotal = item.price * item.quantity;
 
   return (
     <div
-      className={`flex gap-4 p-4 ${themed.bgPrimary} rounded-xl border ${themed.border} ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
+      className={`flex gap-4 p-4 ${themed.bgPrimary} ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
     >
       {/* Product image */}
       <TextLink
@@ -66,7 +69,7 @@ export function CartItemRow({
         >
           {item.productTitle}
         </TextLink>
-        <Caption className="mt-0.5">{item.sellerName}</Caption>
+        {!hideSeller && <Caption className="mt-0.5">{item.sellerName}</Caption>}
         <Text className="text-sm font-semibold text-primary mt-1">
           {formatCurrency(item.price)}
         </Text>

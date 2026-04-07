@@ -11,6 +11,7 @@ import {
   Heading,
   Input,
   Label,
+  SectionTabs,
   Slider,
   Span,
   Text,
@@ -94,21 +95,16 @@ export default function BackgroundSettings({
           <Heading level={2} className="pb-4">
             Background Settings
           </Heading>
-          <div className="flex gap-2 pb-4">
-            <Button
-              onClick={() => setActiveTab("light")}
-              variant={activeTab === "light" ? "primary" : "outline"}
-              size="sm"
-            >
-              ☀️ Light Mode
-            </Button>
-            <Button
-              onClick={() => setActiveTab("dark")}
-              variant={activeTab === "dark" ? "primary" : "outline"}
-              size="sm"
-            >
-              🌙 Dark Mode
-            </Button>
+          <div className="pb-2">
+            <SectionTabs
+              inline
+              value={activeTab}
+              onChange={(v) => setActiveTab(v as "light" | "dark")}
+              tabs={[
+                { value: "light", label: "☀️ Light Mode" },
+                { value: "dark", label: "🌙 Dark Mode" },
+              ]}
+            />
           </div>
         </div>
 

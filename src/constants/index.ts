@@ -83,15 +83,3 @@ export type {
 // FAQ category constants
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";
-
-// Static FAQ data (no backend required)
-export {
-  STATIC_FAQS,
-  getStaticFaqsByCategory,
-  getAllStaticFaqs,
-  getStaticFaqCategoryCounts,
-  getLocalizedFaqText,
-} from "./faq-data";
-export type { StaticFAQItem } from "./faq-data";
-export { FAQ_TRANSLATIONS_HI } from "./faq-data-hi";
-export type { FAQTranslation } from "./faq-data-hi";

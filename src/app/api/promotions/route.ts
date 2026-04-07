@@ -21,32 +21,40 @@ export const GET = createRouteHandler({
   handler: async () => {
     serverLogger.info("Promotions page data requested");
 
-    const [promotedRaw, featuredRaw, activeCoupons] = await Promise.all([
-      productRepository.findPromoted(),
-      productRepository.findFeatured(),
-      couponsRepository.getActiveCoupons(),
-    ]);
+    const nowIso = new Date().toISOString();
 
-    const promotedProducts = promotedRaw
-      .filter((p) => p.status === "published")
-      .slice(0, 12);
-
-    const featuredProducts = featuredRaw
-      .filter((p) => p.status === "published")
-      .slice(0, 8);
-
-    const now = new Date();
-    const validCoupons = activeCoupons.filter((c) => {
-      const startOk =
-        !c.validity.startDate || new Date(c.validity.startDate) <= now;
-      const endOk = !c.validity.endDate || new Date(c.validity.endDate) >= now;
-      return startOk && endOk;
-    });
+    const [promotedResult, featuredResult, activeCouponsResult] =
+      await Promise.all([
+        productRepository.list(
+          {
+            filters: "status==published,isPromoted==true",
+            sorts: "-createdAt",
+            page: "1",
+            pageSize: "12",
+          },
+          { status: "published" },
+        ),
+        productRepository.list(
+          {
+            filters: "status==published,featured==true",
+            sorts: "-createdAt",
+            page: "1",
+            pageSize: "8",
+          },
+          { status: "published" },
+        ),
+        couponsRepository.list({
+          filters: `validity.isActive==true,validity.endDate>=${nowIso},validity.startDate<=${nowIso}`,
+          sorts: "validity.endDate",
+          page: "1",
+          pageSize: "50",
+        }),
+      ]);
 
     return successResponse({
-      promotedProducts,
-      featuredProducts,
-      activeCoupons: validCoupons,
+      promotedProducts: promotedResult.items,
+      featuredProducts: featuredResult.items,
+      activeCoupons: activeCouponsResult.items,
     });
   },
 });

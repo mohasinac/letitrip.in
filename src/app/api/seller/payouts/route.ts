@@ -9,37 +9,19 @@ import "@/providers.config";
 
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import {
-  productRepository,
-  orderRepository,
-  payoutRepository,
-} from "@/repositories";
+import { orderRepository, payoutRepository } from "@/repositories";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 
 // ─── Helper ───────────────────────────────────────────────────────────────
 
 async function computeSellerEarnings(sellerId: string) {
-  const products = await productRepository.findBySeller(sellerId);
-  const productIds = products.slice(0, 50).map((p) => p.id);
-
-  let deliveredOrders: Awaited<
-    ReturnType<typeof orderRepository.findByProduct>
-  > = [];
-  if (productIds.length > 0) {
-    const batches = await Promise.all(
-      productIds.map((id) =>
-        orderRepository
-          .findByProduct(id)
-          .catch(() => [] as typeof deliveredOrders),
-      ),
-    );
-    deliveredOrders = batches.flat().filter((o) => o.status === "delivered");
-  }
-
-  // 3. Deduplicate order IDs already covered by existing payouts
-  const paidOutIds = await payoutRepository.getPaidOutOrderIds(sellerId);
-
-  const eligibleOrders = deliveredOrders.filter((o) => !paidOutIds.has(o.id));
+  const eligibleOrdersResult = await orderRepository.listAll({
+    filters: `sellerId==${sellerId},status==delivered,payoutStatus==eligible`,
+    sorts: "-orderDate",
+    page: "1",
+    pageSize: "5000",
+  });
+  const eligibleOrders = eligibleOrdersResult.items;
   const grossAmount = eligibleOrders.reduce(
     (sum, o) => sum + (o.totalPrice ?? 0),
     0,
@@ -55,7 +37,6 @@ async function computeSellerEarnings(sellerId: string) {
     grossAmount,
     platformFee,
     netAmount,
-    productCount: products.length,
   };
 }
 
