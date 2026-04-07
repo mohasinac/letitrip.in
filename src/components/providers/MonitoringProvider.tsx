@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import {
   setupGlobalErrorHandler,
   setupCacheMonitoring,
-} from "@/lib/monitoring";
+} from "@/lib/monitoring/runtime";
 import { initializeClientLogger } from "@/helpers";
 
 import { logger } from "@/classes";
