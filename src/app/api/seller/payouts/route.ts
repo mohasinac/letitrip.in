@@ -9,6 +9,12 @@ import "@/providers.config";
 
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@/lib/api/request-helpers";
+import { buildSieveFilters } from "@/helpers";
 import { orderRepository, payoutRepository } from "@/repositories";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 
@@ -44,28 +50,50 @@ async function computeSellerEarnings(sellerId: string) {
 
 export const GET = createRouteHandler({
   auth: true,
-  handler: async ({ user }) => {
+  handler: async ({ request, user }) => {
     const uid = user!.uid;
+    const searchParams = getSearchParams(request);
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 20, {
+      min: 1,
+      max: 200,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sellerFilter = `sellerId==${uid}`;
+    const effectiveFilters =
+      buildSieveFilters(["", sellerFilter], ["", filters]) || sellerFilter;
 
-    const [payouts, earnings] = await Promise.all([
-      payoutRepository.findBySeller(uid),
+    const [
+      payoutResult,
+      completedPayouts,
+      pendingPayouts,
+      processingPayouts,
+      earnings,
+    ] = await Promise.all([
+      payoutRepository.list({
+        filters: effectiveFilters,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      }),
+      payoutRepository.findBySellerAndStatus(uid, "completed"),
+      payoutRepository.findBySellerAndStatus(uid, "pending"),
+      payoutRepository.findBySellerAndStatus(uid, "processing"),
       computeSellerEarnings(uid),
     ]);
 
-    const totalPaidOut = payouts
-      .filter((p) => p.status === "completed")
-      .reduce((sum, p) => sum + p.amount, 0);
+    const totalPaidOut = completedPayouts.reduce((sum, p) => sum + p.amount, 0);
 
-    const pendingAmount = payouts
-      .filter((p) => p.status === "pending" || p.status === "processing")
-      .reduce((sum, p) => sum + p.amount, 0);
+    const pendingAmount =
+      pendingPayouts.reduce((sum, p) => sum + p.amount, 0) +
+      processingPayouts.reduce((sum, p) => sum + p.amount, 0);
 
-    const hasPendingPayout = payouts.some(
-      (p) => p.status === "pending" || p.status === "processing",
-    );
+    const hasPendingPayout =
+      pendingPayouts.length + processingPayouts.length > 0;
 
     return successResponse({
-      payouts,
+      payouts: payoutResult.items,
       summary: {
         availableEarnings: earnings.netAmount,
         grossEarnings: earnings.grossAmount,
@@ -75,6 +103,13 @@ export const GET = createRouteHandler({
         pendingAmount,
         hasPendingPayout,
         eligibleOrderCount: earnings.eligibleOrders.length,
+      },
+      meta: {
+        total: payoutResult.total,
+        page: payoutResult.page,
+        pageSize: payoutResult.pageSize,
+        totalPages: payoutResult.totalPages,
+        hasMore: payoutResult.hasMore,
       },
     });
   },

@@ -128,6 +128,28 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
   }
 
   /**
+   * Find payouts for a seller by status, newest first
+   */
+  async findBySellerAndStatus(
+    sellerId: string,
+    status: PayoutStatus,
+  ): Promise<PayoutDocument[]> {
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where(PAYOUT_FIELDS.SELLER_ID, "==", sellerId)
+      .where(PAYOUT_FIELDS.STATUS, "==", status)
+      .orderBy(PAYOUT_FIELDS.CREATED_AT, "desc")
+      .get();
+
+    return snapshot.docs.map((doc) =>
+      this.decryptPayout({
+        id: doc.id,
+        ...doc.data(),
+      } as PayoutDocument),
+    );
+  }
+
+  /**
    * Find payouts by status
    */
   async findByStatus(status: PayoutStatus): Promise<PayoutDocument[]> {
