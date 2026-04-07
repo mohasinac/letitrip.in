@@ -10,9 +10,22 @@ import { logger } from "@/classes";
 
 // Initialize Firebase Performance
 let performance: ReturnType<typeof getPerformance> | null = null;
+const PERFORMANCE_ENABLED =
+  process.env.NEXT_PUBLIC_ENABLE_FIREBASE_PERFORMANCE === "true";
+
+async function initializePerformance(): Promise<void> {
+  if (!PERFORMANCE_ENABLED) return;
+
+  try {
+    performance = getPerformance(app);
+  } catch (error) {
+    performance = null;
+    logger.warn("Firebase Performance disabled", { error });
+  }
+}
 
 if (typeof window !== "undefined") {
-  performance = getPerformance(app);
+  void initializePerformance();
 }
 
 /**

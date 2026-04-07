@@ -171,6 +171,7 @@ const nextConfig = {
         __dirname,
         "node_modules/@tanstack/react-query",
       ),
+      "@mohasinac/http$": path.resolve(__dirname, "src/lib/http/index.ts"),
     };
 
     if (isServer) {
@@ -220,6 +221,12 @@ const nextConfig = {
           ]),
         ),
       };
+
+      // Preserve local HTTP shim even when package aliases are enabled.
+      config.resolve.alias["@mohasinac/http$"] = path.resolve(
+        __dirname,
+        "src/lib/http/index.ts",
+      );
     }
     return config;
   },

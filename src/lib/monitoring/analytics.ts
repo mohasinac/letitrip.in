@@ -6,6 +6,7 @@
 
 import {
   getAnalytics,
+  isSupported,
   logEvent,
   setUserId,
   setUserProperties,
@@ -16,9 +17,24 @@ import { logger } from "@/classes";
 
 // Initialize Google Analytics
 let analytics: Analytics | null = null;
+const ANALYTICS_ENABLED =
+  process.env.NEXT_PUBLIC_ENABLE_FIREBASE_ANALYTICS === "true";
+
+async function initializeAnalytics(): Promise<void> {
+  if (!ANALYTICS_ENABLED) return;
+
+  try {
+    const supported = await isSupported();
+    if (!supported) return;
+    analytics = getAnalytics(app);
+  } catch (error) {
+    analytics = null;
+    logger.warn("Firebase Analytics disabled", { error });
+  }
+}
 
 if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+  void initializeAnalytics();
 }
 
 /**

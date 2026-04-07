@@ -7,7 +7,7 @@ description: "No direct fetch in UI, 2-hop: reads use Hook→apiClient, mutation
 
 ## RULE 20 & 21: 2-Hop Architecture — Hook → apiClient (reads) · Hook → Action (mutations)
 
-The `src/services/` layer has been **deleted**. There is no service layer.
+Use package clients directly. Do not add or revive app-local service layers for reusable logic.
 
 ### Reads (useQuery)
 
@@ -20,7 +20,7 @@ Component → TanStack Query hook (useQuery) → apiClient → API Route
 ```typescript
 // ✅ RIGHT — apiClient directly in hook queryFn
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@mohasinac/http";
 import { API_ENDPOINTS } from "@/constants";
 
 export function useProducts(params?: string) {
@@ -71,7 +71,7 @@ return useMutation({
 | `src/hooks/*.ts` — `queryFn` inside `useQuery` only                 | ✅       |
 | `src/features/<name>/hooks/*.ts` — `queryFn` only                   | ✅       |
 | `src/contexts/*.tsx` — internal data-fetching helpers               | ✅       |
-| `src/lib/firebase/` — session helpers                               | ✅       |
+| package internals (`@mohasinac/http`)                               | ✅       |
 | `src/app/api/**` — external HTTP only, never calling own API routes | ✅       |
 | Components (`.tsx`)                                                 | ❌       |
 | Server Actions (`src/actions/`)                                     | ❌       |
@@ -86,17 +86,14 @@ return useMutation({
 - `apiClient` calls in hooks MUST use `API_ENDPOINTS` from `@/constants` — never hardcode paths
 - Mutations MUST use Server Actions — never call `apiClient` from `useMutation`
 - Components MUST NOT import or call `apiClient` directly
-- No `src/services/` directory — it does not exist and must not be re-created
+- No new `src/lib/**` reusable data-access wrappers for generic concerns — put shared logic in LIR packages
+- Reusable hooks/helpers must be moved to `@mohasinac/react` or relevant `@mohasinac/feat-*` package
 
 ### Violation Quick-Reference
 
-| Location                       | `fetch()` | `apiClient.*` | Allowed?        |
-| ------------------------------ | --------- | ------------- | --------------- |
-| Component / page               | ❌        | ❌            | hook only       |
-| Hook queryFn                   | ❌        | ❌            | service fn only |
-| Service file                   | ❌        | ✅            | ✅              |
-| API route (external APIs only) | ✅        | ❌            | ✅              |
-
-### Available Services (`@/services`) — check before adding a new one
-
-`addressService` · `adminService` · `authEventService` · `authService` · `bidService` · `blogService` · `carouselService` · `cartService` · `categoryService` · `chatService` · `checkoutService` · `couponService` · `eventService` · `faqService` · `homepageSectionsService` · `mediaService` · `navSuggestionsService` · `notificationService` · `orderService` · `productService` · `profileService` · `promotionsService` · `realtimeTokenService` · `reviewService` · `rcService` · `searchService` · `sellerService` · `sessionService` · `siteSettingsService` · `storeService` · `wishlistService`
+| Location                       | `fetch()` | `apiClient.*` | Allowed?                     |
+| ------------------------------ | --------- | ------------- | ---------------------------- |
+| Component / page               | ❌        | ❌            | Use hook only                |
+| Hook queryFn                   | ❌        | ✅            | ✅                           |
+| Server Action                  | ❌        | ❌            | Call repository or providers |
+| API route (external APIs only) | ✅        | ❌            | ✅                           |

@@ -68,23 +68,52 @@ import { Button } from "@/components";
 import { isValidEmail } from "@/utils";
 ```
 
-| Need                                              | Import from                  |
-| ------------------------------------------------- | ---------------------------- |
-| Feature components/hooks                          | `@/features/<name>`          |
-| UI primitives, Admin/User components              | `@/components`               |
-| Constants, ROUTES, API_ENDPOINTS, THEME_CONSTANTS | `@/constants`                |
-| Hooks (useAuth, useApiQuery, useForm…)            | `@/hooks`                    |
-| Validators, formatters, converters                | `@/utils`                    |
-| Auth/data/UI helpers                              | `@/helpers`                  |
-| Singletons (CacheManager, Logger…)                | `@/classes`                  |
-| Domain services                                   | `@/services`                 |
-| Feature services                                  | `@/features/<name>/services` |
-| Repositories                                      | `@/repositories`             |
-| DB schemas & types                                | `@/db/schema`                |
-| API types                                         | `@/types/api`                |
-| Auth types                                        | `@/types/auth`               |
-| Error classes                                     | `@/lib/errors`               |
-| Contexts                                          | `@/contexts`                 |
+| Need                                              | Import from                           |
+| ------------------------------------------------- | ------------------------------------- |
+| Reusable primitives/components                    | `@mohasinac/ui`                       |
+| Reusable hooks                                    | `@mohasinac/react`                    |
+| API client                                        | `@mohasinac/http`                     |
+| Shared core classes/utilities                     | `@mohasinac/core`                     |
+| Shared contracts/types                            | `@mohasinac/contracts`                |
+| Feature components/hooks (app-specific)           | `@/features/<name>`                   |
+| App composition wrappers                          | `@/components`                        |
+| Constants, ROUTES, API_ENDPOINTS, THEME_CONSTANTS | `@/constants`                         |
+| App-only hooks                                    | `@/hooks`                             |
+| App-only validators/formatters/converters         | `@/utils`                             |
+| App-only auth/data/UI helpers                     | `@/helpers`                           |
+| App singletons                                    | `@/classes`                           |
+| Repositories                                      | `@/repositories`                      |
+| DB schemas & types                                | `@/db/schema`                         |
+| API types                                         | `@/types/api`                         |
+| Auth types                                        | `@/types/auth`                        |
+| Error classes                                     | `@mohasinac/errors` or `@/lib/errors` |
+| Contexts                                          | `@/contexts`                          |
+
+### Package-First Rule
+
+When adding shared components, hooks, helpers, or utilities, prefer LIR packages (`@mohasinac/*`) first. Keep app-local code for orchestration and product-specific behavior only.
+
+## RULE 38: Shared Code Ownership & App Slimming
+
+The application layer must stay thin. Shared code belongs in packages, not in app-local folders.
+
+| Code type                                               | Required home          |
+| ------------------------------------------------------- | ---------------------- |
+| Shared UI primitives/components                         | `@mohasinac/ui`        |
+| Generic React hooks                                     | `@mohasinac/react`     |
+| Generic utilities/classes/logger/cache/event bus        | `@mohasinac/core`      |
+| Domain-shared modules (products/cart/orders/admin/etc.) | `@mohasinac/feat-*`    |
+| Contracts/interfaces                                    | `@mohasinac/contracts` |
+| App-only composition and glue code                      | `src/**`               |
+
+Required workflow:
+
+- If logic is reusable across pages/features/projects, move it to the correct package first.
+- Import package exports in app code instead of creating new app-local duplicates.
+- After migration, delete replaced app-local implementation immediately (no dual source of truth).
+- Do not add new generic shared code under `src/lib/**`, `src/components/**`, `src/hooks/**`, `src/helpers/**`, or `src/utils/**` when it belongs in a package.
+
+Exceptions allowed only for product-specific orchestration that cannot be reused outside this app.
 
 ## RULE 9 & 10: Thin Pages (150-line max)
 

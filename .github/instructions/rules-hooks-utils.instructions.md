@@ -64,7 +64,7 @@ const filters = buildSieveFilters(
 
 `hasRole(user, role)` · `hasAnyRole(user, roles)` · `isAdmin(user)` · `isSeller(user)` · `isModerator(user)` · `isSessionExpired(session)` · `generateInitials(name)` · `formatUserDisplayName(user)`
 
-### API Request Helpers (server-side, from `@/lib/api/`)
+### API Request Helpers (server-side helper module)
 
 `getSearchParams(req)` · `getRequiredSessionCookie(req)` · `getOptionalSessionCookie(req)` · `getBooleanParam(sp, key)` · `getStringParam(sp, key)` · `getNumberParam(sp, key, fallback, opts?)`
 
@@ -156,11 +156,12 @@ const { data } = useQuery({
 ```tsx
 // ✅ Full hook example
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { apiClient } from "@mohasinac/http";
+import { API_ENDPOINTS } from "@/constants";
 
 const { data, isLoading } = useQuery({
   queryKey: ["products", filters],
-  queryFn: () => productService.list(filters),
+  queryFn: () => apiClient.get(`${API_ENDPOINTS.PRODUCTS.LIST}?${filters}`),
   staleTime: 10 * 60 * 1000,
   gcTime: 30 * 60 * 1000,
 });
@@ -192,7 +193,7 @@ const {
 
 | Need                         | Hook                                                                                                                                                                 |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET data                     | `useQuery(options)` from `@tanstack/react-query`; queryFn must call a service                                                                                        |
+| GET data                     | `useQuery(options)` from `@tanstack/react-query`; queryFn calls `apiClient` from `@mohasinac/http`                                                                   |
 | POST/PUT/DELETE mutations    | `useMutation(options)` from `@tanstack/react-query`; mutationFn must be a Server Action from `@/actions`                                                             |
 | Invalidate cache             | `useQueryClient()` → `queryClient.invalidateQueries({ queryKey })`                                                                                                   |
 | Auth state                   | `useAuth()` / `useSession()`                                                                                                                                         |
@@ -205,7 +206,7 @@ const {
 | Profile stats                | `useProfileStats()`                                                                                                                                                  |
 | Public profile               | `usePublicProfile(uid)`                                                                                                                                              |
 | Become seller                | `useBecomeSeller()`                                                                                                                                                  |
-| Form state                   | `useForm({ resolver: zodResolver(schema), defaultValues })` — import directly from `react-hook-form`                                                                 |
+| Form state                   | `useForm({ resolver: zodResolver(schema), defaultValues })` — import from `@/hooks` (react-hook-form re-export)                                                      |
 | Address form state           | `useAddressForm(initialData?)`                                                                                                                                       |
 | Address list                 | `useAddresses()`                                                                                                                                                     |
 | Single address               | `useAddress(id)`                                                                                                                                                     |
@@ -258,5 +259,7 @@ const {
 | Generic RTDB one-shot        | `useRealtimeEvent<TData>(config)`                                                                                                                                    |
 | Swipe / Gestures             | `useSwipe(ref, cbs, opts)` / `useGesture(ref, handlers)` / `useLongPress(cb, opts)` / `usePullToRefresh(onRefresh, opts)`                                            |
 | Admin list factory           | `createAdminListQuery<TItem, TResult>(config)` — generates paginated admin hooks; use for new admin entities                                                         |
+
+Package-first extension rule: if a hook/helper becomes reusable across domains, move it to LIR packages (`@mohasinac/react`, `@mohasinac/core`, or appropriate `@mohasinac/feat-*`) instead of adding generic logic in app-local modules.
 
 **Service rule**: every `queryFn`/`mutationFn` MUST call a Server Action from `@/actions` or a direct `apiClient` call in a hook — never inline `fetch()`.

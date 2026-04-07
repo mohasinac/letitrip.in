@@ -17,6 +17,84 @@ import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./src/i18n/routing";
 
+const API_PATH_PREFIX = "/api";
+const CORS_ALLOW_METHODS = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
+const CORS_ALLOW_HEADERS =
+  "Content-Type,Authorization,X-Requested-With,X-CSRF-Token";
+const CORS_MAX_AGE_SECONDS = "86400";
+
+function normalizeEnvList(value: string | undefined): string[] {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+const ALLOWED_CORS_ORIGINS = Array.from(
+  new Set(
+    [
+      ...normalizeEnvList(process.env.CORS_ALLOWED_ORIGINS),
+      process.env.NEXT_PUBLIC_APP_URL,
+      process.env.NEXT_PUBLIC_SITE_URL,
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ].filter((origin): origin is string => Boolean(origin)),
+  ),
+);
+
+function appendVary(headers: Headers, value: string): void {
+  const existing = headers.get("Vary");
+  if (!existing) {
+    headers.set("Vary", value);
+    return;
+  }
+
+  const parts = existing
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!parts.includes(value)) {
+    headers.set("Vary", `${existing}, ${value}`);
+  }
+}
+
+function isApiRequest(request: NextRequest): boolean {
+  return request.nextUrl.pathname.startsWith(API_PATH_PREFIX);
+}
+
+function getAllowedCorsOrigin(request: NextRequest): string | null {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    return null;
+  }
+
+  return ALLOWED_CORS_ORIGINS.includes(origin) ? origin : null;
+}
+
+function applyCorsHeaders(
+  response: NextResponse,
+  allowedOrigin: string | null,
+): NextResponse {
+  response.headers.set("Access-Control-Allow-Methods", CORS_ALLOW_METHODS);
+  response.headers.set("Access-Control-Allow-Headers", CORS_ALLOW_HEADERS);
+  response.headers.set("Access-Control-Max-Age", CORS_MAX_AGE_SECONDS);
+  appendVary(response.headers, "Origin");
+  appendVary(response.headers, "Access-Control-Request-Method");
+  appendVary(response.headers, "Access-Control-Request-Headers");
+
+  if (allowedOrigin) {
+    response.headers.set("Access-Control-Allow-Origin", allowedOrigin);
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+  }
+
+  return response;
+}
+
 /** Static CSP — same for every request so Vercel can cache ISR responses. */
 const CSP =
   process.env.NODE_ENV === "development"
@@ -46,12 +124,29 @@ const CSP =
 const intlMiddleware = createMiddleware(routing);
 
 export default function proxy(request: NextRequest) {
+  if (isApiRequest(request)) {
+    const allowedOrigin = getAllowedCorsOrigin(request);
+
+    if (request.method === "OPTIONS") {
+      if (request.headers.get("origin") && !allowedOrigin) {
+        return new NextResponse(null, { status: 403 });
+      }
+
+      return applyCorsHeaders(
+        new NextResponse(null, { status: 204 }),
+        allowedOrigin,
+      );
+    }
+
+    return applyCorsHeaders(NextResponse.next(), allowedOrigin);
+  }
+
   const response = intlMiddleware(request) ?? NextResponse.next();
   response.headers.set("Content-Security-Policy", CSP);
   return response;
 }
 
 export const config = {
-  // next-intl matcher: skip Next.js internals, static files, and API routes
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  // Match both page and API routes while skipping Next.js internals and static files.
+  matcher: ["/((?!_next|.*\\..*).*)"],
 };

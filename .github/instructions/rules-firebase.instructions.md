@@ -1,5 +1,5 @@
 ---
-applyTo: ["src/app/api/**", "src/lib/**", "src/repositories/**"]
+applyTo: ["src/app/api/**", "src/repositories/**", "src/actions/**"]
 description: "Firebase backend-only architecture, upload flow, RTDB patterns, repository pattern, Sieve queries, API route structure, error classes. Rules 11, 12, 13, 14."
 ---
 
@@ -29,7 +29,9 @@ import {
 ```
 
 NEVER import `@/lib/firebase/config` in components, hooks, services, contexts, or pages.  
-NEVER import `@/lib/firebase/admin` outside `src/app/api/**` and `src/lib/`.
+NEVER import `@/lib/firebase/admin` outside backend modules (`src/app/api/**`, `src/repositories/**`, `src/actions/**`).
+
+Prefer provider packages for shared backend infrastructure: `@mohasinac/db-firebase`, `@mohasinac/auth-firebase`, `@mohasinac/storage-firebase`.
 
 ### File Upload — Three-Phase Flow
 
@@ -163,7 +165,7 @@ NEVER throw raw errors or literal strings.
 ```typescript
 // ❌  throw new Error('User not found');
 // ✅
-import { NotFoundError, AuthenticationError } from "@/lib/errors";
+import { NotFoundError, AuthenticationError } from "@mohasinac/errors";
 throw new NotFoundError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
 ```
 

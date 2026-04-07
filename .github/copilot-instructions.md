@@ -42,12 +42,12 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 
 | File | Rules | Applies to |
 |------|-------|------------|
-| [rules-architecture.instructions.md](.github/instructions/rules-architecture.instructions.md) | 1, 2, 9, 10, 24 — feature modules, barrel imports, thin pages | `src/**` |
+| [rules-architecture.instructions.md](.github/instructions/rules-architecture.instructions.md) | 1, 2, 9, 10, 24, 38 — feature modules, barrel imports, thin pages, package ownership | `src/**` |
 | [rules-strings-i18n.instructions.md](.github/instructions/rules-strings-i18n.instructions.md) | 3, 33 — `useTranslations` vs `UI_LABELS`, i18n | `src/**` |
 | [rules-styling.instructions.md](.github/instructions/rules-styling.instructions.md) | 4, 25 — `THEME_CONSTANTS`, mobile-first, widescreen | `src/**/*.tsx` |
 | [rules-components.instructions.md](.github/instructions/rules-components.instructions.md) | 7, 8, 31, 32, 34 — Typography/Form/Semantic primitives, DataTable, filters | `src/**/*.tsx` |
 | [rules-hooks-utils.instructions.md](.github/instructions/rules-hooks-utils.instructions.md) | 5, 6 — existing utils/helpers/hooks | `src/**` |
-| [rules-firebase.instructions.md](.github/instructions/rules-firebase.instructions.md) | 11, 12, 13, 14 — Firebase backend-only, upload flow, repositories, API routes | `src/app/api/**`, `src/lib/**` |
+| [rules-firebase.instructions.md](.github/instructions/rules-firebase.instructions.md) | 11, 12, 13, 14 — Firebase backend-only, upload flow, repositories, API routes | `src/app/api/**`, `src/repositories/**`, `src/actions/**` |
 | [rules-services.instructions.md](.github/instructions/rules-services.instructions.md) | 20, 21 — 2-hop: reads Hook→apiClient, mutations Hook→Action; no service layer | `src/**` |
 | [rules-media.instructions.md](.github/instructions/rules-media.instructions.md) | 28 — MediaImage/Video/Avatar/Gallery | `src/**/*.tsx` |
 | [rules-constants.instructions.md](.github/instructions/rules-constants.instructions.md) | 15, 16, 17, 18, 19 — singletons, RBAC, schema constants, ROUTES, API_ENDPOINTS | `src/**` |
@@ -65,6 +65,9 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **No Firebase client SDK** in UI code — Auth/Firestore/Storage are backend-only
 - **No `fetch()` or `apiClient` in components** — reads use `useQuery` with `apiClient` in the `queryFn` inside a hook; components only call hooks
 - **No `src/services/` directory** — the service layer has been deleted; `apiClient` lives in hooks directly
+- **Package-first shared logic** — do not create new reusable logic under `src/lib/**`; use LIR packages (`@mohasinac/core`, `@mohasinac/http`, `@mohasinac/react`, `@mohasinac/ui`, `@mohasinac/feat-*`) and keep app code as thin composition
+- **Shared components belong in LIR** — if a component/hook/helper is reusable across pages or projects, move it to the appropriate `@mohasinac/*` package instead of duplicating in app-local folders
+- **Slim app policy** — migrate shared code to `@mohasinac/*` packages (`@mohasinac/ui` for shared UI; `@mohasinac/react` for generic hooks; `@mohasinac/core` for utilities/classes; `@mohasinac/feat-*` for domain modules), then remove duplicated app-local implementations
 - **Mutations use Server Actions** — import from `@/actions`; call via `useMutation` or directly inside event handlers; **never** call `apiClient` from a mutation
 - **No direct Firestore queries** in API routes — use repositories from `@/repositories`
 - **No file upload to Storage from browser** — stage locally → submit FormData to backend

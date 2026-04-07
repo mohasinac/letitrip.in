@@ -104,6 +104,10 @@ export function formatPrice(n) { return `₹${n.toLocaleString('en-IN')}`; }
 // ✅ RIGHT — extend formatCurrency(amount, 'INR', 'en-IN')
 ```
 
+### Shared Component Ownership
+
+If a component, primitive, or UI helper is reusable outside one page/domain, it must live in LIR packages (`@mohasinac/ui`, `@mohasinac/react`, or the relevant `@mohasinac/feat-*`). Keep app-local `@/components` focused on composition and project-specific wrappers.
+
 ## RULE 32: DataTable / Search / Filter / Pagination Primitives
 
 All filter/sort/page state MUST live in URL via `useUrlTable`. Using `useState` for list state is a violation.
