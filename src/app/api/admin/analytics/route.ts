@@ -43,7 +43,8 @@ async function loadPast12MonthsOrders(): Promise<OrderDocument[]> {
   // Paginate if needed (total orders last 12 months might exceed 500)
   let allItems = result.items;
   let page = 2;
-  while (result.hasMore && page <= 10) {
+  let hasMore = result.hasMore;
+  while (hasMore && page <= 10) {
     const nextResult = await orderRepository.listAll({
       filters: `createdAt>=${isoStart}`,
       sorts: "-createdAt",
@@ -51,7 +52,37 @@ async function loadPast12MonthsOrders(): Promise<OrderDocument[]> {
       pageSize: "500",
     });
     allItems.push(...nextResult.items);
-    if (!nextResult.hasMore) break;
+    hasMore = nextResult.hasMore;
+    page += 1;
+  }
+
+  return allItems;
+}
+
+async function loadCurrentMonthOrders(): Promise<OrderDocument[]> {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const isoStart = monthStart.toISOString();
+
+  const result = await orderRepository.listAll({
+    filters: `createdAt>=${isoStart}`,
+    sorts: "-createdAt",
+    page: "1",
+    pageSize: "500",
+  });
+
+  let allItems = result.items;
+  let page = 2;
+  let hasMore = result.hasMore;
+  while (hasMore && page <= 10) {
+    const nextResult = await orderRepository.listAll({
+      filters: `createdAt>=${isoStart}`,
+      sorts: "-createdAt",
+      page: String(page),
+      pageSize: "500",
+    });
+    allItems.push(...nextResult.items);
+    hasMore = nextResult.hasMore;
     page += 1;
   }
 
@@ -68,6 +99,7 @@ export const GET = createRouteHandler({
     const [
       allTimeTotalsResult,
       past12MonthsOrders,
+      thisMonthOrders,
       totalProductsResult,
       publishedProductsResult,
     ] = await Promise.all([
@@ -76,6 +108,7 @@ export const GET = createRouteHandler({
         pageSize: "1",
       }),
       loadPast12MonthsOrders(),
+      loadCurrentMonthOrders(),
       productRepository.list({ page: "1", pageSize: "1" }),
       productRepository.list(
         {
@@ -97,10 +130,6 @@ export const GET = createRouteHandler({
     );
 
     // This-month totals
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const thisMonthOrders = past12MonthsOrders.filter(
-      (o) => normalizeDate(o.createdAt) >= monthStart,
-    );
     const newOrdersThisMonth = thisMonthOrders.length;
     const revenueThisMonth = thisMonthOrders.reduce(
       (sum, o) => sum + (o.totalPrice ?? 0),

@@ -40,7 +40,8 @@ async function loadSeller6MonthOrders(
   // Paginate if needed
   let allItems = result.items;
   let page = 2;
-  while (result.hasMore && page <= 5) {
+  let hasMore = result.hasMore;
+  while (hasMore && page <= 5) {
     const nextResult = await orderRepository.listAll({
       filters: `sellerId==${sellerId},createdAt>=${isoStart}`,
       sorts: "-createdAt",
@@ -48,7 +49,7 @@ async function loadSeller6MonthOrders(
       pageSize: "300",
     });
     allItems.push(...nextResult.items);
-    if (!nextResult.hasMore) break;
+    hasMore = nextResult.hasMore;
     page += 1;
   }
 
