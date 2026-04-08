@@ -1,2 +1,3 @@
-// GET /api/blog/[slug] — delegate to @mohasinac/feat-blog
-export { blogSlugGET as GET } from "@mohasinac/feat-blog";
+import { withProviders } from "@/providers.config";
+import { blogSlugGET } from "@mohasinac/feat-blog";
+export const GET = withProviders(blogSlugGET);

@@ -47,3 +47,23 @@ export function initProviders(): Promise<void> {
   })();
   return initPromise;
 }
+
+/**
+ * Wrap any Next.js route handler to guarantee providers are initialized
+ * before the handler runs. Use this for all feat-* route re-exports, which
+ * cannot await initProviders() themselves because they are compiled in the
+ * @mohasinac/* packages and run synchronously on import.
+ *
+ * Usage:
+ *   import { withProviders } from "@/providers.config";
+ *   import { GET as _GET } from "@mohasinac/feat-events";
+ *   export const GET = withProviders(_GET);
+ */
+export function withProviders<A extends unknown[], R>(
+  fn: (...args: A) => R,
+): (...args: A) => Promise<R extends Promise<infer U> ? U : R> {
+  return async (...args: A) => {
+    await initProviders();
+    return fn(...args) as R extends Promise<infer U> ? U : R;
+  };
+}

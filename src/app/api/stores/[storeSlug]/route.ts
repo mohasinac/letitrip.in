@@ -1,2 +1,3 @@
-// GET /api/stores/[storeSlug] — delegate to @mohasinac/feat-stores
-export { storeSlugGET as GET } from "@mohasinac/feat-stores";
+import { withProviders } from "@/providers.config";
+import { storeSlugGET } from "@mohasinac/feat-stores";
+export const GET = withProviders(storeSlugGET);

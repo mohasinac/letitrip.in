@@ -1,3 +1,3 @@
-import "@/providers.config";
-// GET /api/events — delegate to @mohasinac/feat-events
-export { GET } from "@mohasinac/feat-events";
+import { withProviders } from "@/providers.config";
+import { GET as _GET } from "@mohasinac/feat-events";
+export const GET = withProviders(_GET);

@@ -1,5 +1,4 @@
-﻿import "@/providers.config";
-export {
-  carouselGET as GET,
-  carouselPOST as POST,
-} from "@mohasinac/feat-homepage/server";
+﻿import { withProviders } from "@/providers.config";
+import { carouselGET, carouselPOST } from "@mohasinac/feat-homepage/server";
+export const GET = withProviders(carouselGET);
+export const POST = withProviders(carouselPOST);

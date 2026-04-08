@@ -1,1 +1,3 @@
-export { eventIdGET as GET } from "@mohasinac/feat-events";
+import { withProviders } from "@/providers.config";
+import { eventIdGET } from "@mohasinac/feat-events";
+export const GET = withProviders(eventIdGET);

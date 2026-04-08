@@ -32,6 +32,7 @@
 import { z } from "zod";
 import type { NextRequest, NextResponse } from "next/server";
 import { createApiHandlerFactory } from "@mohasinac/next";
+import { initProviders } from "@/providers.config";
 import { applyRateLimit } from "@/lib/security/rate-limit";
 import {
   requireAuthFromRequest,
@@ -79,13 +80,15 @@ export function createApiHandler<
 >(options: ApiHandlerOptions<TInput, TParams>) {
   return localCreateApiHandler<TInput, TParams>({
     ...options,
-    handler: ({ request, user, body, params }) =>
-      options.handler({
+    handler: async ({ request, user, body, params }) => {
+      await initProviders();
+      return options.handler({
         request: request as NextRequest,
         user,
         body,
         params,
-      }),
+      });
+    },
   });
 }
 
