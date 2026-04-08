@@ -1,38 +1,32 @@
 /**
- * Firebase Configuration
+ * Firebase Client SDK — app, auth, storage, realtime DB.
  *
- * Client-side Firebase configuration for authentication.
- * Uses environment variables for secure credential management.
+ * Firestore is intentionally excluded — all DB access goes through
+ * @mohasinac/db-firebase (Admin SDK) via repositories and API routes.
  */
 
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
-import { getStorage, FirebaseStorage } from "firebase/storage";
-import { getDatabase, Database } from "firebase/database";
-import { buildFirebaseClientConfig } from "./client-config";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getDatabase, type Database } from "firebase/database";
 
-const firebaseConfig = buildFirebaseClientConfig(process.env);
+// IMPORTANT: reference each key as a literal `process.env.NEXT_PUBLIC_*` expression
+// so webpack's DefinePlugin inlines the values at build time. Passing `process.env`
+// as a whole argument to a helper function bypasses the substitution step and results
+// in `undefined` values in the browser bundle.
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+};
 
-// Initialize Firebase (prevent multiple instances)
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-let storage: FirebaseStorage;
-let realtimeDb: Database;
+const app: FirebaseApp = getApps()[0] ?? initializeApp(firebaseConfig);
+const auth: Auth = getAuth(app);
+const storage: FirebaseStorage = getStorage(app);
+const realtimeDb: Database = getDatabase(app);
 
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  realtimeDb = getDatabase(app);
-} else {
-  app = getApps()[0];
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  realtimeDb = getDatabase(app);
-}
-
-export { app, auth, db, storage, realtimeDb };
+export { app, auth, storage, realtimeDb };
