@@ -47,7 +47,7 @@ function BaseListingCardRoot({
   return (
     <div
       onClick={onClick}
-        className={`relative rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}
+        className={`relative flex flex-col h-full rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}
         ${isSelected ? "ring-2 ring-primary border-primary" : "border-gray-200 dark:border-gray-700"}
         ${isDisabled ? "opacity-60" : ""}
         ${onClick ? "cursor-pointer hover:shadow-md" : ""}
@@ -86,7 +86,7 @@ function BaseListingCardInfo({
   className = "",
   children,
 }: BaseListingCardInfoProps) {
-  return <div className={`p-3 flex flex-col ${className}`}>{children}</div>;
+  return <div className={`p-3 flex flex-col flex-1 ${className}`}>{children}</div>;
 }
 
 function BaseListingCardCheckbox({

@@ -36,7 +36,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/next";
 

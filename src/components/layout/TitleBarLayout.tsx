@@ -40,7 +40,6 @@ import {
   Span,
   TextLink,
 } from "@/components";
-import LocaleSwitcher from "./LocaleSwitcher";
 
 /** Minimal user shape required by the title bar. */
 export interface TitleBarUser {
@@ -312,10 +311,6 @@ export function TitleBarLayout({
               </svg>
             </Button>
           )}
-          <div className="hidden md:block">
-            <LocaleSwitcher />
-          </div>
-
           {/* Dashboard Nav — visible only when a dashboard section is active */}
           {hasDashboardNav && onOpenDashboardNav && (
             <Button

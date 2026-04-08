@@ -14,9 +14,9 @@ export function mapStoreDocument(store: StoreDocument): StoreListItem {
     storeBannerURL: store.storeBannerURL,
     status: store.status,
     isPublic: store.isPublic,
-    totalProducts: store.stats?.totalProducts ?? 0,
-    itemsSold: store.stats?.itemsSold ?? 0,
-    totalReviews: store.stats?.totalReviews ?? 0,
+    totalProducts: store.stats?.totalProducts || undefined,
+    itemsSold: store.stats?.itemsSold || undefined,
+    totalReviews: store.stats?.totalReviews || undefined,
     averageRating: store.stats?.averageRating,
     createdAt: store.createdAt.toISOString(),
   };

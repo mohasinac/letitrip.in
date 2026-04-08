@@ -37,7 +37,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { getAdminRealtimeDb, getAdminDb } from "@/lib/firebase/admin";
-import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";

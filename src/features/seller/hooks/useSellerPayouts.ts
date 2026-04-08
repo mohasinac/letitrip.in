@@ -28,7 +28,7 @@ export function useSellerPayouts() {
     staleTime: 0,
   });
 
-  const { mutate: requestPayout, isPending: submitting } = useMutation<
+  const { mutateAsync: requestPayout, isPending: submitting } = useMutation<
     unknown,
     Error,
     Record<string, unknown>

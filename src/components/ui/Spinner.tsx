@@ -54,7 +54,7 @@ export default function Spinner({
         className={`
           ${sizeClasses[size]}
           ${variantClasses[variant]}
-          rounded-full animate-spin
+          rounded-full animate-spin force-spin
         `}
       />
       {label && <Span className="sr-only">{label}</Span>}

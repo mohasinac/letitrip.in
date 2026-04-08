@@ -26,13 +26,6 @@ jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-jest.mock("@/services", () => ({
-  sellerService: {
-    getPayoutSettings: jest.fn(),
-    updatePayoutSettings: jest.fn(),
-  },
-}));
-
 describe("useSellerPayoutSettings", () => {
   it("returns default state when no data", () => {
     const { result } = renderHook(() => useSellerPayoutSettings());

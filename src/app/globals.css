@@ -354,14 +354,18 @@
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *:not(.force-spin),
+  *:not(.force-spin)::before,
+  *:not(.force-spin)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.force-spin {
+  animation: spin 1s linear infinite !important;
 }
 
 /* ── Sprint 0: New Keyframes ──────────────────────────────────────────── */

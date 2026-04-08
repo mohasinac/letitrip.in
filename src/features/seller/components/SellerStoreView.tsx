@@ -14,6 +14,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
+  Accordion,
+  AccordionItem,
   Card,
   Alert,
   Button,
@@ -240,241 +242,243 @@ export function SellerStoreView() {
 
       {saveError && <Alert variant="error">{saveError}</Alert>}
 
-      {/* ── Store Details ─────────────────────────────────────── */}
       <Card>
-        <div className={spacing.stack}>
-          <div className={`${flex.between} gap-4`}>
-            <div>
-              <Heading level={3}>{t("sectionStoreDetails")}</Heading>
-              <Text variant="secondary" size="sm" className="mt-0.5">
+        <Accordion
+          type="multiple"
+          defaultValue={["seller-store-details", "seller-store-social"]}
+          className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+        >
+          <AccordionItem
+            value="seller-store-details"
+            title={<Text className="font-semibold">{t("sectionStoreDetails")}</Text>}
+          >
+            <div className={`${spacing.stack} pt-3`}>
+              <Text variant="secondary" size="sm">
                 {t("sectionStoreDetailsSubtitle")}
               </Text>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Caption>{t("storeStatusLabel")}:</Caption>
+                <StatusBadge status={store.status} label={statusLabel} />
+              </div>
+
+              {store.storeSlug && (
+                <div
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${themed.bgSecondary} border ${themed.borderColor}`}
+                >
+                  <Caption>{t("storeUrlLabel")}</Caption>
+                  <Caption className="font-mono">/stores/{store.storeSlug}</Caption>
+                </div>
+              )}
+
+              <FormField
+                name="storeName"
+                label={t("storeName")}
+                value={form.storeName}
+                onChange={set("storeName")}
+                placeholder={t("storeNamePlaceholder")}
+                required
+              />
+
+              <FormField
+                name="storeDescription"
+                label={t("storeDescription")}
+                type="textarea"
+                rows={3}
+                value={form.storeDescription}
+                onChange={set("storeDescription")}
+                placeholder={t("storeDescriptionPlaceholder")}
+                helpText={t("storeDescriptionHelp")}
+              />
+
+              <FormField
+                name="storeCategory"
+                label={t("storeCategory")}
+                value={form.storeCategory}
+                onChange={set("storeCategory")}
+                placeholder={t("storeCategoryPlaceholder")}
+              />
+
+              <FormField
+                name="bio"
+                label={t("bio")}
+                type="textarea"
+                rows={2}
+                value={form.bio}
+                onChange={set("bio")}
+                placeholder={t("bioPlaceholder")}
+                helpText={t("bioHelp")}
+              />
+
+              <FormGroup columns={2}>
+                <FormField
+                  name="storeLogoURL"
+                  label={t("storeLogoURL")}
+                  value={form.storeLogoURL}
+                  onChange={set("storeLogoURL")}
+                  placeholder="https://..."
+                />
+                <FormField
+                  name="storeBannerURL"
+                  label={t("storeBannerURL")}
+                  value={form.storeBannerURL}
+                  onChange={set("storeBannerURL")}
+                  placeholder="https://..."
+                />
+              </FormGroup>
+
+              <div className={flex.between}>
+                <div>
+                  <Label>{t("storeVisibilityLabel")}</Label>
+                  <Caption>{t("storeVisibilityHelp")}</Caption>
+                </div>
+                <Toggle
+                  checked={form.isPublic}
+                  onChange={(v) => set("isPublic")(v)}
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Caption>{t("storeStatusLabel")}:</Caption>
-              <StatusBadge status={store.status} label={statusLabel} />
-            </div>
-          </div>
+          </AccordionItem>
 
-          {store.storeSlug && (
-            <div
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${themed.bgSecondary} border ${themed.borderColor}`}
-            >
-              <Caption>{t("storeUrlLabel")}</Caption>
-              <Caption className="font-mono">/stores/{store.storeSlug}</Caption>
-            </div>
-          )}
-
-          <FormField
-            name="storeName"
-            label={t("storeName")}
-            value={form.storeName}
-            onChange={set("storeName")}
-            placeholder={t("storeNamePlaceholder")}
-            required
-          />
-
-          <FormField
-            name="storeDescription"
-            label={t("storeDescription")}
-            type="textarea"
-            rows={3}
-            value={form.storeDescription}
-            onChange={set("storeDescription")}
-            placeholder={t("storeDescriptionPlaceholder")}
-            helpText={t("storeDescriptionHelp")}
-          />
-
-          <FormField
-            name="storeCategory"
-            label={t("storeCategory")}
-            value={form.storeCategory}
-            onChange={set("storeCategory")}
-            placeholder={t("storeCategoryPlaceholder")}
-          />
-
-          <FormField
-            name="bio"
-            label={t("bio")}
-            type="textarea"
-            rows={2}
-            value={form.bio}
-            onChange={set("bio")}
-            placeholder={t("bioPlaceholder")}
-            helpText={t("bioHelp")}
-          />
-
-          <FormGroup columns={2}>
-            <FormField
-              name="storeLogoURL"
-              label={t("storeLogoURL")}
-              value={form.storeLogoURL}
-              onChange={set("storeLogoURL")}
-              placeholder="https://..."
-            />
-            <FormField
-              name="storeBannerURL"
-              label={t("storeBannerURL")}
-              value={form.storeBannerURL}
-              onChange={set("storeBannerURL")}
-              placeholder="https://..."
-            />
-          </FormGroup>
-
-          <div className={flex.between}>
-            <div>
-              <Label>{t("storeVisibilityLabel")}</Label>
-              <Caption>{t("storeVisibilityHelp")}</Caption>
-            </div>
-            <Toggle
-              checked={form.isPublic}
-              onChange={(v) => set("isPublic")(v)}
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* ── Contact & Social ──────────────────────────────────── */}
-      <Card>
-        <div className={spacing.stack}>
-          <div>
-            <Heading level={3}>{t("sectionSocial")}</Heading>
-            <Text variant="secondary" size="sm" className="mt-0.5">
-              {t("sectionSocialSubtitle")}
-            </Text>
-          </div>
-
-          <FormField
-            name="website"
-            label={t("website")}
-            value={form.website}
-            onChange={set("website")}
-            placeholder="https://yourwebsite.com"
-          />
-          <FormField
-            name="location"
-            label={t("location")}
-            value={form.location}
-            onChange={set("location")}
-            placeholder={t("locationPlaceholder")}
-          />
-
-          <Divider />
-
-          <FormGroup columns={2}>
-            <FormField
-              name="instagram"
-              label="Instagram"
-              value={form.instagram}
-              onChange={set("instagram")}
-              placeholder="https://instagram.com/..."
-            />
-            <FormField
-              name="twitter"
-              label="X / Twitter"
-              value={form.twitter}
-              onChange={set("twitter")}
-              placeholder="https://x.com/..."
-            />
-            <FormField
-              name="facebook"
-              label="Facebook"
-              value={form.facebook}
-              onChange={set("facebook")}
-              placeholder="https://facebook.com/..."
-            />
-            <FormField
-              name="linkedin"
-              label="LinkedIn"
-              value={form.linkedin}
-              onChange={set("linkedin")}
-              placeholder="https://linkedin.com/in/..."
-            />
-          </FormGroup>
-        </div>
-      </Card>
-
-      {/* ── Store Policies ────────────────────────────────────── */}
-      <Card>
-        <div className={spacing.stack}>
-          <div>
-            <Heading level={3}>{t("sectionPolicies")}</Heading>
-            <Text variant="secondary" size="sm" className="mt-0.5">
-              {t("sectionPoliciesSubtitle")}
-            </Text>
-          </div>
-
-          <FormField
-            name="returnPolicy"
-            label={t("returnPolicy")}
-            type="textarea"
-            rows={4}
-            value={form.returnPolicy}
-            onChange={set("returnPolicy")}
-            placeholder={t("returnPolicyPlaceholder")}
-          />
-
-          <FormField
-            name="shippingPolicy"
-            label={t("shippingPolicy")}
-            type="textarea"
-            rows={4}
-            value={form.shippingPolicy}
-            onChange={set("shippingPolicy")}
-            placeholder={t("shippingPolicyPlaceholder")}
-          />
-        </div>
-      </Card>
-
-      {/* ── Vacation Mode ─────────────────────────────────────── */}
-      <Card>
-        <div className={spacing.stack}>
-          <div className={flex.between}>
-            <div>
-              <Heading level={3}>{t("sectionVacation")}</Heading>
-              <Text variant="secondary" size="sm" className="mt-0.5">
-                {t("sectionVacationSubtitle")}
-              </Text>
-            </div>
-            <Toggle
-              checked={form.isVacationMode}
-              onChange={(v) => set("isVacationMode")(v)}
-            />
-          </div>
-
-          {form.isVacationMode && (
-            <FormField
-              name="vacationMessage"
-              label={t("vacationMessage")}
-              type="textarea"
-              rows={2}
-              value={form.vacationMessage}
-              onChange={set("vacationMessage")}
-              placeholder={t("vacationMessagePlaceholder")}
-              helpText={t("vacationMessageHelp")}
-            />
-          )}
-        </div>
-      </Card>
-
-      {/* ── Pickup Addresses (link to dedicated page) ─────────── */}
-      <Card>
-        <div className={`${flex.between} gap-4`}>
-          <div>
-            <Heading level={3}>{t("pickupAddressesTitle")}</Heading>
-            <Text variant="secondary" size="sm" className="mt-0.5">
-              {t("pickupAddressesSubtitle")}
-            </Text>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(ROUTES.SELLER.ADDRESSES)}
+          <AccordionItem
+            value="seller-store-social"
+            title={<Text className="font-semibold">{t("sectionSocial")}</Text>}
           >
-            {t("manageAddresses")}
-          </Button>
-        </div>
+            <div className={`${spacing.stack} pt-3`}>
+              <Text variant="secondary" size="sm">
+                {t("sectionSocialSubtitle")}
+              </Text>
+
+              <FormField
+                name="website"
+                label={t("website")}
+                value={form.website}
+                onChange={set("website")}
+                placeholder="https://yourwebsite.com"
+              />
+              <FormField
+                name="location"
+                label={t("location")}
+                value={form.location}
+                onChange={set("location")}
+                placeholder={t("locationPlaceholder")}
+              />
+
+              <Divider />
+
+              <FormGroup columns={2}>
+                <FormField
+                  name="instagram"
+                  label="Instagram"
+                  value={form.instagram}
+                  onChange={set("instagram")}
+                  placeholder="https://instagram.com/..."
+                />
+                <FormField
+                  name="twitter"
+                  label="X / Twitter"
+                  value={form.twitter}
+                  onChange={set("twitter")}
+                  placeholder="https://x.com/..."
+                />
+                <FormField
+                  name="facebook"
+                  label="Facebook"
+                  value={form.facebook}
+                  onChange={set("facebook")}
+                  placeholder="https://facebook.com/..."
+                />
+                <FormField
+                  name="linkedin"
+                  label="LinkedIn"
+                  value={form.linkedin}
+                  onChange={set("linkedin")}
+                  placeholder="https://linkedin.com/in/..."
+                />
+              </FormGroup>
+            </div>
+          </AccordionItem>
+
+          <AccordionItem
+            value="seller-store-policies"
+            title={<Text className="font-semibold">{t("sectionPolicies")}</Text>}
+          >
+            <div className={`${spacing.stack} pt-3`}>
+              <Text variant="secondary" size="sm">
+                {t("sectionPoliciesSubtitle")}
+              </Text>
+
+              <FormField
+                name="returnPolicy"
+                label={t("returnPolicy")}
+                type="textarea"
+                rows={4}
+                value={form.returnPolicy}
+                onChange={set("returnPolicy")}
+                placeholder={t("returnPolicyPlaceholder")}
+              />
+
+              <FormField
+                name="shippingPolicy"
+                label={t("shippingPolicy")}
+                type="textarea"
+                rows={4}
+                value={form.shippingPolicy}
+                onChange={set("shippingPolicy")}
+                placeholder={t("shippingPolicyPlaceholder")}
+              />
+            </div>
+          </AccordionItem>
+
+          <AccordionItem
+            value="seller-store-vacation"
+            title={<Text className="font-semibold">{t("sectionVacation")}</Text>}
+          >
+            <div className={`${spacing.stack} pt-3`}>
+              <div className={flex.between}>
+                <Text variant="secondary" size="sm" className="max-w-[80%]">
+                  {t("sectionVacationSubtitle")}
+                </Text>
+                <Toggle
+                  checked={form.isVacationMode}
+                  onChange={(v) => set("isVacationMode")(v)}
+                />
+              </div>
+
+              {form.isVacationMode && (
+                <FormField
+                  name="vacationMessage"
+                  label={t("vacationMessage")}
+                  type="textarea"
+                  rows={2}
+                  value={form.vacationMessage}
+                  onChange={set("vacationMessage")}
+                  placeholder={t("vacationMessagePlaceholder")}
+                  helpText={t("vacationMessageHelp")}
+                />
+              )}
+            </div>
+          </AccordionItem>
+
+          <AccordionItem
+            value="seller-store-pickup-addresses"
+            title={<Text className="font-semibold">{t("pickupAddressesTitle")}</Text>}
+          >
+            <div className={`${flex.between} gap-4 pt-3`}>
+              <Text variant="secondary" size="sm">
+                {t("pickupAddressesSubtitle")}
+              </Text>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(ROUTES.SELLER.ADDRESSES)}
+              >
+                {t("manageAddresses")}
+              </Button>
+            </div>
+          </AccordionItem>
+        </Accordion>
       </Card>
 
       {/* ── Save ──────────────────────────────────────────────── */}

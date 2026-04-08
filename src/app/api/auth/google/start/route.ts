@@ -20,7 +20,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@/lib/server-logger";
 import { AppError } from "@/lib/errors";
 import { handleApiError } from "@/lib/errors/error-handler";

@@ -24,9 +24,23 @@ const firebaseConfig = {
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
-const app: FirebaseApp = getApps()[0] ?? initializeApp(firebaseConfig);
-const auth: Auth = getAuth(app);
-const storage: FirebaseStorage = getStorage(app);
-const realtimeDb: Database = getDatabase(app);
+const canInitializeClientFirebase =
+  typeof window !== "undefined" && Boolean(firebaseConfig.apiKey);
+
+const app: FirebaseApp = canInitializeClientFirebase
+  ? (getApps()[0] ?? initializeApp(firebaseConfig))
+  : (null as unknown as FirebaseApp);
+
+const auth: Auth = canInitializeClientFirebase
+  ? getAuth(app)
+  : (null as unknown as Auth);
+
+const storage: FirebaseStorage = canInitializeClientFirebase
+  ? getStorage(app)
+  : (null as unknown as FirebaseStorage);
+
+const realtimeDb: Database = canInitializeClientFirebase
+  ? getDatabase(app)
+  : (null as unknown as Database);
 
 export { app, auth, storage, realtimeDb };

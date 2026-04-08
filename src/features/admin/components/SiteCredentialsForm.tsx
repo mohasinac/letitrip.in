@@ -17,6 +17,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
+  Accordion,
+  AccordionItem,
   Card,
   FormField,
   FormFieldSpan,
@@ -114,6 +116,9 @@ export function SiteCredentialsForm({
       </Text>
     );
 
+  const countConfigured = (fields: Array<string | undefined>) =>
+    fields.filter(Boolean).length;
+
   return (
     <Card className={enhancedCard.base}>
       <div className={spacing.cardPadding}>
@@ -124,241 +129,316 @@ export function SiteCredentialsForm({
           {t("credentialsSubtitle")}
         </Text>
 
-        {/* ── Razorpay ─────────────────────────────────────────────── */}
-        <Heading level={4} className="text-sm font-semibold mb-3 mt-2">
-          {t("razorpaySection")}
-        </Heading>
-        <FormGroup columns={2} className="mb-6">
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("razorpayKeyId")}
-              </Text>
-              {statusBadge(maskedCredentials.razorpayKeyId)}
-            </div>
-            <FormField
-              name="razorpayKeyId"
-              label=""
-              type="text"
-              value={values.razorpayKeyId ?? ""}
-              placeholder={hint(maskedCredentials.razorpayKeyId)}
-              onChange={(v) => update("razorpayKeyId", v)}
-              autoComplete="off"
-            />
-          </div>
-
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("razorpayKeySecret")}
-              </Text>
-              {statusBadge(maskedCredentials.razorpayKeySecret)}
-            </div>
-            <FormField
-              name="razorpayKeySecret"
-              label=""
-              type="password"
-              value={values.razorpayKeySecret ?? ""}
-              placeholder={hint(maskedCredentials.razorpayKeySecret)}
-              onChange={(v) => update("razorpayKeySecret", v)}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <FormFieldSpan>
-            <div>
-              <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-                <Text size="sm" className="font-medium">
-                  {t("razorpayWebhookSecret")}
+        <Accordion
+          type="multiple"
+          defaultValue={["razorpay", "resend"]}
+          className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+        >
+          <AccordionItem
+            value="razorpay"
+            title={
+              <div className="flex items-center justify-between gap-3 pr-2">
+                <Text size="sm" className="font-semibold">
+                  {t("razorpaySection")}
                 </Text>
-                {statusBadge(maskedCredentials.razorpayWebhookSecret)}
-              </div>
-              <FormField
-                name="razorpayWebhookSecret"
-                label=""
-                type="password"
-                value={values.razorpayWebhookSecret ?? ""}
-                placeholder={hint(maskedCredentials.razorpayWebhookSecret)}
-                onChange={(v) => update("razorpayWebhookSecret", v)}
-                autoComplete="new-password"
-              />
-            </div>
-          </FormFieldSpan>
-        </FormGroup>
-
-        {/* ── Resend ───────────────────────────────────────────────── */}
-        <Heading level={4} className="text-sm font-semibold mb-3">
-          {t("resendSection")}
-        </Heading>
-        <div className={`${spacing.stack} mb-6`}>
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("resendApiKey")}
-              </Text>
-              {statusBadge(maskedCredentials.resendApiKey)}
-            </div>
-            <FormField
-              name="resendApiKey"
-              label=""
-              type="password"
-              value={values.resendApiKey ?? ""}
-              placeholder={hint(maskedCredentials.resendApiKey)}
-              onChange={(v) => update("resendApiKey", v)}
-              autoComplete="new-password"
-            />
-          </div>
-        </div>
-
-        {/* ── WhatsApp ─────────────────────────────────────────────── */}
-        <Heading level={4} className="text-sm font-semibold mb-3">
-          {t("whatsappSection")}
-        </Heading>
-        <FormGroup columns={2}>
-          <FormField
-            name="whatsappNumber"
-            label={t("whatsappNumber")}
-            type="tel"
-            value={values.whatsappNumber ?? ""}
-            placeholder="+91XXXXXXXXXX"
-            onChange={(v) => update("whatsappNumber", v)}
-          />
-
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("whatsappApiKey")}
-              </Text>
-              {statusBadge(maskedCredentials.whatsappApiKey)}
-            </div>
-            <FormField
-              name="whatsappApiKey"
-              label=""
-              type="password"
-              value={values.whatsappApiKey ?? ""}
-              placeholder={hint(maskedCredentials.whatsappApiKey)}
-              onChange={(v) => update("whatsappApiKey", v)}
-              autoComplete="new-password"
-            />
-          </div>
-        </FormGroup>
-
-        {/* ── Shiprocket ──────────────────────────────────────────── */}
-        <Heading level={4} className="text-sm font-semibold mb-3 mt-6">
-          {t("shiprocketSection")}
-        </Heading>
-        <FormGroup columns={2} className="mb-6">
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("shiprocketEmail")}
-              </Text>
-              {statusBadge(maskedCredentials.shiprocketEmail)}
-            </div>
-            <FormField
-              name="shiprocketEmail"
-              label=""
-              type="email"
-              value={values.shiprocketEmail ?? ""}
-              placeholder={hint(maskedCredentials.shiprocketEmail)}
-              onChange={(v) => update("shiprocketEmail", v)}
-              autoComplete="off"
-            />
-          </div>
-
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("shiprocketPassword")}
-              </Text>
-              {statusBadge(maskedCredentials.shiprocketPassword)}
-            </div>
-            <FormField
-              name="shiprocketPassword"
-              label=""
-              type="password"
-              value={values.shiprocketPassword ?? ""}
-              placeholder={hint(maskedCredentials.shiprocketPassword)}
-              onChange={(v) => update("shiprocketPassword", v)}
-              autoComplete="new-password"
-            />
-          </div>
-        </FormGroup>
-
-        {/* ── Meta (Facebook / Instagram) ──────────────────────── */}
-        <Heading level={4} className="text-sm font-semibold mb-3">
-          {t("metaSection")}
-        </Heading>
-        <FormGroup columns={2}>
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("metaAppId")}
-              </Text>
-              {statusBadge(maskedCredentials.metaAppId)}
-            </div>
-            <FormField
-              name="metaAppId"
-              label=""
-              type="text"
-              value={values.metaAppId ?? ""}
-              placeholder={hint(maskedCredentials.metaAppId)}
-              onChange={(v) => update("metaAppId", v)}
-              autoComplete="off"
-            />
-          </div>
-
-          <div>
-            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-              <Text size="sm" className="font-medium">
-                {t("metaAppSecret")}
-              </Text>
-              {statusBadge(maskedCredentials.metaAppSecret)}
-            </div>
-            <FormField
-              name="metaAppSecret"
-              label=""
-              type="password"
-              value={values.metaAppSecret ?? ""}
-              placeholder={hint(maskedCredentials.metaAppSecret)}
-              onChange={(v) => update("metaAppSecret", v)}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <FormFieldSpan>
-            <div>
-              <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
-                <Text size="sm" className="font-medium">
-                  {t("metaPageAccessToken")}
+                <Text size="xs" variant="secondary">
+                  {countConfigured([
+                    maskedCredentials.razorpayKeyId,
+                    maskedCredentials.razorpayKeySecret,
+                    maskedCredentials.razorpayWebhookSecret,
+                  ])}
+                  /3
                 </Text>
-                {statusBadge(maskedCredentials.metaPageAccessToken)}
               </div>
-              <FormField
-                name="metaPageAccessToken"
-                label=""
-                type="password"
-                value={values.metaPageAccessToken ?? ""}
-                placeholder={hint(maskedCredentials.metaPageAccessToken)}
-                onChange={(v) => update("metaPageAccessToken", v)}
-                autoComplete="new-password"
-              />
-              <Text size="xs" variant="secondary" className="mt-1">
-                {t("metaPageAccessTokenHint")}
-              </Text>
-            </div>
-          </FormFieldSpan>
+            }
+          >
+            <FormGroup columns={2} className="pt-2">
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("razorpayKeyId")}
+                  </Text>
+                  {statusBadge(maskedCredentials.razorpayKeyId)}
+                </div>
+                <FormField
+                  name="razorpayKeyId"
+                  label=""
+                  type="text"
+                  value={values.razorpayKeyId ?? ""}
+                  placeholder={hint(maskedCredentials.razorpayKeyId)}
+                  onChange={(v) => update("razorpayKeyId", v)}
+                  autoComplete="off"
+                />
+              </div>
 
-          <FormField
-            name="metaPageId"
-            label={t("metaPageId")}
-            type="text"
-            value={values.metaPageId ?? ""}
-            placeholder={hint(maskedCredentials.metaPageId)}
-            onChange={(v) => update("metaPageId", v)}
-            autoComplete="off"
-          />
-        </FormGroup>
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("razorpayKeySecret")}
+                  </Text>
+                  {statusBadge(maskedCredentials.razorpayKeySecret)}
+                </div>
+                <FormField
+                  name="razorpayKeySecret"
+                  label=""
+                  type="password"
+                  value={values.razorpayKeySecret ?? ""}
+                  placeholder={hint(maskedCredentials.razorpayKeySecret)}
+                  onChange={(v) => update("razorpayKeySecret", v)}
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <FormFieldSpan>
+                <div>
+                  <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                    <Text size="sm" className="font-medium">
+                      {t("razorpayWebhookSecret")}
+                    </Text>
+                    {statusBadge(maskedCredentials.razorpayWebhookSecret)}
+                  </div>
+                  <FormField
+                    name="razorpayWebhookSecret"
+                    label=""
+                    type="password"
+                    value={values.razorpayWebhookSecret ?? ""}
+                    placeholder={hint(maskedCredentials.razorpayWebhookSecret)}
+                    onChange={(v) => update("razorpayWebhookSecret", v)}
+                    autoComplete="new-password"
+                  />
+                </div>
+              </FormFieldSpan>
+            </FormGroup>
+          </AccordionItem>
+
+          <AccordionItem
+            value="resend"
+            title={
+              <div className="flex items-center justify-between gap-3 pr-2">
+                <Text size="sm" className="font-semibold">
+                  {t("resendSection")}
+                </Text>
+                <Text size="xs" variant="secondary">
+                  {countConfigured([maskedCredentials.resendApiKey])}/1
+                </Text>
+              </div>
+            }
+          >
+            <div className="pt-2">
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("resendApiKey")}
+                  </Text>
+                  {statusBadge(maskedCredentials.resendApiKey)}
+                </div>
+                <FormField
+                  name="resendApiKey"
+                  label=""
+                  type="password"
+                  value={values.resendApiKey ?? ""}
+                  placeholder={hint(maskedCredentials.resendApiKey)}
+                  onChange={(v) => update("resendApiKey", v)}
+                  autoComplete="new-password"
+                />
+              </div>
+            </div>
+          </AccordionItem>
+
+          <AccordionItem
+            value="whatsapp"
+            title={
+              <div className="flex items-center justify-between gap-3 pr-2">
+                <Text size="sm" className="font-semibold">
+                  {t("whatsappSection")}
+                </Text>
+                <Text size="xs" variant="secondary">
+                  {countConfigured([
+                    values.whatsappNumber,
+                    maskedCredentials.whatsappApiKey,
+                  ])}
+                  /2
+                </Text>
+              </div>
+            }
+          >
+            <FormGroup columns={2} className="pt-2">
+              <FormField
+                name="whatsappNumber"
+                label={t("whatsappNumber")}
+                type="tel"
+                value={values.whatsappNumber ?? ""}
+                placeholder="+91XXXXXXXXXX"
+                onChange={(v) => update("whatsappNumber", v)}
+              />
+
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("whatsappApiKey")}
+                  </Text>
+                  {statusBadge(maskedCredentials.whatsappApiKey)}
+                </div>
+                <FormField
+                  name="whatsappApiKey"
+                  label=""
+                  type="password"
+                  value={values.whatsappApiKey ?? ""}
+                  placeholder={hint(maskedCredentials.whatsappApiKey)}
+                  onChange={(v) => update("whatsappApiKey", v)}
+                  autoComplete="new-password"
+                />
+              </div>
+            </FormGroup>
+          </AccordionItem>
+
+          <AccordionItem
+            value="shiprocket"
+            title={
+              <div className="flex items-center justify-between gap-3 pr-2">
+                <Text size="sm" className="font-semibold">
+                  {t("shiprocketSection")}
+                </Text>
+                <Text size="xs" variant="secondary">
+                  {countConfigured([
+                    maskedCredentials.shiprocketEmail,
+                    maskedCredentials.shiprocketPassword,
+                  ])}
+                  /2
+                </Text>
+              </div>
+            }
+          >
+            <FormGroup columns={2} className="pt-2">
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("shiprocketEmail")}
+                  </Text>
+                  {statusBadge(maskedCredentials.shiprocketEmail)}
+                </div>
+                <FormField
+                  name="shiprocketEmail"
+                  label=""
+                  type="email"
+                  value={values.shiprocketEmail ?? ""}
+                  placeholder={hint(maskedCredentials.shiprocketEmail)}
+                  onChange={(v) => update("shiprocketEmail", v)}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("shiprocketPassword")}
+                  </Text>
+                  {statusBadge(maskedCredentials.shiprocketPassword)}
+                </div>
+                <FormField
+                  name="shiprocketPassword"
+                  label=""
+                  type="password"
+                  value={values.shiprocketPassword ?? ""}
+                  placeholder={hint(maskedCredentials.shiprocketPassword)}
+                  onChange={(v) => update("shiprocketPassword", v)}
+                  autoComplete="new-password"
+                />
+              </div>
+            </FormGroup>
+          </AccordionItem>
+
+          <AccordionItem
+            value="meta"
+            title={
+              <div className="flex items-center justify-between gap-3 pr-2">
+                <Text size="sm" className="font-semibold">
+                  {t("metaSection")}
+                </Text>
+                <Text size="xs" variant="secondary">
+                  {countConfigured([
+                    maskedCredentials.metaAppId,
+                    maskedCredentials.metaAppSecret,
+                    maskedCredentials.metaPageAccessToken,
+                    maskedCredentials.metaPageId,
+                  ])}
+                  /4
+                </Text>
+              </div>
+            }
+          >
+            <FormGroup columns={2} className="pt-2">
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("metaAppId")}
+                  </Text>
+                  {statusBadge(maskedCredentials.metaAppId)}
+                </div>
+                <FormField
+                  name="metaAppId"
+                  label=""
+                  type="text"
+                  value={values.metaAppId ?? ""}
+                  placeholder={hint(maskedCredentials.metaAppId)}
+                  onChange={(v) => update("metaAppId", v)}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div>
+                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                  <Text size="sm" className="font-medium">
+                    {t("metaAppSecret")}
+                  </Text>
+                  {statusBadge(maskedCredentials.metaAppSecret)}
+                </div>
+                <FormField
+                  name="metaAppSecret"
+                  label=""
+                  type="password"
+                  value={values.metaAppSecret ?? ""}
+                  placeholder={hint(maskedCredentials.metaAppSecret)}
+                  onChange={(v) => update("metaAppSecret", v)}
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <FormFieldSpan>
+                <div>
+                  <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                    <Text size="sm" className="font-medium">
+                      {t("metaPageAccessToken")}
+                    </Text>
+                    {statusBadge(maskedCredentials.metaPageAccessToken)}
+                  </div>
+                  <FormField
+                    name="metaPageAccessToken"
+                    label=""
+                    type="password"
+                    value={values.metaPageAccessToken ?? ""}
+                    placeholder={hint(maskedCredentials.metaPageAccessToken)}
+                    onChange={(v) => update("metaPageAccessToken", v)}
+                    autoComplete="new-password"
+                  />
+                  <Text size="xs" variant="secondary" className="mt-1">
+                    {t("metaPageAccessTokenHint")}
+                  </Text>
+                </div>
+              </FormFieldSpan>
+
+              <FormField
+                name="metaPageId"
+                label={t("metaPageId")}
+                type="text"
+                value={values.metaPageId ?? ""}
+                placeholder={hint(maskedCredentials.metaPageId)}
+                onChange={(v) => update("metaPageId", v)}
+                autoComplete="off"
+              />
+            </FormGroup>
+          </AccordionItem>
+        </Accordion>
       </div>
     </Card>
   );

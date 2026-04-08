@@ -60,7 +60,7 @@ export function BlogCard({
           )}
         </span>
       )}
-      <PkgBlogCard post={post} className={`${dimensions.minW} ${dimensions.minH} ${className ?? ""}`} />
+      <PkgBlogCard post={post} className={`h-full ${dimensions.minW} ${dimensions.minH} ${className ?? ""}`} />
     </Link>
   );
 }

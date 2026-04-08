@@ -18,7 +18,7 @@
  *        styled with the selected action's variant (danger = red, etc.).
  *
  * Layout rules:
- *  - Hidden on md+ screens (`md:hidden`) — desktop shows inline action panels.
+ *  - Hidden on lg+ screens (`lg:hidden`) — desktop shows inline action panels.
  *  - The bar slides up with a 300 ms ease-out transition; `pointer-events-none`
  *    while off-screen.
  *
@@ -96,7 +96,7 @@ export default function BottomActions() {
       }
       aria-hidden={!isVisible}
       className={[
-        "fixed bottom-14 left-0 right-0 md:hidden",
+        "fixed bottom-14 left-0 right-0 lg:hidden",
         zIndex.bottomActions,
         layout.bottomNavBg,
         "shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.30)]",

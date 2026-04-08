@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button, Heading, Text } from "@/components";
+import { Accordion, AccordionItem, Button, Card, Heading, Text } from "@/components";
 import { Alert } from "@/components";
 import { FormField, FormGroup } from "@/components";
 import { useTranslations } from "next-intl";
@@ -100,52 +100,83 @@ export function SellerPayoutRequestForm({
             ]}
           />
 
-          {paymentMethod === "bank_transfer" ? (
-            <FormGroup columns={2}>
-              <FormField
-                name="accountHolderName"
-                label={t("bankHolderName")}
-                value={bankForm.accountHolderName}
-                onChange={(v) =>
-                  setBankForm((f) => ({ ...f, accountHolderName: v }))
-                }
-              />
-              <FormField
-                name="accountNumberMasked"
-                label={t("bankAccountNumber")}
-                value={bankForm.accountNumberMasked}
-                onChange={(v) =>
-                  setBankForm((f) => ({ ...f, accountNumberMasked: v }))
-                }
-              />
-              <FormField
-                name="ifscCode"
-                label={t("bankIfsc")}
-                value={bankForm.ifscCode}
-                onChange={(v) => setBankForm((f) => ({ ...f, ifscCode: v }))}
-              />
-              <FormField
-                name="bankName"
-                label={t("bankName")}
-                value={bankForm.bankName}
-                onChange={(v) => setBankForm((f) => ({ ...f, bankName: v }))}
-              />
-            </FormGroup>
-          ) : (
-            <FormField
-              name="upiId"
-              label={t("upiIdLabel")}
-              value={upiId}
-              onChange={(v) => setUpiId(v)}
-            />
-          )}
+          <Accordion
+            type="multiple"
+            defaultValue={[
+              paymentMethod === "bank_transfer"
+                ? "seller-payout-bank"
+                : "seller-payout-upi",
+            ]}
+            className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+          >
+            {paymentMethod === "bank_transfer" ? (
+              <AccordionItem
+                value="seller-payout-bank"
+                title={<Text size="sm" className="font-semibold">{t("paymentMethodBank")}</Text>}
+              >
+                <FormGroup columns={2} className="pt-3">
+                  <FormField
+                    name="accountHolderName"
+                    label={t("bankHolderName")}
+                    value={bankForm.accountHolderName}
+                    onChange={(v) =>
+                      setBankForm((f) => ({ ...f, accountHolderName: v }))
+                    }
+                  />
+                  <FormField
+                    name="accountNumberMasked"
+                    label={t("bankAccountNumber")}
+                    value={bankForm.accountNumberMasked}
+                    onChange={(v) =>
+                      setBankForm((f) => ({ ...f, accountNumberMasked: v }))
+                    }
+                  />
+                  <FormField
+                    name="ifscCode"
+                    label={t("bankIfsc")}
+                    value={bankForm.ifscCode}
+                    onChange={(v) =>
+                      setBankForm((f) => ({ ...f, ifscCode: v }))
+                    }
+                  />
+                  <FormField
+                    name="bankName"
+                    label={t("bankName")}
+                    value={bankForm.bankName}
+                    onChange={(v) => setBankForm((f) => ({ ...f, bankName: v }))}
+                  />
+                </FormGroup>
+              </AccordionItem>
+            ) : (
+              <AccordionItem
+                value="seller-payout-upi"
+                title={<Text size="sm" className="font-semibold">{t("paymentMethodUpi")}</Text>}
+              >
+                <div className="pt-3">
+                  <FormField
+                    name="upiId"
+                    label={t("upiIdLabel")}
+                    value={upiId}
+                    onChange={(v) => setUpiId(v)}
+                  />
+                </div>
+              </AccordionItem>
+            )}
 
-          <FormField
-            name="notes"
-            label={t("notesLabel")}
-            value={notes}
-            onChange={(v) => setNotes(v)}
-          />
+            <AccordionItem
+              value="seller-payout-notes"
+              title={<Text size="sm" className="font-semibold">{t("notesLabel")}</Text>}
+            >
+              <div className="pt-3">
+                <FormField
+                  name="notes"
+                  label={t("notesLabel")}
+                  value={notes}
+                  onChange={(v) => setNotes(v)}
+                />
+              </div>
+            </AccordionItem>
+          </Accordion>
 
           <div className="flex gap-3 justify-start">
             <Button variant="secondary" onClick={() => setShowForm(false)}>

@@ -160,7 +160,7 @@ export function ListingLayout({
   const isDashboard =
     pathname.startsWith("/admin") || pathname.startsWith("/seller");
 
-  // Register bulk actions with the mobile BottomActions bar (md:hidden sticky bar).
+  // Register bulk actions with the mobile BottomActions bar (lg:hidden sticky bar).
   // Feature components that already call useBottomActions for bulk will
   // overwrite this registration (parent effects run after child effects in React).
   useBottomActions({
@@ -221,8 +221,8 @@ export function ListingLayout({
         // bottom-14 → bump padding up to pb-28 so it clears both bars.
         toolbarPaginationSlot
           ? selectedCount > 0
-            ? "pb-28 md:pb-0"
-            : "pb-12 md:pb-0"
+            ? "pb-28 lg:pb-0"
+            : "pb-12 lg:pb-0"
           : "",
         className,
       ]
@@ -256,8 +256,8 @@ export function ListingLayout({
           "py-2.5",
         ].join(" ")}
       >
-        {/* ── Desktop (md+): single flex row ─────────────────────────────── */}
-        <div className="hidden md:flex items-center gap-2 min-w-0">
+        {/* ── Desktop (lg+): single flex row ─────────────────────────────── */}
+        <div className="hidden lg:flex items-center gap-2 min-w-0">
           {/* Filter sidebar toggle — visible at lg+ (sidebar appears at lg) */}
           {hasFilter && (
             <Button
@@ -311,8 +311,8 @@ export function ListingLayout({
           )}
         </div>
 
-        {/* ── Mobile (< md): two stacked rows ────────────────────────────── */}
-        <div className="flex flex-col gap-2 md:hidden">
+        {/* ── Mobile/Tablet (< lg): two stacked rows ─────────────────────── */}
+        <div className="flex flex-col gap-2 lg:hidden">
           {/* Row 1: filter trigger + search */}
           <div className="flex items-center gap-2">
             {hasFilter && (
@@ -368,7 +368,7 @@ export function ListingLayout({
         {/* ── Bulk action bar — sticky inside toolbar on desktop ──────────── */}
         {/* Mobile bulk actions are handled by useBottomActions → BottomActions bar */}
         {selectedCount > 0 && (
-          <div className="hidden md:block pt-2 mt-2 border-t border-zinc-100 dark:border-slate-800">
+          <div className="hidden lg:block pt-2 mt-2 border-t border-zinc-100 dark:border-slate-800">
             <BulkActionBar
               selectedCount={selectedCount}
               onClearSelection={onClearSelection}
@@ -468,7 +468,7 @@ export function ListingLayout({
         <Nav
           aria-label="Pagination"
           className={[
-            "fixed left-0 right-0 md:hidden",
+            "fixed left-0 right-0 lg:hidden",
             isDashboard
               ? "bottom-0"
               : selectedCount > 0

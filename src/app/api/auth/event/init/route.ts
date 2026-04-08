@@ -27,7 +27,7 @@ import { getAdminAuth, getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/next";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */

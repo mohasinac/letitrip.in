@@ -21,38 +21,9 @@ import {
   Unsubscribe,
 } from "firebase/database";
 import { realtimeDb } from "./config";
+import { RTDB_PATHS } from "./rtdb-paths";
 
-/**
- * Realtime database paths
- */
-export const RTDB_PATHS = {
-  PRESENCE: "presence",
-  CHAT: "chat",
-  NOTIFICATIONS: "notifications",
-  LIVE_UPDATES: "live_updates",
-  /**
-   * Pre-session OAuth & login signal channel.
-   * Nodes are written by API routes (Admin SDK), read once by the client
-   * via a per-event custom token.  Cleaned up by the cleanupAuthEvents
-   * Firebase Function every 5 minutes.
-   */
-  AUTH_EVENTS: "auth_events",
-  /**
-   * Razorpay webhook signal channel.
-   * Nodes are written by the payment webhook route (Admin SDK), read once
-   * by the client via a per-event custom token.
-   */
-  PAYMENT_EVENTS: "payment_events",
-  /**
-   * Bulk action result signal channel.
-   * Nodes are written by bulk API routes (Admin SDK) after processing;
-   * the client subscribes via a per-job custom token issued with
-   * { bulkJobId: jobId } claim to scope access to exactly one node.
-   * Cleanup: Firebase Function cleanupBulkEvents deletes nodes older
-   * than 15 minutes to prevent RTDB accumulation.
-   */
-  BULK_EVENTS: "bulk_events",
-} as const;
+export { RTDB_PATHS } from "./rtdb-paths";
 
 /**
  * Set user online presence

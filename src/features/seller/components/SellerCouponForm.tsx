@@ -6,6 +6,8 @@ import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
+  Accordion,
+  AccordionItem,
   Button,
   Card,
   FormGroup,
@@ -101,11 +103,16 @@ export function SellerCouponForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={spacing.stack}>
       <Card className="p-6">
-        <Heading level={3} variant="primary" className="mb-4">
-          {t("formSectionBasic")}
-        </Heading>
-
-        <FormGroup columns={2}>
+        <Accordion
+          type="multiple"
+          defaultValue={["seller-coupon-basic", "seller-coupon-discount"]}
+          className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+        >
+          <AccordionItem
+            value="seller-coupon-basic"
+            title={<Text className="font-semibold">{t("formSectionBasic")}</Text>}
+          >
+            <FormGroup columns={2} className="pt-3">
           {/* Short code */}
           <div>
             <Label
@@ -166,16 +173,14 @@ export function SellerCouponForm() {
               placeholder={t("fieldDescriptionPlaceholder")}
             />
           </div>
-        </FormGroup>
-      </Card>
+            </FormGroup>
+          </AccordionItem>
 
-      {/* Discount type & target */}
-      <Card className="p-6">
-        <Heading level={3} variant="primary" className="mb-4">
-          {t("formSectionDiscount")}
-        </Heading>
-
-        <FormGroup columns={2}>
+          <AccordionItem
+            value="seller-coupon-discount"
+            title={<Text className="font-semibold">{t("formSectionDiscount")}</Text>}
+          >
+            <FormGroup columns={2} className="pt-3">
           {/* Type */}
           <div>
             <Label htmlFor="type" className="block text-sm font-medium mb-1.5">
@@ -271,16 +276,14 @@ export function SellerCouponForm() {
               {t("hintPreordersNever")}
             </Text>
           </div>
-        </FormGroup>
-      </Card>
+            </FormGroup>
+          </AccordionItem>
 
-      {/* Usage limits */}
-      <Card className="p-6">
-        <Heading level={3} variant="primary" className="mb-4">
-          {t("formSectionUsage")}
-        </Heading>
-
-        <FormGroup columns={2}>
+          <AccordionItem
+            value="seller-coupon-usage"
+            title={<Text className="font-semibold">{t("formSectionUsage")}</Text>}
+          >
+            <FormGroup columns={2} className="pt-3">
           <div>
             <Label
               htmlFor="usage.totalLimit"
@@ -311,16 +314,14 @@ export function SellerCouponForm() {
               placeholder={t("fieldPerUserLimitPlaceholder")}
             />
           </div>
-        </FormGroup>
-      </Card>
+            </FormGroup>
+          </AccordionItem>
 
-      {/* Validity */}
-      <Card className="p-6">
-        <Heading level={3} variant="primary" className="mb-4">
-          {t("formSectionValidity")}
-        </Heading>
-
-        <FormGroup columns={2}>
+          <AccordionItem
+            value="seller-coupon-validity"
+            title={<Text className="font-semibold">{t("formSectionValidity")}</Text>}
+          >
+            <FormGroup columns={2} className="pt-3">
           <div>
             <Label
               htmlFor="validity.startDate"
@@ -362,7 +363,9 @@ export function SellerCouponForm() {
               <Span className="text-sm">{t("fieldIsActive")}</Span>
             </Label>
           </div>
-        </FormGroup>
+            </FormGroup>
+          </AccordionItem>
+        </Accordion>
       </Card>
 
       {/* Submit */}

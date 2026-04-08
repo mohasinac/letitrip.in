@@ -32,7 +32,7 @@ export function StoreCard({
 
   return (
     <div
-      className={`relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${dimensions.minW} ${dimensions.minH} ${className}`}
+      className={`relative flex flex-col h-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${dimensions.minW} ${dimensions.minH} ${className}`}
     >
       {selectable && (
         <Button
@@ -66,7 +66,7 @@ export function StoreCard({
           <div className={`bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 ${dimensions.heroMinH} ${dimensions.heroMaxH}`} />
         )}
 
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-4 flex-1 flex flex-col justify-between">
           <div className="-mt-6 mb-3">
             {store.storeLogoURL ? (
               <MediaImage
@@ -90,17 +90,17 @@ export function StoreCard({
             </Text>
           )}
           <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-            {store.totalProducts != null && (
+            {store.totalProducts != null && store.totalProducts > 0 && (
               <Span>
                 {store.totalProducts} {labels.products ?? "products"}
               </Span>
             )}
-            {store.itemsSold != null && (
+            {store.itemsSold != null && store.itemsSold > 0 && (
               <Span>
                 {store.itemsSold} {labels.sold ?? "sold"}
               </Span>
             )}
-            {store.averageRating != null && (
+            {store.averageRating != null && store.averageRating > 0 && (
               <Span>★ {store.averageRating.toFixed(1)}</Span>
             )}
           </div>

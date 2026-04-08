@@ -19,8 +19,8 @@
  * @see src/app/api/realtime/token/route.ts — Issues the custom token
  */
 
-import { initializeApp, getApps } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getDatabase, type Database } from "firebase/database";
 
 const firebaseClientConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -33,20 +33,25 @@ const firebaseClientConfig = {
 };
 
 const REALTIME_APP_NAME = "letitrip-realtime";
+const canInitializeRealtimeClient =
+  typeof window !== "undefined" && Boolean(firebaseClientConfig.databaseURL);
 
 /**
  * Dedicated Firebase app instance for authenticated Realtime DB subscriptions.
  * Uses the same project config as the main app but runs under its own Auth context.
  */
-export const realtimeApp =
-  getApps().find((a) => a.name === REALTIME_APP_NAME) ??
-  initializeApp(firebaseClientConfig, REALTIME_APP_NAME);
+export const realtimeApp: FirebaseApp = canInitializeRealtimeClient
+  ? (getApps().find((a) => a.name === REALTIME_APP_NAME) ??
+      initializeApp(firebaseClientConfig, REALTIME_APP_NAME))
+  : (null as unknown as FirebaseApp);
 
 /**
  * Realtime Database instance bound to the authenticated app.
  * Use this (NOT `realtimeDb` from `@/lib/firebase/config`) for chat subscriptions.
  */
-export const chatRealtimeDb = getDatabase(realtimeApp);
+export const chatRealtimeDb: Database = canInitializeRealtimeClient
+  ? getDatabase(realtimeApp)
+  : (null as unknown as Database);
 
 /**
  * Public Realtime Database instance (default Firebase app).

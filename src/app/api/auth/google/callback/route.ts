@@ -37,7 +37,7 @@ import {
   SCHEMA_DEFAULTS,
   DEFAULT_USER_DATA,
 } from "@/db/schema";
-import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { UserRole } from "@/types/auth";

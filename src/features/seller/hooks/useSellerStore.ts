@@ -30,7 +30,7 @@ export function useSellerStore() {
     enabled: !authLoading && !!user,
   });
 
-  const { mutate: createStore, isPending: isCreating } = useMutation<
+  const { mutateAsync: createStore, isPending: isCreating } = useMutation<
     { store: StoreDocument },
     Error,
     Parameters<typeof createStoreAction>[0]
@@ -39,7 +39,7 @@ export function useSellerStore() {
     onSuccess: () => refetch(),
   });
 
-  const { mutate: updateStore, isPending: isSaving } = useMutation<
+  const { mutateAsync: updateStore, isPending: isSaving } = useMutation<
     { store: StoreDocument },
     Error,
     Parameters<typeof updateStoreAction>[0]

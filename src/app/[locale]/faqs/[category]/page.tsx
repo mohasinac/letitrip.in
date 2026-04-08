@@ -6,6 +6,7 @@ import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { FAQPageContent } from "@/features/faq";
 import { resolveLocale } from "@/i18n/resolve-locale";
+import { routing } from "@/i18n/routing";
 
 interface Props {
   params: Promise<{ locale: string; category: string }>;
@@ -15,7 +16,9 @@ export const dynamicParams = false;
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return Object.keys(FAQ_CATEGORIES).map((category) => ({ category }));
+  return routing.locales.flatMap((locale) =>
+    Object.keys(FAQ_CATEGORIES).map((category) => ({ locale, category })),
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

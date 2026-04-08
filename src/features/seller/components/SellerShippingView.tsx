@@ -11,6 +11,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
+  Accordion,
+  AccordionItem,
   AdminPageHeader,
   Card,
   Button,
@@ -373,98 +375,112 @@ export function SellerShippingView() {
 
       {/* Method selector */}
       <Card className="p-6">
-        <Heading level={3} className="mb-4">
-          {t("methodHeading")}
-        </Heading>
-        <FormGroup columns={2}>
-          {(["custom", "shiprocket"] as const).map((method) => (
-            <Button
-              key={method}
-              type="button"
-              variant="ghost"
-              onClick={() => setSelectedMethod(method)}
-              className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
-                activeMethod === method
-                  ? "border-primary bg-primary/5 dark:bg-primary/10"
-                  : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
-              }`}
+        <Accordion
+          type="multiple"
+          defaultValue={[
+            "seller-shipping-method",
+            activeMethod === "custom"
+              ? "seller-shipping-custom"
+              : "seller-shipping-shiprocket",
+          ]}
+          className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+        >
+          <AccordionItem
+            value="seller-shipping-method"
+            title={<Text className="font-semibold">{t("methodHeading")}</Text>}
+          >
+            <FormGroup columns={2} className="pt-3">
+              {(["custom", "shiprocket"] as const).map((method) => (
+                <Button
+                  key={method}
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setSelectedMethod(method)}
+                  className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
+                    activeMethod === method
+                      ? "border-primary bg-primary/5 dark:bg-primary/10"
+                      : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
+                  }`}
+                >
+                  <Text weight="semibold" className="mb-1">
+                    {method === "custom"
+                      ? t("methodCustomTitle")
+                      : t("methodShiprocketTitle")}
+                  </Text>
+                  <Text variant="secondary" size="sm">
+                    {method === "custom"
+                      ? t("methodCustomDesc")
+                      : t("methodShiprocketDesc")}
+                  </Text>
+                </Button>
+              ))}
+            </FormGroup>
+          </AccordionItem>
+
+          {activeMethod === "custom" && (
+            <AccordionItem
+              value="seller-shipping-custom"
+              title={<Text className="font-semibold">{t("customHeading")}</Text>}
             >
-              <Text weight="semibold" className="mb-1">
-                {method === "custom"
-                  ? t("methodCustomTitle")
-                  : t("methodShiprocketTitle")}
-              </Text>
-              <Text variant="secondary" size="sm">
-                {method === "custom"
-                  ? t("methodCustomDesc")
-                  : t("methodShiprocketDesc")}
-              </Text>
-            </Button>
-          ))}
-        </FormGroup>
-      </Card>
-
-      {/* Custom shipping config */}
-      {activeMethod === "custom" && (
-        <Card className="p-6">
-          <Heading level={3} className="mb-4">
-            {t("customHeading")}
-          </Heading>
-          <CustomShippingForm
-            defaultCarrier={shippingConfig?.customCarrierName ?? ""}
-            defaultPrice={shippingConfig?.customShippingPrice ?? 0}
-            isSaving={isSaving}
-            onSave={(data) => updateShipping(data)}
-          />
-        </Card>
-      )}
-
-      {/* Shiprocket config */}
-      {activeMethod === "shiprocket" && (
-        <>
-          <Card className="p-6">
-            <Heading level={3} className="mb-1">
-              {t("srCredsHeading")}
-            </Heading>
-            <Text variant="secondary" size="sm" className="mb-4">
-              {t("srCredsDesc")}
-            </Text>
-            <SrCredsForm
-              isTokenValid={isTokenValid}
-              isSaving={isSaving}
-              onSave={(creds) =>
-                updateShipping({
-                  method: "shiprocket",
-                  shiprocketCredentials: creds,
-                })
-              }
-            />
-          </Card>
-
-          {isTokenValid && (
-            <Card className="p-6">
-              <Heading level={3} className="mb-1">
-                {t("pickupHeading")}
-              </Heading>
-              <Text variant="secondary" size="sm" className="mb-4">
-                {t("pickupDesc")}
-              </Text>
-              <PickupAddressForm
-                isSaving={isSaving}
-                isVerified={shippingConfig?.pickupAddress?.isVerified ?? false}
-                onSave={(address) => {
-                  updateShipping({
-                    method: "shiprocket",
-                    pickupAddress: address,
-                  });
-                  // After saving, server will return otpPending — open modal
-                  setOtpModal({ open: true, locationId: null }); // locationId comes from response
-                }}
-              />
-            </Card>
+              <div className="pt-3">
+                <CustomShippingForm
+                  defaultCarrier={shippingConfig?.customCarrierName ?? ""}
+                  defaultPrice={shippingConfig?.customShippingPrice ?? 0}
+                  isSaving={isSaving}
+                  onSave={(data) => updateShipping(data)}
+                />
+              </div>
+            </AccordionItem>
           )}
-        </>
-      )}
+
+          {activeMethod === "shiprocket" && (
+            <AccordionItem
+              value="seller-shipping-shiprocket"
+              title={<Text className="font-semibold">{t("srCredsHeading")}</Text>}
+            >
+              <div className="pt-3 space-y-5">
+                <div>
+                  <Text variant="secondary" size="sm" className="mb-3">
+                    {t("srCredsDesc")}
+                  </Text>
+                  <SrCredsForm
+                    isTokenValid={isTokenValid}
+                    isSaving={isSaving}
+                    onSave={(creds) =>
+                      updateShipping({
+                        method: "shiprocket",
+                        shiprocketCredentials: creds,
+                      })
+                    }
+                  />
+                </div>
+
+                {isTokenValid && (
+                  <div className={`pt-4 border-t ${themed.border}`}>
+                    <Heading level={4} className="mb-1">
+                      {t("pickupHeading")}
+                    </Heading>
+                    <Text variant="secondary" size="sm" className="mb-3">
+                      {t("pickupDesc")}
+                    </Text>
+                    <PickupAddressForm
+                      isSaving={isSaving}
+                      isVerified={shippingConfig?.pickupAddress?.isVerified ?? false}
+                      onSave={(address) => {
+                        updateShipping({
+                          method: "shiprocket",
+                          pickupAddress: address,
+                        });
+                        setOtpModal({ open: true, locationId: null });
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </AccordionItem>
+          )}
+        </Accordion>
+      </Card>
 
       {/* OTP verification modal */}
       <OtpModal

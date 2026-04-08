@@ -125,10 +125,12 @@ export function CategoryCard({
             <div className={`${THEME_CONSTANTS.flex.between} mt-1`}>
               {/* Animated underline */}
               <div className="bg-primary-400 h-0.5 w-0 rounded-full transition-all duration-300 group-hover:w-8" />
-              {/* Product count chip */}
-              <Span className="bg-black/50 backdrop-blur text-white text-[10px] font-medium rounded-full px-2 py-0.5">
-                {productCount}
-              </Span>
+              {/* Product count chip — only shown when there are products */}
+              {productCount > 0 && (
+                <Span className="bg-black/50 backdrop-blur text-white text-[10px] font-medium rounded-full px-2 py-0.5">
+                  {productCount}
+                </Span>
+              )}
             </div>
           </div>
 

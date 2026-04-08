@@ -93,6 +93,35 @@ if (typeof global.Headers === "undefined") {
   } as any;
 }
 
+// Mock Request class
+if (typeof global.Request === "undefined") {
+  global.Request = class Request {
+    url: string;
+    method: string;
+    headers: any;
+    body: any;
+
+    constructor(input: string, init?: any) {
+      this.url = input;
+      this.method = init?.method || "GET";
+      this.headers = init?.headers || {};
+      this.body = init?.body;
+    }
+
+    async json() {
+      return typeof this.body === "string"
+        ? JSON.parse(this.body)
+        : this.body || {};
+    }
+
+    async text() {
+      return typeof this.body === "string"
+        ? this.body
+        : JSON.stringify(this.body || "");
+    }
+  } as any;
+}
+
 // Mock fetch for Firebase Auth
 if (typeof global.fetch === "undefined") {
   global.fetch = jest.fn((url: string, options?: any) =>

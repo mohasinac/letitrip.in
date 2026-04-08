@@ -63,9 +63,14 @@ export async function sendEmail(
 }
 
 // ─── Module-level fallbacks for legacy functions ──────────────────────────────
-// These still read from env vars — existing email functions continue to work.
-// New email functions should use sendEmail() above for DB-first resolution.
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Keep legacy helpers on the same lazy DB-first path so importing this module
+// never depends on RESEND_API_KEY being present at build time.
+async function sendConfiguredEmail(
+  opts: Record<string, unknown> & { to: string | string[]; subject: string },
+): Promise<{ data: unknown; error: unknown }> {
+  return sendEmail(opts);
+}
+
 const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@letitrip.in";
 const FROM_NAME = process.env.EMAIL_FROM_NAME || "Letitrip";
 
@@ -76,7 +81,7 @@ export async function sendVerificationEmail(email: string, token: string) {
   const verificationLink = `${SITE_URL}/auth/verify-email?token=${token}`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
       subject: `Verify your ${SITE_NAME} email address`,
@@ -189,7 +194,7 @@ export async function sendVerificationEmailWithLink(
   verificationLink: string,
 ): ReturnType<typeof sendVerificationEmail> {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
       subject: `Verify your ${SITE_NAME} email address`,
@@ -219,7 +224,7 @@ export async function sendPasswordResetEmailWithLink(
   resetLink: string,
 ): ReturnType<typeof sendPasswordResetEmail> {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
       subject: `Reset your ${SITE_NAME} password`,
@@ -248,7 +253,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const resetLink = `${SITE_URL}/auth/reset-password?token=${token}`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
       subject: `Reset your ${SITE_NAME} password`,
@@ -367,7 +372,7 @@ For security reasons, we recommend choosing a strong password that you haven't u
  */
 export async function sendPasswordChangedEmail(email: string) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
       subject: `Your ${SITE_NAME} password has been changed`,
@@ -564,7 +569,7 @@ export async function sendOrderConfirmationEmail(
       : `  Product: ${productTitle}\n  Quantity: ${quantity}`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to,
       subject: `Order Confirmed — ${orderId}`,
@@ -690,7 +695,7 @@ export async function sendContactEmail(params: {
   const supportEmail = process.env.EMAIL_SUPPORT || "info@letitrip.in";
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: supportEmail,
       replyTo: email,
@@ -750,7 +755,7 @@ export async function sendNewProductSubmittedEmail(
   const reviewUrl = `${SITE_URL}/admin/products`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: adminEmail,
       subject: `New Product Submitted — ${product.title}`,
@@ -890,7 +895,7 @@ export async function sendNewReviewNotificationEmail(params: {
   const recipients = [...new Set([sellerEmail, adminEmail])]; // deduplicate if same
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: recipients,
       subject: `New review on "${productTitle}" — ${rating}/5 stars`,
@@ -992,7 +997,7 @@ export async function sendSiteSettingsChangedEmail(params: {
   const settingsUrl = `${SITE_URL}/admin/site-settings`;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await sendConfiguredEmail({
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: adminEmails,
       subject: `Site settings updated by ${changedByEmail}`,
