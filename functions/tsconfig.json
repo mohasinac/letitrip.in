@@ -4,12 +4,14 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
+    "rootDir": "./src",
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@fn/*": ["src/*"]
