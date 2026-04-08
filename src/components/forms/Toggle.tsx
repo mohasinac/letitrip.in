@@ -2,7 +2,7 @@
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { classNames } from "@/helpers";
+import { classNames } from "@mohasinac/ui";
 import { Label, Span } from "../typography/Typography";
 
 /**

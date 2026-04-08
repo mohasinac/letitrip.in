@@ -338,7 +338,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {/* Average */}
           <div className="flex flex-col items-center justify-center sm:w-32 shrink-0">
             <Span className={`text-5xl font-bold ${themed.textPrimary}`}>
-              {formatNumber(avgRating, "en-US", { decimals: 1 })}
+              {formatNumber(avgRating, "en-IN", { decimals: 1 })}
             </Span>
             <StarRating rating={Math.round(avgRating)} size="md" />
             <Span className={`text-xs mt-1 ${themed.textSecondary}`}>

@@ -85,3 +85,40 @@ export const FILE_UPLOAD_CONFIG = {
   ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/webp"],
   ALLOWED_DOCUMENT_TYPES: ["application/pdf", "application/msword"],
 } as const;
+
+/**
+ * Locale, currency, and regional defaults.
+ *
+ * Single source of truth for regional settings.
+ * All formatters, analytics payloads, and site defaults
+ * MUST derive from these values.
+ *
+ * To add a new locale/currency in future:
+ *   1. Add the locale string to SUPPORTED_LOCALES
+ *   2. Update the relevant messages/ JSON files
+ *   3. Update src/i18n/routing.ts locales array
+ *   4. Adjust DEFAULT_LOCALE if needed
+ */
+export const LOCALE_CONFIG = {
+  /** BCP 47 language tag used for all Intl formatters */
+  DEFAULT_LOCALE: "en-IN",
+  /** ISO 4217 currency code */
+  DEFAULT_CURRENCY: "INR",
+  /** Unicode currency symbol */
+  CURRENCY_SYMBOL: "₹",
+  /** Default country name (display) */
+  DEFAULT_COUNTRY: "India",
+  /** Default city name (display) */
+  DEFAULT_CITY: "Mumbai",
+  /** Default country ISO-2 code */
+  DEFAULT_COUNTRY_CODE: "IN",
+  /** Default international dialling prefix */
+  DEFAULT_PHONE_CODE: "+91",
+  /** IANA timezone — must stay in sync with BUSINESS_DAY_CONFIG.TIMEZONE */
+  TIMEZONE: "Asia/Kolkata",
+  /**
+   * Supported locales list — routing.ts must mirror this.
+   * Currently English-only; extend here when adding new languages.
+   */
+  SUPPORTED_LOCALES: ["en"] as const,
+} as const;

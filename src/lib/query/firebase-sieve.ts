@@ -5,10 +5,11 @@
  * to Firestore using the native Firebase adapter — pushing all query work to
  * the database instead of loading documents into memory first.
  *
- * This replaces the in-memory `applySieveToArray` helper for collection-level
- * list endpoints, making them scalable as data grows.
+ * All filtering, sorting, and pagination is pushed to Firestore — never
+ * performed in-memory. This keeps collection-level list endpoints O(1) in
+ * memory regardless of how many documents exist in the collection.
  *
- * --- Firebase adapter limitations ---
+ * --- Firebase adapter operator support ---
  * Supported natively:
  *   == != > < >= <=             → Firestore where()
  *   @= (contains)               → array-contains (for array fields)
@@ -16,11 +17,11 @@
  *   sorts                       → orderBy()
  *   page / pageSize             → offset() + limit()
  *
- * NOT supported (fall back to applySieveToArray for these):
+ * NOT supported — use Algolia (appkit/providers/search-algolia) instead:
  *   _-= (endsWith), !@= !_= !_-=  — negated string operators
  *   @=* _=* ==* !=*               — case-insensitive operators
  *   (field1|field2)>10            — multi-field OR filters
- *   Full-text search              — use Algolia/Typesense for this
+ *   Full-text search
  *
  * @example
  * ```ts

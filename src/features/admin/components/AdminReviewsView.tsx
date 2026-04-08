@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePendingTable } from "@/hooks";
-import { buildSieveFilters } from "@/helpers";
+import { buildSieveFilters } from "@mohasinac/utils";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";

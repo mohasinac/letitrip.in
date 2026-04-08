@@ -142,7 +142,7 @@ export const trackEcommerce = {
     price: number;
   }) => {
     trackEvent("view_item", {
-      currency: "USD",
+      currency: "INR",
       value: product.price,
       items: [
         {
@@ -166,7 +166,7 @@ export const trackEcommerce = {
     quantity: number;
   }) => {
     trackEvent("add_to_cart", {
-      currency: "USD",
+      currency: "INR",
       value: product.price * product.quantity,
       items: [
         {
@@ -198,7 +198,7 @@ export const trackEcommerce = {
   }) => {
     trackEvent("purchase", {
       transaction_id: order.id,
-      currency: "USD",
+      currency: "INR",
       value: order.total,
       tax: order.tax || 0,
       shipping: order.shipping || 0,

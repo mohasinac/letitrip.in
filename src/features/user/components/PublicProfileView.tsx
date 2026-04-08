@@ -139,7 +139,7 @@ async function SellerReviewsSection({
               <StarIcons rating={reviewsData.averageRating} />
             </div>
             <Text className="text-sm font-semibold">
-              {formatNumber(reviewsData.averageRating, "en-US", {
+              {formatNumber(reviewsData.averageRating, "en-IN", {
                 decimals: 1,
               })}
             </Text>
@@ -441,7 +441,7 @@ export async function PublicProfileView({
                 <StarIcons rating={Math.floor(user.stats.rating)} />
               </div>
               <Text className="font-semibold">
-                {formatNumber(user.stats.rating, "en-US", { decimals: 1 })}
+                {formatNumber(user.stats.rating, "en-IN", { decimals: 1 })}
               </Text>
               <Text variant="secondary" className="text-sm">
                 ({user.stats.reviewsCount}{" "}

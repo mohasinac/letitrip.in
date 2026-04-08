@@ -24,28 +24,5 @@ export * from "./business-day";
 // PII Redaction (sanitize objects before logging)
 export { redactPii } from "@mohasinac/security/pii-redact";
 
-// ------- New helpers from @mohasinac/utils (not previously in this barrel) -------
-export {
-  groupBy,
-  unique,
-  uniqueBy,
-  sortBy,
-  chunk,
-  paginate,
-  deepMerge,
-  pick,
-  omit,
-  isEmptyObject,
-  deepClone,
-  isEqual,
-  cleanObject,
-  buildSieveFilters,
-  calculatePagination,
-  sort,
-  formatCustomDate,
-} from "@mohasinac/utils";
-export type {
-  PaginationOptions,
-  PaginationResult,
-  SortOrder,
-} from "@mohasinac/utils";
+// Generic utilities live in @mohasinac/utils — import from there directly:
+// import { buildSieveFilters, calculatePagination, groupBy, sortBy, ... } from "@mohasinac/utils";

@@ -434,6 +434,7 @@ export async function applyEmailVerificationCode(code: string): Promise<void> {
  * Get current user
  */
 export function getCurrentUser(): User | null {
+  if (!auth) return null;
   return auth.currentUser;
 }
 
@@ -443,5 +444,11 @@ export function getCurrentUser(): User | null {
 export function onAuthStateChanged(
   callback: (user: User | null) => void,
 ): () => void {
+  if (!auth) {
+    // Firebase client SDK not initialized (missing NEXT_PUBLIC env vars or SSR context).
+    // Immediately signal "no user" and return a no-op unsubscribe.
+    callback(null);
+    return () => {};
+  }
   return firebaseOnAuthStateChanged(auth, callback);
 }

@@ -2,7 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { classNames } from "@/helpers";
+import { classNames } from "@mohasinac/ui";
 import { Span } from "../typography/Typography";
 import { Label } from "../typography/Typography";
 
@@ -86,7 +86,9 @@ export default function Slider({
             </Label>
           )}
           {showValue && (
-            <Span className={`text-sm font-medium tabular-nums ${themed.textSecondary}`}>
+            <Span
+              className={`text-sm font-medium tabular-nums ${themed.textSecondary}`}
+            >
               {value}
             </Span>
           )}
@@ -226,7 +228,8 @@ export default function Slider({
           background: #1e293b;
         }
 
-        :global(.dark) .slider-input:not(:disabled)::-webkit-slider-thumb:hover {
+        :global(.dark)
+          .slider-input:not(:disabled)::-webkit-slider-thumb:hover {
           box-shadow: 0 0 0 4px rgba(101, 196, 8, 0.15);
         }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { classNames } from "@/helpers";
+import { classNames } from "@mohasinac/ui";
 import { Button, MediaImage, Span, Text } from "@/components";
 
 const { flex } = THEME_CONSTANTS;

@@ -1,19 +1,14 @@
 /**
  * Helpers Barrel Export
  *
- * Centralized export for all business logic helpers
+ * App-specific helpers only. Generic utilities are imported directly
+ * from their packages (@mohasinac/utils, @mohasinac/ui, etc.).
  */
 
-// Auth Helpers
+// Auth Helpers — RBAC, token utilities
 export * from "./auth";
 
-// Data Helpers
-export * from "./data";
-
-// UI Helpers
-export * from "./ui";
-
-// Validation Helpers
+// Validation Helpers — address, form validation
 export * from "./validation";
 
 // Logging Helpers (Client-side only)

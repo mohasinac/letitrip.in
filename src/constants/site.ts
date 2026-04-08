@@ -77,8 +77,8 @@ export const SITE_CONFIG = {
   // Contact info
   contact: {
     email: "info@letitrip.in",
-    phone: "+1 (555) 123-4567",
-    address: "123 Marketplace Street, City, Country",
+    phone: "+91 22 4567 8900",
+    address: "Mumbai, Maharashtra, India",
   },
 
   // SEO
