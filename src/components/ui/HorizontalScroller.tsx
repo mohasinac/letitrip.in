@@ -3,11 +3,12 @@
 import {
   useRef,
   useEffect,
+  useState,
   useCallback,
   type RefObject,
   type ReactNode,
+  type CSSProperties,
 } from "react";
-import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 
 export interface PerViewConfig {
@@ -56,7 +57,7 @@ export interface HorizontalScrollerProps<T = unknown> {
 function resolvePerView(perView: number | PerViewConfig | undefined): number {
   if (!perView) return 3;
   if (typeof perView === "number") return perView;
-  // priority: xl > lg > md > sm > xs > base
+  // priority: xl > lg > md > sm > xs > base — used as SSR-safe initial value
   return (
     perView.xl ??
     perView.lg ??
@@ -66,6 +67,36 @@ function resolvePerView(perView: number | PerViewConfig | undefined): number {
     perView.base ??
     3
   );
+}
+
+/** Tracks viewport size and returns the correct per-view count for the current breakpoint. */
+function usePerViewCount(perView: number | PerViewConfig | undefined): number {
+  const [n, setN] = useState(() => resolvePerView(perView));
+  const perViewKey = JSON.stringify(perView);
+
+  useEffect(() => {
+    if (!perView || typeof perView === "number") {
+      setN(typeof perView === "number" ? perView : 3);
+      return;
+    }
+    const pv = perView as PerViewConfig;
+    function update() {
+      const w = window.innerWidth;
+      let result = pv.base ?? 3;
+      if (w >= 640 && pv.sm != null) result = pv.sm;
+      if (w >= 768 && pv.md != null) result = pv.md;
+      if (w >= 1024 && pv.lg != null) result = pv.lg;
+      if (w >= 1280 && pv.xl != null) result = pv.xl;
+      if (w >= 1536 && pv["2xl"] != null) result = pv["2xl"]!;
+      setN(result);
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [perViewKey]);
+
+  return n;
 }
 
 export function HorizontalScroller<T = unknown>({
@@ -95,6 +126,7 @@ export function HorizontalScroller<T = unknown>({
   const autoScrollTimer = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined,
   );
+  const perViewCount = usePerViewCount(perView);
 
   const scrollBy = useCallback(
     (direction: 1 | -1) => {
@@ -117,7 +149,6 @@ export function HorizontalScroller<T = unknown>({
   }, [autoScroll, autoScrollInterval, scrollBy]);
 
   const itemsMode = items != null && renderItem != null;
-  const { dimensions } = THEME_CONSTANTS.card;
 
   const arrowCls = {
     sm: "w-7 h-7 text-sm",
@@ -134,19 +165,26 @@ export function HorizontalScroller<T = unknown>({
     .filter(Boolean)
     .join(" ");
 
+  const itemStyle: CSSProperties = itemsMode
+    ? {
+        width: `calc((100% - ${(perViewCount - 1) * gap}px) / ${perViewCount})`,
+        ...(minItemWidth != null && { minWidth: minItemWidth }),
+      }
+    : minItemWidth != null
+      ? { minWidth: minItemWidth }
+      : {};
+
   const content = itemsMode
     ? items.map((item, i) => (
         <div
           key={keyExtractor ? keyExtractor(item, i) : i}
           className={[
             snapToItems ? "snap-start flex-none" : "flex-none",
-            dimensions.railMinW,
-            dimensions.railMaxW,
             itemClassName,
           ]
             .filter(Boolean)
             .join(" ")}
-          style={minItemWidth ? { minWidth: minItemWidth } : undefined}
+          style={itemStyle}
         >
           {renderItem(item, i)}
         </div>

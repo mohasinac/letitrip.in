@@ -170,7 +170,7 @@ export const THEME_CONSTANTS = {
 
   /** Homepage section dimensions (viewport-relative + clamped). */
   homepage: {
-    heroMinH: "min-h-[clamp(420px,72vh,680px)]" as const,
+    ..._base.homepage,
     heroSkeletonH: "h-[clamp(420px,72vh,680px)]" as const,
     splitBannerMinH: "min-h-[clamp(300px,40vh,420px)]" as const,
     promoBannerMinH: "min-h-[clamp(240px,34vh,360px)]" as const,
@@ -696,17 +696,9 @@ export const THEME_CONSTANTS = {
   },
 
   /**
-   * Carousel tokens (Sprint 0 / Phase 0)
-   * Shared arrow and dot styles for SectionCarousel and HeroCarousel.
+   * Carousel tokens — sourced from @mohasinac/tokens (arrow, dotActive, dotInactive).
    */
-  carousel: {
-    arrow:
-      "w-10 h-10 rounded-2xl bg-white/85 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg border border-zinc-300/70 dark:border-slate-600 text-zinc-800 dark:text-zinc-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:border-zinc-400 dark:hover:border-slate-500 active:scale-95 transition-all duration-200 flex items-center justify-center",
-    dotActive:
-      "w-8 h-2 !min-h-0 rounded-full bg-white shadow-sm transition-all duration-500",
-    dotInactive:
-      "w-2 h-2 !min-h-0 rounded-full bg-white/55 shadow-sm transition-all duration-500",
-  },
+  carousel: _base.carousel,
 
   /**
    * Trust strip tokens (Sprint 0 / Phase 0)

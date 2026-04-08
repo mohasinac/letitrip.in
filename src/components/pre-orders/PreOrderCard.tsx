@@ -1,18 +1,21 @@
-/**
- * PreOrderCard — displays a product that is available for pre-order.
- *
- * Accepts ProductItem (products with isPreOrder==true) and injects
- * letitrip-specific wishlist hook and routing.
- */
 "use client";
 
-import { Link } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useWishlistToggle } from "@/hooks";
 import { PreOrderTag } from "@mohasinac/feat-pre-orders";
 import type { ProductItem } from "@mohasinac/feat-products";
-import { Button, Heading, Text } from "@/components";
+import {
+  BaseListingCard,
+  Button,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { formatCurrency } from "@/utils";
+
+const { themed, flex, position } = THEME_CONSTANTS;
 
 /** PreOrderCardData = ProductItem (products with isPreOrder==true) */
 export type PreOrderCardData = ProductItem;
@@ -30,78 +33,108 @@ export interface PreOrderCardProps {
 export function PreOrderCard({
   product,
   className = "",
-  selectable,
-  isSelected,
+  variant = "grid",
+  selectable = false,
+  isSelected = false,
   onSelect,
   inWishlist: initialInWishlist = false,
 }: PreOrderCardProps) {
+  const t = useTranslations("preOrders");
+  const tWishlist = useTranslations("wishlist");
   const { inWishlist, toggle: toggleWishlist } = useWishlistToggle(
     product.id,
     initialInWishlist,
   );
 
   const href = ROUTES.PUBLIC.PRE_ORDER_DETAIL(product.id);
-  // ProductDocument may have preOrderDeliveryDate — safe cast for optional field
   const deliveryDate = (product as unknown as { preOrderDeliveryDate?: string })
     .preOrderDeliveryDate;
 
   return (
-    <div
-      className={`rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden ${
-        isSelected ? "ring-2 ring-primary" : ""
-      } ${className}`}
+    <BaseListingCard
+      isSelected={isSelected}
+      variant={variant}
+      className={className}
     >
-      <Link
-        href={href}
-        className="block p-4"
-        onClick={
-          selectable && onSelect
-            ? (e) => {
-                e.preventDefault();
-                onSelect(product.id, !isSelected);
-              }
-            : undefined
-        }
-      >
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <Heading
-            level={3}
-            className="text-sm font-medium line-clamp-2 flex-1 text-gray-900 dark:text-gray-100"
-          >
-            {product.title}
-          </Heading>
-          <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cobalt/10 text-cobalt dark:bg-cobalt/20">
-            Pre-order
-          </span>
+      {/* ── IMAGE ── */}
+      <BaseListingCard.Hero aspect="square" variant={variant}>
+        <TextLink href={href} className={`${position.fill} block`}>
+          <MediaImage
+            src={product.mainImage}
+            alt={product.title}
+            size="card"
+            fallback="📦"
+          />
+        </TextLink>
+
+        {/* Pre-order badge */}
+        <div className="absolute top-2 right-2">
+          <Span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-cobalt text-white">
+            {t("preOrderBadge")}
+          </Span>
         </div>
 
-        <div className="flex items-center justify-between mt-2">
-          <Text size="sm" weight="semibold">
+        {/* Selectable checkbox */}
+        {selectable && (
+          <BaseListingCard.Checkbox
+            selected={isSelected}
+            onSelect={(e) => {
+              e.stopPropagation();
+              onSelect?.(product.id, !isSelected);
+            }}
+          />
+        )}
+      </BaseListingCard.Hero>
+
+      {/* ── INFO ── */}
+      <BaseListingCard.Info variant={variant}>
+        <TextLink href={href}>
+          <Text
+            size="sm"
+            weight="medium"
+            className={`line-clamp-2 ${themed.textPrimary}`}
+          >
+            {product.title}
+          </Text>
+        </TextLink>
+
+        <div className={`${flex.between} items-center mt-1`}>
+          <Text size="sm" weight="semibold" className={themed.textPrimary}>
             {formatCurrency(product.price, product.currency)}
           </Text>
           {deliveryDate && <PreOrderTag estimatedDate={deliveryDate} />}
         </div>
-      </Link>
 
-      <div className="px-4 pb-3 flex gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleWishlist();
-          }}
-          className={`text-xs px-2 py-1 rounded border transition-colors ${
-            inWishlist
-              ? "border-primary text-primary"
-              : "border-gray-300 dark:border-gray-600 text-gray-500"
-          }`}
-          aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-        >
-          {inWishlist ? "♥" : "♡"}
-        </Button>
-      </div>
-    </div>
+        <div className={`${flex.between} items-center mt-2`}>
+          <Button
+            variant="primary"
+            size="sm"
+            className="flex-1 text-xs"
+            onClick={() => {
+              window.location.href = href;
+            }}
+          >
+            {t("reserveNow")}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist();
+            }}
+            className={`ml-2 text-base ${inWishlist ? "text-primary" : themed.textSecondary}`}
+            aria-label={
+              inWishlist
+                ? tWishlist("removeFromWishlist")
+                : tWishlist("addToWishlist")
+            }
+          >
+            {inWishlist ? "♥" : "♡"}
+          </Button>
+        </div>
+      </BaseListingCard.Info>
+    </BaseListingCard>
   );
 }
