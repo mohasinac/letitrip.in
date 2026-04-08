@@ -21,6 +21,14 @@ const LOGS_DIR = path.join(process.cwd(), "logs");
 const MAX_LOG_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_LOG_FILES = 10;
 
+/**
+ * File logging is only enabled when running locally.
+ * On Vercel (and other read-only cloud environments) we fall back to
+ * console-only logging — the `VERCEL` env var is injected automatically
+ * by the platform.
+ */
+const isFileLoggingEnabled = !process.env.VERCEL;
+
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogEntry {
@@ -164,7 +172,7 @@ export const serverLogger = {
       data: sanitized,
     };
     console.info(`[INFO] ${message}`, sanitized);
-    writeLog(entry).catch(() => {}); // Fire and forget
+    if (isFileLoggingEnabled) writeLog(entry).catch(() => {}); // Fire and forget
   },
 
   warn(message: string, data?: any): void {
@@ -176,7 +184,7 @@ export const serverLogger = {
       data: sanitized,
     };
     console.warn(`[WARN] ${message}`, sanitized);
-    writeLog(entry).catch(() => {}); // Fire and forget
+    if (isFileLoggingEnabled) writeLog(entry).catch(() => {}); // Fire and forget
   },
 
   error(message: string, data?: any): void {
@@ -188,6 +196,6 @@ export const serverLogger = {
       data: sanitized,
     };
     console.error(`[ERROR] ${message}`, sanitized);
-    writeLog(entry).catch(() => {}); // Fire and forget
+    if (isFileLoggingEnabled) writeLog(entry).catch(() => {}); // Fire and forget
   },
 };

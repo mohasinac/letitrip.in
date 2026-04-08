@@ -26,7 +26,8 @@ export default function UnsavedChangesModal() {
   useEffect(() => {
     const subscription = eventBus.on(
       UNSAVED_CHANGES_EVENT,
-      (resolveFn: UnsavedChangesResolve) => {
+      (...args: unknown[]) => {
+        const resolveFn = args[0] as UnsavedChangesResolve;
         setResolve(() => resolveFn);
         setIsOpen(true);
       },
