@@ -19,8 +19,8 @@
 
 Next.js 16.1.6 (App Router) · React 19.2 · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · Server Actions · React Context + hooks
 
-**npm packages** (`@mohasinac/*` scope, v1.1.0 on npmjs.org): `@mohasinac/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@mohasinac/http` (ApiClient, apiClient singleton) · `@mohasinac/next` (IAuthVerifier, createApiErrorHandler) · `@mohasinac/react` (10 UI hooks) · `@mohasinac/ui` (Semantic + Typography primitives) · `@mohasinac/contracts` (all interfaces: IRepository, IAuthProvider, IEmailProvider, IStyleAdapter, ProviderRegistry) · 50+ `@mohasinac/feat-*` packages  
-Installed from npm registry (`^1.1.0`) — letitrip.in's `package.json` uses published npm tarballs, not local `file:` references.
+**npm packages** (`@mohasinac/*` scope, v1.4.x on npmjs.org): `@mohasinac/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@mohasinac/http` (ApiClient, apiClient singleton) · `@mohasinac/next` (IAuthVerifier, createApiErrorHandler) · `@mohasinac/react` (14 hooks) · `@mohasinac/ui` (Semantic + Typography + DataTable primitives) · `@mohasinac/contracts` (all interfaces: IRepository, IAuthProvider, IEmailProvider, IStyleAdapter, ProviderRegistry) · 30+ `@mohasinac/feat-*` packages  
+Installed from npm registry (`^1.4.0`) — letitrip.in's `package.json` uses published npm tarballs, not local `file:` references.
 
 ---
 
@@ -85,6 +85,15 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
 - **No mojibake** — if garbled characters appear (`ãÆ`, `â€™`, `Ã©`, `ï¿½`), stop and fix with `replace_string_in_file` before continuing; see Rule 28-C- **Dev server — reuse existing**: before starting `npm run dev`, run `netstat -ano | Select-String ":3000.*LISTENING"` — if output is non-empty, port 3000 is already in use; use it for testing instead of starting a second server
 - **`dynamicParams = false` for fully-static dynamic routes** — any page that has `generateStaticParams()` returning ALL possible values must also export `export const dynamicParams = false;` to avoid Vercel `NEXT_MISSING_LAMBDA` build errors
+- **Cold-start guard on feat-* routes** — every `app/api/*/route.ts` that re-exports a `@mohasinac/feat-*` handler MUST wrap it with `withProviders()` from `@/providers.config`:
+  ```ts
+  import { withProviders } from "@/providers.config";
+  import { GET as _GET } from "@mohasinac/feat-products";
+  export const GET = withProviders(_GET);
+  ```
+  Bare `export { GET } from "@mohasinac/feat-*"` will cause 500 errors on Vercel cold starts because `registerProviders()` hasn't finished yet.
+- **Never publish packages from letitrip.in** — packages live in `D:\proj\packages`; bump version → build → publish there, then update `package.json` here and run `npm install`
+- **Vercel logs** for production debugging: `vercel ls` → get deployment URL → `vercel logs <url>` (not `--prod`; that flag is unsupported in v48+)
 ## Migration State (as of 2026-04-06)
 
 | Stage | Description | Status |
@@ -103,6 +112,8 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | J1 | Admin hooks factory — `createAdminListQuery`; `buildSieveFilters`; actions split | ✅ Complete |
 | K1 | **npm publish** — all 58 `@mohasinac/*` packages published at v1.1.0; `letitrip.in` updated to use `^1.1.0` npm tarballs; `pnpm-lock.yaml` → `package-lock.json` (clean npm ci); Vercel deploy green | ✅ Complete |
 | K2 | `dynamicParams = false` added to `src/app/[locale]/faqs/[category]/page.tsx` — fixes Vercel `NEXT_MISSING_LAMBDA` for fully-static dynamic routes | ✅ Complete |
+| L1 | Cold-start race fix — `withProviders()` wrapper in `providers.config.ts`; `await initProviders()` in `createApiHandler`; all 17 feat-* route stubs rewritten | ✅ Complete |
+| L2 | `@mohasinac/ui@1.4.3` — `DataTable<T extends object>` generic fix; all TS errors in admin DataTable views resolved | ✅ Complete |
 
 ---
 

@@ -20,20 +20,20 @@ The platform hosts multiple seller stores, supports events/promotions/coupons, i
 
 | Layer         | Technology                                                     |
 | ------------- | -------------------------------------------------------------- |
-| Framework     | Next.js 16.1.1 (App Router, Server Components, Server Actions) |
+| Framework     | Next.js 16.1.6 (App Router, Server Components, Server Actions) |
 | Language      | TypeScript                                                     |
 | Styling       | Tailwind CSS + `THEME_CONSTANTS` tokens                        |
 | Auth          | Firebase Auth (email/password + Google OAuth)                  |
 | Database      | Firestore (primary data) + Firebase Realtime DB (bids, events) |
 | Storage       | Firebase Storage (media)                                       |
-| Search        | Algolia                                                        |
-| Payments      | Razorpay                                                       |
-| Email         | Resend                                                         |
-| Shipping      | ShipRocket                                                     |
+| Search        | Algolia (`@mohasinac/search-algolia`)                          |
+| Payments      | Razorpay (`@mohasinac/payment-razorpay`)                       |
+| Email         | Resend (`@mohasinac/email-resend`)                             |
+| Shipping      | ShipRocket (`@mohasinac/shipping-shiprocket`)                  |
 | Data Fetching | TanStack Query v5                                              |
 | Forms         | react-hook-form v7 + Zod                                       |
 | i18n          | next-intl                                                      |
-| Monorepo      | pnpm workspaces + Turborepo                                    |
+| Packages      | `@mohasinac/*` — 58 published npm packages (v1.4.x)            |
 
 ---
 
@@ -43,25 +43,49 @@ The platform hosts multiple seller stores, supports events/promotions/coupons, i
 letitrip.in/
 ├── src/
 │   ├── app/                  # Next.js App Router pages + API routes
-│   ├── features/             # Feature modules (products, admin, seller, user…)
+│   │   └── api/              # Route stubs — thin withProviders() wrappers over @mohasinac/feat-*
+│   ├── features/             # App-local feature modules (products, admin, seller, user…)
 │   ├── components/           # Shared UI components
-│   ├── actions/              # Server Actions (all mutations)
-│   ├── hooks/                # Shared React hooks
-│   ├── services/             # API call wrappers (read-only)
-│   ├── repositories/         # Firestore repository layer
-│   ├── constants/            # App-wide constants (routes, RBAC, theme…)
-│   ├── helpers/              # Pure utility functions (auth, data, logging)
-│   └── utils/                # Low-level formatters, validators, converters
-├── packages/
-│   ├── core/                 # @lir/core — Logger, Queue, EventBus, Cache
-│   ├── http/                 # @lir/http — ApiClient
-│   ├── next/                 # @lir/next — IAuthVerifier, createApiErrorHandler
-│   ├── react/                # @lir/react — UI hooks (breakpoint, gesture, camera…)
-│   └── ui/                   # @lir/ui — Typography, Semantic HTML, DataTable, primitives
+│   ├── actions/              # Server Actions (all mutations — never apiClient)
+│   ├── hooks/                # Shared React hooks (reads use useQuery + apiClient)
+│   ├── repositories/         # Firestore repository layer (server-only)
+│   ├── constants/            # App-wide constants (routes, RBAC, theme, API_ENDPOINTS)
+│   ├── helpers/              # Pure utility functions (auth, data, buildSieveFilters)
+│   ├── utils/                # Low-level formatters, validators, converters
+│   ├── providers.config.ts   # DI wiring — registerProviders() + withProviders() wrapper
+│   └── lib/
+│       └── api/
+│           └── api-handler.ts  # createApiHandler factory (auth, rate-limit, validation)
 ├── functions/                # Firebase Cloud Functions (cron jobs + Firestore triggers)
-├── messages/                 # next-intl translation strings (en.json)
-└── scripts/                  # Seed scripts, deployment scripts
+├── messages/                 # next-intl translation strings (en.json, hi.json)
+└── scripts/                  # Seed scripts, deployment helpers
 ```
+
+---
+
+## Provider Architecture
+
+All Firebase, email, storage, and payment access goes through the `@mohasinac/contracts` DI registry:
+
+```ts
+// src/providers.config.ts — registered once at startup
+registerProviders({
+  db,
+  auth,
+  session,
+  email,
+  storage,
+  payment,
+  shipping,
+  search,
+  style,
+});
+
+// withProviders() — guards every feat-* route against cold-start races
+export const GET = withProviders(_GET);
+```
+
+The `withProviders()` wrapper calls `await initProviders()` before every request, eliminating Vercel cold-start 500 errors where `instrumentation.ts` hadn't finished yet.
 
 ---
 
@@ -96,6 +120,9 @@ Tier 1 — Shared    src/components/ hooks/ utils/…   used by any tier
 ## Development
 
 ```bash
+# Check if dev server is already running before starting a new one
+netstat -ano | Select-String ":3000.*LISTENING"
+
 npm run dev          # Start dev server (Turbopack)
 npm run build        # Production build
 npx tsc --noEmit     # Type-check only
@@ -150,8 +177,8 @@ npm run lint         # ESLint
 | [docs/features/rc.md](docs/features/rc.md)                       | RC virtual currency feature                     |
 | [docs/features/notifications.md](docs/features/notifications.md) | Notifications feature                           |
 | [docs/features/wishlist.md](docs/features/wishlist.md)           | Wishlist feature                                |
-| [docs/packages/core.md](docs/packages/core.md)                   | @lir/core package                               |
-| [docs/packages/http.md](docs/packages/http.md)                   | @lir/http package                               |
-| [docs/packages/next.md](docs/packages/next.md)                   | @lir/next package                               |
-| [docs/packages/react.md](docs/packages/react.md)                 | @lir/react package                              |
-| [docs/packages/ui.md](docs/packages/ui.md)                       | @lir/ui package                                 |
+| [docs/packages/core.md](docs/packages/core.md)                   | @mohasinac/core package                         |
+| [docs/packages/http.md](docs/packages/http.md)                   | @mohasinac/http package                         |
+| [docs/packages/next.md](docs/packages/next.md)                   | @mohasinac/next package                         |
+| [docs/packages/react.md](docs/packages/react.md)                 | @mohasinac/react package                        |
+| [docs/packages/ui.md](docs/packages/ui.md)                       | @mohasinac/ui package                           |
