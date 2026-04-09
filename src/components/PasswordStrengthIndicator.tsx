@@ -8,8 +8,8 @@
 
 import React from "react";
 import { PASSWORD_CONFIG, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { Span } from "./typography/Typography";
-import { Li, Ul } from "./semantic/Semantic";
+import { Span } from "@mohasinac/appkit/ui";
+import { Li, Ul } from "@mohasinac/appkit/ui";
 
 interface PasswordStrengthIndicatorProps {
   password: string;

@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 /**
  * Divider Component

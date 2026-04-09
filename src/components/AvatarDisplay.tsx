@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ImageCropData } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span } from "./typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 interface AvatarDisplayProps {
   cropData: ImageCropData | null;

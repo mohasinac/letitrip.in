@@ -33,7 +33,7 @@ export {
   Ul,
   Ol,
   Li,
-} from "./Semantic";
+} from "@mohasinac/appkit/ui";
 
 export type {
   SectionProps,
@@ -46,7 +46,7 @@ export type {
   UlProps,
   OlProps,
   LiProps,
-} from "./Semantic";
+} from "@mohasinac/appkit/ui";
 
 /**
  * Layout primitives — Container, Stack, Row, Grid.

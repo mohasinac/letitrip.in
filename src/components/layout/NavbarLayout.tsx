@@ -1,6 +1,6 @@
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Nav, Ul, Li } from "../semantic/Semantic";
+import { Nav, Ul, Li } from "@mohasinac/appkit/ui";
 import NavItem from "./NavItem";
 
 export interface NavbarLayoutItem {

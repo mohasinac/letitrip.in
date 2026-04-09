@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Text } from "../typography/Typography";
+import { Text } from "@mohasinac/appkit/ui";
 import Button from "../ui/Button";
 import { nowMs } from "@/utils";
 

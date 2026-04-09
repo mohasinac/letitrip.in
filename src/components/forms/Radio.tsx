@@ -1,7 +1,7 @@
 ﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@mohasinac/appkit/ui";
-import { Label, Span, Text } from "../typography/Typography";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
 
 /**
  * RadioGroup Component

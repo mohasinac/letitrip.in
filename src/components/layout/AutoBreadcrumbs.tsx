@@ -3,9 +3,9 @@
 import { ChevronRight } from "lucide-react";
 import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
-import { Nav, Ol, Li } from "../semantic/Semantic";
+import { Nav, Ol, Li } from "@mohasinac/appkit/ui";
 import { TextLink } from "../typography/TextLink";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 /**
  * AutoBreadcrumbs Component

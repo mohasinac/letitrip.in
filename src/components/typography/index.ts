@@ -11,7 +11,7 @@
  */
 
 // Block-level text primitives
-export { Heading, Text, Label, Caption, Span } from "./Typography";
+export { Heading, Text, Label, Caption, Span } from "@mohasinac/appkit/ui";
 
 // Link primitive (wraps next-intl Link for internal, <a> for external)
 export { TextLink } from "./TextLink";

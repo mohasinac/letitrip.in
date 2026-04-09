@@ -3,7 +3,7 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { TextLink } from "../typography/TextLink";
 import { ReactNode } from "react";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 /**
  * NavItem Component

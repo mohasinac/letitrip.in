@@ -2,9 +2,9 @@
 
 import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
-import { Nav } from "../semantic/Semantic";
+import { Nav } from "@mohasinac/appkit/ui";
 import { TextLink } from "../typography/TextLink";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 /**
  * SectionTabs

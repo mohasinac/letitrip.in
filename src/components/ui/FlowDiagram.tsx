@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Text, Span } from "../typography/Typography";
+import { Text, Span } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { themed } = THEME_CONSTANTS;

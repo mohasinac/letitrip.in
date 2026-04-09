@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Label, Text } from "../typography/Typography";
+import { Label, Text } from "@mohasinac/appkit/ui";
 import SelectField from "../forms/Select";
 
 const { themed, flex } = THEME_CONSTANTS;

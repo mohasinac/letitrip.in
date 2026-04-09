@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Heading } from "../typography/Typography";
+import { Heading } from "@mohasinac/appkit/ui";
 import Button from "../ui/Button";
 import { useSwipe } from "@/hooks";
 import { preventBodyScroll } from "@/utils";

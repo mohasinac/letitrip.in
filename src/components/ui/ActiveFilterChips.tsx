@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 export interface ActiveFilter {
   /** Unique key for this filter (e.g. "status", "category") */

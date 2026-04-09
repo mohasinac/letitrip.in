@@ -16,7 +16,7 @@ import MainNavbar from "./layout/MainNavbar";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
 import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
-import { Main } from "./semantic/Semantic";
+import { Main } from "@mohasinac/appkit/ui";
 import { BackgroundRenderer } from "./utility";
 import { logger } from "@mohasinac/appkit/core";
 import { useSiteSettings } from "@/hooks";

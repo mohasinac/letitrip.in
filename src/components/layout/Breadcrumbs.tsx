@@ -1,9 +1,9 @@
 ﻿import React from "react";
-import { Nav, Ol, Li } from "../semantic/Semantic";
+import { Nav, Ol, Li } from "@mohasinac/appkit/ui";
 import Button from "../ui/Button";
 import { TextLink } from "../typography/TextLink";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span } from "../typography/Typography";
+import { Span } from "@mohasinac/appkit/ui";
 
 /**
  * Breadcrumbs Component

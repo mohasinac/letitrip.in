@@ -1,5 +1,5 @@
 import React from "react";
-import { Label, Text } from "../typography/Typography";
+import { Label, Text } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@mohasinac/appkit/ui";
 
