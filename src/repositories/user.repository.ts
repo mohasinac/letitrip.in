@@ -22,7 +22,7 @@ import {
   USER_FIELDS,
 } from "@/db/schema";
 import { UserRole } from "@/types/auth";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import {
   encryptPiiFields,
   decryptPiiFields,

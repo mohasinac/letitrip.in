@@ -16,7 +16,10 @@ import {
   ERROR_MESSAGES,
 } from "@/constants";
 import { hasRole as checkRoleHierarchy } from "@/helpers";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import {
+  AuthenticationError,
+  AuthorizationError,
+} from "@mohasinac/appkit/errors";
 import { useCallback, useMemo } from "react";
 
 /**

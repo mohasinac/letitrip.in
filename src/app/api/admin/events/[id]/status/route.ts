@@ -13,7 +13,7 @@ import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NotFoundError, ValidationError } from "@/lib/errors";
+import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {

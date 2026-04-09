@@ -18,7 +18,7 @@ import { chatRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, FEATURE_FLAGS } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { NotFoundError, AuthorizationError } from "@/lib/errors";
+import { NotFoundError, AuthorizationError } from "@mohasinac/appkit/errors";
 import { createApiHandler } from "@/lib/api/api-handler";
 
 export const DELETE = createApiHandler<never, { chatId: string }>({

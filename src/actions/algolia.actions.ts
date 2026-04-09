@@ -38,10 +38,13 @@ import {
   STORE_FIELDS,
 } from "@/db/schema";
 import { ROUTES } from "@/constants";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError } from "@mohasinac/appkit/errors";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

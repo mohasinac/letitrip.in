@@ -13,7 +13,7 @@ import {
   Analytics,
 } from "firebase/analytics";
 import { app } from "@/lib/firebase/config";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 // Initialize Google Analytics
 let analytics: Analytics | null = null;

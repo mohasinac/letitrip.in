@@ -11,12 +11,15 @@ import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import { blogRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@/lib/errors";
+} from "@mohasinac/appkit/errors";
 import type {
   BlogPostDocument,
   BlogPostCreateInput,

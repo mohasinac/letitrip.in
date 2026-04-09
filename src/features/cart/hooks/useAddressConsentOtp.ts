@@ -18,7 +18,7 @@
 
 import { useState, useCallback } from "react";
 import { sendConsentOtpAction, verifyConsentOtpAction } from "@/actions";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 export type ConsentOtpState =
   | "idle"

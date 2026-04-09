@@ -11,7 +11,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { verifyPhoneSchema } from "@/lib/validation/schemas";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { userRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

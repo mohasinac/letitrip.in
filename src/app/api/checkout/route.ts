@@ -32,7 +32,11 @@ import {
   failedCheckoutRepository,
 } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
+import {
+  ApiError,
+  ValidationError,
+  NotFoundError,
+} from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";

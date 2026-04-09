@@ -28,8 +28,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateCache } from "@/lib/api/cache-middleware";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, ValidationError } from "@/lib/errors";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 /** Map of seed-script collection names → the API path prefixes they populate. */

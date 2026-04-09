@@ -34,7 +34,7 @@ import {
   addressRepository,
 } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { ValidationError, NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { sendOrderConfirmationEmail } from "@/lib/email";

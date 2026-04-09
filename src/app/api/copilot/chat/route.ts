@@ -13,7 +13,7 @@ import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { AppError } from "@/lib/errors";
+import { AppError } from "@mohasinac/appkit/errors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ---------------------------------------------------------------------------

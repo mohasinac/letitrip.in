@@ -6,7 +6,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import type {
   BidDocument,

@@ -13,7 +13,7 @@ import type {
   PaymentStatus,
 } from "@/db/schema";
 import { createOrderId, ORDER_COLLECTION, ORDER_FIELDS } from "@/db/schema";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import {
   encryptPiiFields,

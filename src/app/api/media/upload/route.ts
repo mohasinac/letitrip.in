@@ -12,7 +12,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import {
   formatFileSize,
   generateMediaFilename,

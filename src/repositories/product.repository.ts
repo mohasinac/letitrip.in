@@ -21,7 +21,7 @@ import {
   PRODUCT_FIELDS,
 } from "@/db/schema";
 import { generateUniqueId, slugify } from "@/utils";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import { encryptPiiFields, decryptPiiFields } from "@/lib/pii";
 

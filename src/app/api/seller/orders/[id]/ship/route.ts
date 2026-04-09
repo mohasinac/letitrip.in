@@ -17,7 +17,7 @@ import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@/lib/errors";
+} from "@mohasinac/appkit/errors";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ORDER_FIELDS } from "@/db/schema";
@@ -29,7 +29,7 @@ import {
   isShiprocketTokenExpired,
 } from "@/lib/shiprocket/client";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { RateLimitPresets } from "@mohasinac/appkit/security";
 import { resolveDate } from "@/utils";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────

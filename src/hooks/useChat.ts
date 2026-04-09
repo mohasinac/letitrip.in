@@ -32,7 +32,7 @@ import {
   createOrGetChatRoomAction,
   deleteChatRoomAction,
 } from "@/actions";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { nowMs } from "@/utils";
 import { useQuery, useMutation } from "@tanstack/react-query";
 

@@ -14,12 +14,15 @@ import {
   userRepository,
 } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@/lib/errors";
+} from "@mohasinac/appkit/errors";
 import { FEATURE_FLAGS, ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";

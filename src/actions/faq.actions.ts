@@ -10,12 +10,15 @@
 import { z } from "zod";
 import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
 import { faqsRepository } from "@/repositories";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@/lib/errors";
+} from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { faqCreateSchema, faqUpdateSchema } from "@/lib/validation/schemas";

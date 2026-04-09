@@ -8,7 +8,7 @@ import { z } from "zod";
 import { newsletterRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@/lib/server-logger";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 import { createRouteHandler } from "@mohasinac/appkit/next";

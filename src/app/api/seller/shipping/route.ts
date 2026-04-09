@@ -10,7 +10,7 @@
 
 import { z } from "zod";
 import { userRepository } from "@/repositories";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

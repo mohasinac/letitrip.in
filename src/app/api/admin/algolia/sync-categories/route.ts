@@ -17,7 +17,7 @@ import {
   ALGOLIA_CATEGORIES_INDEX_NAME,
 } from "@mohasinac/appkit/providers/search-algolia";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 async function loadActiveCategories() {

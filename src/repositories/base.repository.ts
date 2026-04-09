@@ -25,7 +25,7 @@ import {
   WriteBatch,
 } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { DatabaseError, NotFoundError } from "@mohasinac/appkit/errors";
 import {
   prepareForFirestore,
   deserializeTimestamps,

@@ -43,8 +43,20 @@ export * from "./helpers/ui";
 // Note: helpers/validation exports via @/helpers directly; not re-exported here
 // to avoid ambiguity with hooks exports of the same types.
 
-// ==================== CLASSES ====================
-export * from "./classes";
+// ==================== CLASSES (now from appkit) ====================
+export {
+  logger,
+  Logger,
+  eventBus,
+  EventBus,
+  cacheManager,
+  CacheManager,
+  storageManager,
+  StorageManager,
+  Queue,
+  type LogLevel,
+} from "@mohasinac/appkit/core";
+export { apiClient, ApiClient } from "@mohasinac/appkit/http";
 
 // ==================== TYPES ====================
 export * from "./types/auth";

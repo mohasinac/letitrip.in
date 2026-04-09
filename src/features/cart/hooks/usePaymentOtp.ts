@@ -21,7 +21,7 @@ import {
   sendPhoneOtp,
   reauthenticateWithPhone,
 } from "@/lib/firebase/auth-helpers";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { apiClient, ApiClientError } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 

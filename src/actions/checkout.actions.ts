@@ -14,8 +14,8 @@
  */
 
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { rateLimitByIdentifier } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import { rateLimitByIdentifier } from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
 import { timingSafeEqual } from "crypto";

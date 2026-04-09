@@ -1,38 +1,41 @@
-import type { UserDocument } from "@/db/schema";
-import { successResponse, errorResponse } from "@/lib/api-response";
-import { NotFoundError, AuthorizationError } from "@/lib/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import "@/providers.config";
+/**
+ * Verify Phone Number API Route
+ * POST /api/profile/verify-phone
+ *
+ * Called AFTER client-side Firebase confirmationResult.confirm(code).
+ * Updates the phoneVerified flag in Firestore for the authenticated user.
+ */
+
+import { getAdminAuth } from "@/lib/firebase/admin";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
+import { verifyPhoneSchema } from "@/lib/validation/schemas";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { userRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
-export const GET = createRouteHandler<never, { userId: string }>({
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { userId } = params!;
+export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
+  auth: true,
+  schema: verifyPhoneSchema,
+  handler: async ({ user }) => {
+    const auth = getAdminAuth();
+    const userRecord = await auth.getUser(user!.uid);
 
-    const userData = await userRepository.findById(userId);
-    if (!userData) throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
-    if (!userData.publicProfile?.isPublic) {
-      throw new AuthorizationError(ERROR_MESSAGES.GENERIC.PROFILE_PRIVATE);
+    if (!userRecord.phoneNumber) {
+      throw new ValidationError(ERROR_MESSAGES.PHONE.NO_PHONE);
     }
 
-    const publicProfile: Partial<UserDocument> = {
-      uid: userData.uid,
-      displayName: userData.displayName,
-      photoURL: userData.photoURL,
-      avatarMetadata: userData.avatarMetadata,
-      role: userData.role,
-      createdAt: userData.createdAt,
-      publicProfile: userData.publicProfile,
-      stats: userData.stats,
-    };
+    // verificationId + code validated by schema; actual verification is client-side.
+    // Mark phone as verified in Firestore.
+    await userRepository.update(user!.uid, {
+      phoneVerified: true,
+      phoneNumber: userRecord.phoneNumber,
+    } as any);
 
-    if (userData.publicProfile?.showEmail) publicProfile.email = userData.email;
-    if (userData.publicProfile?.showPhone)
-      publicProfile.phoneNumber = userData.phoneNumber;
-
-    return successResponse(publicProfile);
+    return successResponse(
+      { phoneNumber: userRecord.phoneNumber },
+      SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
+    );
   },
 });

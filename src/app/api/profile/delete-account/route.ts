@@ -6,7 +6,7 @@ import "@/providers.config";
 
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { deleteAccountSchema } from "@/lib/validation/schemas";
 import {
   userRepository,

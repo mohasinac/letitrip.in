@@ -19,13 +19,16 @@ import {
   couponsRepository,
 } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
 import {
   ApiError,
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@/lib/errors";
+} from "@mohasinac/appkit/errors";
 import {
   generateStoreSlug,
   DEFAULT_PLATFORM_FEE_RATE,

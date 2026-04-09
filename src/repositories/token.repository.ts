@@ -19,7 +19,7 @@ import {
   PASSWORD_RESET_COLLECTION,
   TOKEN_FIELDS,
 } from "@/db/schema";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import { resolveDate } from "@/utils";
 import {
   encryptPiiFields,

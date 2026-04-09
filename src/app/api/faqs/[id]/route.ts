@@ -8,7 +8,7 @@ import { faqsRepository, siteSettingsRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@/lib/api-response";
 import { faqUpdateSchema } from "@/lib/validation/schemas";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { FAQDocument } from "@/db/schema";

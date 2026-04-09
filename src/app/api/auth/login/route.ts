@@ -19,11 +19,15 @@ import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@/lib/api-response";
-import { ValidationError, AuthenticationError, AppError } from "@/lib/errors";
+import {
+  ValidationError,
+  AuthenticationError,
+  AppError,
+} from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";
 import { serverLogger } from "@/lib/server-logger";
 

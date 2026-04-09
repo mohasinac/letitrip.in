@@ -11,8 +11,11 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { addressRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import type { AddressDocument } from "@/db/schema";
 
 // ─── Validation schemas ────────────────────────────────────────────────────

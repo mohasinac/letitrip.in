@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { nowISO } from "@/utils";
 
 interface ErrorProps {

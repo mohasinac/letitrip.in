@@ -8,7 +8,7 @@
 import { randomUUID } from "crypto";
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
-import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { DatabaseError, NotFoundError } from "@mohasinac/appkit/errors";
 import { decryptPii } from "@/lib/pii";
 import type {
   CartDocument,

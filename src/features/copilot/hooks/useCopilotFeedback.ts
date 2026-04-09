@@ -7,7 +7,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/classes";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 
 export function useCopilotFeedback() {

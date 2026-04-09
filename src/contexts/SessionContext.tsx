@@ -29,7 +29,7 @@ import {
   signOut as firebaseSignOut,
 } from "@/lib/firebase/auth-helpers";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { useQueryClient } from "@tanstack/react-query";

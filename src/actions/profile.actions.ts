@@ -15,8 +15,11 @@ import {
   productRepository,
   reviewRepository,
 } from "@/repositories";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { maskPublicReview } from "@/lib/pii";
 import type { UserDocument } from "@/db/schema";

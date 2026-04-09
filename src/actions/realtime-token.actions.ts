@@ -11,8 +11,11 @@
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { chatRepository } from "@/repositories";
 import { getAdminAuth } from "@/lib/firebase/admin";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 export interface RealtimeTokenResult {

@@ -13,7 +13,7 @@ import {
 } from "@/lib/monitoring/runtime";
 import { initializeClientLogger } from "@/helpers";
 
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 export function MonitoringProvider({
   children,

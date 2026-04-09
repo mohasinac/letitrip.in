@@ -12,7 +12,7 @@ import { maskPublicBid } from "@/lib/pii";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { resolveDate } from "@/utils";
 import { z } from "zod";
 import { createApiHandler } from "@/lib/api/api-handler";

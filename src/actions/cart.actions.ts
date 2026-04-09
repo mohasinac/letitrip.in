@@ -14,8 +14,11 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { cartRepository, productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { ValidationError, AuthorizationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { ValidationError, AuthorizationError } from "@mohasinac/appkit/errors";
 import type { CartDocument } from "@/db/schema";
 
 // ─── Validation schemas ────────────────────────────────────────────────────

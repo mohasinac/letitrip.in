@@ -10,8 +10,11 @@
 import { z } from "zod";
 import { headers } from "next/headers";
 import { sendContactEmail } from "@/lib/email";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { ValidationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 

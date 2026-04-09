@@ -10,7 +10,7 @@ import {
   clearGuestReturnTo,
 } from "@/utils";
 import { mergeGuestCartAction } from "@/actions";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 /**
  * useGuestCartMerge

@@ -14,7 +14,7 @@ import {
   SiteSettingsUpdateInput,
   DEFAULT_SITE_SETTINGS_DATA,
 } from "@/db/schema/site-settings";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import { encrypt, decrypt, maskSecret } from "@/lib/encryption";
 
 /**

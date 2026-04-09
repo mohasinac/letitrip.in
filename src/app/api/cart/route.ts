@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";

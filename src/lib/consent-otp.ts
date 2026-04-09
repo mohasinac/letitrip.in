@@ -12,7 +12,7 @@ import { createHmac, randomInt } from "crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { escapeHtml, resolveDate } from "@/utils";
 import { USER_COLLECTION } from "@/db/schema";
-import { AuthorizationError } from "@/lib/errors";
+import { AuthorizationError } from "@mohasinac/appkit/errors";
 
 // ─── Private ──────────────────────────────────────────────────────────────────
 

@@ -22,8 +22,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@/lib/server-logger";
-import { AppError } from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { AppError } from "@mohasinac/appkit/errors";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 
 const UUID_REGEX =

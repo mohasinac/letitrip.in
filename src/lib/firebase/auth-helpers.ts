@@ -42,9 +42,9 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "./config";
-import { AuthenticationError, ApiError } from "@/lib/errors";
+import { AuthenticationError, ApiError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { apiClient } from "@mohasinac/appkit/http";
 
 /**

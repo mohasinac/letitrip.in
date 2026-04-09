@@ -5,9 +5,9 @@
  * Automatically detects environment and uses appropriate logger.
  */
 
-import { logger } from "@/classes";
-import { Logger } from "@/classes";
-import { AppError } from "@/lib/errors";
+import { logger } from "@mohasinac/appkit/core";
+import { Logger } from "@mohasinac/appkit/core";
+import { AppError } from "@mohasinac/appkit/errors";
 import { redactPii } from "@mohasinac/appkit/security";
 
 /**

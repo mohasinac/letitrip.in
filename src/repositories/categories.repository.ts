@@ -19,7 +19,7 @@ import {
   createCategoryId,
 } from "@/db/schema/categories";
 import { CATEGORY_FIELDS } from "@/db/schema";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";
 import type {

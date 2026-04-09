@@ -18,7 +18,7 @@ import {
   generateInitials,
   calculatePasswordScore,
 } from "../auth.helper";
-import { canChangeRole } from "@/lib/security/authorization";
+import { canChangeRole } from "@mohasinac/appkit/security";
 
 describe("Auth Helper", () => {
   describe("hasRole", () => {

@@ -9,7 +9,7 @@
  */
 
 import { serverLogger } from "@/lib/server-logger";
-import { AppError } from "@/lib/errors";
+import { AppError } from "@mohasinac/appkit/errors";
 import { type NextRequest } from "next/server";
 
 /**

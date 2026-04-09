@@ -7,10 +7,10 @@
 import { reviewRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { reviewVoteSchema } from "@/lib/validation/schemas";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
 /**
  * POST /api/reviews/[id]/vote

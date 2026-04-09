@@ -11,7 +11,7 @@ import {
   MAIN_NAV_ITEMS,
 } from "@/constants";
 import { useSwipe, useAuth, useLogout, useMessage } from "@/hooks";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { Sprout, SearchCode } from "lucide-react";
 import {
   AvatarDisplay,

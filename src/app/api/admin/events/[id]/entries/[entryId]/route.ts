@@ -8,7 +8,7 @@ import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 const reviewEntrySchema = z.object({

@@ -18,7 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 

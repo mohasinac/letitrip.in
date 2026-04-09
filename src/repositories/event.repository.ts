@@ -14,7 +14,7 @@ import type {
 } from "@/db/schema";
 import { EVENTS_COLLECTION, EVENT_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type {
   SieveModel,
   FirebaseSieveFields,

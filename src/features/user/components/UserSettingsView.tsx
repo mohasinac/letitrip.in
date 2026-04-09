@@ -12,7 +12,7 @@ import type { ProfileInfoData } from "./ProfileInfoForm";
 import { PasswordChangeForm } from "./PasswordChangeForm";
 import { AccountInfoCard } from "./AccountInfoCard";
 import { useRouter } from "@/i18n/navigation";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import {
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,

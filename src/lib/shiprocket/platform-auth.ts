@@ -13,7 +13,7 @@
  * Token lifetime is ~10 days; we refresh after 9 days to stay safe.
  */
 
-import { AppError } from "@/lib/errors";
+import { AppError } from "@mohasinac/appkit/errors";
 import { siteSettingsRepository } from "@/repositories";
 import { shiprocketAuthenticate } from "./client";
 

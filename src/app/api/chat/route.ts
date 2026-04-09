@@ -12,7 +12,7 @@ import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, FEATURE_FLAGS } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { NotFoundError, AuthorizationError } from "@/lib/errors";
+import { NotFoundError, AuthorizationError } from "@mohasinac/appkit/errors";
 import { z } from "zod";
 import { createApiHandler } from "@/lib/api/api-handler";
 

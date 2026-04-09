@@ -42,7 +42,7 @@
 
 import { Firestore, Transaction, WriteBatch } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 // Repository singletons

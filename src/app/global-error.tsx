@@ -11,7 +11,7 @@
 
 import { useEffect } from "react";
 import { NextIntlClientProvider, useTranslations } from "next-intl";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Button, TextLink } from "@/components";
 import { nowISO } from "@/utils";

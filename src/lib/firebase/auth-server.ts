@@ -9,10 +9,15 @@ import { getAdminAuth } from "./admin";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import type { DecodedIdToken } from "firebase-admin/auth";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import {
+  AuthenticationError,
+  AuthorizationError,
+} from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import type { SessionUser } from "@/types/auth";
+import type { SessionUser, UserRole } from "@/types/auth";
+import type { NextRequest } from "next/server";
+import type { UserDocument } from "@/db/schema/users";
 
 /** Firebase error codes that represent a normal "not authenticated" state. */
 const EXPECTED_AUTH_CODES = new Set([
@@ -230,3 +235,57 @@ export const getServerSessionUser = cache(
     }
   },
 );
+
+/**
+ * Get the authenticated user from a NextRequest session cookie.
+ * Returns null if unauthenticated or session is invalid.
+ */
+export async function getUserFromRequest(
+  request: NextRequest,
+): Promise<UserDocument | null> {
+  try {
+    const sessionCookie = request.cookies.get("__session")?.value;
+    if (!sessionCookie) return null;
+
+    const decodedToken = await verifySessionCookie(sessionCookie);
+    if (!decodedToken) return null;
+
+    const { userRepository } = await import("@/repositories");
+    return await userRepository.findById(decodedToken.uid);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Require authenticated user from a NextRequest.
+ * Throws AuthenticationError if unauthenticated or account is disabled.
+ */
+export async function requireAuthFromRequest(
+  request: NextRequest,
+): Promise<UserDocument> {
+  const user = await getUserFromRequest(request);
+  if (!user) {
+    throw new AuthenticationError(ERROR_MESSAGES.USER.NOT_AUTHENTICATED);
+  }
+  if (user.disabled) {
+    throw new AuthenticationError(ERROR_MESSAGES.AUTH.ACCOUNT_DISABLED);
+  }
+  return user;
+}
+
+/**
+ * Require a specific role from a NextRequest.
+ * Throws AuthorizationError if the user lacks the required role.
+ */
+export async function requireRoleFromRequest(
+  request: NextRequest,
+  roles: UserRole | UserRole[],
+): Promise<UserDocument> {
+  const user = await requireAuthFromRequest(request);
+  const requiredRoles = Array.isArray(roles) ? roles : [roles];
+  if (!requiredRoles.includes(user.role as UserRole)) {
+    throw new AuthorizationError(ERROR_MESSAGES.AUTH.FORBIDDEN);
+  }
+  return user;
+}

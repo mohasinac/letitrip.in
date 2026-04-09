@@ -22,7 +22,7 @@
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type { ChatRoomCreateInput, ChatRoomDocument } from "@/db/schema";
 import { CHAT_ROOM_COLLECTION } from "@/db/schema";
 import { encryptPiiFields, decryptPiiFields, CHAT_PII_FIELDS } from "@/lib/pii";

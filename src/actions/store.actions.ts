@@ -12,7 +12,7 @@ import {
   productRepository,
   reviewRepository,
 } from "@/repositories";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import type { StoreDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";

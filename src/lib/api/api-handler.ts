@@ -33,12 +33,12 @@ import { z } from "zod";
 import type { NextRequest, NextResponse } from "next/server";
 import { createApiHandlerFactory } from "@mohasinac/appkit/next";
 import { initProviders } from "@/providers.config";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit } from "@mohasinac/appkit/security";
 import {
   requireAuthFromRequest,
   requireRoleFromRequest,
-} from "@/lib/security/authorization";
-import { handleApiError } from "@/lib/errors/error-handler";
+} from "@/lib/firebase/auth-server";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { UI_LABELS } from "@/constants";

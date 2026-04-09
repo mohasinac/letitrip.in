@@ -9,7 +9,7 @@ import { z } from "zod";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { blogRepository } from "@/repositories";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 

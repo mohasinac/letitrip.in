@@ -18,8 +18,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payment/razorpay";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, ValidationError } from "@/lib/errors";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";

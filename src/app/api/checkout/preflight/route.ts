@@ -18,7 +18,7 @@ import "@/providers.config";
 
 import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { unitOfWork } from "@/repositories";

@@ -11,7 +11,7 @@ import {
   useDeleteAddress,
   useSetDefaultAddress,
 } from "../useAddresses";
-import { cacheManager } from "@/classes";
+import { cacheManager } from "@mohasinac/appkit/core";
 
 // ─── Mock @tanstack/react-query ───────────────────────────────────────────────
 jest.mock("@tanstack/react-query", () => ({

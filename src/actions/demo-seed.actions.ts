@@ -13,7 +13,7 @@
  */
 
 import { serverLogger } from "@/lib/server-logger";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 
 export type SeedCollectionName =
   | "users"

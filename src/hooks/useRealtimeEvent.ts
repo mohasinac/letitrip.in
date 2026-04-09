@@ -28,7 +28,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ref, onValue, type DatabaseReference } from "firebase/database";
 import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
 import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { ERROR_MESSAGES } from "@/constants";
 
 // ─── Event Type Enum ────────────────────────────────────────────────────────

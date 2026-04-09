@@ -19,8 +19,8 @@ import {
   StorageReference,
 } from "firebase/storage";
 import { storage } from "./config";
-import { DatabaseError } from "@/lib/errors";
-import { logger } from "@/classes";
+import { DatabaseError } from "@mohasinac/appkit/errors";
+import { logger } from "@mohasinac/appkit/core";
 
 /**
  * Storage folder structure

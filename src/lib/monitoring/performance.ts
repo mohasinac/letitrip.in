@@ -6,7 +6,7 @@
 
 import { getPerformance, trace, PerformanceTrace } from "firebase/performance";
 import { app } from "@/lib/firebase/config";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 // Initialize Firebase Performance
 let performance: ReturnType<typeof getPerformance> | null = null;

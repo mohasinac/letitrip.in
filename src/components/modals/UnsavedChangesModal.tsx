@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { eventBus } from "@/classes";
+import { eventBus } from "@mohasinac/appkit/core";
 import { UNSAVED_CHANGES_EVENT } from "@/hooks";
 
 type UnsavedChangesResolve = (confirmed: boolean) => void;

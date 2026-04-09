@@ -12,7 +12,7 @@ import {
 } from "@/lib/api/request-helpers";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
 

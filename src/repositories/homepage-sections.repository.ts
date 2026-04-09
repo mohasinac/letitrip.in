@@ -13,7 +13,7 @@ import {
   SectionType,
   createHomepageSectionId,
 } from "@/db/schema/homepage-sections";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type {
   SieveModel,
   FirebaseSieveFields,

@@ -16,7 +16,7 @@ import {
   logApplicationError,
   initializeClientLogger,
 } from "../error-logger";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 jest.mock("@/classes", () => ({
   logger: {

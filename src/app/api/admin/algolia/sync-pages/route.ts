@@ -38,7 +38,7 @@ import {
   SUCCESS_MESSAGES,
   SEO_CONFIG,
 } from "@/constants";
-import { ValidationError } from "@/lib/errors";
+import { ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 // ── Static pages ──────────────────────────────────────────────────────────────

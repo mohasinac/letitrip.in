@@ -11,7 +11,7 @@ import "@/providers.config";
 import { storeRepository, storeAddressRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 
 export const GET = createRouteHandler({

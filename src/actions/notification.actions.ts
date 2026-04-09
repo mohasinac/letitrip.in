@@ -9,8 +9,11 @@
 
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { notificationRepository } from "@/repositories";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import type { NotificationDocument } from "@/db/schema";
 
 /**

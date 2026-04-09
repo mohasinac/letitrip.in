@@ -11,7 +11,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next";
 import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
-import { AppError } from "@/lib/errors";
+import { AppError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 export const GET = createRouteHandler({

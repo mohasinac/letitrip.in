@@ -10,7 +10,7 @@ import { successResponse } from "@/lib/api-response";
 import { resolveDate } from "@/utils";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NotFoundError, ValidationError } from "@/lib/errors";
+import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 const enterEventSchema = z.object({

@@ -5,12 +5,12 @@
  */
 
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { NotFoundError, AuthorizationError } from "@/lib/errors";
+import { NotFoundError, AuthorizationError } from "@mohasinac/appkit/errors";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
 type IdParams = { id: string };
 

@@ -23,7 +23,7 @@ import {
   createFAQId,
   FAQ_FIELDS,
 } from "@/db/schema";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import { siteSettingsRepository } from "./site-settings.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";

@@ -15,7 +15,7 @@
 
 import Razorpay from "razorpay";
 import { createHmac, timingSafeEqual } from "crypto";
-import { AppError } from "@/lib/errors";
+import { AppError } from "@mohasinac/appkit/errors";
 import { siteSettingsRepository } from "@/repositories";
 
 // ─── Credential Resolution ────────────────────────────────────────────────────

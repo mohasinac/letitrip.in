@@ -5,12 +5,12 @@
  * Allows users to revoke their own sessions (e.g., logout from other devices).
  */
 
-import { AuthorizationError, NotFoundError } from "@/lib/errors";
+import { AuthorizationError, NotFoundError } from "@mohasinac/appkit/errors";
 import { sessionRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
 export const DELETE = createRouteHandler<never, { id: string }>({
   auth: true,

@@ -1,6 +1,6 @@
 "use client";
 
-import { eventBus } from "@/classes";
+import { eventBus } from "@mohasinac/appkit/core";
 import {
   useUnsavedChanges as useUnsavedChangesBase,
   UNSAVED_CHANGES_EVENT,

@@ -9,8 +9,11 @@
 
 import { requireRole } from "@/lib/firebase/auth-server";
 import { siteSettingsRepository } from "@/repositories";
-import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  rateLimitByIdentifier,
+  RateLimitPresets,
+} from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function getSiteSettingsAction(): Promise<unknown> {

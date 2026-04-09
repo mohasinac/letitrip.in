@@ -9,7 +9,7 @@ import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import type { EventEntryDocument, EventEntryCreateInput } from "@/db/schema";
 import { EVENT_ENTRIES_COLLECTION, EVENT_ENTRY_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
-import { DatabaseError } from "@/lib/errors";
+import { DatabaseError } from "@mohasinac/appkit/errors";
 import type {
   SieveModel,
   FirebaseSieveFields,

@@ -17,7 +17,7 @@
 
 import { useEffect, useState } from "react";
 import { API_ENDPOINTS } from "@/constants";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 
 export interface RealtimeBidData {
   currentBid: number;

@@ -18,7 +18,7 @@ import BackToTop from "./utility/BackToTop";
 import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
 import { Main } from "./semantic/Semantic";
 import { BackgroundRenderer } from "./utility";
-import { logger } from "@/classes";
+import { logger } from "@mohasinac/appkit/core";
 import { useSiteSettings } from "@/hooks";
 import { EventBanner } from "@/components";
 import UnsavedChangesModal from "./modals/UnsavedChangesModal";

@@ -14,7 +14,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { handleApiError } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
