@@ -1,164 +1,101 @@
-import "@/providers.config";
-/**
- * Site Settings API Routes
- *
- * Handles global site configuration (singleton document)
- *
- * TODO (Future) - Phase 2:
- * - Implement settings caching (Redis/memory)
- * - Add settings versioning/history
- * - Implement settings validation rules
- * - Add settings change notifications
- * - Implement settings import/export
- * - Add settings backup/restore
- * - Implement feature flag management
- */
-
-import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse } from "@/lib/api-response";
-import { getUserFromRequest } from "@mohasinac/appkit/security";
-import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
-import { handleApiError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
-import { sendSiteSettingsChangedEmail } from "@/lib/email";
-import { SCHEMA_DEFAULTS } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
+import {
+  productRepository,
+  reviewRepository,
+  storeRepository,
+} from "@/repositories";
 
-/**
- * GET /api/site-settings
- *
- * Get global site settings
- *
- * ✅ Fetches settings via siteSettingsRepository.getSingleton()
- * ✅ Returns public fields only for non-admin users (strips emailSettings, legalPages)
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
- * TODO (Future): Support ETag for conditional requests — ✅ Done
- * TODO (Future): Integrate Redis for distributed caching
- */
-export const GET = createApiHandler({
-  handler: async ({ request }) => {
-    // Fetch site settings (singleton pattern)
-    const settings = await siteSettingsRepository.getSingleton();
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ storeSlug: string }> },
+): Promise<NextResponse> {
+  try {
+    const { storeSlug } = await context.params;
+    const store = await storeRepository.findBySlug(storeSlug);
 
-    // Never expose encrypted credential blobs to any client
-    const { credentials: _encrypted, ...settingsWithoutCreds } = settings;
-
-    // Check if user is authenticated and is admin
-    const user = await getUserFromRequest(request);
-    const isAdmin = user?.role === "admin";
-
-    // Filter sensitive fields for non-admin users
-    let responseData: any;
-
-    if (isAdmin) {
-      // Admin: include masked credential values so the UI can show "rzp_li…key4"
-      const credentialsMasked =
-        await siteSettingsRepository.getCredentialsMasked();
-      responseData = { ...settingsWithoutCreds, credentialsMasked };
-    } else {
-      // Public: strip admin-only fields, expose the Razorpay key ID for the checkout modal
-      const { emailSettings, legalPages, ...publicFields } =
-        settingsWithoutCreds;
-
-      // Resolve the public Razorpay key ID: DB wins over env var
-      const decrypted = await siteSettingsRepository.getDecryptedCredentials();
-      const razorpayKeyIdPublic =
-        decrypted.razorpayKeyId ||
-        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-        "";
-
-      responseData = {
-        ...publicFields,
-        contact: {
-          email: settings.contact.email,
-          phone: settings.contact.phone,
-          whatsappNumber: settings.contact.whatsappNumber,
-        },
-        razorpayKeyId: razorpayKeyIdPublic,
-      };
+    if (!store || store.status !== "active" || !store.isPublic) {
+      return NextResponse.json(
+        { success: false, error: "Store not found" },
+        { status: 404 },
+      );
     }
 
-    const cacheControl = isAdmin
-      ? "private, no-cache"
-      : "public, max-age=300, s-maxage=600, stale-while-revalidate=120";
+    const productsResult = await productRepository.list(
+      {
+        filters: "status==published",
+        sorts: "-itemsSold",
+        page: 1,
+        pageSize: 20,
+      },
+      { sellerId: store.ownerId },
+    );
 
-    // ETag: shallow hash of the serialised response — enables conditional GET (304 Not Modified)
-    const etag = `"${createHash("md5").update(JSON.stringify(responseData)).digest("hex")}"`;
-    const ifNoneMatch = request.headers.get("if-none-match");
-    if (ifNoneMatch === etag) {
-      return new NextResponse(null, {
-        status: 304,
-        headers: { ETag: etag, "Cache-Control": cacheControl },
-      });
-    }
+    const products = productsResult.items;
+    const productMap = new Map(
+      products.map((product) => [product.id, product]),
+    );
 
-    const response = successResponse(responseData);
-    response.headers.set("Cache-Control", cacheControl);
-    response.headers.set("ETag", etag);
-    return response;
-  },
-});
-
-/**
- * PATCH /api/site-settings
- *
- * Update site settings (admin only)
- *
- * Body: Partial<SiteSettingsDocument>
- *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with siteSettingsUpdateSchema (Zod)
- * ✅ Updates via siteSettingsRepository.updateSingleton()
- * ✅ Writes audit log entry via serverLogger with changed fields and admin identity
- * ✅ Returns updated settings
- * TODO (Future): Invalidate distributed caches (Redis)
- * TODO (Future): Send notification to all admins on settings change — ✅ Done
- */
-export const PATCH = createRouteHandler<
-  (typeof siteSettingsUpdateSchema)["_output"]
->({
-  auth: true,
-  roles: ["admin"],
-  schema: siteSettingsUpdateSchema,
-  handler: async ({ user, body }) => {
-    // Update settings in repository (singleton pattern)
-    const updatedSettings = await siteSettingsRepository.updateSingleton(body!);
-
-    // Invalidate the integration-keys in-process cache so Razorpay/Resend/etc.
-    // pick up rotated credentials on the very next request.
-    invalidateIntegrationKeysCache();
-
-    // Audit log — record which admin changed what fields
-    serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {
-      adminId: user!.uid,
-      adminEmail: user!.email,
-      changedFields: Object.keys(body!),
-      changes: body!,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Fire-and-forget: notify all admins about the settings change
-    const adminEmail =
-      process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
-    sendSiteSettingsChangedEmail({
-      adminEmails: [adminEmail],
-      changedByEmail: user!.email || adminEmail,
-      changedFields: Object.keys(body!),
-    }).catch((err) =>
-      serverLogger.error(
-        ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
-        { err },
+    const reviewPages = await Promise.all(
+      products.map((product) =>
+        reviewRepository.listForProduct(product.id, {
+          filters: "status==approved",
+          sorts: "-createdAt",
+          page: 1,
+          pageSize: 50,
+        }),
       ),
     );
 
-    return successResponse(
-      updatedSettings,
-      SUCCESS_MESSAGES.ADMIN.SETTINGS_SAVED,
+    const ratingDistribution: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+    let totalReviews = 0;
+    let ratingSum = 0;
+
+    for (const reviewPage of reviewPages) {
+      for (const review of reviewPage.items) {
+        totalReviews += 1;
+        ratingSum += review.rating;
+        ratingDistribution[review.rating] =
+          (ratingDistribution[review.rating] ?? 0) + 1;
+      }
+    }
+
+    const reviews = reviewPages
+      .flatMap((reviewPage) => reviewPage.items)
+      .sort(
+        (left, right) =>
+          new Date(right.createdAt ?? 0).getTime() -
+          new Date(left.createdAt ?? 0).getTime(),
+      )
+      .slice(0, 10)
+      .map((review) => ({
+        ...review,
+        productTitle:
+          productMap.get(review.productId)?.title ?? review.productTitle,
+        productMainImage: productMap.get(review.productId)?.mainImage ?? null,
+      }));
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        reviews,
+        averageRating:
+          totalReviews > 0
+            ? Math.round((ratingSum / totalReviews) * 10) / 10
+            : 0,
+        totalReviews,
+        ratingDistribution,
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch store reviews" },
+      { status: 500 },
     );
-  },
-});
+  }
+}

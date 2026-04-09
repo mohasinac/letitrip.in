@@ -19,7 +19,7 @@ import { NextResponse } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
-import { getUserFromRequest } from "@mohasinac/appkit/security";
+import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
