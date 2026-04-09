@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { use } from "react";
 import { SITE_CONFIG } from "@/constants";
-import { EventParticipateView } from "@/features/events";
+import { EventParticipateView } from "@/features/events/components";
 
 interface Props {
   params: Promise<{ id: string }>;

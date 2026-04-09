@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { Button, FormField, FormGroup, Alert, Heading } from "@/components";
 import { useMessage, useContactSubmit } from "@/hooks";
-import { isValidEmail, isRequired } from "@/utils";
+import { isRequired, isValidEmail } from "@mohasinac/appkit/validation";
 const { spacing } = THEME_CONSTANTS;
 
 interface ContactFormData {

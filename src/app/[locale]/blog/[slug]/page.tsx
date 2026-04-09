@@ -1,6 +1,6 @@
 ﻿import { notFound } from "next/navigation";
 import { blogRepository } from "@/repositories";
-import { BlogPostView } from "@/features/blog";
+import { BlogPostView } from "@/features/blog/components";
 import type { Metadata } from "next";
 import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog";
 

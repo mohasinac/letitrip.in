@@ -9,7 +9,7 @@
 import type { Metadata } from "next";
 import { productRepository, couponsRepository } from "@/repositories";
 import { SEO_CONFIG, SITE_CONFIG } from "@/constants";
-import { PromotionsView } from "@/features/promotions";
+import { PromotionsView } from "@/features/promotions/components/PromotionsView";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 import type { ProductCardData } from "@/components";
 import { nowMs } from "@/utils";

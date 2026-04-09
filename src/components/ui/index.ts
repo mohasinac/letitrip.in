@@ -101,8 +101,8 @@ export { BulkActionBar } from "./BulkActionBar";
 export type { BulkActionBarProps, BulkActionItem } from "./BulkActionBar";
 
 // Phase 11: Camera capture
-export { CameraCapture } from "@mohasinac/appkit/features/media";
-export type { CameraCaptureProps } from "@mohasinac/appkit/features/media";
+export { CameraCapture } from "./CameraCapture.client";
+export type { CameraCaptureProps } from "./CameraCapture.client";
 
 // Accessibility
 export { SkipToMain } from "./SkipToMain";

@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { BlogListView } from "@/features/blog";
+import { BlogListView } from "@/features/blog/components";
 import { blogRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";

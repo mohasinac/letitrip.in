@@ -1,4 +1,4 @@
-import { StoreHeader, StoreNavTabs } from "@/features/stores";
+import { StoreHeader, StoreNavTabs } from "@/features/stores/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { Main } from "@/components";
 

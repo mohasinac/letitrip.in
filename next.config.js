@@ -171,6 +171,7 @@ const nextConfig = {
         __dirname,
         "node_modules/@tanstack/react-query",
       ),
+      "next-intl$": path.resolve(__dirname, "node_modules/next-intl"),
       "@mohasinac/http$": path.resolve(__dirname, "src/lib/http/index.ts"),
     };
 

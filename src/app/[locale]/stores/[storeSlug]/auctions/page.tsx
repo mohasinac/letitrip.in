@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { Spinner } from "@/components";
-import { StoreAuctionsView } from "@/features/stores";
+import { StoreAuctionsView } from "@/features/stores/components";
 import { storeRepository } from "@/repositories";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import type { Metadata } from "next";

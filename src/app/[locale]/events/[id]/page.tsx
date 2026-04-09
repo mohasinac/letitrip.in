@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { eventRepository } from "@/repositories";
-import { EventDetailView, EventJsonLd } from "@/features/events";
+import { EventDetailView, EventJsonLd } from "@/features/events/components";
 import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";

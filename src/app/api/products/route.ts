@@ -1,7 +1,7 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 import { withProviders } from "@/providers.config";
-import { POST as _POST } from "@mohasinac/appkit/features/products";
+import { POST as _POST } from "@mohasinac/appkit/features/products/server";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);

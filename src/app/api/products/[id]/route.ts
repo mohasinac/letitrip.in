@@ -1,9 +1,9 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 export {
   productItemPATCH as PATCH,
   productItemDELETE as DELETE,
-} from "@mohasinac/appkit/features/products";
+} from "@mohasinac/appkit/features/products/server";
 
 // Override GET to use the project's ProductRepository, which auto-decrypts
 // PII fields (sellerName, sellerEmail) via the mapDoc override.

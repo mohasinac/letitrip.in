@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
-import { CategoriesListView } from "@/features/categories";
+import { CategoriesListView } from "@/features/categories/components";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { resolveLocale } from "@/i18n/resolve-locale";
 

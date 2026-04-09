@@ -1,4 +1,4 @@
-import { AdminEventEntriesView } from "@/features/events";
+import { AdminEventEntriesView } from "@/features/events/components";
 
 interface PageProps {
   params: Promise<{ id: string }>;

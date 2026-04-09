@@ -1,6 +1,7 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
-import { CouponCard, ProductSection } from "@/features/promotions";
+import { CouponCard } from "@/features/promotions/components/CouponCard";
+import { ProductSection } from "@/features/promotions/components/ProductSection";
 import { Heading, Text, Section } from "@/components";
 import type { ProductCardData } from "@/components";
 import type { CouponDocument } from "@/db/schema";

@@ -4,7 +4,11 @@
  * Reusable validation logic for address forms
  */
 
-import { isRequired, isValidIndianMobile, isValidIndianPincode } from "@/utils";
+import {
+  isRequired,
+  isValidIndianMobile,
+  isValidIndianPincode,
+} from "@mohasinac/appkit/validation";
 import { ERROR_MESSAGES } from "@/constants";
 
 /**

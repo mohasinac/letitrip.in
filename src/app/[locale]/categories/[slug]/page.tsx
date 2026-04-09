@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
-import { CategoryProductsView } from "@/features/categories";
+import { CategoryProductsView } from "@/features/categories/components";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 interface PageProps {

@@ -1,3 +1,3 @@
 import { withProviders } from "@/providers.config";
-import { GET as _GET } from "@mohasinac/appkit/features/events";
+import { GET as _GET } from "@mohasinac/appkit/features/events/server";
 export const GET = withProviders(_GET);

@@ -53,14 +53,14 @@ export { ErrorBoundary } from "./ErrorBoundary";
 export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
 export {
   ImageCropModal,
-  VideoTrimModal,
   VideoThumbnailSelector,
-} from "@mohasinac/appkit/features/media";
+  VideoTrimModal,
+} from "./media-modals.client";
 export type {
   ImageCropData,
-  VideoTrimModalProps,
   VideoThumbnailSelectorProps,
-} from "@mohasinac/appkit/features/media";
+  VideoTrimModalProps,
+} from "./media-modals.client";
 export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================

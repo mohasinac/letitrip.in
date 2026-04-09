@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { EventsListView } from "@/features/events";
+import { EventsListView } from "@/features/events/components";
 import { eventRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";

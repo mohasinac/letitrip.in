@@ -9,7 +9,7 @@ import {
 } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { calculatePasswordStrength } from "@/utils";
+import { calculatePasswordStrength } from "@mohasinac/appkit/validation";
 
 /**
  * PasswordChangeForm Component
