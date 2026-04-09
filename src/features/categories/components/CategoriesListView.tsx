@@ -24,7 +24,7 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { CategoryGrid } from "./CategoryGrid";
 import { useCategoriesList } from "../hooks/useCategoriesList";
 

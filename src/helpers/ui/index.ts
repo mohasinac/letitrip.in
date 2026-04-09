@@ -11,4 +11,4 @@ export {
   classNames,
   mergeTailwindClasses,
   easings,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 
 export interface ProfileStats {
   orderCount: number;

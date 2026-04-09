@@ -20,7 +20,7 @@ import {
   indexNavPages,
   ALGOLIA_PAGES_INDEX_NAME,
   type AlgoliaNavRecord,
-} from "@mohasinac/search-algolia";
+} from "@mohasinac/appkit/providers/search-algolia";
 import { getAdminDb } from "@/lib/firebase/admin";
 import {
   CATEGORIES_COLLECTION,

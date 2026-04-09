@@ -6,7 +6,7 @@
  */
 
 import type { AvatarMetadata } from "@/db/schema";
-import { UserRole } from "@mohasinac/feat-auth";
+import { UserRole } from "@mohasinac/appkit/features/auth";
 export type { UserRole };
 
 /**

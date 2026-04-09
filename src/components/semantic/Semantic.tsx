@@ -14,7 +14,7 @@ export {
   Ul,
   Ol,
   Li,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";
 export type {
   SectionProps,
   ArticleProps,
@@ -26,4 +26,4 @@ export type {
   UlProps,
   OlProps,
   LiProps,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";

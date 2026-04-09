@@ -15,7 +15,7 @@ import "@/providers.config";
 import { successResponse } from "@/lib/api-response";
 import { ApiError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { smsCounterRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 

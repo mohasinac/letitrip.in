@@ -23,7 +23,7 @@ import {
   deleteAddressAction,
   setDefaultAddressAction,
 } from "@/actions";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 
 // ============================================================================
 // Types

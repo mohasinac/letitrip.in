@@ -26,7 +26,7 @@ import {
   FolderTree,
   Tag,
 } from "lucide-react";
-import { Drawer } from "@mohasinac/ui";
+import { Drawer } from "@mohasinac/appkit/ui";
 import { Nav, Span, Text, Aside } from "@/components";
 
 interface NavItem {

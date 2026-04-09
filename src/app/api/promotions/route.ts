@@ -7,7 +7,7 @@ import "@/providers.config";
 import { productRepository, couponsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /**
  * GET /api/promotions

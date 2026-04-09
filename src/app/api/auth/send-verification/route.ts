@@ -12,7 +12,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { sendVerificationSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { sendVerificationEmailWithLink } from "@/lib/email";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<
   (typeof sendVerificationSchema)["_output"]

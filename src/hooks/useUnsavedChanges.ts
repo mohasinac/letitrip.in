@@ -4,13 +4,13 @@ import { eventBus } from "@/classes";
 import {
   useUnsavedChanges as useUnsavedChangesBase,
   UNSAVED_CHANGES_EVENT,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";
 
 export { UNSAVED_CHANGES_EVENT };
 export type {
   UseUnsavedChangesOptions,
   UseUnsavedChangesReturn,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";
 
 /**
  * App-specific wrapper that wires the confirmation flow to the global

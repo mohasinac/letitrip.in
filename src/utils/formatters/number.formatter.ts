@@ -7,4 +7,4 @@ export {
   formatDecimal,
   formatOrdinal,
   parseFormattedNumber,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

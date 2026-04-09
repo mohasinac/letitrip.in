@@ -35,7 +35,7 @@ import {
   type EventItem,
   type EventListParams,
   type EventListResponse,
-} from "@mohasinac/feat-events";
+} from "@mohasinac/appkit/features/events";
 import { EventCard } from "@/components";
 
 const PAGE_SIZE = 24;

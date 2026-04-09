@@ -14,8 +14,8 @@ interface AuctionGridProps {
   auctions: AuctionGridItem[];
   loading?: boolean;
   skeletonCount?: number;
-  /** "grid" (default): responsive grid. "list": stacked horizontal cards. */
-  variant?: "grid" | "list";
+  /** "grid"/"card"/"fluid" (default): responsive grid. "list": stacked horizontal cards. */
+  variant?: "grid" | "card" | "fluid" | "list";
   selectable?: boolean;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
@@ -30,7 +30,7 @@ interface AuctionGridProps {
 function AuctionCardSkeleton({
   variant = "grid",
 }: {
-  variant?: "grid" | "list";
+  variant?: "grid" | "card" | "fluid" | "list";
 }) {
   if (variant === "list") {
     return (

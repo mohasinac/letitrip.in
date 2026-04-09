@@ -2,7 +2,7 @@
 import { blogRepository } from "@/repositories";
 import { BlogPostView } from "@/features/blog";
 import type { Metadata } from "next";
-import type { BlogPostDetailResponse } from "@mohasinac/feat-blog";
+import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

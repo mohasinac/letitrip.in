@@ -1,2 +1,2 @@
-export { useKeyPress } from "@mohasinac/react";
-export type { KeyModifiers, UseKeyPressOptions } from "@mohasinac/react";
+export { useKeyPress } from "@mohasinac/appkit/react";
+export type { KeyModifiers, UseKeyPressOptions } from "@mohasinac/appkit/react";

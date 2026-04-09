@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { offerRepository } from "@/repositories";
 
 export const GET = createRouteHandler({

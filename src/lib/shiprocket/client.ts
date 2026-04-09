@@ -10,4 +10,4 @@ export {
   shiprocketCheckServiceability,
   SHIPROCKET_TOKEN_TTL_MS,
   isShiprocketTokenExpired,
-} from "@mohasinac/shipping-shiprocket";
+} from "@mohasinac/appkit/providers/shipping-shiprocket";

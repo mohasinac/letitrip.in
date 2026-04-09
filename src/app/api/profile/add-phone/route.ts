@@ -14,7 +14,7 @@ import { addPhoneSchema } from "@/lib/validation/schemas";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,

@@ -3,7 +3,7 @@
 import { useAuth } from "@/contexts";
 import { useGuestCart } from "./useGuestCart";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 
 /**
  * useCartCount

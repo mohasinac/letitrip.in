@@ -24,7 +24,7 @@ import {
   isAlgoliaConfigured,
   clearAlgoliaIndex,
   ALGOLIA_PAGES_INDEX_NAME,
-} from "@mohasinac/search-algolia";
+} from "@mohasinac/appkit/providers/search-algolia";
 import {
   usersSeedData,
   addressesSeedData,

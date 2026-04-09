@@ -2,12 +2,12 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient, ApiClientError } from "@mohasinac/http";
+import { apiClient, ApiClientError } from "@mohasinac/appkit/http";
 import type {
   ProductItem,
   ProductListResponse,
-} from "@mohasinac/feat-products";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+} from "@mohasinac/appkit/features/products";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 export type CategoryProductItem = ProductItem;
 

@@ -43,7 +43,7 @@ export default async function AuctionsPage({ params }: Props) {
   const initialData = result
     ? {
         items:
-          result.items as unknown as import("@mohasinac/feat-auctions").AuctionItem[],
+          result.items as unknown as import("@mohasinac/appkit/features/auctions").AuctionItem[],
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,

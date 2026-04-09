@@ -3,7 +3,7 @@ import { productRepository } from "@/repositories";
 import { ProductDetailView, ProductJsonLd } from "@/features/products";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 

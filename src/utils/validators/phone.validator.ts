@@ -5,4 +5,4 @@ export {
   extractCountryCode,
   isValidIndianMobile,
   isValidIndianPincode,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

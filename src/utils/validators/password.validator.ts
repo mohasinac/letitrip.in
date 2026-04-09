@@ -1,9 +1,9 @@
 export type {
   PasswordStrength,
   PasswordRequirements,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";
 export {
   meetsPasswordRequirements,
   calculatePasswordStrength,
   isCommonPassword,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

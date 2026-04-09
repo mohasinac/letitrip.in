@@ -7,8 +7,8 @@
 
 import { renderHook, act } from "@testing-library/react";
 import { useBulkAction } from "../useBulkAction";
-import { ApiClientError } from "@mohasinac/http";
-import type { BulkActionResult } from "@mohasinac/react";
+import { ApiClientError } from "@mohasinac/appkit/http";
+import type { BulkActionResult } from "@mohasinac/appkit/react";
 
 // ──────────────────────────────────────────────────────────
 // Helpers

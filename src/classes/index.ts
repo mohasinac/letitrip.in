@@ -6,5 +6,5 @@
  * apiClient re-exported here for backward-compat callers that import from @/classes.
  * Prefer importing from @mohasinac/http directly in new code.
  */
-export * from "@mohasinac/core";
-export { apiClient, ApiClient, ApiClientError } from "@mohasinac/http";
+export * from "@mohasinac/appkit/core";
+export { apiClient, ApiClient, ApiClientError } from "@mohasinac/appkit/http";

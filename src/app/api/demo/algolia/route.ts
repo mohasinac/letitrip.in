@@ -45,7 +45,7 @@ import {
   ALGOLIA_INDEX_NAME,
   ALGOLIA_PAGES_INDEX_NAME,
   type AlgoliaNavRecord,
-} from "@mohasinac/search-algolia";
+} from "@mohasinac/appkit/providers/search-algolia";
 import { productRepository } from "@/repositories";
 import {
   CATEGORIES_COLLECTION,

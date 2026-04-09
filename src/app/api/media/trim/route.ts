@@ -11,7 +11,7 @@ import { trimDataSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { generateTrimmedVideoFilename } from "@/utils";
 import ffmpeg from "fluent-ffmpeg";

@@ -7,4 +7,4 @@ export type {
   StoreAuctionsResponse,
   StoreReview,
   StoreReviewsData,
-} from "@mohasinac/feat-stores";
+} from "@mohasinac/appkit/features/stores";

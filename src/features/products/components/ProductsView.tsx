@@ -18,7 +18,7 @@ import {
   ViewToggle,
 } from "@/components";
 import { ProductFilters } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter, ViewMode } from "@/components";
 import { Heading, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -58,7 +58,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
   const searchQuery = table.get("q");
   const sortParam = table.get("sort") || PRODUCT_SORT_VALUES.NEWEST;
   const pageParam = table.getNumber("page", 1);
-  const viewMode = (table.get("view") || "grid") as "grid" | "list";
+  const viewMode = (table.get("view") || "card") as ViewMode;
 
   // ── Staged filter state via usePendingTable ───────────────────────────
   const {
@@ -344,8 +344,10 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
               { key: "status", header: t("colStatus") },
             ]}
             showTableView={false}
-            viewMode={viewMode}
-            onViewModeChange={(m) => table.set("view", m)}
+            viewMode={viewMode === "list" ? "list" : "grid"}
+            onViewModeChange={(m) =>
+              table.set("view", m === "list" ? "list" : "card")
+            }
             labels={{
               gridView: tActions("gridView"),
               listView: tActions("listView"),

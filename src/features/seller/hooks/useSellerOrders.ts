@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { shipOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 

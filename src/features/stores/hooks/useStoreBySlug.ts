@@ -7,4 +7,4 @@ export {
   useStoreProducts,
   useStoreAuctions,
   useStoreReviews,
-} from "@mohasinac/feat-stores";
+} from "@mohasinac/appkit/features/stores";

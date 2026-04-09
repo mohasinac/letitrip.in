@@ -9,7 +9,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { AuthStatusPanel } from "@mohasinac/feat-auth";
+import { AuthStatusPanel } from "@mohasinac/appkit/features/auth";
 import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useVerifyEmail } from "@/hooks";

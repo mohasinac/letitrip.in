@@ -26,7 +26,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { sendSiteSettingsChangedEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 
 /**

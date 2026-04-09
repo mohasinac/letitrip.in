@@ -10,7 +10,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),

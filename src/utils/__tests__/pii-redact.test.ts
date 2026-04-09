@@ -1,4 +1,4 @@
-import { redactPii } from "@mohasinac/security/pii-redact";
+import { redactPii } from "@mohasinac/appkit/security";
 
 describe("redactPii", () => {
   it("returns primitives unchanged", () => {

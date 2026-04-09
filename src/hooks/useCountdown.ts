@@ -1,2 +1,2 @@
-export { useCountdown } from "@mohasinac/react";
-export type { CountdownRemaining } from "@mohasinac/react";
+export { useCountdown } from "@mohasinac/appkit/react";
+export type { CountdownRemaining } from "@mohasinac/appkit/react";

@@ -11,7 +11,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
-import { buildSieveFilters } from "@mohasinac/utils";
+import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import {
   ROUTES,

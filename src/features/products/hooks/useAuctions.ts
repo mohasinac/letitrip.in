@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import type {
   AuctionItem,
   AuctionListResponse,
-} from "@mohasinac/feat-auctions";
+} from "@mohasinac/appkit/features/auctions";
 
 export type { AuctionItem };
 export type AuctionsListResult = AuctionListResponse;

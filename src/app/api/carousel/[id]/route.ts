@@ -3,7 +3,7 @@ import {
   carouselItemGET,
   carouselItemPATCH,
   carouselItemDELETE,
-} from "@mohasinac/feat-homepage/server";
+} from "@mohasinac/appkit/features/homepage";
 export const GET = withProviders(carouselItemGET);
 export const PATCH = withProviders(carouselItemPATCH);
 export const DELETE = withProviders(carouselItemDELETE);

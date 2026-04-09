@@ -4,7 +4,7 @@ import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { CATEGORY_BADGE } from "@/components";
-import type { BlogPost } from "@mohasinac/feat-blog";
+import type { BlogPost } from "@mohasinac/appkit/features/blog";
 
 const LABELS = UI_LABELS.ADMIN.BLOG;
 const { themed, typography } = THEME_CONSTANTS;

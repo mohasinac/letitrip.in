@@ -32,7 +32,7 @@ import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 import { useCategoryDetail } from "../hooks/useCategoryDetail";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 const { themed, flex, spacing } = THEME_CONSTANTS;
 

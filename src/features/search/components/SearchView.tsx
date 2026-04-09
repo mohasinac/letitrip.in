@@ -23,7 +23,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import { useSearch } from "@mohasinac/feat-search";
+import { useSearch } from "@mohasinac/appkit/features/search";
 import type { CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 import { SearchResultsSection } from "./SearchResultsSection";

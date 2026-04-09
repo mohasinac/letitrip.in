@@ -2,7 +2,7 @@
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { classNames } from "@mohasinac/ui";
+import { classNames } from "@mohasinac/appkit/ui";
 import { Label, Span } from "../typography/Typography";
 
 /**

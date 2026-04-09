@@ -10,7 +10,7 @@
  *
  * Reference: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
  */
-import { createInstrumentation } from "@mohasinac/instrumentation";
+import { createInstrumentation } from "@mohasinac/appkit/instrumentation";
 
 const { register } = createInstrumentation({
   onNodeServer: async () => {

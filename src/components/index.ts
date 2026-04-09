@@ -55,12 +55,12 @@ export {
   ImageCropModal,
   VideoTrimModal,
   VideoThumbnailSelector,
-} from "@mohasinac/feat-media";
+} from "@mohasinac/appkit/features/media";
 export type {
   ImageCropData,
   VideoTrimModalProps,
   VideoThumbnailSelectorProps,
-} from "@mohasinac/feat-media";
+} from "@mohasinac/appkit/features/media";
 export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================
@@ -106,10 +106,10 @@ export * from "./auth";
 // Components that don't have existing app-specific equivalents
 // Modal, Drawer, Pagination, StatusBadge, Breadcrumbs are app-specific (see feedback/, ui/, layout/)
 // BreadcrumbItem is already exported from layout/ as a React component — don't re-export as type
-export { StarRating } from "@mohasinac/ui";
-export type { StarRatingProps } from "@mohasinac/ui";
-export { ImageLightbox } from "@mohasinac/ui";
-export type { ImageLightboxProps, LightboxImage } from "@mohasinac/ui";
+export { StarRating } from "@mohasinac/appkit/ui";
+export type { StarRatingProps } from "@mohasinac/appkit/ui";
+export { ImageLightbox } from "@mohasinac/appkit/ui";
+export type { ImageLightboxProps, LightboxImage } from "@mohasinac/appkit/ui";
 
 // ==================== PROVIDERS ====================
 // Re-export from providers subdirectory

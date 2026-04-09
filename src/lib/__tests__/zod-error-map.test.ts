@@ -5,7 +5,7 @@
  * to avoid module-level side-effects interfering with the test suite.
  */
 
-import { zodErrorMap, setupZodErrorMap } from "@mohasinac/validation";
+import { zodErrorMap, setupZodErrorMap } from "@mohasinac/appkit/validation";
 
 // Helper: simulate a minimal Zod-like raw issue
 function makeIssue(

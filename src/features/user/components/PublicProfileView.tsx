@@ -13,7 +13,7 @@ import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
 import type { PublicUserProfile } from "@/hooks";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
 

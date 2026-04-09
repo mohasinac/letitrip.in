@@ -39,7 +39,7 @@ export default async function ProductsPage({ params }: Props) {
     .then(
       (r): ProductsListResult => ({
         items:
-          r.items as unknown as import("@mohasinac/feat-products").ProductItem[],
+          r.items as unknown as import("@mohasinac/appkit/features/products").ProductItem[],
         total: r.total,
         page: r.page,
         pageSize: r.pageSize,

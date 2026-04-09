@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { HeroCarousel as HeroCarouselBase } from "@mohasinac/feat-homepage";
-import type { CarouselSlide } from "@mohasinac/feat-homepage";
+import { HeroCarousel as HeroCarouselBase } from "@mohasinac/appkit/features/homepage";
+import type { CarouselSlide } from "@mohasinac/appkit/features/homepage";
 import type { CarouselSlideDocument } from "@/db/schema";
 
 interface HeroCarouselProps {

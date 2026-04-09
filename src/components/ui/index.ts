@@ -70,7 +70,7 @@ export {
   CountdownDisplay,
   PriceDisplay,
   TagInput,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";
 export type {
   StepperNavProps,
   StatsGridProps,
@@ -79,11 +79,11 @@ export type {
   CountdownDisplayProps,
   PriceDisplayProps,
   TagInputProps,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";
 export { ItemRow } from "./ItemRow";
 export type { ItemRowProps } from "./ItemRow";
-export { SummaryCard } from "@mohasinac/ui";
-export type { SummaryCardProps, SummaryLine } from "@mohasinac/ui";
+export { SummaryCard } from "@mohasinac/appkit/ui";
+export type { SummaryCardProps, SummaryLine } from "@mohasinac/appkit/ui";
 
 // Horizontal scroll container with arrows, auto-scroll, and circular mode
 export { HorizontalScroller } from "./HorizontalScroller";
@@ -101,8 +101,8 @@ export { BulkActionBar } from "./BulkActionBar";
 export type { BulkActionBarProps, BulkActionItem } from "./BulkActionBar";
 
 // Phase 11: Camera capture
-export { CameraCapture } from "@mohasinac/feat-media";
-export type { CameraCaptureProps } from "@mohasinac/feat-media";
+export { CameraCapture } from "@mohasinac/appkit/features/media";
+export type { CameraCaptureProps } from "@mohasinac/appkit/features/media";
 
 // Accessibility
 export { SkipToMain } from "./SkipToMain";

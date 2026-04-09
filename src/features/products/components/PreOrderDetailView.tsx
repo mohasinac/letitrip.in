@@ -39,7 +39,7 @@ import { useProductDetail } from "../hooks";
 import { usePreOrderPayment } from "../hooks/usePreOrders";
 import { listAddressesAction } from "@/actions";
 import { formatCurrency, formatDate } from "@/utils";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { Address } from "@/hooks";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;

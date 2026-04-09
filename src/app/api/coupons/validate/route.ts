@@ -10,7 +10,7 @@ import { successResponse } from "@/lib/api-response";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const validateSchema = z.object({
   code: z.string().min(1),

@@ -14,4 +14,4 @@ export {
   currentYear,
   nowISO,
   formatCustomDate,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

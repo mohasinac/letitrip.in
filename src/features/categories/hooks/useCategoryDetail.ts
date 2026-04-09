@@ -1,1 +1,1 @@
-export { useCategoryDetail } from "@mohasinac/feat-categories";
+export { useCategoryDetail } from "@mohasinac/appkit/features/categories";

@@ -4,7 +4,7 @@ import { EventDetailView, EventJsonLd } from "@/features/events";
 import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";
-import type { EventItem } from "@mohasinac/feat-events";
+import type { EventItem } from "@mohasinac/appkit/features/events";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 

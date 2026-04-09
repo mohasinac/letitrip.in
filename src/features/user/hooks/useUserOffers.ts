@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 import {
   makeOfferAction,

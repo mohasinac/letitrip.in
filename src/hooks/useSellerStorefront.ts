@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import type {
   PublicUserProfile,
   SellerReviewsData,
@@ -57,7 +57,7 @@ export function useSellerStorefront(
       queryKey: ["storefront-products", sellerId],
       queryFn: async () => {
         const result = await apiClient.get<{
-          items: import("@mohasinac/feat-products").ProductItem[];
+          items: import("@mohasinac/appkit/features/products").ProductItem[];
           total: number;
           page: number;
           pageSize: number;

@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { BlogCard } from "@/components";
-import type { BlogPost } from "@mohasinac/feat-blog";
+import type { BlogPost } from "@mohasinac/appkit/features/blog";
 
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {

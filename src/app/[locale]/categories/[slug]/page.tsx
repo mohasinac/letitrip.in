@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoryProductsView } from "@/features/categories";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

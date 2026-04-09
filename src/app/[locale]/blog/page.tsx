@@ -3,7 +3,7 @@ import { BlogListView } from "@/features/blog";
 import { blogRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import type { Metadata } from "next";
-import type { BlogListResponse } from "@mohasinac/feat-blog";
+import type { BlogListResponse } from "@mohasinac/appkit/features/blog";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;

@@ -68,7 +68,7 @@ export type {
  * <Stack gap="md">...</Stack>
  * ```
  */
-export { Container, Stack, Row, Grid } from "@mohasinac/ui";
+export { Container, Stack, Row, Grid } from "@mohasinac/appkit/ui";
 export type {
   GapKey,
   ContainerSize,
@@ -77,4 +77,4 @@ export type {
   StackProps,
   RowProps,
   GridProps,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";

@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { EventCard as PkgEventCard } from "@mohasinac/feat-events";
+import { EventCard as PkgEventCard } from "@mohasinac/appkit/features/events";
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import type { EventItem, EventType } from "@mohasinac/feat-events";
+import type { EventItem, EventType } from "@mohasinac/appkit/features/events";
 
 export type { EventItem, EventType };
 
@@ -53,7 +53,11 @@ export function EventCard({
           )}
         </span>
       )}
-      <PkgEventCard event={event} {...props} className={`${dimensions.minW} ${dimensions.minH} ${props.className ?? ""}`} />
+      <PkgEventCard
+        event={event}
+        {...props}
+        className={`${dimensions.minW} ${dimensions.minH} ${props.className ?? ""}`}
+      />
     </Link>
   );
 }

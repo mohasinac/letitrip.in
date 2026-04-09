@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateCartItemAction, removeFromCartAction } from "@/actions";
-import { useCartQuery } from "@mohasinac/feat-cart";
+import { useCartQuery } from "@mohasinac/appkit/features/cart";
 import { API_ENDPOINTS } from "@/constants";
 import type { CartDocument } from "@/db/schema";
 

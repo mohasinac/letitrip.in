@@ -8,8 +8,8 @@
 import { Link } from "@/i18n/navigation";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useWishlistToggle, useAddToCart, useMessage } from "@/hooks";
-import { ProductCard as PkgProductCard } from "@mohasinac/feat-products";
-import type { ProductItem } from "@mohasinac/feat-products";
+import { ProductCard as PkgProductCard } from "@mohasinac/appkit/features/products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 // Re-export data type so consumers can still import from here
 export type ProductCardData = ProductItem;
@@ -17,7 +17,7 @@ export type ProductCardData = ProductItem;
 export interface ProductCardProps {
   product: ProductCardData;
   className?: string;
-  variant?: "grid" | "list";
+  variant?: "grid" | "card" | "fluid" | "list";
   selectable?: boolean;
   isSelected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;

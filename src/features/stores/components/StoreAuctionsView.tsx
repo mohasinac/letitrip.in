@@ -48,7 +48,7 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
   });
 
   const sortParam = table.get("sort") || AUCTION_SORT_VALUES.NEWEST;
-  const viewMode = (table.get("view") || "grid") as ViewMode;
+  const viewMode = (table.get("view") || "card") as ViewMode;
   const pageParam = table.getNumber("page", 1);
 
   const sortOptions = useMemo(

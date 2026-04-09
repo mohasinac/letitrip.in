@@ -1,1 +1,1 @@
-export { useMediaQuery } from "@mohasinac/react";
+export { useMediaQuery } from "@mohasinac/appkit/react";

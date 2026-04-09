@@ -8,7 +8,7 @@
 import { logger } from "@/classes";
 import { Logger } from "@/classes";
 import { AppError } from "@/lib/errors";
-import { redactPii } from "@mohasinac/security/pii-redact";
+import { redactPii } from "@mohasinac/appkit/security";
 
 /**
  * Error context information for better debugging

@@ -1,5 +1,5 @@
-export { useBulkSelection } from "@mohasinac/react";
+export { useBulkSelection } from "@mohasinac/appkit/react";
 export type {
   UseBulkSelectionOptions,
   UseBulkSelectionReturn,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";

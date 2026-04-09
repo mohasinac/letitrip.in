@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
-import { useCheckoutReadQueries } from "@mohasinac/feat-cart";
+import { useCheckoutReadQueries } from "@mohasinac/appkit/features/cart";
 import type {
   AddressDocument,
   CartDocument,

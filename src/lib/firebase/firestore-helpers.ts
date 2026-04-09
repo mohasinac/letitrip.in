@@ -4,7 +4,7 @@ import {
   prepareForFirestore as _prepareForFirestore,
   removeUndefined as _removeUndefined,
   deserializeTimestamps,
-} from "@mohasinac/db-firebase";
+} from "@mohasinac/appkit/providers/db-firebase";
 
 export { deserializeTimestamps };
 

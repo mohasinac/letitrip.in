@@ -76,7 +76,7 @@ import type {
   BulkActionResult,
   BulkActionSummary,
   BulkActionItemFailure,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";
 
 // Re-export status so callers don't need a separate import.
 export type { RealtimeEventStatus as BulkEventStatus };

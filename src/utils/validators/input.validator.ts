@@ -7,4 +7,4 @@ export {
   inRange,
   matchesPattern,
   isInList,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

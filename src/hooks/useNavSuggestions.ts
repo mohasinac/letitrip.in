@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   searchNavPages,
   type AlgoliaNavRecord,
-} from "@mohasinac/search-algolia/browser";
+} from "@mohasinac/appkit/providers/search-algolia";
 
 export type { AlgoliaNavRecord };
 

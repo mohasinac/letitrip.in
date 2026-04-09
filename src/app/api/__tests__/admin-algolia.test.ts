@@ -63,7 +63,7 @@ jest.mock("@/repositories", () => ({
 
 const mockIsAlgoliaConfigured = jest.fn();
 const mockIndexProducts = jest.fn();
-jest.mock("@mohasinac/search-algolia", () => ({
+jest.mock("@mohasinac/appkit/providers/search-algolia", () => ({
   isAlgoliaConfigured: () => mockIsAlgoliaConfigured(),
   indexProducts: (...args: unknown[]) => mockIndexProducts(...args),
   ALGOLIA_INDEX_NAME: "test_products",

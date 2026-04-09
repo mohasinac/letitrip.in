@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { ProductCard } from "@/components";
-import type { ProductListResponse } from "@mohasinac/feat-products";
+import type { ProductListResponse } from "@mohasinac/appkit/features/products";
 import { SectionCarousel } from "./SectionCarousel";
 
 interface FeaturedProductsSectionProps {

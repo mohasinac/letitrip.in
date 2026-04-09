@@ -9,7 +9,7 @@ import "@/providers.config";
 
 import { sessionRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /**
  * Get current user's sessions

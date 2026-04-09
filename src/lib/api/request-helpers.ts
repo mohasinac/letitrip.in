@@ -5,4 +5,4 @@ export {
   getBooleanParam,
   getStringParam,
   getNumberParam,
-} from "@mohasinac/next";
+} from "@mohasinac/appkit/next";

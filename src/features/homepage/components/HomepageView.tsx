@@ -1,5 +1,5 @@
-import type { CategoryItem } from "@mohasinac/feat-categories";
-import type { ProductListResponse } from "@mohasinac/feat-products";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
+import type { ProductListResponse } from "@mohasinac/appkit/features/products";
 import {
   carouselRepository,
   categoriesRepository,

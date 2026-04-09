@@ -24,8 +24,8 @@ export {
   inRange,
   matchesPattern,
   isInList,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";
 export type {
   PasswordStrength,
   PasswordRequirements,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

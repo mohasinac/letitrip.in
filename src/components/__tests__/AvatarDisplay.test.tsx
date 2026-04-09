@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import type { ImageCropData } from "@mohasinac/feat-media";
+import type { ImageCropData } from "@mohasinac/appkit/features/media";
 import { AvatarDisplay } from "../AvatarDisplay";
 import { UI_LABELS } from "@/constants";
 

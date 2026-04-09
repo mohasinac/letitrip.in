@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEvents } from "@mohasinac/feat-events";
+import { useEvents } from "@mohasinac/appkit/features/events";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { EventCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";

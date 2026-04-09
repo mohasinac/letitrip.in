@@ -3,4 +3,4 @@ export {
   isValidEmailDomain,
   normalizeEmail,
   isDisposableEmail,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

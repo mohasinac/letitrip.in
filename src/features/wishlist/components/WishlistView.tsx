@@ -67,7 +67,7 @@ function WishlistContent() {
   const activeTab = (table.get("tab") || "products") as TabKey;
   const search = table.get("q");
   const sortParam = table.get("sorts") || "-addedAt";
-  const viewMode = (table.get("view") || "grid") as ViewMode;
+  const viewMode = (table.get("view") || "card") as ViewMode;
 
   useEffect(() => {
     if (!authLoading && !user) {

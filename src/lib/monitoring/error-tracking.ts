@@ -9,9 +9,9 @@ export {
   trackValidationError,
   trackDatabaseError,
   trackPermissionError,
-} from "@mohasinac/monitoring";
+} from "@mohasinac/appkit/monitoring";
 export type {
   ErrorContext,
   TrackedError,
   ErrorTrackerFn,
-} from "@mohasinac/monitoring";
+} from "@mohasinac/appkit/monitoring";

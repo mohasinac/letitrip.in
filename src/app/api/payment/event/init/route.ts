@@ -38,7 +38,7 @@ import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /** Client-side hard timeout communicated via expiresAt. */
 const EVENT_TTL_MS = 5 * 60 * 1000;

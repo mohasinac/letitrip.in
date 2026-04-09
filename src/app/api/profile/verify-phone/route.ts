@@ -13,7 +13,7 @@ import { successResponse } from "@/lib/api-response";
 import { verifyPhoneSchema } from "@/lib/validation/schemas";
 import { ValidationError } from "@/lib/errors";
 import { userRepository } from "@/repositories";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,

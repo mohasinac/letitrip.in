@@ -7,4 +7,4 @@ export {
   objectToQueryString,
   firestoreTimestampToDate,
   dateToISOString,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

@@ -5,7 +5,7 @@ import {
   type ProductItem,
   type ProductListResponse,
   type ProductListParams,
-} from "@mohasinac/feat-products";
+} from "@mohasinac/appkit/features/products";
 
 export type { ProductItem };
 export type ProductsListResult = ProductListResponse;

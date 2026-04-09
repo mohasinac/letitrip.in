@@ -10,7 +10,7 @@ import { addressRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 export const POST = createRouteHandler<never, { id: string }>({

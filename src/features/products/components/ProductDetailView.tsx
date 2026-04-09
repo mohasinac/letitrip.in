@@ -20,7 +20,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
 import { useProductDetail } from "../hooks";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 function formatCategoryLabel(label: string): string {
   if (label.startsWith("category-")) {

@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import type { StoreListItem } from "@mohasinac/feat-stores";
+import type { StoreListItem } from "@mohasinac/appkit/features/stores";
 import { Button, Heading, MediaImage, Span, Text } from "@/components";
 
 export type { StoreListItem };
@@ -54,7 +54,9 @@ export function StoreCard({
 
       <Link href={href} className="block">
         {store.storeBannerURL ? (
-          <div className={`overflow-hidden bg-gray-100 ${dimensions.heroMinH} ${dimensions.heroMaxH}`}>
+          <div
+            className={`overflow-hidden bg-gray-100 ${dimensions.heroMinH} ${dimensions.heroMaxH}`}
+          >
             <MediaImage
               src={store.storeBannerURL}
               alt={`${store.storeName} banner`}
@@ -63,7 +65,9 @@ export function StoreCard({
             />
           </div>
         ) : (
-          <div className={`bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 ${dimensions.heroMinH} ${dimensions.heroMaxH}`} />
+          <div
+            className={`bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 ${dimensions.heroMinH} ${dimensions.heroMaxH}`}
+          />
         )}
 
         <div className="px-4 pb-4 flex-1 flex flex-col justify-between">
@@ -81,7 +85,10 @@ export function StoreCard({
               </div>
             )}
           </div>
-          <Heading level={3} className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+          <Heading
+            level={3}
+            className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate"
+          >
             {store.storeName}
           </Heading>
           {store.storeDescription && (

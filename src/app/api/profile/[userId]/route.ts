@@ -3,7 +3,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { NotFoundError, AuthorizationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { userRepository } from "@/repositories";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 export const GET = createRouteHandler<never, { userId: string }>({

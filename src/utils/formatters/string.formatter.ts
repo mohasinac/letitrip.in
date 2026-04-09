@@ -10,4 +10,4 @@ export {
   randomString,
   isEmptyString,
   proseMirrorToHtml,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

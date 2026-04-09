@@ -18,7 +18,7 @@
  * ```
  */
 
-import { createApiErrorHandler } from "@mohasinac/next";
+import { createApiErrorHandler } from "@mohasinac/appkit/next";
 import { AppError } from "./base-error";
 import { ERROR_CODES, ERROR_MESSAGES } from "./error-codes";
 import { serverLogger } from "@/lib/server-logger";

@@ -4,7 +4,7 @@ import "@/providers.config";
  * DELETE /api/profile/delete-account
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { deleteAccountSchema } from "@/lib/validation/schemas";

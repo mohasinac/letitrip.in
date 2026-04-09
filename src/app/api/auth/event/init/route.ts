@@ -28,7 +28,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;

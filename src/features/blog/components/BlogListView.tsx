@@ -36,7 +36,7 @@ import {
   useBlogPosts,
   type BlogListParams,
   type BlogListResponse,
-} from "@mohasinac/feat-blog";
+} from "@mohasinac/appkit/features/blog";
 
 const PAGE_SIZE = 24;
 

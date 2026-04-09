@@ -46,7 +46,7 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
   });
 
   const sortParam = table.get("sort") || PRODUCT_SORT_VALUES.NEWEST;
-  const viewMode = (table.get("view") || "grid") as ViewMode;
+  const viewMode = (table.get("view") || "card") as ViewMode;
   const categoryParam = table.get("category");
   const minPriceParam = table.get("minPrice");
   const maxPriceParam = table.get("maxPrice");

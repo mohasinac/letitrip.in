@@ -45,8 +45,8 @@ export interface AuctionCardProps {
   /** Optional buyout price — if provided shows a Buyout button */
   buyoutPrice?: number;
   className?: string;
-  /** "grid" (default): vertical card. "list": horizontal card. */
-  variant?: "grid" | "list";
+  /** "grid"/"card"/"fluid" (default): vertical card. "list": horizontal card. */
+  variant?: "grid" | "card" | "fluid" | "list";
   selectable?: boolean;
   isSelected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;
@@ -77,6 +77,9 @@ export function AuctionCard({
   const t = useTranslations("auctions");
   const tWishlist = useTranslations("wishlist");
   const router = useRouter();
+
+  // Map card/fluid → grid for BaseListingCard which only knows grid/list
+  const baseVariant: "grid" | "list" = variant === "list" ? "list" : "grid";
 
   const [hovered, setHovered] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
@@ -162,13 +165,13 @@ export function AuctionCard({
     <BaseListingCard
       isSelected={isSelected}
       isDisabled={isEnded}
-      variant={variant}
+      variant={baseVariant}
       className={className}
     >
       {/* ── IMAGE SECTION ── */}
       <BaseListingCard.Hero
         aspect="square"
-        variant={variant}
+        variant={baseVariant}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -263,7 +266,7 @@ export function AuctionCard({
       </BaseListingCard.Hero>
 
       {/* ── INFO SECTION ── */}
-      <BaseListingCard.Info variant={variant}>
+      <BaseListingCard.Info variant={baseVariant}>
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
           <TextLink

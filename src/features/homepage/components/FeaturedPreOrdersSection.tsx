@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedPreOrders } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { PreOrderCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 

@@ -28,7 +28,7 @@ import {
   AccordionItem,
 } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
-import type { ProductStatus } from "@mohasinac/feat-products";
+import type { ProductStatus } from "@mohasinac/appkit/features/products";
 import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";
 
 const { themed, flex } = THEME_CONSTANTS;

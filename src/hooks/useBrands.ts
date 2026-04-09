@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import { apiClient } from "@mohasinac/appkit/http";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 /**
  * useBrands

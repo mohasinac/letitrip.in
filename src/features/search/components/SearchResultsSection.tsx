@@ -8,7 +8,7 @@ import {
 } from "@/components";
 import { useTranslations } from "next-intl";
 import type { ProductSortValue } from "@/components";
-import type { SearchProductItem } from "@mohasinac/feat-search";
+import type { SearchProductItem } from "@mohasinac/appkit/features/search";
 import type { ViewMode } from "@/components";
 
 const PAGE_SIZE = 24;
@@ -45,7 +45,7 @@ export function SearchResultsSection({
   urlSort,
   urlPage,
   isLoading,
-  variant = "grid",
+  variant = "card",
   selectable = false,
   selectedIds = [],
   onSelectionChange,

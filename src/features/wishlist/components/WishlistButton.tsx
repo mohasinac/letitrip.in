@@ -15,7 +15,7 @@ import { useAuth, useMessage, useWishlistToggle } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { WishlistToggleButton } from "@mohasinac/feat-wishlist";
+import { WishlistToggleButton } from "@mohasinac/appkit/features/wishlist";
 
 interface WishlistButtonProps {
   productId: string;

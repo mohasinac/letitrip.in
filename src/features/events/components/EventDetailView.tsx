@@ -19,8 +19,8 @@ import { SurveyEventSection } from "./SurveyEventSection";
 import { FeedbackEventSection } from "./FeedbackEventSection";
 import { EventLeaderboard } from "./EventLeaderboard";
 import { formatDate } from "@/utils";
-import type { EventItem } from "@mohasinac/feat-events";
-import { useEvent as usePublicEvent } from "@mohasinac/feat-events";
+import type { EventItem } from "@mohasinac/appkit/features/events";
+import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 
 const { spacing, typography, themed } = THEME_CONSTANTS;
 

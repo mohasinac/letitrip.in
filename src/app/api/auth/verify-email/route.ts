@@ -9,7 +9,7 @@ import "@/providers.config";
 
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";

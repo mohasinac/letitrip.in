@@ -11,7 +11,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import {
   formatFileSize,

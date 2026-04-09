@@ -7,4 +7,4 @@ export {
   getCacheHitRate,
   isCacheHitRateLow,
   getCacheStatistics,
-} from "@mohasinac/monitoring";
+} from "@mohasinac/appkit/monitoring";

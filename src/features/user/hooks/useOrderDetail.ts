@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import type { OrderDocument } from "@/db/schema";
 
 /**

@@ -155,6 +155,7 @@
     "bulkRemoveFromWishlistPartial": "{success} of {total} items removed from wishlist",
     "bulkRemoveFromWishlistFailed": "Failed to remove items from wishlist",
     "gridView": "Grid view",
+    "fluidView": "Fluid view",
     "listView": "List view",
     "selectionHint": "Tap or click a card to select it, then use bulk actions to add to wishlist or cart",
     "required": "Required",

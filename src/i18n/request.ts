@@ -7,9 +7,9 @@
 
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
-import { setupZodErrorMap } from "@mohasinac/validation";
+import { setupZodErrorMap } from "@mohasinac/appkit/validation";
 import { routing } from "./routing";
-import { mergeFeatureMessages } from "@mohasinac/cli";
+import { mergeFeatureMessages } from "@mohasinac/appkit/cli";
 import features from "@/features.config";
 
 export default getRequestConfig(async ({ requestLocale }) => {

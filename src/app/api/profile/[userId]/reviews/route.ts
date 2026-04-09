@@ -11,7 +11,7 @@ import { productRepository, reviewRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { maskPublicReview } from "@/lib/pii";
 
 /**

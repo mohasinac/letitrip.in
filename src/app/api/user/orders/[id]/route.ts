@@ -9,7 +9,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { AuthorizationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { RateLimitPresets, applyRateLimit } from "@/lib/security/rate-limit";
 
 export const GET = createRouteHandler<never, { id: string }>({

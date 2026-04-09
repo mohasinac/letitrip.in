@@ -5,7 +5,7 @@
 
 "use client";
 
-import { SocialAuthButtons } from "@mohasinac/feat-auth";
+import { SocialAuthButtons } from "@mohasinac/appkit/features/auth";
 import { useTranslations } from "next-intl";
 
 interface AuthSocialButtonsProps {

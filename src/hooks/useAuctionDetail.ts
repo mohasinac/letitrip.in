@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
-import type { ProductItem } from "@mohasinac/feat-products";
+import { apiClient } from "@mohasinac/appkit/http";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { FirebaseSieveResult } from "@/lib/query";
 
 export interface PublicBid {

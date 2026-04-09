@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 import { demoSeedAction } from "@/actions";
 import type { SeedCollectionName, SeedOperationResult } from "@/actions";

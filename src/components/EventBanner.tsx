@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useEvents } from "@mohasinac/feat-events";
+import { useEvents } from "@mohasinac/appkit/features/events";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Button, TextLink } from "@/components";

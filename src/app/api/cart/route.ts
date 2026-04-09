@@ -14,7 +14,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({

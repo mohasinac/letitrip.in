@@ -13,14 +13,18 @@ interface ProductGridProps {
   products: ProductCardData[];
   loading?: boolean;
   skeletonCount?: number;
-  /** "grid" (default): responsive grid. "list": stacked horizontal cards. */
-  variant?: "grid" | "list";
+  /** "card"/"grid" (default): responsive grid. "fluid": auto-fill grid. "list": stacked horizontal cards. */
+  variant?: "grid" | "card" | "fluid" | "list";
   selectable?: boolean;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
 }
 
-function ProductSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
+function ProductSkeleton({
+  variant = "card",
+}: {
+  variant?: "grid" | "card" | "fluid" | "list";
+}) {
   if (variant === "list") {
     return (
       <div
@@ -62,7 +66,7 @@ export function ProductGrid({
   products,
   loading = false,
   skeletonCount = 24,
-  variant = "grid",
+  variant = "card",
   selectable = false,
   selectedIds = [],
   onSelectionChange,

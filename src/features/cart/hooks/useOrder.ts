@@ -1,6 +1,6 @@
 "use client";
 
-import { useOrder as useCartOrder } from "@mohasinac/feat-cart";
+import { useOrder as useCartOrder } from "@mohasinac/appkit/features/cart";
 import type { OrderDocument } from "@/db/schema";
 
 /**

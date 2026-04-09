@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
-import { Drawer } from "@mohasinac/ui";
+import { Drawer } from "@mohasinac/appkit/ui";
 import { MediaAvatar, Span, Text, Nav, Aside } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useNotifications } from "@/hooks";

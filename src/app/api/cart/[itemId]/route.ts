@@ -9,7 +9,7 @@ import { z } from "zod";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 const updateCartItemSchema = z.object({

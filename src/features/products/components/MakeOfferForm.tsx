@@ -20,7 +20,7 @@ import {
   Text,
   Textarea,
 } from "@/components";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 const { themed } = THEME_CONSTANTS;
 

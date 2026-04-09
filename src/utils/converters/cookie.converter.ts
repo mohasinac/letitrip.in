@@ -3,4 +3,4 @@ export {
   getCookie,
   hasCookie,
   deleteCookie,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

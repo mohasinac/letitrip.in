@@ -21,7 +21,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthEvent } from "./useAuthEvent";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
 import { useRouter } from "@/i18n/navigation";

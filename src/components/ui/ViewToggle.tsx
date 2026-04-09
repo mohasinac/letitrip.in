@@ -5,7 +5,7 @@ import {
   ViewToggle as BaseViewToggle,
   type ViewMode,
   type ViewToggleProps as BaseViewToggleProps,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";
 
 export type { ViewMode };
 
@@ -43,7 +43,8 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
       value={value}
       onChange={onChange as BaseViewToggleProps["onChange"]}
       labels={{
-        grid: t("gridView"),
+        card: t("gridView"),
+        fluid: t("fluidView"),
         list: t("listView"),
         toolbar: "View mode",
       }}

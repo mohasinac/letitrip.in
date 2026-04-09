@@ -5,5 +5,8 @@ export {
   rateLimitByIdentifier,
   RateLimitPresets,
   clearRateLimitStore,
-} from "@mohasinac/security";
-export type { RateLimitConfig, RateLimitResult } from "@mohasinac/security";
+} from "@mohasinac/appkit/security";
+export type {
+  RateLimitConfig,
+  RateLimitResult,
+} from "@mohasinac/appkit/security";

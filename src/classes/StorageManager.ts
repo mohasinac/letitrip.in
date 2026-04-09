@@ -3,5 +3,5 @@
  *
  * Implementation lives in packages/core/src/StorageManager.ts.
  */
-export { StorageManager, storageManager } from "@mohasinac/core";
-export type { StorageType, StorageOptions } from "@mohasinac/core";
+export { StorageManager, storageManager } from "@mohasinac/appkit/core";
+export type { StorageType, StorageOptions } from "@mohasinac/appkit/core";

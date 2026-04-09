@@ -7,5 +7,5 @@ export type {
   CouponItem,
   PromotionsListResponse,
   PromotionsListParams,
-} from "@mohasinac/feat-promotions";
-export { usePromotions } from "@mohasinac/feat-promotions";
+} from "@mohasinac/appkit/features/promotions";
+export { usePromotions } from "@mohasinac/appkit/features/promotions";

@@ -14,7 +14,7 @@ import {
   isAlgoliaConfigured,
   clearAlgoliaIndex,
   ALGOLIA_CATEGORIES_INDEX_NAME,
-} from "@mohasinac/search-algolia";
+} from "@mohasinac/appkit/providers/search-algolia";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";

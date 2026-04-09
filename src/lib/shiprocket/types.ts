@@ -19,4 +19,4 @@ export type {
   ShiprocketTrackingResponse,
   ShiprocketCourierServiceabilityResponse,
   ShiprocketWebhookPayload,
-} from "@mohasinac/shipping-shiprocket";
+} from "@mohasinac/appkit/providers/shipping-shiprocket";

@@ -36,7 +36,7 @@ import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
 import { getAdminDb } from "@/lib/firebase/admin";

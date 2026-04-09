@@ -20,7 +20,7 @@ import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { z } from "zod";
 import { serverLogger } from "@/lib/server-logger";
 import { sendPasswordResetEmailWithLink } from "@/lib/email";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

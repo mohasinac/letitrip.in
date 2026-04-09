@@ -5,8 +5,8 @@
  */
 "use client";
 
-import { ReviewCard as PkgReviewCard } from "@mohasinac/feat-reviews";
-import type { Review } from "@mohasinac/feat-reviews";
+import { ReviewCard as PkgReviewCard } from "@mohasinac/appkit/features/reviews";
+import type { Review } from "@mohasinac/appkit/features/reviews";
 
 export type ReviewCardData = Review;
 

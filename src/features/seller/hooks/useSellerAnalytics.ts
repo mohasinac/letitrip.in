@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { hasAnyRole } from "@/helpers";
 import type { SellerAnalyticsSummary } from "../components/SellerAnalyticsStats";
 import type { MonthEntry } from "../components/SellerRevenueChart";

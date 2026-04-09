@@ -2,8 +2,8 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createCategoryAction } from "@/actions";
-import { apiClient } from "@mohasinac/http";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import { apiClient } from "@mohasinac/appkit/http";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 /**
  * useCategorySelector

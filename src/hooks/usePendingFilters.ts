@@ -1,7 +1,7 @@
 "use client";
 
-export { usePendingFilters } from "@mohasinac/react";
+export { usePendingFilters } from "@mohasinac/appkit/react";
 export type {
   UsePendingFiltersOptions,
   UsePendingFiltersReturn,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";

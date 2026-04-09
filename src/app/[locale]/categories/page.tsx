@@ -11,7 +11,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { CategoriesListView } from "@/features/categories";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;

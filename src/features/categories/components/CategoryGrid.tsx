@@ -7,7 +7,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Span, Text } from "@/components";
 import { CategoryCard } from "@/components";

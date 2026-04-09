@@ -31,7 +31,7 @@
 
 import { z } from "zod";
 import type { NextRequest, NextResponse } from "next/server";
-import { createApiHandlerFactory } from "@mohasinac/next";
+import { createApiHandlerFactory } from "@mohasinac/appkit/next";
 import { initProviders } from "@/providers.config";
 import { applyRateLimit } from "@/lib/security/rate-limit";
 import {

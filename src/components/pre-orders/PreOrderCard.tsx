@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useWishlistToggle } from "@/hooks";
-import { PreOrderTag } from "@mohasinac/feat-pre-orders";
-import type { ProductItem } from "@mohasinac/feat-products";
+import { PreorderBadge } from "@mohasinac/appkit/features/pre-orders";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import {
   BaseListingCard,
   Button,
@@ -102,7 +102,7 @@ export function PreOrderCard({
           <Text size="sm" weight="semibold" className={themed.textPrimary}>
             {formatCurrency(product.price, product.currency)}
           </Text>
-          {deliveryDate && <PreOrderTag estimatedDate={deliveryDate} />}
+          {deliveryDate && <PreorderBadge shipDate={deliveryDate} />}
         </div>
 
         <div className={`${flex.between} items-center mt-2`}>

@@ -14,7 +14,7 @@ import {
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatMonthYear, formatCurrency, formatNumber } from "@/utils";
 import type { PublicUserProfile } from "@/hooks";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
 

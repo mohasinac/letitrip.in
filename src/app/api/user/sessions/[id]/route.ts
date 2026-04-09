@@ -9,7 +9,7 @@ import { AuthorizationError, NotFoundError } from "@/lib/errors";
 import { sessionRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 export const DELETE = createRouteHandler<never, { id: string }>({

@@ -32,7 +32,7 @@ jest.mock("@/repositories", () => ({
   },
 }));
 
-jest.mock("@mohasinac/next", () => ({
+jest.mock("@mohasinac/appkit/next", () => ({
   createRouteHandler:
     (config: any) =>
     async (requestOrContext: Request | { request: Request }) => {

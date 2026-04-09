@@ -20,14 +20,17 @@ let initPromise: Promise<void> | null = null;
 export function initProviders(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
-    const { registerProviders } = await import("@mohasinac/contracts");
+    const { registerProviders } = await import("@mohasinac/appkit/contracts");
     const { firebaseAuthProvider, firebaseSessionProvider } =
-      await import("@mohasinac/auth-firebase");
-    const { createResendProvider } = await import("@mohasinac/email-resend");
+      await import("@mohasinac/appkit/providers/auth-firebase");
+    const { createResendProvider } =
+      await import("@mohasinac/appkit/providers/email-resend");
     const { firebaseStorageProvider } =
-      await import("@mohasinac/storage-firebase");
-    const { firebaseDbProvider } = await import("@mohasinac/db-firebase");
-    const { tailwindAdapter } = await import("@mohasinac/css-tailwind");
+      await import("@mohasinac/appkit/providers/storage-firebase");
+    const { firebaseDbProvider } =
+      await import("@mohasinac/appkit/providers/db-firebase");
+    const { tailwindAdapter } =
+      await import("@mohasinac/appkit/style/tailwind");
 
     registerProviders({
       db: firebaseDbProvider,
@@ -56,7 +59,7 @@ export function initProviders(): Promise<void> {
  *
  * Usage:
  *   import { withProviders } from "@/providers.config";
- *   import { GET as _GET } from "@mohasinac/feat-events";
+ *   import { GET as _GET } from "@mohasinac/appkit/features/events";
  *   export const GET = withProviders(_GET);
  */
 export function withProviders<A extends unknown[], R>(

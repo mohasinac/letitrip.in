@@ -4,7 +4,7 @@ import { eventRepository } from "@/repositories";
 import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";
-import type { EventListResponse } from "@mohasinac/feat-events";
+import type { EventListResponse } from "@mohasinac/appkit/features/events";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 60;

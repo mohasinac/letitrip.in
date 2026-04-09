@@ -45,7 +45,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import type { ButtonProps } from "@mohasinac/ui";
+import type { ButtonProps } from "@mohasinac/appkit/ui";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

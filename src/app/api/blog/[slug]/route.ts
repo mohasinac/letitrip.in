@@ -1,3 +1,3 @@
 import { withProviders } from "@/providers.config";
-import { blogSlugGET } from "@mohasinac/feat-blog";
+import { blogSlugGET } from "@mohasinac/appkit/features/blog";
 export const GET = withProviders(blogSlugGET);

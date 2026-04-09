@@ -1,5 +1,5 @@
 import type { StoreDocument } from "@/db/schema";
-import type { StoreListItem } from "@mohasinac/feat-stores";
+import type { StoreListItem } from "@mohasinac/appkit/features/stores";
 
 /** Maps a Firestore StoreDocument to the view-layer StoreListItem shape. */
 export function mapStoreDocument(store: StoreDocument): StoreListItem {

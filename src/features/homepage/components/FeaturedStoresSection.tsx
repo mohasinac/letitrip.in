@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useStores } from "@mohasinac/feat-stores";
+import { useStores } from "@mohasinac/appkit/features/stores";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { StoreCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";

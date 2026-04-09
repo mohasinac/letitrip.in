@@ -23,7 +23,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 
 interface CreateAdminListQueryOptions<TApiResult, TResult = TApiResult> {
   queryKey: string[];

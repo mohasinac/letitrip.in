@@ -15,7 +15,7 @@ import {
 } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-import { redactPii } from "@mohasinac/security/pii-redact";
+import { redactPii } from "@mohasinac/appkit/security";
 
 const LOGS_DIR = path.join(process.cwd(), "logs");
 const MAX_LOG_FILE_SIZE = 10 * 1024 * 1024; // 10MB

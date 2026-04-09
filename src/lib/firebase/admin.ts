@@ -8,7 +8,7 @@ import {
   getAdminApp as _getAdminApp,
   getAdminStorage as _getAdminStorage,
   getAdminRealtimeDb as _getAdminRealtimeDb,
-} from "@mohasinac/db-firebase";
+} from "@mohasinac/appkit/providers/db-firebase";
 
 export const getAdminApp = _getAdminApp;
 export const getAdminAuth = _getAdminAuth;

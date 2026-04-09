@@ -5,7 +5,7 @@
  */
 
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@/lib/api-response";
 import { faqUpdateSchema } from "@/lib/validation/schemas";
 import { NotFoundError } from "@/lib/errors";

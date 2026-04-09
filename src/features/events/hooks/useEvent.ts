@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiClient, ApiClientError } from "@mohasinac/http";
+import { apiClient, ApiClientError } from "@mohasinac/appkit/http";
 import type { EventDocument } from "@/db/schema";
 
 interface UseEventOptions {

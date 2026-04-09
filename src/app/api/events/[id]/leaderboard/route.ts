@@ -3,7 +3,7 @@
  * GET /api/events/[id]/leaderboard — Top 50 approved entries by points
  */
 
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@/lib/api-response";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";

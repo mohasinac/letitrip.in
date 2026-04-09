@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Heading, Text, Span } from "@/components";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 interface BuyMoreSaveMoreProps {
   product: ProductItem;

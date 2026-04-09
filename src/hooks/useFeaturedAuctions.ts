@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import type {
   ProductItem,
   ProductListResponse,
-} from "@mohasinac/feat-products";
+} from "@mohasinac/appkit/features/products";
 
 type PaginatedResult = ProductListResponse;
 

@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";

@@ -15,7 +15,7 @@ import {
 } from "@/components";
 import { BlogCard } from "@/components";
 import { formatDate, proseMirrorToHtml } from "@/utils";
-import type { BlogPostCategory } from "@mohasinac/feat-blog";
+import type { BlogPostCategory } from "@mohasinac/appkit/features/blog";
 
 const { themed, typography, flex, page } = THEME_CONSTANTS;
 
@@ -32,7 +32,7 @@ const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
 
 interface BlogPostViewProps {
   slug: string;
-  initialData?: import("@mohasinac/feat-blog").BlogPostDetailResponse;
+  initialData?: import("@mohasinac/appkit/features/blog").BlogPostDetailResponse;
 }
 
 export function BlogPostView({ slug, initialData }: BlogPostViewProps) {

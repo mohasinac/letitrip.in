@@ -1,6 +1,6 @@
 "use client";
 
-export { useBulkAction } from "@mohasinac/react";
+export { useBulkAction } from "@mohasinac/appkit/react";
 export type {
   BulkActionPayload,
   BulkActionResult,
@@ -8,4 +8,4 @@ export type {
   BulkActionItemFailure,
   UseBulkActionOptions,
   UseBulkActionReturn,
-} from "@mohasinac/react";
+} from "@mohasinac/appkit/react";

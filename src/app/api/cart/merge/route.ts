@@ -15,7 +15,7 @@ import { successResponse, ApiErrors } from "@/lib/api-response";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const mergeCartSchema = z.object({
   items: z

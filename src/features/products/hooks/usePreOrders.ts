@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 /** Pre-order cards show products with isPreOrder==true — they are ProductItems */
 export type PreOrderItem = ProductItem;

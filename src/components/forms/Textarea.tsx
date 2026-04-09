@@ -1,7 +1,7 @@
 import React from "react";
 import { Label, Text } from "../typography/Typography";
 import { THEME_CONSTANTS } from "@/constants";
-import { classNames } from "@mohasinac/ui";
+import { classNames } from "@mohasinac/appkit/ui";
 
 /**
  * Textarea Component

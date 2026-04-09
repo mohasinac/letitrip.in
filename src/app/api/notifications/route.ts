@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@/lib/api-response";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";

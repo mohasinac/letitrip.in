@@ -38,7 +38,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { getAdminRealtimeDb, getAdminDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
 import { consentOtpRef } from "@/lib/consent-otp";

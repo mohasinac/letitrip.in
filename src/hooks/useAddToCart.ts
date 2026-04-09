@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts";
 import { addToCartAction } from "@/actions";
 import { addToGuestCart } from "@/utils";
-import type { ApiClientError } from "@mohasinac/http";
+import type { ApiClientError } from "@mohasinac/appkit/http";
 
 interface AddToCartPayload {
   productId: string;

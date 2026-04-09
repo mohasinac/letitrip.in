@@ -14,7 +14,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfileAction, type UpdateProfileInput } from "@/actions";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 
 // ============================================================================
 // Types

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useUrlTable } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import {
   createSellerProductAction,
   sellerUpdateProductAction,

@@ -125,7 +125,7 @@ export type {
 } from "./usePullToRefresh";
 
 // Phase 37: Service layer — homepage hooks
-export { useHeroCarousel } from "@mohasinac/feat-homepage";
+export { useHeroCarousel } from "@mohasinac/appkit/features/homepage";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
 export { useFeaturedPreOrders } from "./useFeaturedPreOrders";

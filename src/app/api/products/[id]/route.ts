@@ -3,7 +3,7 @@ import { productRepository } from "@/repositories";
 export {
   productItemPATCH as PATCH,
   productItemDELETE as DELETE,
-} from "@mohasinac/feat-products";
+} from "@mohasinac/appkit/features/products";
 
 // Override GET to use the project's ProductRepository, which auto-decrypts
 // PII fields (sellerName, sellerEmail) via the mapDoc override.

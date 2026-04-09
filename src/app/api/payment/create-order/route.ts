@@ -16,7 +16,7 @@ import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
 import { siteSettingsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const createOrderSchema = z.object({
   amount: z.number().positive("Amount must be positive"),

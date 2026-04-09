@@ -20,7 +20,7 @@ import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { unitOfWork } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import type { CartItemDocument } from "@/db/schema";

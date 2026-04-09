@@ -3,4 +3,4 @@ export {
   isValidUrlWithProtocol,
   isExternalUrl,
   sanitizeUrl,
-} from "@mohasinac/validation";
+} from "@mohasinac/appkit/validation";

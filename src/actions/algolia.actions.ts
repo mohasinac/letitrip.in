@@ -25,7 +25,7 @@ import {
   ALGOLIA_CATEGORIES_INDEX_NAME,
   ALGOLIA_STORES_INDEX_NAME,
   type AlgoliaNavRecord,
-} from "@mohasinac/search-algolia";
+} from "@mohasinac/appkit/providers/search-algolia";
 import { getAdminDb } from "@/lib/firebase/admin";
 import {
   CATEGORIES_COLLECTION,

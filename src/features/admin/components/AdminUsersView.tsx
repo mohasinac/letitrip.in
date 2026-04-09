@@ -11,7 +11,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, usePendingTable } from "@/hooks";
-import { buildSieveFilters } from "@mohasinac/utils";
+import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";

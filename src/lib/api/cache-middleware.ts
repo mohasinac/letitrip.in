@@ -1,4 +1,8 @@
-import { type CacheConfig, withCache, invalidateCache } from "@mohasinac/next";
+import {
+  type CacheConfig,
+  withCache,
+  invalidateCache,
+} from "@mohasinac/appkit/next";
 
 export { withCache, invalidateCache };
 

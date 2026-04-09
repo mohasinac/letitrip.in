@@ -2,7 +2,7 @@ import { MediaImage } from "@/components";
 import {
   ItemRow as PackageItemRow,
   type ItemRowProps as PackageItemRowProps,
-} from "@mohasinac/ui";
+} from "@mohasinac/appkit/ui";
 
 export interface ItemRowProps {
   image?: string;

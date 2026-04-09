@@ -5,7 +5,7 @@ import {
   markNotificationReadAction,
   markAllNotificationsReadAction,
 } from "@/actions";
-import { apiClient } from "@mohasinac/http";
+import { apiClient } from "@mohasinac/appkit/http";
 import type { NotificationDocument } from "@/db/schema";
 
 interface NotificationsResponse {

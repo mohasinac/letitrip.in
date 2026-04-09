@@ -17,7 +17,7 @@ import { buildSellerReviews } from "@/features/user/server";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 interface Props {
   params: Promise<{ userId: string; locale: string }>;

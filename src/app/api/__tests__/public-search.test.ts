@@ -23,7 +23,7 @@ jest.mock("@/repositories", () => ({
   },
 }));
 
-jest.mock("@mohasinac/search-algolia", () => ({
+jest.mock("@mohasinac/appkit/providers/search-algolia", () => ({
   isAlgoliaConfigured: () => false,
   algoliaSearch: jest.fn(),
 }));

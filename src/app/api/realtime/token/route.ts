@@ -9,7 +9,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { chatRepository } from "@/repositories";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler({
   auth: true,

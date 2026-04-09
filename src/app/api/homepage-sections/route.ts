@@ -1,4 +1,7 @@
 ﻿import { withProviders } from "@/providers.config";
-import { GET as _GET, POST as _POST } from "@mohasinac/feat-homepage/server";
+import {
+  GET as _GET,
+  POST as _POST,
+} from "@mohasinac/appkit/features/homepage";
 export const GET = withProviders(_GET);
 export const POST = withProviders(_POST);

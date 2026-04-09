@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { AuthStatusPanel } from "@mohasinac/feat-auth";
+import { AuthStatusPanel } from "@mohasinac/appkit/features/auth";
 import {
   Card,
   Button,

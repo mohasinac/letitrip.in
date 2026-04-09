@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { SectionTabs, Ul, Li, Text, Ol } from "@/components";
 import type { SectionTab } from "@/components";
-import type { ProductItem } from "@mohasinac/feat-products";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 interface ProductTabsProps {
   product: ProductItem;

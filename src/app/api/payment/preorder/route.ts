@@ -36,7 +36,7 @@ import {
 import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 
 const preorderDepositSchema = z.object({

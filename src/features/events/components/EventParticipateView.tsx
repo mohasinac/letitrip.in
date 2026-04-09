@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth, useMessage } from "@/hooks";
 import { useEventEnter } from "../hooks/useEventMutations";
-import { useEvent as usePublicEvent } from "@mohasinac/feat-events";
+import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 import {
   ROUTES,
   SUCCESS_MESSAGES,

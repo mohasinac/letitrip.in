@@ -10,7 +10,7 @@ import "@/providers.config";
 
 import { addressRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { userAddressCreateSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";

@@ -14,4 +14,4 @@ export {
   isInViewport,
   smoothScrollTo,
   preventBodyScroll,
-} from "@mohasinac/utils";
+} from "@mohasinac/appkit/utils";

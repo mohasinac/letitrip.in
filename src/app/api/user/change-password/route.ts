@@ -11,7 +11,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { changePasswordSchema } from "@/lib/validation/schemas";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<
   (typeof changePasswordSchema)["_output"]

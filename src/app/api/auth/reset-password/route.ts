@@ -14,7 +14,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,

@@ -1,11 +1,14 @@
 // Generic admin UI primitives — domain-agnostic, usable across features
-export { ImageUpload, MediaUploadField } from "@mohasinac/feat-media";
+export {
+  ImageUpload,
+  MediaUploadField,
+} from "@mohasinac/appkit/features/media";
 export type {
   ImageUploadProps,
   MediaUploadFieldProps,
-} from "@mohasinac/feat-media";
-export { DataTable } from "@mohasinac/ui";
-export type { DataTableColumn } from "@mohasinac/ui";
+} from "@mohasinac/appkit/features/media";
+export { DataTable } from "@mohasinac/appkit/ui";
+export type { DataTableColumn } from "@mohasinac/appkit/ui";
 
 // Shared Admin Infrastructure
 export { AdminPageHeader } from "./AdminPageHeader";

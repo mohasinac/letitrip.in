@@ -8,7 +8,7 @@ import { bidRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
-import { createRouteHandler } from "@mohasinac/next";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 
 /**

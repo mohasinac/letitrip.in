@@ -22,7 +22,7 @@ export {
 } from "./hooks/useEventMutations";
 export { usePollVote } from "./hooks/usePollVote";
 export { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
-export { useEvent as usePublicEvent } from "@mohasinac/feat-events";
+export { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";

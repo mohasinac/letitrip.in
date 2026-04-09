@@ -1,1 +1,1 @@
-export { useLongPress } from "@mohasinac/react";
+export { useLongPress } from "@mohasinac/appkit/react";

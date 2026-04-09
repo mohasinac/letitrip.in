@@ -12,7 +12,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
-import { buildSieveFilters } from "@mohasinac/utils";
+import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 

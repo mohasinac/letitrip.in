@@ -6,7 +6,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
-import type { EventItem } from "@mohasinac/feat-events";
+import type { EventItem } from "@mohasinac/appkit/features/events";
 
 interface SurveyEventSectionProps {
   event: EventItem;

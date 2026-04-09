@@ -2,4 +2,4 @@
   categoryItemGET as GET,
   categoryItemPATCH as PATCH,
   categoryItemDELETE as DELETE,
-} from "@mohasinac/feat-categories";
+} from "@mohasinac/appkit/features/categories";

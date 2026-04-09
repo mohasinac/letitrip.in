@@ -1,10 +1,10 @@
 "use client";
 
-import { BlogCard as PkgBlogCard } from "@mohasinac/feat-blog";
-import type { BlogPostCategory } from "@mohasinac/feat-blog";
+import { BlogCard as PkgBlogCard } from "@mohasinac/appkit/features/blog";
+import type { BlogPostCategory } from "@mohasinac/appkit/features/blog";
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import type { BlogPost } from "@mohasinac/feat-blog";
+import type { BlogPost } from "@mohasinac/appkit/features/blog";
 
 export const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
   news: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -60,7 +60,10 @@ export function BlogCard({
           )}
         </span>
       )}
-      <PkgBlogCard post={post} className={`h-full ${dimensions.minW} ${dimensions.minH} ${className ?? ""}`} />
+      <PkgBlogCard
+        post={post}
+        className={`h-full ${dimensions.minW} ${dimensions.minH} ${className ?? ""}`}
+      />
     </Link>
   );
 }

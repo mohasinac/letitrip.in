@@ -41,7 +41,7 @@ import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
 } from "@/actions";
-import { apiClient, ApiClientError } from "@mohasinac/http";
+import { apiClient, ApiClientError } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

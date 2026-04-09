@@ -6,7 +6,7 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { CategoryCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 
 interface TopCategoriesSectionProps {
   initialCategories?: CategoryItem[];

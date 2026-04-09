@@ -10,7 +10,7 @@
 
 import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { CategoryItem } from "@mohasinac/feat-categories";
+import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
   BaseListingCard,

@@ -22,7 +22,7 @@ import {
   reauthenticateWithPhone,
 } from "@/lib/firebase/auth-helpers";
 import { logger } from "@/classes";
-import { apiClient, ApiClientError } from "@mohasinac/http";
+import { apiClient, ApiClientError } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
 
 export type OtpState =

@@ -1,6 +1,6 @@
 "use client";
 
-import { useUserWishlist } from "@mohasinac/feat-wishlist";
+import { useUserWishlist } from "@mohasinac/appkit/features/wishlist";
 import type { ProductDocument } from "@/db/schema";
 
 export interface WishlistItem {
