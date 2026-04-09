@@ -39,7 +39,6 @@ export * from "./utils";
 
 // ==================== HELPERS ====================
 export * from "./helpers/auth";
-export * from "./helpers/ui";
 // Note: helpers/validation exports via @/helpers directly; not re-exported here
 // to avoid ambiguity with hooks exports of the same types.
 
