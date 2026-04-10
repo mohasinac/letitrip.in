@@ -14,10 +14,9 @@ import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { Heading, Row, Text } from "@mohasinac/appkit/ui";
 import {
+  AddressCard,
   AddressForm,
-  Badge,
   Button,
-  Card,
   ConfirmDeleteModal,
   EmptyState,
   ListingLayout,
@@ -34,7 +33,7 @@ import {
   useDeleteStoreAddress,
 } from "../hooks";
 
-const { spacing, flex } = THEME_CONSTANTS;
+const { spacing } = THEME_CONSTANTS;
 
 export function SellerAddressesView() {
   const t = useTranslations("sellerAddresses");
@@ -140,64 +139,12 @@ export function SellerAddressesView() {
         ) : (
           <div className={THEME_CONSTANTS.grid.addressCards}>
             {addresses!.map((addr) => (
-              <Card
+              <AddressCard
                 key={addr.id}
-                variant="interactive"
-                className={spacing.cardPadding}
-              >
-                <div className={spacing.stack}>
-                  <div className={`${flex.betweenStart} gap-3`}>
-                    <div>
-                      <Heading level={4}>{addr.label}</Heading>
-                      {addr.isDefault && (
-                        <Badge variant="info" className="mt-1">
-                          {t("defaultBadge")}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                        onClick={() => setEditingAddress(addr)}
-                        className="text-sm"
-                      >
-                        {tActions("edit")}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                        onClick={() => setDeleteId(addr.id)}
-                        className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      >
-                        {tActions("delete")}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className={spacing.stackSmall}>
-                    <Text size="sm" weight="medium">
-                      {addr.fullName}
-                    </Text>
-                    <Text size="sm" variant="secondary">
-                      {addr.phone}
-                    </Text>
-                    <Text size="sm" variant="secondary">
-                      {addr.addressLine1}
-                    </Text>
-                    {addr.addressLine2 && (
-                      <Text size="sm" variant="secondary">
-                        {addr.addressLine2}
-                      </Text>
-                    )}
-                    <Text size="sm" variant="secondary">
-                      {addr.city}, {addr.state} {addr.postalCode}
-                    </Text>
-                  </div>
-                </div>
-              </Card>
+                address={addr}
+                onEdit={() => setEditingAddress(addr)}
+                onDelete={() => setDeleteId(addr.id)}
+              />
             ))}
           </div>
         )}

@@ -1,38 +1,26 @@
 "use client";
 
-/**
- * WishlistView
- *
- * User wishlist page with tabs for Products, Auctions, Categories, and Stores.
- * Currently only the Products tab has backend support; others show a placeholder.
- * Uses the unified ListingLayout shell with URL-driven state.
- */
-
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Heart, ShoppingBag, Gavel, Grid3X3, Store, Info } from "lucide-react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useUrlTable, useMessage, useBottomActions } from "@/hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useAuth, useMessage } from "@/hooks";
 import {
-  Button,
+  WishlistView as AppkitWishlistView,
+  type WishlistTab,
+} from "@mohasinac/appkit/features/wishlist";
+import {
   EmptyState,
-  ListingLayout,
   ProductGrid,
   Search,
   SectionTabs,
   SortDropdown,
   Spinner,
-  Tooltip,
   ViewToggle,
 } from "@/components";
-import { Heading, Row, Text } from "@mohasinac/appkit/ui";
-import type { ViewMode } from "@/components";
-import { WishlistButton } from "./WishlistButton";
-import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { removeFromWishlistAction, addToCartAction } from "@/actions";
-import { useWishlist } from "../hooks/useWishlist";
-import type { WishlistItem } from "../hooks/useWishlist";
+import { Row } from "@mohasinac/appkit/ui";
+import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import type { ProductCardData } from "@/components";
 
 const WISHLIST_SORT_OPTIONS_KEYS = [
@@ -45,7 +33,7 @@ const WISHLIST_SORT_OPTIONS_KEYS = [
 const TAB_KEYS = ["products", "auctions", "categories", "stores"] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
-const TAB_ICONS: Record<TabKey, React.ReactNode> = {
+const TAB_ICONS: Record<TabKey, ReactNode> = {
   products: <ShoppingBag className="w-4 h-4 mr-1.5 inline" />,
   auctions: <Gavel className="w-4 h-4 mr-1.5 inline" />,
   categories: <Grid3X3 className="w-4 h-4 mr-1.5 inline" />,
@@ -58,14 +46,8 @@ function WishlistContent() {
   const t = useTranslations("wishlist");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
-  const { showSuccess, showError } = useMessage();
-  const queryClient = useQueryClient();
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const table = useUrlTable();
-  const activeTab = (table.get("tab") || "products") as TabKey;
-  const search = table.get("q");
-  const sortParam = table.get("sorts") || "-addedAt";
-  const viewMode = (table.get("view") || "card") as ViewMode;
+  const { showError } = useMessage();
+  const [viewMode, setViewMode] = useState<"card" | "fluid" | "list">("card");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,51 +55,6 @@ function WishlistContent() {
       router.push(ROUTES.AUTH.LOGIN);
     }
   }, [user, authLoading, router, showError]);
-
-  const { data, isLoading } = useWishlist(!!user);
-
-  const allItems = useMemo(() => data?.items ?? [], [data]);
-  const total = allItems.length;
-
-  // Client-side search + sort for products tab
-  const displayedProducts = useMemo(() => {
-    if (activeTab !== "products") return [];
-    let items = allItems.filter((i) => i.product !== null);
-
-    const q = (search || "").trim().toLowerCase();
-    if (q) {
-      items = items.filter(
-        (i) =>
-          (i.product?.title ?? "").toLowerCase().includes(q) ||
-          (i.product?.description ?? "").toLowerCase().includes(q),
-      );
-    }
-
-    items.sort((a, b) => {
-      const desc = sortParam.startsWith("-");
-      const field = desc ? sortParam.slice(1) : sortParam;
-      let aVal: number;
-      let bVal: number;
-      if (field === "price") {
-        aVal = a.product?.price ?? 0;
-        bVal = b.product?.price ?? 0;
-      } else {
-        aVal = new Date(a.addedAt).getTime();
-        bVal = new Date(b.addedAt).getTime();
-      }
-      return desc ? bVal - aVal : aVal - bVal;
-    });
-
-    return items;
-  }, [allItems, activeTab, search, sortParam]);
-
-  const products = useMemo(
-    () =>
-      displayedProducts
-        .map((i) => i.product)
-        .filter((p) => p !== null) as unknown as ProductCardData[],
-    [displayedProducts],
-  );
 
   const sortOptions = useMemo(
     () =>
@@ -128,105 +65,6 @@ function WishlistContent() {
     [t],
   );
 
-  const handleClearFilters = useCallback(() => {
-    table.clear(["q", "sorts"]);
-  }, [table]);
-
-  // ── Bulk action handlers ─────────────────────────────────────────
-  const handleBulkRemoveFromWishlist = useCallback(async () => {
-    const results = await Promise.allSettled(
-      selectedIds.map((id) => removeFromWishlistAction(id)),
-    );
-    const succeeded = results.filter((r) => r.status === "fulfilled").length;
-    if (succeeded === selectedIds.length) {
-      showSuccess(
-        tActions("bulkRemoveFromWishlistSuccess", { count: succeeded }),
-      );
-    } else if (succeeded > 0) {
-      showError(
-        tActions("bulkRemoveFromWishlistPartial", {
-          success: succeeded,
-          total: selectedIds.length,
-        }),
-      );
-    } else {
-      showError(tActions("bulkRemoveFromWishlistFailed"));
-    }
-    setSelectedIds([]);
-  }, [selectedIds, showSuccess, showError, tActions]);
-
-  const handleBulkAddToCart = useCallback(async () => {
-    const results = await Promise.allSettled(
-      selectedIds.map((id) => {
-        const item = allItems.find((i) => i.productId === id);
-        if (!item?.product)
-          return Promise.reject(new Error("Product not found"));
-        const p = item.product;
-        return addToCartAction({
-          productId: id,
-          productTitle: p.title,
-          productImage: p.images?.[0] ?? "",
-          price: p.price,
-          currency: p.currency || "INR",
-          quantity: 1,
-          sellerId: p.sellerId,
-          sellerName: p.sellerName,
-          isAuction: p.isAuction,
-        });
-      }),
-    );
-    const succeeded = results.filter((r) => r.status === "fulfilled").length;
-    if (succeeded > 0) queryClient.invalidateQueries({ queryKey: ["cart"] });
-    if (succeeded === selectedIds.length) {
-      showSuccess(tActions("bulkAddToCartSuccess", { count: succeeded }));
-    } else if (succeeded > 0) {
-      showError(
-        tActions("bulkAddToCartPartial", {
-          success: succeeded,
-          total: selectedIds.length,
-        }),
-      );
-    } else {
-      showError(tActions("bulkAddToCartFailed"));
-    }
-    setSelectedIds([]);
-  }, [selectedIds, showSuccess, showError, tActions, queryClient]);
-
-  // Move isProductTab before the early return so hooks are unconditional
-  const isProductTab = activeTab === "products";
-
-  // ── Mobile bottom bulk action bar ──
-  useBottomActions({
-    bulk: isProductTab
-      ? {
-          selectedCount: selectedIds.length,
-          onClearSelection: () => setSelectedIds([]),
-          actions:
-            selectedIds.length > 0
-              ? [
-                  {
-                    id: "bulk-cart",
-                    label: tActions("bulkAddToCart", {
-                      count: selectedIds.length,
-                    }),
-                    variant: "primary" as const,
-                    onClick: handleBulkAddToCart,
-                  },
-                  {
-                    id: "bulk-remove",
-                    label: tActions("bulkRemove", {
-                      count: selectedIds.length,
-                    }),
-                    variant: "danger" as const,
-                    grow: false,
-                    onClick: handleBulkRemoveFromWishlist,
-                  },
-                ]
-              : [],
-        }
-      : undefined,
-  });
-
   if (authLoading || !user) {
     return (
       <Row justify="center" gap="none" className="min-h-screen">
@@ -236,22 +74,19 @@ function WishlistContent() {
   }
 
   return (
-    <ListingLayout
-      headerSlot={
-        <div>
-          <Heading level={3}>{t("title")}</Heading>
-          <Text variant="secondary" className="mt-1">
-            {total > 0
-              ? t("subtitleWithCount", { count: total })
-              : t("subtitle")}
-          </Text>
-        </div>
-      }
-      statusTabsSlot={
+    <AppkitWishlistView
+      userId={user.uid}
+      labels={{
+        title: t("title"),
+        subtitle: t("subtitle"),
+        emptyTitle: t("empty"),
+        emptyDescription: t("description"),
+      }}
+      renderTabs={(activeTab, onTabChange) => (
         <SectionTabs
           inline
           value={activeTab}
-          onChange={(v) => table.setMany({ tab: v, q: "", sorts: "" })}
+          onChange={(v) => onTabChange(v as WishlistTab)}
           tabs={TAB_KEYS.map((tab) => ({
             value: tab,
             label: t(
@@ -260,121 +95,65 @@ function WishlistContent() {
             icon: TAB_ICONS[tab],
           }))}
         />
-      }
-      searchSlot={
-        isProductTab ? (
-          <Search
-            value={search}
-            onChange={(v) => table.set("q", v)}
-            placeholder={t("searchPlaceholder")}
-            onClear={() => table.set("q", "")}
-          />
-        ) : undefined
-      }
-      sortSlot={
-        isProductTab ? (
-          <SortDropdown
-            value={sortParam}
-            onChange={(v) => table.set("sorts", v)}
-            options={sortOptions}
-          />
-        ) : undefined
-      }
-      viewToggleSlot={
-        isProductTab ? (
-          <div className="flex items-center gap-1.5">
-            <ViewToggle
-              value={viewMode}
-              onChange={(m) => table.set("view", m)}
+      )}
+      renderSearch={(value, onChange) => (
+        <Search
+          value={value}
+          onChange={onChange}
+          placeholder={t("searchPlaceholder")}
+          onClear={() => onChange("")}
+        />
+      )}
+      renderSort={(value, onChange) => (
+        <SortDropdown value={value} onChange={onChange} options={sortOptions} />
+      )}
+      renderViewToggle={(_mode, onToggle) => (
+        <ViewToggle
+          value={viewMode}
+          onChange={(m) => {
+            const nextMode = m as "card" | "fluid" | "list";
+            setViewMode(nextMode);
+            onToggle(nextMode);
+          }}
+        />
+      )}
+      renderProducts={(items, isLoading) => {
+        const products = items.map((item) => ({
+          id: item.productId,
+          title: item.productTitle ?? "",
+          slug: item.productSlug,
+          price: item.productPrice ?? 0,
+          currency: item.productCurrency ?? "INR",
+          images: item.productImage ? [item.productImage] : [],
+          status: item.productStatus ?? "published",
+        })) as unknown as ProductCardData[];
+
+        if (!isLoading && products.length === 0) {
+          return (
+            <EmptyState
+              icon={<Heart className="w-16 h-16" />}
+              title={t("empty")}
+              description={t("description")}
+              actionLabel={tActions("browseProducts")}
+              onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
             />
-            <Tooltip content={tActions("selectionHint")} placement="bottom">
-              <Button
-                type="button"
-                variant="ghost"
-                className={`w-7 h-7 rounded-full ${THEME_CONSTANTS.flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
-                aria-label={tActions("selectionHint")}
-              >
-                <Info className="w-4 h-4" />
-              </Button>
-            </Tooltip>
-          </div>
-        ) : undefined
-      }
-      loading={isLoading && isProductTab}
-      selectedCount={selectedIds.length}
-      onClearSelection={() => setSelectedIds([])}
-      bulkActionItems={
-        isProductTab
-          ? [
-              {
-                id: "bulk-cart",
-                label: tActions("bulkAddToCart", { count: selectedIds.length }),
-                variant: "primary",
-                onClick: handleBulkAddToCart,
-              },
-              {
-                id: "bulk-remove",
-                label: tActions("bulkRemove", { count: selectedIds.length }),
-                variant: "danger",
-                onClick: handleBulkRemoveFromWishlist,
-              },
-            ]
-          : undefined
-      }
-    >
-      {isProductTab ? (
-        !isLoading && products.length === 0 ? (
-          <EmptyState
-            icon={<Heart className="w-16 h-16" />}
-            title={search ? t("noResults") : t("empty")}
-            description={search ? t("noResultsSubtitle") : t("description")}
-            actionLabel={
-              search ? tActions("clearAll") : tActions("browseProducts")
-            }
-            onAction={
-              search
-                ? handleClearFilters
-                : () => router.push(ROUTES.PUBLIC.PRODUCTS)
-            }
+          );
+        }
+
+        return (
+          <ProductGrid
+            products={products}
+            loading={isLoading}
+            variant={viewMode}
           />
-        ) : (
-          <div className="relative">
-            <ProductGrid
-              products={products}
-              loading={isLoading}
-              variant={viewMode}
-              selectable
-              selectedIds={selectedIds}
-              onSelectionChange={setSelectedIds}
-            />
-            {/* Wishlist remove button overlay */}
-            {!isLoading && (
-              <div
-                className={`${THEME_CONSTANTS.grid.productCards} absolute inset-0 pointer-events-none`}
-              >
-                {displayedProducts.map((item) =>
-                  item.product ? (
-                    <div key={item.productId} className="relative">
-                      <div className="absolute top-2 right-2 pointer-events-auto z-10">
-                        <WishlistButton
-                          productId={item.productId}
-                          initialInWishlist={true}
-                        />
-                      </div>
-                    </div>
-                  ) : null,
-                )}
-              </div>
-            )}
-          </div>
-        )
-      ) : (
-        /* Non-product tabs — coming soon */
+        );
+      }}
+      renderTabPlaceholder={(tab) => (
         <EmptyState
           icon={
-            activeTab === "auctions" ? (
+            tab === "auctions" ? (
               <Gavel className="w-16 h-16" />
-            ) : activeTab === "categories" ? (
+            ) : tab === "categories" ? (
               <Grid3X3 className="w-16 h-16" />
             ) : (
               <Store className="w-16 h-16" />
@@ -384,7 +163,7 @@ function WishlistContent() {
           description={t("comingSoonDescription")}
         />
       )}
-    </ListingLayout>
+    />
   );
 }
 

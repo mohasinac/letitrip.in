@@ -113,7 +113,7 @@ export async function enforceConsentOtpRateLimit(uid: string): Promise<void> {
   const db = getAdminDb();
   const metaRef = consentOtpRateLimitRef(db, uid);
 
-  await db.runTransaction(async (tx) => {
+  await db.runTransaction(async (tx: FirebaseFirestore.Transaction) => {
     const metaSnap = await tx.get(metaRef);
     const meta = metaSnap.exists
       ? (metaSnap.data() as {

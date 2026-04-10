@@ -28,7 +28,7 @@ import type { ActiveFilter } from "@/components";
 import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import {
@@ -209,7 +209,12 @@ function BlogListContent({ initialData }: { initialData?: BlogListResponse }) {
             />
           ) : (
             <div className={THEME_CONSTANTS.spacing.stack}>
-              {featuredPost && <BlogFeaturedCard post={featuredPost} />}
+              {featuredPost && (
+                <BlogFeaturedCard
+                  post={featuredPost}
+                  href={`${ROUTES.PUBLIC.BLOG}/${featuredPost.slug}`}
+                />
+              )}
 
               <DataTable
                 data={regularPosts}

@@ -28,6 +28,18 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const USE_LOCAL_PACKAGES = process.env.USE_LOCAL_PACKAGES === "true";
 const PACKAGES_ROOT = path.resolve(__dirname, "../packages/packages");
 
+// ---------------------------------------------------------------------------
+// Local appkit resolution — only active in local dev (USE_LOCAL_APPKIT=true)
+//
+// Points @mohasinac/appkit and all its sub-path imports (e.g.
+// @mohasinac/appkit/features/admin) to the local dist/ folder at
+// D:\proj\appkit\dist instead of the installed npm tarball.  This lets you
+// run `npm run watch:features-a` in the appkit repo and have letitrip pick
+// up changes on the next HMR reload without an npm publish cycle.
+// ---------------------------------------------------------------------------
+const USE_LOCAL_APPKIT = process.env.USE_LOCAL_APPKIT === "true";
+const APPKIT_ROOT = path.resolve(__dirname, "../appkit");
+
 const MOHASINAC_PACKAGES = [
   "auth-firebase",
   "cli",
@@ -227,6 +239,22 @@ const nextConfig = {
       config.resolve.alias["@mohasinac/http$"] = path.resolve(
         __dirname,
         "src/lib/http/index.ts",
+      );
+    }
+
+    if (USE_LOCAL_APPKIT) {
+      // Exact match for the root import (e.g. import from "@mohasinac/appkit")
+      config.resolve.alias["@mohasinac/appkit$"] = path.join(
+        APPKIT_ROOT,
+        "dist",
+        "index.js",
+      );
+      // Prefix match for all sub-path imports (e.g. "@mohasinac/appkit/features/admin")
+      // webpack replaces the prefix so "@mohasinac/appkit/features/admin" becomes
+      // "<APPKIT_ROOT>/dist/features/admin" → resolved as index.js by node resolver.
+      config.resolve.alias["@mohasinac/appkit"] = path.join(
+        APPKIT_ROOT,
+        "dist",
       );
     }
     return config;

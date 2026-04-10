@@ -4,7 +4,7 @@ import { redirect } from "@/i18n/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { FAQPageContent } from "@/features/faq";
+import { FAQPageContent } from "@/features/faq/components/FAQPageContent";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import { routing } from "@/i18n/routing";
 

@@ -1,5 +1,10 @@
-export {
-  categoryItemGET as GET,
-  categoryItemPATCH as PATCH,
-  categoryItemDELETE as DELETE,
+import { withProviders } from "@/providers.config";
+import {
+  categoryItemGET,
+  categoryItemPATCH,
+  categoryItemDELETE,
 } from "@mohasinac/appkit/features/categories/server";
+
+export const GET = withProviders(categoryItemGET);
+export const PATCH = withProviders(categoryItemPATCH);
+export const DELETE = withProviders(categoryItemDELETE);

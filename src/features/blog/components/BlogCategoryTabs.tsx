@@ -2,9 +2,10 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { SectionTabs } from "@/components";
-import type { SectionTab } from "@/components";
-import type { BlogPostCategory } from "@/db/schema";
+import {
+  BlogCategoryTabs as AppkitBlogCategoryTabs,
+  type BlogPostCategory,
+} from "@mohasinac/appkit/features/blog";
 
 interface BlogCategoryTabsProps {
   activeCategory: "" | BlogPostCategory;
@@ -16,25 +17,26 @@ export function BlogCategoryTabs({
   onChange,
 }: BlogCategoryTabsProps) {
   const t = useTranslations("filters");
-  const tabs: SectionTab[] = useMemo(
-    () => [
-      { value: "", label: t("blogCategoryAll") },
-      { value: "news", label: t("blogCategoryNews") },
-      { value: "tips", label: t("blogCategoryTips") },
-      { value: "guides", label: t("blogCategoryGuides") },
-      { value: "updates", label: t("blogCategoryUpdates") },
-      { value: "community", label: t("blogCategoryCommunity") },
-    ],
-    [t],
+  const categories = useMemo<BlogPostCategory[]>(
+    () => ["news", "tips", "guides", "updates", "community"],
+    [],
   );
 
   return (
-    <SectionTabs
-      inline
-      value={activeCategory}
-      onChange={(v) => onChange(v as "" | BlogPostCategory)}
-      tabs={tabs}
-      className="mb-8"
-    />
+    <div className="mb-8">
+      <AppkitBlogCategoryTabs
+        categories={categories}
+        active={activeCategory || null}
+        onSelect={(v) => onChange((v ?? "") as "" | BlogPostCategory)}
+        labels={{
+          all: t("blogCategoryAll"),
+          news: t("blogCategoryNews"),
+          tips: t("blogCategoryTips"),
+          guides: t("blogCategoryGuides"),
+          updates: t("blogCategoryUpdates"),
+          community: t("blogCategoryCommunity"),
+        }}
+      />
+    </div>
   );
 }

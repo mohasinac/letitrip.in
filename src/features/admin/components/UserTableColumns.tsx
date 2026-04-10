@@ -1,14 +1,8 @@
 "use client";
 
-/**
- * useUserTableColumns
- * Path: src/components/admin/users/UserTableColumns.tsx
- *
- * Column definitions hook for the admin users DataTable.
- * Uses RoleBadge, StatusBadge from @/components and formatDate from @/utils.
- */
-
 import { Button, MediaAvatar, RoleBadge, StatusBadge } from "@/components";
+import type { DataTableColumn } from "@/components";
+import { buildAccountColumns } from "@mohasinac/appkit/features/account";
 import { Span } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
@@ -17,6 +11,15 @@ import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
 
+type AccountTableUser = Omit<
+  AdminUser,
+  "displayName" | "email" | "photoURL"
+> & {
+  displayName?: string;
+  email?: string;
+  photoURL?: string;
+};
+
 export function useUserTableColumns(
   onView: (user: AdminUser) => void,
   onToggleBan: (user: AdminUser) => void,
@@ -24,14 +27,13 @@ export function useUserTableColumns(
   const t = useTranslations("adminUsers");
   const tActions = useTranslations("actions");
 
-  return {
-    columns: [
-      {
-        key: "displayName",
+  const columns = buildAccountColumns<AccountTableUser>({
+    overrides: {
+      displayName: {
         header: t("colName"),
         sortable: true,
         width: "20%",
-        render: (user: AdminUser) => (
+        render: (user: AccountTableUser) => (
           <div className="flex items-center gap-2">
             {user.photoURL ? (
               <MediaAvatar
@@ -52,12 +54,11 @@ export function useUserTableColumns(
           </div>
         ),
       },
-      {
-        key: "email",
+      email: {
         header: t("colEmail"),
         sortable: true,
         width: "25%",
-        render: (user: AdminUser) => (
+        render: (user: AccountTableUser) => (
           <div>
             <div>{user.email}</div>
             {!user.emailVerified && (
@@ -68,19 +69,22 @@ export function useUserTableColumns(
           </div>
         ),
       },
+    },
+    omit: ["phone", "createdAt"],
+    extras: [
       {
         key: "role",
         header: t("colRole"),
         sortable: true,
         width: "15%",
-        render: (user: AdminUser) => <RoleBadge role={user.role} />,
+        render: (user: AccountTableUser) => <RoleBadge role={user.role} />,
       },
       {
         key: "disabled",
         header: t("colStatus"),
         sortable: true,
         width: "12%",
-        render: (user: AdminUser) => (
+        render: (user: AccountTableUser) => (
           <StatusBadge
             status={user.disabled ? "danger" : "active"}
             label={user.disabled ? t("banned") : t("active")}
@@ -92,16 +96,20 @@ export function useUserTableColumns(
         header: t("colJoined"),
         sortable: true,
         width: "15%",
-        render: (user: AdminUser) => formatDate(user.createdAt),
+        render: (user: AccountTableUser) => formatDate(user.createdAt),
       },
       {
         key: "lastLoginAt",
         header: t("colLastLogin"),
         width: "13%",
-        render: (user: AdminUser) =>
+        render: (user: AccountTableUser) =>
           user.lastLoginAt ? formatDate(user.lastLoginAt) : t("never"),
       },
     ],
+  }) as DataTableColumn<AdminUser>[];
+
+  return {
+    columns,
     actions: (user: AdminUser) => (
       <div className="flex gap-2">
         <Button

@@ -1,14 +1,11 @@
 "use client";
 
-import { Globe, MapPin, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { EmptyState, Spinner, Card, TextLink } from "@/components";
+import { StoreAboutView as AppkitStoreAboutView } from "@mohasinac/appkit/features/stores";
+import { EmptyState, Spinner, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";
-
-const { spacing, themed, flex, page } = THEME_CONSTANTS;
 
 interface StoreAboutViewProps {
   storeSlug: string;
@@ -20,7 +17,9 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
 
   if (isLoading) {
     return (
-      <div className={`${flex.hCenter} ${page.empty}`}>
+      <div
+        className={`${THEME_CONSTANTS.flex.hCenter} ${THEME_CONSTANTS.page.empty}`}
+      >
         <Spinner />
       </div>
     );
@@ -36,76 +35,54 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
   }
 
   return (
-    <div className={`${spacing.stack} max-w-4xl mx-auto`}>
-      <Card className={`p-6 ${spacing.stack}`}>
-        {/* Store name + description */}
-        <div>
-          <Heading level={2}>{store.storeName}</Heading>
-          {store.storeDescription && (
-            <Text variant="secondary" className="mt-2">
-              {store.storeDescription}
-            </Text>
-          )}
-        </div>
-
-        {/* Details list */}
-        <dl className="divide-y divide-zinc-200 dark:divide-slate-700 text-sm">
-          {store.storeCategory && (
-            <div className="py-3 flex items-center gap-3">
-              <Store className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-              <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
-                {t("about.category")}
-              </dt>
-              <dd className={`${themed.textPrimary} capitalize`}>
-                {store.storeCategory}
-              </dd>
-            </div>
-          )}
-
-          {store.bio && (
-            <div className="py-3">
-              <Text variant="secondary" size="sm">
-                {store.bio}
-              </Text>
-            </div>
-          )}
-
-          {store.location && (
-            <div className="py-3 flex items-center gap-3">
-              <MapPin className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-              <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
-                {t("about.location")}
-              </dt>
-              <dd className={themed.textPrimary}>{store.location}</dd>
-            </div>
-          )}
-
-          {store.website && (
-            <div className="py-3 flex items-center gap-3">
-              <Globe className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-              <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
-                {t("about.website")}
-              </dt>
-              <dd>
-                <TextLink href={store.website} className="break-all">
-                  {store.website}
-                </TextLink>
-              </dd>
-            </div>
-          )}
-
-          {store.createdAt && (
-            <div className="py-3 flex items-center gap-3">
-              <dt className={`${themed.textSecondary} w-28 flex-shrink-0 pl-7`}>
-                {t("about.memberSince")}
-              </dt>
-              <dd className={themed.textPrimary}>
-                {formatDate(store.createdAt)}
-              </dd>
-            </div>
-          )}
-        </dl>
-      </Card>
-    </div>
+    <AppkitStoreAboutView
+      store={{
+        id: store.id,
+        storeSlug: store.storeSlug ?? storeSlug,
+        ownerId: store.ownerId ?? "",
+        storeName: store.storeName,
+        storeDescription: store.storeDescription,
+        storeCategory: store.storeCategory,
+        storeLogoURL: store.storeLogoURL,
+        storeBannerURL: store.storeBannerURL,
+        status: store.status ?? "active",
+        isPublic: store.isPublic ?? true,
+        totalProducts: store.totalProducts,
+        itemsSold: store.itemsSold,
+        totalReviews: store.totalReviews,
+        averageRating: store.averageRating,
+        createdAt: store.createdAt,
+        bio: store.bio,
+        location: store.location,
+        website: store.website,
+        socialLinks: store.socialLinks,
+        returnPolicy: store.returnPolicy,
+        shippingPolicy: store.shippingPolicy,
+        isVacationMode: store.isVacationMode,
+        vacationMessage: store.vacationMessage,
+      }}
+      labels={{
+        aboutTitle: t("about.bio"),
+        locationLabel: t("about.location"),
+        websiteLabel: t("about.website"),
+        memberSinceLabel: t("about.memberSince"),
+      }}
+      renderSocialLinks={(links) =>
+        links && Object.values(links).some(Boolean) ? (
+          <div className="flex gap-2 flex-wrap">
+            {links.twitter && <TextLink href={links.twitter}>Twitter</TextLink>}
+            {links.instagram && (
+              <TextLink href={links.instagram}>Instagram</TextLink>
+            )}
+            {links.facebook && (
+              <TextLink href={links.facebook}>Facebook</TextLink>
+            )}
+            {links.linkedin && (
+              <TextLink href={links.linkedin}>LinkedIn</TextLink>
+            )}
+          </div>
+        ) : null
+      }
+    />
   );
 }

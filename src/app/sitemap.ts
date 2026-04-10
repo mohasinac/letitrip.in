@@ -219,7 +219,7 @@ async function fetchProductUrls(): Promise<MetadataRoute.Sitemap> {
       .limit(5000)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const data = doc.data();
       const slugOrId: string =
         (data[PRODUCT_FIELDS.SLUG] as string | undefined) ?? doc.id;
@@ -246,7 +246,7 @@ async function fetchEventUrls(): Promise<MetadataRoute.Sitemap> {
       .limit(500)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const data = doc.data();
       return {
         url: `${BASE_URL}${ROUTES.PUBLIC.EVENT_DETAIL(doc.id)}`,
@@ -274,7 +274,7 @@ async function fetchCategoryUrls(): Promise<MetadataRoute.Sitemap> {
       .limit(500)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const data = doc.data();
       const slug: string =
         (data[CATEGORY_FIELDS.SLUG] as string | undefined) ?? doc.id;
@@ -309,7 +309,7 @@ async function fetchBlogPostUrls(): Promise<MetadataRoute.Sitemap> {
       .limit(1000)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const data = doc.data();
       const slug: string =
         (data[BLOG_POST_FIELDS.SLUG] as string | undefined) ?? doc.id;
@@ -359,7 +359,7 @@ async function fetchAuctionUrls(): Promise<MetadataRoute.Sitemap> {
       .limit(2000)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
       const data = doc.data();
       const slugOrId: string =
         (data[PRODUCT_FIELDS.SLUG] as string | undefined) ?? doc.id;

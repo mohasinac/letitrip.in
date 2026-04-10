@@ -5,12 +5,12 @@ import { Star, Heart, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Heading, Main, Nav, Span, Text } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
+import { CategoryProductsView as AppkitCategoryProductsView } from "@mohasinac/appkit/features/categories";
 import {
   ActiveFilterChips,
   Button,
   DataTable,
   HorizontalScroller,
-  ListingLayout,
   MediaImage,
   PRODUCT_SORT_VALUES,
   ProductCard,
@@ -66,11 +66,9 @@ export function CategoryProductsView({
   const page = table.getNumber("page", 1);
   const activeTab = table.get("tab") || "products";
 
-  // ── Staged filter state ──────────────────────────────────────────────
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["minPrice", "maxPrice"]);
 
-  /* ---- Fetch category + children ---- */
   const {
     category,
     children,
@@ -80,7 +78,6 @@ export function CategoryProductsView({
     initialChildren,
   });
 
-  /* ---- Fetch products ---- */
   const { products, totalProducts, totalPages, prodLoading } =
     useCategoryProducts(slug, {
       sort,
@@ -92,7 +89,6 @@ export function CategoryProductsView({
       cacheKey: table.params.toString(),
     });
 
-  /* ---- Sort options ---- */
   const sortOptions = useMemo(
     () => [
       { value: PRODUCT_SORT_VALUES.NEWEST, label: tProducts("sortNewest") },
@@ -111,7 +107,6 @@ export function CategoryProductsView({
     [tProducts],
   );
 
-  /* ---- Active filters ---- */
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     const filters: ActiveFilter[] = [];
     const minPrice = table.get("minPrice");
@@ -119,16 +114,14 @@ export function CategoryProductsView({
     if (minPrice || maxPrice) {
       const label =
         minPrice && maxPrice
-          ? `₹${minPrice} – ₹${maxPrice}`
+          ? `\u20B9${minPrice} \u2013 \u20B9${maxPrice}`
           : minPrice
-            ? `₹${minPrice}+`
-            : `Up to ₹${maxPrice}`;
+            ? `\u20B9${minPrice}+`
+            : `Up to \u20B9${maxPrice}`;
       filters.push({ key: "minPrice", label: t("filterPrice"), value: label });
     }
     const q = table.get("q");
-    if (q) {
-      filters.push({ key: "q", label: tActions("search"), value: q });
-    }
+    if (q) filters.push({ key: "q", label: tActions("search"), value: q });
     return filters;
   }, [table, t, tActions]);
 
@@ -192,7 +185,6 @@ export function CategoryProductsView({
     setSelectedIds([]);
   }, [selectedIds, showSuccess, showError, tActions]);
 
-  /* ---- Loading state ---- */
   if (catLoading) {
     return (
       <div className={`${flex.center} min-h-[60vh]`}>
@@ -201,7 +193,6 @@ export function CategoryProductsView({
     );
   }
 
-  /* ---- Not found state ---- */
   if (!category) {
     return (
       <div
@@ -221,288 +212,177 @@ export function CategoryProductsView({
   }
 
   return (
-    <Main
-      className={`${THEME_CONSTANTS.page.container["2xl"]} py-6 sm:py-10 space-y-6`}
-    >
-      {/* ═══════════════ Category Hero ═══════════════ */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-        {/* Category image */}
-        <div className="relative w-full sm:w-48 md:w-56 lg:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
-          {category.display?.coverImage ? (
-            <MediaImage
-              src={category.display.coverImage}
-              alt={category.name}
-              size="card"
-            />
-          ) : (
-            <div
-              className={`${flex.center} w-full h-full bg-gradient-to-br from-primary/5 to-purple-50 dark:from-primary/10 dark:to-purple-900/20`}
-            >
-              <Span className="text-6xl">{category.display?.icon ?? "🗂️"}</Span>
-            </div>
-          )}
-        </div>
-
-        {/* Name + meta */}
-        <div className="flex-1 min-w-0 space-y-2">
-          <div className={`${flex.rowCenter} gap-3 flex-wrap`}>
-            <Heading level={1} className="text-2xl sm:text-3xl lg:text-4xl">
-              {category.name}
-            </Heading>
-            {/* Featured star */}
-            {category.isFeatured && (
-              <Star
-                className="w-6 h-6 text-yellow-500 fill-yellow-500 flex-shrink-0"
-                aria-label={t("featured")}
-              />
+    <AppkitCategoryProductsView
+      slug={slug}
+      category={category as any}
+      children={children as any}
+      total={totalProducts}
+      isLoading={prodLoading}
+      renderBreadcrumbs={() => (
+        <Nav
+          aria-label="Breadcrumb"
+          className={`text-sm ${themed.textSecondary} mb-4`}
+        >
+          <TextLink
+            href={ROUTES.PUBLIC.CATEGORIES}
+            className="hover:text-primary"
+          >
+            {t("title")}
+          </TextLink>
+          {category.ancestors?.map((ancestor) => (
+            <Span key={ancestor.id}>
+              <Span className="mx-2">/</Span>
+              <TextLink
+                href={`${ROUTES.PUBLIC.CATEGORIES}/${ancestor.name.toLowerCase().replace(/\s+/g, "-")}`}
+                className="hover:text-primary"
+              >
+                {ancestor.name}
+              </TextLink>
+            </Span>
+          ))}
+          <Span className="mx-2">/</Span>
+          <Span className={themed.textPrimary}>{category.name}</Span>
+        </Nav>
+      )}
+      renderChildCategories={() =>
+        children.length > 0 ? (
+          <HorizontalScroller
+            items={children}
+            keyExtractor={(cat: CategoryItem) => cat.id}
+            renderItem={(child: CategoryItem) => (
+              <TextLink
+                href={`${ROUTES.PUBLIC.CATEGORIES}/${child.slug}`}
+                variant="inherit"
+                className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors no-underline ${themed.border} hover:border-primary ${themed.bgSecondary} hover:bg-primary/5 dark:hover:bg-primary/10 ${themed.textPrimary}`}
+              >
+                {child.display?.icon && (
+                  <Span className="text-lg">{child.display.icon}</Span>
+                )}
+                <Span className="text-sm font-medium whitespace-nowrap">
+                  {child.name}
+                </Span>
+              </TextLink>
             )}
-            {/* Wishlist heart */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
-              aria-label={t("addToWishlist")}
-            >
-              <Heart className="w-5 h-5 text-zinc-400 hover:text-red-500 transition-colors" />
-            </Button>
-          </div>
-
-          {category.description && (
-            <Text variant="secondary" className="line-clamp-3">
-              {category.description}
-            </Text>
-          )}
-
-          <Text size="sm" variant="muted">
-            {t("productsCount", {
-              count: category.metrics?.productCount ?? 0,
-            })}
-          </Text>
-        </div>
-      </div>
-
-      {/* ═══════════════ Subcategory HorizontalScroller ═══════════════ */}
-      {children.length > 0 && (
-        <HorizontalScroller
-          items={children}
-          keyExtractor={(cat: CategoryItem) => cat.id}
-          renderItem={(child: CategoryItem) => (
-            <TextLink
-              href={`${ROUTES.PUBLIC.CATEGORIES}/${child.slug}`}
-              variant="inherit"
-              className={`flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-colors no-underline ${themed.border} hover:border-primary ${themed.bgSecondary} hover:bg-primary/5 dark:hover:bg-primary/10 ${themed.textPrimary}`}
-            >
-              {child.display?.icon && (
-                <Span className="text-lg">{child.display.icon}</Span>
-              )}
-              <Span className="text-sm font-medium whitespace-nowrap">
-                {child.name}
-              </Span>
-            </TextLink>
-          )}
-          showArrows
-          showFadeEdges
-          gap={8}
-          className="py-1"
+            showArrows
+            showFadeEdges
+            gap={8}
+            className="py-1"
+          />
+        ) : null
+      }
+      renderSearch={() => (
+        <Search
+          value={table.get("q")}
+          onChange={(v) => table.set("q", v)}
+          placeholder={t("searchProducts", { name: category.name })}
+          onClear={() => table.set("q", "")}
         />
       )}
-
-      {/* ═══════════════ Products / Auctions Tabs ═══════════════ */}
-      <SectionTabs
-        inline
-        value={activeTab}
-        onChange={(tab) => table.set("tab", tab)}
-        tabs={[
-          { value: "products", label: t("productsTab") },
-          { value: "auctions", label: t("auctionsTab") },
-        ]}
-      />
-
-      {/* ──── Products tab content ──── */}
-      {activeTab === "products" && (
-        <div className="pt-4">
-          {/* Breadcrumb */}
-          <Nav
-            aria-label="Breadcrumb"
-            className={`text-sm ${themed.textSecondary} mb-4`}
+      renderSort={() => (
+        <SortDropdown
+          value={sort}
+          onChange={(v) => table.set("sort", v)}
+          options={sortOptions}
+        />
+      )}
+      renderViewToggle={() => (
+        <Tooltip content={tActions("selectionHint")} placement="bottom">
+          <Button
+            type="button"
+            variant="ghost"
+            className={`w-7 h-7 rounded-full ${flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
+            aria-label={tActions("selectionHint")}
           >
-            <TextLink
-              href={ROUTES.PUBLIC.CATEGORIES}
-              className="hover:text-primary"
-            >
-              {t("title")}
-            </TextLink>
-            {category.ancestors?.map((ancestor) => (
-              <Span key={ancestor.id}>
-                <Span className="mx-2">/</Span>
-                <TextLink
-                  href={`${ROUTES.PUBLIC.CATEGORIES}/${ancestor.name.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="hover:text-primary"
-                >
-                  {ancestor.name}
-                </TextLink>
-              </Span>
-            ))}
-            <Span className="mx-2">/</Span>
-            <Span className={themed.textPrimary}>{category.name}</Span>
-          </Nav>
-
-          {/* ListingLayout — unified search/filter/sort/grid/pagination */}
-          <ListingLayout
-            searchSlot={
-              <Search
-                value={table.get("q")}
-                onChange={(v) => table.set("q", v)}
-                placeholder={t("searchProducts", { name: category.name })}
-                onClear={() => table.set("q", "")}
-              />
-            }
-            filterContent={
-              <RangeFilter
-                title={t("filterPrice")}
-                minValue={pendingTable.get("minPrice")}
-                maxValue={pendingTable.get("maxPrice")}
-                onMinChange={(v) => pendingTable.set("minPrice", v)}
-                onMaxChange={(v) => pendingTable.set("maxPrice", v)}
-                prefix="₹"
-                showSlider
-                minBound={0}
-                maxBound={500000}
-                step={500}
-                defaultCollapsed={false}
-              />
-            }
-            filterActiveCount={filterActiveCount}
-            onFilterApply={onFilterApply}
-            onFilterClear={onFilterClear}
-            sortSlot={
-              <SortDropdown
-                value={sort}
-                onChange={(v) => table.set("sort", v)}
-                options={sortOptions}
-              />
-            }
-            activeFiltersSlot={
-              activeFilters.length > 0 ? (
-                <ActiveFilterChips
-                  filters={activeFilters}
-                  onRemove={handleClearFilter}
-                  onClearAll={onFilterClear}
-                />
-              ) : undefined
-            }
-            selectedCount={selectedIds.length}
-            onClearSelection={() => setSelectedIds([])}
-            actionsSlot={
-              <Tooltip content={tActions("selectionHint")} placement="bottom">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className={`w-7 h-7 rounded-full ${flex.center} text-zinc-400 hover:text-primary transition-colors p-0 min-h-0`}
-                  aria-label={tActions("selectionHint")}
-                >
-                  <Info className="w-4 h-4" />
-                </Button>
-              </Tooltip>
-            }
-            bulkActionItems={
-              user
-                ? [
-                    {
-                      id: "bulk-cart",
-                      label: tActions("bulkAddToCart", {
-                        count: selectedIds.length,
-                      }),
-                      variant: "secondary",
-                      onClick: handleBulkAddToCart,
-                    },
-                    {
-                      id: "bulk-wishlist",
-                      label: tActions("bulkAddToWishlist", {
-                        count: selectedIds.length,
-                      }),
-                      variant: "primary",
-                      onClick: handleBulkAddToWishlist,
-                    },
-                  ]
-                : undefined
-            }
-            toolbarPaginationSlot={
-              totalPages > 1 ? (
-                <TablePagination
-                  compact
-                  total={totalProducts}
-                  currentPage={page}
-                  totalPages={totalPages}
-                  pageSize={PAGE_SIZE}
-                  onPageChange={(p) => table.set("page", String(p))}
-                />
-              ) : undefined
-            }
-          >
-            <DataTable
-              data={products}
-              keyExtractor={(item) => item.id}
-              loading={prodLoading}
-              externalPagination
-              columns={[
-                { key: "title", header: tProducts("colTitle") },
-                { key: "price", header: tProducts("colPrice") },
-                { key: "category", header: tProducts("filterCategory") },
-                { key: "status", header: tProducts("colStatus") },
-              ]}
-              showViewToggle
-              showTableView={false}
-              viewMode={
-                (table.get("view") || "grid") as "table" | "grid" | "list"
+            <Info className="w-4 h-4" />
+          </Button>
+        </Tooltip>
+      )}
+      renderFilters={() => (
+        <RangeFilter
+          title={t("filterPrice")}
+          minValue={pendingTable.get("minPrice")}
+          maxValue={pendingTable.get("maxPrice")}
+          onMinChange={(v) => pendingTable.set("minPrice", v)}
+          onMaxChange={(v) => pendingTable.set("maxPrice", v)}
+          prefix="\u20B9"
+          showSlider
+          minBound={0}
+          maxBound={500000}
+          step={500}
+          defaultCollapsed={false}
+        />
+      )}
+      renderActiveFilters={() =>
+        activeFilters.length > 0 ? (
+          <ActiveFilterChips
+            filters={activeFilters}
+            onRemove={handleClearFilter}
+            onClearAll={onFilterClear}
+          />
+        ) : null
+      }
+      renderProducts={(loading) => (
+        <DataTable
+          data={products}
+          keyExtractor={(item) => item.id}
+          loading={loading}
+          externalPagination
+          columns={[
+            { key: "title", header: tProducts("colTitle") },
+            { key: "price", header: tProducts("colPrice") },
+            { key: "category", header: tProducts("filterCategory") },
+            { key: "status", header: tProducts("colStatus") },
+          ]}
+          showViewToggle
+          showTableView={false}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          onViewModeChange={(m) => table.set("view", m)}
+          labels={{
+            gridView: tActions("gridView"),
+            listView: tActions("listView"),
+          }}
+          emptyState={
+            <div className={`${flex.centerCol} py-16 text-center`}>
+              <Text size="lg" weight="medium">
+                {t("noProductsIn", { name: category.name })}
+              </Text>
+              <TextLink
+                href={ROUTES.PUBLIC.CATEGORIES}
+                className="mt-3 text-sm text-primary hover:underline"
+              >
+                {t("backToCategories")}
+              </TextLink>
+            </div>
+          }
+          mobileCardRender={(item) => (
+            <ProductCard
+              product={item as any}
+              variant={
+                (table.get("view") || "grid") === "list" ? "list" : "grid"
               }
-              onViewModeChange={(m) => table.set("view", m)}
-              labels={{
-                gridView: tActions("gridView"),
-                listView: tActions("listView"),
-              }}
-              emptyState={
-                <div className={`${flex.centerCol} py-16 text-center`}>
-                  <Text size="lg" weight="medium">
-                    {t("noProductsIn", { name: category.name })}
-                  </Text>
-                  <TextLink
-                    href={ROUTES.PUBLIC.CATEGORIES}
-                    className="mt-3 text-sm text-primary hover:underline"
-                  >
-                    {t("backToCategories")}
-                  </TextLink>
-                </div>
+              selectable={!!user}
+              isSelected={selectedIds.includes(item.id)}
+              onSelect={(id, sel) =>
+                setSelectedIds((prev) =>
+                  sel ? [...prev, id] : prev.filter((x) => x !== id),
+                )
               }
-              mobileCardRender={(item) => (
-                <ProductCard
-                  product={item as any}
-                  variant={
-                    (table.get("view") || "grid") === "list" ? "list" : "grid"
-                  }
-                  selectable={!!user}
-                  isSelected={selectedIds.includes(item.id)}
-                  onSelect={(id, sel) =>
-                    setSelectedIds((prev) =>
-                      sel ? [...prev, id] : prev.filter((x) => x !== id),
-                    )
-                  }
-                />
-              )}
             />
-          </ListingLayout>
-        </div>
+          )}
+        />
       )}
-
-      {/* ──── Auctions tab content ──── */}
-      {activeTab === "auctions" && (
-        <div className={`${flex.centerCol} py-16 text-center`}>
-          <Span className="text-5xl mb-4">🔨</Span>
-          <Text size="lg" weight="medium">
-            {t("noAuctionsIn", { name: category.name })}
-          </Text>
-        </div>
-      )}
-    </Main>
+      renderPagination={() =>
+        totalPages > 1 ? (
+          <TablePagination
+            compact
+            total={totalProducts}
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={PAGE_SIZE}
+            onPageChange={(p) => table.set("page", String(p))}
+          />
+        ) : null
+      }
+    />
   );
 }

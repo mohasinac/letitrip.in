@@ -2,20 +2,26 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
+import { ROUTES, FAQ_CATEGORIES, SITE_CONFIG } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { useUrlTable } from "@/hooks";
-import { Heading, Text } from "@mohasinac/appkit/ui";
 import { Search, SectionTabs } from "@/components";
 import type { SectionTab } from "@/components";
-import { FAQCategorySidebar } from "./FAQCategorySidebar";
-import { FAQSortDropdown } from "./FAQSortDropdown";
+import {
+  FAQPageContent as AppkitFAQPageContent,
+  type FAQSortOption,
+  type FAQCategoryItem,
+} from "@mohasinac/appkit/features/faq";
 import { FAQAccordion } from "./FAQAccordion";
-import { ContactCTA } from "./ContactCTA";
-import type { FAQSortOption } from "./FAQSortDropdown";
-import { useFaqList } from "../hooks";
 
-const { flex } = THEME_CONSTANTS;
+const CATEGORIES: FAQCategoryItem[] = Object.entries(FAQ_CATEGORIES).map(
+  ([k, cat]) => ({
+    key: k as FAQCategoryKey,
+    label: cat.label,
+    icon: cat.icon,
+    description: cat.description,
+  }),
+);
 
 interface FAQPageContentProps {
   initialCategory?: FAQCategoryKey | "all";
@@ -27,53 +33,10 @@ export function FAQPageContent({
   const t = useTranslations("faq");
   const tLoading = useTranslations("loading");
   const router = useRouter();
-
-  // Derive directly from the URL-sourced prop — no local state.
-  // handleCategorySelect calls router.push, which updates the URL and causes
-  // the page to re-render with the new initialCategory prop.
-  const selectedCategory = initialCategory;
   const table = useUrlTable({ defaults: { sort: "helpful", q: "" } });
   const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
   const searchQuery = table.get("q") || "";
 
-  const sorts =
-    sortOption === "helpful"
-      ? "-stats.helpful,-priority,order"
-      : sortOption === "alphabetical"
-        ? "question"
-        : "-createdAt";
-
-  const { faqs, total, isLoading } = useFaqList({
-    category: selectedCategory === "all" ? undefined : selectedCategory,
-    search: searchQuery.trim() || undefined,
-    sorts,
-    page: 1,
-    pageSize: 100,
-  });
-
-  const { faqs: allMatchingFaqs } = useFaqList({
-    search: searchQuery.trim() || undefined,
-    sorts: "-priority,order",
-    page: 1,
-    pageSize: 200,
-  });
-
-  const categoryCounts: Record<FAQCategoryKey, number> = {
-    general: 0,
-    orders_payment: 0,
-    shipping_delivery: 0,
-    returns_refunds: 0,
-    product_information: 0,
-    account_security: 0,
-    technical_support: 0,
-  };
-  allMatchingFaqs.forEach((faq) => {
-    if (faq.category in categoryCounts) {
-      categoryCounts[faq.category as FAQCategoryKey] += 1;
-    }
-  });
-
-  // Navigate to the category URL path on selection
   const handleCategorySelect = (category: FAQCategoryKey | "all") => {
     if (category === "all") {
       router.push(ROUTES.PUBLIC.FAQS);
@@ -83,37 +46,56 @@ export function FAQPageContent({
   };
 
   return (
-    <div className="py-12">
-      {/* Page Header */}
-      <div className="text-center mb-12">
-        <Heading
-          level={1}
-          className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
-        >
-          {t("title")}
-        </Heading>
-        <Text
-          className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
-        >
-          {t("subtitle")}
-        </Text>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mb-8">
-        <Search
-          value={searchQuery}
-          onChange={(v) => table.set("q", v)}
-          placeholder={t("searchPlaceholder")}
-        />
-      </div>
-
-      {/* Mobile category pill strip — hidden on large screens (sidebar takes over) */}
-      <div className="lg:hidden mb-8">
+    <AppkitFAQPageContent
+      initialCategory={initialCategory}
+      categories={CATEGORIES}
+      routeHelpers={{
+        allFaqsHref: ROUTES.PUBLIC.FAQS,
+        faqCategoryHref: (cat) => ROUTES.PUBLIC.FAQ_CATEGORY(cat),
+        contactHref: ROUTES.PUBLIC.CONTACT,
+        navigateToCategory: handleCategorySelect,
+      }}
+      labels={{
+        title: t("title"),
+        subtitle: t("subtitle"),
+        searchPlaceholder: t("searchPlaceholder"),
+        categoriesTitle: t("categories"),
+        allFaqs: t("allFaqs"),
+        stillHaveQuestions: t("stillHaveQuestions"),
+        contactSupport: t("contactSupport"),
+        sortLabel: t("sort"),
+        sortHelpful: t("sortHelpful"),
+        sortNewest: t("sortNewest"),
+        sortAlphabetical: t("sortAlphabetical"),
+        resultCount: (count) => t("resultCount", { count }),
+        inCategory: (label) => t("inCategory", { category: label }),
+        loading: tLoading("default"),
+        contactTitle: t("contactTitle"),
+        contactDescription: t("contactDescription"),
+        contactEmailUs: t("contactEmailUs"),
+        contactCallUs: t("contactCallUs"),
+        contactForm: t("contactForm"),
+        contactSubmitRequest: t("submitRequest"),
+        contactTeam: t("contactTeam"),
+      }}
+      contact={{
+        email: SITE_CONFIG.contact.email,
+        phone: SITE_CONFIG.contact.phone,
+      }}
+      searchValue={searchQuery}
+      onSearchChange={(v) => table.set("q", v)}
+      sortOption={sortOption}
+      onSortChange={(sort) => table.setSort(sort)}
+      renderMobileCategoryTabs={({
+        selectedCategory,
+        total,
+        categoryCounts,
+        onSelect,
+      }) => (
         <SectionTabs
           inline
           value={selectedCategory}
-          onChange={(v) => handleCategorySelect(v as FAQCategoryKey | "all")}
+          onChange={(v) => onSelect(v as FAQCategoryKey | "all")}
           tabs={
             [
               {
@@ -122,64 +104,17 @@ export function FAQPageContent({
                 icon: "📚",
                 count: total,
               },
-              ...Object.entries(FAQ_CATEGORIES).map(([k, cat]) => ({
-                value: k,
-                label: t(`category.${k}`),
+              ...CATEGORIES.map((cat) => ({
+                value: cat.key,
+                label: t(`category.${cat.key}`),
                 icon: cat.icon,
-                count: categoryCounts[k as FAQCategoryKey] ?? 0,
+                count: categoryCounts[cat.key as FAQCategoryKey] ?? 0,
               })),
             ] satisfies SectionTab[]
           }
         />
-      </div>
-
-      {/* Main Content Grid */}
-      <div
-        className={`grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12 gap-8`}
-      >
-        {/* Sidebar (desktop only — 30% width) */}
-        <div className="hidden lg:block lg:col-span-4 xl:col-span-3">
-          <FAQCategorySidebar
-            selectedCategory={selectedCategory}
-            onCategorySelect={handleCategorySelect}
-            categoryCounts={categoryCounts}
-          />
-        </div>
-
-        {/* Main Content (full width on mobile, 70% on desktop) */}
-        <div className="col-span-1 lg:col-span-8 xl:col-span-9">
-          {/* Sort & Results Count */}
-          <div className={`${flex.between} mb-8`}>
-            <Text
-              className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
-            >
-              {t("resultCount", { count: total })}
-              {selectedCategory !== "all" &&
-                ` ${t("inCategory", { category: t(`category.${selectedCategory}`) })}`}
-            </Text>
-            <FAQSortDropdown
-              selectedSort={sortOption}
-              onSortChange={(sort) => table.setSort(sort)}
-            />
-          </div>
-
-          {/* FAQ Accordion */}
-          {isLoading ? (
-            <Text className={THEME_CONSTANTS.themed.textSecondary}>
-              {tLoading("default")}
-            </Text>
-          ) : (
-            <FAQAccordion faqs={faqs} />
-          )}
-
-          {/* Contact CTA */}
-          {faqs.length > 0 && (
-            <div className="mt-12">
-              <ContactCTA />
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+      )}
+      renderAccordion={(faqs) => <FAQAccordion faqs={faqs as any} />}
+    />
   );
 }

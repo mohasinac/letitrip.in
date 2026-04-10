@@ -1,17 +1,3894 @@
 {
-  "generatedAt": "2026-03-15T01:16:30.605Z",
-  "scannedFiles": 1341,
-  "totalViolations": 0,
-  "autoFixableCount": 0,
+  "generatedAt": "2026-04-10T15:30:38.748Z",
+  "scannedFiles": 1272,
+  "totalViolations": 73,
+  "autoFixableCount": 2,
   "summary": {
-    "byCode": [],
+    "byCode": [
+      {
+        "code": "ARCH-001",
+        "count": 2,
+        "severity": "warning",
+        "autoFixable": true
+      },
+      {
+        "code": "ARCH-002",
+        "count": 1,
+        "severity": "error",
+        "autoFixable": false
+      },
+      {
+        "code": "ARCH-003",
+        "count": 1,
+        "severity": "warning",
+        "autoFixable": false
+      },
+      {
+        "code": "CNST-002",
+        "count": 6,
+        "severity": "info",
+        "autoFixable": false
+      },
+      {
+        "code": "COMP-005",
+        "count": 6,
+        "severity": "warning",
+        "autoFixable": false
+      },
+      {
+        "code": "COMP-007",
+        "count": 1,
+        "severity": "warning",
+        "autoFixable": false
+      },
+      {
+        "code": "COMP-010",
+        "count": 13,
+        "severity": "warning",
+        "autoFixable": false
+      },
+      {
+        "code": "QUAL-001",
+        "count": 3,
+        "severity": "warning",
+        "autoFixable": false
+      },
+      {
+        "code": "STYL-001",
+        "count": 1,
+        "severity": "info",
+        "autoFixable": false
+      },
+      {
+        "code": "STYL-003",
+        "count": 38,
+        "severity": "info",
+        "autoFixable": false
+      },
+      {
+        "code": "SVC-001",
+        "count": 1,
+        "severity": "error",
+        "autoFixable": false
+      }
+    ],
     "bySeverity": {
-      "error": 0,
-      "warning": 0,
-      "info": 0
+      "error": 2,
+      "warning": 26,
+      "info": 45
     },
-    "byCategory": [],
-    "topFiles": []
+    "byCategory": [
+      {
+        "category": "ARCH",
+        "count": 4
+      },
+      {
+        "category": "CNST",
+        "count": 6
+      },
+      {
+        "category": "COMP",
+        "count": 20
+      },
+      {
+        "category": "QUAL",
+        "count": 3
+      },
+      {
+        "category": "STYL",
+        "count": 39
+      },
+      {
+        "category": "SVC",
+        "count": 1
+      }
+    ],
+    "topFiles": [
+      {
+        "file": "src/components/ui/Accordion.tsx",
+        "count": 6
+      },
+      {
+        "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+        "count": 5
+      },
+      {
+        "file": "src/features/copilot/hooks/useCopilotChat.ts",
+        "count": 5
+      },
+      {
+        "file": "src/components/ui/Avatar.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/components/ui/BaseListingCard.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/components/ui/ListingLayout.tsx",
+        "count": 4
+      },
+      {
+        "file": "src/components/StoreCard.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/components/ui/Dropdown.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/components/ui/DynamicSelect.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/components/ui/Menu.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/components/ui/Tabs.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/features/cart/components/CheckoutOrderReview.tsx",
+        "count": 3
+      },
+      {
+        "file": "src/components/BlogCard.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/DashboardStatsCard.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/EventCard.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/ui/HorizontalScroller.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/components/ui/SortDropdown.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/features/products/components/ProductFeatureBadges.tsx",
+        "count": 2
+      },
+      {
+        "file": "src/instrumentation.ts",
+        "count": 2
+      },
+      {
+        "file": "src/actions/demo-seed.actions.ts",
+        "count": 1
+      }
+    ]
   },
-  "violations": []
+  "violations": [
+    {
+      "id": "V00001",
+      "code": "SVC-001",
+      "severity": "error",
+      "autoFixable": false,
+      "rule": "Direct fetch() in UI code",
+      "description": "fetch() must not be called in components, hooks, contexts, or pages. Reads use apiClient in a hook queryFn. Mutations use Server Actions.",
+      "ruleRef": "rules-services.instructions.md — RULE 20 & 21",
+      "file": "src/actions/demo-seed.actions.ts",
+      "line": 67,
+      "col": 26,
+      "message": "Direct fetch() in UI code — use apiClient in a hook queryFn instead",
+      "snippet": "const response = await fetch(`${baseUrl}/api/demo/seed`, {",
+      "context": [
+        {
+          "lineNumber": 64,
+          "content": "  // collection-specific seeding logic (800+ lines). We call it server-side",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 65,
+          "content": "  // so there's no browser round-trip — this runs in the same Node process.",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 66,
+          "content": "  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? \"http://localhost:3000\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 67,
+          "content": "  const response = await fetch(`${baseUrl}/api/demo/seed`, {",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 68,
+          "content": "    method: \"POST\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 69,
+          "content": "    headers: { \"Content-Type\": \"application/json\" },",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 70,
+          "content": "    body: JSON.stringify(vars),",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00002",
+      "code": "QUAL-001",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "console.log / debug / info / warn in production code",
+      "description": "console.* is forbidden in production source. Use logger (client) from @/classes or serverLogger from @/lib/server-logger.",
+      "ruleRef": "rules-code-quality.instructions.md — RULE 23",
+      "file": "src/app/api/products/[id]/route.ts",
+      "line": 25,
+      "col": 5,
+      "message": "console.error() is forbidden — use logger or serverLogger",
+      "snippet": "console.error(\"[products] GET /api/products/[id] failed\", error);",
+      "context": [
+        {
+          "lineNumber": 22,
+          "content": "    }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 23,
+          "content": "    return NextResponse.json({ success: true, data: item });",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 24,
+          "content": "  } catch (error) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 25,
+          "content": "    console.error(\"[products] GET /api/products/[id] failed\", error);",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 26,
+          "content": "    return NextResponse.json(",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 27,
+          "content": "      { success: false, error: \"Failed to fetch product\" },",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 28,
+          "content": "      { status: 500 },",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00003",
+      "code": "ARCH-001",
+      "severity": "warning",
+      "autoFixable": true,
+      "rule": "Deep non-barrel import",
+      "description": "Must import from barrel exports (index.ts) only. Never import from sub-paths like @/components/ui/Button or @/utils/validators/email.",
+      "ruleRef": "rules-architecture.instructions.md — RULE 2",
+      "file": "src/app/opengraph-image.tsx",
+      "line": 3,
+      "col": 23,
+      "message": "Deep import '@/constants/seo' — use the barrel index instead",
+      "snippet": "import { SEO_CONFIG } from \"@/constants/seo\";",
+      "context": [
+        {
+          "lineNumber": 1,
+          "content": "import { ImageResponse } from \"next/og\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 2,
+          "content": "// Import directly from source file (not the barrel) to keep OG image route lean.",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 3,
+          "content": "import { SEO_CONFIG } from \"@/constants/seo\";",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 4,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 5,
+          "content": "export const runtime = \"nodejs\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 6,
+          "content": "",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00004",
+      "code": "ARCH-003",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Page file exceeds 150 lines",
+      "description": "Page components (page.tsx) must be thin shells (≤150 non-empty lines). Extract logic to src/features/<name>/components/<Domain>View.tsx.",
+      "ruleRef": "rules-architecture.instructions.md — RULE 9 & 10",
+      "file": "src/app/[locale]/refund-policy/page.tsx",
+      "line": 1,
+      "col": 1,
+      "message": "Page has 154 non-empty lines — max is 150",
+      "snippet": "154 non-empty lines",
+      "context": [
+        {
+          "lineNumber": 1,
+          "content": "import type { Metadata } from \"next\";",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 2,
+          "content": "import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from \"@/constants\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 3,
+          "content": "import { Heading, Text, Section } from \"@mohasinac/appkit/ui\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 4,
+          "content": "import { TextLink, FlowDiagram } from \"@/components\";",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00005",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/BlogCard.tsx",
+      "line": 53,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 50,
+          "content": "      }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 51,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 52,
+          "content": "      {selectable && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 53,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 54,
+          "content": "          className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 inline-flex items-center justify-center",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 55,
+          "content": "            ${selected ? \"bg-primary border-primary\" : \"bg-white/90 border-gray-300\"}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 56,
+          "content": "          aria-hidden=\"true\"",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00006",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/BlogCard.tsx",
+      "line": 59,
+      "col": 13,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span className=\"text-white text-xs leading-none\">✓</span>",
+      "context": [
+        {
+          "lineNumber": 56,
+          "content": "          aria-hidden=\"true\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 57,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 58,
+          "content": "          {selected && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 59,
+          "content": "            <span className=\"text-white text-xs leading-none\">✓</span>",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 60,
+          "content": "          )}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 61,
+          "content": "        </span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 62,
+          "content": "      )}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00007",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/DashboardStatsCard.tsx",
+      "line": 24,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.textSecondary",
+      "snippet": "iconColor = \"text-gray-600 dark:text-gray-400\",",
+      "context": [
+        {
+          "lineNumber": 21,
+          "content": "  value,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 22,
+          "content": "  icon: Icon,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 23,
+          "content": "  iconBg = \"bg-gray-100 dark:bg-gray-800\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 24,
+          "content": "  iconColor = \"text-gray-600 dark:text-gray-400\",",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 25,
+          "content": "  trend,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 26,
+          "content": "  variant,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 27,
+          "content": "  href,",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00008",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/DashboardStatsCard.tsx",
+      "line": 36,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": ": \"bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700\"",
+      "context": [
+        {
+          "lineNumber": 33,
+          "content": "      className={`rounded-xl p-4 flex items-center gap-4 ${",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "        isDark",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "          ? \"bg-gray-900 text-white\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 36,
+          "content": "          : \"bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 37,
+          "content": "      } ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 38,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 39,
+          "content": "      {Icon && (",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00009",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/EventCard.tsx",
+      "line": 46,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 43,
+          "content": "      }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 44,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 45,
+          "content": "      {selectable && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 46,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 47,
+          "content": "          className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 inline-flex items-center justify-center pointer-events-none",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 48,
+          "content": "            ${selected ? \"bg-primary border-primary\" : \"bg-white/90 border-gray-300\"}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 49,
+          "content": "          aria-hidden=\"true\"",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00010",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/EventCard.tsx",
+      "line": 52,
+      "col": 13,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span className=\"text-white text-xs leading-none\">✓</span>",
+      "context": [
+        {
+          "lineNumber": 49,
+          "content": "          aria-hidden=\"true\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 50,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 51,
+          "content": "          {selected && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 52,
+          "content": "            <span className=\"text-white text-xs leading-none\">✓</span>",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 53,
+          "content": "          )}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 54,
+          "content": "        </span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 55,
+          "content": "      )}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00011",
+      "code": "STYL-001",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Grid missing xl: / 2xl: column breakpoints",
+      "description": "Every grid must include xl: and 2xl: column counts for widescreen. Flagged when lg:grid-cols-N is present but xl:grid-cols-N is absent.",
+      "ruleRef": "rules-styling.instructions.md — RULE 25",
+      "file": "src/components/forms/Form.tsx",
+      "line": 78,
+      "col": 1,
+      "message": "Grid defines lg: columns but missing xl:grid-cols-N and 2xl:grid-cols-N",
+      "snippet": "3: \"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3\",",
+      "context": [
+        {
+          "lineNumber": 75,
+          "content": "  const gridClasses = {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 76,
+          "content": "    1: \"grid-cols-1\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 77,
+          "content": "    2: \"grid-cols-1 md:grid-cols-2\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 78,
+          "content": "    3: \"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3\",",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 79,
+          "content": "    4: \"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 80,
+          "content": "  };",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 81,
+          "content": "",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00012",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/media/MediaImage.tsx",
+      "line": 131,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 128,
+          "content": "        role=\"img\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 129,
+          "content": "        aria-label={alt}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 130,
+          "content": "      >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 131,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 132,
+          "content": "          className=\"text-zinc-400 text-2xl leading-none\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 133,
+          "content": "          aria-hidden=\"true\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 134,
+          "content": "        >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00013",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/StoreCard.tsx",
+      "line": 36,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.bgPrimary",
+      "snippet": "className={`relative flex flex-col h-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${dimensions.minW} ${dimensions.minH} ${className}`}",
+      "context": [
+        {
+          "lineNumber": 33,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 36,
+          "content": "      className={`relative flex flex-col h-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${dimensions.minW} ${dimensions.minH} ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 37,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 38,
+          "content": "      {selectable && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 39,
+          "content": "        <Button",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00014",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/StoreCard.tsx",
+      "line": 48,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 ${selected ? \"bg-primary border-primary\" : \"bg-white border-gray-300\"} flex items-center justify-center`}",
+      "context": [
+        {
+          "lineNumber": 45,
+          "content": "            e.preventDefault();",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 46,
+          "content": "            onSelect?.(store.id, !selected);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 47,
+          "content": "          }}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 48,
+          "content": "          className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 ${selected ? \"bg-primary border-primary\" : \"bg-white border-gray-300\"} flex items-center justify-center`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 49,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 50,
+          "content": "          {selected && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 51,
+          "content": "            <Span className=\"text-white text-xs leading-none\">✓</Span>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00015",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/StoreCard.tsx",
+      "line": 84,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "<div className=\"h-12 w-12 rounded-lg border-2 border-white bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 font-bold text-lg shadow-sm\">",
+      "context": [
+        {
+          "lineNumber": 81,
+          "content": "                className=\"h-12 w-12 rounded-lg border-2 border-white object-cover shadow-sm\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 82,
+          "content": "              />",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 83,
+          "content": "            ) : (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 84,
+          "content": "              <div className=\"h-12 w-12 rounded-lg border-2 border-white bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 font-bold text-lg shadow-sm\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 85,
+          "content": "                {store.storeName[0]?.toUpperCase()}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "              </div>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 87,
+          "content": "            )}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00016",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 96,
+      "col": 7,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 93,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 94,
+          "content": "      className={`border-b border-gray-200 dark:border-gray-700 ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 95,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 96,
+          "content": "      <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 97,
+          "content": "        type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 98,
+          "content": "        disabled={disabled}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 99,
+          "content": "        aria-expanded={isOpen}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00017",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 103,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span>{title}</span>",
+      "context": [
+        {
+          "lineNumber": 100,
+          "content": "        onClick={() => toggle(value)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 101,
+          "content": "        className=\"w-full flex items-center justify-between py-3 px-1 text-left text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "      >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "        <span>{title}</span>",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 104,
+          "content": "        <span",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 105,
+          "content": "          className={`transition-transform duration-200 ${isOpen ? \"rotate-180\" : \"\"}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "        >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00018",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 104,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 101,
+          "content": "        className=\"w-full flex items-center justify-between py-3 px-1 text-left text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "      >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "        <span>{title}</span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 104,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 105,
+          "content": "          className={`transition-transform duration-200 ${isOpen ? \"rotate-180\" : \"\"}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 107,
+          "content": "          ▾",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00019",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 94,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "className={`border-b border-gray-200 dark:border-gray-700 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 91,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 92,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 93,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 94,
+          "content": "      className={`border-b border-gray-200 dark:border-gray-700 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 95,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 96,
+          "content": "      <button",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 97,
+          "content": "        type=\"button\"",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00020",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 101,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "className=\"w-full flex items-center justify-between py-3 px-1 text-left text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed\"",
+      "context": [
+        {
+          "lineNumber": 98,
+          "content": "        disabled={disabled}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 99,
+          "content": "        aria-expanded={isOpen}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 100,
+          "content": "        onClick={() => toggle(value)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 101,
+          "content": "        className=\"w-full flex items-center justify-between py-3 px-1 text-left text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 102,
+          "content": "      >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "        <span>{title}</span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 104,
+          "content": "        <span",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00021",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Accordion.tsx",
+      "line": 111,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.textSecondary",
+      "snippet": "<div className=\"pb-3 px-1 text-sm text-gray-600 dark:text-gray-400\">",
+      "context": [
+        {
+          "lineNumber": 108,
+          "content": "        </span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 109,
+          "content": "      </button>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 110,
+          "content": "      {isOpen && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 111,
+          "content": "        <div className=\"pb-3 px-1 text-sm text-gray-600 dark:text-gray-400\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 112,
+          "content": "          {children}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 113,
+          "content": "        </div>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 114,
+          "content": "      )}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00022",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Avatar.tsx",
+      "line": 55,
+      "col": 5,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 52,
+          "content": "    );",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 53,
+          "content": "  }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 54,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 55,
+          "content": "    <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 56,
+          "content": "      aria-label={name}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 57,
+          "content": "      className={`${sz} rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-medium select-none ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 58,
+          "content": "    >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00023",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Avatar.tsx",
+      "line": 83,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 80,
+          "content": "        />",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 81,
+          "content": "      ))}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 82,
+          "content": "      {extra > 0 && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 83,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 84,
+          "content": "          className={`${SIZE_MAP[size]} rounded-full ring-2 ring-white dark:ring-gray-900 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-medium`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 85,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "          +{extra}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00024",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Avatar.tsx",
+      "line": 57,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`${sz} rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-medium select-none ${className}`}",
+      "context": [
+        {
+          "lineNumber": 54,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 55,
+          "content": "    <span",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 56,
+          "content": "      aria-label={name}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 57,
+          "content": "      className={`${sz} rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-medium select-none ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 58,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 59,
+          "content": "      {initials(name)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 60,
+          "content": "    </span>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00025",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Avatar.tsx",
+      "line": 84,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`${SIZE_MAP[size]} rounded-full ring-2 ring-white dark:ring-gray-900 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-medium`}",
+      "context": [
+        {
+          "lineNumber": 81,
+          "content": "      ))}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 82,
+          "content": "      {extra > 0 && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 83,
+          "content": "        <span",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 84,
+          "content": "          className={`${SIZE_MAP[size]} rounded-full ring-2 ring-white dark:ring-gray-900 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-medium`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 85,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "          +{extra}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 87,
+          "content": "        </span>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00026",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/BaseListingCard.tsx",
+      "line": 100,
+      "col": 5,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 97,
+          "content": "  className = \"\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 98,
+          "content": "}: BaseListingCardCheckboxProps) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 99,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 100,
+          "content": "    <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 101,
+          "content": "      type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "      aria-label={label ?? (selected ? \"Deselect\" : \"Select\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "      onClick={onSelect}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00027",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/BaseListingCard.tsx",
+      "line": 108,
+      "col": 20,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "{selected && <span className=\"text-white text-xs leading-none\">✓</span>}",
+      "context": [
+        {
+          "lineNumber": 105,
+          "content": "        ${selected ? \"bg-primary border-primary\" : \"bg-white/90 border-gray-300\"}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "        ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 107,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 108,
+          "content": "      {selected && <span className=\"text-white text-xs leading-none\">✓</span>}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 109,
+          "content": "    </button>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 110,
+          "content": "  );",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 111,
+          "content": "}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00028",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/BaseListingCard.tsx",
+      "line": 51,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "${isSelected ? \"ring-2 ring-primary border-primary\" : \"border-gray-200 dark:border-gray-700\"}",
+      "context": [
+        {
+          "lineNumber": 48,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 49,
+          "content": "      onClick={onClick}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 50,
+          "content": "        className={`relative flex flex-col h-full rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 51,
+          "content": "        ${isSelected ? \"ring-2 ring-primary border-primary\" : \"border-gray-200 dark:border-gray-700\"}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 52,
+          "content": "        ${isDisabled ? \"opacity-60\" : \"\"}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 53,
+          "content": "        ${onClick ? \"cursor-pointer hover:shadow-md\" : \"\"}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 54,
+          "content": "        ${className}`}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00029",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/BaseListingCard.tsx",
+      "line": 104,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`absolute ${position} z-10 h-5 w-5 rounded border-2 flex items-center justify-center",
+      "context": [
+        {
+          "lineNumber": 101,
+          "content": "      type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "      aria-label={label ?? (selected ? \"Deselect\" : \"Select\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "      onClick={onSelect}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 104,
+          "content": "      className={`absolute ${position} z-10 h-5 w-5 rounded border-2 flex items-center justify-center",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 105,
+          "content": "        ${selected ? \"bg-primary border-primary\" : \"bg-white/90 border-gray-300\"}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "        ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 107,
+          "content": "    >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00030",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Dropdown.tsx",
+      "line": 87,
+      "col": 5,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 84,
+          "content": "}: DropdownItemProps) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 85,
+          "content": "  const { close } = useContext(DropdownCtx);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 87,
+          "content": "    <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 88,
+          "content": "      type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 89,
+          "content": "      disabled={disabled}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 90,
+          "content": "      onClick={() => {",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00031",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Dropdown.tsx",
+      "line": 71,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.bgPrimary",
+      "snippet": "className={`absolute right-0 z-50 mt-1 min-w-[160px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 68,
+          "content": "  if (!isOpen) return null;",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 69,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 70,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 71,
+          "content": "      className={`absolute right-0 z-50 mt-1 min-w-[160px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 72,
+          "content": "      onClick={(e) => e.stopPropagation()}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 73,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 74,
+          "content": "      {children}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00032",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Dropdown.tsx",
+      "line": 104,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "className={`my-1 border-t border-gray-200 dark:border-gray-700 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 101,
+          "content": "function DropdownSeparator({ className = \"\" }: DropdownSeparatorProps) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 104,
+          "content": "      className={`my-1 border-t border-gray-200 dark:border-gray-700 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 105,
+          "content": "    />",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "  );",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 107,
+          "content": "}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00033",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/DynamicSelect.tsx",
+      "line": 119,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "className=\"w-full flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm disabled:opacity-50\"",
+      "context": [
+        {
+          "lineNumber": 116,
+          "content": "        size=\"md\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 117,
+          "content": "        disabled={disabled}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 118,
+          "content": "        onClick={() => setIsOpen((v) => !v)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 119,
+          "content": "        className=\"w-full flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm disabled:opacity-50\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 120,
+          "content": "      >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 121,
+          "content": "        <Span className={value != null ? \"\" : \"text-gray-400\"}>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 122,
+          "content": "          {selectedLabel || placeholder}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00034",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/DynamicSelect.tsx",
+      "line": 128,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.bgPrimary",
+      "snippet": "<div className=\"absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg\">",
+      "context": [
+        {
+          "lineNumber": 125,
+          "content": "      </Button>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 126,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 127,
+          "content": "      {isOpen && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 128,
+          "content": "        <div className=\"absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 129,
+          "content": "          <Input",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 130,
+          "content": "            autoFocus",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 131,
+          "content": "            value={query}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00035",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/DynamicSelect.tsx",
+      "line": 134,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "className=\"w-full px-3 py-2 text-sm border-b border-gray-200 dark:border-gray-700 outline-none bg-transparent\"",
+      "context": [
+        {
+          "lineNumber": 131,
+          "content": "            value={query}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 132,
+          "content": "            onChange={(e) => setQuery(e.target.value)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 133,
+          "content": "            placeholder={searchPlaceholder}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 134,
+          "content": "            className=\"w-full px-3 py-2 text-sm border-b border-gray-200 dark:border-gray-700 outline-none bg-transparent\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 135,
+          "content": "          />",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 136,
+          "content": "          <Ul className=\"max-h-48 overflow-y-auto py-1\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 137,
+          "content": "            {filteredOptions.map((opt, i) => (",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00036",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/HorizontalScroller.tsx",
+      "line": 209,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}",
+      "context": [
+        {
+          "lineNumber": 206,
+          "content": "          size=\"sm\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 207,
+          "content": "          onClick={() => scrollBy(-1)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 208,
+          "content": "          aria-label=\"Previous\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 209,
+          "content": "          className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 210,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 211,
+          "content": "          ‹",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 212,
+          "content": "        </Button>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00037",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/HorizontalScroller.tsx",
+      "line": 227,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}",
+      "context": [
+        {
+          "lineNumber": 224,
+          "content": "          size=\"sm\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 225,
+          "content": "          onClick={() => scrollBy(1)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 226,
+          "content": "          aria-label=\"Next\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 227,
+          "content": "          className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 ${arrowCls} rounded-full bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 shadow flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition-colors`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 228,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 229,
+          "content": "          ›",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 230,
+          "content": "        </Button>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00038",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/ListingLayout.tsx",
+      "line": 406,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800\">",
+      "context": [
+        {
+          "lineNumber": 403,
+          "content": "              ].join(\" \")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 404,
+          "content": "            >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 405,
+          "content": "              {/* Panel header */}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 406,
+          "content": "              <div className=\"flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 407,
+          "content": "                <Text weight=\"semibold\" size=\"sm\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 408,
+          "content": "                  {panelTitle}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 409,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00039",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/ListingLayout.tsx",
+      "line": 481,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "\"h-10 flex items-center justify-center px-3 overflow-x-auto pb-px\",",
+      "context": [
+        {
+          "lineNumber": 478,
+          "content": "            \"z-[39]\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 479,
+          "content": "            THEME_CONSTANTS.layout.bottomNavBg,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 480,
+          "content": "            \"shadow-[0_-2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_8px_rgba(0,0,0,0.20)]\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 481,
+          "content": "            \"h-10 flex items-center justify-center px-3 overflow-x-auto pb-px\",",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 482,
+          "content": "            THEME_CONSTANTS.utilities.scrollbarThinX,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 483,
+          "content": "          ].join(\" \")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 484,
+          "content": "        >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00040",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/ListingLayout.tsx",
+      "line": 511,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800 flex-shrink-0\">",
+      "context": [
+        {
+          "lineNumber": 508,
+          "content": "            aria-label={panelTitle}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 509,
+          "content": "          >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 510,
+          "content": "            {/* Header */}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 511,
+          "content": "            <div className=\"flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-slate-800 flex-shrink-0\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 512,
+          "content": "              <Text weight=\"semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 513,
+          "content": "                {panelTitle}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 514,
+          "content": "                {filterActiveCount > 0 && (",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00041",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/ListingLayout.tsx",
+      "line": 526,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.center",
+      "snippet": "className=\"rounded-full w-8 h-8 p-0 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-slate-800\"",
+      "context": [
+        {
+          "lineNumber": 523,
+          "content": "                size=\"sm\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 524,
+          "content": "                onClick={() => setMobileFilterOpen(false)}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 525,
+          "content": "                aria-label={tActions(\"close\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 526,
+          "content": "                className=\"rounded-full w-8 h-8 p-0 flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-slate-800\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 527,
+          "content": "              >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 528,
+          "content": "                <svg",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 529,
+          "content": "                  className=\"w-4 h-4\"",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00042",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Menu.tsx",
+      "line": 87,
+      "col": 5,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 84,
+          "content": "}: MenuItemProps) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 85,
+          "content": "  const { close } = useContext(MenuCtx);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 87,
+          "content": "    <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 88,
+          "content": "      type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 89,
+          "content": "      disabled={disabled}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 90,
+          "content": "      onClick={() => {",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00043",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Menu.tsx",
+      "line": 71,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.bgPrimary",
+      "snippet": "className={`absolute right-0 z-50 mt-1 min-w-[160px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 68,
+          "content": "  if (!isOpen) return null;",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 69,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 70,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 71,
+          "content": "      className={`absolute right-0 z-50 mt-1 min-w-[160px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg py-1 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 72,
+          "content": "      onClick={(e) => e.stopPropagation()}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 73,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 74,
+          "content": "      {children}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00044",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Menu.tsx",
+      "line": 104,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "className={`my-1 border-t border-gray-200 dark:border-gray-700 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 101,
+          "content": "function MenuSeparator({ className = \"\" }: MenuSeparatorProps) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 102,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 103,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 104,
+          "content": "      className={`my-1 border-t border-gray-200 dark:border-gray-700 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 105,
+          "content": "    />",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 106,
+          "content": "  );",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 107,
+          "content": "}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00045",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/SectionTabs.tsx",
+      "line": 159,
+      "col": 17,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 156,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 157,
+          "content": "            if (isControlled) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 158,
+          "content": "              return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 159,
+          "content": "                <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 160,
+          "content": "                  key={key}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 161,
+          "content": "                  type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 162,
+          "content": "                  role=\"tab\"",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00046",
+      "code": "COMP-007",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML select or textarea",
+      "description": "Never use <select> or <textarea> in TSX. Use <Select> or <Textarea> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/SortDropdown.tsx",
+      "line": 35,
+      "col": 7,
+      "message": "Raw <select> — use <Select> from @/components",
+      "snippet": "<select",
+      "context": [
+        {
+          "lineNumber": 32,
+          "content": "          {displayLabel}\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 33,
+          "content": "        </span>\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "      )}\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "      <select\r",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 36,
+          "content": "        value={value ?? \"\"}\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 37,
+          "content": "        onChange={(e) => onChange(e.target.value)}\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 38,
+          "content": "        className=\"rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary/30\"\r",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00047",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/SortDropdown.tsx",
+      "line": 31,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span className=\"text-sm text-gray-500 whitespace-nowrap\">",
+      "context": [
+        {
+          "lineNumber": 28,
+          "content": "  return (\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 29,
+          "content": "    <div className={`flex items-center gap-2 ${className}`}>\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 30,
+          "content": "      {displayLabel && (\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 31,
+          "content": "        <span className=\"text-sm text-gray-500 whitespace-nowrap\">\r",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 32,
+          "content": "          {displayLabel}\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 33,
+          "content": "        </span>\r",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "      )}\r",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00048",
+      "code": "COMP-005",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML button tag",
+      "description": "Never use <button> in TSX. Use <Button variant=\"...\"> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/components/ui/Tabs.tsx",
+      "line": 77,
+      "col": 5,
+      "message": "Raw <button> — use <Button variant=\"...\"> from @/components",
+      "snippet": "<button",
+      "context": [
+        {
+          "lineNumber": 74,
+          "content": "  const { active, setActive } = useContext(TabsContext);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 75,
+          "content": "  const isActive = active === value;",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 76,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 77,
+          "content": "    <button",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 78,
+          "content": "      role=\"tab\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 79,
+          "content": "      type=\"button\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 80,
+          "content": "      disabled={disabled}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00049",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Tabs.tsx",
+      "line": 61,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.border",
+      "snippet": "className={`flex border-b border-gray-200 dark:border-gray-700 ${className}`}",
+      "context": [
+        {
+          "lineNumber": 58,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 59,
+          "content": "    <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 60,
+          "content": "      role=\"tablist\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 61,
+          "content": "      className={`flex border-b border-gray-200 dark:border-gray-700 ${className}`}",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 62,
+          "content": "    >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 63,
+          "content": "      {children}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 64,
+          "content": "    </div>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00050",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/components/ui/Tabs.tsx",
+      "line": 87,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.themed.textSecondary",
+      "snippet": ": \"border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white\"",
+      "context": [
+        {
+          "lineNumber": 84,
+          "content": "        ${",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 85,
+          "content": "          isActive",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 86,
+          "content": "            ? \"border-primary text-primary\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 87,
+          "content": "            : \"border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white\"",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 88,
+          "content": "        }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 89,
+          "content": "        ${className}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 90,
+          "content": "    >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00051",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+      "line": 139,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 136,
+          "content": "          <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 137,
+          "content": "            value=\"razorpay\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 138,
+          "content": "            title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 139,
+          "content": "              <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 140,
+          "content": "                <Text size=\"sm\" className=\"font-semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 141,
+          "content": "                  {t(\"razorpaySection\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 142,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00052",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+      "line": 216,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 213,
+          "content": "          <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 214,
+          "content": "            value=\"resend\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 215,
+          "content": "            title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 216,
+          "content": "              <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 217,
+          "content": "                <Text size=\"sm\" className=\"font-semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 218,
+          "content": "                  {t(\"resendSection\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 219,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00053",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+      "line": 250,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 247,
+          "content": "          <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 248,
+          "content": "            value=\"whatsapp\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 249,
+          "content": "            title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 250,
+          "content": "              <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 251,
+          "content": "                <Text size=\"sm\" className=\"font-semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 252,
+          "content": "                  {t(\"whatsappSection\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 253,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00054",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+      "line": 297,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 294,
+          "content": "          <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 295,
+          "content": "            value=\"shiprocket\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 296,
+          "content": "            title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 297,
+          "content": "              <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 298,
+          "content": "                <Text size=\"sm\" className=\"font-semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 299,
+          "content": "                  {t(\"shiprocketSection\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 300,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00055",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/admin/components/SiteCredentialsForm.tsx",
+      "line": 353,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 350,
+          "content": "          <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 351,
+          "content": "            value=\"meta\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 352,
+          "content": "            title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 353,
+          "content": "              <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 354,
+          "content": "                <Text size=\"sm\" className=\"font-semibold\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 355,
+          "content": "                  {t(\"metaSection\")}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 356,
+          "content": "                </Text>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00056",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/cart/components/CartItemList.tsx",
+      "line": 74,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.spacing.stack",
+      "snippet": "<div className=\"space-y-4\">",
+      "context": [
+        {
+          "lineNumber": 71,
+          "content": "  const groups = groupBySeller(items);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 72,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 73,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 74,
+          "content": "    <div className=\"space-y-4\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 75,
+          "content": "      {groups.map((group) => (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 76,
+          "content": "        <div",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 77,
+          "content": "          key={group.sellerId}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00057",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/cart/components/CheckoutOrderReview.tsx",
+      "line": 81,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 78,
+          "content": "        <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 79,
+          "content": "          value=\"checkout-address\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 80,
+          "content": "          title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 81,
+          "content": "            <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 82,
+          "content": "              <Text className=\"font-semibold\">{t(\"shippingTo\")}</Text>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 83,
+          "content": "              <Text size=\"xs\" variant=\"secondary\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 84,
+          "content": "                {address.city}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00058",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/cart/components/CheckoutOrderReview.tsx",
+      "line": 120,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 117,
+          "content": "        <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 118,
+          "content": "          value=\"checkout-items\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 119,
+          "content": "          title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 120,
+          "content": "            <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 121,
+          "content": "              <Text className=\"font-semibold\">{t(\"orderItems\")}</Text>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 122,
+          "content": "              <Text size=\"xs\" variant=\"secondary\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 123,
+          "content": "                {items.length}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00059",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/cart/components/CheckoutOrderReview.tsx",
+      "line": 212,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.flex.between",
+      "snippet": "<div className=\"flex items-center justify-between gap-3 pr-2\">",
+      "context": [
+        {
+          "lineNumber": 209,
+          "content": "        <AccordionItem",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 210,
+          "content": "          value=\"checkout-payment\"",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 211,
+          "content": "          title={",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 212,
+          "content": "            <div className=\"flex items-center justify-between gap-3 pr-2\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 213,
+          "content": "              <Text className=\"font-semibold\">{t(\"paymentMethod\")}</Text>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 214,
+          "content": "              <Text size=\"xs\" variant=\"secondary\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 215,
+          "content": "                {t(",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00060",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/copilot/components/AdminCopilotView.tsx",
+      "line": 48,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.spacing.stack",
+      "snippet": "<div className=\"flex-1 overflow-y-auto p-4 space-y-4\">",
+      "context": [
+        {
+          "lineNumber": 45,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 46,
+          "content": "      <Card className=\"flex flex-col h-[calc(100vh-220px)] xl:h-[calc(100vh-180px)]\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 47,
+          "content": "        {/* Messages area */}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 48,
+          "content": "        <div className=\"flex-1 overflow-y-auto p-4 space-y-4\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 49,
+          "content": "          {messages.length === 0 && (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 50,
+          "content": "            <div className={`${flex.center} flex-col h-full text-center`}>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 51,
+          "content": "              <Heading level={3} className={typography.h5}>",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00061",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/copilot/hooks/useCopilotChat.ts",
+      "line": 17,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "return `conv_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;",
+      "context": [
+        {
+          "lineNumber": 14,
+          "content": "import type { CopilotMessage, CopilotChatResponse } from \"../types\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 15,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 16,
+          "content": "function generateConversationId(): string {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 17,
+          "content": "  return `conv_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 18,
+          "content": "}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 19,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 20,
+          "content": "export function useCopilotChat() {",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00062",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/copilot/hooks/useCopilotChat.ts",
+      "line": 34,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "id: `user_${Date.now()}`,",
+      "context": [
+        {
+          "lineNumber": 31,
+          "content": "    },",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 32,
+          "content": "    onMutate: (prompt) => {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 33,
+          "content": "      const userMsg: CopilotMessage = {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "        id: `user_${Date.now()}`,",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 35,
+          "content": "        role: \"user\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 36,
+          "content": "        content: prompt,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 37,
+          "content": "        createdAt: new Date().toISOString(),",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00063",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/copilot/hooks/useCopilotChat.ts",
+      "line": 37,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "createdAt: new Date().toISOString(),",
+      "context": [
+        {
+          "lineNumber": 34,
+          "content": "        id: `user_${Date.now()}`,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "        role: \"user\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 36,
+          "content": "        content: prompt,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 37,
+          "content": "        createdAt: new Date().toISOString(),",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 38,
+          "content": "      };",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 39,
+          "content": "      setMessages((prev) => [...prev, userMsg]);",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 40,
+          "content": "    },",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00064",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/copilot/hooks/useCopilotChat.ts",
+      "line": 43,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "id: `ai_${Date.now()}`,",
+      "context": [
+        {
+          "lineNumber": 40,
+          "content": "    },",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 41,
+          "content": "    onSuccess: (data) => {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 42,
+          "content": "      const aiMsg: CopilotMessage = {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 43,
+          "content": "        id: `ai_${Date.now()}`,",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 44,
+          "content": "        role: \"assistant\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 45,
+          "content": "        content: data.response,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 46,
+          "content": "        createdAt: new Date().toISOString(),",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00065",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/copilot/hooks/useCopilotChat.ts",
+      "line": 46,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "createdAt: new Date().toISOString(),",
+      "context": [
+        {
+          "lineNumber": 43,
+          "content": "        id: `ai_${Date.now()}`,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 44,
+          "content": "        role: \"assistant\",",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 45,
+          "content": "        content: data.response,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 46,
+          "content": "        createdAt: new Date().toISOString(),",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 47,
+          "content": "        durationMs: data.durationMs,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 48,
+          "content": "      };",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 49,
+          "content": "      setMessages((prev) => [...prev, aiMsg]);",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00066",
+      "code": "STYL-003",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "Raw repeated Tailwind spacing/color string",
+      "description": "Known raw Tailwind strings that THEME_CONSTANTS covers must not appear directly in className. Use THEME_CONSTANTS from @/constants.",
+      "ruleRef": "rules-styling.instructions.md — RULE 4",
+      "file": "src/features/homepage/components/CustomerReviewsSection.tsx",
+      "line": 55,
+      "col": 1,
+      "message": "Raw Tailwind string — use THEME_CONSTANTS.page.container[\"2xl\"]",
+      "snippet": "<div className=\"w-full max-w-7xl mx-auto px-4 md:px-8\">",
+      "context": [
+        {
+          "lineNumber": 52,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 53,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 54,
+          "content": "    <Section className={`py-12 ${THEME_CONSTANTS.themed.bgPrimary}`}>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 55,
+          "content": "      <div className=\"w-full max-w-7xl mx-auto px-4 md:px-8\">",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 56,
+          "content": "        {/* Section Header */}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 57,
+          "content": "        <div className=\"text-center mb-10\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 58,
+          "content": "          <Heading",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00067",
+      "code": "ARCH-002",
+      "severity": "error",
+      "autoFixable": false,
+      "rule": "Cross-feature import",
+      "description": "Feature modules must not import from other features. Elevate shared logic to Tier-1 (src/components, src/hooks, src/utils…).",
+      "ruleRef": "rules-architecture.instructions.md — RULE 1",
+      "file": "src/features/homepage/components/FAQSection.tsx",
+      "line": 11,
+      "col": 23,
+      "message": "Feature 'homepage' imports from 'faq' — cross-feature imports are forbidden",
+      "snippet": "import { useFaqList } from \"@/features/faq\";",
+      "context": [
+        {
+          "lineNumber": 8,
+          "content": "import { Heading, Section, Span, Text } from \"@mohasinac/appkit/ui\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 9,
+          "content": "import { Button, SectionTabs, TextLink } from \"@/components\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 10,
+          "content": "import type { SectionTab } from \"@/components\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 11,
+          "content": "import { useFaqList } from \"@/features/faq\";",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 12,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 13,
+          "content": "const { flex } = THEME_CONSTANTS;",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 14,
+          "content": "",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00068",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/features/products/components/ProductFeatureBadges.tsx",
+      "line": 163,
+      "col": 9,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span",
+      "context": [
+        {
+          "lineNumber": 160,
+          "content": "  return (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 161,
+          "content": "    <div className=\"flex flex-wrap gap-2\">",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 162,
+          "content": "      {badges.map((badge) => (",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 163,
+          "content": "        <span",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 164,
+          "content": "          key={badge.key}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 165,
+          "content": "          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium ${badge.bgClass} ${badge.colorClass}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 166,
+          "content": "        >",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00069",
+      "code": "COMP-010",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "Raw HTML span tag",
+      "description": "Never use <span> in TSX. Use <Span> from @/components.",
+      "ruleRef": "rules-components.instructions.md — RULE 7 & 8",
+      "file": "src/features/products/components/ProductFeatureBadges.tsx",
+      "line": 167,
+      "col": 11,
+      "message": "Raw <span> — use <Span> from @/components",
+      "snippet": "<span aria-hidden=\"true\">{badge.icon}</span>",
+      "context": [
+        {
+          "lineNumber": 164,
+          "content": "          key={badge.key}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 165,
+          "content": "          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium ${badge.bgClass} ${badge.colorClass}`}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 166,
+          "content": "        >",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 167,
+          "content": "          <span aria-hidden=\"true\">{badge.icon}</span>",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 168,
+          "content": "          {badge.label}",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 169,
+          "content": "        </span>",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 170,
+          "content": "      ))}",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00070",
+      "code": "ARCH-001",
+      "severity": "warning",
+      "autoFixable": true,
+      "rule": "Deep non-barrel import",
+      "description": "Must import from barrel exports (index.ts) only. Never import from sub-paths like @/components/ui/Button or @/utils/validators/email.",
+      "ruleRef": "rules-architecture.instructions.md — RULE 2",
+      "file": "src/features/products/components/ProductReviews.tsx",
+      "line": 19,
+      "col": 28,
+      "message": "Deep import '@/hooks/useProductReviews' — use the barrel index instead",
+      "snippet": "import { useCreateReview } from \"@/hooks/useProductReviews\";",
+      "context": [
+        {
+          "lineNumber": 16,
+          "content": "  MediaLightbox,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 17,
+          "content": "} from \"@/components\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 18,
+          "content": "import { useProductReviews } from \"@mohasinac/appkit/features/reviews\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 19,
+          "content": "import { useCreateReview } from \"@/hooks/useProductReviews\";",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 20,
+          "content": "import { useAuth, useMessage, useUrlTable } from \"@/hooks\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 21,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 22,
+          "content": "const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00071",
+      "code": "CNST-002",
+      "severity": "info",
+      "autoFixable": false,
+      "rule": "new Date() / Date.now() outside utils/",
+      "description": "Date creation must use utility functions from @/utils (nowMs, nowISO, parseDate…). Never call new Date() or Date.now() directly in components, hooks, or features.",
+      "ruleRef": "rules-hooks-utils.instructions.md — RULE 5",
+      "file": "src/features/seller/components/SellerStorefrontView.tsx",
+      "line": 67,
+      "col": 1,
+      "message": "new Date()/Date.now() outside utils — use nowMs(), nowISO(), parseDate() from @/utils",
+      "snippet": "const memberSince = formatMonthYear(seller.createdAt ?? new Date());",
+      "context": [
+        {
+          "lineNumber": 64,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 65,
+          "content": "  const sellerName =",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 66,
+          "content": "    seller.displayName || seller.email?.split(\"@\")[0] || \"Seller\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 67,
+          "content": "  const memberSince = formatMonthYear(seller.createdAt ?? new Date());",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 68,
+          "content": "",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 69,
+          "content": "  const avatarCropData: ImageCropData | null =",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 70,
+          "content": "    seller.avatarMetadata ||",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00072",
+      "code": "QUAL-001",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "console.log / debug / info / warn in production code",
+      "description": "console.* is forbidden in production source. Use logger (client) from @/classes or serverLogger from @/lib/server-logger.",
+      "ruleRef": "rules-code-quality.instructions.md — RULE 23",
+      "file": "src/instrumentation.ts",
+      "line": 32,
+      "col": 7,
+      "message": "console.log() is forbidden — use logger or serverLogger",
+      "snippet": "console.log(\"[instrumentation] registerProviders() completed ✓\");",
+      "context": [
+        {
+          "lineNumber": 29,
+          "content": "      const { initProviders } = await import(\"./providers.config\");",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 30,
+          "content": "      await initProviders();",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 31,
+          "content": "      // eslint-disable-next-line no-console",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 32,
+          "content": "      console.log(\"[instrumentation] registerProviders() completed ✓\");",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 33,
+          "content": "    } catch (err) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "      // eslint-disable-next-line no-console",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "      console.error(\"[instrumentation] initProviders() FAILED:\", err);",
+          "isViolation": false
+        }
+      ]
+    },
+    {
+      "id": "V00073",
+      "code": "QUAL-001",
+      "severity": "warning",
+      "autoFixable": false,
+      "rule": "console.log / debug / info / warn in production code",
+      "description": "console.* is forbidden in production source. Use logger (client) from @/classes or serverLogger from @/lib/server-logger.",
+      "ruleRef": "rules-code-quality.instructions.md — RULE 23",
+      "file": "src/instrumentation.ts",
+      "line": 35,
+      "col": 7,
+      "message": "console.error() is forbidden — use logger or serverLogger",
+      "snippet": "console.error(\"[instrumentation] initProviders() FAILED:\", err);",
+      "context": [
+        {
+          "lineNumber": 32,
+          "content": "      console.log(\"[instrumentation] registerProviders() completed ✓\");",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 33,
+          "content": "    } catch (err) {",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 34,
+          "content": "      // eslint-disable-next-line no-console",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 35,
+          "content": "      console.error(\"[instrumentation] initProviders() FAILED:\", err);",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 36,
+          "content": "    }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 37,
+          "content": "  }",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 38,
+          "content": "}",
+          "isViolation": false
+        }
+      ]
+    }
+  ]
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS } from "@/constants";
-import { FAQPageContent } from "@/features/faq";
+import { FAQPageContent } from "@/features/faq/components/FAQPageContent";
 
 export const revalidate = 3600;
 

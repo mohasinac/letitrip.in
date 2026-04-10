@@ -1,15 +1,15 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useMemo, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
-import { Heading, Main, Span, Text } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
+import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
+import { useSearch } from "@mohasinac/appkit/features/search";
 import {
   PRODUCT_SORT_VALUES,
   Search,
   ViewToggle,
   BulkActionBar,
-  Button,
 } from "@/components";
 import {
   FilterDrawer,
@@ -23,12 +23,11 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
-import { useSearch } from "@mohasinac/appkit/features/search";
 import type { CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 import { SearchResultsSection } from "./SearchResultsSection";
 
-const { themed, spacing, page } = THEME_CONSTANTS;
+const { page } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 
@@ -137,10 +136,10 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
         label: t("priceRange"),
         value:
           urlMinPrice && urlMaxPrice
-            ? `₹${urlMinPrice}–₹${urlMaxPrice}`
+            ? `\u20B9${urlMinPrice}\u2013\u20B9${urlMaxPrice}`
             : urlMinPrice
-              ? `from ₹${urlMinPrice}`
-              : `up to ₹${urlMaxPrice}`,
+              ? `from \u20B9${urlMinPrice}`
+              : `up to \u20B9${urlMaxPrice}`,
       });
     }
     if (urlCondition) {
@@ -187,8 +186,6 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
     t,
   ]);
 
-  const handleSortChange = (sort: string) => table.set("sort", sort);
-
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
       selectedIds.map((id) => addToWishlistAction(id)),
@@ -221,69 +218,75 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
   );
 
   return (
-    <Main className={`${page.container["2xl"]} py-10 ${spacing.stack}`}>
-      <div>
-        <Heading level={1}>{t("title")}</Heading>
-        <Text variant="secondary" className="mt-1">
-          {t("subtitle")}
-        </Text>
-      </div>
-
-      {/* Search Input */}
-      <div className="relative">
+    <AppkitSearchView
+      query={urlQ}
+      total={total}
+      isLoading={isLoading}
+      className={`${page.container["2xl"]} py-10`}
+      labels={{
+        searchTitle: t("title"),
+        noQueryDescription: t("subtitle"),
+        resultsCount: (count, q) => t("resultsCount", { count, query: q }),
+      }}
+      renderSearchInput={() => (
         <Search
           value={table.get("q")}
           onChange={(v) => table.set("q", v)}
           placeholder={t("searchInputPlaceholder")}
           className="w-full h-12"
         />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterDrawer
-          activeCount={filterActiveCount}
-          onApply={onFilterApply}
-          onReset={onFilterClear}
-        >
-          <FilterFacetSection
-            title={t("categoryFilter")}
-            options={categoryOptions}
-            selected={
-              pendingTable.get("category") ? [pendingTable.get("category")] : []
-            }
-            onChange={(vals) => pendingTable.set("category", vals[0] ?? "")}
-            searchable={categoryOptions.length > 6}
-          />
-          <FilterFacetSection
-            title={t("conditionFilter")}
-            options={conditionOptions}
-            selected={
-              pendingTable.get("condition")
-                ? [pendingTable.get("condition")]
-                : []
-            }
-            onChange={(vals) => pendingTable.set("condition", vals[0] ?? "")}
-          />
-          <SwitchFilter
-            title={t("auctionFilter")}
-            label={t("auctionOnly")}
-            checked={pendingTable.get("isAuction") === "true"}
-            onChange={(v) => pendingTable.set("isAuction", v ? "true" : "")}
-          />
-          <SwitchFilter
-            title={t("preOrderFilter")}
-            label={t("preOrderOnly")}
-            checked={pendingTable.get("isPreOrder") === "true"}
-            onChange={(v) => pendingTable.set("isPreOrder", v ? "true" : "")}
-          />
-          <SwitchFilter
-            title={t("inStockFilter")}
-            label={t("inStockOnly")}
-            checked={pendingTable.get("inStock") === "true"}
-            onChange={(v) => pendingTable.set("inStock", v ? "true" : "")}
-          />
-        </FilterDrawer>
-        <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
+      )}
+      renderFilters={() => (
+        <div className="flex flex-wrap items-center gap-3">
+          <FilterDrawer
+            activeCount={filterActiveCount}
+            onApply={onFilterApply}
+            onReset={onFilterClear}
+          >
+            <FilterFacetSection
+              title={t("categoryFilter")}
+              options={categoryOptions}
+              selected={
+                pendingTable.get("category")
+                  ? [pendingTable.get("category")]
+                  : []
+              }
+              onChange={(vals) => pendingTable.set("category", vals[0] ?? "")}
+              searchable={categoryOptions.length > 6}
+            />
+            <FilterFacetSection
+              title={t("conditionFilter")}
+              options={conditionOptions}
+              selected={
+                pendingTable.get("condition")
+                  ? [pendingTable.get("condition")]
+                  : []
+              }
+              onChange={(vals) => pendingTable.set("condition", vals[0] ?? "")}
+            />
+            <SwitchFilter
+              title={t("auctionFilter")}
+              label={t("auctionOnly")}
+              checked={pendingTable.get("isAuction") === "true"}
+              onChange={(v) => pendingTable.set("isAuction", v ? "true" : "")}
+            />
+            <SwitchFilter
+              title={t("preOrderFilter")}
+              label={t("preOrderOnly")}
+              checked={pendingTable.get("isPreOrder") === "true"}
+              onChange={(v) => pendingTable.set("isPreOrder", v ? "true" : "")}
+            />
+            <SwitchFilter
+              title={t("inStockFilter")}
+              label={t("inStockOnly")}
+              checked={pendingTable.get("inStock") === "true"}
+              onChange={(v) => pendingTable.set("inStock", v ? "true" : "")}
+            />
+          </FilterDrawer>
+          <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
+        </div>
+      )}
+      renderActiveFilters={() => (
         <ActiveFilterChips
           filters={activeFilters}
           onRemove={(key) => {
@@ -295,49 +298,50 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
           }}
           onClearAll={onFilterClear}
         />
-      </div>
-
-      {hasAnyFilter ? (
-        <>
-          {selectedIds.length > 0 && user && (
-            <BulkActionBar
-              selectedCount={selectedIds.length}
-              onClearSelection={() => setSelectedIds([])}
-              actions={[
-                {
-                  id: "bulk-wishlist",
-                  label: tActions("bulkAddToWishlist", {
-                    count: selectedIds.length,
-                  }),
-                  variant: "primary",
-                  onClick: handleBulkAddToWishlist,
-                },
-              ]}
-            />
-          )}
-          <SearchResultsSection
-            products={items}
-            total={total}
-            totalPages={totalPages}
-            urlQ={urlQ}
-            urlSort={urlSort}
-            urlPage={urlPage}
-            isLoading={isLoading}
-            variant={viewMode}
-            selectable={!!user}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            onSortChange={handleSortChange}
-            onPageChange={table.setPage}
-          />
-        </>
-      ) : (
-        <EmptyState
-          icon={<SearchIcon className="w-16 h-16" />}
-          title={t("emptyQuery")}
-          description={t("subtitle")}
-        />
       )}
-    </Main>
+      renderResults={() =>
+        hasAnyFilter ? (
+          <>
+            {selectedIds.length > 0 && user && (
+              <BulkActionBar
+                selectedCount={selectedIds.length}
+                onClearSelection={() => setSelectedIds([])}
+                actions={[
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]}
+              />
+            )}
+            <SearchResultsSection
+              products={items}
+              total={total}
+              totalPages={totalPages}
+              urlQ={urlQ}
+              urlSort={urlSort}
+              urlPage={urlPage}
+              isLoading={isLoading}
+              variant={viewMode}
+              selectable={!!user}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onSortChange={(sort) => table.set("sort", sort)}
+              onPageChange={table.setPage}
+            />
+          </>
+        ) : (
+          <EmptyState
+            icon={<SearchIcon className="w-16 h-16" />}
+            title={t("emptyQuery")}
+            description={t("subtitle")}
+          />
+        )
+      }
+    />
   );
 }

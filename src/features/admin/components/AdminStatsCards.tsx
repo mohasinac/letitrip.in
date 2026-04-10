@@ -1,26 +1,10 @@
-/**
- * Admin Stats Cards Component
- *
- * Displays key admin statistics using THEME_CONSTANTS.enhancedCard.stat tokens
- * and lucide-react icons. All labels via useTranslations('adminStats').
- */
-
 "use client";
 
-import {
-  Users,
-  UserCheck,
-  UserPlus,
-  UserX,
-  Package,
-  ShoppingCart,
-} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
-
-const { themed, flex } = THEME_CONSTANTS;
-import { Text } from "@mohasinac/appkit/ui";
-import { formatNumber } from "@/utils";
+import {
+  DashboardStatsGrid,
+  type DashboardStats,
+} from "@mohasinac/appkit/features/admin";
 
 interface StatsCardsProps {
   stats: {
@@ -30,85 +14,27 @@ interface StatsCardsProps {
   };
 }
 
-const { enhancedCard, spacing } = THEME_CONSTANTS;
-
 export function AdminStatsCards({ stats }: StatsCardsProps) {
   const t = useTranslations("adminStats");
 
-  const cards = [
-    {
-      label: t("totalUsers"),
-      value: stats.users.total,
-      cardClass: enhancedCard.stat.indigo,
-      iconClass: "text-primary",
-      Icon: Users,
-    },
-    {
-      label: t("activeUsers"),
-      value: stats.users.active,
-      cardClass: enhancedCard.stat.emerald,
-      iconClass: "text-emerald-600 dark:text-emerald-400",
-      Icon: UserCheck,
-    },
-    {
-      label: t("newUsers"),
-      value: stats.users.new,
-      cardClass: enhancedCard.stat.teal,
-      iconClass: "text-teal-600 dark:text-teal-400",
-      Icon: UserPlus,
-    },
-    {
-      label: t("disabledUsers"),
-      value: stats.users.disabled,
-      cardClass: enhancedCard.stat.rose,
-      iconClass: "text-rose-600 dark:text-rose-400",
-      Icon: UserX,
-    },
-    {
-      label: t("totalProducts"),
-      value: stats.products.total,
-      cardClass: enhancedCard.stat.amber,
-      iconClass: "text-amber-600 dark:text-amber-400",
-      Icon: Package,
-    },
-    {
-      label: t("totalOrders"),
-      value: stats.orders.total,
-      cardClass: enhancedCard.stat.indigo,
-      iconClass: "text-primary",
-      Icon: ShoppingCart,
-    },
-  ];
+  const mappedStats: DashboardStats = {
+    totalUsers: stats.users.total,
+    totalProducts: stats.products.total,
+    totalOrders: stats.orders.total,
+    pendingReviews: stats.users.disabled,
+    newUsersToday: stats.users.new,
+  };
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6">
-      {cards.map((card) => (
-        <div
-          key={card.label}
-          className={`${card.cardClass} hover:shadow-md transition-shadow p-4`}
-        >
-          <div className={flex.betweenStart}>
-            <div className="flex-1">
-              <Text
-                size="sm"
-                weight="medium"
-                variant="secondary"
-                className="mb-1"
-              >
-                {card.label}
-              </Text>
-              <Text weight="bold" className={`text-3xl ${card.iconClass}`}>
-                {formatNumber(card.value)}
-              </Text>
-            </div>
-            <div
-              className={`p-2 rounded-lg ${themed.bgSecondary} ${card.iconClass}`}
-            >
-              <card.Icon className="w-6 h-6" strokeWidth={1.5} />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <DashboardStatsGrid
+      stats={mappedStats}
+      labels={{
+        totalUsers: t("totalUsers"),
+        totalProducts: t("totalProducts"),
+        totalOrders: t("totalOrders"),
+        pendingReviews: t("disabledUsers"),
+        newUsersToday: t("newUsers"),
+      }}
+    />
   );
 }

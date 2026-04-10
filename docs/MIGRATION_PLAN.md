@@ -1,5 +1,8 @@
 # @mohasinac/\* Full Migration Plan — letitrip.in
 
+> Current execution contract: see `docs/APPKIT_FIRST_TRACKER.md`.
+> This file remains useful for historical package migration detail and blocker inventory.
+
 > **Goal**: letitrip.in delegates all reusable domain logic to `@mohasinac/*`
 > packages. App-specific configuration, overrides, and letitrip-only business
 > logic stay local.

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Container, Grid, Heading, Text } from "@mohasinac/appkit/ui";
+import { StoresListView as AppkitStoresListView } from "@mohasinac/appkit/features/stores";
 import {
   Button,
   EmptyState,
@@ -196,28 +197,48 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                   ))}
             </div>
           ) : (
-            <Grid cols={4} gap="lg">
-              {isLoading
-                ? Array.from({ length: pageSize }).map((_, i) => (
+            <>
+              {isLoading ? (
+                <Grid cols={4} gap="lg">
+                  {Array.from({ length: pageSize }).map((_, i) => (
                     <div
                       key={i}
                       className="animate-pulse rounded-xl bg-zinc-200 dark:bg-slate-700 aspect-[4/3]"
                     />
-                  ))
-                : stores.map((store) => (
-                    <StoreCard
-                      key={store.id}
-                      store={store}
-                      selectable={!!user}
-                      selected={selectedIds.includes(store.ownerId)}
-                      onSelect={(id, sel) =>
-                        setSelectedIds((prev) =>
-                          sel ? [...prev, id] : prev.filter((x) => x !== id),
-                        )
-                      }
-                    />
                   ))}
-            </Grid>
+                </Grid>
+              ) : (
+                <AppkitStoresListView
+                  stores={stores as any}
+                  total={total}
+                  currentPage={page}
+                  totalPages={totalPages}
+                  labels={{
+                    products: t("products"),
+                    reviews: t("reviews"),
+                    sold: t("sold"),
+                    empty: t("empty.description"),
+                  }}
+                  slots={{
+                    renderCard: (store) => (
+                      <StoreCard
+                        key={store.id}
+                        store={store as StoreListItem}
+                        selectable={!!user}
+                        selected={selectedIds.includes(
+                          (store as StoreListItem).ownerId,
+                        )}
+                        onSelect={(id, sel) =>
+                          setSelectedIds((prev) =>
+                            sel ? [...prev, id] : prev.filter((x) => x !== id),
+                          )
+                        }
+                      />
+                    ),
+                  }}
+                />
+              )}
+            </>
           )}
         </ListingLayout>
       </Container>

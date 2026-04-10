@@ -12,6 +12,7 @@
  */
 
 import { type NextRequest } from "next/server";
+import type { DataSnapshot } from "firebase-admin/database";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
 
@@ -55,7 +56,7 @@ export async function GET(
       // Note: firebase-admin's ref.on() returns the callback itself (not an unsubscriber).
       const listener = bidRef.on(
         "value",
-        (snapshot) => {
+        (snapshot: DataSnapshot) => {
           enqueue({
             type: "update",
             data: snapshot.exists() ? snapshot.val() : null,

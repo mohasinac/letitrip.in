@@ -45,6 +45,10 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError } from "@mohasinac/appkit/errors";
+import type {
+  QueryDocumentSnapshot,
+  DocumentData,
+} from "firebase-admin/firestore";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -196,7 +200,7 @@ async function fetchCategoryNavRecords(): Promise<AlgoliaNavRecord[]> {
       )
       .limit(500)
       .get();
-    return snap.docs.map((doc) => {
+    return snap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data();
       const slug = (data[CATEGORY_FIELDS.SLUG] as string | undefined) ?? doc.id;
       const url = `/categories/${slug}`;
@@ -237,7 +241,7 @@ async function fetchBlogNavRecords(): Promise<AlgoliaNavRecord[]> {
       )
       .limit(1000)
       .get();
-    return snap.docs.map((doc) => {
+    return snap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data();
       const slug =
         (data[BLOG_POST_FIELDS.SLUG] as string | undefined) ?? doc.id;
@@ -276,7 +280,7 @@ async function fetchEventNavRecords(): Promise<AlgoliaNavRecord[]> {
       )
       .limit(500)
       .get();
-    return snap.docs.map((doc) => {
+    return snap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data();
       const url = ROUTES.PUBLIC.EVENT_DETAIL(doc.id);
       return {
@@ -313,7 +317,7 @@ async function fetchStoreNavRecords(): Promise<AlgoliaNavRecord[]> {
       )
       .limit(500)
       .get();
-    return snap.docs.map((doc) => {
+    return snap.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => {
       const data = doc.data();
       const slug =
         (data[STORE_FIELDS.STORE_SLUG] as string | undefined) ?? doc.id;

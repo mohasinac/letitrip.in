@@ -159,6 +159,7 @@ npm run lint         # ESLint
 | [docs/components.md](docs/components.md)                         | Shared component library                        |
 | [docs/hooks.md](docs/hooks.md)                                   | Shared hooks reference                          |
 | [docs/constants.md](docs/constants.md)                           | Constants reference                             |
+| [docs/APPKIT_FIRST_TRACKER.md](docs/APPKIT_FIRST_TRACKER.md)     | Authoritative appkit-first migration contract   |
 | [docs/features/products.md](docs/features/products.md)           | Products, Auctions, Pre-Orders feature          |
 | [docs/features/cart-checkout.md](docs/features/cart-checkout.md) | Cart & Checkout feature                         |
 | [docs/features/orders.md](docs/features/orders.md)               | Orders feature                                  |

@@ -3,12 +3,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { Gavel } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { StoreAuctionsView as AppkitStoreAuctionsView } from "@mohasinac/appkit/features/stores";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   AuctionGrid,
-  Button,
   EmptyState,
-  ListingLayout,
   Search,
   SortDropdown,
   Spinner,
@@ -111,83 +110,84 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
   }, [selectedIds, showSuccess, showError, tActions]);
 
   return (
-    <ListingLayout
-      viewToggleSlot={
-        <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
-      }
-      searchSlot={
-        <Search
-          value={table.get("q")}
-          onChange={(v) => table.set("q", v)}
-          placeholder={t("auctions.searchPlaceholder")}
-          onClear={() => table.set("q", "")}
-        />
-      }
-      sortSlot={
-        <SortDropdown
-          value={sortParam}
-          onChange={(v) => table.set("sort", v)}
-          options={sortOptions}
-        />
-      }
-      toolbarPaginationSlot={
-        totalPages > 1 ? (
-          <TablePagination
-            total={total}
-            currentPage={pageParam}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            onPageChange={table.setPage}
-            compact
-          />
-        ) : undefined
-      }
-      selectedCount={selectedIds.length}
-      onClearSelection={() => setSelectedIds([])}
-      bulkActionItems={
-        user
-          ? [
-              {
-                id: "bulk-wishlist",
-                label: tActions("bulkAddToWishlist", {
-                  count: selectedIds.length,
-                }),
-                variant: "primary",
-                onClick: handleBulkAddToWishlist,
-              },
-            ]
-          : undefined
-      }
-    >
-      {isLoading && (
-        <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
-          <Spinner />
-        </div>
+    <AppkitStoreAuctionsView
+      storeSlug={storeSlug}
+      items={items as any}
+      total={total}
+      isLoading={isLoading}
+      renderAuctions={(_items, loading) => (
+        <>
+          <div className="flex items-center gap-2 mb-4">
+            <Search
+              value={table.get("q")}
+              onChange={(v) => table.set("q", v)}
+              placeholder={t("auctions.searchPlaceholder")}
+              onClear={() => table.set("q", "")}
+            />
+            <SortDropdown
+              value={sortParam}
+              onChange={(v) => table.set("sort", v)}
+              options={sortOptions}
+            />
+            <ViewToggle
+              value={viewMode}
+              onChange={(m) => table.set("view", m)}
+            />
+          </div>
+          {loading && (
+            <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
+              <Spinner />
+            </div>
+          )}
+          {!!error && !loading && (
+            <EmptyState
+              title={t("error.title")}
+              description={t("error.description")}
+            />
+          )}
+          {!loading && !error && items.length === 0 && (
+            <EmptyState
+              icon={<Gavel className="w-16 h-16" />}
+              title={t("auctions.empty.title")}
+              description={t("auctions.empty.description")}
+            />
+          )}
+          {!loading && !error && items.length > 0 && (
+            <AuctionGrid
+              auctions={
+                items as unknown as Parameters<
+                  typeof AuctionGrid
+                >[0]["auctions"]
+              }
+              variant={viewMode}
+              selectable={!!user}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
+          )}
+          {totalPages > 1 && (
+            <TablePagination
+              total={total}
+              currentPage={pageParam}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={table.setPage}
+              compact
+            />
+          )}
+          {user && selectedIds.length > 0 && (
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={handleBulkAddToWishlist}
+                className="px-4 py-2 rounded-lg bg-primary text-white text-sm"
+              >
+                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
+              </button>
+            </div>
+          )}
+        </>
       )}
-      {!!error && !isLoading && (
-        <EmptyState
-          title={t("error.title")}
-          description={t("error.description")}
-        />
-      )}
-      {!isLoading && !error && items.length === 0 && (
-        <EmptyState
-          icon={<Gavel className="w-16 h-16" />}
-          title={t("auctions.empty.title")}
-          description={t("auctions.empty.description")}
-        />
-      )}
-      {!isLoading && !error && items.length > 0 && (
-        <AuctionGrid
-          auctions={
-            items as unknown as Parameters<typeof AuctionGrid>[0]["auctions"]
-          }
-          variant={viewMode}
-          selectable={!!user}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-        />
-      )}
-    </ListingLayout>
+    />
   );
 }

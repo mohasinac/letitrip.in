@@ -150,7 +150,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
     let stockResult: StockResult;
     try {
       stockResult = await db.runTransaction(
-        async (tx): Promise<StockResult> => {
+        async (tx: FirebaseFirestore.Transaction): Promise<StockResult> => {
           // Validate consent OTP atomically — checked for ALL orders.
           // Two concurrent requests both seeing verified=true: only one transaction
           // commits (Firestore optimistic locking); the second finds the OTP gone.
@@ -395,7 +395,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
       const metaRef = consentOtpRateLimitRef(db, uid);
       metaRef
         .get()
-        .then((snap) => {
+        .then((snap: FirebaseFirestore.DocumentSnapshot) => {
           const cur = snap.exists
             ? ((snap.data()?.bypassCredits as number) ?? 0)
             : 0;
@@ -406,7 +406,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
             { merge: true },
           );
         })
-        .catch((err) =>
+        .catch((err: unknown) =>
           serverLogger.warn("Failed to grant consent OTP bypass credit", {
             err,
           }),
@@ -416,7 +416,8 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
     // 9. Send confirmation emails (fire-and-forget)
     if (emailsToSend.length > 0) {
       Promise.all(emailsToSend.map((e) => sendOrderConfirmationEmail(e))).catch(
-        (err) => serverLogger.error("Order confirmation email error:", err),
+        (err: unknown) =>
+          serverLogger.error("Order confirmation email error:", err),
       );
     }
 

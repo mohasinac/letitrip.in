@@ -224,7 +224,9 @@ export async function GET(_request: NextRequest) {
               );
             if (refs.length > 0) {
               const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter((s) => s.exists).length;
+              existingCount = snaps.filter(
+                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
+              ).length;
             }
           } else if (colName === "storeAddresses") {
             const refs = (seedData as any[])
@@ -238,7 +240,9 @@ export async function GET(_request: NextRequest) {
               );
             if (refs.length > 0) {
               const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter((s) => s.exists).length;
+              existingCount = snaps.filter(
+                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
+              ).length;
             }
           } else if (colName === "siteSettings") {
             const snap = await db
@@ -252,7 +256,9 @@ export async function GET(_request: NextRequest) {
               .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.uid));
             if (refs.length > 0) {
               const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter((s) => s.exists).length;
+              existingCount = snaps.filter(
+                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
+              ).length;
             }
           } else if (colName === "faqs") {
             // FAQs use generated IDs — build them the same way the POST handler does
@@ -266,7 +272,9 @@ export async function GET(_request: NextRequest) {
             });
             if (refs.length > 0) {
               const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter((s) => s.exists).length;
+              existingCount = snaps.filter(
+                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
+              ).length;
             }
           } else {
             const refs = (seedData as any[])
@@ -277,7 +285,7 @@ export async function GET(_request: NextRequest) {
               existingCount = snaps.filter((s) => s.exists).length;
             }
           }
-        } catch (err) {
+        } catch (err: unknown) {
           serverLogger.error(`Error checking status for ${colName}:`, err);
         }
 

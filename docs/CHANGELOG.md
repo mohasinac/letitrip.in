@@ -6,6 +6,49 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-04-04
 
+### Coverage-gate checkpoint for admin shell extraction
+
+- Verified appkit package-side coverage work for admin shells is built successfully in source (`D:\proj\appkit`) after fixing admin component blockers.
+- Confirmed installed `@mohasinac/appkit@2.0.3` in letitrip does not yet export `AdminDashboardView` and `QuickActionsPanel`, so Task 1 extraction remains blocked by package release/adoption.
+- Updated `docs/APPKIT_FIRST_TRACKER.md` gap inventory and release note to record this blocker explicitly before any further admin extraction edits.
+
+### Appkit-first tracker added as the migration source of truth
+
+- Added `docs/APPKIT_FIRST_TRACKER.md` as the authoritative execution contract for ongoing migration work.
+- Defined default decisions for when code must move into appkit first versus when letitrip.in may keep a thin adapter or blocker-specific local implementation.
+- Documented the customization model so future work keeps appkit reusable while allowing letitrip-specific labels, routes, render slots, and adapters.
+- Captured the current status, known appkit gaps, migration acceptance criteria, and execution order to reduce repeated architecture questions during future runs.
+
+### Admin dashboard stats cards moved to appkit surface
+
+- Converted `src/features/admin/components/AdminStatsCards.tsx` into a thin adapter over `DashboardStatsGrid` from `@mohasinac/appkit/features/admin`.
+- Kept letitrip-specific translation labels and local stats-shape mapping in the adapter while moving the reusable card rendering back to appkit.
+
+### Admin user table columns partially moved to appkit account surface
+
+- Refactored `src/features/admin/components/UserTableColumns.tsx` to build its shared base columns from `buildAccountColumns` in `@mohasinac/appkit/features/account`.
+- Kept letitrip-specific translation headers, avatar rendering, role/status columns, and action buttons locally while removing duplicated base account-column structure.
+
+### User address card moved to appkit account surface
+
+- Refactored `src/components/user/AddressCard.tsx` into a thin adapter over `AddressCard` from `@mohasinac/appkit/features/account`.
+- Kept letitrip-specific set-default action locally while delegating reusable address card rendering and label wiring to appkit.
+
+### Seller addresses view now reuses shared package-backed address card
+
+- Updated `src/features/seller/components/SellerAddressesView.tsx` to replace duplicated local address-card markup with the shared `AddressCard` adapter from `@/components`.
+- Preserved seller-specific edit/delete drawer flow and data hooks while delegating reusable address card UI rendering to the package-backed adapter.
+
+### Tracker protocol added for missing package coverage
+
+- Updated `docs/APPKIT_FIRST_TRACKER.md` with a required missing-coverage protocol.
+- Future batches must now log newly encountered package-surface blockers in `Known Gaps To Close In Appkit` with blocked file path and resolution status.
+
+### Tracker reset and coverage gate enforcement
+
+- Updated `docs/APPKIT_FIRST_TRACKER.md` to enforce a mandatory pre-extraction coverage gate.
+- Reset the active migration queue in tracker to Task 1 (Admin shells) so extraction order restarts from the first task.
+
 ### Page regression fixes for wrapper migration and Next 16 proxy builds
 
 - Added a bare-render mode to `src/components/forms/Input.tsx` so file, radio, range, and search controls can keep their page-specific layouts without the component injecting extra wrapper markup.

@@ -1,24 +1,14 @@
 "use client";
 
-import { Badge } from "@/components";
-import { useTranslations } from "next-intl";
-import type { EventStatus } from "@/db/schema";
+import {
+  EventStatusBadge as AppkitEventStatusBadge,
+  type EventStatus,
+} from "@mohasinac/appkit/features/events";
 
 interface EventStatusBadgeProps {
   status: EventStatus;
 }
 
-const STATUS_VARIANT: Record<
-  EventStatus,
-  "success" | "warning" | "danger" | "secondary"
-> = {
-  active: "success",
-  draft: "secondary",
-  paused: "warning",
-  ended: "danger",
-};
-
 export function EventStatusBadge({ status }: EventStatusBadgeProps) {
-  const t = useTranslations("eventStatus");
-  return <Badge variant={STATUS_VARIANT[status]}>{t(status)}</Badge>;
+  return <AppkitEventStatusBadge status={status} />;
 }

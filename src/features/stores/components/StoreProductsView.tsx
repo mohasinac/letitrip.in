@@ -3,12 +3,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { PackageSearch, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { StoreProductsView as AppkitStoreProductsView } from "@mohasinac/appkit/features/stores";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   ActiveFilterChips,
   Button,
   EmptyState,
-  ListingLayout,
   ProductFilters,
   ProductGrid,
   PRODUCT_SORT_VALUES,
@@ -19,8 +19,7 @@ import {
   Tooltip,
   ViewToggle,
 } from "@/components";
-import type { ViewMode } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ViewMode, ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 import { useStoreProducts } from "../hooks";
@@ -70,22 +69,18 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     [tProducts],
   );
 
-  /* ---- Build API query params ---- */
   const apiParams = useMemo(() => {
     const sp = new URLSearchParams();
     sp.set("page", String(pageParam));
     sp.set("pageSize", String(PAGE_SIZE));
     sp.set("sorts", sortParam);
-
     const filterParts: string[] = [];
     if (categoryParam) filterParts.push(`category==${categoryParam}`);
     if (minPriceParam) filterParts.push(`price>=${minPriceParam}`);
     if (maxPriceParam) filterParts.push(`price<=${maxPriceParam}`);
     if (filterParts.length > 0) sp.set("filters", filterParts.join(","));
-
     const q = table.get("q");
     if (q) sp.set("q", q);
-
     return sp.toString();
   }, [
     pageParam,
@@ -106,7 +101,6 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const totalPages = Math.ceil(total / pageSize) || 1;
 
-  /* ---- Derive categories from fetched data ---- */
   const allCategories = useMemo(() => {
     if (!items.length) return [];
     const cats = new Set(
@@ -122,7 +116,6 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     return [...cats].sort() as string[];
   }, [items]);
 
-  /* ---- Active filters ---- */
   const hasActiveFilters =
     Boolean(categoryParam) || Boolean(minPriceParam) || Boolean(maxPriceParam);
 
@@ -207,8 +200,81 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
   }, [selectedIds, showSuccess, showError, tActions]);
 
   return (
-    <ListingLayout
-      viewToggleSlot={
+    <AppkitStoreProductsView
+      storeSlug={storeSlug}
+      items={items as any}
+      total={total}
+      isLoading={isLoading}
+      renderProducts={(_items, loading) => (
+        <>
+          {loading && (
+            <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
+              <Spinner />
+            </div>
+          )}
+          {!!error && !loading && (
+            <EmptyState
+              title={t("error.title")}
+              description={t("error.description")}
+            />
+          )}
+          {!loading && !error && items.length === 0 && (
+            <EmptyState
+              icon={<PackageSearch className="w-16 h-16" />}
+              title={t("products.empty.title")}
+              description={t("products.empty.description")}
+              actionLabel={hasActiveFilters ? tActions("clearAll") : undefined}
+              onAction={hasActiveFilters ? clearFilters : undefined}
+            />
+          )}
+          {!loading && !error && items.length > 0 && (
+            <ProductGrid
+              products={
+                items as unknown as Parameters<
+                  typeof ProductGrid
+                >[0]["products"]
+              }
+              loading={false}
+              variant={viewMode}
+              selectable={!!user}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              skeletonCount={PAGE_SIZE}
+            />
+          )}
+        </>
+      )}
+      renderSearch={() => (
+        <Search
+          value={table.get("q")}
+          onChange={(v) => table.set("q", v)}
+          placeholder={t("products.searchPlaceholder")}
+          onClear={() => table.set("q", "")}
+        />
+      )}
+      renderSort={() => (
+        <SortDropdown
+          value={sortParam}
+          onChange={(v) => table.set("sort", v)}
+          options={sortOptions}
+        />
+      )}
+      renderFilters={() => (
+        <ProductFilters
+          table={table}
+          categoryOptions={allCategories.map((c) => ({ value: c, label: c }))}
+        />
+      )}
+      renderActiveFilters={() =>
+        activeFilters.length > 0 ? (
+          <ActiveFilterChips
+            filters={activeFilters}
+            onRemove={(key) => table.set(key, "")}
+            onClearAll={clearFilters}
+          />
+        ) : null
+      }
+      renderViewToggle={() => (
         <div className="flex items-center gap-1.5">
           <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
           <Tooltip content={tActions("selectionHint")} placement="bottom">
@@ -222,63 +288,8 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
             </Button>
           </Tooltip>
         </div>
-      }
-      searchSlot={
-        <Search
-          value={table.get("q")}
-          onChange={(v) => table.set("q", v)}
-          placeholder={t("products.searchPlaceholder")}
-          onClear={() => table.set("q", "")}
-        />
-      }
-      filterContent={
-        <ProductFilters
-          table={table}
-          categoryOptions={allCategories.map((c) => ({ value: c, label: c }))}
-        />
-      }
-      filterActiveCount={activeFilters.length}
-      onFilterApply={() => table.setPage(1)}
-      onFilterClear={clearFilters}
-      sortSlot={
-        <SortDropdown
-          value={sortParam}
-          onChange={(v) => table.set("sort", v)}
-          options={sortOptions}
-        />
-      }
-      activeFiltersSlot={
-        activeFilters.length > 0 ? (
-          <ActiveFilterChips
-            filters={activeFilters}
-            onRemove={(key) => table.set(key, "")}
-            onClearAll={clearFilters}
-          />
-        ) : undefined
-      }
-      selectedCount={selectedIds.length}
-      onClearSelection={() => setSelectedIds([])}
-      bulkActionItems={
-        user
-          ? [
-              {
-                id: "bulk-cart",
-                label: tActions("bulkAddToCart", { count: selectedIds.length }),
-                variant: "secondary",
-                onClick: handleBulkAddToCart,
-              },
-              {
-                id: "bulk-wishlist",
-                label: tActions("bulkAddToWishlist", {
-                  count: selectedIds.length,
-                }),
-                variant: "primary",
-                onClick: handleBulkAddToWishlist,
-              },
-            ]
-          : undefined
-      }
-      toolbarPaginationSlot={
+      )}
+      renderPagination={() =>
         totalPages > 1 ? (
           <TablePagination
             total={total}
@@ -288,42 +299,8 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
             onPageChange={table.setPage}
             compact
           />
-        ) : undefined
+        ) : null
       }
-    >
-      {isLoading && (
-        <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
-          <Spinner />
-        </div>
-      )}
-      {!!error && !isLoading && (
-        <EmptyState
-          title={t("error.title")}
-          description={t("error.description")}
-        />
-      )}
-      {!isLoading && !error && items.length === 0 && (
-        <EmptyState
-          icon={<PackageSearch className="w-16 h-16" />}
-          title={t("products.empty.title")}
-          description={t("products.empty.description")}
-          actionLabel={hasActiveFilters ? tActions("clearAll") : undefined}
-          onAction={hasActiveFilters ? clearFilters : undefined}
-        />
-      )}
-      {!isLoading && !error && items.length > 0 && (
-        <ProductGrid
-          products={
-            items as unknown as Parameters<typeof ProductGrid>[0]["products"]
-          }
-          loading={false}
-          variant={viewMode}
-          selectable={!!user}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          skeletonCount={PAGE_SIZE}
-        />
-      )}
-    </ListingLayout>
+    />
   );
 }

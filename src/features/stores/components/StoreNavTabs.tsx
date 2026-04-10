@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { StoreNavTabs as AppkitStoreNavTabs } from "@mohasinac/appkit/features/stores";
 import { SectionTabs } from "@/components";
 import type { SectionTab } from "@/components";
 import { ROUTES } from "@/constants";
@@ -12,12 +13,40 @@ interface StoreNavTabsProps {
 export function StoreNavTabs({ storeSlug }: StoreNavTabsProps) {
   const t = useTranslations("storePage.tabs");
 
-  const tabs: readonly SectionTab[] = [
-    { label: t("products"), href: ROUTES.PUBLIC.STORE_PRODUCTS(storeSlug) },
-    { label: t("about"), href: ROUTES.PUBLIC.STORE_ABOUT(storeSlug) },
-    { label: t("auctions"), href: ROUTES.PUBLIC.STORE_AUCTIONS(storeSlug) },
-    { label: t("reviews"), href: ROUTES.PUBLIC.STORE_REVIEWS(storeSlug) },
+  const tabs = [
+    {
+      value: "products",
+      label: t("products"),
+      href: ROUTES.PUBLIC.STORE_PRODUCTS(storeSlug),
+    },
+    {
+      value: "about",
+      label: t("about"),
+      href: ROUTES.PUBLIC.STORE_ABOUT(storeSlug),
+    },
+    {
+      value: "auctions",
+      label: t("auctions"),
+      href: ROUTES.PUBLIC.STORE_AUCTIONS(storeSlug),
+    },
+    {
+      value: "reviews",
+      label: t("reviews"),
+      href: ROUTES.PUBLIC.STORE_REVIEWS(storeSlug),
+    },
   ];
 
-  return <SectionTabs tabs={tabs} variant="user" />;
+  return (
+    <AppkitStoreNavTabs
+      tabs={tabs}
+      renderTabBar={(tabs) => (
+        <SectionTabs
+          tabs={tabs.map(
+            (tab) => ({ label: tab.label, href: tab.href }) as SectionTab,
+          )}
+          variant="user"
+        />
+      )}
+    />
+  );
 }

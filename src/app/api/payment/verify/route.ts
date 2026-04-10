@@ -368,7 +368,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
     // 11. Send confirmation emails (fire-and-forget)
     if (emailsToSend.length > 0) {
       Promise.all(emailsToSend.map((e) => sendOrderConfirmationEmail(e))).catch(
-        (err) => serverLogger.error("Order confirmation email error:", err),
+        (err: unknown) =>
+          serverLogger.error("Order confirmation email error:", err),
       );
     }
 
@@ -381,7 +382,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
     getAdminRealtimeDb()
       .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${razorpay_order_id}`)
       .update({ status: "success", orderIds, updatedAt: Date.now() })
-      .catch((err) =>
+      .catch((err: unknown) =>
         serverLogger.warn("Payment event RTDB signal failed (non-critical)", {
           err,
         }),
