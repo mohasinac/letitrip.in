@@ -10,11 +10,10 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Button,
-  Heading,
-  Text,
   Spinner,
   SideDrawer,
   AddressForm,

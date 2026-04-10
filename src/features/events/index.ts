@@ -22,7 +22,6 @@ export {
 } from "./hooks/useEventMutations";
 export { usePollVote } from "./hooks/usePollVote";
 export { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
-export { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";
@@ -42,12 +41,10 @@ export { FeedbackConfigForm } from "./components/EventTypeConfig/FeedbackConfigF
 export { AdminEventEntriesView } from "./components/AdminEventEntriesView";
 
 // Public-facing components
-export { EventCard } from "@/components";
 export { PollVotingSection } from "./components/PollVotingSection";
 export { SurveyEventSection } from "./components/SurveyEventSection";
 export { FeedbackEventSection } from "./components/FeedbackEventSection";
 export { EventLeaderboard } from "./components/EventLeaderboard";
 export { EventParticipateView } from "./components/EventParticipateView";
 export { EventsListView } from "./components/EventsListView";
-export { EventBanner } from "@/components";
 export { AdminEventsView } from "./components/AdminEventsView";

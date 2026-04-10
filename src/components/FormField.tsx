@@ -10,14 +10,12 @@
 "use client";
 
 import React from "react";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   ImageUpload,
   Input,
-  Label,
   MediaUploadField,
   Select,
-  Span,
-  Text,
   Textarea,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";

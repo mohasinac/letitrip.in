@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { ProductCard } from "./ProductCard";
 import type { ProductCardData } from "./ProductCard";
-import { Heading, Span, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 
 const { themed, card } = THEME_CONSTANTS;
 const { dimensions } = card;

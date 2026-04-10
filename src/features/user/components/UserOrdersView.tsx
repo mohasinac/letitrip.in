@@ -13,26 +13,25 @@ import { Suspense, useCallback, useMemo, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useMessage, usePendingTable, useUrlTable } from "@/hooks";
+import { useAuth, useMessage, useUrlTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUserOrders } from "../hooks";
 import {
   ActiveFilterChips,
   Button,
   DataTable,
   EmptyState,
-  Heading,
   ListingLayout,
   OrderCard,
   OrderFilters,
   Search,
   SectionTabs,
   SortDropdown,
-  Row,
   Spinner,
   StatusBadge,
   TablePagination,
-  Text,
 } from "@/components";
+import { Heading, Row, Text } from "@mohasinac/appkit/ui";
 import type { ActiveFilter } from "@/components";
 import { ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";

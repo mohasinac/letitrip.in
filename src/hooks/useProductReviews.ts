@@ -3,8 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { createReviewAction } from "@/actions";
 
-export { useProductReviews } from "@mohasinac/appkit/features/reviews";
-
 interface CreateReviewInput {
   productId: string;
   rating: number;

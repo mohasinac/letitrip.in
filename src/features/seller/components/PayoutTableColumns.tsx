@@ -9,7 +9,8 @@
  */
 
 import React from "react";
-import { Text, Caption, Badge } from "@/components";
+import { Caption, Text } from "@mohasinac/appkit/ui";
+import { Badge } from "@/components";
 import { formatCurrency, formatDate, formatDateTime } from "@/utils";
 import { UI_LABELS } from "@/constants";
 

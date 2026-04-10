@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { Heading, Text, Label, Caption, Span, TextLink } from "../index";
+import { Heading, Text, Label, Caption, Span, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 describe("Typography Components", () => {

@@ -4,17 +4,18 @@
  * Central export point for all custom hooks.
  * Import hooks from here for consistency across the application.
  *
+ * Appkit React hooks (useSwipe, useGesture, etc.) are imported directly from @mohasinac/appkit/react
+ *
  * @example
  * ```tsx
- * import { useSwipe, useGesture } from '@/hooks';
+ * import { useSwipe, useGesture } from '@mohasinac/appkit/react';
+ * import { useAuth, useMessage } from '@/hooks';
  * ```
  */
 
-export { useSwipe } from "./useSwipe";
-export type { UseSwipeOptions, SwipeDirection } from "./useSwipe";
-
-export { useGesture } from "./useGesture";
-export type { UseGestureOptions, GestureType } from "./useGesture";
+// Appkit hooks are now imported directly - see @mohasinac/appkit/react for:
+// useSwipe, useGesture, useClickOutside, useKeyPress, useMediaQuery, useBreakpoint,
+// useLongPress, usePullToRefresh, useCamera, useCountdown, usePendingFilters, usePendingTable
 
 export { useProfile } from "./useProfile";
 export { useProfileStats } from "./useProfileStats";
@@ -28,11 +29,7 @@ export type {
 export { useSellerStorefront } from "./useSellerStorefront";
 export { useMessage } from "./useMessage";
 
-export { useClickOutside } from "./useClickOutside";
-export type { UseClickOutsideOptions } from "./useClickOutside";
-
-export { useKeyPress } from "./useKeyPress";
-export type { UseKeyPressOptions, KeyModifiers } from "./useKeyPress";
+// Appkit hooks - import directly from @mohasinac/appkit/react
 
 export {
   useLogin,
@@ -79,13 +76,10 @@ export {
   useRequireRole,
 } from "./useRBAC";
 
-// Responsive hooks (Phase 3)
-export { useMediaQuery } from "./useMediaQuery";
+// Appkit hooks - import directly from @mohasinac/appkit/react
+// useMediaQuery, useBreakpoint
 
-// Payment hooks
 export { useRazorpay } from "./useRazorpay";
-export type { RazorpayOptions, RazorpayPaymentResponse } from "./useRazorpay";
-export { useBreakpoint } from "./useBreakpoint";
 export { useRealtimeBids } from "./useRealtimeBids";
 export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";
 export { useRealtimeEvent } from "./useRealtimeEvent";
@@ -116,16 +110,10 @@ export type {
 export { useUrlTable } from "./useUrlTable";
 export type { UseUrlTableOptions } from "./useUrlTable";
 
-// Phase 10: Gestures + Accessibility
-export { useLongPress } from "./useLongPress";
-export { usePullToRefresh } from "./usePullToRefresh";
-export type {
-  UsePullToRefreshOptions,
-  UsePullToRefreshReturn,
-} from "./usePullToRefresh";
+// Phase 10: Appkit gestures - import directly from @mohasinac/appkit/react
+// useLongPress, usePullToRefresh
 
 // Phase 37: Service layer — homepage hooks
-export { useHeroCarousel } from "@mohasinac/appkit/features/homepage";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
 export { useFeaturedPreOrders } from "./useFeaturedPreOrders";
@@ -137,7 +125,7 @@ export { useSiteSettings } from "./useSiteSettings";
 export { useHomepageSections } from "./useHomepageSections";
 
 // Phase 37: Service layer — product hooks
-export { useProductReviews, useCreateReview } from "./useProductReviews";
+// useProductReviews, useCreateReview now import directly from @mohasinac/appkit/features/reviews
 export { useRelatedProducts } from "./useRelatedProducts";
 export { useAddToCart } from "./useAddToCart";
 
@@ -145,8 +133,8 @@ export { useAddToCart } from "./useAddToCart";
 export { useWishlistToggle } from "./useWishlistToggle";
 export { useNotifications } from "./useNotifications";
 export { useCategorySelector } from "./useCategorySelector";
-export { useCountdown } from "./useCountdown";
-export type { CountdownRemaining } from "./useCountdown";
+// useCountdown now import directly from @mohasinac/appkit/react
+// usePendingFilters, usePendingTable now import directly from @mohasinac/appkit/react
 
 // Phase 58.7: Shared component hooks
 export { useContactSubmit } from "./useContactSubmit";
@@ -161,8 +149,7 @@ export type {
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
 export { useMediaUpload, useMediaCrop, useMediaTrim } from "./useMediaUpload";
-export { useCamera } from "./useCamera";
-export type { UseCameraOptions, UseCameraReturn } from "./useCamera";
+// useCamera now import directly from @mohasinac/appkit/react
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
 export { useFaqVote } from "./useFaqVote";
@@ -190,28 +177,17 @@ export { useBecomeSeller } from "./useBecomeSeller";
 export type { BecomeSellerResult } from "./useBecomeSeller";
 
 // Phase 1 part 4: deferred filter state
-export { usePendingFilters } from "./usePendingFilters";
-export type {
-  UsePendingFiltersOptions,
-  UsePendingFiltersReturn,
-} from "./usePendingFilters";
-export { usePendingTable } from "./usePendingTable";
-export type { PendingTable, UsePendingTableReturn } from "./usePendingTable";
+// usePendingFilters, usePendingTable now import directly from @mohasinac/appkit/react
 
 // Search: navigation suggestions
 export { useNavSuggestions } from "./useNavSuggestions";
 export type { AlgoliaNavRecord } from "./useNavSuggestions";
 
 // Bulk action hooks
-export { useBulkSelection } from "./useBulkSelection";
-export type {
-  UseBulkSelectionOptions,
-  UseBulkSelectionReturn,
-} from "./useBulkSelection";
-export { useBulkAction } from "./useBulkAction";
+// useBulkSelection, useBulkAction now import directly from @mohasinac/appkit/react
 export type {
   UseBulkActionOptions,
   UseBulkActionReturn,
-} from "./useBulkAction";
+} from "@mohasinac/appkit/react";
 export { useBulkEvent } from "./useBulkEvent";
 export type { UseBulkEventReturn, BulkEventStatus } from "./useBulkEvent";

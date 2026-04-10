@@ -9,7 +9,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, Button, Heading, TextLink } from "@/components";
+import { Heading } from "@mohasinac/appkit/ui";
+import { Card, Button, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing, enhancedCard } = THEME_CONSTANTS;

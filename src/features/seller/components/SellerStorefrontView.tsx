@@ -1,13 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Badge,
-  Text,
   AvatarDisplay,
   EmptyState,
-  Heading,
   MediaImage,
   TextLink,
 } from "@/components";

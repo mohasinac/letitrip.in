@@ -7,10 +7,11 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    // @mohasinac/* packages are published to npm (no longer local pnpm
-    // workspaces), so Tailwind must scan their dist bundles directly so
-    // dark-mode and other utility classes aren't purged.
-    "./node_modules/@mohasinac/*/dist/index.js",
+    // @mohasinac/* packages — scan all JS files (including chunk files) so
+    // dark-mode and opacity-modifier utility classes aren't purged.
+    // The dist/index.js files are just re-export stubs; actual class strings
+    // live in the split chunk files (e.g. chunk-G6ATVCOC.js).
+    "./node_modules/@mohasinac/*/dist/**/*.js",
   ],
   safelist: [
     // Zinc neutrals (light mode)
@@ -28,8 +29,13 @@ module.exports = {
     "dark:bg-slate-800",
     "dark:bg-slate-900",
     "dark:bg-slate-950",
+    "dark:bg-slate-950/90",
     "dark:border-slate-700",
     "dark:border-slate-800",
+    "dark:border-slate-800/80",
+    // Opacity-modifier variants used by titleBarBg / navbarBg tokens
+    "bg-white/90",
+    "border-zinc-200/80",
   ],
   theme: {
     extend: {

@@ -5,7 +5,8 @@ import { useRouter } from "@/i18n/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, MediaImage, Section, Span, Text } from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, MediaImage } from "@/components";
 import type { BannerSectionConfig } from "@/db/schema";
 
 const { position, homepage } = THEME_CONSTANTS;

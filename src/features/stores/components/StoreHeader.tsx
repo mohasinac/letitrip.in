@@ -3,15 +3,8 @@
 import { Store, Star, Package, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  AvatarDisplay,
-  Button,
-  Caption,
-  Heading,
-  Skeleton,
-  Span,
-  Text,
-} from "@/components";
+import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { AvatarDisplay, Button, Skeleton } from "@/components";
 import { useStoreBySlug } from "../hooks";
 
 const { themed, flex, overflow, page } = THEME_CONSTANTS;

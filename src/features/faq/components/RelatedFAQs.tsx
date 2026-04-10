@@ -2,7 +2,8 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import type { FAQDocument } from "@/db/schema";
-import { Heading, Text, TextLink } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 interface RelatedFAQsProps {
   relatedFAQs: FAQDocument[];

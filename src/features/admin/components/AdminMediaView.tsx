@@ -4,14 +4,13 @@ import { useState, useCallback } from "react";
 import { nowMs } from "@/utils";
 import { useMediaCrop, useMediaTrim } from "@/hooks";
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   AdminPageHeader,
   Button,
   DataTable,
   useToast,
-  Heading,
-  Text,
 } from "@/components";
 import { MediaOperationForm } from "./MediaOperationForm";
 import { getMediaTableColumns } from "./MediaTableColumns";

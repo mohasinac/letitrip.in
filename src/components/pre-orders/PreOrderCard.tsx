@@ -5,14 +5,8 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useWishlistToggle } from "@/hooks";
 import { PreorderBadge } from "@mohasinac/appkit/features/pre-orders";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
-import {
-  BaseListingCard,
-  Button,
-  MediaImage,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { BaseListingCard, Button, MediaImage, TextLink } from "@/components";
 import { formatCurrency } from "@/utils";
 
 const { themed, flex, position } = THEME_CONSTANTS;

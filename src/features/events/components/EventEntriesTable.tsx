@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Badge, Button, Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
+import { Badge, Button } from "@/components";
 import type { EventEntryDocument, EntryReviewStatus } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;

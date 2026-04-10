@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Text, Heading } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useTranslations } from "next-intl";

@@ -5,7 +5,8 @@ import { ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { UserSidebar } from "@/features/user";
-import { Button, Main, ProtectedRoute, Span } from "@/components";
+import { Main, Span } from "@mohasinac/appkit/ui";
+import { Button, ProtectedRoute } from "@/components";
 import { useDashboardNav } from "@/contexts";
 
 interface UserLayoutProps {

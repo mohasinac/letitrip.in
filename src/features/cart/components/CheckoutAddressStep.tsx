@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import type { AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Span, Badge, Button } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Badge, Button } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 

@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { CartItemRow } from "./CartItemRow";
-import { Button, Heading, Span, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 import type { CartItemDocument } from "@/db/schema";
 

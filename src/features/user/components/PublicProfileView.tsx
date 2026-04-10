@@ -3,12 +3,10 @@
   Badge,
   Card,
   EmptyState,
-  Heading,
   MediaImage,
-  Span,
-  Text,
   TextLink,
 } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";

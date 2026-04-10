@@ -11,7 +11,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useMessage, useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -19,10 +20,10 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 const { flex, spacing } = THEME_CONSTANTS;
 import { formatCurrency } from "@/utils";
 import { useTranslations } from "next-intl";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Button,
-  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
@@ -33,7 +34,6 @@ import {
   SideDrawer,
   StatusBadge,
   TablePagination,
-  Text,
 } from "@/components";
 import { ProductForm, useProductTableColumns } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";

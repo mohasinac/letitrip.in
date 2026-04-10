@@ -17,14 +17,13 @@ import {
 } from "@/hooks";
 import {
   Card,
-  Heading,
   Button,
   Spinner,
   AddressForm,
   ConfirmDeleteModal,
-  Row,
   useToast,
 } from "@/components";
+import { Heading, Row } from "@mohasinac/appkit/ui";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";

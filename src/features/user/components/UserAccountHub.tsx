@@ -12,16 +12,10 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import {
-  AvatarDisplay,
-  Button,
-  Heading,
-  Span,
-  Spinner,
-  Text,
-} from "@/components";
+import { AvatarDisplay, Button, Spinner } from "@/components";
 import { RoleBadge } from "@/components";
 import { StatusBadge } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth } from "@/hooks";
 import { useUserOrders } from "../hooks";

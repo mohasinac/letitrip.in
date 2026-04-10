@@ -14,14 +14,12 @@ import { checkoutOfferAction } from "@/actions";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
   Button,
-  Caption,
   DataTable,
   EmptyState,
-  Heading,
   Spinner,
   StatusBadge,
-  Text,
 } from "@/components";
+import { Caption, Heading, Text } from "@mohasinac/appkit/ui";
 import type { DataTableColumn } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
 import type { OfferDocument } from "@/db/schema";

@@ -1,19 +1,18 @@
 "use client";
 
 import {
-  Card,
-  Button,
   Grid,
   Heading,
+  Label,
   Row,
+  Span,
   Stack,
   Text,
-  Label,
-  Span,
-} from "@/components";
+} from "@mohasinac/appkit/ui";
+import { Card, Button } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { formatDate } from "@/utils";
-import { ReviewStars } from "./ReviewStars";
+import { RatingDisplay } from "@mohasinac/appkit/ui";
 import type { Review } from "./Review.types";
 
 const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
@@ -66,7 +65,7 @@ export function ReviewDetailView({
 
           <div>
             <div className="flex items-center gap-2 mt-1">
-              <ReviewStars rating={review.rating} size="md" />
+              <RatingDisplay rating={review.rating} size="md" />
               <Span variant="secondary">({review.rating}/5)</Span>
             </div>
           </div>

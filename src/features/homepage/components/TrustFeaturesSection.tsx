@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { ShieldCheck, Truck, RotateCcw, Headphones } from "lucide-react";
 import { THEME_CONSTANTS, TRUST_FEATURES } from "@/constants";
 import type { TrustFeatureItem } from "@/constants";
-import { Heading, Section, Text } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
 
 // ─── Icon resolver ────────────────────────────────────────────────────────────
 const ICON_MAP: Record<

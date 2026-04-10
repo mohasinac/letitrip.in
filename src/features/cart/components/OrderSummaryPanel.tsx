@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Span } from "@/components";
+import { Heading, Span } from "@mohasinac/appkit/ui";
 
 const { themed } = THEME_CONSTANTS;
 

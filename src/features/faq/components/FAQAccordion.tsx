@@ -7,7 +7,8 @@ import { useMessage } from "@/hooks";
 import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { FAQDocument } from "@/db/schema";
-import { Button, Heading, Span, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 
 interface FAQAccordionProps {
   faqs: FAQDocument[];

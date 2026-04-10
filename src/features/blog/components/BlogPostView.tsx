@@ -2,17 +2,9 @@
 
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useBlogPost } from "../hooks";
-import {
-  Card,
-  Button,
-  MediaImage,
-  Spinner,
-  Heading,
-  Text,
-  Span,
-  TextLink,
-} from "@/components";
+import { useBlogPost } from "@mohasinac/appkit/features/blog";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Card, Button, MediaImage, Spinner, TextLink } from "@/components";
 import { BlogCard } from "@/components";
 import { formatDate, proseMirrorToHtml } from "@/utils";
 import type { BlogPostCategory } from "@mohasinac/appkit/features/blog";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Span } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 interface BuyMoreSaveMoreProps {

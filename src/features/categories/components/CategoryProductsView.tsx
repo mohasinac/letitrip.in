@@ -3,34 +3,31 @@
 import { useCallback, useMemo, useState } from "react";
 import { Star, Heart, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Heading, Main, Nav, Span, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   ActiveFilterChips,
   Button,
   DataTable,
-  Heading,
   HorizontalScroller,
   ListingLayout,
-  Main,
   MediaImage,
-  Nav,
   PRODUCT_SORT_VALUES,
   ProductCard,
   Search,
   SectionTabs,
   SortDropdown,
-  Span,
   Spinner,
   TablePagination,
-  Text,
   TextLink,
   Tooltip,
 } from "@/components";
 import type { ActiveFilter, ProductSortValue } from "@/components";
 import { RangeFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction, addToCartAction } from "@/actions";
-import { useCategoryDetail } from "../hooks/useCategoryDetail";
+import { useCategoryDetail } from "@mohasinac/appkit/features/categories";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
+import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { resolveLocale } from "@/i18n/resolve-locale";

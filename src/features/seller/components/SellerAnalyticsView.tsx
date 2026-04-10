@@ -1,6 +1,7 @@
 "use client";
 
-import { Spinner, Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Spinner } from "@/components";
 import { SellerAnalyticsStats } from "./SellerAnalyticsStats";
 import { SellerRevenueChart } from "./SellerRevenueChart";
 import { SellerTopProducts } from "./SellerTopProducts";

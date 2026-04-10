@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useMessage, useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+import { Text, Caption } from "@mohasinac/appkit/ui";
 import {
   Card,
   SideDrawer,
@@ -13,8 +15,6 @@ import {
   AdminPageHeader,
   DrawerFormFooter,
   StatusBadge,
-  Text,
-  Caption,
   TablePagination,
   ListingLayout,
   Search,

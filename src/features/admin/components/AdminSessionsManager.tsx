@@ -12,6 +12,7 @@ import {
   useRevokeSession,
   useRevokeUserSessions,
 } from "@/features/admin";
+import { Grid, Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Button,
@@ -19,9 +20,6 @@ import {
   Badge,
   ConfirmDeleteModal,
   DataTable,
-  Grid,
-  Heading,
-  Text,
 } from "@/components";
 import { useToast } from "@/components";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";

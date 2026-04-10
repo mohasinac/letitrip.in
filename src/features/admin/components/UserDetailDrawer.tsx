@@ -8,17 +8,13 @@
 
 "use client";
 
+import { Caption, Grid, Heading, Label, Text } from "@mohasinac/appkit/ui";
 import {
   SideDrawer,
   Button,
   RoleBadge,
   StatusBadge,
-  Heading,
-  Text,
-  Caption,
-  Label,
   AvatarDisplay,
-  Grid,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDateTime } from "@/utils";

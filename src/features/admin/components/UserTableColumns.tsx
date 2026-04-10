@@ -8,13 +8,8 @@
  * Uses RoleBadge, StatusBadge from @/components and formatDate from @/utils.
  */
 
-import {
-  Button,
-  MediaAvatar,
-  RoleBadge,
-  Span,
-  StatusBadge,
-} from "@/components";
+import { Button, MediaAvatar, RoleBadge, StatusBadge } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./User.types";

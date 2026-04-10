@@ -3,15 +3,8 @@
 import React, { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import {
-  Button,
-  Checkbox,
-  Input,
-  Label,
-  Span,
-  Text,
-  Tooltip,
-} from "@/components";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, Input, Tooltip } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {

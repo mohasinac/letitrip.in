@@ -1,16 +1,8 @@
 ﻿"use client";
 
 import { useState } from "react";
-import {
-  Alert,
-  Button,
-  Input,
-  Label,
-  RadioGroup,
-  Span,
-  Text,
-  Textarea,
-} from "@/components";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Alert, Button, Input, RadioGroup, Textarea } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;

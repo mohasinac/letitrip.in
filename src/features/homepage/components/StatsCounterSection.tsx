@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Package, Users, ShoppingBag, Star } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Section, Heading, Text } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
 
 // ─── Icon map ────────────────────────────────────────────────────────────────
 

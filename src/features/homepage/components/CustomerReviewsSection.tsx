@@ -3,13 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useHomepageReviews } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import {
-  Heading,
-  HorizontalScroller,
-  Section,
-  Text,
-  TextLink,
-} from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
+import { HorizontalScroller, TextLink } from "@/components";
 import { ReviewCard } from "@/components";
 import type { ReviewCardData } from "@/components";
 import type { ReviewDocument } from "@/db/schema";

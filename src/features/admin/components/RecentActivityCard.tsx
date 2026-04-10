@@ -9,7 +9,8 @@
 
 import { UserPlus, Activity } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Card, Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { themed, spacing, enhancedCard, flex } = THEME_CONSTANTS;

@@ -24,19 +24,11 @@
 
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { BlockFooter, Caption, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { TrustBarItem } from "@/db/schema";
-import {
-  BlockFooter,
-  Button,
-  Caption,
-  Li,
-  Span,
-  Text,
-  TextLink,
-  Ul,
-} from "@/components";
+import { Button, TextLink } from "@/components";
 
 export interface FooterLinkGroup {
   heading: string;

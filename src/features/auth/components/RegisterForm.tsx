@@ -8,18 +8,15 @@
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Alert,
   Button,
   Checkbox,
   FormField,
   FormGroup,
-  Heading,
-  Label,
   PasswordStrengthIndicator,
-  Span,
   Spinner,
-  Text,
   TextLink,
 } from "@/components";
 import {

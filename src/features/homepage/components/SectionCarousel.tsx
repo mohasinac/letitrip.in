@@ -2,14 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Button,
-  Heading,
   HorizontalScroller,
   MediaImage,
-  Section,
-  Span,
-  Text,
   TextLink,
   type PerViewConfig,
 } from "@/components";

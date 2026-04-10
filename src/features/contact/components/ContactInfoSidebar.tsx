@@ -1,7 +1,8 @@
 "use client";
 
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Aside, Heading, Span, Text, TextLink } from "@/components";
+import { Aside, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 
 const { themed, spacing } = THEME_CONSTANTS;

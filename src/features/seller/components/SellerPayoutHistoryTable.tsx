@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Badge, Heading, Text, DataTable } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Card, Badge, DataTable } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";

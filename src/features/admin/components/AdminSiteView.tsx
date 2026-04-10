@@ -11,7 +11,8 @@
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { AdminPageHeader, Button, Card, Text, useToast } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
+import { AdminPageHeader, Button, Card, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
 import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/features/admin";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";

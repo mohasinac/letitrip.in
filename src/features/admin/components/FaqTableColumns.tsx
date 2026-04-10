@@ -7,7 +7,8 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { FAQ } from "./Faq.types";
-import { RowActionMenu, Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { RowActionMenu } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.FAQS;
 const { themed } = THEME_CONSTANTS;

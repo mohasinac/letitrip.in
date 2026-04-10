@@ -1,13 +1,7 @@
 ﻿"use client";
 
-import {
-  Breadcrumbs,
-  BreadcrumbItem,
-  Heading,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Breadcrumbs, BreadcrumbItem, TextLink } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductActions } from "./ProductActions";
 import { ProductInfo } from "./ProductInfo";

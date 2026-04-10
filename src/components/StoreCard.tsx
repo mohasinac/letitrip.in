@@ -3,7 +3,8 @@
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { StoreListItem } from "@mohasinac/appkit/features/stores";
-import { Button, Heading, MediaImage, Span, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, MediaImage } from "@/components";
 
 export type { StoreListItem };
 

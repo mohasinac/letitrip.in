@@ -1,6 +1,6 @@
 "use client";
 
-import { Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import { SellerPayoutStats } from "./SellerPayoutStats";
 import { SellerPayoutRequestForm } from "./SellerPayoutRequestForm";
 import { SellerPayoutHistoryTable } from "./SellerPayoutHistoryTable";

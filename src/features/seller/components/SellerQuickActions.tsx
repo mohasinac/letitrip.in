@@ -3,9 +3,8 @@
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Card, Button } from "@/components";
-import { Heading } from "@/components";
+import { Heading, Span } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@/constants";
-import { Span } from "@/components";
 
 export function SellerQuickActions() {
   const router = useRouter();

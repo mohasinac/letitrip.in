@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Badge, Grid, Heading, Text, Caption } from "@/components";
+import { Caption, Grid, Heading, Text } from "@mohasinac/appkit/ui";
+import { Badge } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";

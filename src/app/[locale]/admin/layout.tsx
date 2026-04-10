@@ -1,7 +1,8 @@
 "use client";
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { ProtectedRoute, Main } from "@/components";
+import { Main } from "@mohasinac/appkit/ui";
+import { ProtectedRoute } from "@/components";
 import { AdminSidebar, AdminTopBar } from "@/features/admin";
 import { useDashboardNav } from "@/contexts";
 

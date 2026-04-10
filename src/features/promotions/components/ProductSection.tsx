@@ -1,4 +1,5 @@
-import { ProductCard, Heading, Text, Section } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
+import { ProductCard } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { ProductCardData } from "@/components";
 

@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Button,
   Card,
-  Text,
   Tabs,
   TabsList,
   TabsTrigger,

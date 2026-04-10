@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Gavel, PackageCheck } from "lucide-react";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, Section, Text } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 
 // ─── Step configuration ───────────────────────────────────────────────────────

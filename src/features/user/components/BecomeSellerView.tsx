@@ -14,20 +14,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { Caption, Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 import {
   Alert,
   Badge,
   Button,
-  Caption,
   Card,
   Checkbox,
   Divider,
-  Heading,
-  Li,
-  Span,
   Spinner,
-  Text,
-  Ul,
 } from "@/components";
 import { useAuth, useBecomeSeller } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";

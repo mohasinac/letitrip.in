@@ -2,17 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Button,
-  Checkbox,
-  FormField,
-  FormGroup,
-  Label,
-  Li,
-  TagInput,
-  Text,
-  Ul,
-} from "@/components";
+import { Label, Li, Text, Ul } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, FormField, FormGroup } from "@/components";
+import { TagInput } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import type { FAQ } from "./Faq.types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";

@@ -2,14 +2,8 @@
 
 import { Globe, MapPin, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  EmptyState,
-  Spinner,
-  Heading,
-  Text,
-  Card,
-  TextLink,
-} from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { EmptyState, Spinner, Card, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";

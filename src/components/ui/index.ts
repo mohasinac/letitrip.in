@@ -35,12 +35,7 @@ export {
   MenuItem,
   MenuSeparator,
 } from "./Menu";
-export {
-  default as Skeleton,
-  SkeletonText,
-  SkeletonCard,
-  SkeletonAvatar,
-} from "./Skeleton";
+export { Skeleton } from "@mohasinac/appkit/ui";
 export { default as ImageGallery } from "./ImageGallery";
 export type { GalleryImage } from "./ImageGallery";
 export { default as SideDrawer } from "./SideDrawer";
@@ -62,28 +57,8 @@ export { StatusBadge } from "./StatusBadge";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
 
-// Phase 10: Generic Layout Primitives
-export {
-  StepperNav,
-  StatsGrid,
-  RatingDisplay,
-  CountdownDisplay,
-  PriceDisplay,
-  TagInput,
-} from "@mohasinac/appkit/ui";
-export type {
-  StepperNavProps,
-  StatsGridProps,
-  StatItem,
-  RatingDisplayProps,
-  CountdownDisplayProps,
-  PriceDisplayProps,
-  TagInputProps,
-} from "@mohasinac/appkit/ui";
 export { ItemRow } from "./ItemRow";
 export type { ItemRowProps } from "./ItemRow";
-export { SummaryCard } from "@mohasinac/appkit/ui";
-export type { SummaryCardProps, SummaryLine } from "@mohasinac/appkit/ui";
 
 // Horizontal scroll container with arrows, auto-scroll, and circular mode
 export { HorizontalScroller } from "./HorizontalScroller";
@@ -99,10 +74,6 @@ export type { ListingLayoutProps } from "./ListingLayout";
 // Bulk action bar (appears when items are selected)
 export { BulkActionBar } from "./BulkActionBar";
 export type { BulkActionBarProps, BulkActionItem } from "./BulkActionBar";
-
-// Phase 11: Camera capture
-export { CameraCapture } from "./CameraCapture.client";
-export type { CameraCaptureProps } from "./CameraCapture.client";
 
 // Accessibility
 export { SkipToMain } from "./SkipToMain";

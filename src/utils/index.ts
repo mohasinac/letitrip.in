@@ -21,8 +21,7 @@ export * from "./guest-cart";
 export * from "./order-splitter";
 // Business Day (10:00 AM IST day-boundary logic)
 export * from "./business-day";
-// PII Redaction (sanitize objects before logging)
-export { redactPii } from "@mohasinac/appkit/security";
+// PII Redaction - import directly from @mohasinac/appkit/security
 
 // Generic utilities live in @mohasinac/utils — import from there directly:
 // import { buildSieveFilters, calculatePagination, groupBy, sortBy, ... } from "@mohasinac/appkit/utils";

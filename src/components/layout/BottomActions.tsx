@@ -33,8 +33,9 @@ import { useTranslations } from "next-intl";
 import { X, ChevronUp, ChevronDown, Check } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useBottomActionsContext } from "@/contexts/BottomActionsContext";
-import { useClickOutside } from "@/hooks";
-import { Button, Span, Text } from "@/components";
+import { useClickOutside } from "@mohasinac/appkit/react";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 
 export default function BottomActions() {
   const tActions = useTranslations("actions");

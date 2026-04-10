@@ -10,7 +10,8 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Caption, RowActionMenu, Span, Text } from "@/components";
+import { Caption, Span, Text } from "@mohasinac/appkit/ui";
+import { RowActionMenu } from "@/components";
 import { useTranslations } from "next-intl";
 import type { BlogPostDocument } from "@/db/schema";
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Accordion, AccordionItem, Button, Card, Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Accordion, AccordionItem, Button, Card } from "@/components";
 import { Alert } from "@/components";
 import { FormField, FormGroup } from "@/components";
 import { useTranslations } from "next-intl";
@@ -112,7 +113,11 @@ export function SellerPayoutRequestForm({
             {paymentMethod === "bank_transfer" ? (
               <AccordionItem
                 value="seller-payout-bank"
-                title={<Text size="sm" className="font-semibold">{t("paymentMethodBank")}</Text>}
+                title={
+                  <Text size="sm" className="font-semibold">
+                    {t("paymentMethodBank")}
+                  </Text>
+                }
               >
                 <FormGroup columns={2} className="pt-3">
                   <FormField
@@ -143,14 +148,20 @@ export function SellerPayoutRequestForm({
                     name="bankName"
                     label={t("bankName")}
                     value={bankForm.bankName}
-                    onChange={(v) => setBankForm((f) => ({ ...f, bankName: v }))}
+                    onChange={(v) =>
+                      setBankForm((f) => ({ ...f, bankName: v }))
+                    }
                   />
                 </FormGroup>
               </AccordionItem>
             ) : (
               <AccordionItem
                 value="seller-payout-upi"
-                title={<Text size="sm" className="font-semibold">{t("paymentMethodUpi")}</Text>}
+                title={
+                  <Text size="sm" className="font-semibold">
+                    {t("paymentMethodUpi")}
+                  </Text>
+                }
               >
                 <div className="pt-3">
                   <FormField
@@ -165,7 +176,11 @@ export function SellerPayoutRequestForm({
 
             <AccordionItem
               value="seller-payout-notes"
-              title={<Text size="sm" className="font-semibold">{t("notesLabel")}</Text>}
+              title={
+                <Text size="sm" className="font-semibold">
+                  {t("notesLabel")}
+                </Text>
+              }
             >
               <div className="pt-3">
                 <FormField

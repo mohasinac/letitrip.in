@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Toggle, Button, Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Toggle, Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface SwitchFilterProps {

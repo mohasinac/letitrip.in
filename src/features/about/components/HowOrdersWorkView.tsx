@@ -1,12 +1,6 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import {
-  Heading,
-  Span,
-  Text,
-  Section,
-  TextLink,
-  FlowDiagram,
-} from "@/components";
+import { Heading, Span, Text, Section } from "@mohasinac/appkit/ui";
+import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";

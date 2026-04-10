@@ -1,7 +1,8 @@
 "use client";
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { ProtectedRoute, Button, AutoBreadcrumbs, Main } from "@/components";
+import { Main } from "@mohasinac/appkit/ui";
+import { ProtectedRoute, Button, AutoBreadcrumbs } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { SellerSidebar } from "@/features/seller";
 import { useDashboardNav } from "@/contexts";

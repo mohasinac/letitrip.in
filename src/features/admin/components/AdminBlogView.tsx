@@ -10,8 +10,10 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useMessage, useUrlTable } from "@/hooks";
 import { useAdminBlog } from "@/features/admin/hooks";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -19,7 +21,6 @@ import {
   Badge,
   Button,
   BlogFilters,
-  Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
@@ -30,7 +31,6 @@ import {
   SideDrawer,
   SortDropdown,
   StatusBadge,
-  Text,
 } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
 import { BlogForm, useBlogTableColumns } from ".";

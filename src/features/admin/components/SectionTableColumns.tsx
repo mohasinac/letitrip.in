@@ -7,7 +7,8 @@
  * Column definitions hook for the admin homepage sections DataTable.
  */
 
-import { Button, Span, StatusBadge } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Button, StatusBadge } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./Section.types";

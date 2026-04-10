@@ -36,12 +36,12 @@ export { FormField } from "./FormField";
 export type { FormFieldProps, SelectOption } from "./FormField";
 
 // ==================== TYPOGRAPHY ====================
-// Re-export from typography subdirectory
-export * from "./typography";
+// Typography (Heading, Text, Label, Caption, Span) now imported directly from @mohasinac/appkit/ui
+export { TextLink } from "./typography/TextLink";
+export type { TextLinkProps } from "./typography/TextLink";
 
 // ==================== SEMANTIC HTML WRAPPERS ====================
-// Section, Article, Main, Aside, Nav, BlockHeader, BlockFooter, Ul, Ol, Li
-export * from "./semantic";
+// Semantic HTML (Section, Article, Main, Aside, Nav, etc.) now imported directly from @mohasinac/appkit/ui
 
 // ==================== FEEDBACK COMPONENTS ====================
 // Re-export from feedback subdirectory
@@ -102,14 +102,8 @@ export * from "./user";
 // Re-export from auth subdirectory
 export * from "./auth";
 
-// ==================== @MOHASINAC/UI NEW PRIMITIVES (S1-1) ====================
-// Components that don't have existing app-specific equivalents
-// Modal, Drawer, Pagination, StatusBadge, Breadcrumbs are app-specific (see feedback/, ui/, layout/)
-// BreadcrumbItem is already exported from layout/ as a React component — don't re-export as type
-export { StarRating } from "@mohasinac/appkit/ui";
-export type { StarRatingProps } from "@mohasinac/appkit/ui";
-export { ImageLightbox } from "@mohasinac/appkit/ui";
-export type { ImageLightboxProps, LightboxImage } from "@mohasinac/appkit/ui";
+// ==================== @MOHASINAC/UI NEW PRIMITIVES ====================
+// StarRating, ImageLightbox now imported directly from @mohasinac/appkit/ui
 
 // ==================== PROVIDERS ====================
 // Re-export from providers subdirectory

@@ -15,17 +15,8 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Alert,
-  Button,
-  Caption,
-  Card,
-  Heading,
-  Span,
-  Spinner,
-  Text,
-  Textarea,
-} from "@/components";
+import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Alert, Button, Card, Spinner, Textarea } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";

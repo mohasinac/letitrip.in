@@ -9,18 +9,19 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useMessage, useUrlTable } from "@/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategory } from "@/db/schema";
 
 const { flex } = THEME_CONSTANTS;
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Badge,
   Button,
-  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
@@ -30,7 +31,6 @@ import {
   SideDrawer,
   StatusBadge,
   TablePagination,
-  Text,
 } from "@/components";
 import { FaqFilters } from "./FaqFilters";
 import { FaqForm, getFaqTableColumns } from ".";

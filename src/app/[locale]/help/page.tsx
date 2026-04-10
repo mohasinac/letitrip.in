@@ -1,7 +1,8 @@
 ﻿import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Heading, Text, TextLink, Section } from "@/components";
+import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 3600;

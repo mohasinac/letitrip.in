@@ -3,7 +3,8 @@
 import { useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeftRight } from "lucide-react";
-import { MediaImage, Span, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { MediaImage } from "@/components";
 import type { FeaturedResult } from "@/db/schema";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

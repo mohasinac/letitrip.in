@@ -10,7 +10,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SideDrawer, Button, Text, Heading, Label, Input } from "@/components";
+import { Heading, Label, Text } from "@mohasinac/appkit/ui";
+import { SideDrawer, Button, Input } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useAddressConsentOtp } from "../hooks/useAddressConsentOtp";
 

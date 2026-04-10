@@ -2,7 +2,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
 import { CouponCard } from "@/features/promotions/components/CouponCard";
 import { ProductSection } from "@/features/promotions/components/ProductSection";
-import { Heading, Text, Section } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
 import type { ProductCardData } from "@/components";
 import type { CouponDocument } from "@/db/schema";
 

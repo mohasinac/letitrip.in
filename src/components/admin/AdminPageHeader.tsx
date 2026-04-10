@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { Button, Heading, Nav, Span, Text, TextLink } from "@/components";
+import { Heading, Nav, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, TextLink } from "@/components";
 import { ChevronRight } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 

@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { Heading } from "@mohasinac/appkit/ui";
+import { useSwipe } from "@mohasinac/appkit/react";
 import Button from "../ui/Button";
-import { useSwipe } from "@/hooks";
 import { preventBodyScroll } from "@/utils";
 
 /**
@@ -83,12 +83,12 @@ export default function Modal({
 
   // Swipe down to close modal on mobile (only when not disabled)
   useSwipe(modalRef, {
-    onSwiping: (deltaX, deltaY) => {
+    onSwiping: (deltaX: number, deltaY: number) => {
       if (!isSwipeDisabled && deltaY > 0) {
         setTranslateY(deltaY);
       }
     },
-    onSwipeDown: (distance) => {
+    onSwipeDown: (distance: number) => {
       if (!isSwipeDisabled && distance > 100) {
         onClose();
       }

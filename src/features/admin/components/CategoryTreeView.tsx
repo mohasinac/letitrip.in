@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@mohasinac/appkit/ui";
-import { Button, MediaImage, Span, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { Button, MediaImage } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 

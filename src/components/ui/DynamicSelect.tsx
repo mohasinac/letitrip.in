@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Button, Input, Li, Span, Text, Ul } from "@/components";
+import { Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { Button, Input } from "@/components";
 
 export interface DynamicSelectOption<V = string> {
   value: V;

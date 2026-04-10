@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { Button, FormField, FormGroup, Alert, Heading } from "@/components";
+import { Heading } from "@mohasinac/appkit/ui";
+import { Button, FormField, FormGroup, Alert } from "@/components";
 import { useMessage, useContactSubmit } from "@/hooks";
 import { isRequired, isValidEmail } from "@mohasinac/appkit/validation";
 const { spacing } = THEME_CONSTANTS;

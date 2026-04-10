@@ -12,7 +12,8 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useUrlTable, useMessage } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminOrders } from "@/features/admin/hooks";
 import {
@@ -24,6 +25,7 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
+import { Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Button,
@@ -36,7 +38,6 @@ import {
   OrderFilters,
   Search,
   TablePagination,
-  Text,
 } from "@/components";
 import { useOrderTableColumns, OrderStatusForm } from ".";
 import type { OrderStatusFormState } from ".";

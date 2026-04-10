@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import {
-  Button,
-  Card,
-  Badge,
   Row,
-  Spinner,
   Heading,
   Text,
   Caption,
   Span,
   Ul,
   Li,
-} from "@/components";
+} from "@mohasinac/appkit/ui";
+import { Button, Card, Badge, Spinner } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import {
   useAlgoliaSync,

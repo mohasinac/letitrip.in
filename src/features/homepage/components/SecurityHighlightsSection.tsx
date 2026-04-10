@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Lock, Globe, KeyRound, Database } from "lucide-react";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Span, Text, TextLink } from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 // ─── Security items config ──────────────────────────────────────────────────
 

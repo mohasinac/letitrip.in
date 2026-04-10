@@ -3,7 +3,7 @@
 import { AlertTriangle, AlertCircle, Clock, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Span, Stack } from "@/components";
+import { Span, Stack } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 interface AdminPriorityAlertsProps {

@@ -8,7 +8,8 @@
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { CouponDocument } from "@/db/schema";
 import { formatCurrency, isPast } from "@/utils";
-import { RowActionMenu, Span, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { RowActionMenu } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.COUPONS;
 const { themed } = THEME_CONSTANTS;

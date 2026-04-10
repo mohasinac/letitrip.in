@@ -9,14 +9,13 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Label, Span } from "@mohasinac/appkit/ui";
 import {
   Checkbox,
   FormField,
   FormGroup,
   ImageUpload,
-  Label,
   MediaImage,
-  Span,
 } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";

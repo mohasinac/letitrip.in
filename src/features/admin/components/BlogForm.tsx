@@ -9,16 +9,9 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Checkbox,
-  FormField,
-  FormFieldSpan,
-  FormGroup,
-  Label,
-  Span,
-  TagInput,
-  Text,
-} from "@/components";
+import { Checkbox, FormField, FormFieldSpan, FormGroup } from "@/components";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { TagInput } from "@mohasinac/appkit/ui";
 import { RichTextEditor } from "./RichTextEditor";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";

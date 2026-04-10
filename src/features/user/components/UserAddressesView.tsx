@@ -21,13 +21,11 @@ import {
   Button,
   ConfirmDeleteModal,
   EmptyState,
-  Heading,
   ListingLayout,
-  Row,
   Spinner,
-  Text,
 } from "@/components";
 import { AddressCard } from "@/components";
+import { Heading, Row, Text } from "@mohasinac/appkit/ui";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,

@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { THEME_CONSTANTS, TRUST_INDICATORS } from "@/constants";
-import { Card, Heading, Section, Text } from "@/components";
+import { Heading, Section, Text } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 
 export function TrustIndicatorsSection() {
   return (

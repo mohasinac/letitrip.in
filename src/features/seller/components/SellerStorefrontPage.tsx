@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Alert, Text, TextLink } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
+import { Card, Alert, TextLink } from "@/components";
 import { SellerStorefrontView } from "./SellerStorefrontView";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useSellerStorefront } from "@/hooks";

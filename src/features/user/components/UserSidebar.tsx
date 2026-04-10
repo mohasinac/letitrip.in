@@ -14,7 +14,8 @@ import {
 import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
 import { Drawer } from "@mohasinac/appkit/ui";
-import { MediaAvatar, Span, Text, Nav, Aside } from "@/components";
+import { Span, Text, Nav, Aside } from "@mohasinac/appkit/ui";
+import { MediaAvatar } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useNotifications } from "@/hooks";
 

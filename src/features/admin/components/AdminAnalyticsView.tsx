@@ -8,7 +8,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { AdminPageHeader, Heading, Span, Text, TextLink } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { AdminPageHeader, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAdminAnalytics } from "@/features/admin/hooks";

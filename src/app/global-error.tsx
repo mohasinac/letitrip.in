@@ -13,7 +13,8 @@ import { useEffect } from "react";
 import { NextIntlClientProvider, useTranslations } from "next-intl";
 import { logger } from "@mohasinac/appkit/core";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Button, TextLink } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Button, TextLink } from "@/components";
 import { nowISO } from "@/utils";
 import enMessages from "../../messages/en.json";
 

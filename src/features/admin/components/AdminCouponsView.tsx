@@ -10,7 +10,8 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useMessage, useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import {
@@ -22,9 +23,9 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   Badge,
-  Caption,
   Card,
   Button,
   SideDrawer,
@@ -36,7 +37,6 @@ import {
   Search,
   StatusBadge,
   TablePagination,
-  Text,
 } from "@/components";
 import { CouponFilters } from "./CouponFilters";
 import { formatDate } from "@/utils";

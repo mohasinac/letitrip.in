@@ -10,24 +10,23 @@
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Container, Heading, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   ActiveFilterChips,
-  Container,
   DataTable,
   EmptyState,
-  Heading,
   ListingLayout,
   REVIEW_SORT_OPTIONS,
   ReviewFilters,
   Search,
   SortDropdown,
   TablePagination,
-  Text,
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { usePendingTable, useUrlTable, useBrands } from "@/hooks";
+import { useUrlTable, useBrands } from "@/hooks";
 import { ReviewCard } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
 import { useReviews, type ReviewsApiResult } from "../hooks/useReviews";

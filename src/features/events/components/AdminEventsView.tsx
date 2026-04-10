@@ -11,11 +11,12 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { Caption, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   AdminPageHeader,
   Badge,
   Button,
-  Caption,
   Card,
   DataTable,
   EventFilters,
@@ -25,7 +26,6 @@ import {
   SortDropdown,
   StatusBadge,
   TablePagination,
-  Text,
   ConfirmDeleteModal,
 } from "@/components";
 import { formatDate } from "@/utils";
@@ -33,7 +33,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { useUrlTable, useMessage } from "@/hooks";
 import {
   useEvents,
   useEventsTableColumns,

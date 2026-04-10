@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Accordion,
   AccordionItem,
@@ -23,8 +24,6 @@ import {
   FormField,
   FormFieldSpan,
   FormGroup,
-  Heading,
-  Text,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsCredentialsMasked } from "@/db/schema";

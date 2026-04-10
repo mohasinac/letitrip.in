@@ -11,15 +11,9 @@
 import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import {
-  BaseListingCard,
-  Heading,
-  MediaImage,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { BaseListingCard, MediaImage, TextLink } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 

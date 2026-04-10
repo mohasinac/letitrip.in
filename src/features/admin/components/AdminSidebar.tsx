@@ -27,7 +27,7 @@ import {
   Tag,
 } from "lucide-react";
 import { Drawer } from "@mohasinac/appkit/ui";
-import { Nav, Span, Text, Aside } from "@/components";
+import { Nav, Span, Text, Aside } from "@mohasinac/appkit/ui";
 
 interface NavItem {
   href: string;

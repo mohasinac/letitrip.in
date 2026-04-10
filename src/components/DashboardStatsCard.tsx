@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import type { ElementType } from "react";
-import { Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
 
 export interface DashboardStatsCardProps {
   label: string;

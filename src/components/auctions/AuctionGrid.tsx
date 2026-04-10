@@ -2,7 +2,7 @@
 
 import { AuctionCard } from "./AuctionCard";
 import type { AuctionCardData } from "./AuctionCard";
-import { Span, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { card } = THEME_CONSTANTS;

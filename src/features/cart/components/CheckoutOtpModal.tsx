@@ -13,15 +13,8 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  SideDrawer,
-  Button,
-  Input,
-  Label,
-  Text,
-  Heading,
-  TextLink,
-} from "@/components";
+import { Heading, Label, Text } from "@mohasinac/appkit/ui";
+import { SideDrawer, Button, Input, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { usePaymentOtp } from "../hooks/usePaymentOtp";
 

@@ -2,10 +2,11 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
+import { Heading, Main, Span, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   PRODUCT_SORT_VALUES,
   Search,
-  Span,
   ViewToggle,
   BulkActionBar,
   Button,
@@ -18,10 +19,9 @@ import {
   SwitchFilter,
 } from "@/components";
 import type { ActiveFilter, ViewMode } from "@/components";
-import { Heading, Text, Main } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import { useSearch } from "@mohasinac/appkit/features/search";
 import type { CategoryDocument } from "@/db/schema";

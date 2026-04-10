@@ -5,7 +5,8 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { logger } from "@mohasinac/appkit/core";
 import { useFaqVote, useMessage } from "@/hooks";
-import { Button, Span, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 

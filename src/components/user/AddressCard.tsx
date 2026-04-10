@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Badge, Button, Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Card, Badge, Button } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 

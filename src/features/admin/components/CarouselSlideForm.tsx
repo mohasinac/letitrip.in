@@ -11,16 +11,8 @@
 
 import { useState } from "react";
 import { nowMs } from "@/utils";
-import {
-  Button,
-  Checkbox,
-  FormField,
-  FormGroup,
-  Heading,
-  Label,
-  Select,
-  Text,
-} from "@/components";
+import { Heading, Label, Text } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, FormField, FormGroup, Select } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";

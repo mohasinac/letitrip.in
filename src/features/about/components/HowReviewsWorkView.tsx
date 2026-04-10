@@ -1,5 +1,6 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
+import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { ShieldCheck, ThumbsUp, Pencil } from "lucide-react";

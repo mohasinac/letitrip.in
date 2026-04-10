@@ -1,6 +1,7 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
-import { Heading, Text, Span, Section, TextLink } from "@/components";
+import { Heading, Text, Span, Section } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 const { themed, spacing, page } = THEME_CONSTANTS;
 

@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { AuthStatusPanel } from "@mohasinac/appkit/features/auth";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Button,
   Alert,
   FormField,
   PasswordStrengthIndicator,
-  Heading,
-  Text,
   TextLink,
 } from "@/components";
 import { useResetPassword } from "@/hooks";

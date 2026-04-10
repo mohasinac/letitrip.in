@@ -13,15 +13,8 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  Button,
-  Heading,
-  Text,
-  Caption,
-  Skeleton,
-  EmptyState,
-  ConfirmDeleteModal,
-} from "@/components";
+import { Caption, Heading, Text } from "@mohasinac/appkit/ui";
+import { Button, Skeleton, EmptyState, ConfirmDeleteModal } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChatRooms, useDeleteChatRoom, useIsAdmin } from "@/hooks";

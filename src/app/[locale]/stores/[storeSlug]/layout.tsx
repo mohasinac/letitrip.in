@@ -1,6 +1,6 @@
 import { StoreHeader, StoreNavTabs } from "@/features/stores/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { Main } from "@/components";
+import { Main } from "@mohasinac/appkit/ui";
 
 const { page } = THEME_CONSTANTS;
 

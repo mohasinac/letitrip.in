@@ -1,6 +1,7 @@
 "use client";
 
-import { AvatarDisplay, Heading, RoleBadge, Text } from "@/components";
+import { AvatarDisplay, RoleBadge } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 

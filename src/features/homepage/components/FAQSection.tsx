@@ -5,15 +5,8 @@ import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import {
-  Button,
-  Heading,
-  Section,
-  SectionTabs,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, SectionTabs, TextLink } from "@/components";
 import type { SectionTab } from "@/components";
 import { useFaqList } from "@/features/faq";
 

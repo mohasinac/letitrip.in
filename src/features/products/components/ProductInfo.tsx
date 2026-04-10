@@ -15,14 +15,10 @@ function formatCategoryLabel(label: string): string {
   }
   return label;
 }
+import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 import {
   Badge,
-  Heading,
-  Text,
-  Span,
   TextLink,
-  Ul,
-  Li,
   Divider,
   Accordion,
   AccordionItem,

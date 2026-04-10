@@ -10,7 +10,8 @@ import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AuthStatusPanel } from "@mohasinac/appkit/features/auth";
-import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
+import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Card, Button, Alert, Spinner } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useVerifyEmail } from "@/hooks";
 

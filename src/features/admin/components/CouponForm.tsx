@@ -9,14 +9,8 @@
 
 import { useState, useEffect } from "react";
 import { nowISO } from "@/utils";
-import {
-  FormGroup,
-  Input,
-  Select,
-  Stack,
-  Textarea,
-  Toggle,
-} from "@/components";
+import { Stack } from "@mohasinac/appkit/ui";
+import { FormGroup, Input, Select, Textarea, Toggle } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;

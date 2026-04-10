@@ -29,7 +29,7 @@
  */
 
 import React, { forwardRef } from "react";
-import { Aside } from "@/components";
+import { Aside } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface SidebarLayoutProps {

@@ -3,19 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Button,
   Card,
   Checkbox,
   FormGroup,
-  Heading,
   Input,
-  Label,
   MediaVideo,
   SectionTabs,
   Slider,
-  Span,
-  Text,
   Textarea,
 } from "@/components";
 

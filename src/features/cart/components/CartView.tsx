@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Main, Heading, Text, Button } from "@/components";
+import { Heading, Main, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import { CartItemList } from "./CartItemList";
 import { CartSummary } from "./CartSummary";
 import { PromoCodeInput } from "./PromoCodeInput";

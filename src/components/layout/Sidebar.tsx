@@ -10,21 +10,12 @@ import {
   SUCCESS_MESSAGES,
   MAIN_NAV_ITEMS,
 } from "@/constants";
-import { useSwipe, useAuth, useLogout, useMessage } from "@/hooks";
+import { Heading, Li, Nav, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { useSwipe } from "@mohasinac/appkit/react";
+import { useAuth, useLogout, useMessage } from "@/hooks";
 import { logger } from "@mohasinac/appkit/core";
 import { Sprout, SearchCode } from "lucide-react";
-import {
-  AvatarDisplay,
-  Button,
-  Heading,
-  Li,
-  LocaleSwitcher,
-  Nav,
-  Span,
-  Text,
-  TextLink,
-  Ul,
-} from "@/components";
+import { AvatarDisplay, Button, LocaleSwitcher, TextLink } from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
 import { SidebarLayout } from "./SidebarLayout";

@@ -9,7 +9,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Select, Span, Text, Textarea } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { Button, Select, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { PayoutDocument, PayoutStatus } from "@/db/schema";

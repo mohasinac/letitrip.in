@@ -33,13 +33,8 @@ import { Tag, X, PanelLeft } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { AvatarMetadata } from "@/db/schema";
-import {
-  AvatarDisplay,
-  BlockHeader,
-  Button,
-  Span,
-  TextLink,
-} from "@/components";
+import { BlockHeader, Span } from "@mohasinac/appkit/ui";
+import { AvatarDisplay, Button, TextLink } from "@/components";
 
 /** Minimal user shape required by the title bar. */
 export interface TitleBarUser {

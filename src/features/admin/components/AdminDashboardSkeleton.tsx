@@ -5,7 +5,7 @@
  * Uses THEME_CONSTANTS.skeleton.* tokens.
  */
 
-import { Grid } from "@/components";
+import { Grid } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { skeleton, spacing, themed, flex } = THEME_CONSTANTS;

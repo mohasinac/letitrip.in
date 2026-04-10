@@ -11,16 +11,8 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  AdminPageHeader,
-  Button,
-  Card,
-  Heading,
-  Span,
-  Text,
-  Toggle,
-  useToast,
-} from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { AdminPageHeader, Button, Card, Toggle, useToast } from "@/components";
 import { useAdminFeatureFlags } from "../hooks/useAdminFeatureFlags";
 import type { SiteSettingsDocument } from "@/db/schema";
 import { FEATURE_FLAG_META } from "@/db/schema";

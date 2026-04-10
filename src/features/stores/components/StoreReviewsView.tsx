@@ -2,14 +2,8 @@
 
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  EmptyState,
-  Spinner,
-  Heading,
-  Stack,
-  Text,
-  Caption,
-} from "@/components";
+import { Caption, Heading, Stack, Text } from "@mohasinac/appkit/ui";
+import { EmptyState, Spinner } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreReviews } from "../hooks";

@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
-import { Button, Input, Label, Select, Span } from "@/components";
+import { Label, Span } from "@mohasinac/appkit/ui";
+import { Button, Input, Select } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
 

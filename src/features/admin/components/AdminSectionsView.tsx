@@ -14,17 +14,16 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 const { flex } = THEME_CONSTANTS;
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Badge,
   Button,
-  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
   SideDrawer,
   StatusBadge,
-  Text,
   useToast,
 } from "@/components";
 import { SectionForm, useSectionTableColumns } from ".";

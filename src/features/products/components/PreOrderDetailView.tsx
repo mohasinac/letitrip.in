@@ -9,20 +9,16 @@
 
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 import {
   Badge,
   Breadcrumbs,
   BreadcrumbItem,
   Button,
   Divider,
-  Heading,
-  Span,
-  Text,
   TextLink,
   Accordion,
   AccordionItem,
-  Ul,
-  Li,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";

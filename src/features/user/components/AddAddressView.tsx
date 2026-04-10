@@ -2,7 +2,8 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useCreateAddress } from "@/hooks";
-import { Card, Heading, AddressForm, useToast } from "@/components";
+import { Heading } from "@mohasinac/appkit/ui";
+import { Card, AddressForm, useToast } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import {
   THEME_CONSTANTS,

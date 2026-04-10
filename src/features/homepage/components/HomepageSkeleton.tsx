@@ -1,7 +1,7 @@
 "use client";
 
 import { THEME_CONSTANTS } from "@/constants";
-import { Section } from "@/components";
+import { Section } from "@mohasinac/appkit/ui";
 
 /** Full-page skeleton shown while homepage data is loading. */
 export function HomepageSkeleton() {
@@ -32,7 +32,10 @@ export function HomepageSkeleton() {
         <div className={`${skeleton.heading} w-48 mx-auto mb-6`} />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className={`${skeleton.card} ${homepage.categoryTileH}`} />
+            <div
+              key={i}
+              className={`${skeleton.card} ${homepage.categoryTileH}`}
+            />
           ))}
         </div>
       </Section>

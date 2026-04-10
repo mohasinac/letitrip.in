@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { Nav, Ul } from "@/components";
+import { Nav, Ul } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface BottomNavLayoutProps {

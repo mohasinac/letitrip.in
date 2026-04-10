@@ -3,15 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  Button,
-  Heading,
-  Input,
-  Label,
-  Select,
-  Span,
-  Textarea,
-} from "@/components";
+import { Heading, Label, Span } from "@mohasinac/appkit/ui";
+import { Button, Input, Select, Textarea } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 

@@ -17,19 +17,12 @@
 import { useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useNotifications, useMessage, useClickOutside } from "@/hooks";
+import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { useClickOutside } from "@mohasinac/appkit/react";
+import { useNotifications, useMessage } from "@/hooks";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
-import {
-  Button,
-  Heading,
-  Li,
-  Span,
-  Spinner,
-  Text,
-  TextLink,
-  Ul,
-} from "@/components";
+import { Button, Spinner, TextLink } from "@/components";
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   order_placed: "🛍️",

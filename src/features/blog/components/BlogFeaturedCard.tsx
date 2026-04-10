@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Card, MediaImage, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { CATEGORY_BADGE } from "@/components";

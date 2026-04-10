@@ -2,7 +2,8 @@
 
 import { ReactNode, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, DrawerFormFooter, SideDrawer, Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Button, DrawerFormFooter, SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FilterDrawerProps {

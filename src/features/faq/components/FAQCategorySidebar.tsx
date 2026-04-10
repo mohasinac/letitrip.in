@@ -2,7 +2,8 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, FAQ_CATEGORIES, ROUTES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { Heading, Span, Text, TextLink } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 

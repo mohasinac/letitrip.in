@@ -7,14 +7,12 @@
 
 "use client";
 
+import { Heading, Stack, Text } from "@mohasinac/appkit/ui";
 import {
   FormField,
   Checkbox,
   FormGroup,
   ImageUpload,
-  Heading,
-  Stack,
-  Text,
   Alert,
 } from "@/components";
 import { CategorySelectorCreate } from "@/components";

@@ -3,10 +3,9 @@
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Card, Button } from "@/components";
-import { Heading, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
-import { Span } from "@/components";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 

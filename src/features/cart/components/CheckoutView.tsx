@@ -18,7 +18,7 @@
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
-import { StepperNav } from "@/components";
+import { StepperNav } from "@mohasinac/appkit/ui";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
@@ -35,7 +35,8 @@ import {
 } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Button, Heading, Main, SideDrawer, AddressForm } from "@/components";
+import { Heading, Main } from "@mohasinac/appkit/ui";
+import { Button, SideDrawer, AddressForm } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { SiteSettingsDocument } from "@/db/schema";
 import type { UnavailableItem } from "@/hooks";

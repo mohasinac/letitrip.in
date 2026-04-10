@@ -8,20 +8,17 @@
 
 "use client";
 
+import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { useCountdown } from "@mohasinac/appkit/react";
 import {
   Badge,
   Breadcrumbs,
   BreadcrumbItem,
   Button,
   Divider,
-  Heading,
-  Span,
-  Text,
   TextLink,
   Accordion,
   AccordionItem,
-  Ul,
-  Li,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
@@ -33,7 +30,6 @@ import {
   useAuth,
   useBottomActions,
   useRealtimeBids,
-  useCountdown,
   useAuctionDetail,
   useWishlistToggle,
 } from "@/hooks";

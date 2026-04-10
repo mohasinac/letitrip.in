@@ -55,7 +55,6 @@ export type { HomepageSection, SectionDrawerMode } from "./Section.types";
 // Reviews
 export { getReviewTableColumns, ReviewRowActions } from "./ReviewTableColumns";
 export { ReviewDetailView } from "./ReviewDetailView";
-export { ReviewStars } from "./ReviewStars";
 export type { Review, ReviewStatus } from "./Review.types";
 
 // FAQs

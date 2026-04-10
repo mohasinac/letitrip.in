@@ -3,12 +3,8 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { useRelatedProducts } from "@/hooks";
-import {
-  ProductCard,
-  HorizontalScroller,
-  Heading,
-  Section,
-} from "@/components";
+import { Heading, Section } from "@mohasinac/appkit/ui";
+import { ProductCard, HorizontalScroller } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;

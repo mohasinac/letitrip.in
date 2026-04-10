@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { siteSettingsRepository } from "@/repositories";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Span, Text } from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
 import { BeforeAfterCard } from "./BeforeAfterCard";
 
 /**

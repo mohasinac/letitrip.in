@@ -14,6 +14,7 @@
 import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { useMediaUpload } from "@/hooks";
+import { Text } from "@mohasinac/appkit/ui";
 import {
   Button,
   Alert,
@@ -22,7 +23,6 @@ import {
   AvatarDisplay,
   Progress,
   useToast,
-  Text,
 } from "@/components";
 import type { ImageCropData } from "@/components";
 import { THEME_CONSTANTS, UI_HELP_TEXT, SUCCESS_MESSAGES } from "@/constants";

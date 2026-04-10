@@ -46,7 +46,8 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
-import { Aside, Button, BulkActionBar, Nav, Span, Text } from "@/components";
+import { Aside, Nav, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, BulkActionBar } from "@/components";
 import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useBottomActions } from "@/hooks";

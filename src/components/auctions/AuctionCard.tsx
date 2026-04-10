@@ -2,20 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, Gavel, ShoppingBag, Clock } from "lucide-react";
-import {
-  BaseListingCard,
-  Caption,
-  MediaImage,
-  Span,
-  Text,
-  TextLink,
-  Button,
-} from "@/components";
+import { Caption, Span, Text } from "@mohasinac/appkit/ui";
+import { useCountdown } from "@mohasinac/appkit/react";
+import type { CountdownRemaining } from "@mohasinac/appkit/react";
+import { BaseListingCard, MediaImage, TextLink, Button } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useCountdown, useWishlistToggle } from "@/hooks";
-import type { CountdownRemaining } from "@/hooks";
+import { useWishlistToggle } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
 const { themed, flex, position } = THEME_CONSTANTS;

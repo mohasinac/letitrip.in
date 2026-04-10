@@ -13,6 +13,8 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   ActiveFilterChips,
   Badge,
@@ -30,11 +32,10 @@ import {
   SortDropdown,
   Spinner,
   TablePagination,
-  Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { getFilterLabel } from "@/components";
-import { useAuth, useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { useAuth, useUrlTable, useMessage } from "@/hooks";
 import {
   useSellerOrders,
   useSellerShipping,

@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
-import { useClickOutside, useKeyPress } from "@/hooks";
+import { useClickOutside, useKeyPress } from "@mohasinac/appkit/react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 
 export interface RowAction {
   label: string;

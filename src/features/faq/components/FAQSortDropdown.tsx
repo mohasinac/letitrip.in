@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span, Select } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Select } from "@/components";
 
 export type FAQSortOption = "helpful" | "newest" | "alphabetical";
 

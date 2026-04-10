@@ -26,8 +26,9 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { X, ChevronUp, ChevronDown, Check } from "lucide-react";
-import { Button, Span } from "@/components";
-import { useClickOutside } from "@/hooks";
+import { Span } from "@mohasinac/appkit/ui";
+import { useClickOutside } from "@mohasinac/appkit/react";
+import { Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface BulkActionItem {

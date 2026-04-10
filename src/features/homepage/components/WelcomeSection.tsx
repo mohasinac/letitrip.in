@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, Section, Span, Text } from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import type { WelcomeSectionConfig } from "@/db/schema";
 
 // ─── Trust chip keys (order matters for display) ────────────────────────────

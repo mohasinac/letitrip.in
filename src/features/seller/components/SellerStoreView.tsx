@@ -13,6 +13,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { Caption, Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Accordion,
   AccordionItem,
@@ -22,11 +23,6 @@ import {
   FormField,
   FormGroup,
   Toggle,
-  Heading,
-  Text,
-  Caption,
-  Label,
-  Span,
   Spinner,
   Divider,
   useToast,
@@ -250,7 +246,9 @@ export function SellerStoreView() {
         >
           <AccordionItem
             value="seller-store-details"
-            title={<Text className="font-semibold">{t("sectionStoreDetails")}</Text>}
+            title={
+              <Text className="font-semibold">{t("sectionStoreDetails")}</Text>
+            }
           >
             <div className={`${spacing.stack} pt-3`}>
               <Text variant="secondary" size="sm">
@@ -267,7 +265,9 @@ export function SellerStoreView() {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg ${themed.bgSecondary} border ${themed.borderColor}`}
                 >
                   <Caption>{t("storeUrlLabel")}</Caption>
-                  <Caption className="font-mono">/stores/{store.storeSlug}</Caption>
+                  <Caption className="font-mono">
+                    /stores/{store.storeSlug}
+                  </Caption>
                 </div>
               )}
 
@@ -401,7 +401,9 @@ export function SellerStoreView() {
 
           <AccordionItem
             value="seller-store-policies"
-            title={<Text className="font-semibold">{t("sectionPolicies")}</Text>}
+            title={
+              <Text className="font-semibold">{t("sectionPolicies")}</Text>
+            }
           >
             <div className={`${spacing.stack} pt-3`}>
               <Text variant="secondary" size="sm">
@@ -432,7 +434,9 @@ export function SellerStoreView() {
 
           <AccordionItem
             value="seller-store-vacation"
-            title={<Text className="font-semibold">{t("sectionVacation")}</Text>}
+            title={
+              <Text className="font-semibold">{t("sectionVacation")}</Text>
+            }
           >
             <div className={`${spacing.stack} pt-3`}>
               <div className={flex.between}>
@@ -462,7 +466,9 @@ export function SellerStoreView() {
 
           <AccordionItem
             value="seller-store-pickup-addresses"
-            title={<Text className="font-semibold">{t("pickupAddressesTitle")}</Text>}
+            title={
+              <Text className="font-semibold">{t("pickupAddressesTitle")}</Text>
+            }
           >
             <div className={`${flex.between} gap-4 pt-3`}>
               <Text variant="secondary" size="sm">

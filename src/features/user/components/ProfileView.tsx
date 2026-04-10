@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { useAuth, useProfileStats } from "@/hooks";
-import { Heading, Button, Spinner } from "@/components";
+import { Button, Spinner } from "@/components";
+import { Heading } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";

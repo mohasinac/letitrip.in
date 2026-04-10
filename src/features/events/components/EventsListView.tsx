@@ -11,24 +11,22 @@
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Container, Grid, Heading, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   ActiveFilterChips,
   Button,
-  Container,
   EmptyState,
-  Grid,
-  Heading,
   ListingLayout,
   Search,
   SortDropdown,
   TablePagination,
-  Text,
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { EventFilters } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import {
   useEvents,

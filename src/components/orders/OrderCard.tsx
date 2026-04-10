@@ -4,15 +4,8 @@ import { useCallback } from "react";
 import { Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import {
-  Button,
-  Caption,
-  Card,
-  Span,
-  StatusBadge,
-  Text,
-  TextLink,
-} from "@/components";
+import { Caption, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, Card, StatusBadge, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { OrderDocument } from "@/db/schema";

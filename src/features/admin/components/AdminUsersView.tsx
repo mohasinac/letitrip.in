@@ -10,27 +10,26 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 
 const { flex } = THEME_CONSTANTS;
+import { Caption, Span, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Button,
-  Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
   ListingLayout,
   RoleBadge,
   Search,
-  Span,
   StatusBadge,
   TablePagination,
-  Text,
   useToast,
 } from "@/components";
 import { UserFilters } from "./UserFilters";

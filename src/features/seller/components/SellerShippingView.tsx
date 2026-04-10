@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Accordion,
   AccordionItem,
@@ -19,8 +20,6 @@ import {
   FormField,
   FormGroup,
   Alert,
-  Text,
-  Heading,
   Badge,
   SideDrawer,
   Spinner,
@@ -420,7 +419,9 @@ export function SellerShippingView() {
           {activeMethod === "custom" && (
             <AccordionItem
               value="seller-shipping-custom"
-              title={<Text className="font-semibold">{t("customHeading")}</Text>}
+              title={
+                <Text className="font-semibold">{t("customHeading")}</Text>
+              }
             >
               <div className="pt-3">
                 <CustomShippingForm
@@ -436,7 +437,9 @@ export function SellerShippingView() {
           {activeMethod === "shiprocket" && (
             <AccordionItem
               value="seller-shipping-shiprocket"
-              title={<Text className="font-semibold">{t("srCredsHeading")}</Text>}
+              title={
+                <Text className="font-semibold">{t("srCredsHeading")}</Text>
+              }
             >
               <div className="pt-3 space-y-5">
                 <div>
@@ -465,7 +468,9 @@ export function SellerShippingView() {
                     </Text>
                     <PickupAddressForm
                       isSaving={isSaving}
-                      isVerified={shippingConfig?.pickupAddress?.isVerified ?? false}
+                      isVerified={
+                        shippingConfig?.pickupAddress?.isVerified ?? false
+                      }
                       onSave={(address) => {
                         updateShipping({
                           method: "shiprocket",

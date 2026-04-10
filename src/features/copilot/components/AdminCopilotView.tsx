@@ -10,16 +10,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  AdminPageHeader,
-  Button,
-  Card,
-  Heading,
-  Input,
-  Section,
-  Span,
-  Text,
-} from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { AdminPageHeader, Button, Card, Input } from "@/components";
 import { useCopilotChat } from "../hooks";
 import type { CopilotMessage } from "../types";
 

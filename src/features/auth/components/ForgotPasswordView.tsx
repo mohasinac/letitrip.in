@@ -8,14 +8,13 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { AuthStatusPanel } from "@mohasinac/appkit/features/auth";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
   Button,
   Alert,
   FormField,
   FormGroup,
-  Heading,
-  Text,
   TextLink,
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";

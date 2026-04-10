@@ -1,14 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  FormField,
-  FormGroup,
-  Button,
-  AvatarUpload,
-  Card,
-  Heading,
-} from "@/components";
+import { FormField, FormGroup, Button, AvatarUpload, Card } from "@/components";
+import { Heading } from "@mohasinac/appkit/ui";
 import type { ImageCropData } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";

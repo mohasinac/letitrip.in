@@ -19,7 +19,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { themed, flex } = THEME_CONSTANTS;
-import { Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
 import { formatNumber } from "@/utils";
 
 interface StatsCardsProps {

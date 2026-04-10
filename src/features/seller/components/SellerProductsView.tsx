@@ -11,6 +11,7 @@
 
 import { Suspense, useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   Spinner,
   Button,
@@ -31,13 +32,7 @@ import {
 } from "@/components";
 import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
-import {
-  useAuth,
-  useMessage,
-  useUrlTable,
-  usePendingTable,
-  useCategories,
-} from "@/hooks";
+import { useAuth, useMessage, useUrlTable, useCategories } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerProducts } from "../hooks";

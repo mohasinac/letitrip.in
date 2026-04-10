@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Label, Text } from "@mohasinac/appkit/ui";
 import {
   SideDrawer,
   Button,
@@ -8,11 +9,9 @@ import {
   Alert,
   FormGroup,
   Input,
-  Label,
   Select,
-  TagInput,
-  Text,
 } from "@/components";
+import { TagInput } from "@mohasinac/appkit/ui";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { resolveDate } from "@/utils";
 

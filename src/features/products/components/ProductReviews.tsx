@@ -5,27 +5,19 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime, formatNumber } from "@/utils";
+import { Heading, Label, Section, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Alert,
   Button,
   FormField,
-  Heading,
   HorizontalScroller,
-  Label,
   MediaAvatar,
   MediaImage,
   MediaLightbox,
-  Section,
-  Span,
-  Text,
 } from "@/components";
-import {
-  useProductReviews,
-  useCreateReview,
-  useAuth,
-  useMessage,
-  useUrlTable,
-} from "@/hooks";
+import { useProductReviews } from "@mohasinac/appkit/features/reviews";
+import { useCreateReview } from "@/hooks/useProductReviews";
+import { useAuth, useMessage, useUrlTable } from "@/hooks";
 
 const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
 

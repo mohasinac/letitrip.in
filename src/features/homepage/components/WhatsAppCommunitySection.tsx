@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { MessageCircle } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Heading, Section, Span, Text } from "@/components";
+import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import { proseMirrorToHtml, formatNumber } from "@/utils";
 import type {
   HomepageSectionDocument,

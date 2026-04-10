@@ -1,9 +1,10 @@
 "use client";
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { ReviewStars } from "./ReviewStars";
 import type { Review } from "./Review.types";
-import { Button, Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
+import { RatingDisplay } from "@mohasinac/appkit/ui";
 
 const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
 
@@ -38,7 +39,7 @@ export function getReviewTableColumns() {
       width: "12%",
       render: (review: Review) => (
         <div className="flex items-center gap-2">
-          <ReviewStars rating={review.rating} />
+          <RatingDisplay rating={review.rating} />
           <Span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             ({review.rating})
           </Span>

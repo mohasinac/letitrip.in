@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
@@ -18,9 +18,9 @@ import { useAdminReviews } from "@/features/admin/hooks";
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   Badge,
-  Caption,
   Card,
   Button,
   DataTable,
@@ -34,7 +34,7 @@ import {
   SortDropdown,
 } from "@/components";
 import { useToast } from "@/components";
-import { SideDrawer, ConfirmDeleteModal, Text, Textarea } from "@/components";
+import { SideDrawer, ConfirmDeleteModal, Textarea } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
 import type { Review, ReviewStatus } from ".";
 

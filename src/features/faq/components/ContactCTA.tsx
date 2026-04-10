@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
-import { Heading, Span, Text, TextLink } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 export function ContactCTA() {
   const t = useTranslations("faq.contact");

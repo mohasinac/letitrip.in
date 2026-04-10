@@ -3,7 +3,7 @@
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatRelativeTime } from "@/utils";
 import type { PublicBid } from "@/hooks";
-import { Heading, Li, Span, Text, Ul } from "@/components";
+import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 

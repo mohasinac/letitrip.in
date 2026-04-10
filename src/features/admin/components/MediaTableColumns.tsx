@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { Badge, Button, Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
+import { Badge, Button } from "@/components";
 import { formatDate } from "@/utils";
 import { UI_LABELS } from "@/constants";
 

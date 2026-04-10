@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Accordion,
   AccordionItem,
@@ -21,8 +22,6 @@ import {
   FormField,
   FormGroup,
   Alert,
-  Text,
-  Heading,
   Badge,
   Spinner,
 } from "@/components";
@@ -258,7 +257,9 @@ export function SellerPayoutSettingsView() {
                       : t("methodBankTitle")}
                   </Text>
                   <Text variant="secondary" size="sm">
-                    {method === "upi" ? t("methodUpiDesc") : t("methodBankDesc")}
+                    {method === "upi"
+                      ? t("methodUpiDesc")
+                      : t("methodBankDesc")}
                   </Text>
                 </Button>
               ))}

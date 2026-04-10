@@ -1,14 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  Caption,
-  Divider,
-  Heading,
-  SideDrawer,
-  Text,
-} from "@/components";
+import { Caption, Heading, Text } from "@mohasinac/appkit/ui";
+import { Card, Divider, SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 

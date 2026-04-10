@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
-import { Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
 
 interface PromoBannerStripProps {
   /** Free-shipping threshold in rupees. Defaults to 499. */

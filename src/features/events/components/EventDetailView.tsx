@@ -2,16 +2,8 @@
 
 import { useState } from "react";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import {
-  Card,
-  Spinner,
-  EmptyState,
-  Heading,
-  MediaImage,
-  Text,
-  Button,
-  Span,
-} from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Card, Spinner, EmptyState, MediaImage, Button } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { PollVotingSection } from "./PollVotingSection";

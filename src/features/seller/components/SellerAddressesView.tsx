@@ -12,6 +12,7 @@ import { useState, useCallback } from "react";
 import { MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
+import { Heading, Row, Text } from "@mohasinac/appkit/ui";
 import {
   AddressForm,
   Badge,
@@ -19,12 +20,9 @@ import {
   Card,
   ConfirmDeleteModal,
   EmptyState,
-  Heading,
   ListingLayout,
-  Row,
   SideDrawer,
   Spinner,
-  Text,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { StoreAddressDocument } from "@/db/schema";

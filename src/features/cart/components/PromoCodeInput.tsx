@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Input, Label, Span, Text } from "@/components";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, Input } from "@/components";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { CartItemDocument } from "@/db/schema";

@@ -11,18 +11,17 @@
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Container, Heading, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   ActiveFilterChips,
   Button,
-  Container,
   DataTable,
   EmptyState,
-  Heading,
   ListingLayout,
   Search,
   SortDropdown,
   TablePagination,
-  Text,
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -30,7 +29,7 @@ import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import {
   useBlogPosts,

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { ContactInfoSidebar, ContactForm } from "@/features/contact";
-import { Heading, Text, Section } from "@/components";
+import { Heading, Text, Section } from "@mohasinac/appkit/ui";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
 export const revalidate = 3600;

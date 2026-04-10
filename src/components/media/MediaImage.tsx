@@ -19,7 +19,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Span } from "../typography";
+import { Span } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;

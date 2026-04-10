@@ -17,18 +17,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   EmptyState,
-  Heading,
   ListingLayout,
   ProductGrid,
-  Row,
   Search,
   SectionTabs,
   SortDropdown,
   Spinner,
-  Text,
   Tooltip,
   ViewToggle,
 } from "@/components";
+import { Heading, Row, Text } from "@mohasinac/appkit/ui";
 import type { ViewMode } from "@/components";
 import { WishlistButton } from "./WishlistButton";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";

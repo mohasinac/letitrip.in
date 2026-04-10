@@ -5,17 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import { cancelOrderAction } from "@/actions";
 import { useAuth, useMessage } from "@/hooks";
 import { useOrderDetail } from "../hooks";
-import {
-  Card,
-  Heading,
-  Span,
-  Text,
-  Button,
-  StatusBadge,
-  Row,
-  Spinner,
-  EmptyState,
-} from "@/components";
+import { Heading, Row, Span, Text } from "@mohasinac/appkit/ui";
+import { Card, Button, StatusBadge, Spinner, EmptyState } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";

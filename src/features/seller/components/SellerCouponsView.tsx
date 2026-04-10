@@ -4,17 +4,8 @@ import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Tag, Plus } from "lucide-react";
-import {
-  Button,
-  Heading,
-  Text,
-  Span,
-  Caption,
-  Badge,
-  Spinner,
-  EmptyState,
-  Card,
-} from "@/components";
+import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Button, Badge, Spinner, EmptyState, Card } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {
   ROUTES,

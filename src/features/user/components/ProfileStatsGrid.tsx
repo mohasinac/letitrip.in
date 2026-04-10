@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Text } from "@/components";
+import { Card } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Link } from "@/i18n/navigation";
 

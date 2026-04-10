@@ -2,7 +2,8 @@
 
 import { useEventLeaderboard } from "../hooks/useEventLeaderboard";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span, Spinner, Text } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
+import { Spinner } from "@/components";
 import { useAuth } from "@/hooks";
 import { useTranslations } from "next-intl";
 import type { EventEntryDocument } from "@/db/schema";

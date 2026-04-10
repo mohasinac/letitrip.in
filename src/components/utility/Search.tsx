@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Input, Li, Span, Text, Ul } from "@/components";
+import { Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { Button, Input } from "@/components";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
 import type { AlgoliaNavRecord } from "@/hooks";
@@ -280,7 +281,8 @@ export default function Search({
 
   // ── Overlay: nav suggestions ─────────────────────────────────────────────────
   const router = useRouter();
-  const { suggestions, isLoading: suggestionsLoading } = useNavSuggestions(query);
+  const { suggestions, isLoading: suggestionsLoading } =
+    useNavSuggestions(query);
 
   useEffect(() => {
     setActiveIndex(-1);
@@ -408,7 +410,10 @@ export default function Search({
             }}
             onBlur={() => {
               if (inlineBlurRef.current) clearTimeout(inlineBlurRef.current);
-              inlineBlurRef.current = setTimeout(() => setIsInlineOpen(false), 120);
+              inlineBlurRef.current = setTimeout(
+                () => setIsInlineOpen(false),
+                120,
+              );
             }}
             placeholder={placeholder}
             className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
@@ -528,7 +533,11 @@ export default function Search({
                         {s.title}
                       </Text>
                       {s.subtitle && (
-                        <Text variant="secondary" size="xs" className="truncate">
+                        <Text
+                          variant="secondary"
+                          size="xs"
+                          className="truncate"
+                        >
                           {s.subtitle}
                         </Text>
                       )}
@@ -788,43 +797,48 @@ export default function Search({
                   ) : suggestions.length > 0 ? (
                     <Ul>
                       {suggestions.map((s, suggestionIndex) => {
-                        const itemIndex = quickLinkItems.length + suggestionIndex;
+                        const itemIndex =
+                          quickLinkItems.length + suggestionIndex;
                         const isActive = activeIndex === itemIndex;
 
                         return (
-                        <Li key={s.objectID}>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => handleSuggestionClick(s)}
-                            onMouseEnter={() => setActiveIndex(itemIndex)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0 ${isActive ? "bg-zinc-100 dark:bg-slate-700/70" : THEME_CONSTANTS.themed.hover}`}
-                          >
-                            <Span className="text-sm">
-                              {NAV_TYPE_ICON[s.type]}
-                            </Span>
-                            <div className="flex-1 min-w-0">
-                              <Text size="sm" className="font-medium truncate">
-                                {s.title}
-                              </Text>
-                              {s.subtitle && (
-                                <Text
-                                  variant="secondary"
-                                  size="xs"
-                                  className="truncate"
-                                >
-                                  {s.subtitle}
-                                </Text>
-                              )}
-                            </div>
-                            <Span
-                              className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
+                          <Li key={s.objectID}>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              onClick={() => handleSuggestionClick(s)}
+                              onMouseEnter={() => setActiveIndex(itemIndex)}
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0 ${isActive ? "bg-zinc-100 dark:bg-slate-700/70" : THEME_CONSTANTS.themed.hover}`}
                             >
-                              {s.type}
-                            </Span>
-                          </Button>
-                        </Li>
-                      );})}
+                              <Span className="text-sm">
+                                {NAV_TYPE_ICON[s.type]}
+                              </Span>
+                              <div className="flex-1 min-w-0">
+                                <Text
+                                  size="sm"
+                                  className="font-medium truncate"
+                                >
+                                  {s.title}
+                                </Text>
+                                {s.subtitle && (
+                                  <Text
+                                    variant="secondary"
+                                    size="xs"
+                                    className="truncate"
+                                  >
+                                    {s.subtitle}
+                                  </Text>
+                                )}
+                              </div>
+                              <Span
+                                className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
+                              >
+                                {s.type}
+                              </Span>
+                            </Button>
+                          </Li>
+                        );
+                      })}
                     </Ul>
                   ) : null}
                   {/* Always show "search products" footer */}

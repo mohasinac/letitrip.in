@@ -9,23 +9,23 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Badge,
   Button,
-  Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
   StatusBadge,
   TablePagination,
-  Text,
   ListingLayout,
   Search,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { usePendingTable } from "@mohasinac/appkit/react";
+import { useUrlTable, useMessage } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { StoreFilters } from "./StoreFilters";
 import { useAdminStores } from "@/features/admin/hooks";

@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Label, Pagination, Select, Span, Text } from "@/components";
+import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Pagination, Select } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;

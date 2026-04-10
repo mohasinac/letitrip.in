@@ -1,13 +1,6 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import {
-  Heading,
-  Text,
-  Grid,
-  Section,
-  TextLink,
-  Span,
-  FlowDiagram,
-} from "@/components";
+import { Grid, Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 

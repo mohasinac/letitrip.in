@@ -2,6 +2,8 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { PackageSearch, Gavel, Info } from "lucide-react";
+import { Container, Heading, Text } from "@mohasinac/appkit/ui";
+import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   DataTable,
   ProductCard,
@@ -13,13 +15,12 @@ import {
   PRODUCT_SORT_VALUES,
   EmptyState,
   Button,
-  Container,
   Tooltip,
   ViewToggle,
 } from "@/components";
 import { ProductFilters } from "@/components";
 import type { ActiveFilter, ViewMode } from "@/components";
-import { Heading, Text, TextLink } from "@/components";
+import { TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -27,7 +28,6 @@ import {
   useAuth,
   useMessage,
   useCategories,
-  usePendingTable,
   useBrands,
 } from "@/hooks";
 import { useProducts } from "../hooks";

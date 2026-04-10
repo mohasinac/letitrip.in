@@ -12,19 +12,16 @@ import {
   ERROR_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
+import { Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Alert,
   Button,
   Card,
   FormField,
   FormGroup,
-  Heading,
   Input,
-  Label,
   RadioGroup,
-  Span,
   Spinner,
-  Text,
 } from "@/components";
 import { formatDate } from "@/utils";
 import type { EventDocument, SurveyFormField } from "@/db/schema";

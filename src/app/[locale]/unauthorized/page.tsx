@@ -10,7 +10,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Button, Heading, Span, Text } from "@/components";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Button } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function UnauthorizedPage() {

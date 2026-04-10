@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { Span } from "@mohasinac/appkit/ui";
 import {
   Button,
   HorizontalScroller,
   MediaImage,
   MediaLightbox,
   MediaVideo,
-  Span,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";

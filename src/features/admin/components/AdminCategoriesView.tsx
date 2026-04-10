@@ -12,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
+import { Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Button,
@@ -20,7 +21,6 @@ import {
   DrawerFormFooter,
   ListingLayout,
   SideDrawer,
-  Text,
 } from "@/components";
 import { CategoryTreeView } from "./CategoryTreeView";
 import { useToast } from "@/components";

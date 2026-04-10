@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Text } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
