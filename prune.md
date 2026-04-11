@@ -144,6 +144,48 @@ Get-ChildItem src\db\schema -Recurse -Include "*.ts"
 
 ---
 
+### Rule I — No Re-exports; Direct Imports Only
+> Never create a file whose sole content is re-exporting from another module. Every import site must reference the canonical appkit path directly. The only permitted barrel files are the `index.ts` entrypoints declared in appkit's `tsup.config.ts`.
+
+**Find violations:**
+```pwsh
+# Files whose entire content is export { ... } from '...' or export * from '...'
+Select-String -Path "src\**\*.ts","src\**\*.tsx" -Pattern "^export (\{[^}]+\}|\*) from" -Recurse |
+  Group-Object Path | Where-Object { $_.Count -eq 1 } |
+  ForEach-Object { Get-Content $_.Name } |
+  Where-Object { $_ -match "^export" -and $_ -notmatch "^export (function|class|const|type|interface|enum|default)" }
+```
+
+**Fix per shim:**
+1. Find every file importing from the shim path: `Select-String -Path "src\**\*.ts","src\**\*.tsx" -Pattern "from '.*<shim-path>'" -Recurse`
+2. Replace each import with the canonical appkit import path.
+3. Delete the shim file.
+4. Confirm zero remaining references before committing.
+
+**Known re-export shims to delete (from §1):**
+
+| Shim file | Canonical import |
+|---|---|
+| `src/lib/monitoring/error-tracking.ts` | `@mohasinac/appkit/monitoring` |
+| `src/lib/monitoring/runtime.ts` | `@mohasinac/appkit/monitoring` |
+| `src/lib/monitoring/performance.ts` | `@mohasinac/appkit/monitoring` |
+| `src/lib/api/cache-middleware.ts` | `@mohasinac/appkit/next` |
+| `src/lib/api-response.ts` | `@mohasinac/appkit/next` |
+| `src/lib/firebase/firestore-helpers.ts` | `@mohasinac/appkit/providers/db-firebase` |
+| `src/utils/converters/cookie.converter.ts` | `@mohasinac/appkit/utils` |
+| `src/utils/formatters/date.formatter.ts` | `@mohasinac/appkit/utils` |
+| `src/utils/formatters/number.formatter.ts` | `@mohasinac/appkit/utils` |
+| `src/utils/formatters/string.formatter.ts` | `@mohasinac/appkit/utils` |
+| `src/utils/validators/email.validator.ts` | `@mohasinac/appkit/validation` |
+| `src/utils/validators/phone.validator.ts` | `@mohasinac/appkit/validation` |
+| `src/utils/validators/password.validator.ts` | `@mohasinac/appkit/validation` |
+| `src/utils/validators/input.validator.ts` | `@mohasinac/appkit/validation` |
+| `src/utils/validators/url.validator.ts` | `@mohasinac/appkit/validation` |
+| `src/utils/events/event-manager.ts` | `@mohasinac/appkit/utils` |
+| `src/lib/api/request-helpers.ts` | `@mohasinac/appkit/next` |
+
+---
+
 ## Legend
 
 | Symbol | Meaning |
