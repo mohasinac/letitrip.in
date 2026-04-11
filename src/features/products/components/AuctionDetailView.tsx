@@ -6,14 +6,20 @@
  */
 "use client";
 
-import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Li,
+  Text,
+  Ul,
+  Divider,
+  Span,
+  Button,
+  Badge,
+} from "@mohasinac/appkit/ui";
 import { useCountdown } from "@mohasinac/appkit/react";
 import {
-  Badge,
   Breadcrumbs,
   BreadcrumbItem,
-  Button,
-  Divider,
   TextLink,
   Accordion,
   AccordionItem,

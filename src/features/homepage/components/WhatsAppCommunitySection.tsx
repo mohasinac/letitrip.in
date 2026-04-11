@@ -23,7 +23,9 @@ export function WhatsAppCommunitySection() {
       title={config?.title ?? t("whatsappTitle")}
       descriptionHtml={descriptionHtml}
       memberCount={config?.memberCount}
-      memberCountLabel={t("whatsappMemberCount")}
+      memberCountLabel={t("whatsappMemberCount", {
+        count: config?.memberCount ?? 0,
+      })}
       testimonial={config?.testimonial}
       benefits={config?.benefits}
       buttonText={config?.buttonText ?? t("whatsappCta")}

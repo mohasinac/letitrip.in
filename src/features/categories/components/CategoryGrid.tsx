@@ -9,7 +9,7 @@
 import { useTranslations } from "next-intl";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span } from "@mohasinac/appkit/ui";
 import { CategoryCard } from "@/components";
 
 const { grid } = THEME_CONSTANTS;

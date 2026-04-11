@@ -1,7 +1,8 @@
+import { Spinner } from "@mohasinac/appkit/ui";
 import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
-import { Spinner } from "@/components";
+
 import { StoresListView } from "@/features/stores/components";
 import { mapStoreDocument } from "@/features/stores/utils";
 import { THEME_CONSTANTS } from "@/constants";

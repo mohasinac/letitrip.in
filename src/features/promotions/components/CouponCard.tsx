@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Gift, Percent, Truck, Tag } from "lucide-react";
 import { useMessage } from "@/hooks";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Card } from "@/components";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";

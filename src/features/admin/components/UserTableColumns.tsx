@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, MediaAvatar, RoleBadge, StatusBadge } from "@/components";
+import { MediaAvatar, RoleBadge } from "@/components";
 import type { DataTableColumn } from "@/components";
 import { buildAccountColumns } from "@mohasinac/appkit/features/account";
-import { Span } from "@mohasinac/appkit/ui";
+import { Span, Button, StatusBadge } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./User.types";

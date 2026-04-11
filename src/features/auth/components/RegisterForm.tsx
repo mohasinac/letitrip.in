@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
@@ -7,7 +8,7 @@ import { RegisterForm as AppkitRegisterForm } from "@mohasinac/appkit/features/a
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useRegister, useGoogleLogin } from "@/hooks";
-import { PasswordStrengthIndicator, TextLink, Spinner } from "@/components";
+import { PasswordStrengthIndicator, TextLink } from "@/components";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
 export function RegisterForm() {

@@ -16,8 +16,8 @@ import {
   useMessage,
   useWishlistToggle,
 } from "@/hooks";
-import { Span, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Span, Text, Button } from "@mohasinac/appkit/ui";
+
 import { Gavel, Heart, ShoppingCart, Tag, Zap } from "lucide-react";
 import { formatCurrency } from "@/utils";
 import { MakeOfferForm } from "./MakeOfferForm";

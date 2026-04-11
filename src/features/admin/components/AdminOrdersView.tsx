@@ -25,10 +25,9 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
+import { Text, TablePagination, Button } from "@mohasinac/appkit/ui";
 import {
   Card,
-  Button,
   OrderCard,
   SideDrawer,
   DataTable,
@@ -36,7 +35,6 @@ import {
   DrawerFormFooter,
   OrderFilters,
   Search,
-  TablePagination,
 } from "@/components";
 import { AdminOrdersView as AdminOrdersShell } from "@mohasinac/appkit/features/admin";
 import { useOrderTableColumns, OrderStatusForm } from ".";

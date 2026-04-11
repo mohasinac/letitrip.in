@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Label } from "@mohasinac/appkit/ui";
-import { Button, Checkbox, FormGroup, Input, Select } from "@/components";
+import { Label, Button } from "@mohasinac/appkit/ui";
+import { Checkbox, FormGroup, Input, Select } from "@/components";
 import { useTranslations } from "next-intl";
 import type { PollConfig } from "@/db/schema";
 

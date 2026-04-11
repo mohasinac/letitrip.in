@@ -11,7 +11,7 @@
 import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { BaseListingCard, MediaImage, TextLink } from "@/components";
 

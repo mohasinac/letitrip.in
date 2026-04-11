@@ -1,10 +1,11 @@
 "use client";
 
-"use client";
+import { Button } from "@mohasinac/appkit/ui";
+("use client");
 
 import { useTranslations } from "next-intl";
 import { BlogPostView as AppkitBlogPostView } from "@mohasinac/appkit/features/blog";
-import { Button, MediaImage, TextLink } from "@/components";
+import { MediaImage, TextLink } from "@/components";
 import { BlogCard } from "@/components";
 import { ROUTES } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";

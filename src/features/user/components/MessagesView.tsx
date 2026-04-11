@@ -1,10 +1,11 @@
 ﻿"use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks";
-import { Button, EmptyState } from "@/components";
+import { EmptyState } from "@/components";
 import { MessagesView as AppkitMessagesView } from "@mohasinac/appkit/features/account";
 import { ROUTES } from "@/constants";
 import { ChatList } from "./ChatList";

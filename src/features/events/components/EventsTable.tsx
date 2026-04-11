@@ -2,8 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
-import { Caption, Text } from "@mohasinac/appkit/ui";
-import { Button, Badge } from "@/components";
+import { Caption, Text, Badge, Button } from "@mohasinac/appkit/ui";
+
 import { EventStatusBadge } from "./EventStatusBadge";
 import type { EventDocument } from "@/db/schema";
 

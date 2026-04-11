@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Card, TextLink } from "@/components";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Card, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**

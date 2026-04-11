@@ -6,8 +6,8 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { Label } from "@mohasinac/appkit/ui";
-import { Button, Input } from "@/components";
+import { Label, Button } from "@mohasinac/appkit/ui";
+import { Input } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 

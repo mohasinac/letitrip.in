@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components";
 
 /**
  * BackToTop Component

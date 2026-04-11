@@ -1,8 +1,8 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Card, FormField } from "@/components";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Card, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { SiteSettingsDocument, TrustBarItem } from "@/db/schema";

@@ -1,7 +1,6 @@
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading } from "@mohasinac/appkit/ui";
-import Button from "../ui/Button";
+import { Button, Heading } from "@mohasinac/appkit/ui";
 
 /**
  * Alert Component

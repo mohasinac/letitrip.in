@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
-import { Button } from "@/components";
+import { Button } from "@mohasinac/appkit/ui";
+
 import { useState, useRef, useEffect, createContext, useContext } from "react";
 
 interface DropdownCtxValue {

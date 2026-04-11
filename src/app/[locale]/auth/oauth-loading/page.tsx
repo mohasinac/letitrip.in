@@ -20,8 +20,7 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
-import { Spinner } from "@/components";
+import { Text, Spinner } from "@mohasinac/appkit/ui";
 
 export default function OAuthLoadingPage() {
   const t = useTranslations("auth.oauth");

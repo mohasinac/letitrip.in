@@ -1,6 +1,7 @@
+import { Spinner } from "@mohasinac/appkit/ui";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { Spinner } from "@/components";
+
 import { ResetPasswordView } from "@/features/auth";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import type { Metadata } from "next";

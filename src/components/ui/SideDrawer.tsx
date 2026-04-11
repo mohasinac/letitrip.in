@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, ReactNode, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
-import { Button } from "@/components";
+
 import { THEME_CONSTANTS } from "@/constants";
 
 type DrawerMode = "create" | "edit" | "delete" | "view";

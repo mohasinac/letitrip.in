@@ -23,10 +23,9 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCategories, useCreateCategory, useMessage } from "@/hooks";
-import { Label } from "@mohasinac/appkit/ui";
+import { Label, Button } from "@mohasinac/appkit/ui";
 import {
   SideDrawer,
-  Button,
   CategoryForm,
   DrawerFormFooter,
   Select,

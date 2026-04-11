@@ -146,7 +146,7 @@ A domain is considered migrated only when all of the following are true:
 3. [x] Product, cart, checkout, and events shells in appkit.
 4. [x] Homepage sections in appkit.
 5. [x] Export and release package updates.
-6. [ ] Replace remaining letitrip local views with thin adapters.
+6. [x] Replace remaining letitrip local views with thin adapters.
 
 ---
 
@@ -159,7 +159,7 @@ A domain is considered migrated only when all of the following are true:
 - Completed in this batch: `AdminCarouselView`, `AdminCategoriesView`, `AdminSectionsView`, `AdminMediaView`, `AdminNavigationView` now consume appkit admin shells.
 - No remaining admin adapter items in this queue.
 
-#### Seller (6 deferred)
+#### Seller
 
 | File                      | Status                                        |
 | ------------------------- | --------------------------------------------- |
@@ -169,18 +169,18 @@ A domain is considered migrated only when all of the following are true:
 | `SellerStorefrontView`    | migrated - now thin adapter over appkit shell |
 | `SellerStoreView`         | migrated - now thin adapter over appkit shell |
 | `SellerGuideView`         | migrated - now thin adapter over appkit shell |
-| `PayoutHistoryTable`      | deferred - sub-component, no appkit shell     |
-| `PayoutStats`             | deferred - sub-component, no appkit shell     |
-| `ChatWindow`              | deferred - realtime chat, stays local         |
-| `ChatList`                | deferred - realtime chat, stays local         |
+| `PayoutHistoryTable`      | migrated - now thin adapter over appkit shell |
+| `PayoutStats`             | migrated - now thin adapter over appkit shell |
+| `ChatWindow`              | migrated - now thin adapter over appkit shell |
+| `ChatList`                | migrated - now thin adapter over appkit shell |
 
-#### Products / Cart / Checkout (2 deferred)
+#### Products / Cart / Checkout
 
 | File                                                                                 | Status   | Blocker                                                                                                          |
 | ------------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| `products/components/PreOrderDetailView.tsx`                                         | deferred | Razorpay deposit flow; stays local until payment provider abstracted                                             |
+| `products/components/PreOrderDetailView.tsx`                                         | migrated | now thin adapter over appkit PreOrderDetailView shell with local payment/deposit wiring                          |
 | `cart/components/CartView.tsx`                                                       | migrated | now thin adapter over appkit CartView shell for authenticated flow; guest cart row logic remains local by design |
-| Full checkout flow (`CheckoutView`, `CheckoutAddressStep`, `CheckoutOtpModal`, etc.) | deferred | Firebase OTP + Razorpay payment inline; stays local until provider contracts exist                               |
+| Full checkout flow (`CheckoutView`, `CheckoutAddressStep`, `CheckoutOtpModal`, etc.) | migrated | now thin adapters over appkit checkout shells; provider logic remains local via render slots                     |
 
 ---
 
@@ -195,7 +195,13 @@ These are concrete package gaps currently preventing a fully clean appkit-first 
 | Seller storefront/profile shells | `SellerStoreView`, `SellerGuideView`, and `SellerStorefrontView` now covered and adopted in letitrip - status: resolved                                                                                          |
 | EventStatsBanner                 | used in `AdminEventEntriesView`; not yet in appkit - status: open                                                                                                                                                |
 | CartView guest cart              | authenticated CartView shell now adopted; guest `GuestCartItemRow` pattern remains intentionally local until guest cart abstractions are added - blocked in `cart/components/CartView.tsx` - status: in-progress |
-| PreOrderDetailView payment       | Razorpay deposit flow blocks adapter migration - blocked in `products/components/PreOrderDetailView.tsx` - status: open (deferred until payment provider contracts exist)                                        |
+| PreOrderDetailView payment       | migrated as thin adapter; Razorpay deposit logic intentionally remains local in render slots - blocked in `products/components/PreOrderDetailView.tsx` - status: in-progress                                     |
+
+### Local live integration
+
+- `appkit` now includes `watch:all` to watch all tsup batches during local development.
+- `letitrip` is configured to consume local appkit via `"@mohasinac/appkit": "link:../appkit"`.
+- `letitrip` scripts include `dev:appkit:watch` and `dev:appkit:sync` for local iteration.
 
 ### Task 5 completion (record)
 

@@ -15,14 +15,16 @@ function formatCategoryLabel(label: string): string {
   }
   return label;
 }
-import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
 import {
-  Badge,
-  TextLink,
+  Heading,
+  Li,
+  Text,
+  Ul,
   Divider,
-  Accordion,
-  AccordionItem,
-} from "@/components";
+  Span,
+  Badge,
+} from "@mohasinac/appkit/ui";
+import { TextLink, Accordion, AccordionItem } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import type { ProductStatus } from "@mohasinac/appkit/features/products";
 import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";

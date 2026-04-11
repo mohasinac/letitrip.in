@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Span } from "@/components";
+import { Span } from "@mohasinac/appkit/ui";
 
 export interface AvatarProps {
   src?: string | null;

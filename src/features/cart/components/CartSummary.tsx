@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Span } from "@mohasinac/appkit/ui";
-import { Button, TextLink } from "@/components";
+import { Heading, Span, Button } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 const { themed, flex, spacing } = THEME_CONSTANTS;
 

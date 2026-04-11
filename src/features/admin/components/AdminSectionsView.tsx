@@ -14,17 +14,20 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 const { flex } = THEME_CONSTANTS;
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
-import { Caption, Text } from "@mohasinac/appkit/ui";
+import {
+  Caption,
+  Text,
+  StatusBadge,
+  Badge,
+  Button,
+} from "@mohasinac/appkit/ui";
 import { AdminSectionsView as AppkitAdminSectionsView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
-  Badge,
-  Button,
   Card,
   DataTable,
   DrawerFormFooter,
   SideDrawer,
-  StatusBadge,
   useToast,
 } from "@/components";
 import { SectionForm, useSectionTableColumns } from ".";

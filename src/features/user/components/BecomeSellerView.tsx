@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useBecomeSeller } from "@/hooks";
+import { Alert, Card, Checkbox } from "@/components";
 import {
-  Alert,
+  Caption,
+  Heading,
+  Li,
+  Span,
+  Text,
+  Ul,
   Badge,
   Button,
-  Card,
-  Checkbox,
   Divider,
   Spinner,
-} from "@/components";
-import { Caption, Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+} from "@mohasinac/appkit/ui";
 import { BecomeSellerView as AppkitBecomeSellerView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 

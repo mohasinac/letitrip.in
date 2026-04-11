@@ -1,4 +1,10 @@
-﻿"use client";
+"use client";
+
+import {
+  TablePagination,
+  Spinner,
+  ActiveFilterChips,
+} from "@mohasinac/appkit/ui";
 
 import { useEffect, useMemo, Suspense } from "react";
 import { useTranslations } from "next-intl";
@@ -6,14 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useAuth, useMessage, useUrlTable } from "@/hooks";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUserNotifications } from "../hooks/useUserNotifications";
-import {
-  ActiveFilterChips,
-  EmptyState,
-  FilterFacetSection,
-  Search,
-  Spinner,
-  TablePagination,
-} from "@/components";
+import { EmptyState, FilterFacetSection, Search } from "@/components";
 import { UserNotificationsView as AppkitUserNotificationsView } from "@mohasinac/appkit/features/account";
 import type { ActiveFilter } from "@/components";
 import { getFilterLabel } from "@/components";

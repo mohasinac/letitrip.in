@@ -8,21 +8,23 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUserOrders } from "../hooks";
 import { UserOrdersView as AppkitUserOrdersView } from "@mohasinac/appkit/features/account";
 import {
-  ActiveFilterChips,
-  Button,
   DataTable,
   EmptyState,
-  ListingLayout,
   OrderCard,
   OrderFilters,
   Search,
   SectionTabs,
+} from "@/components";
+import {
+  TablePagination,
+  Span,
+  Button,
+  ListingLayout,
   SortDropdown,
   Spinner,
   StatusBadge,
-  TablePagination,
-} from "@/components";
-import { Span } from "@mohasinac/appkit/ui";
+  ActiveFilterChips,
+} from "@mohasinac/appkit/ui";
 import type { ActiveFilter } from "@/components";
 import { ROUTES } from "@/constants";
 import { cancelOrderAction } from "@/actions";

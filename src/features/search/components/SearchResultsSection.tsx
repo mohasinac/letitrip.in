@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  Pagination,
-  EmptyState,
-  ProductGrid,
-  ProductSortBar,
-} from "@/components";
+import { Pagination } from "@mohasinac/appkit/ui";
+import { EmptyState, ProductGrid, ProductSortBar } from "@/components";
 import { useTranslations } from "next-intl";
 import type { ProductSortValue } from "@/components";
 import type { SearchProductItem } from "@mohasinac/appkit/features/search";

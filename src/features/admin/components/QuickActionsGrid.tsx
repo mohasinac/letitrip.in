@@ -1,3 +1,4 @@
+import { Button } from "@mohasinac/appkit/ui";
 /**
  * QuickActionsGrid Component
  *
@@ -5,10 +6,10 @@
  * appkit's QuickActionsPanel with local Card / Button / TextLink rendering.
  */
 
-"use client";
+("use client");
 
 import { useTranslations } from "next-intl";
-import { Card, Button, TextLink } from "@/components";
+import { Card, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
   QuickActionsPanel,

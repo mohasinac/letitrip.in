@@ -12,19 +12,16 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Spinner, Button, Badge } from "@mohasinac/appkit/ui";
 import { SellerPayoutSettingsView as AppkitSellerPayoutSettingsView } from "@mohasinac/appkit/features/seller";
 import {
   Accordion,
   AccordionItem,
   AdminPageHeader,
   Card,
-  Button,
   FormField,
   FormGroup,
   Alert,
-  Badge,
-  Spinner,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSellerPayoutSettings } from "@/features/seller";

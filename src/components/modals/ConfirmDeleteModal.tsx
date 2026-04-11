@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Button, Card } from "@/components";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface ConfirmDeleteModalProps {

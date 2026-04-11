@@ -1,11 +1,13 @@
-﻿"use client";
+"use client";
+
+import { Spinner } from "@mohasinac/appkit/ui";
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { updateProfileAction } from "@/actions";
-import { Alert, Spinner } from "@/components";
+import { Alert } from "@/components";
 import { UserSettingsView as AppkitUserSettingsView } from "@mohasinac/appkit/features/account";
 import {
   ROUTES,

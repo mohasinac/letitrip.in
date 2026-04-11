@@ -1,3 +1,11 @@
+import {
+  SortDropdown,
+  Button,
+  TablePagination,
+  ActiveFilterChips,
+  ListingLayout,
+  Spinner,
+} from "@mohasinac/appkit/ui";
 /**
  * SellerProductsView
  *
@@ -7,27 +15,21 @@
  * Uses ListingLayout for a unified listing shell.
  */
 
-"use client";
+("use client");
 
 import { Suspense, useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SellerProductsView as AppkitSellerProductsView } from "@mohasinac/appkit/features/seller";
 import {
-  Spinner,
-  Button,
   DataTable,
   AdminPageHeader,
-  TablePagination,
   SideDrawer,
   ConfirmDeleteModal,
   ProductForm,
   useProductTableColumns,
   EmptyState,
-  ActiveFilterChips,
-  ListingLayout,
   Search,
-  SortDropdown,
   ProductFilters,
   getFilterLabel,
 } from "@/components";

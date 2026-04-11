@@ -6,7 +6,14 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminBids } from "@/features/admin/hooks";
-import { Grid, Text, Caption, Span } from "@mohasinac/appkit/ui";
+import {
+  Grid,
+  Text,
+  Caption,
+  StatusBadge,
+  Span,
+  TablePagination,
+} from "@mohasinac/appkit/ui";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -14,8 +21,6 @@ import {
   SideDrawer,
   DataTable,
   AdminPageHeader,
-  TablePagination,
-  StatusBadge,
   Search,
 } from "@/components";
 import { AdminBidsView as AdminBidsShell } from "@mohasinac/appkit/features/admin";

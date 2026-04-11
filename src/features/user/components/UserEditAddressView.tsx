@@ -15,15 +15,8 @@ import {
   useUpdateAddress,
   useDeleteAddress,
 } from "@/hooks";
-import {
-  Card,
-  Button,
-  Spinner,
-  AddressForm,
-  ConfirmDeleteModal,
-  useToast,
-} from "@/components";
-import { Heading, Row } from "@mohasinac/appkit/ui";
+import { Card, AddressForm, ConfirmDeleteModal, useToast } from "@/components";
+import { Heading, Row, Button, Spinner } from "@mohasinac/appkit/ui";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";

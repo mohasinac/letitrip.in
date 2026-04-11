@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, Gavel, ShoppingBag, Clock } from "lucide-react";
-import { Caption, Span, Text } from "@mohasinac/appkit/ui";
+import { Caption, Text, Button, Span } from "@mohasinac/appkit/ui";
 import { useCountdown } from "@mohasinac/appkit/react";
 import type { CountdownRemaining } from "@mohasinac/appkit/react";
-import { BaseListingCard, MediaImage, TextLink, Button } from "@/components";
+import { BaseListingCard, MediaImage, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";

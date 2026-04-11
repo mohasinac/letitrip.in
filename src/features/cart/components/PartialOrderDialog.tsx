@@ -12,8 +12,8 @@
  */
 
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { SideDrawer, Button } from "@/components";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+import { SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UnavailableItem } from "@/hooks";
 

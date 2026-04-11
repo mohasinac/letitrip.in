@@ -11,10 +11,11 @@
  * link to profile settings instead.
  */
 
-import { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Label, Text } from "@mohasinac/appkit/ui";
-import { SideDrawer, Button, Input, TextLink } from "@/components";
+import * as AppkitCartFeature from "@mohasinac/appkit/features/cart";
+import { Label, Text, Button } from "@mohasinac/appkit/ui";
+import { SideDrawer, Input, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { usePaymentOtp } from "../hooks/usePaymentOtp";
 
@@ -26,6 +27,25 @@ interface CheckoutOtpModalProps {
   onVerified: () => void;
   onClose: () => void;
 }
+
+type ModalContainerContext = {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
+};
+
+const AppkitCheckoutOtpModal = (
+  AppkitCartFeature as {
+    CheckoutOtpModal?: React.ComponentType<{
+      isOpen: boolean;
+      title?: string;
+      onClose: () => void;
+      renderContainer: (context: ModalContainerContext) => React.ReactNode;
+      renderBody: () => React.ReactNode;
+    }>;
+  }
+).CheckoutOtpModal;
 
 /** Masks all but the last 4 digits of a phone number. */
 function maskPhone(phone: string): string {
@@ -79,8 +99,6 @@ export function CheckoutOtpModal({
   const hasNoPhone = !phoneNumber;
   const isSending = otpState === "sending";
   const isVerifying = otpState === "verifying";
-  const codeSent = otpState === "code_sent" || otpState === "error";
-
   const friendlyError = (() => {
     if (!error) return null;
     switch (error) {
@@ -99,19 +117,12 @@ export function CheckoutOtpModal({
     }
   })();
 
-  return (
-    <SideDrawer
-      isOpen={isOpen}
-      onClose={onClose}
-      title={t("otpModalTitle")}
-      mode="edit"
-    >
-      {/* Invisible reCAPTCHA anchor */}
+  const modalBody = (
+    <>
       <div id={recaptchaId} />
 
       <div className={spacing.stack}>
         {hasNoPhone ? (
-          /* ── No phone registered ─────────────────────────── */
           <div className="text-center space-y-3">
             <Text variant="secondary">{t("otpNoPhone")}</Text>
             <Text size="sm" variant="secondary">
@@ -123,7 +134,6 @@ export function CheckoutOtpModal({
           </div>
         ) : otpState === "idle" ||
           (otpState === "error" && !verificationSent(error)) ? (
-          /* ── Initial state: ask to send OTP ─────────────── */
           <div className={spacing.stack}>
             <Text variant="secondary">{t("otpModalDesc")}</Text>
             <Text size="sm" className="font-mono font-semibold">
@@ -148,7 +158,6 @@ export function CheckoutOtpModal({
             </div>
           </div>
         ) : (
-          /* ── Code sent: input + verify ───────────────────── */
           <div className={spacing.stack}>
             <Text variant="secondary">
               {t("otpSentDesc", { phone: maskPhone(phoneNumber) })}
@@ -200,6 +209,43 @@ export function CheckoutOtpModal({
           </div>
         )}
       </div>
+    </>
+  );
+
+  if (AppkitCheckoutOtpModal) {
+    return (
+      <AppkitCheckoutOtpModal
+        isOpen={isOpen}
+        title={t("otpModalTitle")}
+        onClose={onClose}
+        renderContainer={({
+          isOpen: open,
+          onClose: close,
+          title,
+          children,
+        }) => (
+          <SideDrawer
+            isOpen={open}
+            onClose={close}
+            title={title ?? t("otpModalTitle")}
+            mode="edit"
+          >
+            {children}
+          </SideDrawer>
+        )}
+        renderBody={() => modalBody}
+      />
+    );
+  }
+
+  return (
+    <SideDrawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t("otpModalTitle")}
+      mode="edit"
+    >
+      {modalBody}
     </SideDrawer>
   );
 }

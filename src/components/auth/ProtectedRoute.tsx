@@ -19,8 +19,8 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { useSession } from "@/contexts";
 import { getRouteAccessConfig, ROUTES, UI_LABELS } from "@/constants";
 import { UserRole } from "@/types/auth";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Spinner, Button } from "@/components";
+import { Heading, Text, Button, Spinner } from "@mohasinac/appkit/ui";
+
 import { THEME_CONSTANTS } from "@/constants";
 
 interface ProtectedRouteProps {

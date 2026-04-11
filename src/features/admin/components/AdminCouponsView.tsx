@@ -30,19 +30,22 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
-  Badge,
-  Card,
+  Caption,
+  Text,
+  TablePagination,
   Button,
+  StatusBadge,
+  Badge,
+} from "@mohasinac/appkit/ui";
+import {
+  Card,
   SideDrawer,
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,
   Search,
-  StatusBadge,
-  TablePagination,
 } from "@/components";
 import { AdminCouponsView as AdminCouponsShell } from "@mohasinac/appkit/features/admin";
 import { CouponFilters } from "./CouponFilters";

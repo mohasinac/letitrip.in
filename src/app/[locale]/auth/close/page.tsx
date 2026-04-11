@@ -20,8 +20,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
-import { Spinner } from "@/components";
+import { Text, Spinner } from "@mohasinac/appkit/ui";
+
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;

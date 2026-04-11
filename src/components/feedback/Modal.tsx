@@ -3,9 +3,8 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Heading } from "@mohasinac/appkit/ui";
+import { Button, Heading } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
-import Button from "../ui/Button";
 import { preventBodyScroll } from "@/utils";
 
 /**

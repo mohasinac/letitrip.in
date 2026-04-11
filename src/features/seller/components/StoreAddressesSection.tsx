@@ -10,16 +10,8 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import {
-  Card,
-  Button,
-  Spinner,
-  SideDrawer,
-  AddressForm,
-  Badge,
-  Alert,
-} from "@/components";
+import { Heading, Text, Badge, Button, Spinner } from "@mohasinac/appkit/ui";
+import { Card, SideDrawer, AddressForm, Alert } from "@/components";
 import { useMessage } from "@/hooks";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { StoreAddressDocument } from "@/db/schema";

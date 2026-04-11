@@ -6,8 +6,8 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid, useMessage } from "@/hooks";
-import { Label, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, FormGroup, Input, TextLink } from "@/components";
+import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { FormGroup, Input, TextLink } from "@/components";
 import type { BidResult } from "@/hooks";
 
 const { themed } = THEME_CONSTANTS;

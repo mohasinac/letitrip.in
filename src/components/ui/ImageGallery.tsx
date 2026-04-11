@@ -1,9 +1,9 @@
 ﻿"use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Text } from "@mohasinac/appkit/ui";
+import { Text, HorizontalScroller, Button } from "@mohasinac/appkit/ui";
 import { useSwipe, useGesture } from "@mohasinac/appkit/react";
-import { Button, HorizontalScroller, MediaImage } from "@/components";
+import { MediaImage } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**

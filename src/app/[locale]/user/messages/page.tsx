@@ -1,3 +1,4 @@
+import { Spinner } from "@mohasinac/appkit/ui";
 /**
  * User Messages Page
  *
@@ -9,7 +10,7 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { EmptyState, Spinner } from "@/components";
+import { EmptyState } from "@/components";
 import { FEATURE_FLAGS, SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { MessagesView } from "@/features/user";
 import { getTranslations } from "next-intl/server";

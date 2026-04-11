@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Card, Badge, DataTable } from "@/components";
+import { SellerPayoutHistoryTable as AppkitSellerPayoutHistoryTable } from "@mohasinac/appkit/features/seller";
+import { Heading, Text, Badge } from "@mohasinac/appkit/ui";
+import { Card, DataTable } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
@@ -92,15 +93,13 @@ export function SellerPayoutHistoryTable({
     },
   ];
   return (
-    <div>
-      <Heading level={2} className="mb-4">
-        {t("historyTitle")}
-      </Heading>
-
-      {isLoading ? (
-        <Text variant="secondary">{t("loading")}</Text>
-      ) : payouts.length === 0 ? (
-        <Card className={`p-6 text-center`}>
+    <AppkitSellerPayoutHistoryTable
+      labels={{ title: t("historyTitle") }}
+      isLoading={isLoading}
+      hasRows={payouts.length > 0}
+      renderLoading={() => <Text variant="secondary">{t("loading")}</Text>}
+      renderEmptyState={() => (
+        <Card className="p-6 text-center">
           <Text variant="secondary" weight="medium">
             {t("noPayouts")}
           </Text>
@@ -108,7 +107,8 @@ export function SellerPayoutHistoryTable({
             {t("noPayoutsDesc")}
           </Text>
         </Card>
-      ) : (
+      )}
+      renderTable={() => (
         <DataTable
           columns={columns}
           data={payouts}
@@ -119,6 +119,6 @@ export function SellerPayoutHistoryTable({
           onSelectionChange={setSelectedIds}
         />
       )}
-    </div>
+    />
   );
 }

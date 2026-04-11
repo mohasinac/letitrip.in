@@ -34,8 +34,7 @@ import { X, ChevronUp, ChevronDown, Check } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useBottomActionsContext } from "@/contexts/BottomActionsContext";
 import { useClickOutside } from "@mohasinac/appkit/react";
-import { Span, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Span, Text, Button } from "@mohasinac/appkit/ui";
 
 export default function BottomActions() {
   const tActions = useTranslations("actions");

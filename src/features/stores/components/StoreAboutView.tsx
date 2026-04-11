@@ -1,8 +1,9 @@
 "use client";
 
+import { Spinner } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { StoreAboutView as AppkitStoreAboutView } from "@mohasinac/appkit/features/stores";
-import { EmptyState, Spinner, TextLink } from "@/components";
+import { EmptyState, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";

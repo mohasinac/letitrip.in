@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
+import { Text, Button } from "@mohasinac/appkit/ui";
 import { AdminNavigationView as AppkitAdminNavigationView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
-  Button,
   Card,
   Tabs,
   TabsList,

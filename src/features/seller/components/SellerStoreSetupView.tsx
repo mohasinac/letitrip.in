@@ -9,9 +9,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
 import { SellerStoreSetupView as AppkitSellerStoreSetupView } from "@mohasinac/appkit/features/seller";
-import { Card, Alert, Button, FormField } from "@/components";
+import { Card, Alert, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";

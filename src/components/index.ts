@@ -15,10 +15,10 @@
  * @example
  * ```tsx
  * // Import from main barrel
- * import { Button, Input, Alert } from '@/components';
+ * import { Input, Alert } from "@/components";
  *
  * // Import from specific subdirectory
- * import { Button, Card } from '@/components/ui';
+ * import { Card } from "@/components";
  * import { Input, Select } from '@/components/forms';
  * ```
  */

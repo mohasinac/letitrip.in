@@ -10,7 +10,7 @@
 "use client";
 
 import React from "react";
-import { Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Label, Text, Span } from "@mohasinac/appkit/ui";
 import {
   ImageUpload,
   Input,

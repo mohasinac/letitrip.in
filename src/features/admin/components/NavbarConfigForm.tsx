@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Card } from "@/components";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 

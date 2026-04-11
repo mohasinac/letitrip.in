@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Span, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Span } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";

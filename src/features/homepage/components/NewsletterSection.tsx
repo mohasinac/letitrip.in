@@ -10,8 +10,8 @@ import { z } from "zod";
 import { subscribeNewsletterAction } from "@/actions";
 import { useMessage } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { Button, Input, TextLink } from "@/components";
-import { Text } from "@mohasinac/appkit/ui";
+import { Input, TextLink } from "@/components";
+import { Text, Button } from "@mohasinac/appkit/ui";
 import { NewsletterSection as AppkitNewsletterSection } from "@mohasinac/appkit/features/homepage";
 
 const schema = z.object({ email: z.string().email() });

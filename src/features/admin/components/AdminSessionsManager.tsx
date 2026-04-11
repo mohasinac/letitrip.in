@@ -13,15 +13,8 @@ import {
   useRevokeUserSessions,
 } from "@/features/admin";
 import { AdminSessionsManager as AdminSessionsShell } from "@mohasinac/appkit/features/admin";
-import { Grid, Heading, Text } from "@mohasinac/appkit/ui";
-import {
-  Card,
-  Button,
-  Alert,
-  Badge,
-  ConfirmDeleteModal,
-  DataTable,
-} from "@/components";
+import { Grid, Heading, Text, Badge, Button } from "@mohasinac/appkit/ui";
+import { Card, Alert, ConfirmDeleteModal, DataTable } from "@/components";
 import { useToast } from "@/components";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 import { useTranslations } from "next-intl";

@@ -11,8 +11,8 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Text, Span } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function NotFound() {

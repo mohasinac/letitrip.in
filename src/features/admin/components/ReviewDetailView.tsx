@@ -5,11 +5,12 @@ import {
   Heading,
   Label,
   Row,
-  Span,
   Stack,
   Text,
+  Button,
+  Span,
 } from "@mohasinac/appkit/ui";
-import { Card, Button } from "@/components";
+import { Card } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { formatDate } from "@/utils";
 import { RatingDisplay } from "@mohasinac/appkit/ui";

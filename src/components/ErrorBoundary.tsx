@@ -8,7 +8,7 @@
 
 import React, { Component, ReactNode } from "react";
 import { Text, Heading } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Button } from "@mohasinac/appkit/ui";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { Logger } from "@mohasinac/appkit/core";
 import { useTranslations } from "next-intl";

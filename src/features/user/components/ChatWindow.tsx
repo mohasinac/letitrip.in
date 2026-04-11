@@ -15,8 +15,16 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
-import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Alert, Button, Card, Spinner, Textarea } from "@/components";
+import { ChatWindow as AppkitChatWindow } from "@mohasinac/appkit/features/account";
+import {
+  Caption,
+  Heading,
+  Text,
+  Spinner,
+  Span,
+  Button,
+} from "@mohasinac/appkit/ui";
+import { Alert, Card, Textarea } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";
@@ -64,97 +72,97 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
   };
 
   return (
-    <Card
-      className={`flex flex-col h-full min-h-[360px] sm:min-h-[420px] xl:min-h-[540px] max-h-[600px] xl:max-h-[760px] 2xl:max-h-[840px] p-4`}
-    >
-      {/* Header */}
-      <div className={`${flex.between} pb-3 border-b ${themed.border} mb-3`}>
-        <div className="flex items-center gap-2">
-          <Heading level={4}>{participantName ?? t("chat")}</Heading>
-          <Span
-            className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500" : "bg-zinc-400"}`}
-            aria-label={isConnected ? t("connected") : t("disconnected")}
-          />
-        </div>
-        {isLoading && <Spinner size="sm" />}
-      </div>
-
-      {/* Error */}
-      {error && (
-        <Alert variant="warning" className="mb-3">
-          {error}
-        </Alert>
-      )}
-
-      {/* Messages */}
-      <div
-        className={`${flex.growMinH} ${overflow.yAuto} flex flex-col gap-3 pr-1`}
-      >
-        {messages.length === 0 && !isLoading && (
-          <div className={`${flex.center} h-full`}>
-            <Caption>{t("noMessages")}</Caption>
+    <Card className="flex flex-col h-full min-h-[360px] sm:min-h-[420px] xl:min-h-[540px] max-h-[600px] xl:max-h-[760px] 2xl:max-h-[840px] p-4">
+      <AppkitChatWindow
+        labels={{
+          title: participantName ?? t("chat"),
+          connected: t("connected"),
+          disconnected: t("disconnected"),
+        }}
+        isConnected={isConnected}
+        isLoading={isLoading}
+        renderLoadingIndicator={() => <Spinner size="sm" />}
+        error={
+          error ? (
+            <Alert variant="warning" className="mb-3">
+              {error}
+            </Alert>
+          ) : undefined
+        }
+        renderMessages={() => (
+          <div
+            className={`${flex.growMinH} ${overflow.yAuto} flex flex-col gap-3 pr-1`}
+          >
+            {messages.length === 0 && !isLoading && (
+              <div className={`${flex.center} h-full`}>
+                <Caption>{t("noMessages")}</Caption>
+              </div>
+            )}
+            {messages.map((msg) => {
+              const isMine = msg.userId === currentUserId;
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[75%] px-4 py-2 ${
+                      isMine ? card.chatBubble.mine : card.chatBubble.theirs
+                    }`}
+                  >
+                    {!isMine && (
+                      <Caption variant="accent" className="mb-0.5">
+                        {msg.userName}
+                      </Caption>
+                    )}
+                    <Text
+                      size="sm"
+                      className={isMine ? "text-white" : undefined}
+                    >
+                      {msg.message}
+                    </Text>
+                    <Caption
+                      variant={isMine ? "inverse" : "default"}
+                      className="mt-0.5"
+                    >
+                      {formatDate(msg.timestamp)}
+                    </Caption>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={bottomRef} />
           </div>
         )}
-        {messages.map((msg) => {
-          const isMine = msg.userId === currentUserId;
-          return (
-            <div
-              key={msg.id}
-              className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[75%] px-4 py-2 ${
-                  isMine ? card.chatBubble.mine : card.chatBubble.theirs
-                }`}
-              >
-                {!isMine && (
-                  <Caption variant="accent" className="mb-0.5">
-                    {msg.userName}
-                  </Caption>
-                )}
-                <Text size="sm" className={isMine ? "text-white" : undefined}>
-                  {msg.message}
-                </Text>
-                <Caption
-                  variant={isMine ? "inverse" : "default"}
-                  className="mt-0.5"
-                >
-                  {formatDate(msg.timestamp)}
-                </Caption>
-              </div>
+        renderInput={() => (
+          <div
+            className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
+          >
+            <div className="flex-1">
+              <Textarea
+                className="resize-none min-h-[40px] max-h-[120px]"
+                rows={1}
+                placeholder={t("inputPlaceholder")}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={!isConnected || isSending}
+                aria-label={t("inputPlaceholder")}
+              />
             </div>
-          );
-        })}
-        <div ref={bottomRef} />
-      </div>
-
-      {/* Input */}
-      <div
-        className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
-      >
-        <div className="flex-1">
-          <Textarea
-            className="resize-none min-h-[40px] max-h-[120px]"
-            rows={1}
-            placeholder={t("inputPlaceholder")}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={!isConnected || isSending}
-            aria-label={t("inputPlaceholder")}
-          />
-        </div>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleSend}
-          isLoading={isSending}
-          disabled={!text.trim() || !isConnected || isSending}
-          aria-label={t("send")}
-        >
-          {t("send")}
-        </Button>
-      </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSend}
+              isLoading={isSending}
+              disabled={!text.trim() || !isConnected || isSending}
+              aria-label={t("send")}
+            >
+              {t("send")}
+            </Button>
+          </div>
+        )}
+      />
     </Card>
   );
 }

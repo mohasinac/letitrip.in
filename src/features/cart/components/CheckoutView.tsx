@@ -18,7 +18,8 @@
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
-import { StepperNav } from "@mohasinac/appkit/ui";
+import { StepperNav, Button } from "@mohasinac/appkit/ui";
+import { CheckoutView as AppkitCheckoutView } from "@mohasinac/appkit/features/cart";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
@@ -36,7 +37,7 @@ import {
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Heading, Main } from "@mohasinac/appkit/ui";
-import { Button, SideDrawer, AddressForm } from "@/components";
+import { SideDrawer, AddressForm } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { SiteSettingsDocument } from "@/db/schema";
 import type { UnavailableItem } from "@/hooks";
@@ -430,81 +431,84 @@ export function CheckoutView() {
       {/* Stepper */}
       <StepperNav steps={STEPS} currentStep={step} />
 
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3">
-        {/* Main content */}
-        <div className="lg:col-span-2">
-          {step === 1 && (
-            <div>
-              <CheckoutAddressStep
-                addresses={addresses}
-                selectedAddressId={selectedAddressId}
-                onSelect={setSelectedAddressId}
-                onAddNew={() => setAddAddressOpen(true)}
-                currentUserDisplayName={user?.displayName}
-              />
-              {/* Next button */}
-              <div className="mt-6 flex justify-between items-center">
-                <Button
-                  onClick={() => router.push(ROUTES.USER.CART)}
-                  className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
-                >
-                  ← {t("backToCart")}
-                </Button>
-                <Button
-                  onClick={handleNext}
-                  disabled={!selectedAddressId}
-                  className="px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
-                >
-                  {t("stepReview")} →
-                </Button>
+      <AppkitCheckoutView
+        activeStep={step}
+        onStepChange={(nextStep) => setStep(nextStep as 1 | 2)}
+        totalSteps={2}
+        className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3"
+        renderStep={(currentStep) => (
+          <div className="lg:col-span-2">
+            {currentStep === 1 && (
+              <div>
+                <CheckoutAddressStep
+                  addresses={addresses}
+                  selectedAddressId={selectedAddressId}
+                  onSelect={setSelectedAddressId}
+                  onAddNew={() => setAddAddressOpen(true)}
+                  currentUserDisplayName={user?.displayName}
+                />
+                <div className="mt-6 flex justify-between items-center">
+                  <Button
+                    onClick={() => router.push(ROUTES.USER.CART)}
+                    className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
+                  >
+                    ← {t("backToCart")}
+                  </Button>
+                  <Button
+                    onClick={handleNext}
+                    disabled={!selectedAddressId}
+                    className="px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
+                  >
+                    {t("stepReview")} →
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {step === 2 && selectedAddress && (
-            <div>
-              <CheckoutOrderReview
-                items={items}
-                address={selectedAddress}
-                subtotal={subtotal}
-                paymentMethod={paymentMethod}
-                onPaymentMethodChange={setPaymentMethod}
-                onChangeAddress={() => setStep(1)}
-                upiVpa={upiVpa}
-                platformFee={platformFee}
-                depositAmount={depositAmount}
-                notes={sellerNotes}
-                onNotesChange={setSellerNotes}
-              />
-              {/* Place order button */}
-              <div className="mt-6 flex justify-between items-center">
-                <Button
-                  onClick={() => setStep(1)}
-                  className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
-                >
-                  ← {t("stepAddress")}
-                </Button>
-                <Button
-                  onClick={handlePlaceOrder}
-                  disabled={isPlacingOrder}
-                  className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
-                >
-                  {isPlacingOrder
-                    ? t("placingOrder")
-                    : paymentMethod === "upi_manual"
-                      ? t("placeAndWhatsapp")
-                      : t("placeOrder")}
-                </Button>
+            {currentStep === 2 && selectedAddress && (
+              <div>
+                <CheckoutOrderReview
+                  items={items}
+                  address={selectedAddress}
+                  subtotal={subtotal}
+                  paymentMethod={paymentMethod}
+                  onPaymentMethodChange={setPaymentMethod}
+                  onChangeAddress={() => setStep(1)}
+                  upiVpa={upiVpa}
+                  platformFee={platformFee}
+                  depositAmount={depositAmount}
+                  notes={sellerNotes}
+                  onNotesChange={setSellerNotes}
+                />
+                <div className="mt-6 flex justify-between items-center">
+                  <Button
+                    onClick={() => setStep(1)}
+                    className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
+                  >
+                    ← {t("stepAddress")}
+                  </Button>
+                  <Button
+                    onClick={handlePlaceOrder}
+                    disabled={isPlacingOrder}
+                    className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
+                  >
+                    {isPlacingOrder
+                      ? t("placingOrder")
+                      : paymentMethod === "upi_manual"
+                        ? t("placeAndWhatsapp")
+                        : t("placeOrder")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Order summary sidebar */}
-        <div className="mt-8 lg:mt-0">
-          <OrderSummaryPanel itemCount={itemCount} subtotal={subtotal} />
-        </div>
-      </div>
+            )}
+          </div>
+        )}
+        renderOrderSummary={() => (
+          <div className="mt-8 lg:mt-0">
+            <OrderSummaryPanel itemCount={itemCount} subtotal={subtotal} />
+          </div>
+        )}
+      />
     </Main>
   );
 }

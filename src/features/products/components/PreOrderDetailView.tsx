@@ -9,13 +9,20 @@
 
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { PreOrderDetailView as AppkitPreOrderDetailView } from "@mohasinac/appkit/features/products";
 import {
+  Heading,
+  Li,
+  Text,
+  Ul,
+  Divider,
+  Span,
+  Button,
   Badge,
+} from "@mohasinac/appkit/ui";
+import {
   Breadcrumbs,
   BreadcrumbItem,
-  Button,
-  Divider,
   TextLink,
   Accordion,
   AccordionItem,
@@ -221,20 +228,19 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
   return (
     <div className={`min-h-screen ${themed.bgSecondary}`}>
       <div className={`${page.container.xl} py-6 sm:py-8`}>
-        {/* Breadcrumbs */}
-        <Breadcrumbs className="mb-6">
-          <BreadcrumbItem href={ROUTES.HOME}>
-            {t("breadcrumbHome")}
-          </BreadcrumbItem>
-          <BreadcrumbItem href={ROUTES.PUBLIC.PRE_ORDERS}>
-            {t("breadcrumbPreOrders")}
-          </BreadcrumbItem>
-          <BreadcrumbItem>{product!.title}</BreadcrumbItem>
-        </Breadcrumbs>
-
-        {/* 3-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
-          <div>
+        <AppkitPreOrderDetailView
+          renderBreadcrumb={() => (
+            <Breadcrumbs className="mb-6">
+              <BreadcrumbItem href={ROUTES.HOME}>
+                {t("breadcrumbHome")}
+              </BreadcrumbItem>
+              <BreadcrumbItem href={ROUTES.PUBLIC.PRE_ORDERS}>
+                {t("breadcrumbPreOrders")}
+              </BreadcrumbItem>
+              <BreadcrumbItem>{product!.title}</BreadcrumbItem>
+            </Breadcrumbs>
+          )}
+          renderGallery={() => (
             <ProductImageGallery
               mainImage={product!.mainImage ?? ""}
               images={product!.images}
@@ -246,295 +252,296 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
               title={product!.title}
               slug={product!.slug}
             />
-          </div>
+          )}
+          renderInfo={() => (
+            <div className={`flex flex-col gap-5`}>
+              {/* Status badge + PRE-ORDER label */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="info">📅 {t("preOrderBadge")}</Badge>
+                <Badge variant={STATUS_COLORS[productionStatus] ?? "info"}>
+                  {STATUS_LABELS[productionStatus] ?? productionStatus}
+                </Badge>
+              </div>
 
-          {/* ── Col 2: Product Info ── */}
-          <div className={`flex flex-col gap-5`}>
-            {/* Status badge + PRE-ORDER label */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="info">📅 {t("preOrderBadge")}</Badge>
-              <Badge variant={STATUS_COLORS[productionStatus] ?? "info"}>
-                {STATUS_LABELS[productionStatus] ?? productionStatus}
-              </Badge>
-            </div>
-
-            {/* Title */}
-            <Heading level={1} className="text-2xl sm:text-3xl leading-tight">
-              {product!.title}
-            </Heading>
-
-            {/* Sold by */}
-            <Text size="sm" variant="secondary">
-              {t("soldBy")}{" "}
-              <TextLink
-                href={ROUTES.PUBLIC.STORE_DETAIL(
-                  product!.storeId ?? product!.sellerId ?? "",
-                )}
-                className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
-              >
-                {product!.sellerName}
-              </TextLink>
-            </Text>
-
-            <Divider />
-
-            {/* Price & deposit */}
-            <div className={`flex flex-col gap-1`}>
-              <Text size="sm" variant="secondary">
-                {t("totalPrice")}
-              </Text>
-              <Heading
-                level={2}
-                className="text-2xl font-bold text-purple-600 dark:text-purple-400"
-              >
-                {formatCurrency(product!.price)}
+              {/* Title */}
+              <Heading level={1} className="text-2xl sm:text-3xl leading-tight">
+                {product!.title}
               </Heading>
-              {depositAmount != null && (
-                <Text
-                  size="sm"
-                  className="text-emerald-600 dark:text-emerald-400"
-                >
-                  {t("depositDue", {
-                    amount: formatCurrency(depositAmount),
-                    percent: product!.preOrderDepositPercent ?? "",
-                  })}
-                </Text>
-              )}
-            </div>
 
-            {/* Delivery date */}
-            {product!.preOrderDeliveryDate && (
-              <div className={`${flex.rowCenter} gap-2`}>
-                <Span className="text-sm text-zinc-500 dark:text-zinc-400">
-                  🚚 {t("estimatedDelivery")}:
-                </Span>
-                <Span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-                  {formatDate(product!.preOrderDeliveryDate)}
-                </Span>
-              </div>
-            )}
-
-            {/* Spots info */}
-            {spotsLeft !== null && !isSoldOut && (
-              <Text
-                size="sm"
-                className="text-amber-600 dark:text-amber-400 font-medium"
-              >
-                🔥 {t("spotsLeft", { count: spotsLeft })}
-              </Text>
-            )}
-            {isSoldOut && (
-              <Text
-                size="sm"
-                className="text-red-600 dark:text-red-400 font-medium"
-              >
-                {t("soldOut")}
-              </Text>
-            )}
-
-            {product!.preOrderCancellable && (
+              {/* Sold by */}
               <Text size="sm" variant="secondary">
-                ✅ {t("cancellableInfo")}
+                {t("soldBy")}{" "}
+                <TextLink
+                  href={ROUTES.PUBLIC.STORE_DETAIL(
+                    product!.storeId ?? product!.sellerId ?? "",
+                  )}
+                  className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                >
+                  {product!.sellerName}
+                </TextLink>
               </Text>
-            )}
 
-            <Divider />
+              <Divider />
 
-            {/* Feature badges (condition, insurance, etc.) */}
-            {product && (
-              <ProductFeatureBadges
-                featured={product.featured}
-                condition={product.condition}
-                isAuction={product.isAuction}
-              />
-            )}
-
-            {/* Description */}
-            {product!.description && (
-              <div>
-                <Heading level={3} className="text-base mb-2">
-                  {t("description")}
-                </Heading>
-                <Text
-                  size="sm"
-                  variant="secondary"
-                  className="whitespace-pre-line"
-                >
-                  {product!.description}
-                </Text>
-              </div>
-            )}
-
-            {/* Specifications */}
-            {product!.specifications && product!.specifications.length > 0 && (
-              <Accordion>
-                <AccordionItem
-                  value="specifications"
-                  title={t("specifications")}
-                >
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {product!.specifications.map((spec, i) => (
-                      <div key={i}>
-                        <Span className="text-zinc-500 dark:text-zinc-400 block">
-                          {spec.name}
-                        </Span>
-                        <Span className="font-medium">
-                          {spec.value}
-                          {spec.unit ? ` ${spec.unit}` : ""}
-                        </Span>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionItem>
-              </Accordion>
-            )}
-
-            {/* Features */}
-            {product!.features && product!.features.length > 0 && (
-              <Accordion>
-                <AccordionItem value="features" title={t("features")}>
-                  <Ul className="space-y-1">
-                    {product!.features.map((f, i) => (
-                      <Li
-                        key={i}
-                        className="text-sm text-zinc-600 dark:text-zinc-300"
-                      >
-                        • {f}
-                      </Li>
-                    ))}
-                  </Ul>
-                </AccordionItem>
-              </Accordion>
-            )}
-
-            {/* Delivery & Returns accordion */}
-            <Accordion>
-              <AccordionItem
-                value="delivery-returns"
-                title={t("deliveryReturns")}
-              >
-                {product!.shippingInfo && (
-                  <Text size="sm" variant="secondary">
-                    {product!.shippingInfo}
-                  </Text>
-                )}
-                {product!.returnPolicy && (
-                  <Text size="sm" variant="secondary" className="mt-2">
-                    {product!.returnPolicy}
-                  </Text>
-                )}
-              </AccordionItem>
-            </Accordion>
-          </div>
-
-          {/* ── Col 3: Reservation Panel (sticky) ── */}
-          <div className="lg:sticky lg:top-24 self-start">
-            <div
-              className={`${themed.bgPrimary} rounded-xl border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
-            >
-              {/* Pre-order label */}
-              <div className="flex items-center gap-2">
-                <Span className="text-xs font-bold uppercase text-purple-600 dark:text-purple-400 tracking-wider">
-                  {t("preOrderBadge")}
-                </Span>
-              </div>
-
-              {/* Price summary */}
-              <div>
+              {/* Price & deposit */}
+              <div className={`flex flex-col gap-1`}>
                 <Text size="sm" variant="secondary">
                   {t("totalPrice")}
                 </Text>
-                <Text className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                <Heading
+                  level={2}
+                  className="text-2xl font-bold text-purple-600 dark:text-purple-400"
+                >
                   {formatCurrency(product!.price)}
-                </Text>
+                </Heading>
                 {depositAmount != null && (
                   <Text
                     size="sm"
-                    className="text-emerald-600 dark:text-emerald-400 mt-1"
+                    className="text-emerald-600 dark:text-emerald-400"
                   >
-                    {t("payNow", { amount: formatCurrency(depositAmount) })}
+                    {t("depositDue", {
+                      amount: formatCurrency(depositAmount),
+                      percent: product!.preOrderDepositPercent ?? "",
+                    })}
                   </Text>
                 )}
               </div>
 
-              {/* Delivery */}
+              {/* Delivery date */}
               {product!.preOrderDeliveryDate && (
-                <div
-                  className={`bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3 ${flex.rowCenter} gap-2`}
-                >
-                  <Span className="text-xl">🗓️</Span>
-                  <div>
-                    <Text size="xs" variant="secondary">
-                      {t("estimatedDelivery")}
-                    </Text>
-                    <Text
-                      size="sm"
-                      className="font-semibold text-purple-700 dark:text-purple-300"
-                    >
-                      {formatDate(product!.preOrderDeliveryDate)}
-                    </Text>
-                  </div>
+                <div className={`${flex.rowCenter} gap-2`}>
+                  <Span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    🚚 {t("estimatedDelivery")}:
+                  </Span>
+                  <Span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+                    {formatDate(product!.preOrderDeliveryDate)}
+                  </Span>
                 </div>
               )}
 
-              {/* Spots */}
+              {/* Spots info */}
               {spotsLeft !== null && !isSoldOut && (
                 <Text
-                  size="xs"
-                  className="text-amber-600 dark:text-amber-400 text-center font-semibold"
+                  size="sm"
+                  className="text-amber-600 dark:text-amber-400 font-medium"
                 >
-                  🔥 {t("onlyNLeft", { count: spotsLeft })}
+                  🔥 {t("spotsLeft", { count: spotsLeft })}
                 </Text>
               )}
-
-              {/* Reserve button */}
-              {isSoldOut ? (
-                <Button
-                  variant="ghost"
-                  className="w-full cursor-not-allowed opacity-60"
-                  disabled
+              {isSoldOut && (
+                <Text
+                  size="sm"
+                  className="text-red-600 dark:text-red-400 font-medium"
                 >
                   {t("soldOut")}
-                </Button>
-              ) : user ? (
-                <Button
-                  variant="primary"
-                  className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600"
-                  onClick={handleReserve}
-                  isLoading={isProcessing}
-                  disabled={isProcessing}
-                >
-                  {t("reserveNow")}
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                  onClick={() => router.push(ROUTES.AUTH.LOGIN)}
-                >
-                  {t("loginToReserve")}
-                </Button>
-              )}
-
-              {/* Wishlist */}
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={handleWishlistToggle}
-                disabled={wishlistLoading}
-              >
-                {inWishlist ? t("removeFromWishlist") : t("addToWishlist")}
-              </Button>
-
-              {/* Cancellation note */}
-              {product!.preOrderCancellable && (
-                <Text size="xs" variant="secondary" className="text-center">
-                  ✅ {t("cancellableShort")}
                 </Text>
               )}
+
+              {product!.preOrderCancellable && (
+                <Text size="sm" variant="secondary">
+                  ✅ {t("cancellableInfo")}
+                </Text>
+              )}
+
+              <Divider />
+
+              {/* Feature badges (condition, insurance, etc.) */}
+              {product && (
+                <ProductFeatureBadges
+                  featured={product.featured}
+                  condition={product.condition}
+                  isAuction={product.isAuction}
+                />
+              )}
+
+              {/* Description */}
+              {product!.description && (
+                <div>
+                  <Heading level={3} className="text-base mb-2">
+                    {t("description")}
+                  </Heading>
+                  <Text
+                    size="sm"
+                    variant="secondary"
+                    className="whitespace-pre-line"
+                  >
+                    {product!.description}
+                  </Text>
+                </div>
+              )}
+
+              {/* Specifications */}
+              {product!.specifications &&
+                product!.specifications.length > 0 && (
+                  <Accordion>
+                    <AccordionItem
+                      value="specifications"
+                      title={t("specifications")}
+                    >
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        {product!.specifications.map((spec, i) => (
+                          <div key={i}>
+                            <Span className="text-zinc-500 dark:text-zinc-400 block">
+                              {spec.name}
+                            </Span>
+                            <Span className="font-medium">
+                              {spec.value}
+                              {spec.unit ? ` ${spec.unit}` : ""}
+                            </Span>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionItem>
+                  </Accordion>
+                )}
+
+              {/* Features */}
+              {product!.features && product!.features.length > 0 && (
+                <Accordion>
+                  <AccordionItem value="features" title={t("features")}>
+                    <Ul className="space-y-1">
+                      {product!.features.map((f, i) => (
+                        <Li
+                          key={i}
+                          className="text-sm text-zinc-600 dark:text-zinc-300"
+                        >
+                          • {f}
+                        </Li>
+                      ))}
+                    </Ul>
+                  </AccordionItem>
+                </Accordion>
+              )}
+
+              {/* Delivery & Returns accordion */}
+              <Accordion>
+                <AccordionItem
+                  value="delivery-returns"
+                  title={t("deliveryReturns")}
+                >
+                  {product!.shippingInfo && (
+                    <Text size="sm" variant="secondary">
+                      {product!.shippingInfo}
+                    </Text>
+                  )}
+                  {product!.returnPolicy && (
+                    <Text size="sm" variant="secondary" className="mt-2">
+                      {product!.returnPolicy}
+                    </Text>
+                  )}
+                </AccordionItem>
+              </Accordion>
             </div>
-          </div>
-        </div>
+          )}
+          renderBuyBar={() => (
+            <div className="lg:sticky lg:top-24 self-start">
+              <div
+                className={`${themed.bgPrimary} rounded-xl border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
+              >
+                {/* Pre-order label */}
+                <div className="flex items-center gap-2">
+                  <Span className="text-xs font-bold uppercase text-purple-600 dark:text-purple-400 tracking-wider">
+                    {t("preOrderBadge")}
+                  </Span>
+                </div>
+
+                {/* Price summary */}
+                <div>
+                  <Text size="sm" variant="secondary">
+                    {t("totalPrice")}
+                  </Text>
+                  <Text className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                    {formatCurrency(product!.price)}
+                  </Text>
+                  {depositAmount != null && (
+                    <Text
+                      size="sm"
+                      className="text-emerald-600 dark:text-emerald-400 mt-1"
+                    >
+                      {t("payNow", { amount: formatCurrency(depositAmount) })}
+                    </Text>
+                  )}
+                </div>
+
+                {/* Delivery */}
+                {product!.preOrderDeliveryDate && (
+                  <div
+                    className={`bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3 ${flex.rowCenter} gap-2`}
+                  >
+                    <Span className="text-xl">🗓️</Span>
+                    <div>
+                      <Text size="xs" variant="secondary">
+                        {t("estimatedDelivery")}
+                      </Text>
+                      <Text
+                        size="sm"
+                        className="font-semibold text-purple-700 dark:text-purple-300"
+                      >
+                        {formatDate(product!.preOrderDeliveryDate)}
+                      </Text>
+                    </div>
+                  </div>
+                )}
+
+                {/* Spots */}
+                {spotsLeft !== null && !isSoldOut && (
+                  <Text
+                    size="xs"
+                    className="text-amber-600 dark:text-amber-400 text-center font-semibold"
+                  >
+                    🔥 {t("onlyNLeft", { count: spotsLeft })}
+                  </Text>
+                )}
+
+                {/* Reserve button */}
+                {isSoldOut ? (
+                  <Button
+                    variant="ghost"
+                    className="w-full cursor-not-allowed opacity-60"
+                    disabled
+                  >
+                    {t("soldOut")}
+                  </Button>
+                ) : user ? (
+                  <Button
+                    variant="primary"
+                    className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600"
+                    onClick={handleReserve}
+                    isLoading={isProcessing}
+                    disabled={isProcessing}
+                  >
+                    {t("reserveNow")}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+                  >
+                    {t("loginToReserve")}
+                  </Button>
+                )}
+
+                {/* Wishlist */}
+                <Button
+                  variant="ghost"
+                  className="w-full"
+                  onClick={handleWishlistToggle}
+                  disabled={wishlistLoading}
+                >
+                  {inWishlist ? t("removeFromWishlist") : t("addToWishlist")}
+                </Button>
+
+                {/* Cancellation note */}
+                {product!.preOrderCancellable && (
+                  <Text size="xs" variant="secondary" className="text-center">
+                    ✅ {t("cancellableShort")}
+                  </Text>
+                )}
+              </div>
+            </div>
+          )}
+        />
       </div>
     </div>
   );

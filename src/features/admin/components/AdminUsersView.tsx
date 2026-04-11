@@ -18,17 +18,21 @@ import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 
 const { flex } = THEME_CONSTANTS;
-import { Caption, Span, Text } from "@mohasinac/appkit/ui";
+import {
+  Caption,
+  Text,
+  TablePagination,
+  Span,
+  Button,
+  StatusBadge,
+} from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
-  Button,
   Card,
   ConfirmDeleteModal,
   DataTable,
   RoleBadge,
   Search,
-  StatusBadge,
-  TablePagination,
   useToast,
 } from "@/components";
 import { AdminUsersView as AdminUsersShell } from "@mohasinac/appkit/features/admin";

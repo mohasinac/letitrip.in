@@ -5,14 +5,8 @@ import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Caption, Li, Ol, Span, Text } from "@mohasinac/appkit/ui";
-import {
-  Accordion,
-  AccordionItem,
-  Button,
-  MediaImage,
-  Textarea,
-} from "@/components";
+import { Caption, Li, Ol, Text, Button, Span } from "@mohasinac/appkit/ui";
+import { Accordion, AccordionItem, MediaImage, Textarea } from "@/components";
 
 const { themed, flex, spacing } = THEME_CONSTANTS;
 

@@ -9,16 +9,19 @@
 "use client";
 
 import { useState, useCallback, Suspense } from "react";
-import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
-  AdminPageHeader,
+  Caption,
+  Text,
+  TablePagination,
   Badge,
   Button,
+  StatusBadge,
+} from "@mohasinac/appkit/ui";
+import {
+  AdminPageHeader,
   Card,
   ConfirmDeleteModal,
   DataTable,
-  StatusBadge,
-  TablePagination,
   Search,
 } from "@/components";
 import { AdminStoresView as AdminStoresShell } from "@mohasinac/appkit/features/admin";

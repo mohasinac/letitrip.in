@@ -27,10 +27,15 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 const { flex, spacing } = THEME_CONSTANTS;
 import { formatCurrency } from "@/utils";
 import { useTranslations } from "next-intl";
-import { Caption, Text } from "@mohasinac/appkit/ui";
+import {
+  Caption,
+  Text,
+  TablePagination,
+  Button,
+  StatusBadge,
+} from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
-  Button,
   Card,
   DataTable,
   DrawerFormFooter,
@@ -38,8 +43,6 @@ import {
   ProductFilters,
   Search,
   SideDrawer,
-  StatusBadge,
-  TablePagination,
 } from "@/components";
 import { AdminProductsView as AdminProductsShell } from "@mohasinac/appkit/features/admin";
 import { ProductForm, useProductTableColumns } from "@/components";

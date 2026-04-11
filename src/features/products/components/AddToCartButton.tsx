@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useAddToCart, useMessage } from "@/hooks";
-import { Button } from "@/components";
 
 interface AddToCartButtonProps {
   productId: string;

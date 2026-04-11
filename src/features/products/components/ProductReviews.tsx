@@ -5,12 +5,18 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime, formatNumber } from "@/utils";
-import { Heading, Label, Section, Span, Text } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Label,
+  Section,
+  Text,
+  HorizontalScroller,
+  Span,
+  Button,
+} from "@mohasinac/appkit/ui";
 import {
   Alert,
-  Button,
   FormField,
-  HorizontalScroller,
   MediaAvatar,
   MediaImage,
   MediaLightbox,

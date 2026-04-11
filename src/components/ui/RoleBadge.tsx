@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components";
+import { Badge } from "@mohasinac/appkit/ui";
 
 /**
  * RoleBadge Component
@@ -45,7 +45,7 @@ export function RoleBadge({ role, label, className }: RoleBadgeProps) {
     | "default";
   return (
     <Badge variant={variant} className={className}>
-      {label ?? (ROLE_LABELS[role] ?? role)}
+      {label ?? ROLE_LABELS[role] ?? role}
     </Badge>
   );
 }

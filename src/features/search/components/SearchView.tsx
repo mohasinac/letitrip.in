@@ -1,20 +1,20 @@
-﻿"use client";
+"use client";
+
+import {
+  ActiveFilterChips,
+  ViewToggle,
+  BulkActionBar,
+} from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
 import { useSearch } from "@mohasinac/appkit/features/search";
-import {
-  PRODUCT_SORT_VALUES,
-  Search,
-  ViewToggle,
-  BulkActionBar,
-} from "@/components";
+import { PRODUCT_SORT_VALUES, Search } from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
-  ActiveFilterChips,
   EmptyState,
   SwitchFilter,
 } from "@/components";

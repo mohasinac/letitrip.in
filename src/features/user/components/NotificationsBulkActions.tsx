@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;

@@ -1,12 +1,8 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import { useState } from "react";
-import {
-  FormField,
-  FormGroup,
-  Button,
-  PasswordStrengthIndicator,
-} from "@/components";
+import { FormField, FormGroup, PasswordStrengthIndicator } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { calculatePasswordStrength } from "@mohasinac/appkit/validation";

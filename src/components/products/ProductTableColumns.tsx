@@ -10,8 +10,8 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
-import { Span } from "@mohasinac/appkit/ui";
-import { Button, MediaImage } from "@/components";
+import { Span, Button } from "@mohasinac/appkit/ui";
+import { MediaImage } from "@/components";
 import type { AdminProduct } from "./Product.types";
 
 const STATUS_STYLES: Record<string, string> = {

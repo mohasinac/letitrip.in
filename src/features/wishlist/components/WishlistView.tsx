@@ -10,16 +10,8 @@ import {
   WishlistView as AppkitWishlistView,
   type WishlistTab,
 } from "@mohasinac/appkit/features/wishlist";
-import {
-  EmptyState,
-  ProductGrid,
-  Search,
-  SectionTabs,
-  SortDropdown,
-  Spinner,
-  ViewToggle,
-} from "@/components";
-import { Row } from "@mohasinac/appkit/ui";
+import { EmptyState, ProductGrid, Search, SectionTabs } from "@/components";
+import { Row, ViewToggle, SortDropdown, Spinner } from "@mohasinac/appkit/ui";
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import type { ProductCardData } from "@/components";
 

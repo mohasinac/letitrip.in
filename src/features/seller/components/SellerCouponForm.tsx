@@ -5,11 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Label, Text, Button, Span } from "@mohasinac/appkit/ui";
 import {
   Accordion,
   AccordionItem,
-  Button,
   Card,
   FormGroup,
   Select,

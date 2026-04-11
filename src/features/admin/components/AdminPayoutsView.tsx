@@ -7,15 +7,18 @@ import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Text, Caption } from "@mohasinac/appkit/ui";
+import {
+  Text,
+  Caption,
+  TablePagination,
+  StatusBadge,
+} from "@mohasinac/appkit/ui";
 import {
   Card,
   SideDrawer,
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  StatusBadge,
-  TablePagination,
   Search,
 } from "@/components";
 import { AdminPayoutsView as AdminPayoutsShell } from "@mohasinac/appkit/features/admin";

@@ -12,8 +12,8 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { logger } from "@mohasinac/appkit/core";
 import { nowISO } from "@/utils";

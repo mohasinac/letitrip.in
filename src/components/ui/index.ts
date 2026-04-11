@@ -1,21 +1,48 @@
 /**
  * UI Components Index
  *
- * Basic UI building blocks like buttons, cards, and badges.
+ * Letitrip-specific UI wrappers only.
+ * Shared primitives must be imported directly from @mohasinac/appkit/ui.
  *
  * @example
  * ```tsx
- * import { Button, Card, Badge } from '@/components/ui';
+ * import { Card, SideDrawer } from "@/components";
  * ```
  */
 
-export { default as Button } from "./Button";
 export { default as Card, CardHeader, CardBody, CardFooter } from "./Card";
 export { BaseListingCard } from "./BaseListingCard";
-export { default as Badge } from "./Badge";
-export { default as Spinner } from "./Spinner";
-export { default as Divider } from "./Divider";
-export { default as Tooltip } from "./Tooltip";
+export {
+  Button,
+  Badge,
+  Spinner,
+  Divider,
+  Tooltip,
+  Pagination,
+  Progress,
+  IndeterminateProgress,
+  StatusBadge,
+  ViewToggle,
+  ItemRow,
+  HorizontalScroller,
+  ListingLayout,
+  BulkActionBar,
+  SortDropdown,
+  TablePagination,
+  Skeleton,
+} from "@mohasinac/appkit/ui";
+export type {
+  ViewMode,
+  ItemRowProps,
+  HorizontalScrollerProps,
+  PerViewConfig,
+  ListingLayoutProps,
+  BulkActionBarProps,
+  BulkActionItem,
+  SortOption,
+  SortDropdownProps,
+  TablePaginationProps,
+} from "@mohasinac/appkit/ui";
 export { default as Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
 export {
   default as Dropdown,
@@ -26,8 +53,6 @@ export {
 } from "./Dropdown";
 export { default as Accordion, AccordionItem } from "./Accordion";
 export { default as Avatar, AvatarGroup } from "./Avatar";
-export { default as Progress, IndeterminateProgress } from "./Progress";
-export { default as Pagination } from "./Pagination";
 export {
   default as Menu,
   MenuTrigger,
@@ -35,7 +60,6 @@ export {
   MenuItem,
   MenuSeparator,
 } from "./Menu";
-export { Skeleton } from "@mohasinac/appkit/ui";
 export { default as ImageGallery } from "./ImageGallery";
 export type { GalleryImage } from "./ImageGallery";
 export { default as SideDrawer } from "./SideDrawer";
@@ -47,40 +71,15 @@ export { FilterFacetSection } from "./FilterFacetSection";
 export { FilterDrawer } from "./FilterDrawer";
 export { ActiveFilterChips } from "./ActiveFilterChips";
 export type { ActiveFilter } from "./ActiveFilterChips";
-export { SortDropdown } from "./SortDropdown";
-export { TablePagination } from "./TablePagination";
 
 // Phase 3: Shared UI Infrastructure
 export { SectionTabs } from "./SectionTabs";
 export type { SectionTab } from "./SectionTabs";
-export { StatusBadge } from "./StatusBadge";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
 
-export { ItemRow } from "./ItemRow";
-export type { ItemRowProps } from "./ItemRow";
-
-// Horizontal scroll container with arrows, auto-scroll, and circular mode
-export { HorizontalScroller } from "./HorizontalScroller";
-export type {
-  HorizontalScrollerProps,
-  PerViewConfig,
-} from "./HorizontalScroller";
-
-// Listing page layout shell (filter sidebar + toolbar + bulk actions)
-export { ListingLayout } from "./ListingLayout";
-export type { ListingLayoutProps } from "./ListingLayout";
-
-// Bulk action bar (appears when items are selected)
-export { BulkActionBar } from "./BulkActionBar";
-export type { BulkActionBarProps, BulkActionItem } from "./BulkActionBar";
-
 // Accessibility
 export { SkipToMain } from "./SkipToMain";
-
-// Grid / list view mode toggle
-export { ViewToggle } from "./ViewToggle";
-export type { ViewToggleProps, ViewMode } from "./ViewToggle";
 
 // Generic dynamic select (react-select-like, portal-based)
 export { DynamicSelect } from "./DynamicSelect";

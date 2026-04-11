@@ -2,8 +2,8 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button } from "@/components";
-import { Heading, Span } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
+import { Heading, Span, Button } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@/constants";
 
 export function SellerQuickActions() {

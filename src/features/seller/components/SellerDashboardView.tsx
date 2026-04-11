@@ -3,9 +3,9 @@
 import { useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
-import { Grid, Text } from "@mohasinac/appkit/ui";
+import { Grid, Text, Spinner } from "@mohasinac/appkit/ui";
 import { SellerDashboardView as AppkitSellerDashboardView } from "@mohasinac/appkit/features/seller";
-import { Spinner, EmptyState } from "@/components";
+import { EmptyState } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";

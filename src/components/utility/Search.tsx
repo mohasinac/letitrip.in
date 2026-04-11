@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
-import { Button, Input } from "@/components";
+import { Li, Text, Ul, Span, Button } from "@mohasinac/appkit/ui";
+import { Input } from "@/components";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
 import type { AlgoliaNavRecord } from "@/hooks";

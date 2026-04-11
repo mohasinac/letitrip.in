@@ -2,21 +2,25 @@
 
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { PackageSearch, Gavel, Info } from "lucide-react";
-import { Container, Heading, Text } from "@mohasinac/appkit/ui";
+import {
+  Container,
+  Heading,
+  Text,
+  ViewToggle,
+  SortDropdown,
+  ActiveFilterChips,
+  TablePagination,
+  ListingLayout,
+  Button,
+  Tooltip,
+} from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   DataTable,
   ProductCard,
   Search,
-  SortDropdown,
-  ActiveFilterChips,
-  TablePagination,
-  ListingLayout,
   PRODUCT_SORT_VALUES,
   EmptyState,
-  Button,
-  Tooltip,
-  ViewToggle,
 } from "@/components";
 import { ProductFilters } from "@/components";
 import type { ActiveFilter, ViewMode } from "@/components";
@@ -284,7 +288,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
           actionsSlot={
-            <Tooltip content={tActions("selectionHint")} placement="bottom">
+            <Tooltip label={tActions("selectionHint")} side="bottom">
               <Button
                 type="button"
                 variant="ghost"

@@ -4,9 +4,17 @@ import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Tag, Plus } from "lucide-react";
-import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import {
+  Caption,
+  Heading,
+  Text,
+  Spinner,
+  Span,
+  Badge,
+  Button,
+} from "@mohasinac/appkit/ui";
 import { SellerCouponsView as AppkitSellerCouponsView } from "@mohasinac/appkit/features/seller";
-import { Button, Badge, Spinner, EmptyState, Card } from "@/components";
+import { EmptyState, Card } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {
   ROUTES,

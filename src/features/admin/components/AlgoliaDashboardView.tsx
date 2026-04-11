@@ -11,8 +11,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlgoliaDashboardView as AppkitAlgoliaDashboardView } from "@mohasinac/appkit/features/admin";
-import { Card, Badge, Button, useToast } from "@/components";
-import { Text, Span } from "@mohasinac/appkit/ui";
+import { Card, useToast } from "@/components";
+import { Text, Span, Badge, Button } from "@mohasinac/appkit/ui";
 import { useAlgoliaSync } from "@/features/admin/hooks";
 
 export function AlgoliaDashboardView() {

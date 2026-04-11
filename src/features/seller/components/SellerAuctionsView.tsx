@@ -1,3 +1,10 @@
+import {
+  TablePagination,
+  Spinner,
+  ListingLayout,
+  SortDropdown,
+  ActiveFilterChips,
+} from "@mohasinac/appkit/ui";
 /**
  * SellerAuctionsView
  *
@@ -6,20 +13,15 @@
  * automatically scoped to the authenticated seller.
  */
 
-"use client";
+("use client");
 
 import { Suspense, useMemo, useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { SellerAuctionsView as AppkitSellerAuctionsView } from "@mohasinac/appkit/features/seller";
 import {
-  ActiveFilterChips,
-  Spinner,
   DataTable,
   FilterFacetSection,
-  ListingLayout,
   Search,
-  SortDropdown,
-  TablePagination,
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";

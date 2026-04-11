@@ -8,8 +8,8 @@
  */
 
 import { THEME_CONSTANTS } from "@/constants";
-import { Caption, Span, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Caption, Text, Span, Button } from "@mohasinac/appkit/ui";
+
 import { formatCurrency, formatDate } from "@/utils";
 import { useTranslations } from "next-intl";
 import type { BidDocument } from "@/db/schema";

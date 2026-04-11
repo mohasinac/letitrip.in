@@ -2,8 +2,8 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Review } from "./Review.types";
-import { Span } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Span, Button } from "@mohasinac/appkit/ui";
+
 import { RatingDisplay } from "@mohasinac/appkit/ui";
 
 const REVIEWS = UI_LABELS.ADMIN.REVIEWS;

@@ -1,9 +1,9 @@
 ﻿"use client";
 
 import type { ReactNode, MouseEvent } from "react";
-import { Button } from "@/components";
+
 import { THEME_CONSTANTS } from "@/constants";
-import { Span } from "@mohasinac/appkit/ui";
+import { Span, Button } from "@mohasinac/appkit/ui";
 
 const { dimensions } = THEME_CONSTANTS.card;
 

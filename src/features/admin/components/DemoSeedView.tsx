@@ -5,7 +5,6 @@ import {
   Heading,
   Text,
   Caption,
-  Span,
   Ul,
   Li,
   Section,
@@ -13,17 +12,14 @@ import {
   Row,
   Stack,
   Grid,
-} from "@mohasinac/appkit/ui";
-import {
-  Button,
-  Card,
+  IndeterminateProgress,
+  Span,
   Badge,
   Spinner,
-  ConfirmDeleteModal,
-  Checkbox,
   Progress,
-  IndeterminateProgress,
-} from "@/components";
+  Button,
+} from "@mohasinac/appkit/ui";
+import { Card, ConfirmDeleteModal, Checkbox } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useDemoSeed } from "@/features/admin/hooks";
 import type { SeedCollectionName } from "@/features/admin/hooks";

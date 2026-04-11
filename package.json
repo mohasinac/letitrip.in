@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
+    "dev:appkit:watch": "pnpm --dir ../appkit watch:all",
+    "dev:appkit:sync": "pnpm --dir ../appkit build",
     "dev:turbo": "next dev --turbopack",
     "build": "next build --webpack",
     "analyze": "ANALYZE=true next build",
@@ -30,7 +32,7 @@
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "^2.0.7",
+    "@mohasinac/appkit": "2.0.7",
     "@mohasinac/sievejs": "^1.0.0",
     "@serwist/next": "^9.5.6",
     "@tanstack/react-query": "^5.90.21",

@@ -3,8 +3,8 @@
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StoreReviewsView as AppkitStoreReviewsView } from "@mohasinac/appkit/features/stores";
-import { Caption, Heading, Stack, Text } from "@mohasinac/appkit/ui";
-import { EmptyState, Spinner } from "@/components";
+import { Caption, Heading, Stack, Text, Spinner } from "@mohasinac/appkit/ui";
+import { EmptyState } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreReviews } from "../hooks";

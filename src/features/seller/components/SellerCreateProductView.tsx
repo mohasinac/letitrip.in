@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 /**
  * SellerCreateProductView
  * Path: src/features/seller/components/SellerCreateProductView.tsx
@@ -11,12 +12,7 @@ import React, { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { SellerCreateProductView as AppkitSellerCreateProductView } from "@mohasinac/appkit/features/seller";
-import {
-  AdminPageHeader,
-  Button,
-  ProductForm,
-  type AdminProduct,
-} from "@/components";
+import { AdminPageHeader, ProductForm, type AdminProduct } from "@/components";
 import { useMessage } from "@/hooks";
 import { useCreateSellerProduct } from "../hooks/useSellerProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";

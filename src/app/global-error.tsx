@@ -14,7 +14,8 @@ import { NextIntlClientProvider, useTranslations } from "next-intl";
 import { logger } from "@mohasinac/appkit/core";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Button, TextLink } from "@/components";
+import { TextLink } from "@/components";
+import { Button } from "@mohasinac/appkit/ui";
 import { nowISO } from "@/utils";
 import enMessages from "../../messages/en.json";
 

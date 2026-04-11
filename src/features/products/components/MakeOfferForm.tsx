@@ -10,8 +10,8 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useMessage } from "@/hooks";
 import { makeOfferAction } from "@/actions";
-import { Label, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Card, FormGroup, Input, Textarea } from "@/components";
+import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Card, FormGroup, Input, Textarea } from "@/components";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 const { themed } = THEME_CONSTANTS;

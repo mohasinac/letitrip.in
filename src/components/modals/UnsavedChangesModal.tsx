@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Heading, Text } from "@mohasinac/appkit/ui";
-import { Button, Card } from "@/components";
+import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { eventBus } from "@mohasinac/appkit/core";

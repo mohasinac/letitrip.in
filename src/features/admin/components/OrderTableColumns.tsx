@@ -8,8 +8,8 @@
  */
 
 import { THEME_CONSTANTS } from "@/constants";
-import { Caption, Span, Text } from "@mohasinac/appkit/ui";
-import { Button } from "@/components";
+import { Caption, Text, Span, Button } from "@mohasinac/appkit/ui";
+
 import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 

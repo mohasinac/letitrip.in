@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { AdminFeatureFlagsView as AppkitAdminFeatureFlagsView } from "@mohasinac/appkit/features/admin";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span } from "@mohasinac/appkit/ui";
 import { AdminPageHeader, Card, Toggle, useToast } from "@/components";
 import { useAdminFeatureFlags } from "../hooks/useAdminFeatureFlags";
 import type { SiteSettingsDocument } from "@/db/schema";

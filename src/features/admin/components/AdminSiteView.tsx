@@ -1,3 +1,4 @@
+import { Button } from "@mohasinac/appkit/ui";
 /**
  * AdminSiteView — Thin Adapter
  *
@@ -6,13 +7,13 @@
  * Manages site settings: basic info, contact, social links, backgrounds.
  */
 
-"use client";
+("use client");
 
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminSiteView as AppkitAdminSiteView } from "@mohasinac/appkit/features/admin";
-import { AdminPageHeader, Button, Card, useToast } from "@/components";
+import { AdminPageHeader, Card, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
 import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/features/admin";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";

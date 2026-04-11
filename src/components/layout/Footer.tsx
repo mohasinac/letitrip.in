@@ -10,8 +10,8 @@ import type { SiteSettingsDocument } from "@/db/schema";
 import { FooterLayout } from "./FooterLayout";
 import type { FooterSocialLink, FooterLinkGroup } from "./FooterLayout";
 import { THEME_CONSTANTS } from "@/constants";
-import { Text } from "@mohasinac/appkit/ui";
-import { Button, Input } from "@/components";
+import { Text, Button } from "@mohasinac/appkit/ui";
+import { Input } from "@/components";
 
 interface FooterProps {
   footerConfig?: SiteSettingsDocument["footerConfig"];

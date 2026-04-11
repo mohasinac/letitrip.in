@@ -2,7 +2,7 @@
 
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { HowItWorksInfoView } from "@mohasinac/appkit/features/homepage";
-import { Grid, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Grid, Heading, Text, Span } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { useTranslations } from "next-intl";

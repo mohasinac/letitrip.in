@@ -13,19 +13,25 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Caption, Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
+import {
+  Caption,
+  Heading,
+  Label,
+  Text,
+  Divider,
+  Span,
+  Button,
+  Spinner,
+} from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
   Accordion,
   AccordionItem,
   Card,
   Alert,
-  Button,
   FormField,
   FormGroup,
   Toggle,
-  Spinner,
-  Divider,
   useToast,
 } from "@/components";
 import { useAuth } from "@/hooks";

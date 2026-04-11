@@ -1,14 +1,10 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import {
-  AvatarDisplay,
-  Button,
-  NotificationBell,
-  AutoBreadcrumbs,
-} from "@/components";
+import { AvatarDisplay, NotificationBell, AutoBreadcrumbs } from "@/components";
 import { useAuth } from "@/hooks";
 import { RoleBadge } from "@/components";
 

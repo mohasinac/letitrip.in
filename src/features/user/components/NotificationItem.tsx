@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { Span, Text } from "@mohasinac/appkit/ui";
-import { Badge, Button, TextLink } from "@/components";
+import { Text, Button, Span, Badge } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";

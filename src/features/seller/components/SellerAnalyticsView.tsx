@@ -1,13 +1,13 @@
 "use client";
 
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Spinner } from "@mohasinac/appkit/ui";
 import { SellerAnalyticsView as AppkitSellerAnalyticsView } from "@mohasinac/appkit/features/seller";
 import {
   SellerAnalyticsStats,
   SellerRevenueChart,
   SellerTopProducts,
 } from "@mohasinac/appkit/features/seller";
-import { Spinner } from "@/components";
+
 import { useSellerAnalytics } from "../hooks/useSellerAnalytics";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";

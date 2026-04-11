@@ -3,8 +3,8 @@
 import { useEventLeaderboard } from "../hooks/useEventLeaderboard";
 import { EventLeaderboard as AppkitEventLeaderboard } from "@mohasinac/appkit/features/events";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span, Text } from "@mohasinac/appkit/ui";
-import { Spinner } from "@/components";
+import { Span, Text, Spinner } from "@mohasinac/appkit/ui";
+
 import { useAuth } from "@/hooks";
 import { useTranslations } from "next-intl";
 import type { EventEntryDocument } from "@/db/schema";

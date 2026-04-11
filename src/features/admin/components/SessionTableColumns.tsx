@@ -8,8 +8,8 @@
  * Consumed by AdminSessionsManager.tsx.
  */
 
-import { Text, Caption } from "@mohasinac/appkit/ui";
-import { Badge } from "@/components";
+import { Text, Caption, Badge } from "@mohasinac/appkit/ui";
+
 import { formatRelativeTime, formatDate, isFuture } from "@/utils";
 import { UI_LABELS } from "@/constants";
 import type { SessionDocument } from "@/db/schema/sessions";

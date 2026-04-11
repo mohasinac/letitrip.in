@@ -3,8 +3,8 @@
 import React, { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Spinner, Button } from "@/components";
+import { Heading, Text, Button, Span, Spinner } from "@mohasinac/appkit/ui";
+
 import { OrderSuccessHero } from "./OrderSuccessHero";
 import { OrderSuccessCard } from "./OrderSuccessCard";
 import { OrderSuccessActions } from "./OrderSuccessActions";

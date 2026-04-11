@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner, Button } from "@mohasinac/appkit/ui";
 import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
@@ -7,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { VerifyEmailView as AppkitVerifyEmailView } from "@mohasinac/appkit/features/auth";
 import { ROUTES } from "@/constants";
 import { useVerifyEmail } from "@/hooks";
-import { Button, Spinner } from "@/components";
 
 function VerifyEmailContent() {
   const router = useRouter();

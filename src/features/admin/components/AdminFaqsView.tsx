@@ -24,19 +24,22 @@ import type { FAQCategory } from "@/db/schema";
 const { flex } = THEME_CONSTANTS;
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
-import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
-  AdminPageHeader,
+  Caption,
+  Text,
+  TablePagination,
   Badge,
   Button,
+  StatusBadge,
+} from "@mohasinac/appkit/ui";
+import {
+  AdminPageHeader,
   Card,
   DataTable,
   DrawerFormFooter,
   FormField,
   Search,
   SideDrawer,
-  StatusBadge,
-  TablePagination,
 } from "@/components";
 import { AdminFaqsView as AdminFaqsShell } from "@mohasinac/appkit/features/admin";
 import { FaqFilters } from "./FaqFilters";

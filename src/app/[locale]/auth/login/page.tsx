@@ -1,3 +1,4 @@
+import { Spinner } from "@mohasinac/appkit/ui";
 /**
  * Login Page
  *
@@ -7,7 +8,7 @@
 
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { Spinner } from "@/components";
+
 import { LoginForm } from "@/features/auth";
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import type { Metadata } from "next";

@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Heading } from "@mohasinac/appkit/ui";
-import { Card, Button, AdminPageHeader } from "@/components";
+import { Heading, Button } from "@mohasinac/appkit/ui";
+import { Card, AdminPageHeader } from "@/components";
 import { useAuth } from "@/hooks";
 import { useAdminStats } from "@/features/admin";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";

@@ -6,8 +6,8 @@ import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { FAQDocument } from "@/db/schema";
 import { FAQAccordion as AppkitFAQAccordion } from "@mohasinac/appkit/features/faq";
-import { Button } from "@/components";
-import { Span, Text } from "@mohasinac/appkit/ui";
+
+import { Span, Text, Button } from "@mohasinac/appkit/ui";
 
 interface FAQAccordionProps {
   faqs: FAQDocument[];

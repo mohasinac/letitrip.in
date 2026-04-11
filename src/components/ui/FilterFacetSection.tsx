@@ -3,8 +3,8 @@
 import React, { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Label, Span, Text } from "@mohasinac/appkit/ui";
-import { Button, Checkbox, Input, Tooltip } from "@/components";
+import { Label, Text, Tooltip, Span, Button } from "@mohasinac/appkit/ui";
+import { Checkbox, Input } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -358,7 +358,7 @@ export function FilterFacetSection({
                 return (
                   <Tooltip
                     key={opt.value}
-                    content={t("maxSelectionsReached", { max: maxSelections })}
+                    label={t("maxSelectionsReached", { max: maxSelections })}
                   >
                     <div aria-disabled="true">{checkbox}</div>
                   </Tooltip>

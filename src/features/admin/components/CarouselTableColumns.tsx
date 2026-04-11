@@ -9,8 +9,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
-import { StatusBadge, Button, MediaImage } from "@/components";
+import { Text, Button, StatusBadge } from "@mohasinac/appkit/ui";
+import { MediaImage } from "@/components";
 import type { CarouselSlide } from "./Carousel.types";
 
 export function useCarouselTableColumns(

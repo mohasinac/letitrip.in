@@ -3,9 +3,9 @@
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Container, Grid, Heading, Text } from "@mohasinac/appkit/ui";
+import { Container, Grid, Heading, Text, Button } from "@mohasinac/appkit/ui";
 import { CategoriesListView as AppkitCategoriesListView } from "@mohasinac/appkit/features/categories";
-import { Button, EmptyState, Search } from "@/components";
+import { EmptyState, Search } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";

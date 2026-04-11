@@ -1,3 +1,4 @@
+import { Spinner, Button } from "@mohasinac/appkit/ui";
 /**
  * SellerEditProductView
  *
@@ -5,18 +6,11 @@
  * Receives the product `id` as a prop (resolved by the page shell via `use(params)`).
  */
 
-"use client";
+("use client");
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import {
-  Card,
-  Button,
-  Spinner,
-  Alert,
-  AdminPageHeader,
-  ProductForm,
-} from "@/components";
+import { Card, Alert, AdminPageHeader, ProductForm } from "@/components";
 import type { AdminProduct } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {

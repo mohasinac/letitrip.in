@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@mohasinac/appkit/ui";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
@@ -7,7 +8,7 @@ import { ResetPasswordView as AppkitResetPasswordView } from "@mohasinac/appkit/
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useResetPassword } from "@/hooks";
-import { TextLink, Spinner } from "@/components";
+import { TextLink } from "@/components";
 
 function ResetPasswordContent() {
   const router = useRouter();

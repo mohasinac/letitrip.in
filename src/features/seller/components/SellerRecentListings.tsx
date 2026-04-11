@@ -2,8 +2,8 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button } from "@/components";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
+import { Heading, Span, Text, Button } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 

@@ -1,11 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Badge } from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
   Card,
-  Badge,
   AvatarDisplay,
   EmptyState,
   MediaImage,

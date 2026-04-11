@@ -5,8 +5,8 @@
  * Column definitions for the admin categories DataTable.
  */
 
-import { Span } from "@mohasinac/appkit/ui";
-import { Button, MediaImage, StatusBadge } from "@/components";
+import { StatusBadge, Span, Button } from "@mohasinac/appkit/ui";
+import { MediaImage } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;

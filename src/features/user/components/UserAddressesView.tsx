@@ -1,4 +1,6 @@
-﻿"use client";
+"use client";
+
+import { Spinner, Button } from "@mohasinac/appkit/ui";
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -10,13 +12,7 @@ import {
   useSetDefaultAddress,
   useMessage,
 } from "@/hooks";
-import {
-  AddressCard,
-  Button,
-  ConfirmDeleteModal,
-  EmptyState,
-  Spinner,
-} from "@/components";
+import { AddressCard, ConfirmDeleteModal, EmptyState } from "@/components";
 import { UserAddressesView as AppkitUserAddressesView } from "@mohasinac/appkit/features/account";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { Address } from "@/hooks";

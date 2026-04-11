@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Card, EmptyState, MediaImage, Spinner, Button } from "@/components";
+import { Heading, Text, Button, Span, Spinner } from "@mohasinac/appkit/ui";
+import { Card, EmptyState, MediaImage } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
 import { EventStatusBadge } from "./EventStatusBadge";

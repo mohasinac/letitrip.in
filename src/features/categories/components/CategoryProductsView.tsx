@@ -3,24 +3,30 @@
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { Star, Heart, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Heading, Main, Nav, Span, Text } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Main,
+  Nav,
+  Text,
+  Tooltip,
+  Span,
+  Button,
+  HorizontalScroller,
+  SortDropdown,
+  Spinner,
+  TablePagination,
+  ActiveFilterChips,
+} from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { CategoryProductsView as AppkitCategoryProductsView } from "@mohasinac/appkit/features/categories";
 import {
-  ActiveFilterChips,
-  Button,
   DataTable,
-  HorizontalScroller,
   MediaImage,
   PRODUCT_SORT_VALUES,
   ProductCard,
   Search,
   SectionTabs,
-  SortDropdown,
-  Spinner,
-  TablePagination,
   TextLink,
-  Tooltip,
 } from "@/components";
 import type { ActiveFilter, ProductSortValue } from "@/components";
 import { RangeFilter } from "@/components";
@@ -286,7 +292,7 @@ function CategoryProductsContent({
         />
       )}
       renderViewToggle={() => (
-        <Tooltip content={tActions("selectionHint")} placement="bottom">
+        <Tooltip label={tActions("selectionHint")} side="bottom">
           <Button
             type="button"
             variant="ghost"

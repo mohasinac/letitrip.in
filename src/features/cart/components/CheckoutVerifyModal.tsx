@@ -20,8 +20,8 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Label, Text } from "@mohasinac/appkit/ui";
-import { SideDrawer, Button, TextLink, Input } from "@/components";
+import { Label, Text, Button } from "@mohasinac/appkit/ui";
+import { SideDrawer, TextLink, Input } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useCheckoutVerifyOtp } from "../hooks/useCheckoutVerifyOtp";
 

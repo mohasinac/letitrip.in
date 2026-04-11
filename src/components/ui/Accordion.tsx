@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Button, Span } from "@/components";
+import { Span, Button } from "@mohasinac/appkit/ui";
 import { useState, createContext, useContext } from "react";
 
 interface AccordionContextValue {

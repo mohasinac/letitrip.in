@@ -7,8 +7,8 @@
 
 import { UI_LABELS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { Text, Caption } from "@mohasinac/appkit/ui";
-import { Badge, Button } from "@/components";
+import { Text, Caption, Button, Badge } from "@mohasinac/appkit/ui";
+
 import type { PayoutDocument } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.PAYOUTS;

@@ -13,8 +13,9 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Caption, Heading, Text } from "@mohasinac/appkit/ui";
-import { Button, Skeleton, EmptyState, ConfirmDeleteModal } from "@/components";
+import { ChatList as AppkitChatList } from "@mohasinac/appkit/features/account";
+import { Caption, Heading, Text, Button } from "@mohasinac/appkit/ui";
+import { Skeleton, EmptyState, ConfirmDeleteModal } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChatRooms, useDeleteChatRoom, useIsAdmin } from "@/hooks";
@@ -48,17 +49,7 @@ export function ChatList() {
   }>;
 
   if (isLoading) {
-    return (
-      <div className={spacing.stack}>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-xl" />
-        ))}
-      </div>
-    );
-  }
-
-  if (rooms.length === 0) {
-    return <EmptyState title={t("noRooms")} description={t("noRoomsDesc")} />;
+    return null;
   }
 
   const handleDeleteConfirm = async () => {
@@ -74,66 +65,83 @@ export function ChatList() {
 
   return (
     <>
-      <div className={`${spacing.stack} gap-2`}>
-        {rooms.map((room) => {
-          const isActive = room.id === activeChatId;
-          const isBuyer = room.buyerId === user?.uid;
-          const participantName = isBuyer
-            ? (room.sellerName ?? t("seller"))
-            : (room.buyerName ?? t("buyer"));
+      <AppkitChatList
+        isLoading={isLoading}
+        hasItems={rooms.length > 0}
+        renderLoading={() => (
+          <div className={spacing.stack}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full rounded-xl" />
+            ))}
+          </div>
+        )}
+        renderEmptyState={() => (
+          <EmptyState title={t("noRooms")} description={t("noRoomsDesc")} />
+        )}
+        renderList={() => (
+          <div className={`${spacing.stack} gap-2`}>
+            {rooms.map((room) => {
+              const isActive = room.id === activeChatId;
+              const isBuyer = room.buyerId === user?.uid;
+              const participantName = isBuyer
+                ? (room.sellerName ?? t("seller"))
+                : (room.buyerName ?? t("buyer"));
 
-          const rawTime = room.lastMessageAt ?? room.updatedAt;
-          const lastTime = rawTime
-            ? typeof rawTime === "object" && "_seconds" in rawTime
-              ? formatDate(new Date(rawTime._seconds * 1000))
-              : formatDate(new Date(rawTime as string))
-            : "";
+              const rawTime = room.lastMessageAt ?? room.updatedAt;
+              const lastTime = rawTime
+                ? typeof rawTime === "object" && "_seconds" in rawTime
+                  ? formatDate(new Date(rawTime._seconds * 1000))
+                  : formatDate(new Date(rawTime as string))
+                : "";
 
-          return (
-            <div key={room.id} className="relative group">
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  router.push(`${ROUTES.USER.MESSAGES}?chatId=${room.id}`)
-                }
-                className={`w-full text-left rounded-xl border px-4 py-3 pr-10 transition-colors ${
-                  isActive
-                    ? "bg-primary/5 dark:bg-primary/10 border-primary/30 dark:border-primary/30"
-                    : `${themed.bgPrimary} ${themed.border} hover:bg-zinc-50 dark:hover:bg-slate-800`
-                }`}
-              >
-                <div className={`${flex.betweenStart} gap-2`}>
-                  <Text weight="medium" size="sm">
-                    {participantName}
-                  </Text>
-                  {lastTime && (
-                    <Caption className="text-xs shrink-0">{lastTime}</Caption>
-                  )}
+              return (
+                <div key={room.id} className="relative group">
+                  <Button
+                    variant="ghost"
+                    onClick={() =>
+                      router.push(`${ROUTES.USER.MESSAGES}?chatId=${room.id}`)
+                    }
+                    className={`w-full text-left rounded-xl border px-4 py-3 pr-10 transition-colors ${
+                      isActive
+                        ? "bg-primary/5 dark:bg-primary/10 border-primary/30 dark:border-primary/30"
+                        : `${themed.bgPrimary} ${themed.border} hover:bg-zinc-50 dark:hover:bg-slate-800`
+                    }`}
+                  >
+                    <div className={`${flex.betweenStart} gap-2`}>
+                      <Text weight="medium" size="sm">
+                        {participantName}
+                      </Text>
+                      {lastTime && (
+                        <Caption className="text-xs shrink-0">
+                          {lastTime}
+                        </Caption>
+                      )}
+                    </div>
+                    {room.lastMessage && (
+                      <Caption className="truncate mt-0.5">
+                        {room.lastMessage}
+                      </Caption>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={t("deleteRoom")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDeleteId(room.id);
+                    }}
+                    className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-zinc-400 hover:text-red-500 dark:hover:text-red-400"
+                  >
+                    <Trash2 className="h-4 w-4" aria-hidden />
+                  </Button>
                 </div>
-                {room.lastMessage && (
-                  <Caption className="truncate mt-0.5">
-                    {room.lastMessage}
-                  </Caption>
-                )}
-              </Button>
-
-              {/* Delete button — visible on hover (or always on touch devices) */}
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label={t("deleteRoom")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setConfirmDeleteId(room.id);
-                }}
-                className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-zinc-400 hover:text-red-500 dark:hover:text-red-400"
-              >
-                <Trash2 className="h-4 w-4" aria-hidden />
-              </Button>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+        )}
+      />
 
       <ConfirmDeleteModal
         isOpen={!!confirmDeleteId}

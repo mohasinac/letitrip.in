@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Card } from "@/components";
+import { Button } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 

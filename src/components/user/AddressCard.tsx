@@ -1,10 +1,11 @@
 "use client";
 
+import { Button } from "@mohasinac/appkit/ui";
 import {
   AddressCard as AppkitAddressCard,
   type UserAddress as AppkitUserAddress,
 } from "@mohasinac/appkit/features/account";
-import { Button } from "@/components";
+
 import { useTranslations } from "next-intl";
 
 export interface Address {
