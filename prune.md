@@ -144,6 +144,89 @@ Get-ChildItem src\db\schema -Recurse -Include "*.ts"
 
 ---
 
+### Rule J — Multi-Media Schemas and Auto-Delete on Cancel
+> Any schema field holding ≥ 1 image/video/file must use `MediaField`. Forms use `<MediaUploadField>` (single) or `<MediaUploadList>` (multiple) from `@mohasinac/appkit/media`. Every upload form must wire `onAbort` to call `DELETE /api/media?url=...` for each staged-but-unsaved URL.
+
+**Find violations — raw `<input type="file">` instead of MediaUploadField:**
+```pwsh
+Select-String -Path "src\**\*.tsx" -Pattern 'type="file"|type=.file.' -Recurse |
+  Where-Object { $_.Path -notmatch 'MediaUpload' }
+```
+
+**Find violations — string fields in schemas that should be `MediaField`:**
+```pwsh
+# Schema fields named image, video, thumbnail, avatar, cover, media that are plain strings
+Select-String -Path "src\db\schema\**\*.ts","src\**\*.schema.ts" -Pattern "(image|video|thumbnail|avatar|cover|media)\s*[?:]" -Recurse
+```
+
+**Fix per violation:**
+
+| Violation | Fix |
+|---|---|
+| `image: string` in schema | Change to `image: MediaField \| null` |
+| `images: string[]` in schema | Change to `images: MediaField[]` |
+| Raw `<input type="file">` in form | Replace with `<MediaUploadField onUpload={upload} onAbort={abortUpload}>` |
+| Upload without abort/cleanup | Add `onAbort={() => stagedUrls.forEach(url => deleteMedia(url))}` |
+| `useMediaUpload` defined in letitrip | Delete, import from `@mohasinac/appkit/media` |
+
+**Known violations in letitrip:**
+- `src/hooks/useMediaUpload.ts` — duplicate of appkit hook, imports `@/constants` (🔴 delete, re-import from appkit)
+- `src/components/admin/media-upload.client.ts` — letitrip-local upload client (🟠 move logic to appkit)
+- `src/components/AvatarUpload.tsx` — no `onAbort` wiring (🟢 add abort + move to appkit)
+
+---
+
+### Rule K — Standardised ID Generators, No Ad-hoc IDs
+> All Firestore document IDs come from the typed generators in `appkit/src/utils/id-generators.ts`. Every generator must accept an optional `customId?: string` override. Never use `Date.now()`, `Math.random()`, or `uuidv4()` for document IDs.
+
+**Find violations:**
+```pwsh
+# Ad-hoc ID creation
+Select-String -Path "src\**\*.ts","src\**\*.tsx" -Pattern "Date\.now\(\)|Math\.random\(\)|uuidv4\(\)|nanoid\(\)" -Recurse
+# Missing customId support in generators
+Select-String -Path "..\appkit\src\utils\id-generators.ts" -Pattern "^export function generate" |
+  ForEach-Object { if ($_.Line -notmatch "customId") { $_.Line } }
+```
+
+**Fix:**
+1. Add `customId?: string` to every generator input interface in `appkit/src/utils/id-generators.ts`
+2. Add `if (input.customId?.trim()) return input.customId.trim();` as the first line of each generator
+3. Replace all `Date.now()` / `uuidv4()` ID usages in letitrip with the appropriate typed generator call
+4. New entity types: add a generator to `id-generators.ts`, never inline
+
+**Known violations in letitrip:**
+- `src/utils/id-generators.ts` — duplicate of appkit file (🔴 delete, import from `@mohasinac/appkit/utils`)
+- Any seed scripts using `crypto.randomUUID()` for Firestore IDs — check `scripts/seed-*.ts`
+
+---
+
+### Rule L — Auction / Pre-Order / Listing Logic Belongs in Appkit
+> Bidding, countdown timers, pre-order eligibility windows, and offer negotiation are **generic marketplace patterns**. They go in appkit under `src/features/products/` and `src/features/auctions/`. letitrip passes `listingType="auction" | "pre-order" | "standard"` — it never owns the logic.
+
+**Find violations:**
+```pwsh
+# Auction/pre-order business logic outside of appkit
+Select-String -Path "src\**\*.ts","src\**\*.tsx" -Pattern "auction|preorder|pre.order|bidding|countdown" -Recurse |
+  Where-Object { $_.Path -notmatch 'config|constants|site' }
+```
+
+**Fix per type:**
+
+| Violation | Fix |
+|---|---|
+| Bid placement logic in letitrip action | Move to `appkit/src/features/auctions/` class, call from letitrip server action |
+| Countdown timer component in letitrip | Move to `appkit/src/features/products/components/CountdownTimer.tsx` |
+| Pre-order eligibility check in letitrip | Move to `appkit/src/features/products/utils/pre-order.ts` |
+| Offer negotiation state in letitrip hook | Move to `appkit/src/features/products/hooks/useOffer.ts` |
+| Hard-coded `INR` / `IN` / `+91` in appkit | Keep in letitrip `SiteConfig`, inject as prop — never hard-code in appkit |
+
+**Known violations in letitrip (§3i, §3j):**
+- `src/features/products/components/PlaceBidForm.tsx` — bidding logic lives here (🟢 move to appkit)
+- `src/features/products/components/AuctionDetailView.tsx` — auction state logic (🟢 move to appkit)
+- `src/features/products/components/PreOrderDetailView.tsx` — pre-order eligibility (🟢 move to appkit)
+
+---
+
 ### Rule I — No Re-exports; Direct Imports Only
 > Never create a file whose sole content is re-exporting from another module. Every import site must reference the canonical appkit path directly. The only permitted barrel files are the `index.ts` entrypoints declared in appkit's `tsup.config.ts`.
 
