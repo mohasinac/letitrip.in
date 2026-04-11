@@ -32,7 +32,7 @@
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "2.0.7",
+    "@mohasinac/appkit": "^2.0.8",
     "@mohasinac/sievejs": "^1.0.0",
     "@serwist/next": "^9.5.6",
     "@tanstack/react-query": "^5.90.21",
