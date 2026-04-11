@@ -6,6 +6,144 @@ Files and modules in `letitrip.in/src` that duplicate code already present in `a
 
 ---
 
+## Architectural Rules — Violations We Are Actively Fixing
+
+Every item below maps to one or more of these rules. Use the grep commands to surface new violations.
+
+### Rule A — Appkit-First (no duplication)
+> letitrip can only contain: `app/` routes, `src/actions/`, `providers.config.ts`, `features.config.ts`, app-specific constants, and Firebase credentials. Everything else belongs in appkit.
+
+**Find violations:**
+```pwsh
+# Everything outside of the allowed directories
+Get-ChildItem src -Recurse -Include *.tsx,*.ts |
+  Where-Object FullName -notmatch 'actions|config|constants|app\\'
+```
+**Fix:** Copy body to appkit, publish new version, replace letitrip file with a 1-line import.
+
+---
+
+### Rule B — Duplicate Concept = Merge With Config
+> Two files in different repos serving the same concept (e.g. `BlogFilters.tsx` / `EventFilters.tsx`) → **merge into one** appkit component with an `entity` or `config` prop. Delete both originals.
+
+**Find violations:** Any pair of files matching `<Entity><Noun>.tsx` — see §11 (filters), §10 (admin forms).
+
+**Fix:**
+1. Define `entity: "blog" | "event" | ...` prop on the appkit component
+2. Move union logic into appkit, gate by prop
+3. Delete both originals; replace call sites with `<EntityFilters entity="blog" />`
+
+---
+
+### Rule C — SSR by Default, `'use client'` Only for Building Blocks
+> Only Tier-1 HTML-wrapper primitives with event handlers, controlled inputs, and browser-API consumers may carry `'use client'`. Pages, layouts, feature views, and data-loading wrappers must be Server Components.
+
+**Find violations:**
+```pwsh
+Select-String -Path "src\**\*.tsx" -Pattern "use client" -Recurse |
+  Where-Object { $_.Path -notmatch 'ui\\|feedback\\' }
+```
+
+| File type | Fix |
+|---|---|
+| `*View.tsx` with `'use client'` | Make `async`, extract client code to a nested `*Client.tsx` |
+| Page using `useEffect` + fetch | Replace with `async` page + server-side fetch |
+| Layout marked `'use client'` | Remove directive; hydrate interactive children separately |
+| Utility hook in letitrip | Move to `appkit/src/react/hooks/`, re-import |
+
+---
+
+### Rule D — HTML Wrappers, Not Raw Tags
+> Never write `<div>`, `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<header>`, `<footer>`, `<ul>`, `<ol>`, `<li>`, `<span>`, `<p>`, `<h1>`–`<h6>` directly. Always use the appkit semantic/layout primitive.
+
+**Find violations:**
+```pwsh
+Select-String -Path "src\**\*.tsx" -Pattern "<(div|section|article|main|aside|nav|ul|ol|li|span|p|h[1-6])\b" -Recurse
+```
+
+| Raw tag | Replace with (`@mohasinac/appkit/ui`) |
+|---|---|
+| `<div className="flex flex-col ...">` | `<Stack gap="md">` |
+| `<div className="flex flex-row ...">` | `<Row gap="sm">` |
+| `<div className="grid ...">` | `<Grid cols={3} gap="md">` |
+| `<div className="max-w-7xl mx-auto ...">` | `<Container size="2xl">` |
+| `<section>` | `<Section>` |
+| `<article>` | `<Article>` |
+| `<main>` | `<Main>` |
+| `<aside>` | `<Aside>` |
+| `<nav>` | `<Nav aria-label="...">` |
+| `<header>` / `<footer>` | `<Header>` / `<Footer>` |
+| `<ul>` / `<ol>` / `<li>` | `<Ul>` / `<Ol>` / `<Li>` |
+| `<span>` | `<Span>` |
+| `<p>` | `<Text>` |
+| `<h1>`–`<h6>` | `<Heading level={1}>` |
+
+---
+
+### Rule E — HTML Wrapper Variants > Raw ClassName
+> If a `className` pattern on a wrapper appears ≥ 3 times → it becomes a **named variant prop** on the appkit wrapper. Only one-off adjustments use raw `className`.
+
+**Find violations:**
+```pwsh
+Select-String -Path "src\**\*.tsx" -Pattern '<(Stack|Row|Grid|Container|Section|Div)\s[^>]+className' -Recurse
+```
+
+Group the patterns. Any seen 3+ times → add as a named variant in appkit and replace call sites.
+
+**Common patterns identified for migration (from letitrip audit):**
+
+| Current className | Proposed variant / props | Wrapper |
+|---|---|---|
+| `flex items-center gap-2` | `<Row gap="sm" align="center">` | `Row` — props already exist |
+| `flex flex-col gap-4 p-4 rounded-xl border bg-white shadow-sm` | `variant="card"` | `Div` — add variant |
+| `py-12 md:py-16` | `variant="section-xl"` | `Section` — add variant |
+| `py-8 md:py-12` | `variant="section-md"` | `Section` — add variant |
+| `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` | `size="2xl"` | `Container` — prop exists |
+| `text-zinc-500 text-sm` | `variant="secondary"` size prop | `Text` — variant exists |
+| `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4` | `cols={3} gap="md"` | `Grid` — props exist |
+| `flex items-center justify-between` | `justify="between" align="center"` | `Row` — props exist |
+| `rounded-xl overflow-hidden bg-white shadow` | `variant="surface"` | `Div` — add variant |
+
+> **Appkit wrapper work:** `Div`, `Section` need new variant props. All others already have the API — just update letitrip call sites.
+
+---
+
+### Rule F — All Hooks and Contexts in Appkit
+> Consumer apps never define hooks or React contexts.
+
+**Find violations:**
+```pwsh
+# Hooks in letitrip
+Get-ChildItem src -Recurse -Include "use*.ts","use*.tsx" | Where-Object Name -notlike "*.test.*"
+# Contexts
+Get-ChildItem src/contexts -Recurse
+```
+**Fix:** Move to `appkit/src/react/hooks/` or `appkit/src/features/*/hooks/`, update imports.
+
+---
+
+### Rule G — Repository Classes, Not Singletons
+> No `export const fooRepository = new Repo()` in letitrip. All repos are classes registered via `ProviderRegistry`.
+
+**Find violations:**
+```pwsh
+Select-String -Path "src\repositories\**\*.ts" -Pattern "^export const \w+Repository" -Recurse
+```
+**Fix:** See §15.
+
+---
+
+### Rule H — Firestore Schema in Appkit
+> All `COLLECTION`, `FIELD`, and default-shape constants live in `appkit/src/features/*/schema/`.
+
+**Find violations:**
+```pwsh
+Get-ChildItem src\db\schema -Recurse -Include "*.ts"
+```
+**Fix:** See §16i.
+
+---
+
 ## Legend
 
 | Symbol | Meaning |
