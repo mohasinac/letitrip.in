@@ -8,7 +8,7 @@
  * free allotment (2 M invocations, 400 K GB-seconds, 3 Cloud Scheduler jobs
  * free → $0.10/job/month beyond). Current totals:
  *
- *   Cloud Scheduler jobs : 13  (10 billable  ≈ $1.00/month)
+ *   Cloud Scheduler jobs : 14  (11 billable  ≈ $1.10/month)
  *   Invocations/month    : ~15 K  (well under 2 M free tier)
  *   GB-seconds/month     : ~12 K  (well under 400 K free tier)
  *
@@ -28,6 +28,7 @@
  * │  weeklyPayoutEligibility— Sat 05:00 UTC   create payout records          │
  * │  autoPayoutEligibility  — 04:45 UTC       auto-payout (7-day window)     │
  * │  cleanupRtdbEvents      — every 5 min     purge stale RTDB auth/pay nodes│
+ * │  mediaTmpCleanup        — 04:30 UTC       delete orphaned tmp uploads    │
  * ├─────────────────────────────────────────────────────────────────────────┤
  * │  Firestore Triggers                                                     │
  * ├─────────────────────────────────────────────────────────────────────────┤
@@ -61,6 +62,7 @@ export { notificationPrune } from "./jobs/notificationPrune";
 export { weeklyPayoutEligibility } from "./jobs/weeklyPayoutEligibility";
 export { autoPayoutEligibility } from "./jobs/autoPayoutEligibility";
 export { cleanupRtdbEvents } from "./jobs/cleanupRtdbEvents";
+export { mediaTmpCleanup } from "./jobs/mediaTmpCleanup";
 
 // ── Firestore triggers ────────────────────────────────────────────────────
 export { onBidPlaced } from "./triggers/onBidPlaced";

@@ -111,6 +111,28 @@ export const CART_TTL_DAYS = 30;
 export const NOTIFICATION_TTL_DAYS = 90;
 
 // ---------------------------------------------------------------------------
+// Media temporary upload cleanup
+// ---------------------------------------------------------------------------
+/**
+ * Storage folder prefix used to identify staged (un-confirmed) uploads.
+ * The media upload route prefixes uploaded paths with this folder segment
+ * until the entity is successfully saved. The cleanup job scans only this
+ * prefix so that saved media is never at risk.
+ *
+ * Example staged path: tmp/uid/product-image-xyz.jpg
+ * Example saved path:  media/uid/product-image-xyz.jpg
+ */
+export const MEDIA_TMP_FOLDER_PREFIX = "tmp/";
+
+/**
+ * Hours after which an unresolved staged upload is considered orphaned
+ * and eligible for deletion.  Covers browser crashes, tab closes, and
+ * backend save failures.  24 h is generous enough to survive any normal
+ * user session while still reclaiming storage within one business day.
+ */
+export const MEDIA_TMP_TTL_HOURS = 24;
+
+// ---------------------------------------------------------------------------
 // Firestore collection names (mirrored from src/db/schema — kept in sync)
 // ---------------------------------------------------------------------------
 export const COLLECTIONS = {

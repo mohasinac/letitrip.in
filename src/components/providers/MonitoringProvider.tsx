@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import {
   setupGlobalErrorHandler,
   setupCacheMonitoring,
-} from "@/lib/monitoring/runtime";
+} from "@mohasinac/appkit/monitoring";
 import { initializeClientLogger } from "@/helpers";
 
 import { logger } from "@mohasinac/appkit/core";
