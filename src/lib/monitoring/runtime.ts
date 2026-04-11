@@ -1,4 +1,4 @@
-import { trackError } from "./error-tracking";
+import { trackError } from "@mohasinac/appkit/monitoring";
 
 /**
  * Sets up window-level client error forwarding without importing the full

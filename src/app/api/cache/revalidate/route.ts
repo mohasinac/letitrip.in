@@ -27,7 +27,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { invalidateCache } from "@/lib/api/cache-middleware";
+import { invalidateCache } from "@mohasinac/appkit/next";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";

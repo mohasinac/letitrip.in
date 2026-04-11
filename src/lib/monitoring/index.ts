@@ -35,8 +35,8 @@ export {
   type AnalyticsEvent,
 } from "./analytics";
 
-// Error tracking — core from @mohasinac/monitoring (via shim), stubs appended below
-import { trackError as _trackError } from "./error-tracking";
+// Error tracking — from @mohasinac/appkit/monitoring
+import { trackError as _trackError } from "@mohasinac/appkit/monitoring";
 export {
   trackError,
   trackApiError,
@@ -48,7 +48,7 @@ export {
   ErrorCategory,
   type TrackedError,
   type ErrorContext,
-} from "./error-tracking";
+} from "@mohasinac/appkit/monitoring";
 
 // Error tracking — extras not yet in package (stubs)
 export function trackComponentError(
@@ -70,7 +70,8 @@ export function setupGlobalErrorHandler(): void {
   });
 }
 
-// Cache metrics — core from @mohasinac/monitoring (via shim), stubs appended below
+// Cache metrics — from @mohasinac/appkit/monitoring
+import { getCacheStatistics as _getCacheStats } from "@mohasinac/appkit/monitoring";
 export {
   getCacheMetrics,
   recordCacheHit,
@@ -79,10 +80,9 @@ export {
   getCacheHitRate,
   isCacheHitRateLow,
   getCacheStatistics,
-} from "./cache-metrics";
+} from "@mohasinac/appkit/monitoring";
 
 // Cache metrics — extras not yet in package (stubs)
-import { getCacheStatistics as _getCacheStats } from "./cache-metrics";
 export function getCacheDashboardData(): Record<string, unknown> {
   return _getCacheStats();
 }

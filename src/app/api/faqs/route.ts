@@ -24,7 +24,7 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { faqCreateSchema } from "@/lib/validation/schemas";
-import { invalidateCache } from "@/lib/api/cache-middleware";
+import { invalidateCache } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
