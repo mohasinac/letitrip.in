@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Heading, Main, Text } from "@mohasinac/appkit/ui";
+import { CartView as AppkitCartView } from "@mohasinac/appkit/features/cart";
 import { Button } from "@/components";
 import { CartItemList } from "./CartItemList";
 import { CartSummary } from "./CartSummary";
@@ -234,24 +235,19 @@ export function CartView() {
 
   return (
     <Main className={`${page.container.xl} py-8`}>
-      <Heading level={1} className="mb-8">
-        {t("title")}
-      </Heading>
-
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3">
-        {/* Left column: cart items */}
-        <div className="lg:col-span-2">
+      <AppkitCartView
+        labels={{ title: t("title") }}
+        className={spacing.stack}
+        renderItems={() => (
           <CartItemList
             items={items}
             updatingItemId={updatingItemId}
             onUpdateQuantity={handleUpdateQuantity}
             onRemove={handleRemove}
           />
-        </div>
-
-        {/* Right column: promo + summary */}
-        {items.length > 0 && (
-          <div className={`mt-8 lg:mt-0 ${spacing.stack} lg:sticky lg:top-24`}>
+        )}
+        renderPromoCode={() =>
+          items.length > 0 ? (
             <div
               className={`p-4 rounded-xl border ${themed.bgPrimary} ${themed.border}`}
             >
@@ -268,7 +264,10 @@ export function CartView() {
                 }}
               />
             </div>
-
+          ) : null
+        }
+        renderSummary={() =>
+          items.length > 0 ? (
             <CartSummary
               subtotal={subtotal}
               itemCount={itemCount}
@@ -277,9 +276,9 @@ export function CartView() {
               discount={discount}
               couponCode={couponCode ?? undefined}
             />
-          </div>
-        )}
-      </div>
+          ) : null
+        }
+      />
     </Main>
   );
 }

@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
 import {
   AdminPageHeader,
   AdminFilterBar,
@@ -27,7 +27,7 @@ interface AdminEventEntriesViewProps {
   eventId: string;
 }
 
-export function AdminEventEntriesView({ eventId }: AdminEventEntriesViewProps) {
+function AdminEventEntriesContent({ eventId }: AdminEventEntriesViewProps) {
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-submittedAt" },
   });
@@ -129,5 +129,13 @@ export function AdminEventEntriesView({ eventId }: AdminEventEntriesViewProps) {
         }}
       />
     </>
+  );
+}
+
+export function AdminEventEntriesView(props: AdminEventEntriesViewProps) {
+  return (
+    <Suspense>
+      <AdminEventEntriesContent {...props} />
+    </Suspense>
   );
 }

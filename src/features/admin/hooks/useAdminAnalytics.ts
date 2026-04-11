@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
@@ -11,7 +11,7 @@ interface MonthEntry {
   revenue: number;
 }
 
-interface TopProduct {
+export interface TopProduct {
   productId: string;
   title: string;
   revenue: number;

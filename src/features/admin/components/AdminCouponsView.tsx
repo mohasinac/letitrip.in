@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminCouponsView
  *
  * Extracted from src/app/[locale]/admin/coupons/[[...action]]/page.tsx
@@ -8,7 +8,14 @@
 
 "use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  Suspense,
+} from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
@@ -33,11 +40,11 @@ import {
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,
-  ListingLayout,
   Search,
   StatusBadge,
   TablePagination,
 } from "@/components";
+import { AdminCouponsView as AdminCouponsShell } from "@mohasinac/appkit/features/admin";
 import { CouponFilters } from "./CouponFilters";
 import { formatDate } from "@/utils";
 import {
@@ -55,7 +62,7 @@ interface AdminCouponsViewProps {
 
 type DrawerMode = "create" | "edit" | null;
 
-export function AdminCouponsView({ action }: AdminCouponsViewProps) {
+function AdminCouponsContent({ action }: AdminCouponsViewProps) {
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("adminCoupons");
@@ -217,7 +224,8 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
         onAction={handleCreate}
       />
 
-      <ListingLayout
+      <AdminCouponsShell
+        isDashboard
         searchSlot={
           <Search
             value={searchTerm}
@@ -239,6 +247,43 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
             compact
           />
         }
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={drawerTitle}
+            side="right"
+            footer={
+              <DrawerFormFooter
+                onCancel={handleCloseDrawer}
+                onSubmit={handleSave}
+                isLoading={isSaving}
+                isSubmitDisabled={!isDirty && drawerMode === "edit"}
+                submitLabel={
+                  drawerMode === "create" ? t("create") : tActions("save")
+                }
+              />
+            }
+          >
+            {isDrawerOpen && (
+              <CouponForm
+                initialData={selectedCoupon ?? undefined}
+                onChange={setFormState}
+                isEdit={drawerMode === "edit"}
+              />
+            )}
+          </SideDrawer>
+        )}
+        renderConfirmModal={() => (
+          <ConfirmDeleteModal
+            isOpen={!!couponToDelete}
+            onClose={() => setCouponToDelete(null)}
+            onConfirm={handleDeleteConfirm}
+            title={t("delete")}
+            message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
+            isDeleting={deleteMutation.isPending}
+          />
+        )}
       >
         <DataTable
           columns={columns}
@@ -278,44 +323,15 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {/* Create / Edit drawer */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        title={drawerTitle}
-        side="right"
-        footer={
-          <DrawerFormFooter
-            onCancel={handleCloseDrawer}
-            onSubmit={handleSave}
-            isLoading={isSaving}
-            isSubmitDisabled={!isDirty && drawerMode === "edit"}
-            submitLabel={
-              drawerMode === "create" ? t("create") : tActions("save")
-            }
-          />
-        }
-      >
-        {isDrawerOpen && (
-          <CouponForm
-            initialData={selectedCoupon ?? undefined}
-            onChange={setFormState}
-            isEdit={drawerMode === "edit"}
-          />
-        )}
-      </SideDrawer>
-
-      {/* Delete confirm modal */}
-      <ConfirmDeleteModal
-        isOpen={!!couponToDelete}
-        onClose={() => setCouponToDelete(null)}
-        onConfirm={handleDeleteConfirm}
-        title={t("delete")}
-        message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
-        isDeleting={deleteMutation.isPending}
-      />
+      </AdminCouponsShell>
     </div>
+  );
+}
+
+export function AdminCouponsView(props: AdminCouponsViewProps) {
+  return (
+    <Suspense>
+      <AdminCouponsContent {...props} />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@
 import { ROUTES, SITE_CONFIG } from "@/constants";
 import { ContactInfoSidebar as AppkitContactInfoSidebar } from "@mohasinac/appkit/features/contact";
 import { TextLink } from "@/components";
+import { Text } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 
 export function ContactInfoSidebar() {
@@ -35,10 +36,10 @@ export function ContactInfoSidebar() {
       labels={{ title: t("infoGetInTouch") }}
       renderActions={() => (
         <div className="mt-8 p-4 rounded-xl bg-secondary/10 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700">
-          <p className="text-sm text-neutral-500">
+          <Text className="text-sm text-neutral-500">
             {t("faqLink")}{" "}
             <TextLink href={ROUTES.PUBLIC.FAQS}>{t("faqsLinkText")}</TextLink>
-          </p>
+          </Text>
         </div>
       )}
     />

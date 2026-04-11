@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useFeaturedPreOrders } from "@/hooks";
+import { useFeaturedPreOrders } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { PreOrderCard } from "@/components";

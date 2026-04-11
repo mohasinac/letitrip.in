@@ -31,6 +31,12 @@ interface TitleBarProps {
   searchOpen: boolean;
   isDark: boolean;
   onToggleTheme: () => void;
+  /**
+   * When true, suppresses the dashboard-nav PanelLeft button (and the public
+   * hamburger) from the title bar. Set this on admin/seller/user routes so
+   * their own layout headers own the sidebar controls exclusively.
+   */
+  suppressDashboardNav?: boolean;
 }
 
 export default function TitleBar(props: TitleBarProps) {
@@ -38,7 +44,7 @@ export default function TitleBar(props: TitleBarProps) {
   const cartCount = useCartCount();
   const { hasNav: hasDashboardNav, openNav: openDashboardNav } =
     useDashboardNav();
-  const { isDark, onToggleTheme, ...rest } = props;
+  const { isDark, onToggleTheme, suppressDashboardNav, ...rest } = props;
 
   return (
     <TitleBarLayout
@@ -54,8 +60,9 @@ export default function TitleBar(props: TitleBarProps) {
       notificationSlot={<>{user && <NotificationBell />}</>}
       isDark={isDark}
       onToggleTheme={onToggleTheme}
-      hasDashboardNav={hasDashboardNav}
-      onOpenDashboardNav={openDashboardNav}
+      hasDashboardNav={suppressDashboardNav ? false : hasDashboardNav}
+      onOpenDashboardNav={suppressDashboardNav ? undefined : openDashboardNav}
+      hideSidebarToggle={suppressDashboardNav}
     />
   );
 }

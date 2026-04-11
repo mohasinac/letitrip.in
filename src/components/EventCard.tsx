@@ -4,6 +4,7 @@ import { EventCard as PkgEventCard } from "@mohasinac/appkit/features/events";
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { EventItem, EventType } from "@mohasinac/appkit/features/events";
+import { Span } from "@mohasinac/appkit/ui";
 
 export type { EventItem, EventType };
 
@@ -43,15 +44,15 @@ export function EventCard({
       }
     >
       {selectable && (
-        <span
+        <Span
           className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 inline-flex items-center justify-center pointer-events-none
             ${selected ? "bg-primary border-primary" : "bg-white/90 border-gray-300"}`}
           aria-hidden="true"
         >
           {selected && (
-            <span className="text-white text-xs leading-none">✓</span>
+            <Span className="text-white text-xs leading-none">✓</Span>
           )}
-        </span>
+        </Span>
       )}
       <PkgEventCard
         event={event}

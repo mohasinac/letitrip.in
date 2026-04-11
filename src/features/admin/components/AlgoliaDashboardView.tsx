@@ -1,407 +1,158 @@
+/**
+ * AlgoliaDashboardView — Thin Adapter
+ *
+ * Tier 2 — feature component.
+ * Dev-only Algolia sync dashboard.
+ * Uses appkit AlgoliaDashboardView shell + letitrip sync mutations.
+ */
+
 "use client";
 
 import { useState } from "react";
-import {
-  Row,
-  Heading,
-  Text,
-  Caption,
-  Span,
-  Ul,
-  Li,
-} from "@mohasinac/appkit/ui";
-import { Button, Card, Badge, Spinner } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
-import {
-  useAlgoliaSync,
-  type AlgoliaSyncResult,
-  type AlgoliaSyncTarget,
-} from "@/features/admin";
-
-const { themed } = THEME_CONSTANTS;
-
-interface ActionState {
-  loading: boolean;
-  result: AlgoliaSyncResult | null;
-  status: "idle" | "success" | "error";
-}
-
-const SYNC_ACTIONS = [
-  {
-    key: "products" as const,
-    label: "Sync Products → Algolia",
-    emoji: "📦",
-    description:
-      "Bulk re-index all published products into the Algolia products index.",
-    color: "text-primary",
-    headerBg:
-      "bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30",
-    badgeClass: "bg-primary/10 dark:bg-primary/20 text-primary",
-  },
-  {
-    key: "pages" as const,
-    label: "Sync Nav Pages → Algolia",
-    emoji: "\uD83D\uDDFA\uFE0F",
-    description:
-      "Index static pages, categories, blog posts, and events into the pages_nav index for navigation suggestions.",
-    color: "text-violet-700 dark:text-violet-300",
-    headerBg:
-      "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800",
-    badgeClass:
-      "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-  },
-  {
-    key: "categories" as const,
-    label: "Sync Categories → Algolia",
-    emoji: "\uD83D\uDCC2",
-    description:
-      "Bulk re-index all active categories (including brands) into the Algolia categories index.",
-    color: "text-emerald-700 dark:text-emerald-300",
-    headerBg:
-      "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800",
-    badgeClass:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  },
-  {
-    key: "stores" as const,
-    label: "Sync Stores → Algolia",
-    emoji: "\uD83C\uDFEA",
-    description:
-      "Bulk re-index all active + public stores into the Algolia stores index.",
-    color: "text-amber-700 dark:text-amber-300",
-    headerBg:
-      "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800",
-    badgeClass:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  },
-];
-
-type SyncKey = (typeof SYNC_ACTIONS)[number]["key"];
-
-const idleState: ActionState = { loading: false, result: null, status: "idle" };
+import { useTranslations } from "next-intl";
+import { AlgoliaDashboardView as AppkitAlgoliaDashboardView } from "@mohasinac/appkit/features/admin";
+import { Card, Badge, Button, useToast } from "@/components";
+import { Text, Span } from "@mohasinac/appkit/ui";
+import { useAlgoliaSync } from "@/features/admin/hooks";
 
 export function AlgoliaDashboardView() {
-  const [syncStates, setSyncStates] = useState<Record<SyncKey, ActionState>>({
-    products: idleState,
-    pages: idleState,
-    categories: idleState,
-    stores: idleState,
-  });
-  const [clearStates, setClearStates] = useState<Record<SyncKey, ActionState>>({
-    products: idleState,
-    pages: idleState,
-    categories: idleState,
-    stores: idleState,
-  });
-  const [confirmClear, setConfirmClear] = useState<SyncKey | null>(null);
-  const algoliaSync = useAlgoliaSync();
+  const { showToast } = useToast();
+  const t = useTranslations("algoliaDashboard");
 
-  if (process.env.NODE_ENV !== "development") {
-    return (
-      <Row justify="center" gap="none" className="min-h-screen p-8">
-        <Card>
-          <div className="p-8 text-center">
-            <Heading level={2} className="mb-2">
-              🔒 Access Denied
-            </Heading>
-            <Text variant="secondary">
-              This page is only available in development mode.
-            </Text>
-          </div>
-        </Card>
-      </Row>
-    );
-  }
+  const [syncStates, setSyncStates] = useState<
+    Record<string, "idle" | "loading" | "success" | "error">
+  >({
+    products: "idle",
+    pages: "idle",
+    categories: "idle",
+    stores: "idle",
+  });
 
-  const callAction = async (
-    action: "sync" | "clear",
-    target: AlgoliaSyncTarget,
-    setStates: React.Dispatch<
-      React.SetStateAction<Record<SyncKey, ActionState>>
-    >,
+  const [syncResults, setSyncResults] = useState<
+    Record<string, { indexed?: number; error?: string }>
+  >({});
+
+  const syncMutation = useAlgoliaSync();
+
+  const handleSync = async (
+    index: "products" | "pages" | "categories" | "stores",
   ) => {
-    setStates((prev) => ({
-      ...prev,
-      [target]: { loading: true, result: null, status: "idle" },
-    }));
+    setSyncStates((prev) => ({ ...prev, [index]: "loading" }));
     try {
-      const result = await algoliaSync.mutateAsync({ action, target });
-      setStates((prev) => ({
-        ...prev,
-        [target]: { loading: false, result: result ?? {}, status: "success" },
-      }));
+      const result = await syncMutation.mutateAsync({
+        action: "sync",
+        target: index,
+      });
+      setSyncStates((prev) => ({ ...prev, [index]: "success" }));
+      setSyncResults((prev) => ({ ...prev, [index]: result }));
+      showToast(`✅ Indexed ${result?.indexed ?? 0} ${index}`, "success");
     } catch (err: unknown) {
-      setStates((prev) => ({
+      setSyncStates((prev) => ({ ...prev, [index]: "error" }));
+      setSyncResults((prev) => ({
         ...prev,
-        [target]: {
-          loading: false,
-          result: {
-            error: err instanceof Error ? err.message : `${action} failed`,
-          },
-          status: "error",
+        [index]: {
+          error: err instanceof Error ? err.message : `${index} sync failed`,
         },
       }));
+      showToast(
+        err instanceof Error ? err.message : `${index} sync failed`,
+        "error",
+      );
     }
   };
 
-  const handleSync = (key: SyncKey) => callAction("sync", key, setSyncStates);
-
-  const handleClear = async (key: SyncKey) => {
-    setConfirmClear(null);
-    await callAction("clear", key, setClearStates);
-  };
-
-  const anyLoading =
-    Object.values(syncStates).some((s) => s.loading) ||
-    Object.values(clearStates).some((s) => s.loading);
-
-  return (
-    <div className={`min-h-screen p-4 sm:p-8 ${themed.bgSecondary}`}>
-      {/* Header */}
-      <div className="max-w-3xl mx-auto mb-8">
-        <div
-          className={`rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-950/40 dark:to-yellow-950/30 border ${themed.border}`}
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <Heading level={1} className="text-2xl sm:text-3xl font-bold">
-              🔍 Algolia Dashboard
-            </Heading>
-            <Badge variant="warning">Dev Only</Badge>
-          </div>
-          <Text variant="secondary" className="mb-4">
-            Manually trigger Algolia index syncs. The Firebase trigger
-            auto-syncs products on write, but use these buttons when records
-            appear out of sync or after bulk changes.
-          </Text>
-          <div className="flex flex-wrap gap-2">
-            {SYNC_ACTIONS.map((action) => {
-              const state = syncStates[action.key];
-              return (
-                <Span
-                  key={action.key}
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${action.badgeClass}`}
-                >
-                  {action.emoji} {action.label.split(" → ")[0]}
-                  {state.status === "success" &&
-                    state.result?.indexed !== undefined && (
-                      <> · {state.result.indexed} indexed</>
-                    )}
-                </Span>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Sync Cards */}
-      <div className="max-w-3xl mx-auto grid gap-6 sm:grid-cols-2 mb-8">
-        {SYNC_ACTIONS.map((action) => {
-          const syncState = syncStates[action.key];
-          const clearState = clearStates[action.key];
-          const isPendingConfirm = confirmClear === action.key;
-          return (
-            <Card key={action.key}>
-              <div className="p-5">
-                {/* Card Header */}
-                <div className={`rounded-lg px-4 py-3 mb-4 ${action.headerBg}`}>
-                  <Text className={`font-semibold ${action.color}`}>
-                    {action.emoji} {action.label}
-                  </Text>
-                </div>
-
-                <Caption className="mb-4 block">{action.description}</Caption>
-
-                <Button
-                  variant="primary"
-                  className="w-full mb-2"
-                  onClick={() => handleSync(action.key)}
-                  disabled={syncState.loading || anyLoading}
-                >
-                  {syncState.loading ? (
-                    <Span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
-                      <Spinner size="sm" /> Syncing…
-                    </Span>
-                  ) : (
-                    `${action.emoji} Run Sync`
-                  )}
-                </Button>
-
-                {/* Clear with inline confirm */}
-                {!isPendingConfirm ? (
-                  <Button
-                    variant="outline"
-                    className="w-full text-red-500 border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    onClick={() => setConfirmClear(action.key)}
-                    disabled={clearState.loading || anyLoading}
-                  >
-                    {clearState.loading ? (
-                      <Span className={`${THEME_CONSTANTS.flex.center} gap-2`}>
-                        <Spinner size="sm" /> Clearing…
-                      </Span>
-                    ) : (
-                      "🗑 Clear Index"
-                    )}
-                  </Button>
-                ) : (
-                  <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 px-3 py-3">
-                    <Caption className="text-red-700 dark:text-red-300 font-medium mb-2 block">
-                      ⚠️ This removes ALL records. Are you sure?
-                    </Caption>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="primary"
-                        className="flex-1 bg-red-600 hover:bg-red-700 border-red-600"
-                        onClick={() => handleClear(action.key)}
-                      >
-                        Yes, clear it
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => setConfirmClear(null)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Sync result */}
-                {syncState.status !== "idle" && !syncState.loading && (
-                  <div className="mt-3">
-                    <ActionResultDisplay
-                      result={syncState.result}
-                      status={syncState.status}
-                      label="Sync"
-                    />
-                  </div>
-                )}
-
-                {/* Clear result */}
-                {clearState.status !== "idle" && !clearState.loading && (
-                  <div className="mt-3">
-                    <ActionResultDisplay
-                      result={clearState.result}
-                      status={clearState.status}
-                      label="Clear"
-                    />
-                  </div>
-                )}
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Info */}
-      <div className="max-w-3xl mx-auto">
-        <Card>
-          <div className="p-5">
-            <Text className="font-semibold mb-3">
-              ℹ️ How Algolia sync works
-            </Text>
-            <Ul>
-              <Li>
-                <Caption>
-                  <strong>Products index</strong> — auto-synced via the{" "}
-                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
-                    onProductWrite
-                  </code>{" "}
-                  Firebase trigger on every Firestore write.
-                </Caption>
-              </Li>
-              <Li>
-                <Caption>
-                  <strong>Categories index</strong> — auto-synced via the{" "}
-                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
-                    onCategoryWrite
-                  </code>{" "}
-                  Firebase trigger. Includes brand categories.
-                </Caption>
-              </Li>
-              <Li>
-                <Caption>
-                  <strong>Stores index</strong> — auto-synced via the{" "}
-                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
-                    onStoreWrite
-                  </code>{" "}
-                  Firebase trigger. Only active + public stores are indexed.
-                </Caption>
-              </Li>
-              <Li>
-                <Caption>
-                  <strong>pages_nav index</strong> — must be synced manually
-                  when new categories, blog posts, or events are added. There is
-                  no automatic trigger for this index.
-                </Caption>
-              </Li>
-              <Li>
-                <Caption>
-                  Running a sync is safe and idempotent — it overwrites existing
-                  records with fresh data. No records are deleted unless a
-                  product is unpublished.
-                </Caption>
-              </Li>
-              <Li>
-                <Caption>
-                  The search overlay uses{" "}
-                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
-                    NEXT_PUBLIC_ALGOLIA_*
-                  </code>{" "}
-                  keys (read-only). Syncs use the admin write key (server-side
-                  only).
-                </Caption>
-              </Li>
-            </Ul>
-          </div>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function ActionResultDisplay({
-  result,
-  status,
-  label,
-}: {
-  result: AlgoliaSyncResult | null;
-  status: "success" | "error";
-  label: string;
-}) {
-  if (!result) return null;
-
-  if (status === "error") {
+  // Dev-only check (non-negotiable)
+  if (process.env.NODE_ENV !== "development") {
     return (
-      <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3">
-        <Caption className="text-red-700 dark:text-red-300 font-medium">
-          ❌ {result.error ?? `${label} failed`}
-        </Caption>
-      </div>
+      <Card>
+        <div className="p-6 text-center">
+          <Text className="text-neutral-600 dark:text-neutral-400">
+            {t("devOnlyWarning")}
+          </Text>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 space-y-1">
-      <Caption className="text-emerald-700 dark:text-emerald-300 font-medium">
-        ✅ {label} complete
-      </Caption>
-      {result.indexed !== undefined && (
-        <Caption className="text-emerald-600 dark:text-emerald-400">
-          {result.indexed} records indexed
-          {result.total !== undefined && ` of ${result.total}`}
-        </Caption>
+    <AppkitAlgoliaDashboardView
+      renderStatus={() => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {["products", "pages", "categories", "stores"].map((index) => (
+            <Card key={index}>
+              <div className="p-4 text-center">
+                <Text className="text-sm font-medium capitalize mb-2">
+                  {index}
+                </Text>
+                <Badge
+                  variant={
+                    syncStates[index] === "success"
+                      ? "success"
+                      : syncStates[index] === "error"
+                        ? "danger"
+                        : "default"
+                  }
+                >
+                  {syncStates[index]}
+                </Badge>
+                {syncResults[index]?.indexed && (
+                  <Text className="text-xs mt-2 text-neutral-600">
+                    {syncResults[index].indexed} indexed
+                  </Text>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
-      {result.cleared && (
-        <Caption className="text-emerald-600 dark:text-emerald-400">
-          Index cleared — all records removed
-        </Caption>
+      renderActions={() => (
+        <Card>
+          <div className="p-4 sm:p-6">
+            <Text className="text-sm font-medium mb-4">{t("syncActions")}</Text>
+            <div className="flex flex-wrap gap-3">
+              {["products", "pages", "categories", "stores"].map((index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  onClick={() =>
+                    handleSync(
+                      index as "products" | "pages" | "categories" | "stores",
+                    )
+                  }
+                  disabled={syncStates[index] === "loading"}
+                >
+                  {syncStates[index] === "loading"
+                    ? `Syncing ${index}…`
+                    : `Sync ${index}`}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </Card>
       )}
-      {result.deleted !== undefined && result.deleted > 0 && (
-        <Caption className="text-emerald-600 dark:text-emerald-400">
-          {result.deleted} records deleted
-        </Caption>
+      renderLogs={() => (
+        <Card>
+          <div className="p-4 sm:p-6">
+            <Text className="text-sm font-medium mb-4">{t("syncLogs")}</Text>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {Object.entries(syncResults).map(([index, result]) => (
+                <div key={index} className="text-xs font-mono">
+                  <Span className="text-neutral-500">{index}: </Span>
+                  {result.indexed ? (
+                    <Span className="text-green-600">
+                      ✓ {result.indexed} indexed
+                    </Span>
+                  ) : result.error ? (
+                    <Span className="text-red-600">✗ {result.error}</Span>
+                  ) : (
+                    <Span className="text-neutral-500">pending</Span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
       )}
-    </div>
+    />
   );
 }

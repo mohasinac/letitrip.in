@@ -24,13 +24,14 @@ import {
   Spinner,
 } from "@/components";
 import { formatDate } from "@/utils";
-import type { EventDocument, SurveyFormField } from "@/db/schema";
+import { EventParticipateView as AppkitEventParticipateView } from "@mohasinac/appkit/features/events";
+import type { SurveyFormField } from "@/db/schema";
+
+const { spacing } = THEME_CONSTANTS;
 
 interface EventParticipateViewProps {
   id: string;
 }
-
-const { themed, spacing } = THEME_CONSTANTS;
 
 export function EventParticipateView({ id }: EventParticipateViewProps) {
   const router = useRouter();
@@ -63,39 +64,13 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     return null;
   }
 
-  if (authLoading || eventLoading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (!event || event.type !== "survey" || !event.surveyConfig) {
-    return <Alert variant="warning">{t("notSurveyEvent")}</Alert>;
-  }
-
-  if (event.status !== "active") {
-    return <Alert variant="info">{t("entriesClosed")}</Alert>;
-  }
-
-  if (submitted) {
-    return (
-      <Card className="max-w-lg mx-auto p-8 text-center">
-        <Heading level={2} className="mb-2">
-          {t("thankYouTitle")}
-        </Heading>
-        <Text variant="secondary">{t("thankYouDesc")}</Text>
-      </Card>
-    );
-  }
-
-  const fields: SurveyFormField[] = event.surveyConfig.formFields ?? [];
+  const isLoading = authLoading || eventLoading;
 
   const handleChange = (fieldId: string, value: string) =>
     setResponses((prev) => ({ ...prev, [fieldId]: value }));
 
   const handleSubmit = async () => {
+    const fields: SurveyFormField[] = event?.surveyConfig?.formFields ?? [];
     const missing = fields
       .filter((f) => f.required && !responses[f.id]?.trim())
       .map((f) => f.label);
@@ -126,34 +101,31 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
       );
     }
 
-    if (field.type === "select" || field.type === "radio") {
-      if (field.type === "radio") {
-        return (
-          <div key={field.id}>
-            <Label className="block mb-2">
-              {field.label}
-              {field.required && (
-                <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
-              )}
-            </Label>
-            <RadioGroup
-              name={field.id}
-              value={value}
-              options={(field.options ?? []).map((opt) => ({
-                value: opt,
-                label: opt,
-              }))}
-              onChange={onChange}
-              orientation="horizontal"
-              variant="toggle"
-            />
-          </div>
-        );
-      }
-      const options = [
-        { value: "", label: t("selectOption") },
-        ...(field.options?.map((opt) => ({ value: opt, label: opt })) ?? []),
-      ];
+    if (field.type === "radio") {
+      return (
+        <div key={field.id}>
+          <Label className="block mb-2">
+            {field.label}
+            {field.required && (
+              <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
+            )}
+          </Label>
+          <RadioGroup
+            name={field.id}
+            value={value}
+            options={(field.options ?? []).map((opt) => ({
+              value: opt,
+              label: opt,
+            }))}
+            onChange={onChange}
+            orientation="horizontal"
+            variant="toggle"
+          />
+        </div>
+      );
+    }
+
+    if (field.type === "select") {
       return (
         <FormField
           key={field.id}
@@ -163,7 +135,11 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
           required={field.required}
           value={value}
           onChange={onChange}
-          options={options}
+          options={[
+            { value: "", label: t("selectOption") },
+            ...(field.options?.map((opt) => ({ value: opt, label: opt })) ??
+              []),
+          ]}
         />
       );
     }
@@ -211,7 +187,6 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
       );
     }
 
-    // default: text
     return (
       <FormField
         key={field.id}
@@ -226,32 +201,64 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     );
   };
 
+  if (!event && !isLoading) {
+    return <Alert variant="warning">{t("notSurveyEvent")}</Alert>;
+  }
+
+  if (event && event.status !== "active" && !isLoading) {
+    return <Alert variant="info">{t("entriesClosed")}</Alert>;
+  }
+
+  const fields: SurveyFormField[] = event?.surveyConfig?.formFields ?? [];
+
   return (
-    <div className={`max-w-2xl mx-auto ${spacing.stack}`}>
-      <div>
-        <Heading level={1}>{event.title}</Heading>
-        {event.endsAt && (
-          <Text size="sm" variant="secondary" className="mt-1">
-            {t("endsIn")}: {formatDate(event.endsAt)}
-          </Text>
-        )}
-        <Text variant="secondary" className="mt-2">
-          {event.description}
-        </Text>
-      </div>
-
-      <Card className="p-6">
-        <FormGroup>{fields.map((field) => renderField(field))}</FormGroup>
-
+    <AppkitEventParticipateView
+      isLoading={isLoading}
+      isSubmitted={submitted}
+      renderAuthGate={() => null}
+      renderSkeleton={() => (
+        <div className="flex justify-center py-20">
+          <Spinner />
+        </div>
+      )}
+      renderSuccess={() => (
+        <Card className="max-w-lg mx-auto p-8 text-center">
+          <Heading level={2} className="mb-2">
+            {t("thankYouTitle")}
+          </Heading>
+          <Text variant="secondary">{t("thankYouDesc")}</Text>
+        </Card>
+      )}
+      renderEventInfo={() =>
+        event ? (
+          <div>
+            <Heading level={1}>{event.title}</Heading>
+            {event.endsAt && (
+              <Text size="sm" variant="secondary" className="mt-1">
+                {t("endsIn")}: {formatDate(event.endsAt)}
+              </Text>
+            )}
+            <Text variant="secondary" className="mt-2">
+              {event.description}
+            </Text>
+          </div>
+        ) : null
+      }
+      renderForm={() => (
+        <Card className="p-6">
+          <FormGroup>{fields.map((field) => renderField(field))}</FormGroup>
+        </Card>
+      )}
+      renderAction={() => (
         <Button
           onClick={handleSubmit}
           isLoading={mutation.isPending}
           disabled={mutation.isPending}
-          className="w-full mt-4"
+          className="w-full"
         >
           {mutation.isPending ? tLoading("default") : t("submit")}
         </Button>
-      </Card>
-    </div>
+      )}
+    />
   );
 }

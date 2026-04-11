@@ -13,13 +13,13 @@ import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import { Text } from "@mohasinac/appkit/ui";
+import { AdminCategoriesView as AppkitAdminCategoriesView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Button,
   Card,
   DataTable,
   DrawerFormFooter,
-  ListingLayout,
   SideDrawer,
 } from "@/components";
 import { CategoryTreeView } from "./CategoryTreeView";
@@ -243,57 +243,53 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
   const { themed } = THEME_CONSTANTS;
 
   return (
-    <>
-      <ListingLayout
-        headerSlot={
+    <AppkitAdminCategoriesView
+      renderHeader={() => (
+        <div className="flex items-center justify-between gap-4">
           <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        }
-        viewToggleSlot={
-          <div className={`flex border ${themed.border} rounded-md`}>
-            <Button
-              onClick={() => setViewMode("tree")}
-              className={`px-3 py-2 text-sm ${
-                viewMode === "tree"
-                  ? "bg-primary text-white"
-                  : `${themed.bgTertiary} ${themed.textSecondary}`
-              }`}
-            >
-              {t("treeView")}
-            </Button>
-            <Button
-              onClick={() => setViewMode("table")}
-              className={`px-3 py-2 text-sm ${
-                viewMode === "table"
-                  ? "bg-primary text-white"
-                  : `${themed.bgTertiary} ${themed.textSecondary}`
-              }`}
-            >
-              {t("tableView")}
+          <div className="flex items-center gap-2">
+            <div className={`flex border ${themed.border} rounded-md`}>
+              <Button
+                onClick={() => setViewMode("tree")}
+                className={`px-3 py-2 text-sm ${
+                  viewMode === "tree"
+                    ? "bg-primary text-white"
+                    : `${themed.bgTertiary} ${themed.textSecondary}`
+                }`}
+              >
+                {t("treeView")}
+              </Button>
+              <Button
+                onClick={() => setViewMode("table")}
+                className={`px-3 py-2 text-sm ${
+                  viewMode === "table"
+                    ? "bg-primary text-white"
+                    : `${themed.bgTertiary} ${themed.textSecondary}`
+                }`}
+              >
+                {t("tableView")}
+              </Button>
+            </div>
+            <Button onClick={handleCreate} variant="primary">
+              + {tActions("create")}
             </Button>
           </div>
-        }
-        actionsSlot={
-          <Button onClick={handleCreate} variant="primary">
-            + {tActions("create")}
-          </Button>
-        }
-        loading={isLoading}
-        errorSlot={
-          error ? (
-            <Card>
-              <div className="text-center py-8">
-                <Text variant="error" className="mb-4">
-                  {error.message}
-                </Text>
-                <Button variant="outline" onClick={() => refetch()}>
-                  {tActions("retry")}
-                </Button>
-              </div>
-            </Card>
-          ) : undefined
-        }
-      >
-        {viewMode === "tree" ? (
+        </div>
+      )}
+      isLoading={isLoading}
+      renderTable={() =>
+        error ? (
+          <Card>
+            <div className="text-center py-8">
+              <Text variant="error" className="mb-4">
+                {error.message}
+              </Text>
+              <Button variant="outline" onClick={() => refetch()}>
+                {tActions("retry")}
+              </Button>
+            </div>
+          </Card>
+        ) : viewMode === "tree" ? (
           <CategoryTreeView
             categories={categories}
             onSelect={(cat) => handleEdit(cat as Partial<Category>)}
@@ -311,27 +307,28 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
           />
-        )}
-      </ListingLayout>
-
-      {editingCategory && (
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleCloseDrawer}
-          title={drawerTitle}
-          mode={drawerMode || "view"}
-          isDirty={isDirty}
-          footer={drawerFooter}
-          side="right"
-        >
-          <CategoryForm
-            category={editingCategory}
-            allCategories={categories}
-            onChange={setEditingCategory}
-            isReadonly={isReadonly}
-          />
-        </SideDrawer>
-      )}
-    </>
+        )
+      }
+      renderDrawer={() =>
+        editingCategory ? (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={drawerTitle}
+            mode={drawerMode || "view"}
+            isDirty={isDirty}
+            footer={drawerFooter}
+            side="right"
+          >
+            <CategoryForm
+              category={editingCategory}
+              allCategories={categories}
+              onChange={setEditingCategory}
+              isReadonly={isReadonly}
+            />
+          </SideDrawer>
+        ) : null
+      }
+    />
   );
 }

@@ -49,6 +49,7 @@ export default function LayoutClient({
   const isAdminRoute =
     pathname.startsWith("/admin") || pathname.startsWith("/seller");
   const isUserRoute = pathname.startsWith("/user");
+  const isDashboardRoute = isAdminRoute || isUserRoute;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -115,69 +116,10 @@ export default function LayoutClient({
     });
   };
 
-  if (isAdminRoute) {
-    return (
-      <div className="flex flex-col h-screen w-full overflow-hidden">
-        <div className={`shrink-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}>
-          <TitleBar
-            onToggleSidebar={() => {}}
-            sidebarOpen={false}
-            onSearchToggle={() => setSearchOpen(!searchOpen)}
-            searchOpen={searchOpen}
-            isDark={isDark}
-            onToggleTheme={toggleTheme}
-          />
-          <MainNavbar
-            hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems}
-          />
-          <Search
-            isOpen={searchOpen}
-            onOpen={() => setSearchOpen(true)}
-            onClose={() => setSearchOpen(false)}
-            onSearch={(query) => {
-              setSearchOpen(false);
-              router.push(
-                `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
-              );
-            }}
-          />
-        </div>
-        <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
-        <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
-      </div>
-    );
-  }
-
-  if (isUserRoute) {
+  if (isDashboardRoute) {
     return (
       <div className="flex flex-col min-h-screen w-full">
-        <div
-          className={`sticky top-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}
-        >
-          <TitleBar
-            onToggleSidebar={() => {}}
-            sidebarOpen={false}
-            onSearchToggle={() => setSearchOpen(!searchOpen)}
-            searchOpen={searchOpen}
-            isDark={isDark}
-            onToggleTheme={toggleTheme}
-          />
-          <MainNavbar
-            hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems}
-          />
-          <Search
-            isOpen={searchOpen}
-            onOpen={() => setSearchOpen(true)}
-            onClose={() => setSearchOpen(false)}
-            onSearch={(query) => {
-              setSearchOpen(false);
-              router.push(
-                `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
-              );
-            }}
-          />
-        </div>
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
         <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
       </div>
     );

@@ -15,6 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Text } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
+import { SellerOrdersView as AppkitSellerOrdersView } from "@mohasinac/appkit/features/seller";
 import {
   ActiveFilterChips,
   Badge,
@@ -412,158 +413,174 @@ function SellerOrdersContent() {
   if (!user) return null;
 
   return (
-    <>
-      <ListingLayout
-        headerSlot={
-          <>
-            <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-            {/* Summary stats */}
-            {!isLoading && orders.length > 0 && (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
-                {(
-                  [
-                    {
-                      label: t("statTotal"),
-                      count: orders.length,
-                      color: "text-primary",
-                    },
-                    {
-                      label: t("statPending"),
-                      count: orders.filter((o) => o.status === "pending")
-                        .length,
-                      color: "text-yellow-600 dark:text-yellow-400",
-                    },
-                    {
-                      label: t("statConfirmed"),
-                      count: orders.filter((o) => o.status === "confirmed")
-                        .length,
-                      color: "text-primary",
-                    },
-                    {
-                      label: t("statDelivered"),
-                      count: orders.filter((o) => o.status === "delivered")
-                        .length,
-                      color: "text-green-600 dark:text-green-400",
-                    },
-                  ] as const
-                ).map(({ label, count, color }) => (
-                  <Card key={label} className="p-4 text-center">
-                    <Text weight="bold" className={`text-2xl ${color}`}>
-                      {count}
-                    </Text>
-                    <Text size="sm" className={themed.textSecondary}>
-                      {label}
-                    </Text>
-                  </Card>
-                ))}
-              </div>
+    <AppkitSellerOrdersView
+      labels={{ title: t("title"), emptyText: t("emptyTitle") }}
+      total={meta?.total ?? orders.length}
+      isLoading={isLoading}
+      renderTable={(_selected, _onSelectionChange, loading) => (
+        <ListingLayout
+          headerSlot={
+            <>
+              <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+              {!loading && orders.length > 0 && (
+                <div className={THEME_CONSTANTS.grid.productCards}>
+                  {(
+                    [
+                      {
+                        label: t("statTotal"),
+                        count: orders.length,
+                        color: "text-primary",
+                      },
+                      {
+                        label: t("statPending"),
+                        count: orders.filter((o) => o.status === "pending")
+                          .length,
+                        color: "text-yellow-600 dark:text-yellow-400",
+                      },
+                      {
+                        label: t("statConfirmed"),
+                        count: orders.filter((o) => o.status === "confirmed")
+                          .length,
+                        color: "text-primary",
+                      },
+                      {
+                        label: t("statDelivered"),
+                        count: orders.filter((o) => o.status === "delivered")
+                          .length,
+                        color: "text-green-600 dark:text-green-400",
+                      },
+                    ] as const
+                  ).map(({ label, count, color }) => (
+                    <Card key={label} className="p-4 text-center">
+                      <Text weight="bold" className={`text-2xl ${color}`}>
+                        {count}
+                      </Text>
+                      <Text size="sm" className={themed.textSecondary}>
+                        {label}
+                      </Text>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </>
+          }
+          searchSlot={
+            <Search
+              value={searchQ}
+              onChange={(v) => table.set("q", v)}
+              placeholder={t("searchPlaceholder")}
+            />
+          }
+          filterContent={<OrderFilters table={pendingTable} variant="seller" />}
+          filterActiveCount={filterActiveCount}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
+          sortSlot={
+            <SortDropdown
+              value={sortParam}
+              onChange={(v) => table.set("sorts", v)}
+              options={sortOptions}
+            />
+          }
+          activeFiltersSlot={
+            activeFilters.length > 0 ? (
+              <ActiveFilterChips
+                filters={activeFilters}
+                onRemove={(key) => table.set(key, "")}
+                onClearAll={onFilterClear}
+              />
+            ) : undefined
+          }
+          statusTabsSlot={
+            <SectionTabs
+              inline
+              value={statusFilter}
+              onChange={(id) => {
+                table.set("status", id);
+                setSelectedIds([]);
+              }}
+              tabs={STATUS_TABS.map((tab) => ({
+                value: tab.key,
+                label: tab.label,
+              }))}
+            />
+          }
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActionItems={[
+            {
+              id: "payout",
+              label: t("bulkRequestPayout", {
+                count: eligibleForPayout.length,
+              }),
+              variant: "primary",
+              onClick: handleRequestPayout,
+              disabled: eligibleForPayout.length === 0 || !isPayoutConfigured,
+              loading: isBulkLoading,
+            },
+          ]}
+        >
+          <DataTable<OrderDocument>
+            data={orders}
+            columns={columns}
+            keyExtractor={(o) => o.id!}
+            loading={loading}
+            emptyTitle={t("emptyTitle")}
+            emptyMessage={t("emptySubtitle")}
+            externalPagination
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            actions={rowActions}
+            showViewToggle
+            viewMode={
+              (table.get("view") || "table") as "table" | "grid" | "list"
+            }
+            onViewModeChange={(mode) => table.set("view", mode)}
+            mobileCardRender={(order) => (
+              <OrderCard
+                order={order}
+                variant={(table.get("view") as "grid" | "list") || "list"}
+              />
             )}
-          </>
-        }
-        searchSlot={
-          <Search
-            value={searchQ}
-            onChange={(v) => table.set("q", v)}
-            placeholder={t("searchPlaceholder")}
           />
-        }
-        filterContent={<OrderFilters table={pendingTable} variant="seller" />}
-        filterActiveCount={filterActiveCount}
-        onFilterApply={onFilterApply}
-        onFilterClear={onFilterClear}
-        sortSlot={
-          <SortDropdown
-            value={sortParam}
-            onChange={(v) => table.set("sorts", v)}
-            options={sortOptions}
-          />
-        }
-        activeFiltersSlot={
-          activeFilters.length > 0 ? (
-            <ActiveFilterChips
-              filters={activeFilters}
-              onRemove={(key) => table.set(key, "")}
-              onClearAll={onFilterClear}
-            />
-          ) : undefined
-        }
-        statusTabsSlot={
-          <SectionTabs
-            inline
-            value={statusFilter}
-            onChange={(id) => {
-              table.set("status", id);
-              setSelectedIds([]);
-            }}
-            tabs={STATUS_TABS.map((tab) => ({
-              value: tab.key,
-              label: tab.label,
-            }))}
-          />
-        }
-        selectedCount={selectedIds.length}
-        onClearSelection={() => setSelectedIds([])}
-        bulkActionItems={[
-          {
-            id: "payout",
-            label: t("bulkRequestPayout", { count: eligibleForPayout.length }),
-            variant: "primary",
-            onClick: handleRequestPayout,
-            disabled: eligibleForPayout.length === 0 || !isPayoutConfigured,
-            loading: isBulkLoading,
-          },
-        ]}
-      >
-        {/* Orders table */}
-        <DataTable<OrderDocument>
-          data={orders}
-          columns={columns}
-          keyExtractor={(o) => o.id!}
-          loading={isLoading}
-          emptyTitle={t("emptyTitle")}
-          emptyMessage={t("emptySubtitle")}
-          externalPagination
-          selectable
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          actions={rowActions}
-          showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-          onViewModeChange={(mode) => table.set("view", mode)}
-          mobileCardRender={(order) => (
-            <OrderCard
-              order={order}
-              variant={(table.get("view") as "grid" | "list") || "list"}
-            />
+
+          {!loading && orders.length > 0 && (
+            <Card className={`p-4 ${themed.bgSecondary}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <Text className={`font-medium ${themed.textPrimary}`}>
+                  {statusFilter
+                    ? t("revenueFiltered", { status: statusFilter })
+                    : t("revenueThisPage")}
+                </Text>
+                <Text weight="bold" className="text-2xl text-primary">
+                  {formatCurrency(
+                    orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0),
+                  )}
+                </Text>
+              </div>
+            </Card>
           )}
+        </ListingLayout>
+      )}
+      renderPagination={() => (
+        <TablePagination
+          currentPage={page}
+          pageSize={PAGE_SIZE}
+          total={meta?.total ?? orders.length}
+          totalPages={meta?.totalPages ?? 1}
+          onPageChange={(nextPage) => table.setPage(nextPage)}
+          onPageSizeChange={(size) => table.set("pageSize", String(size))}
         />
-
-        {/* Revenue summary */}
-        {!isLoading && orders.length > 0 && (
-          <Card className={`p-4 ${themed.bgSecondary}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <Text className={`font-medium ${themed.textPrimary}`}>
-                {statusFilter
-                  ? t("revenueFiltered", { status: statusFilter })
-                  : t("revenueThisPage")}
-              </Text>
-              <Text weight="bold" className="text-2xl text-primary">
-                {formatCurrency(
-                  orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0),
-                )}
-              </Text>
-            </div>
-          </Card>
-        )}
-      </ListingLayout>
-
-      {/* Ship-order modal (custom shipping only) */}
-      <ShipOrderModal
-        order={shipModalOrder}
-        onClose={() => setShipModalOrder(null)}
-        onShipped={refetch}
-      />
-    </>
+      )}
+      renderModal={() => (
+        <ShipOrderModal
+          order={shipModalOrder}
+          onClose={() => setShipModalOrder(null)}
+          onShipped={refetch}
+        />
+      )}
+    />
   );
 }
 

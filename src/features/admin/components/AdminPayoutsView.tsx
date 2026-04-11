@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
@@ -16,9 +16,9 @@ import {
   DrawerFormFooter,
   StatusBadge,
   TablePagination,
-  ListingLayout,
   Search,
 } from "@/components";
+import { AdminPayoutsView as AdminPayoutsShell } from "@mohasinac/appkit/features/admin";
 import { PayoutFilters } from "./PayoutFilters";
 import { getPayoutTableColumns, PayoutStatusForm } from ".";
 import type { PayoutStatusFormState } from ".";
@@ -37,7 +37,7 @@ interface PayoutsResponse {
   };
 }
 
-export function AdminPayoutsView() {
+function AdminPayoutsContent() {
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("adminPayouts");
 
@@ -198,7 +198,8 @@ export function AdminPayoutsView() {
       )}
 
       {/* Status filter tabs */}
-      <ListingLayout
+      <AdminPayoutsShell
+        isDashboard
         searchSlot={
           <Search
             value={searchTerm}
@@ -220,6 +221,31 @@ export function AdminPayoutsView() {
             compact
           />
         }
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={t("updateStatus")}
+            side="right"
+            footer={
+              selectedPayout ? (
+                <DrawerFormFooter
+                  onCancel={handleCloseDrawer}
+                  onSubmit={handleSave}
+                  isLoading={updateMutation.isPending}
+                  submitLabel={t("updatePayout")}
+                />
+              ) : undefined
+            }
+          >
+            {selectedPayout && (
+              <PayoutStatusForm
+                payout={selectedPayout}
+                onChange={setFormState}
+              />
+            )}
+          </SideDrawer>
+        )}
       >
         <DataTable
           columns={columns}
@@ -249,29 +275,15 @@ export function AdminPayoutsView() {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {/* Update payout status drawer */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        title={t("updateStatus")}
-        side="right"
-        footer={
-          selectedPayout ? (
-            <DrawerFormFooter
-              onCancel={handleCloseDrawer}
-              onSubmit={handleSave}
-              isLoading={updateMutation.isPending}
-              submitLabel={t("updatePayout")}
-            />
-          ) : undefined
-        }
-      >
-        {selectedPayout && (
-          <PayoutStatusForm payout={selectedPayout} onChange={setFormState} />
-        )}
-      </SideDrawer>
+      </AdminPayoutsShell>
     </div>
+  );
+}
+
+export function AdminPayoutsView() {
+  return (
+    <Suspense>
+      <AdminPayoutsContent />
+    </Suspense>
   );
 }

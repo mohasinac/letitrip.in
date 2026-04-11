@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { Button, Span } from "@/components";
 import { useState, createContext, useContext } from "react";
 
 interface AccordionContextValue {
@@ -93,20 +94,20 @@ export function AccordionItem({
     <div
       className={`border-b border-gray-200 dark:border-gray-700 ${className}`}
     >
-      <button
+      <Button
         type="button"
         disabled={disabled}
         aria-expanded={isOpen}
         onClick={() => toggle(value)}
         className="w-full flex items-center justify-between py-3 px-1 text-left text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span>{title}</span>
-        <span
+        <Span>{title}</Span>
+        <Span
           className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         >
           ▾
-        </span>
-      </button>
+        </Span>
+      </Button>
       {isOpen && (
         <div className="pb-3 px-1 text-sm text-gray-600 dark:text-gray-400">
           {children}

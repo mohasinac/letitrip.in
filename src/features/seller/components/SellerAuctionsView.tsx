@@ -10,6 +10,7 @@
 
 import { Suspense, useMemo, useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { SellerAuctionsView as AppkitSellerAuctionsView } from "@mohasinac/appkit/features/seller";
 import {
   ActiveFilterChips,
   Spinner,
@@ -110,79 +111,94 @@ function SellerAuctionsContent() {
   ];
 
   return (
-    <div className={spacing.stack}>
-      <ListingLayout
-        searchSlot={
-          <Search
-            value={q}
-            onChange={(v) => table.set("q", v)}
-            placeholder={t("searchPlaceholder")}
-          />
-        }
-        filterContent={
-          <FilterFacetSection
-            title={t("filterStatusLabel")}
-            options={[
-              { value: "draft", label: t("filterStatusDraft") },
-              { value: "published", label: t("filterStatusActive") },
-              { value: "ended", label: t("filterStatusEnded") },
-              { value: "cancelled", label: t("filterStatusCancelled") },
-            ]}
-            selected={stagedStatus}
-            onChange={setStagedStatus}
-          />
-        }
-        filterActiveCount={statusFilter ? 1 : 0}
-        onFilterApply={() => table.setMany({ status: stagedStatus[0] ?? "" })}
-        onFilterClear={() => {
-          setStagedStatus([]);
-          table.setMany({ status: "", q: "" });
-        }}
-        sortSlot={
-          <SortDropdown
-            value={sorts}
-            onChange={table.setSort}
-            options={sortOptions}
-          />
-        }
-        activeFiltersSlot={
-          activeFilters.length > 0 ? (
-            <ActiveFilterChips
-              filters={activeFilters}
-              onRemove={(key) => table.set(key, "")}
-              onClearAll={() => {
-                setStagedStatus([]);
-                table.setMany({ status: "" });
-              }}
-            />
-          ) : undefined
-        }
-      >
-        <DataTable
-          columns={columns}
-          data={items}
-          keyExtractor={(item) => item.id}
-          loading={isLoading || authLoading}
-          emptyIcon={<Gavel className="w-16 h-16" />}
-          emptyTitle={t("noAuctions")}
-          selectable
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
-          onViewModeChange={(m) => table.set("view", m)}
-          mobileCardRender={(item) => (
-            <SellerProductCard
-              product={item as any}
-              onEdit={(p) =>
-                router.push(`${ROUTES.SELLER.PRODUCTS}/${p.id}/edit`)
-              }
-              onDelete={() => {}}
-            />
-          )}
+    <AppkitSellerAuctionsView
+      labels={{ title: t("pageTitle") }}
+      total={total}
+      isLoading={isLoading || authLoading}
+      renderSearch={() => (
+        <Search
+          value={q}
+          onChange={(v) => table.set("q", v)}
+          placeholder={t("searchPlaceholder")}
         />
-      </ListingLayout>
-    </div>
+      )}
+      renderFilters={() => (
+        <FilterFacetSection
+          title={t("filterStatusLabel")}
+          options={[
+            { value: "draft", label: t("filterStatusDraft") },
+            { value: "published", label: t("filterStatusActive") },
+            { value: "ended", label: t("filterStatusEnded") },
+            { value: "cancelled", label: t("filterStatusCancelled") },
+          ]}
+          selected={stagedStatus}
+          onChange={setStagedStatus}
+        />
+      )}
+      renderActiveFilters={() =>
+        activeFilters.length > 0 ? (
+          <ActiveFilterChips
+            filters={activeFilters}
+            onRemove={(key) => table.set(key, "")}
+            onClearAll={() => {
+              setStagedStatus([]);
+              table.setMany({ status: "" });
+            }}
+          />
+        ) : null
+      }
+      renderTable={(selected, onSelectionChange, loading) => (
+        <div className={spacing.stack}>
+          <ListingLayout
+            filterContent={<></>}
+            filterActiveCount={statusFilter ? 1 : 0}
+            onFilterApply={() =>
+              table.setMany({ status: stagedStatus[0] ?? "" })
+            }
+            onFilterClear={() => {
+              setStagedStatus([]);
+              table.setMany({ status: "", q: "" });
+            }}
+            sortSlot={
+              <SortDropdown
+                value={sorts}
+                onChange={table.setSort}
+                options={sortOptions}
+              />
+            }
+          >
+            <DataTable
+              columns={columns}
+              data={items}
+              keyExtractor={(item) => item.id}
+              loading={loading}
+              emptyIcon={<Gavel className="w-16 h-16" />}
+              emptyTitle={t("noAuctions")}
+              selectable
+              selectedIds={selected.length > 0 ? selected : selectedIds}
+              onSelectionChange={(ids) => {
+                setSelectedIds(ids);
+                onSelectionChange(ids);
+              }}
+              showViewToggle
+              viewMode={
+                (table.get("view") || "grid") as "table" | "grid" | "list"
+              }
+              onViewModeChange={(m) => table.set("view", m)}
+              mobileCardRender={(item) => (
+                <SellerProductCard
+                  product={item as any}
+                  onEdit={(p) =>
+                    router.push(`${ROUTES.SELLER.PRODUCTS}/${p.id}/edit`)
+                  }
+                  onDelete={() => {}}
+                />
+              )}
+            />
+          </ListingLayout>
+        </div>
+      )}
+    />
   );
 }
 

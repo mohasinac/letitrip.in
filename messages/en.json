@@ -1580,6 +1580,10 @@
     "whatOurCustomersSay": "What Our Customers Say",
     "reviewsSubtitle": "Read reviews from satisfied customers",
     "seeAllReviews": "See all reviews →",
+    "viewAllReviews": "View all reviews",
+    "whatsappTitle": "Join Our WhatsApp Community",
+    "whatsappMemberCount": "{count}+ members",
+    "whatsappCta": "Join Now",
     "newsletter": {
       "title": "Stay Updated",
       "subtitle": "Subscribe to get the latest deals and offers",
@@ -1587,7 +1591,9 @@
       "subscribe": "Subscribe",
       "success": "Successfully subscribed!",
       "alreadySubscribed": "You are already subscribed.",
-      "privacyNote": "We respect your privacy. Unsubscribe at any time. Read our"
+      "privacyNote": "We respect your privacy. Unsubscribe at any time. Read our",
+      "privacy": "Privacy Policy",
+      "cta": "Subscribe"
     },
     "promoted": "Featured",
     "auctionNoEndDate": "No end date",
@@ -1784,7 +1790,9 @@
     "formMessage": "Message",
     "formSend": "Send Message",
     "formSending": "Sending...",
+    "formSuccessTitle": "Message sent",
     "formSuccess": "Your message has been sent! We'll get back to you shortly.",
+    "formSendAnother": "Send another message",
     "namePlaceholder": "Enter your name",
     "emailPlaceholder": "Enter your email address",
     "subjectPlaceholder": "Enter subject",
@@ -2640,6 +2648,11 @@
     "credentialSet": "Saved \u2714",
     "credentialNotSet": "Not configured"
   },
+  "algoliaDashboard": {
+    "devOnlyWarning": "This dashboard is available only in development mode.",
+    "syncActions": "Sync Actions",
+    "syncLogs": "Sync Logs"
+  },
   "adminNavigation": {
     "metaTitle": "Navigation Settings",
     "metaDescription": "Configure navbar and footer navigation for the LetItRip platform.",
@@ -3251,6 +3264,7 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to common questions about our platform, products, shipping, and more.",
     "viewAll": "View All FAQs",
+    "viewAllFaqs": "View all FAQs",
     "wasThisHelpful": "Was this helpful?",
     "thanksForFeedback": "Thanks for your feedback!",
     "searchPlaceholder": "Search FAQs...",

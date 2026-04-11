@@ -13,6 +13,7 @@ import { MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { Heading, Row, Text } from "@mohasinac/appkit/ui";
+import { SellerAddressesView as AppkitSellerAddressesView } from "@mohasinac/appkit/features/seller";
 import {
   AddressCard,
   AddressForm,
@@ -109,46 +110,49 @@ export function SellerAddressesView() {
 
   return (
     <>
-      <ListingLayout
-        headerSlot={
-          <div>
-            <Heading level={3}>{t("title")}</Heading>
-            {total > 0 && (
-              <Text variant="secondary" className="mt-1">
-                {t("subtitleWithCount", { count: total })}
-              </Text>
-            )}
-          </div>
-        }
-        actionsSlot={
-          <Button variant="primary" onClick={() => setDrawerOpen(true)}>
-            {t("add")}
-          </Button>
-        }
-      >
-        {error ? (
-          <EmptyState title={tLoading("failed")} description={t("empty")} />
-        ) : total === 0 ? (
-          <EmptyState
-            icon={<MapPin className="w-16 h-16" />}
-            title={t("empty")}
-            description={t("emptySubtitle")}
-            actionLabel={t("addFirst")}
-            onAction={() => setDrawerOpen(true)}
-          />
-        ) : (
-          <div className={THEME_CONSTANTS.grid.addressCards}>
-            {addresses!.map((addr) => (
-              <AddressCard
-                key={addr.id}
-                address={addr}
-                onEdit={() => setEditingAddress(addr)}
-                onDelete={() => setDeleteId(addr.id)}
-              />
-            ))}
+      <AppkitSellerAddressesView
+        labels={{ title: t("title") }}
+        isLoading={isLoading}
+        renderHeader={() => (
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Heading level={3}>{t("title")}</Heading>
+              {total > 0 && (
+                <Text variant="secondary" className="mt-1">
+                  {t("subtitleWithCount", { count: total })}
+                </Text>
+              )}
+            </div>
+            <Button variant="primary" onClick={() => setDrawerOpen(true)}>
+              {t("add")}
+            </Button>
           </div>
         )}
-      </ListingLayout>
+        renderAddressList={() =>
+          error ? (
+            <EmptyState title={tLoading("failed")} description={t("empty")} />
+          ) : total === 0 ? (
+            <EmptyState
+              icon={<MapPin className="w-16 h-16" />}
+              title={t("empty")}
+              description={t("emptySubtitle")}
+              actionLabel={t("addFirst")}
+              onAction={() => setDrawerOpen(true)}
+            />
+          ) : (
+            <div className={THEME_CONSTANTS.grid.addressCards}>
+              {addresses!.map((addr) => (
+                <AddressCard
+                  key={addr.id}
+                  address={addr}
+                  onEdit={() => setEditingAddress(addr)}
+                  onDelete={() => setDeleteId(addr.id)}
+                />
+              ))}
+            </div>
+          )
+        }
+      />
 
       {/* Create drawer */}
       <SideDrawer

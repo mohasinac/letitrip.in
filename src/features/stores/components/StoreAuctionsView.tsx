@@ -1,12 +1,13 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, Suspense } from "react";
 import { Gavel } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StoreAuctionsView as AppkitStoreAuctionsView } from "@mohasinac/appkit/features/stores";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   AuctionGrid,
+  Button,
   EmptyState,
   Search,
   SortDropdown,
@@ -35,7 +36,7 @@ interface StoreAuctionsViewProps {
   storeSlug: string;
 }
 
-export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
+function StoreAuctionsContent({ storeSlug }: StoreAuctionsViewProps) {
   const t = useTranslations("storePage");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -177,17 +178,25 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
           )}
           {user && selectedIds.length > 0 && (
             <div className="mt-4 flex justify-end">
-              <button
+              <Button
                 type="button"
                 onClick={handleBulkAddToWishlist}
                 className="px-4 py-2 rounded-lg bg-primary text-white text-sm"
               >
                 {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </button>
+              </Button>
             </div>
           )}
         </>
       )}
     />
+  );
+}
+
+export function StoreAuctionsView(props: StoreAuctionsViewProps) {
+  return (
+    <Suspense>
+      <StoreAuctionsContent {...props} />
+    </Suspense>
   );
 }

@@ -113,13 +113,8 @@ export type { UseUrlTableOptions } from "./useUrlTable";
 // Phase 10: Appkit gestures - import directly from @mohasinac/appkit/react
 // useLongPress, usePullToRefresh
 
-// Phase 37: Service layer — homepage hooks
-export { useFeaturedProducts } from "./useFeaturedProducts";
-export { useFeaturedAuctions } from "./useFeaturedAuctions";
-export { useFeaturedPreOrders } from "./useFeaturedPreOrders";
+// Phase 37: Service layer — homepage hooks now live in @mohasinac/appkit/features/homepage
 export { useHomepageReviews } from "./useHomepageReviews";
-export { useTopCategories } from "./useTopCategories";
-export { useTopBrands } from "./useTopBrands";
 export { useBrands } from "./useBrands";
 export { useSiteSettings } from "./useSiteSettings";
 export { useHomepageSections } from "./useHomepageSections";

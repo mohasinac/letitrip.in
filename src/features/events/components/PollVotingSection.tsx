@@ -110,17 +110,11 @@ export function PollVotingSection({
         {pollConfig.options.map((opt) => {
           const isChecked = selected.includes(opt.id);
           return (
-            <div
+            <Button
               key={opt.id}
-              role="button"
-              tabIndex={0}
+              variant="ghost"
               onClick={() => handleToggle(opt.id)}
-              onKeyDown={(e) =>
-                e.key === "Enter" || e.key === " "
-                  ? handleToggle(opt.id)
-                  : undefined
-              }
-              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+              className={`flex items-center gap-3 p-3 rounded-lg border justify-start ${
                 isChecked
                   ? "border-primary bg-primary/5 dark:bg-primary/10"
                   : `${themed.border} hover:border-zinc-300`
@@ -131,7 +125,7 @@ export function PollVotingSection({
                 onChange={() => handleToggle(opt.id)}
               />
               <Span className="text-sm">{opt.label}</Span>
-            </div>
+            </Button>
           );
         })}
       </div>

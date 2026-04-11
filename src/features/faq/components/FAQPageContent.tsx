@@ -1,4 +1,6 @@
-"use client";
+﻿"use client";
+
+import { Suspense } from "react";
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -27,9 +29,7 @@ interface FAQPageContentProps {
   initialCategory?: FAQCategoryKey | "all";
 }
 
-export function FAQPageContent({
-  initialCategory = "all",
-}: FAQPageContentProps) {
+function FAQPageInner({ initialCategory = "all" }: FAQPageContentProps) {
   const t = useTranslations("faq");
   const tLoading = useTranslations("loading");
   const router = useRouter();
@@ -116,5 +116,13 @@ export function FAQPageContent({
       )}
       renderAccordion={(faqs) => <FAQAccordion faqs={faqs as any} />}
     />
+  );
+}
+
+export function FAQPageContent(props: FAQPageContentProps) {
+  return (
+    <Suspense>
+      <FAQPageInner {...props} />
+    </Suspense>
   );
 }

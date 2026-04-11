@@ -1,18 +1,19 @@
 /**
- * AdminFeatureFlagsView
+ * AdminFeatureFlagsView — Thin Adapter
  *
  * Tier 2 — feature component.
  * Admin page to enable/disable platform features globally.
- * Manages featureFlags and payment method toggles via site-settings singleton.
+ * Uses appkit AdminFeatureFlagsView shell + letitrip business logic.
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { AdminFeatureFlagsView as AppkitAdminFeatureFlagsView } from "@mohasinac/appkit/features/admin";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { AdminPageHeader, Button, Card, Toggle, useToast } from "@/components";
+import { AdminPageHeader, Card, Toggle, useToast } from "@/components";
 import { useAdminFeatureFlags } from "../hooks/useAdminFeatureFlags";
 import type { SiteSettingsDocument } from "@/db/schema";
 import { FEATURE_FLAG_META } from "@/db/schema";
@@ -125,105 +126,99 @@ export function AdminFeatureFlagsView() {
 
   const isSaving = updateMutation.isPending;
 
-  if (isLoading) {
-    return (
-      <div className={`${spacing.stack} sm:space-y-6 w-full`}>
-        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <Card>
-          <div className="text-center py-8">{tLoading("default")}</div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className={`${spacing.stack} sm:space-y-6 w-full`}>
-      <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+    <AppkitAdminFeatureFlagsView
+      renderHeader={() => (
+        <AdminPageHeader
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={isSaving ? tLoading("saving") : tActions("save")}
+          onAction={handleSave}
+          actionDisabled={isSaving || isLoading}
+        />
+      )}
+      renderFlags={() => (
+        <div className={`${spacing.stack} sm:space-y-6`}>
+          {/* Platform Features */}
+          <Card className={enhancedCard.base}>
+            <div className={spacing.cardPadding}>
+              <Heading level={3} className={`${typography.cardTitle} mb-1`}>
+                {t("platformFeatures")}
+              </Heading>
+              <Text size="xs" variant="secondary" className="mb-4">
+                {t("platformFeaturesDesc")}
+              </Text>
 
-      {/* Platform Features */}
-      <Card className={enhancedCard.base}>
-        <div className={spacing.cardPadding}>
-          <Heading level={3} className={`${typography.cardTitle} mb-1`}>
-            {t("platformFeatures")}
-          </Heading>
-          <Text size="xs" variant="secondary" className="mb-4">
-            {t("platformFeaturesDesc")}
-          </Text>
+              <div>
+                {FEATURE_FLAG_META.filter((m) => m.category === "platform").map(
+                  (meta) => (
+                    <FlagRow
+                      key={meta.key}
+                      icon={meta.icon}
+                      label={t(meta.labelKey as Parameters<typeof t>[0])}
+                      description={t(meta.descKey as Parameters<typeof t>[0])}
+                      checked={
+                        featureFlags[meta.key] ??
+                        DEFAULT_FEATURE_FLAGS[meta.key]
+                      }
+                      onChange={(val) =>
+                        setFeatureFlags((prev) => ({
+                          ...prev,
+                          [meta.key]: val,
+                        }))
+                      }
+                    />
+                  ),
+                )}
+              </div>
+            </div>
+          </Card>
 
-          <div>
-            {FEATURE_FLAG_META.filter((m) => m.category === "platform").map(
-              (meta) => (
+          {/* Payment Methods */}
+          <Card className={enhancedCard.base}>
+            <div className={spacing.cardPadding}>
+              <Heading level={3} className={`${typography.cardTitle} mb-1`}>
+                {t("paymentMethods")}
+              </Heading>
+              <Text size="xs" variant="secondary" className="mb-4">
+                {t("paymentMethodsDesc")}
+              </Text>
+
+              <div>
                 <FlagRow
-                  key={meta.key}
-                  icon={meta.icon}
-                  label={t(meta.labelKey as Parameters<typeof t>[0])}
-                  description={t(meta.descKey as Parameters<typeof t>[0])}
-                  checked={
-                    featureFlags[meta.key] ?? DEFAULT_FEATURE_FLAGS[meta.key]
-                  }
+                  icon="💳"
+                  label={t("razorpay")}
+                  description={t("razorpayDesc")}
+                  checked={payment.razorpayEnabled}
                   onChange={(val) =>
-                    setFeatureFlags((prev) => ({ ...prev, [meta.key]: val }))
+                    setPayment((prev) => ({ ...prev, razorpayEnabled: val }))
                   }
                 />
-              ),
-            )}
-          </div>
+                <FlagRow
+                  icon="📲"
+                  label={t("upiManual")}
+                  description={t("upiManualDesc")}
+                  checked={payment.upiManualEnabled}
+                  onChange={(val) =>
+                    setPayment((prev) => ({ ...prev, upiManualEnabled: val }))
+                  }
+                />
+                <FlagRow
+                  icon="💵"
+                  label={t("cod")}
+                  description={t("codDesc")}
+                  checked={payment.codEnabled}
+                  onChange={(val) =>
+                    setPayment((prev) => ({ ...prev, codEnabled: val }))
+                  }
+                />
+              </div>
+            </div>
+          </Card>
         </div>
-      </Card>
-
-      {/* Payment Methods */}
-      <Card className={enhancedCard.base}>
-        <div className={spacing.cardPadding}>
-          <Heading level={3} className={`${typography.cardTitle} mb-1`}>
-            {t("paymentMethods")}
-          </Heading>
-          <Text size="xs" variant="secondary" className="mb-4">
-            {t("paymentMethodsDesc")}
-          </Text>
-
-          <div>
-            <FlagRow
-              icon="💳"
-              label={t("razorpay")}
-              description={t("razorpayDesc")}
-              checked={payment.razorpayEnabled}
-              onChange={(val) =>
-                setPayment((prev) => ({ ...prev, razorpayEnabled: val }))
-              }
-            />
-            <FlagRow
-              icon="📲"
-              label={t("upiManual")}
-              description={t("upiManualDesc")}
-              checked={payment.upiManualEnabled}
-              onChange={(val) =>
-                setPayment((prev) => ({ ...prev, upiManualEnabled: val }))
-              }
-            />
-            <FlagRow
-              icon="💵"
-              label={t("cod")}
-              description={t("codDesc")}
-              checked={payment.codEnabled}
-              onChange={(val) =>
-                setPayment((prev) => ({ ...prev, codEnabled: val }))
-              }
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Save Button */}
-      <div className="flex justify-start">
-        <Button
-          variant="primary"
-          onClick={handleSave}
-          disabled={isSaving}
-          className="min-w-[140px]"
-        >
-          {isSaving ? tLoading("saving") : tActions("save")}
-        </Button>
-      </div>
-    </div>
+      )}
+      isLoading={isLoading}
+      className={`${spacing.stack} sm:space-y-6 w-full`}
+    />
   );
 }

@@ -128,12 +128,12 @@ export function MediaImage({
         role="img"
         aria-label={alt}
       >
-        <span
+        <Span
           className="text-zinc-400 text-2xl leading-none"
           aria-hidden="true"
         >
           {icon}
-        </span>
+        </Span>
       </div>
     );
   }

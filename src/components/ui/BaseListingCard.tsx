@@ -1,7 +1,9 @@
 ﻿"use client";
 
 import type { ReactNode, MouseEvent } from "react";
+import { Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "@mohasinac/appkit/ui";
 
 const { dimensions } = THEME_CONSTANTS.card;
 
@@ -47,7 +49,7 @@ function BaseListingCardRoot({
   return (
     <div
       onClick={onClick}
-        className={`relative flex flex-col h-full rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}
+      className={`relative flex flex-col h-full rounded-xl border overflow-hidden transition-shadow ${dimensions.minW} ${dimensions.minH}
         ${isSelected ? "ring-2 ring-primary border-primary" : "border-gray-200 dark:border-gray-700"}
         ${isDisabled ? "opacity-60" : ""}
         ${onClick ? "cursor-pointer hover:shadow-md" : ""}
@@ -73,7 +75,7 @@ function BaseListingCardHero({
         : "aspect-[4/3]";
   return (
     <div
-        className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 ${aspectClass} ${dimensions.heroMinH} ${dimensions.heroMaxH} ${className}`}
+      className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 ${aspectClass} ${dimensions.heroMinH} ${dimensions.heroMaxH} ${className}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -86,7 +88,9 @@ function BaseListingCardInfo({
   className = "",
   children,
 }: BaseListingCardInfoProps) {
-  return <div className={`p-3 flex flex-col flex-1 ${className}`}>{children}</div>;
+  return (
+    <div className={`p-3 flex flex-col flex-1 ${className}`}>{children}</div>
+  );
 }
 
 function BaseListingCardCheckbox({
@@ -97,7 +101,7 @@ function BaseListingCardCheckbox({
   className = "",
 }: BaseListingCardCheckboxProps) {
   return (
-    <button
+    <Button
       type="button"
       aria-label={label ?? (selected ? "Deselect" : "Select")}
       onClick={onSelect}
@@ -105,8 +109,8 @@ function BaseListingCardCheckbox({
         ${selected ? "bg-primary border-primary" : "bg-white/90 border-gray-300"}
         ${className}`}
     >
-      {selected && <span className="text-white text-xs leading-none">✓</span>}
-    </button>
+      {selected && <Span className="text-white text-xs leading-none">✓</Span>}
+    </Button>
   );
 }
 

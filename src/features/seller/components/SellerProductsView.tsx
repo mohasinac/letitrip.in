@@ -12,6 +12,7 @@
 import { Suspense, useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
+import { SellerProductsView as AppkitSellerProductsView } from "@mohasinac/appkit/features/seller";
 import {
   Spinner,
   Button,
@@ -267,138 +268,166 @@ function SellerProductsContent() {
   ) : undefined;
 
   return (
-    <>
-      <ListingLayout
-        headerSlot={
-          <AdminPageHeader
-            title={t("title")}
-            subtitle={t("subtitle")}
-            actionLabel={t("addProduct")}
-            onAction={openCreate}
-          />
-        }
-        searchSlot={
-          <Search
-            value={table.get("q")}
-            onChange={(v) => table.set("q", v)}
-            placeholder={t("searchPlaceholder")}
-          />
-        }
-        sortSlot={
-          <SortDropdown
-            value={table.get("sort") || "-createdAt"}
-            onChange={(v) => table.setSort(v)}
-            options={SORT_OPTIONS}
-          />
-        }
-        filterContent={
-          <ProductFilters
-            table={pendingTable}
-            showStatus
-            categoryOptions={categoryOptions}
-          />
-        }
-        filterActiveCount={filterActiveCount}
-        onFilterApply={onFilterApply}
-        onFilterClear={onFilterClear}
-        activeFiltersSlot={activeFiltersSlot}
-        selectedCount={selectedIds.length}
-        onClearSelection={() => setSelectedIds([])}
-        bulkActionItems={[
-          {
-            id: "bulk-publish",
-            label: tActions("bulkPublish", { count: selectedIds.length }),
-            variant: "primary",
-            onClick: () => handleBulkStatusChange("published"),
-          },
-          {
-            id: "bulk-archive",
-            label: tActions("bulkArchive", { count: selectedIds.length }),
-            variant: "outline",
-            onClick: () => handleBulkStatusChange("archived"),
-          },
-          {
-            id: "bulk-delete",
-            label: tActions("bulkDelete", { count: selectedIds.length }),
-            variant: "danger",
-            onClick: handleBulkDelete,
-          },
-        ]}
-      >
-        {!isLoading && products.length === 0 ? (
-          <EmptyState
-            icon={<Store className="w-16 h-16" />}
-            title={t("noProducts")}
-            description={t("noProductsSubtitle")}
-            actionLabel={t("addProduct")}
-            onAction={openCreate}
-          />
-        ) : (
-          <DataTable<AdminProduct>
-            data={products}
-            columns={columns}
-            keyExtractor={(p) => p.id}
-            loading={isLoading}
-            actions={actions}
-            selectable
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            emptyTitle={t("noProducts")}
-            emptyMessage={t("noProductsSubtitle")}
-            externalPagination
-            showViewToggle
-            viewMode={
-              (table.get("view") || "table") as "table" | "grid" | "list"
-            }
-            onViewModeChange={(mode) => table.set("view", mode)}
-            mobileCardRender={(product) => (
-              <SellerProductCard
-                product={product}
-                onEdit={openEdit}
-                onDelete={setDeleteTarget}
-              />
-            )}
-          />
-        )}
-      </ListingLayout>
-
-      <SideDrawer
-        isOpen={drawerMode !== null}
-        onClose={closeDrawer}
-        title={drawerMode === "create" ? t("createProduct") : t("editProduct")}
-        mode={drawerMode ?? "view"}
-        isDirty={isFormDirty}
-        footer={
-          <div className="flex gap-3 justify-start">
-            <Button variant="outline" onClick={closeDrawer}>
-              {tActions("cancel")}
-            </Button>
-            <Button variant="primary" onClick={handleSave} isLoading={isSaving}>
-              {tActions("save")}
-            </Button>
-          </div>
-        }
-      >
-        <ProductForm
-          product={formProduct}
-          onChange={(updated) => {
-            setFormProduct(updated);
-            setIsFormDirty(true);
-          }}
-        />
-      </SideDrawer>
-
-      {deleteTarget && (
-        <ConfirmDeleteModal
-          isOpen={!!deleteTarget}
-          onClose={() => setDeleteTarget(null)}
-          onConfirm={handleDeleteConfirm}
-          title={t("deleteProduct")}
-          message={t("deleteListingConfirm")}
-          isDeleting={deleteMutation.isPending}
+    <AppkitSellerProductsView
+      labels={{
+        title: t("title"),
+        addButton: t("addProduct"),
+        emptyText: t("noProducts"),
+      }}
+      total={totalItems}
+      isLoading={isLoading}
+      renderTable={(_selected, _onSelectionChange, loading) => (
+        <ListingLayout
+          headerSlot={
+            <AdminPageHeader
+              title={t("title")}
+              subtitle={t("subtitle")}
+              actionLabel={t("addProduct")}
+              onAction={openCreate}
+            />
+          }
+          searchSlot={
+            <Search
+              value={table.get("q")}
+              onChange={(v) => table.set("q", v)}
+              placeholder={t("searchPlaceholder")}
+            />
+          }
+          sortSlot={
+            <SortDropdown
+              value={table.get("sort") || "-createdAt"}
+              onChange={(v) => table.setSort(v)}
+              options={SORT_OPTIONS}
+            />
+          }
+          filterContent={
+            <ProductFilters
+              table={pendingTable}
+              showStatus
+              categoryOptions={categoryOptions}
+            />
+          }
+          filterActiveCount={filterActiveCount}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
+          activeFiltersSlot={activeFiltersSlot}
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActionItems={[
+            {
+              id: "bulk-publish",
+              label: tActions("bulkPublish", { count: selectedIds.length }),
+              variant: "primary",
+              onClick: () => handleBulkStatusChange("published"),
+            },
+            {
+              id: "bulk-archive",
+              label: tActions("bulkArchive", { count: selectedIds.length }),
+              variant: "outline",
+              onClick: () => handleBulkStatusChange("archived"),
+            },
+            {
+              id: "bulk-delete",
+              label: tActions("bulkDelete", { count: selectedIds.length }),
+              variant: "danger",
+              onClick: handleBulkDelete,
+            },
+          ]}
+        >
+          {!loading && products.length === 0 ? (
+            <EmptyState
+              icon={<Store className="w-16 h-16" />}
+              title={t("noProducts")}
+              description={t("noProductsSubtitle")}
+              actionLabel={t("addProduct")}
+              onAction={openCreate}
+            />
+          ) : (
+            <DataTable<AdminProduct>
+              data={products}
+              columns={columns}
+              keyExtractor={(p) => p.id}
+              loading={loading}
+              actions={actions}
+              selectable
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              emptyTitle={t("noProducts")}
+              emptyMessage={t("noProductsSubtitle")}
+              externalPagination
+              showViewToggle
+              viewMode={
+                (table.get("view") || "table") as "table" | "grid" | "list"
+              }
+              onViewModeChange={(mode) => table.set("view", mode)}
+              mobileCardRender={(product) => (
+                <SellerProductCard
+                  product={product}
+                  onEdit={openEdit}
+                  onDelete={setDeleteTarget}
+                />
+              )}
+            />
+          )}
+        </ListingLayout>
+      )}
+      renderPagination={() => (
+        <TablePagination
+          currentPage={page}
+          pageSize={table.getNumber("pageSize", 25)}
+          total={totalItems}
+          totalPages={totalPages}
+          onPageChange={(nextPage) => table.setPage(nextPage)}
+          onPageSizeChange={(size) => table.set("pageSize", String(size))}
         />
       )}
-    </>
+      renderModal={() => (
+        <>
+          <SideDrawer
+            isOpen={drawerMode !== null}
+            onClose={closeDrawer}
+            title={
+              drawerMode === "create" ? t("createProduct") : t("editProduct")
+            }
+            mode={drawerMode ?? "view"}
+            isDirty={isFormDirty}
+            footer={
+              <div className="flex gap-3 justify-start">
+                <Button variant="outline" onClick={closeDrawer}>
+                  {tActions("cancel")}
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleSave}
+                  isLoading={isSaving}
+                >
+                  {tActions("save")}
+                </Button>
+              </div>
+            }
+          >
+            <ProductForm
+              product={formProduct}
+              onChange={(updated) => {
+                setFormProduct(updated);
+                setIsFormDirty(true);
+              }}
+            />
+          </SideDrawer>
+
+          {deleteTarget && (
+            <ConfirmDeleteModal
+              isOpen={!!deleteTarget}
+              onClose={() => setDeleteTarget(null)}
+              onConfirm={handleDeleteConfirm}
+              title={t("deleteProduct")}
+              message={t("deleteListingConfirm")}
+              isDeleting={deleteMutation.isPending}
+            />
+          )}
+        </>
+      )}
+    />
   );
 }
 

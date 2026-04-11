@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
 import { Text } from "@mohasinac/appkit/ui";
+import { AdminNavigationView as AppkitAdminNavigationView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Button,
@@ -53,67 +53,80 @@ export function AdminNavigationView() {
 
   if (isLoading) {
     return (
-      <div className={`${THEME_CONSTANTS.spacing.stack} w-full`}>
-        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <Card>
-          <div className="text-center py-10">{tLoading("default")}</div>
-        </Card>
-      </div>
+      <AppkitAdminNavigationView
+        renderHeader={() => (
+          <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+        )}
+        isLoading
+        renderTable={() => (
+          <Card>
+            <div className="text-center py-10">{tLoading("default")}</div>
+          </Card>
+        )}
+      />
     );
   }
 
   if (error) {
     return (
-      <div className={`${THEME_CONSTANTS.spacing.stack} w-full`}>
-        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <Card>
-          <div className="text-center py-10">
-            <Text className="text-red-600 mb-4">{error.message}</Text>
-            <Button variant="outline" onClick={() => refetch()}>
-              {tActions("retry")}
-            </Button>
-          </div>
-        </Card>
-      </div>
+      <AppkitAdminNavigationView
+        renderHeader={() => (
+          <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+        )}
+        renderTable={() => (
+          <Card>
+            <div className="text-center py-10">
+              <Text className="text-red-600 mb-4">{error.message}</Text>
+              <Button variant="outline" onClick={() => refetch()}>
+                {tActions("retry")}
+              </Button>
+            </div>
+          </Card>
+        )}
+      />
     );
   }
 
   return (
-    <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actionLabel={isSaving ? tLoading("saving") : tActions("save")}
-        onAction={handleSave}
-        actionDisabled={isSaving}
-      />
+    <AppkitAdminNavigationView
+      renderHeader={() => (
+        <AdminPageHeader
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={isSaving ? tLoading("saving") : tActions("save")}
+          onAction={handleSave}
+          actionDisabled={isSaving}
+        />
+      )}
+      renderTable={() => (
+        <Tabs defaultValue="navbar">
+          <TabsList>
+            <TabsTrigger value="navbar">{t("navbarTab")}</TabsTrigger>
+            <TabsTrigger value="footer">{t("footerTab")}</TabsTrigger>
+          </TabsList>
 
-      <Tabs defaultValue="navbar">
-        <TabsList>
-          <TabsTrigger value="navbar">{t("navbarTab")}</TabsTrigger>
-          <TabsTrigger value="footer">{t("footerTab")}</TabsTrigger>
-        </TabsList>
+          <TabsContent value="navbar">
+            <NavbarConfigForm settings={settings} onChange={setSettings} />
+          </TabsContent>
 
-        <TabsContent value="navbar">
-          <NavbarConfigForm settings={settings} onChange={setSettings} />
-        </TabsContent>
-
-        <TabsContent value="footer">
-          <FooterConfigForm settings={settings} onChange={setSettings} />
-        </TabsContent>
-      </Tabs>
-
-      {/* Mobile floating save */}
-      <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">
-        <Button
-          onClick={handleSave}
-          disabled={isSaving}
-          variant="primary"
-          className="shadow-xl"
-        >
-          {isSaving ? tLoading("saving") : `💾 ${tActions("save")}`}
-        </Button>
-      </div>
-    </div>
+          <TabsContent value="footer">
+            <FooterConfigForm settings={settings} onChange={setSettings} />
+          </TabsContent>
+        </Tabs>
+      )}
+      renderDrawer={() => (
+        /* Mobile floating save */
+        <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            variant="primary"
+            className="shadow-xl"
+          >
+            {isSaving ? tLoading("saving") : `💾 ${tActions("save")}`}
+          </Button>
+        </div>
+      )}
+    />
   );
 }

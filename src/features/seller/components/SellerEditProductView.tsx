@@ -26,6 +26,7 @@ import {
   ERROR_MESSAGES,
 } from "@/constants";
 import { useTranslations } from "next-intl";
+import { SellerEditProductView as AppkitSellerEditProductView } from "@mohasinac/appkit/features/seller";
 import { useUpdateSellerProduct } from "../hooks/useSellerProducts";
 import { useSellerProductDetail } from "../hooks/useSellerProductDetail";
 
@@ -164,40 +165,48 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
   }
 
   return (
-    <div className={spacing.stack}>
-      <AdminPageHeader
-        title={t("editListingTitle")}
-        subtitle={formData?.title}
-        actionLabel={tActions("back")}
-        onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
-      />
+    <AppkitSellerEditProductView
+      isLoading={isSubmitting}
+      className={spacing.stack}
+      renderForm={() => (
+        <>
+          <AdminPageHeader
+            title={t("editListingTitle")}
+            subtitle={formData?.title}
+            actionLabel={tActions("back")}
+            onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
+          />
 
-      <Card className="p-6">
-        {error && (
-          <Alert variant="error" className="mb-4">
-            {error}
-          </Alert>
-        )}
+          <Card className="p-6">
+            {error && (
+              <Alert variant="error" className="mb-4">
+                {error}
+              </Alert>
+            )}
 
-        {formData && <ProductForm product={formData} onChange={setFormData} />}
+            {formData && (
+              <ProductForm product={formData} onChange={setFormData} />
+            )}
 
-        <div className="mt-6 flex gap-3 justify-start">
-          <Button
-            variant="outline"
-            onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
-            disabled={isSubmitting}
-          >
-            {tActions("cancel")}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            disabled={isSubmitting || !formData}
-          >
-            {isSubmitting ? t("saving") : t("saveListing")}
-          </Button>
-        </div>
-      </Card>
-    </div>
+            <div className="mt-6 flex gap-3 justify-start">
+              <Button
+                variant="outline"
+                onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
+                disabled={isSubmitting}
+              >
+                {tActions("cancel")}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !formData}
+              >
+                {isSubmitting ? t("saving") : t("saveListing")}
+              </Button>
+            </div>
+          </Card>
+        </>
+      )}
+    />
   );
 }

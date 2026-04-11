@@ -1,10 +1,12 @@
+"use client";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import { AboutView as AppkitAboutView } from "@mohasinac/appkit/features/about";
 import { TextLink } from "@/components";
 
-export async function AboutView() {
-  const t = await getTranslations("about");
+export function AboutView() {
+  const t = useTranslations("about");
 
   return (
     <AppkitAboutView

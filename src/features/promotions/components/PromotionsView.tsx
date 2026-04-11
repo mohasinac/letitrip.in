@@ -1,5 +1,7 @@
+"use client";
+
 import { THEME_CONSTANTS } from "@/constants";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import {
   PromotionsView as AppkitPromotionsView,
   PromotionsViewProductSection,
@@ -15,12 +17,12 @@ interface PromotionsViewProps {
   activeCoupons: CouponDocument[];
 }
 
-export async function PromotionsView({
+export function PromotionsView({
   promotedProducts,
   featuredProducts,
   activeCoupons,
 }: PromotionsViewProps) {
-  const t = await getTranslations("promotions");
+  const t = useTranslations("promotions");
 
   const hasContent =
     promotedProducts.length > 0 ||

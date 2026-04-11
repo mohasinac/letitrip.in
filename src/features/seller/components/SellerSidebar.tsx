@@ -91,9 +91,15 @@ interface SidebarContentProps {
   pathname: string;
   t: (key: string) => string;
   tNav: (key: string) => string;
+  onNavClick?: () => void;
 }
 
-function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
+function SidebarContent({
+  pathname,
+  t,
+  tNav,
+  onNavClick,
+}: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo row */}
@@ -130,6 +136,7 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onNavClick}
                   className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors mb-0.5 ${
                     isActive
                       ? "bg-cobalt-500/10 text-cobalt-600 dark:text-cobalt-400"
@@ -154,18 +161,20 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
 interface SellerSidebarProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
+  desktopOpen?: boolean;
 }
 
 /**
  * SellerSidebar
  *
  * Fixed left-sidebar for the seller portal.
- * Desktop: always visible w-56, light/dark bg.
+ * Desktop: collapsible via `desktopOpen` prop (controlled by SellerLayout).
  * Mobile: slide-in Drawer triggered from the seller layout header.
  */
 export function SellerSidebar({
   mobileOpen,
   onMobileClose,
+  desktopOpen = true,
 }: SellerSidebarProps) {
   const pathname = usePathname();
   const t = useTranslations("sellerNav");
@@ -174,7 +183,11 @@ export function SellerSidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <Aside className="hidden md:flex w-56 bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-slate-800">
+      <Aside
+        className={`${
+          desktopOpen ? "hidden md:flex w-56" : "hidden"
+        } bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-slate-800`}
+      >
         <SidebarContent pathname={pathname} t={t} tNav={tNav} />
       </Aside>
 
@@ -186,7 +199,12 @@ export function SellerSidebar({
         size="sm"
         title="Seller Navigation"
       >
-        <SidebarContent pathname={pathname} t={t} tNav={tNav} />
+        <SidebarContent
+          pathname={pathname}
+          t={t}
+          tNav={tNav}
+          onNavClick={onMobileClose}
+        />
       </Drawer>
     </>
   );

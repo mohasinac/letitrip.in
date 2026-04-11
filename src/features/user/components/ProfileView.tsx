@@ -1,75 +1,58 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
-import { useAuth, useProfileStats } from "@/hooks";
-import { Button, Spinner } from "@/components";
-import { Heading } from "@mohasinac/appkit/ui";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useAuth, useProfileStats } from "@/hooks";
+import { Button, Spinner } from "@/components";
+import { ProfileView as AppkitProfileView } from "@mohasinac/appkit/features/account";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileStatsGrid } from "./ProfileStatsGrid";
 
 export function ProfileView() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const tProfile = useTranslations("profile");
+  const t = useTranslations("profile");
   const tLoading = useTranslations("loading");
   const tActions = useTranslations("actions");
-
   const { orderCount, addressCount } = useProfileStats(!!user);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push(ROUTES.AUTH.LOGIN);
-    }
+    if (!loading && !user) router.push(ROUTES.AUTH.LOGIN);
   }, [user, loading, router]);
-
-  const { spacing, flex } = THEME_CONSTANTS;
 
   if (loading) {
     return (
-      <div className={`${flex.center} min-h-screen`}>
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
+  if (!user) return null;
 
-  if (!user) {
-    return null;
-  }
-
-  const stats = {
-    orders: orderCount,
-    wishlist: 0,
-    addresses: addressCount,
-  };
+  const stats = { orders: orderCount, wishlist: 0, addresses: addressCount };
 
   return (
-    <div className={spacing.stack}>
-      {/* Header with Edit Button */}
-      <div className={flex.between}>
-        <Heading level={3}>{tProfile("myProfile")}</Heading>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => router.push(ROUTES.USER.SETTINGS)}
-          className="shadow-md hover:shadow-lg transition-shadow"
-        >
-          {tActions("editProfile")}
-        </Button>
-      </div>
-
-      {/* Profile Hero Section */}
-      <ProfileHeader
-        photoURL={user.photoURL || undefined}
-        displayName={user.displayName || user.email || "User"}
-        email={user.email || ""}
-        role={user.role || "user"}
-      />
-
-      {/* Stats Grid */}
-      <ProfileStatsGrid stats={stats} />
-    </div>
+    <AppkitProfileView
+      renderHeader={() => (
+        <div className={THEME_CONSTANTS.flex.between}>
+          <ProfileHeader
+            photoURL={user.photoURL || undefined}
+            displayName={user.displayName || user.email || "User"}
+            email={user.email || ""}
+            role={user.role || "user"}
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => router.push(ROUTES.USER.SETTINGS)}
+          >
+            {tActions("editProfile")}
+          </Button>
+        </div>
+      )}
+      renderStats={() => <ProfileStatsGrid stats={stats} />}
+    />
   );
 }

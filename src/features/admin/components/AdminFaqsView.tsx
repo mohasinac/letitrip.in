@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminFaqsView
  *
  * Contains all FAQ management state, mutations, handlers, and JSX.
@@ -7,7 +7,14 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  Suspense,
+} from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
@@ -26,12 +33,12 @@ import {
   DataTable,
   DrawerFormFooter,
   FormField,
-  ListingLayout,
   Search,
   SideDrawer,
   StatusBadge,
   TablePagination,
 } from "@/components";
+import { AdminFaqsView as AdminFaqsShell } from "@mohasinac/appkit/features/admin";
 import { FaqFilters } from "./FaqFilters";
 import { FaqForm, getFaqTableColumns } from ".";
 import type { FAQ, FaqDrawerMode } from ".";
@@ -48,7 +55,7 @@ interface AdminFaqsViewProps {
   action?: string[];
 }
 
-export function AdminFaqsView({ action }: AdminFaqsViewProps) {
+function AdminFaqsContent({ action }: AdminFaqsViewProps) {
   const router = useRouter();
   const { showError, showSuccess } = useMessage();
   const t = useTranslations("adminFaqs");
@@ -295,7 +302,8 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
           onAction={handleCreate}
         />
 
-        <ListingLayout
+        <AdminFaqsShell
+          isDashboard
           searchSlot={
             <Search
               value={searchTerm}
@@ -318,6 +326,25 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                 compact
               />
             ) : undefined
+          }
+          renderDrawer={() =>
+            editingFAQ ? (
+              <SideDrawer
+                isOpen={isDrawerOpen}
+                onClose={handleCloseDrawer}
+                title={drawerTitle}
+                mode={drawerMode || "view"}
+                isDirty={isDirty}
+                footer={drawerFooter}
+                side="right"
+              >
+                <FaqForm
+                  faq={editingFAQ}
+                  onChange={setEditingFAQ}
+                  isReadonly={isReadonly}
+                />
+              </SideDrawer>
+            ) : null
           }
         >
           {isLoading ? (
@@ -370,26 +397,16 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               )}
             />
           )}
-        </ListingLayout>
+        </AdminFaqsShell>
       </div>
-
-      {editingFAQ && (
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleCloseDrawer}
-          title={drawerTitle}
-          mode={drawerMode || "view"}
-          isDirty={isDirty}
-          footer={drawerFooter}
-          side="right"
-        >
-          <FaqForm
-            faq={editingFAQ}
-            onChange={setEditingFAQ}
-            isReadonly={isReadonly}
-          />
-        </SideDrawer>
-      )}
     </>
+  );
+}
+
+export function AdminFaqsView(props: AdminFaqsViewProps) {
+  return (
+    <Suspense>
+      <AdminFaqsContent {...props} />
+    </Suspense>
   );
 }

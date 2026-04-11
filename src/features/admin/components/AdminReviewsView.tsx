@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminReviewsView
  *
  * Contains all review management state, mutations, handlers, and JSX.
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useRouter } from "@/i18n/navigation";
@@ -27,12 +27,12 @@ import {
   AdminPageHeader,
   StatusBadge,
   TablePagination,
-  ListingLayout,
   REVIEW_SORT_OPTIONS,
   ReviewFilters,
   Search,
   SortDropdown,
 } from "@/components";
+import { AdminReviewsView as AdminReviewsShell } from "@mohasinac/appkit/features/admin";
 import { useToast } from "@/components";
 import { SideDrawer, ConfirmDeleteModal, Textarea } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
@@ -42,7 +42,7 @@ interface AdminReviewsViewProps {
   action?: string[];
 }
 
-export function AdminReviewsView({ action }: AdminReviewsViewProps) {
+function AdminReviewsContent({ action }: AdminReviewsViewProps) {
   const router = useRouter();
   const t = useTranslations("adminReviews");
   const tActions = useTranslations("actions");
@@ -242,21 +242,23 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     [t],
   );
 
-  if (selectedReview) {
-    return (
-      <ReviewDetailView
-        review={selectedReview}
-        onBack={handleBackToList}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        onDelete={handleDelete}
-      />
-    );
-  }
-
   return (
     <>
-      <ListingLayout
+      <AdminReviewsShell
+        isDashboard
+        renderDetailView={
+          selectedReview
+            ? () => (
+                <ReviewDetailView
+                  review={selectedReview}
+                  onBack={handleBackToList}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  onDelete={handleDelete}
+                />
+              )
+            : undefined
+        }
         headerSlot={
           <AdminPageHeader
             title={t("title")}
@@ -310,6 +312,67 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             </Card>
           ) : undefined
         }
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={rejectModal.open}
+            onClose={() =>
+              setRejectModal({ open: false, review: null, reason: "" })
+            }
+            title={t("rejectionReason")}
+            mode="edit"
+          >
+            <div className={THEME_CONSTANTS.spacing.stack}>
+              <Textarea
+                rows={4}
+                value={rejectModal.reason}
+                onChange={(e) =>
+                  setRejectModal((prev) => ({
+                    ...prev,
+                    reason: e.target.value,
+                  }))
+                }
+                placeholder="Enter rejection reason..."
+              />
+              <div className="flex gap-3 justify-start">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setRejectModal({ open: false, review: null, reason: "" })
+                  }
+                >
+                  {tActions("cancel")}
+                </Button>
+                <Button variant="danger" onClick={confirmReject}>
+                  {tActions("confirm")}
+                </Button>
+              </div>
+            </div>
+          </SideDrawer>
+        )}
+        renderConfirmModal={() => (
+          <>
+            <ConfirmDeleteModal
+              isOpen={!!deleteConfirm}
+              onConfirm={confirmDelete}
+              onClose={() => setDeleteConfirm(null)}
+              title={tActions("delete")}
+              message={
+                deleteConfirm
+                  ? `${tActions("delete")} - ${deleteConfirm.userName}?`
+                  : ""
+              }
+            />
+
+            <ConfirmDeleteModal
+              isOpen={bulkApproveConfirm}
+              onConfirm={confirmBulkApprove}
+              onClose={() => setBulkApproveConfirm(false)}
+              title={t("approveAll")}
+              message={`${t("approveAll")} (${pendingCount})?`}
+              confirmText={tActions("confirm")}
+            />
+          </>
+        )}
       >
         <DataTable
           data={reviews}
@@ -351,64 +414,15 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {/* Reject drawer */}
-      <SideDrawer
-        isOpen={rejectModal.open}
-        onClose={() =>
-          setRejectModal({ open: false, review: null, reason: "" })
-        }
-        title={t("rejectionReason")}
-        mode="edit"
-      >
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          <Textarea
-            rows={4}
-            value={rejectModal.reason}
-            onChange={(e) =>
-              setRejectModal((prev) => ({ ...prev, reason: e.target.value }))
-            }
-            placeholder="Enter rejection reason..."
-          />
-          <div className="flex gap-3 justify-start">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setRejectModal({ open: false, review: null, reason: "" })
-              }
-            >
-              {tActions("cancel")}
-            </Button>
-            <Button variant="danger" onClick={confirmReject}>
-              {tActions("confirm")}
-            </Button>
-          </div>
-        </div>
-      </SideDrawer>
-
-      {/* Delete confirmation */}
-      <ConfirmDeleteModal
-        isOpen={!!deleteConfirm}
-        onConfirm={confirmDelete}
-        onClose={() => setDeleteConfirm(null)}
-        title={tActions("delete")}
-        message={
-          deleteConfirm
-            ? `${tActions("delete")} - ${deleteConfirm.userName}?`
-            : ""
-        }
-      />
-
-      {/* Bulk approve confirmation */}
-      <ConfirmDeleteModal
-        isOpen={bulkApproveConfirm}
-        onConfirm={confirmBulkApprove}
-        onClose={() => setBulkApproveConfirm(false)}
-        title={t("approveAll")}
-        message={`${t("approveAll")} (${pendingCount})?`}
-        confirmText={tActions("confirm")}
-      />
+      </AdminReviewsShell>
     </>
+  );
+}
+
+export function AdminReviewsView(props: AdminReviewsViewProps) {
+  return (
+    <Suspense>
+      <AdminReviewsContent {...props} />
+    </Suspense>
   );
 }

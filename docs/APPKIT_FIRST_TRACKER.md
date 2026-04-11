@@ -6,8 +6,6 @@
 > Last updated: 2026-04-11
 > Status: active
 
-> Tracker reset: active queue restarted at Task 1 (Admin shells).
-
 ---
 
 ## Non-Negotiable Contract
@@ -94,7 +92,7 @@ For every remaining local feature, apply this order:
 6. Delete superseded local implementation code.
 7. Run `npx tsc --noEmit` in letitrip.in.
 
-Do not start from letitrip-first implementation and “extract later” unless a blocker makes that unavoidable.
+Do not start from letitrip-first implementation and "extract later" unless a blocker makes that unavoidable.
 
 ### Pre-Extraction Coverage Gate (Mandatory)
 
@@ -123,70 +121,9 @@ Use this template for each new gap entry:
 
 | Gap                          | Needed change                                                                                                  |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `<domain + missing surface>` | `<required appkit API/extension point> · blocked in <letitrip file path> · status: open/in-progress/resolved>` |
+| `<domain + missing surface>` | `<required appkit API/extension point> - blocked in <letitrip file path> - status: open/in-progress/resolved>` |
 
 If no package publish is needed for a batch, explicitly state that in tracker updates.
-
----
-
-## Status Snapshot
-
-### Queue Reset (Current)
-
-| Task                                                         | Status |
-| ------------------------------------------------------------ | ------ |
-| 1. Admin shells in appkit                                    | active |
-| 2. Seller and user account shells in appkit                  | queued |
-| 3. Product, cart, checkout, and events shells in appkit      | queued |
-| 4. Homepage sections in appkit                               | queued |
-| 5. Export and release package updates                        | queued |
-| 6. Replace remaining letitrip local views with thin adapters | queued |
-
-### Already shifted toward appkit-first
-
-| Domain                                  | Status                                                                  |
-| --------------------------------------- | ----------------------------------------------------------------------- |
-| Auth UI fragments                       | partial migration complete                                              |
-| Blog tabs and listing wrappers          | partial migration complete                                              |
-| Events status badge and read wrappers   | partial migration complete                                              |
-| Product feature badges and read hooks   | partial migration complete                                              |
-| Store header and store grid shell usage | partial migration complete                                              |
-| Wishlist page shell                     | migrated to appkit shell, but selection API still needs package support |
-| Shared UI primitives                    | large extraction wave already completed into `@mohasinac/ui`            |
-
-### Still needs new appkit shells first
-
-| Domain              | Required work                                                                                                                                                               |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Admin               | dashboard stats extraction complete; user-table columns now partially package-backed; remaining dashboard, table, detail, and moderation shells still need package coverage |
-| Seller              | addresses view now reuses shared package-backed AddressCard adapter; remaining seller list/detail/form shells still need package coverage                                   |
-| User account        | address card extraction started (package-backed adapter); remaining orders, addresses flow shells, notifications, RC, and profile shells still need package coverage        |
-| Products            | build remaining product detail and admin/editor shells in appkit                                                                                                            |
-| Cart and checkout   | build appkit-first shells around local mutation constraints                                                                                                                 |
-| Events and homepage | build section-level shells and configurable blocks in appkit                                                                                                                |
-
----
-
-## Known Gaps To Close In Appkit
-
-These are concrete package gaps currently preventing a fully clean appkit-first state:
-
-| Gap                              | Needed change                                                                                                                                                                          |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Wishlist bulk selection          | appkit wishlist shell needs selected IDs and bulk action extension points                                                                                                              |
-| Admin data views                 | reusable appkit admin list/detail shells with slots and toolbar hooks                                                                                                                  |
-| Admin dashboard shell export gap | add and publish `AdminDashboardView` and `QuickActionsPanel` exports in appkit admin surface · blocked in `src/features/admin/components/AdminDashboardView.tsx` · status: in-progress |
-| Seller workspace views           | reusable seller dashboard and CRUD list shells                                                                                                                                         |
-| User portal shells               | reusable account navigation and content section shells                                                                                                                                 |
-| Product editor/detail sections   | reusable detail and authoring view sections                                                                                                                                            |
-| Homepage blocks                  | appkit sections for hero, carousel, promos, collections, and merch blocks                                                                                                              |
-
-Rule for updates: every newly encountered missing-coverage blocker must be added to this table before ending the batch.
-
-### Package release note
-
-- Package publish/update is required for this batch because the installed `@mohasinac/appkit@2.0.3` does not expose newly added admin surfaces needed by Task 1.
-- Coverage has been added and build-verified in appkit source; letitrip extraction must wait for a released version that exports `AdminDashboardView` and `QuickActionsPanel`.
 
 ---
 
@@ -204,14 +141,69 @@ A domain is considered migrated only when all of the following are true:
 
 ## Execution Order
 
-Use this order for ongoing work unless a blocker forces a change:
+1. [x] Admin shells in appkit.
+2. [x] Seller and user account shells in appkit.
+3. [x] Product, cart, checkout, and events shells in appkit.
+4. [x] Homepage sections in appkit.
+5. [x] Export and release package updates.
+6. [ ] Replace remaining letitrip local views with thin adapters.
 
-1. Admin shells in appkit.
-2. Seller and user account shells in appkit.
-3. Product, cart, checkout, and events shells in appkit.
-4. Homepage sections in appkit.
-5. Export and release package updates.
-6. Replace remaining letitrip local views with thin adapters.
+---
+
+## Active Queue
+
+### Task 6 - Replace remaining local views with thin adapters
+
+#### Admin
+
+- Completed in this batch: `AdminCarouselView`, `AdminCategoriesView`, `AdminSectionsView`, `AdminMediaView`, `AdminNavigationView` now consume appkit admin shells.
+- No remaining admin adapter items in this queue.
+
+#### Seller (6 deferred)
+
+| File                      | Status                                        |
+| ------------------------- | --------------------------------------------- |
+| `SellerCreateProductView` | migrated - now thin adapter over appkit shell |
+| `SellerEditProductView`   | migrated - now thin adapter over appkit shell |
+| `SellerStoreSetupView`    | migrated - now thin adapter over appkit shell |
+| `SellerStorefrontView`    | migrated - now thin adapter over appkit shell |
+| `SellerStoreView`         | migrated - now thin adapter over appkit shell |
+| `SellerGuideView`         | migrated - now thin adapter over appkit shell |
+| `PayoutHistoryTable`      | deferred - sub-component, no appkit shell     |
+| `PayoutStats`             | deferred - sub-component, no appkit shell     |
+| `ChatWindow`              | deferred - realtime chat, stays local         |
+| `ChatList`                | deferred - realtime chat, stays local         |
+
+#### Products / Cart / Checkout (2 deferred)
+
+| File                                                                                 | Status   | Blocker                                                                                                          |
+| ------------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `products/components/PreOrderDetailView.tsx`                                         | deferred | Razorpay deposit flow; stays local until payment provider abstracted                                             |
+| `cart/components/CartView.tsx`                                                       | migrated | now thin adapter over appkit CartView shell for authenticated flow; guest cart row logic remains local by design |
+| Full checkout flow (`CheckoutView`, `CheckoutAddressStep`, `CheckoutOtpModal`, etc.) | deferred | Firebase OTP + Razorpay payment inline; stays local until provider contracts exist                               |
+
+---
+
+## Known Gaps To Close In Appkit
+
+These are concrete package gaps currently preventing a fully clean appkit-first state:
+
+| Gap                              | Needed change                                                                                                                                                                                                    |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wishlist bulk selection          | appkit wishlist shell needs selected IDs and bulk action extension points - blocked in `src/features/wishlist/` - status: open                                                                                   |
+| Product editor/detail sections   | `SellerCreateProductView` and `SellerEditProductView` now adopted as thin adapters; reusable deeper form sections still local and can be extracted incrementally - status: in-progress                           |
+| Seller storefront/profile shells | `SellerStoreView`, `SellerGuideView`, and `SellerStorefrontView` now covered and adopted in letitrip - status: resolved                                                                                          |
+| EventStatsBanner                 | used in `AdminEventEntriesView`; not yet in appkit - status: open                                                                                                                                                |
+| CartView guest cart              | authenticated CartView shell now adopted; guest `GuestCartItemRow` pattern remains intentionally local until guest cart abstractions are added - blocked in `cart/components/CartView.tsx` - status: in-progress |
+| PreOrderDetailView payment       | Razorpay deposit flow blocks adapter migration - blocked in `products/components/PreOrderDetailView.tsx` - status: open (deferred until payment provider contracts exist)                                        |
+
+### Task 5 completion (record)
+
+- Released `@mohasinac/appkit@2.0.5` to npm.
+- Updated letitrip dependency to `@mohasinac/appkit@^2.0.5`.
+- `npx tsc --noEmit` passes in letitrip after upgrade.
+
+Rule for updates: every newly encountered missing-coverage blocker must be added to this table before ending the batch.
 
 ---
 
@@ -219,7 +211,7 @@ Use this order for ongoing work unless a blocker forces a change:
 
 When continuing this migration, assume the following without re-asking:
 
-1. The target is not “clean enough”; the target is appkit-first by default.
+1. The target is not "clean enough"; the target is appkit-first by default.
 2. Extensibility must come from appkit APIs, not from local forks.
 3. If an appkit API is missing, extend appkit rather than rebuilding locally.
 4. Local code is acceptable only for blockers, app wiring, or thin adapters.

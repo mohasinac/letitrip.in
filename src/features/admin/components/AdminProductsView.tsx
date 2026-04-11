@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminProductsView
  *
  * Contains all product management state, mutations, drawer logic, and JSX.
@@ -9,7 +9,14 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  Suspense,
+} from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
@@ -27,7 +34,6 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
-  ListingLayout,
   MediaImage,
   ProductFilters,
   Search,
@@ -35,6 +41,7 @@ import {
   StatusBadge,
   TablePagination,
 } from "@/components";
+import { AdminProductsView as AdminProductsShell } from "@mohasinac/appkit/features/admin";
 import { ProductForm, useProductTableColumns } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
@@ -42,7 +49,7 @@ interface AdminProductsViewProps {
   action?: string[];
 }
 
-export function AdminProductsView({ action }: AdminProductsViewProps) {
+function AdminProductsContent({ action }: AdminProductsViewProps) {
   const router = useRouter();
   const t = useTranslations("adminProducts");
   const tActions = useTranslations("actions");
@@ -274,7 +281,8 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
 
   return (
     <>
-      <ListingLayout
+      <AdminProductsShell
+        isDashboard
         headerSlot={
           <AdminPageHeader
             title={t("title")}
@@ -325,6 +333,34 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
             compact
           />
         }
+        renderDrawer={() =>
+          editingProduct ? (
+            <SideDrawer
+              isOpen={isDrawerOpen}
+              onClose={handleCloseDrawer}
+              title={drawerTitle}
+              mode={drawerMode || "view"}
+              isDirty={isDirty}
+              footer={drawerFooter}
+              side="right"
+            >
+              {drawerMode === "delete" ? (
+                <div className={spacing.stack}>
+                  <Text className="text-zinc-700 dark:text-zinc-300">
+                    {t("confirmDelete")}
+                  </Text>
+                  <Text className="font-medium">{editingProduct.title}</Text>
+                </div>
+              ) : (
+                <ProductForm
+                  product={editingProduct}
+                  onChange={setEditingProduct}
+                  isReadonly={isReadonly}
+                />
+              )}
+            </SideDrawer>
+          ) : null
+        }
       >
         <DataTable
           data={products}
@@ -365,34 +401,15 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {editingProduct && (
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleCloseDrawer}
-          title={drawerTitle}
-          mode={drawerMode || "view"}
-          isDirty={isDirty}
-          footer={drawerFooter}
-          side="right"
-        >
-          {drawerMode === "delete" ? (
-            <div className={spacing.stack}>
-              <Text className="text-zinc-700 dark:text-zinc-300">
-                {t("confirmDelete")}
-              </Text>
-              <Text className="font-medium">{editingProduct.title}</Text>
-            </div>
-          ) : (
-            <ProductForm
-              product={editingProduct}
-              onChange={setEditingProduct}
-              isReadonly={isReadonly}
-            />
-          )}
-        </SideDrawer>
-      )}
+      </AdminProductsShell>
     </>
+  );
+}
+
+export function AdminProductsView(props: AdminProductsViewProps) {
+  return (
+    <Suspense>
+      <AdminProductsContent {...props} />
+    </Suspense>
   );
 }

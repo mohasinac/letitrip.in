@@ -40,7 +40,7 @@ export default function Button({
   children,
   ...props
 }: ButtonProps) {
-  const { button, themed, colors } = THEME_CONSTANTS;
+  const { button, colors } = THEME_CONSTANTS;
 
   const variants = {
     primary: `${colors.button.primary} shadow-sm hover:shadow-md ${button.active}`,
@@ -58,6 +58,7 @@ export default function Button({
   };
 
   return (
+    // eslint-disable-next-line lir/no-raw-html-elements
     <button
       className={twMerge(
         button.base,

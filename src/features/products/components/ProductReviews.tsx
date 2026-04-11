@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -40,7 +40,7 @@ function StarRating({
           key={star}
           className={star <= rating ? "text-amber-400" : ratingTokens.empty}
         >
-          ★
+          ?
         </Span>
       ))}
     </div>
@@ -60,7 +60,7 @@ function RatingBar({
   return (
     <div className="flex items-center gap-2 text-xs">
       <Span className={`w-3 ${themed.textSecondary}`}>{star}</Span>
-      <Span className="text-amber-400 text-xs">★</Span>
+      <Span className="text-amber-400 text-xs">?</Span>
       <div className="flex-1 bg-zinc-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
         <div
           className="bg-amber-400 h-full rounded-full transition-all"
@@ -73,7 +73,7 @@ function RatingBar({
 }
 
 // ---------------------------------------------------------------------------
-// ReviewImages — thumbnail strip with per-review lightbox state
+// ReviewImages � thumbnail strip with per-review lightbox state
 // ---------------------------------------------------------------------------
 function ReviewImages({ images }: { images: string[] }) {
   const t = useTranslations("products");
@@ -145,7 +145,7 @@ function StarPicker({
                 : "text-zinc-300 dark:text-zinc-600"
             }
           >
-            ★
+            ?
           </Span>
         </Button>
       ))}
@@ -154,8 +154,8 @@ function StarPicker({
 }
 
 // ---------------------------------------------------------------------------
-// WriteReviewForm — integrated write-review form shown below the heading.
-// Requires auth; 403 → "purchase required", 400 → "already reviewed".
+// WriteReviewForm � integrated write-review form shown below the heading.
+// Requires auth; 403 ? "purchase required", 400 ? "already reviewed".
 // ---------------------------------------------------------------------------
 interface WriteReviewFormProps {
   productId: string;
@@ -286,7 +286,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   );
 }
 
-export function ProductReviews({ productId }: ProductReviewsProps) {
+function ProductReviewsContent({ productId }: ProductReviewsProps) {
   const t = useTranslations("products");
   const tActions = useTranslations("actions");
   const table = useUrlTable({ defaults: { page: "1" } });
@@ -472,5 +472,13 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         </div>
       )}
     </Section>
+  );
+}
+
+export function ProductReviews(props: ProductReviewsProps) {
+  return (
+    <Suspense>
+      <ProductReviewsContent {...props} />
+    </Suspense>
   );
 }

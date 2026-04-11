@@ -81,6 +81,7 @@ export interface WhatsAppCommunitySectionConfig {
   memberCount?: number;
   benefits: string[];
   buttonText: string;
+  testimonial?: string;
 }
 
 export interface FeaturesSectionConfig {

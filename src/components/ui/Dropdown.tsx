@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { Button } from "@/components";
 import { useState, useRef, useEffect, createContext, useContext } from "react";
 
 interface DropdownCtxValue {
@@ -84,7 +85,7 @@ function DropdownItem({
 }: DropdownItemProps) {
   const { close } = useContext(DropdownCtx);
   return (
-    <button
+    <Button
       type="button"
       disabled={disabled}
       onClick={() => {
@@ -94,7 +95,7 @@ function DropdownItem({
       className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 

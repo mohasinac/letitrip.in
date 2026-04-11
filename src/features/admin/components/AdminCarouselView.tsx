@@ -8,6 +8,7 @@ const { flex } = THEME_CONSTANTS;
 import { useAdminCarousel } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import { Caption, Text } from "@mohasinac/appkit/ui";
+import { AdminCarouselView as AppkitAdminCarouselView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Button,
@@ -208,8 +209,8 @@ export function AdminCarouselView({ action }: Props) {
     );
 
   return (
-    <>
-      <div className="space-y-6">
+    <AppkitAdminCarouselView
+      renderHeader={() => (
         <AdminPageHeader
           title={t("title")}
           subtitle={t("subtitle")}
@@ -217,8 +218,10 @@ export function AdminCarouselView({ action }: Props) {
           onAction={handleCreate}
           actionDisabled={slides.filter((s) => s.active).length >= 5}
         />
-
-        {isLoading ? (
+      )}
+      isLoading={isLoading}
+      renderTable={() =>
+        isLoading ? (
           <Card>
             <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
@@ -270,26 +273,27 @@ export function AdminCarouselView({ action }: Props) {
               </Card>
             )}
           />
-        )}
-      </div>
-
-      {editingSlide && (
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleCloseDrawer}
-          title={drawerTitle}
-          mode={drawerMode || "view"}
-          isDirty={isDirty}
-          footer={drawerFooter}
-          side="right"
-        >
-          <CarouselSlideForm
-            slide={editingSlide}
-            onChange={setEditingSlide}
-            isReadonly={isReadonly}
-          />
-        </SideDrawer>
-      )}
-    </>
+        )
+      }
+      renderDrawer={() =>
+        editingSlide ? (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={drawerTitle}
+            mode={drawerMode || "view"}
+            isDirty={isDirty}
+            footer={drawerFooter}
+            side="right"
+          >
+            <CarouselSlideForm
+              slide={editingSlide}
+              onChange={setEditingSlide}
+              isReadonly={isReadonly}
+            />
+          </SideDrawer>
+        ) : null
+      }
+    />
   );
 }

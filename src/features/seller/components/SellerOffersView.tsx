@@ -5,27 +5,26 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useSellerOffers, useRespondToOffer } from "../hooks/useSellerOffers";
-import { useMessage } from "@/hooks";
-import { Caption, Heading, Label, Span, Text } from "@mohasinac/appkit/ui";
+import { SellerOffersView as AppkitSellerOffersView } from "@mohasinac/appkit/features/seller";
+import { Caption, Label, Span, Text } from "@mohasinac/appkit/ui";
 import {
   Button,
-  Card,
   DataTable,
   EmptyState,
   FormGroup,
   Input,
   SideDrawer,
-  Spinner,
   StatusBadge,
   Textarea,
 } from "@/components";
 import type { DataTableColumn } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+import { useMessage } from "@/hooks";
 import { formatCurrency, formatDate } from "@/utils";
 import type { OfferDocument } from "@/db/schema";
+import { useSellerOffers, useRespondToOffer } from "../hooks/useSellerOffers";
 
-const { flex, position } = THEME_CONSTANTS;
+const { flex } = THEME_CONSTANTS;
 
 const STATUS_VARIANT: Record<
   string,
@@ -172,20 +171,13 @@ export function SellerOffersView() {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className={`${flex.center} p-10`}>
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className="space-y-6">
-        <Heading level={2}>{t("sellerPageTitle")}</Heading>
-
-        {offers.length === 0 ? (
+    <AppkitSellerOffersView
+      labels={{ title: t("sellerPageTitle") }}
+      total={offers.length}
+      isLoading={isLoading}
+      renderTable={(selected, onSelectionChange) =>
+        offers.length === 0 ? (
           <EmptyState
             title={t("sellerEmptyTitle")}
             description={t("sellerEmptyDesc")}
@@ -196,85 +188,88 @@ export function SellerOffersView() {
             data={offers}
             keyExtractor={(o) => o.id}
             selectable
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
+            selectedIds={selected.length > 0 ? selected : selectedIds}
+            onSelectionChange={(ids) => {
+              setSelectedIds(ids);
+              onSelectionChange(ids);
+            }}
           />
-        )}
-      </div>
-
-      {/* Counter-offer drawer */}
-      <SideDrawer
-        isOpen={counterModalOpen}
-        onClose={() => setCounterModalOpen(false)}
-        title={t("counterModalTitle")}
-        mode="edit"
-      >
-        <form
-          onSubmit={handleCounterSubmit}
-          className={THEME_CONSTANTS.spacing.stack}
+        )
+      }
+      renderModal={() => (
+        <SideDrawer
+          isOpen={counterModalOpen}
+          onClose={() => setCounterModalOpen(false)}
+          title={t("counterModalTitle")}
+          mode="edit"
         >
-          {respondingTo && (
-            <Text className="text-sm">
-              {t("buyerOffered")}:{" "}
-              <Span className="font-semibold">
-                {formatCurrency(
-                  respondingTo.offerAmount,
-                  respondingTo.currency,
-                )}
-              </Span>
-            </Text>
-          )}
-
-          <FormGroup columns={2}>
-            <div className="space-y-1">
-              <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
-              <div className="relative">
-                <Span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
-                  ₹
+          <form
+            onSubmit={handleCounterSubmit}
+            className={THEME_CONSTANTS.spacing.stack}
+          >
+            {respondingTo && (
+              <Text className="text-sm">
+                {t("buyerOffered")}:{" "}
+                <Span className="font-semibold">
+                  {formatCurrency(
+                    respondingTo.offerAmount,
+                    respondingTo.currency,
+                  )}
                 </Span>
-                <Input
-                  id="counterAmount"
-                  type="number"
-                  min={1}
-                  step={1}
-                  className="pl-7"
-                  {...counterForm.register("counterAmount", {
-                    valueAsNumber: true,
-                  })}
+              </Text>
+            )}
+
+            <FormGroup columns={2}>
+              <div className="space-y-1">
+                <Label htmlFor="counterAmount">{t("counterAmountLabel")}</Label>
+                <div className="relative">
+                  <Span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                    INR
+                  </Span>
+                  <Input
+                    id="counterAmount"
+                    type="number"
+                    min={1}
+                    step={1}
+                    className="pl-12"
+                    {...counterForm.register("counterAmount", {
+                      valueAsNumber: true,
+                    })}
+                  />
+                </div>
+                {counterForm.formState.errors.counterAmount && (
+                  <Text className="text-sm text-red-600 dark:text-red-400">
+                    {counterForm.formState.errors.counterAmount.message}
+                  </Text>
+                )}
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
+                <Textarea
+                  id="sellerNote"
+                  rows={2}
+                  placeholder={t("sellerNotePlaceholder")}
+                  {...counterForm.register("sellerNote")}
                 />
               </div>
-              {counterForm.formState.errors.counterAmount && (
-                <Text className="text-sm text-red-600 dark:text-red-400">
-                  {counterForm.formState.errors.counterAmount.message}
-                </Text>
-              )}
-            </div>
+            </FormGroup>
 
-            <div className="space-y-1">
-              <Label htmlFor="sellerNote">{t("sellerNoteLabel")}</Label>
-              <Textarea
-                id="sellerNote"
-                rows={2}
-                placeholder={t("sellerNotePlaceholder")}
-                {...counterForm.register("sellerNote")}
-              />
+            <div className={`${flex.rowCenter} gap-2 justify-start`}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCounterModalOpen(false)}
+              >
+                {tActions("cancel")}
+              </Button>
+              <Button type="submit" disabled={responding}>
+                {responding ? tActions("submitting") : t("sendCounter")}
+              </Button>
             </div>
-          </FormGroup>
-
-          <div className={`${flex.rowCenter} gap-2 justify-start`}>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setCounterModalOpen(false)}
-            >
-              {tActions("cancel")}
-            </Button>
-            <Button type="submit" disabled={responding}>
-              {responding ? tActions("submitting") : t("sendCounter")}
-            </Button>
-          </div>
-        </form>
-      </SideDrawer>
-    </>
+          </form>
+        </SideDrawer>
+      )}
+    />
   );
 }

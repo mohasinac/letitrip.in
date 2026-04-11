@@ -78,6 +78,12 @@ export interface TitleBarLayoutProps {
   hasDashboardNav?: boolean;
   /** Opens the registered dashboard navigation drawer. */
   onOpenDashboardNav?: () => void;
+  /**
+   * When true, the public-sidebar hamburger toggle is hidden. Use this on
+   * dashboard routes (admin/seller/user) where the sidebar is owned by the
+   * nested layout, not the global title bar.
+   */
+  hideSidebarToggle?: boolean;
   id?: string;
 }
 
@@ -101,6 +107,7 @@ export function TitleBarLayout({
   onToggleTheme,
   hasDashboardNav = false,
   onOpenDashboardNav,
+  hideSidebarToggle = false,
   id = "title-bar",
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
@@ -321,36 +328,38 @@ export function TitleBarLayout({
             </Button>
           )}
 
-          {/* Hamburger Menu */}
-          <Button
-            variant="ghost"
-            onClick={onToggleSidebar}
-            className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
-            aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
-          >
-            <svg
-              className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Hamburger Menu — hidden on dashboard routes where the nested layout owns the sidebar */}
+          {!hideSidebarToggle && (
+            <Button
+              variant="ghost"
+              onClick={onToggleSidebar}
+              className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+              aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
             >
-              {sidebarOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </Button>
+              <svg
+                className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {sidebarOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </Button>
+          )}
         </div>
       </div>
     </BlockHeader>

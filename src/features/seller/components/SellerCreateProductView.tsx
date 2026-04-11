@@ -10,6 +10,7 @@
 import React, { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { SellerCreateProductView as AppkitSellerCreateProductView } from "@mohasinac/appkit/features/seller";
 import {
   AdminPageHeader,
   Button,
@@ -67,39 +68,47 @@ export function SellerCreateProductView() {
   };
 
   return (
-    <div className={`${themed.bgPrimary} min-h-screen`}>
-      <AdminPageHeader
-        title={t("createProduct")}
-        subtitle={t("createProductSubtitle")}
-        breadcrumb={[{ label: t("products"), href: ROUTES.SELLER.PRODUCTS }]}
-      />
+    <AppkitSellerCreateProductView
+      isLoading={isLoading}
+      className={`${themed.bgPrimary} min-h-screen`}
+      renderForm={() => (
+        <>
+          <AdminPageHeader
+            title={t("createProduct")}
+            subtitle={t("createProductSubtitle")}
+            breadcrumb={[
+              { label: t("products"), href: ROUTES.SELLER.PRODUCTS },
+            ]}
+          />
 
-      <div className={`max-w-3xl mx-auto px-4 pb-12 ${spacing.stack}`}>
-        <form
-          onSubmit={handleSubmit}
-          className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack}`}
-        >
-          <ProductForm product={product} onChange={setProduct} />
+          <div className={`max-w-3xl mx-auto px-4 pb-12 ${spacing.stack}`}>
+            <form
+              onSubmit={handleSubmit}
+              className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack}`}
+            >
+              <ProductForm product={product} onChange={setProduct} />
 
-          <div className="flex justify-start gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
-              disabled={isLoading}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isLoading || !product.title}
-            >
-              {isLoading ? t("saving") : t("saveListing")}
-            </Button>
+              <div className="flex justify-start gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
+                  disabled={isLoading}
+                >
+                  {t("cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={isLoading || !product.title}
+                >
+                  {isLoading ? t("saving") : t("saveListing")}
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </div>
+        </>
+      )}
+    />
   );
 }

@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import { Span } from "@/components";
+
 export interface AvatarProps {
   src?: string | null;
   alt?: string;
@@ -43,7 +45,7 @@ export function Avatar({
   const sz = SIZE_MAP[size];
   if (src) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
+      // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
       <img
         src={src}
         alt={alt ?? name ?? ""}
@@ -52,12 +54,12 @@ export function Avatar({
     );
   }
   return (
-    <span
+    <Span
       aria-label={name}
       className={`${sz} rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center font-medium select-none ${className}`}
     >
       {initials(name)}
-    </span>
+    </Span>
   );
 }
 
@@ -80,11 +82,11 @@ export function AvatarGroup({
         />
       ))}
       {extra > 0 && (
-        <span
+        <Span
           className={`${SIZE_MAP[size]} rounded-full ring-2 ring-white dark:ring-gray-900 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 flex items-center justify-center text-xs font-medium`}
         >
           +{extra}
-        </span>
+        </Span>
       )}
     </div>
   );

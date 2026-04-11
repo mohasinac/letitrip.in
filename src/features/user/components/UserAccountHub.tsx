@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   Package,
@@ -6,16 +6,15 @@ import {
   Bell,
   MapPin,
   Settings,
-  ChevronRight,
   ArrowRight,
   Store,
+  ChevronRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { AvatarDisplay, Button, Spinner } from "@/components";
-import { RoleBadge } from "@/components";
-import { StatusBadge } from "@/components";
+import { AvatarDisplay, RoleBadge, StatusBadge, Spinner } from "@/components";
 import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { UserAccountHubView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth } from "@/hooks";
 import { useUserOrders } from "../hooks";
@@ -42,7 +41,6 @@ interface QuickNavItem {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   iconBg: string;
   iconColor: string;
-  countKey?: string;
 }
 
 const QUICK_NAV_ITEMS: QuickNavItem[] = [
@@ -83,14 +81,6 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
   },
 ];
 
-/**
- * UserAccountHub
- *
- * Landing page for the /user route — spatial orientation for users with:
- * 1. Profile header (avatar, name, role badge)
- * 2. Quick nav grid (2×3 cards)
- * 3. Recent orders (last 3)
- */
 export function UserAccountHub() {
   const { user, loading } = useAuth();
   const t = useTranslations("userHub");
@@ -108,40 +98,36 @@ export function UserAccountHub() {
   if (!user) return null;
 
   return (
-    <div className="space-y-8 pb-8">
-      {/* ── Profile header ────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-gradient-to-br from-primary-50/50 via-white to-white dark:from-primary-950/10 dark:via-slate-900 dark:to-slate-900 border border-zinc-200 dark:border-slate-700 p-6">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-          <AvatarDisplay
-            cropData={
-              user.photoURL
-                ? { url: user.photoURL, position: { x: 50, y: 50 }, zoom: 1 }
-                : null
-            }
-            displayName={user.displayName ?? user.email ?? ""}
-            email={user.email ?? ""}
-            size="xl"
-            className="flex-shrink-0"
-          />
-          <div className="flex-1 text-center sm:text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-              <Heading
-                level={2}
-                className="text-xl font-bold text-zinc-900 dark:text-white"
-              >
-                {user.displayName ?? user.email}
-              </Heading>
-              <RoleBadge role={user.role} />
-            </div>
-            <Text size="sm" variant="secondary" className="mb-3">
-              {user.email}
-            </Text>
-            {/* Quick stats row */}
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+    <UserAccountHubView
+      isLoading={loading || ordersLoading}
+      renderProfile={() => (
+        <div className="rounded-2xl bg-gradient-to-br from-primary-50/50 via-white to-white dark:from-primary-950/10 dark:via-slate-900 dark:to-slate-900 border border-zinc-200 dark:border-slate-700 p-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+            <AvatarDisplay
+              cropData={
+                user.photoURL
+                  ? { url: user.photoURL, position: { x: 50, y: 50 }, zoom: 1 }
+                  : null
+              }
+              displayName={user.displayName ?? user.email ?? ""}
+              email={user.email ?? ""}
+              size="xl"
+              className="flex-shrink-0"
+            />
+            <div className="flex-1 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                <Heading level={2} className="text-xl font-bold">
+                  {user.displayName ?? user.email}
+                </Heading>
+                <RoleBadge role={user.role} />
+              </div>
+              <Text size="sm" variant="secondary" className="mb-3">
+                {user.email}
+              </Text>
               {user.role === "user" && (
                 <Link
                   href={ROUTES.USER.BECOME_SELLER}
-                  className="flex items-center gap-1.5 rounded-full bg-cobalt-500/10 text-cobalt-600 dark:text-cobalt-400 px-3 py-1 text-xs font-semibold hover:bg-cobalt-500/20 transition-colors"
+                  className="flex items-center gap-1.5 rounded-full bg-cobalt-500/10 text-cobalt-600 dark:text-cobalt-400 px-3 py-1 text-xs font-semibold hover:bg-cobalt-500/20 transition-colors w-fit"
                 >
                   <Store className="h-3.5 w-3.5" />
                   {t("becomeSellerCta")}
@@ -150,60 +136,52 @@ export function UserAccountHub() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ── Quick nav grid ─────────────────────────────────────────────── */}
-      <div>
-        <Heading
-          level={3}
-          className="text-base font-semibold text-zinc-700 dark:text-zinc-300 mb-4"
-        >
-          {t("quickNav")}
-        </Heading>
-        <div className={THEME_CONSTANTS.grid.navTiles}>
-          {QUICK_NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group rounded-2xl p-5 bg-zinc-50 dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md transition-all duration-200 flex flex-col gap-3"
-            >
-              <div
-                className={`w-10 h-10 rounded-xl ${THEME_CONSTANTS.flex.center} ${item.iconBg}`}
-              >
-                <item.icon
-                  className={`h-5 w-5 ${item.iconColor}`}
-                  strokeWidth={1.5}
-                />
-              </div>
-              <Span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                {tNav(item.labelKey)}
-              </Span>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Recent orders ──────────────────────────────────────────────── */}
-      <div>
-        <div className={`${THEME_CONSTANTS.flex.between} mb-4`}>
-          <Heading
-            level={3}
-            className="text-base font-semibold text-zinc-700 dark:text-zinc-300"
-          >
-            {t("recentOrders")}
+      )}
+      renderNav={() => (
+        <div>
+          <Heading level={3} className="text-base font-semibold mb-4">
+            {t("quickNav")}
           </Heading>
-          <Link
-            href={ROUTES.USER.ORDERS}
-            className="flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 hover:opacity-75 transition-opacity"
-          >
-            {t("viewAllOrders")}
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <div className={THEME_CONSTANTS.grid.navTiles}>
+            {QUICK_NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group rounded-2xl p-5 bg-zinc-50 dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md transition-all duration-200 flex flex-col gap-3"
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl ${THEME_CONSTANTS.flex.center} ${item.iconBg}`}
+                >
+                  <item.icon
+                    className={`h-5 w-5 ${item.iconColor}`}
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <Span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                  {tNav(item.labelKey)}
+                </Span>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden">
+      )}
+      renderRecentOrders={() => (
+        <div>
+          <div className={`${THEME_CONSTANTS.flex.between} mb-4`}>
+            <Heading level={3} className="text-base font-semibold">
+              {t("recentOrders")}
+            </Heading>
+            <Link
+              href={ROUTES.USER.ORDERS}
+              className="flex items-center gap-1 text-sm font-medium text-primary-600 dark:text-primary-400 hover:opacity-75 transition-opacity"
+            >
+              {t("viewAllOrders")}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
           {ordersLoading ? (
-            <div className={`${THEME_CONSTANTS.flex.center} py-10`}>
-              <Spinner size="md" />
+            <div className={`${THEME_CONSTANTS.flex.center} py-8`}>
+              <Spinner size="sm" />
             </div>
           ) : !orders?.length ? (
             <div className="py-10 text-center">
@@ -216,7 +194,7 @@ export function UserAccountHub() {
               </Text>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-100 dark:divide-slate-800">
+            <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden divide-y divide-zinc-100 dark:divide-slate-800">
               {orders.slice(0, 3).map((order) => (
                 <Link
                   key={order.id}
@@ -224,13 +202,13 @@ export function UserAccountHub() {
                   className={`${THEME_CONSTANTS.flex.between} px-4 py-3 hover:bg-zinc-50 dark:hover:bg-slate-800/50 transition-colors group`}
                 >
                   <div className="flex flex-col gap-0.5 min-w-0">
-                    <Span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
+                    <Span className="text-sm font-medium truncate">
                       #{order.id.slice(0, 8).toUpperCase()}
                     </Span>
-                    <Span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text size="xs" variant="secondary" as="span">
                       {formatDate(order.orderDate)} ·{" "}
                       {formatCurrency(order.totalPrice)}
-                    </Span>
+                    </Text>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                     <StatusBadge
@@ -243,7 +221,7 @@ export function UserAccountHub() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    />
   );
 }

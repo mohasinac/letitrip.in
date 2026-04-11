@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminBlogView
  *
  * Extracted from src/app/[locale]/admin/blog/[[...action]]/page.tsx
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
@@ -25,13 +25,13 @@ import {
   ConfirmDeleteModal,
   DataTable,
   DrawerFormFooter,
-  ListingLayout,
   MediaImage,
   Search,
   SideDrawer,
   SortDropdown,
   StatusBadge,
 } from "@/components";
+import { AdminBlogView as AdminBlogShell } from "@mohasinac/appkit/features/admin";
 import type { BlogPostDocument } from "@/db/schema";
 import { BlogForm, useBlogTableColumns } from ".";
 import type { BlogFormData } from ".";
@@ -56,7 +56,7 @@ const BLOG_SORT_OPTIONS_KEYS = [
   { value: "createdAt", key: "sortOldest" },
 ] as const;
 
-export function AdminBlogView() {
+function AdminBlogContent() {
   const router = useRouter();
   const t = useTranslations("adminBlog");
   const tLoading = useTranslations("loading");
@@ -254,7 +254,8 @@ export function AdminBlogView() {
 
   return (
     <>
-      <ListingLayout
+      <AdminBlogShell
+        isDashboard
         headerSlot={
           <>
             <AdminPageHeader
@@ -315,6 +316,33 @@ export function AdminBlogView() {
             </Card>
           ) : undefined
         }
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={closeDrawer}
+            title={drawerTitle}
+            mode={editingPost ? "edit" : "create"}
+            isDirty={isDirty}
+            side="right"
+            footer={
+              <DrawerFormFooter
+                onCancel={closeDrawer}
+                onSubmit={handleSave}
+                isLoading={isSaving}
+              />
+            }
+          >
+            <BlogForm post={formData} onChange={setFormData} />
+          </SideDrawer>
+        )}
+        renderConfirmModal={() => (
+          <ConfirmDeleteModal
+            isOpen={!!deleteTarget}
+            onClose={() => setDeleteTarget(null)}
+            onConfirm={handleDelete}
+            isDeleting={isDeleting}
+          />
+        )}
       >
         <DataTable
           columns={columns as any}
@@ -354,34 +382,15 @@ export function AdminBlogView() {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {/* Create / Edit Drawer */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={closeDrawer}
-        title={drawerTitle}
-        mode={editingPost ? "edit" : "create"}
-        isDirty={isDirty}
-        side="right"
-        footer={
-          <DrawerFormFooter
-            onCancel={closeDrawer}
-            onSubmit={handleSave}
-            isLoading={isSaving}
-          />
-        }
-      >
-        <BlogForm post={formData} onChange={setFormData} />
-      </SideDrawer>
-
-      {/* Delete confirmation */}
-      <ConfirmDeleteModal
-        isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
-        isDeleting={isDeleting}
-      />
+      </AdminBlogShell>
     </>
+  );
+}
+
+export function AdminBlogView() {
+  return (
+    <Suspense>
+      <AdminBlogContent />
+    </Suspense>
   );
 }

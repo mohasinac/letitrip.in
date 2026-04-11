@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminStoresView
  *
  * Tier 2 — feature component.
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
 import { Caption, Text } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
@@ -19,9 +19,9 @@ import {
   DataTable,
   StatusBadge,
   TablePagination,
-  ListingLayout,
   Search,
 } from "@/components";
+import { AdminStoresView as AdminStoresShell } from "@mohasinac/appkit/features/admin";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { usePendingTable } from "@mohasinac/appkit/react";
@@ -52,7 +52,7 @@ interface ConfirmState {
   onConfirm: () => Promise<void>;
 }
 
-export function AdminStoresView() {
+function AdminStoresContent() {
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("adminStores");
   const tActions = useTranslations("actions");
@@ -218,7 +218,8 @@ export function AdminStoresView() {
         subtitle={`${t("subtitle")} — ${total} ${t("total")}`}
       />
 
-      <ListingLayout
+      <AdminStoresShell
+        isDashboard
         searchSlot={
           <Search
             value={searchTerm}
@@ -240,6 +241,18 @@ export function AdminStoresView() {
             compact
           />
         }
+        renderConfirmModal={() => (
+          <ConfirmDeleteModal
+            isOpen={confirmState.open}
+            title={confirmState.title}
+            message={confirmState.message}
+            onConfirm={confirmState.onConfirm}
+            onClose={() =>
+              setConfirmState((prev) => ({ ...prev, open: false }))
+            }
+            confirmText={tActions("confirm")}
+          />
+        )}
       >
         <DataTable<AdminStoreItem>
           data={stores}
@@ -269,16 +282,15 @@ export function AdminStoresView() {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      <ConfirmDeleteModal
-        isOpen={confirmState.open}
-        title={confirmState.title}
-        message={confirmState.message}
-        onConfirm={confirmState.onConfirm}
-        onClose={() => setConfirmState((prev) => ({ ...prev, open: false }))}
-        confirmText={tActions("confirm")}
-      />
+      </AdminStoresShell>
     </div>
+  );
+}
+
+export function AdminStoresView() {
+  return (
+    <Suspense>
+      <AdminStoresContent />
+    </Suspense>
   );
 }

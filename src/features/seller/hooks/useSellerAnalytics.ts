@@ -4,14 +4,16 @@ import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
 import { hasAnyRole } from "@/helpers";
-import type { SellerAnalyticsSummary } from "../components/SellerAnalyticsStats";
-import type { MonthEntry } from "../components/SellerRevenueChart";
-import type { TopProduct } from "../components/SellerTopProducts";
+import type {
+  SellerAnalyticsSummary,
+  SellerAnalyticsMonthEntry,
+  SellerAnalyticsTopProduct,
+} from "@mohasinac/appkit/features/seller";
 
 export interface SellerAnalyticsResponse {
   summary: SellerAnalyticsSummary;
-  revenueByMonth: MonthEntry[];
-  topProducts: TopProduct[];
+  revenueByMonth: SellerAnalyticsMonthEntry[];
+  topProducts: SellerAnalyticsTopProduct[];
 }
 
 /**

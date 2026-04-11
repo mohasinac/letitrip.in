@@ -1,26 +1,25 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { updateProfileAction } from "@/actions";
-import { nowMs } from "@/utils";
-import { Heading, Row } from "@mohasinac/appkit/ui";
-import { Alert, Spinner, useToast } from "@/components";
+import { Alert, Spinner } from "@/components";
+import { UserSettingsView as AppkitUserSettingsView } from "@mohasinac/appkit/features/account";
+import {
+  ROUTES,
+  THEME_CONSTANTS,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { EmailVerificationCard } from "./EmailVerificationCard";
 import { PhoneVerificationCard } from "./PhoneVerificationCard";
 import { ProfileInfoForm } from "./ProfileInfoForm";
 import type { ProfileInfoData } from "./ProfileInfoForm";
 import { PasswordChangeForm } from "./PasswordChangeForm";
 import { AccountInfoCard } from "./AccountInfoCard";
-import { useRouter } from "@/i18n/navigation";
-import { logger } from "@mohasinac/appkit/core";
-import {
-  THEME_CONSTANTS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-  ROUTES,
-} from "@/constants";
-import { useTranslations } from "next-intl";
+import { useToast } from "@/components";
 
 export function UserSettingsView() {
   const { user: profile, loading, refreshUser } = useAuth();
@@ -28,7 +27,6 @@ export function UserSettingsView() {
   const t = useTranslations("settings");
   const { showToast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -43,28 +41,24 @@ export function UserSettingsView() {
 
   const { mutate: changePassword, isPending: isChangingPassword } =
     useChangePassword({
-      onSuccess: () => {
-        showToast(SUCCESS_MESSAGES.USER.PASSWORD_CHANGED, "success");
-      },
-      onError: (error) => {
+      onSuccess: () =>
+        showToast(SUCCESS_MESSAGES.USER.PASSWORD_CHANGED, "success"),
+      onError: (error) =>
         setMessage({
           type: "error",
           text: error.message || ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
-        });
-      },
+        }),
     });
 
   const { mutate: resendVerification, isPending: isSendingVerification } =
     useResendVerification({
-      onSuccess: () => {
-        showToast(SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT, "success");
-      },
-      onError: (error) => {
+      onSuccess: () =>
+        showToast(SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT, "success"),
+      onError: (error) =>
         setMessage({
           type: "error",
           text: error.message || ERROR_MESSAGES.EMAIL.SEND_FAILED,
-        });
-      },
+        }),
     });
 
   const handleProfileUpdate = async (data: ProfileInfoData) => {
@@ -78,118 +72,77 @@ export function UserSettingsView() {
       });
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
       await refreshUser();
-    } catch (error) {
-      logger.error("Profile update error:", error);
+    } catch {
       setMessage({
         type: "error",
-        text:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        text: ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
       });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleAvatarUploadSuccess = async (url: string) => {
-    if (!profile?.uid) return;
-    try {
-      await updateProfileAction({ photoURL: url });
-      showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
-    } catch (error) {
-      logger.error("Avatar upload error:", error);
-      setMessage({
-        type: "error",
-        text:
-          error instanceof Error
-            ? error.message
-            : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-      });
-    }
-  };
-
-  const handlePasswordChange = async (
-    currentPassword: string,
-    newPassword: string,
-  ) => {
-    setMessage(null);
-    await changePassword({ currentPassword, newPassword });
-  };
-
-  const handleResendVerification = () => {
-    setMessage(null);
-    if (profile?.email) {
-      resendVerification({ email: profile.email });
-    }
-  };
-
   if (loading) {
     return (
-      <Row justify="center" gap="none" className="min-h-screen">
-        <Spinner size="xl" variant="primary" />
-      </Row>
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+        <Spinner size="lg" />
+      </div>
     );
   }
-
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
   return (
-    <div className="w-full">
-      <div className={THEME_CONSTANTS.spacing.stack}>
-        <Heading level={3}>{t("title")}</Heading>
-
-        {message && (
-          <Alert
-            variant={message.type}
-            className="mb-4"
-            onClose={() => setMessage(null)}
-          >
+    <AppkitUserSettingsView
+      renderMessage={() =>
+        message ? (
+          <Alert variant={message.type === "success" ? "success" : "error"}>
             {message.text}
           </Alert>
-        )}
-
+        ) : null
+      }
+      renderEmailVerification={() => (
         <EmailVerificationCard
-          email={profile.email || ""}
-          isVerified={profile.emailVerified || false}
-          onResendVerification={handleResendVerification}
-          isLoading={isSendingVerification}
+          email={profile.email ?? ""}
+          isVerified={profile.emailVerified ?? false}
+          onResendVerification={() =>
+            resendVerification({ email: profile.email ?? "" })
+          }
         />
-
-        {profile.phoneNumber && (
-          <PhoneVerificationCard
-            phone={profile.phoneNumber}
-            isVerified={profile.phoneVerified || false}
-          />
-        )}
-
+      )}
+      renderPhoneVerification={() => (
+        <PhoneVerificationCard
+          phone={profile.phoneNumber ?? ""}
+          isVerified={false}
+          onVerify={() => {}}
+        />
+      )}
+      renderProfileForm={() => (
         <ProfileInfoForm
           userId={profile.uid}
           initialData={{
-            displayName: profile.displayName || "",
-            phone: profile.phoneNumber || "",
-            photoURL: profile.photoURL || "",
+            displayName: profile.displayName ?? "",
+            phone: profile.phoneNumber ?? "",
+            photoURL: profile.photoURL ?? "",
           }}
           onSubmit={handleProfileUpdate}
-          onAvatarUploadSuccess={handleAvatarUploadSuccess}
-          onRefresh={refreshUser}
-          isLoading={isSaving}
         />
-
+      )}
+      renderPasswordForm={() => (
         <PasswordChangeForm
-          onSubmit={handlePasswordChange}
+          onSubmit={(currentPassword, newPassword) =>
+            changePassword({ currentPassword, newPassword })
+          }
           isLoading={isChangingPassword}
         />
-
+      )}
+      renderAccountInfo={() => (
         <AccountInfoCard
           uid={profile.uid}
-          email={profile.email || ""}
-          createdAt={profile.metadata?.creationTime || new Date(nowMs())}
-          lastLoginAt={profile.metadata?.lastSignInTime}
+          email={profile.email ?? ""}
+          createdAt={profile.createdAt ?? new Date()}
+          lastLoginAt={profile.metadata?.lastSignInTime ?? null}
         />
-      </div>
-    </div>
+      )}
+    />
   );
 }

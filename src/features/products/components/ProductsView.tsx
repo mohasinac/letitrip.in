@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, Suspense } from "react";
 import { PackageSearch, Gavel, Info } from "lucide-react";
 import { Container, Heading, Text } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
@@ -41,7 +41,7 @@ interface ProductsViewProps {
   initialData?: ProductsListResult;
 }
 
-export function ProductsView({ initialData }: ProductsViewProps = {}) {
+function ProductsContent({ initialData }: ProductsViewProps = {}) {
   const t = useTranslations("products");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -380,5 +380,13 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
         </ListingLayout>
       </Container>
     </div>
+  );
+}
+
+export function ProductsView(props: ProductsViewProps) {
+  return (
+    <Suspense>
+      <ProductsContent {...props} />
+    </Suspense>
   );
 }

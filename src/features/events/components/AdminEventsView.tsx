@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminEventsView
  *
  * Tier 2 — feature component.
@@ -9,7 +9,7 @@
 
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Caption, Text } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
@@ -48,7 +48,7 @@ const EVENT_SORT_OPTIONS_KEYS = [
   { value: "createdAt", key: "sortOldest" },
 ] as const;
 
-export function AdminEventsView() {
+function AdminEventsContent() {
   const { showSuccess, showError } = useMessage();
   const router = useRouter();
   const t = useTranslations("adminEvents");
@@ -308,5 +308,13 @@ export function AdminEventsView() {
         />
       )}
     </>
+  );
+}
+
+export function AdminEventsView() {
+  return (
+    <Suspense>
+      <AdminEventsContent />
+    </Suspense>
   );
 }

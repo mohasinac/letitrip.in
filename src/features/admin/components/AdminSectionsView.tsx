@@ -15,6 +15,7 @@ const { flex } = THEME_CONSTANTS;
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import { Caption, Text } from "@mohasinac/appkit/ui";
+import { AdminSectionsView as AppkitAdminSectionsView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Badge,
@@ -216,16 +217,18 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     );
 
   return (
-    <>
-      <div className="space-y-6">
+    <AppkitAdminSectionsView
+      renderHeader={() => (
         <AdminPageHeader
           title={t("title")}
           subtitle={t("subtitle")}
           actionLabel={`+ ${tActions("create")}`}
           onAction={handleCreate}
         />
-
-        {isLoading ? (
+      )}
+      isLoading={isLoading}
+      renderTable={() =>
+        isLoading ? (
           <Card>
             <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
@@ -274,27 +277,28 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
               </Card>
             )}
           />
-        )}
-      </div>
-
-      {editingSection && (
-        <SideDrawer
-          isOpen={isDrawerOpen}
-          onClose={handleCloseDrawer}
-          title={drawerTitle}
-          mode={drawerMode || "view"}
-          isDirty={isDirty}
-          footer={drawerFooter}
-          side="right"
-        >
-          <SectionForm
-            section={editingSection}
-            onChange={setEditingSection}
-            isReadonly={isReadonly}
-            isCreate={drawerMode === "create"}
-          />
-        </SideDrawer>
-      )}
-    </>
+        )
+      }
+      renderDrawer={() =>
+        editingSection ? (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={drawerTitle}
+            mode={drawerMode || "view"}
+            isDirty={isDirty}
+            footer={drawerFooter}
+            side="right"
+          >
+            <SectionForm
+              section={editingSection}
+              onChange={setEditingSection}
+              isReadonly={isReadonly}
+              isCreate={drawerMode === "create"}
+            />
+          </SideDrawer>
+        ) : null
+      }
+    />
   );
 }

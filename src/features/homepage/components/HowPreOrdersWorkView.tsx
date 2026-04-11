@@ -1,13 +1,16 @@
+"use client";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Grid, Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { HowItWorksInfoView } from "@mohasinac/appkit/features/homepage";
+import { Grid, Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
-const { themed, flex, page } = THEME_CONSTANTS;
+const { themed } = THEME_CONSTANTS;
 
-export async function HowPreOrdersWorkView() {
-  const t = await getTranslations("howPreOrdersWork");
+export function HowPreOrdersWorkView() {
+  const t = useTranslations("howPreOrdersWork");
 
   const STEPS = [
     { number: 1, icon: "🔍", title: t("step1Title"), text: t("step1Text") },
@@ -71,23 +74,15 @@ export async function HowPreOrdersWorkView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
-      {/* Header */}
-      <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
-      >
-        <div className={`${page.container.md} text-center`}>
-          <Heading level={1} variant="none" className="mb-4 text-white">
-            {t("title")}
-          </Heading>
-          <Text variant="none" className="text-white/80 max-w-2xl mx-auto">
-            {t("subtitle")}
-          </Text>
-        </div>
-      </Section>
-
-      <div className={`${page.container.md} py-10 md:py-12 lg:py-16`}>
-        {/* ── Pre-Order Status Timeline Diagram ── */}
+    <HowItWorksInfoView
+      title={t("title")}
+      subtitle={t("subtitle")}
+      heroClass={THEME_CONSTANTS.accentBanner.pageHero}
+      stepsTitle={t("stepsTitle")}
+      steps={STEPS}
+      details={EXTRAS}
+      accentClass="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+      renderDiagram={() => (
         <FlowDiagram
           title={`📊 ${t("diagramTitle")}`}
           titleClass="text-emerald-700 dark:text-emerald-300"
@@ -96,7 +91,6 @@ export async function HowPreOrdersWorkView() {
           stepWidth="w-[90px]"
           className="mb-12"
         >
-          {/* Buyer vs Seller note */}
           <Grid
             cols={2}
             gap="3"
@@ -122,89 +116,50 @@ export async function HowPreOrdersWorkView() {
             </div>
           </Grid>
         </FlowDiagram>
-
-        {/* Steps */}
-        <Heading level={2} className="mb-6">
-          {t("stepsTitle")}
-        </Heading>
-        <div className={`${THEME_CONSTANTS.spacing.stack} mb-14`}>
-          {STEPS.map(({ number, icon, title, text }) => (
-            <Section
-              key={title}
-              className={`flex gap-4 items-start ${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
+      )}
+      renderFooter={() => (
+        <>
+          <div
+            className={`${themed.bgSecondary} rounded-xl p-8 border ${themed.border} text-center`}
+          >
+            <Heading level={2} className="mb-2">
+              {t("ctaTitle")}
+            </Heading>
+            <Text variant="secondary" className="mb-6">
+              {t("ctaText")}
+            </Text>
+            <TextLink
+              href={ROUTES.PUBLIC.PRE_ORDERS}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors text-sm"
             >
-              <div
-                className={`shrink-0 w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 ${flex.center} text-sm font-bold text-emerald-700 dark:text-emerald-400`}
-              >
-                {number}
-              </div>
-              <div>
-                <Heading level={3} className="font-semibold mb-1">
-                  {icon} {title}
-                </Heading>
-                <Text variant="secondary" size="sm" className="leading-relaxed">
-                  {text}
-                </Text>
-              </div>
-            </Section>
-          ))}
-        </div>
+              {t("ctaBrowse")}
+            </TextLink>
+          </div>
 
-        {/* Policies */}
-        <div className="space-y-5 mb-14">
-          {EXTRAS.map(({ title, text }) => (
-            <Section key={title}>
-              <Heading level={2} className="mb-2">
-                {title}
-              </Heading>
-              <Text variant="secondary" className="leading-relaxed">
-                {text}
-              </Text>
-            </Section>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <Section
-          className={`${themed.bgSecondary} rounded-xl p-8 border ${themed.border} text-center`}
-        >
-          <Heading level={2} className="mb-2">
-            {t("ctaTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("ctaText")}
-          </Text>
-          <TextLink
-            href={ROUTES.PUBLIC.PRE_ORDERS}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors text-sm"
+          <div
+            className={`mt-10 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
           >
-            {t("ctaBrowse")}
-          </TextLink>
-        </Section>
-
-        <div
-          className={`mt-10 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
-        >
-          <TextLink
-            href={ROUTES.PUBLIC.PRE_ORDERS}
-            className="text-emerald-600 dark:text-emerald-400 hover:underline"
-          >
-            {t("viewPreOrders")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.HELP}
-            className="text-emerald-600 dark:text-emerald-400 hover:underline"
-          >
-            {t("helpLink")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.REFUND_POLICY}
-            className="text-emerald-600 dark:text-emerald-400 hover:underline"
-          >
-            Refund Policy
-          </TextLink>
-        </div>
-      </div>
-    </div>
+            <TextLink
+              href={ROUTES.PUBLIC.PRE_ORDERS}
+              className="text-emerald-600 dark:text-emerald-400 hover:underline"
+            >
+              {t("viewPreOrders")}
+            </TextLink>
+            <TextLink
+              href={ROUTES.PUBLIC.HELP}
+              className="text-emerald-600 dark:text-emerald-400 hover:underline"
+            >
+              {t("helpLink")}
+            </TextLink>
+            <TextLink
+              href={ROUTES.PUBLIC.REFUND_POLICY}
+              className="text-emerald-600 dark:text-emerald-400 hover:underline"
+            >
+              Refund Policy
+            </TextLink>
+          </div>
+        </>
+      )}
+    />
   );
 }

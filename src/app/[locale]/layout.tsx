@@ -14,6 +14,7 @@ import {
 } from "@/contexts";
 import { GuestCartMergerEffect } from "@/features/cart";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
+import { LOCALE_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -62,7 +63,12 @@ export default async function LocaleLayout({
 
   return (
     <>
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+        timeZone={LOCALE_CONFIG.TIMEZONE}
+        now={new Date()}
+      >
         <SkipToMain />
         <ZodSetup />
         <ThemeProvider>

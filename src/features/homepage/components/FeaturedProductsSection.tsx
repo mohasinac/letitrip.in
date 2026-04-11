@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { useFeaturedProducts } from "@/hooks";
+import { useFeaturedProducts } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { ProductCard } from "@/components";
 import type { ProductListResponse } from "@mohasinac/appkit/features/products";

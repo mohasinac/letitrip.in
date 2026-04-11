@@ -1,8 +1,8 @@
 /**
- * AdminSiteView
+ * AdminSiteView — Thin Adapter
  *
  * Tier 2 — feature component.
- * Extracted from src/app/[locale]/admin/site/page.tsx (was 162 lines).
+ * Uses appkit AdminSiteView shell + letitrip business logic.
  * Manages site settings: basic info, contact, social links, backgrounds.
  */
 
@@ -11,7 +11,7 @@
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Text } from "@mohasinac/appkit/ui";
+import { AdminSiteView as AppkitAdminSiteView } from "@mohasinac/appkit/features/admin";
 import { AdminPageHeader, Button, Card, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
 import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/features/admin";
@@ -66,17 +66,13 @@ export function AdminSiteView() {
     },
   });
 
-  // Masked credential values from the API — shown as hints in SiteCredentialsForm
   const [maskedCredentials, setMaskedCredentials] =
     useState<SiteSettingsCredentialsMasked>({});
-
-  // New credential values entered by the admin (plaintext — never stored here, sent to API once)
   const [credentialsUpdates, setCredentialsUpdates] =
     useState<CredentialsUpdateValues>({});
 
   useEffect(() => {
     if (data) {
-      // Strip credentialsMasked out of the regular settings state
       const { credentialsMasked, ...rest } = data as any;
       setSettings(rest);
       if (credentialsMasked) setMaskedCredentials(credentialsMasked);
@@ -85,16 +81,13 @@ export function AdminSiteView() {
 
   const handleSave = async () => {
     try {
-      // Build payload: regular settings + any new credential values the admin typed
       const payload: Partial<SiteSettingsDocument> & {
         credentials?: CredentialsUpdateValues;
       } = { ...settings };
 
-      // Include credentials only when at least one field is non-empty
       const hasNewCredential = Object.values(credentialsUpdates).some((v) => v);
       if (hasNewCredential) {
         (payload as any).credentials = credentialsUpdates;
-        // Also sync whatsappNumber into contact if the admin changed it
         if (credentialsUpdates.whatsappNumber) {
           payload.contact = {
             ...payload.contact,
@@ -105,7 +98,6 @@ export function AdminSiteView() {
 
       await updateMutation.mutateAsync(payload as any);
       await refetch();
-      // Reset credential fields so they don't re-submit on the next save
       setCredentialsUpdates({});
       showToast(t("settingsSaved"), "success");
     } catch {
@@ -114,8 +106,6 @@ export function AdminSiteView() {
   };
 
   const isSaving = updateMutation.isPending;
-
-  // ── Algolia sync mutations ────────────────────────────────────────────────
   const syncProductsMutation = useAlgoliaSyncProducts();
   const syncPagesMutation = useAlgoliaSyncPages();
 
@@ -134,124 +124,109 @@ export function AdminSiteView() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <Card>
-          <div className="text-center py-8">{tLoading("default")}</div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-        <Card>
-          <div className="text-center py-8">
-            <Text className="text-red-600 mb-4">{error.message}</Text>
-            <Button variant="outline" onClick={() => refetch()}>
-              {tActions("retry")}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actionLabel={isSaving ? tLoading("saving") : t("saveAllChanges")}
-        onAction={handleSave}
-        actionDisabled={isSaving}
-      />
+    <AppkitAdminSiteView
+      renderHeader={() => (
+        <AdminPageHeader
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={isSaving ? tLoading("saving") : t("saveAllChanges")}
+          onAction={handleSave}
+          actionDisabled={isSaving || isLoading}
+        />
+      )}
+      renderForm={() => (
+        <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6`}>
+          {isLoading && (
+            <Card>
+              <div className="text-center py-8">{tLoading("default")}</div>
+            </Card>
+          )}
 
-      <BackgroundSettings
-        lightMode={settings.background?.light!}
-        darkMode={settings.background?.dark!}
-        onChange={(mode, config) => {
-          setSettings({
-            ...settings,
-            background: {
-              ...settings.background!,
-              [mode]: config,
-            },
-          });
-        }}
-      />
+          {error && (
+            <Card>
+              <div className="text-center py-8">
+                <div className="text-red-600 mb-4">{error.message}</div>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
+              </div>
+            </Card>
+          )}
 
-      <SiteBasicInfoForm settings={settings} onChange={setSettings} />
+          {!isLoading && !error && (
+            <>
+              <BackgroundSettings
+                lightMode={settings.background?.light!}
+                darkMode={settings.background?.dark!}
+                onChange={(mode, config) => {
+                  setSettings({
+                    ...settings,
+                    background: {
+                      ...settings.background!,
+                      [mode]: config,
+                    },
+                  });
+                }}
+              />
 
-      <SiteContactForm settings={settings} onChange={setSettings} />
+              <SiteBasicInfoForm settings={settings} onChange={setSettings} />
+              <SiteContactForm settings={settings} onChange={setSettings} />
+              <SiteSocialLinksForm settings={settings} onChange={setSettings} />
+              <SiteCommissionsForm settings={settings} onChange={setSettings} />
 
-      <SiteSocialLinksForm settings={settings} onChange={setSettings} />
+              <SiteCredentialsForm
+                maskedCredentials={maskedCredentials}
+                whatsappNumber={settings.contact?.whatsappNumber}
+                onChange={setCredentialsUpdates}
+              />
 
-      <SiteCommissionsForm settings={settings} onChange={setSettings} />
-
-      <SiteCredentialsForm
-        maskedCredentials={maskedCredentials}
-        whatsappNumber={settings.contact?.whatsappNumber}
-        onChange={setCredentialsUpdates}
-      />
-
-      {/* Algolia Search Tools */}
-      <Card>
-        <div className="p-4 sm:p-6">
-          <Text className="font-semibold text-base mb-1">
-            {t("algoliaTitle")}
-          </Text>
-          <Text variant="secondary" size="sm" className="mb-4">
-            {t("algoliaSubtitle")}
-          </Text>
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() =>
-                handleAlgoliaSync(
-                  () => syncProductsMutation.mutateAsync(undefined),
-                  "Products",
-                )
-              }
-              disabled={syncProductsMutation.isPending}
-            >
-              {syncProductsMutation.isPending
-                ? "⏳ Syncing products…"
-                : "🔄 Sync Products → Algolia"}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() =>
-                handleAlgoliaSync(
-                  () => syncPagesMutation.mutateAsync(undefined),
-                  "Pages",
-                )
-              }
-              disabled={syncPagesMutation.isPending}
-            >
-              {syncPagesMutation.isPending
-                ? "⏳ Syncing pages…"
-                : "🔄 Sync Pages → Algolia"}
-            </Button>
-          </div>
+              {/* Algolia Search Tools */}
+              <Card>
+                <div className="p-4 sm:p-6">
+                  <div className="font-semibold text-base mb-1">
+                    {t("algoliaTitle")}
+                  </div>
+                  <div className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
+                    {t("algoliaSubtitle")}
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        handleAlgoliaSync(
+                          () => syncProductsMutation.mutateAsync(undefined),
+                          "Products",
+                        )
+                      }
+                      disabled={syncProductsMutation.isPending}
+                    >
+                      {syncProductsMutation.isPending
+                        ? "⏳ Syncing products…"
+                        : "🔄 Sync Products → Algolia"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        handleAlgoliaSync(
+                          () => syncPagesMutation.mutateAsync(undefined),
+                          "Pages",
+                        )
+                      }
+                      disabled={syncPagesMutation.isPending}
+                    >
+                      {syncPagesMutation.isPending
+                        ? "⏳ Syncing pages…"
+                        : "🔄 Sync Pages → Algolia"}
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </>
+          )}
         </div>
-      </Card>
-
-      {/* Floating Save Button for Mobile */}
-      <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">
-        <Button
-          onClick={handleSave}
-          disabled={isSaving}
-          variant="primary"
-          className="shadow-xl"
-        >
-          {isSaving ? tLoading("saving") : `💾 ${tActions("save")}`}
-        </Button>
-      </div>
-    </div>
+      )}
+      className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}
+    />
   );
 }

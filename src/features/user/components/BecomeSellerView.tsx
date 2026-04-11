@@ -1,20 +1,9 @@
-"use client";
-
-/**
- * BecomeSellerView
- *
- * Multi-state view for the /user/become-seller page.
- *
- * States:
- *  1. Guide — user with role="user" reads 5 sections, then applies
- *  2. Success — just applied this session (pending admin review)
- *  3. Already a seller / admin / moderator — redirect to seller dashboard
- */
+﻿"use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Caption, Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { useRouter } from "@/i18n/navigation";
+import { useAuth, useBecomeSeller } from "@/hooks";
 import {
   Alert,
   Badge,
@@ -24,12 +13,9 @@ import {
   Divider,
   Spinner,
 } from "@/components";
-import { useAuth, useBecomeSeller } from "@/hooks";
+import { Caption, Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { BecomeSellerView as AppkitBecomeSellerView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-
-const { spacing, themed, flex, page } = THEME_CONSTANTS;
-
-// --- Section IDs --------------------------------------------------------------
 
 const SECTION_IDS = [
   "howItWorks",
@@ -38,10 +24,7 @@ const SECTION_IDS = [
   "auctions",
   "responsibilities",
 ] as const;
-
 type SectionId = (typeof SECTION_IDS)[number];
-
-// --- Single guide section card ------------------------------------------------
 
 interface GuideSectionProps {
   sectionIndex: number;
@@ -53,206 +36,122 @@ interface GuideSectionProps {
 function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
   const t = useTranslations("becomeSeller.guide");
   const checkboxId = `guide-section-${id}`;
-
   return (
     <Card
-      className={`p-4 transition-colors ${
-        read
-          ? "border border-emerald-300 dark:border-emerald-700"
-          : "border border-transparent"
-      }`}
+      className={`p-4 transition-colors ${read ? "border-emerald-400 dark:border-emerald-500" : ""}`}
     >
-      <div className="flex items-start gap-3">
-        {/* Step number */}
-        <div
-          aria-hidden="true"
-          className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 ${flex.center} text-xs font-bold ${
-            read
-              ? "bg-emerald-500 text-white"
-              : "bg-primary/10 dark:bg-primary/15 text-primary"
-          }`}
-        >
-          {sectionIndex + 1}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <Heading level={4} className="mb-2">
-            {t(`sections.${id}.title`)}
-          </Heading>
-          <Text variant="secondary" size="sm" className="mb-3">
-            {t(`sections.${id}.intro`)}
-          </Text>
-
-          {/* Bullet points */}
-          <Ul className={`${spacing.stack} list-none mb-4`}>
-            {(t.raw(`sections.${id}.points`) as string[]).map((point, i) => (
-              <Li key={i} className="flex items-start gap-2">
-                <Span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                <Text size="sm">{point}</Text>
-              </Li>
-            ))}
-          </Ul>
-
-          <Divider className="mb-4" />
-
-          {/* Read acknowledgement */}
-          <Checkbox
-            id={checkboxId}
-            checked={read}
-            onChange={(e) => onToggle(id, e.target.checked)}
-            label={t("ackLabel")}
-          />
-        </div>
+      <div className={THEME_CONSTANTS.flex.between}>
+        <Heading level={4}>
+          {sectionIndex + 1}. {t(`${id}.title`)}
+        </Heading>
+        <Checkbox
+          id={checkboxId}
+          checked={read}
+          onChange={(e) => onToggle(id, e.target.checked)}
+          aria-label={t("markAsRead")}
+        />
       </div>
+      <Text size="sm" variant="secondary" className="mt-2">
+        {t(`${id}.content`)}
+      </Text>
     </Card>
   );
 }
-
-// --- Post-apply success state -------------------------------------------------
-
-function SuccessState() {
-  const t = useTranslations("becomeSeller.states.success");
-
-  return (
-    <Card className={`p-6 text-center max-w-xl mx-auto`}>
-      <div className={`${flex.colCenter} gap-4`}>
-        <div
-          className={`w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 ${flex.center} text-3xl`}
-        >
-          ??
-        </div>
-        <Badge variant="success">{t("badge")}</Badge>
-        <Heading level={2}>{t("title")}</Heading>
-        <Text variant="secondary" className="max-w-md mx-auto">
-          {t("message")}
-        </Text>
-        <Alert variant="info">{t("note")}</Alert>
-      </div>
-    </Card>
-  );
-}
-
-// --- Main component -----------------------------------------------------------
 
 export function BecomeSellerView() {
-  const t = useTranslations("becomeSeller");
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
-
-  const { mutate: applyAsSeller, isPending: isApplying } = useBecomeSeller();
-
-  // Track which guide sections have been read/acknowledged
-  const [readSections, setReadSections] = useState<Record<SectionId, boolean>>(
-    () =>
-      SECTION_IDS.reduce(
-        (acc, id) => ({ ...acc, [id]: false }),
-        {} as Record<SectionId, boolean>,
-      ),
-  );
-
-  // Local post-apply state — session isn't refreshed until re-login
-  const [justApplied, setJustApplied] = useState(false);
-
-  const allSectionsRead = SECTION_IDS.every((id) => readSections[id]);
-  const readCount = SECTION_IDS.filter((id) => readSections[id]).length;
-
-  // Users who are already sellers / admins / mods go straight to their dashboard
-  const isAlreadySeller =
-    user?.role === "seller" ||
-    user?.role === "admin" ||
-    user?.role === "moderator";
+  const t = useTranslations("becomeSeller");
+  const { user, loading } = useAuth();
+  const { mutate: becomeSeller, isPending, isSuccess } = useBecomeSeller();
+  const [readSections, setReadSections] = useState<Set<SectionId>>(new Set());
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && isAlreadySeller) {
-      router.replace(ROUTES.SELLER.DASHBOARD);
+    if (!loading && !user) router.push(ROUTES.AUTH.LOGIN);
+    if (
+      !loading &&
+      user &&
+      ["seller", "admin", "moderator"].includes(user.role)
+    ) {
+      router.push(ROUTES.SELLER.DASHBOARD);
     }
-  }, [authLoading, isAlreadySeller, router]);
+  }, [user, loading, router]);
 
-  if (authLoading || isAlreadySeller) {
+  const handleToggle = (id: SectionId, checked: boolean) => {
+    setReadSections((prev) => {
+      const next = new Set(prev);
+      checked ? next.add(id) : next.delete(id);
+      return next;
+    });
+  };
+
+  const allRead = SECTION_IDS.every((id) => readSections.has(id));
+  const canApply = allRead && agreedToTerms;
+
+  if (loading) {
     return (
-      <div className={`${flex.hCenter} ${page.empty}`}>
-        <Spinner />
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+        <Spinner size="lg" />
       </div>
     );
   }
 
-  if (justApplied) {
-    return <SuccessState />;
+  if (isSuccess) {
+    return (
+      <AppkitBecomeSellerView
+        state="success"
+        renderSuccess={() => (
+          <div
+            className={`${THEME_CONSTANTS.flex.center} flex-col text-center py-16 ${THEME_CONSTANTS.spacing.stack}`}
+          >
+            <Heading level={2}>{t("successTitle")}</Heading>
+            <Text variant="secondary">{t("successDesc")}</Text>
+            <Button
+              variant="primary"
+              onClick={() => router.push(ROUTES.USER.PROFILE)}
+            >
+              {t("goToProfile")}
+            </Button>
+          </div>
+        )}
+      />
+    );
   }
 
-  const handleToggle = (id: SectionId, checked: boolean) => {
-    setReadSections((prev) => ({ ...prev, [id]: checked }));
-  };
-
-  const handleApply = async () => {
-    try {
-      await applyAsSeller(undefined);
-      setJustApplied(true);
-    } catch {
-      // error toast already shown by useBecomeSeller's onError handler
-    }
-  };
-
   return (
-    <div className={spacing.stack}>
-      {/* Page header */}
-      <div>
-        <Heading level={1}>{t("title")}</Heading>
-        <Text variant="secondary" className="mt-1">
-          {t("subtitle")}
-        </Text>
-      </div>
-
-      {/* Progress banner */}
-      <Alert
-        variant={allSectionsRead ? "success" : "info"}
-        title={t("guide.title")}
-      >
-        {allSectionsRead
-          ? t("guide.allReadMessage")
-          : t("guide.progress", { read: readCount, total: SECTION_IDS.length })}
-      </Alert>
-
-      {/* Guide section cards */}
-      <div className={spacing.stack}>
-        {SECTION_IDS.map((id, index) => (
-          <GuideSection
-            key={id}
-            id={id}
-            sectionIndex={index}
-            read={readSections[id]}
-            onToggle={handleToggle}
+    <AppkitBecomeSellerView
+      state="guide"
+      renderGuide={() => (
+        <div className={THEME_CONSTANTS.spacing.stack}>
+          <Heading level={2}>{t("title")}</Heading>
+          <Text variant="secondary">{t("subtitle")}</Text>
+          <Divider />
+          {SECTION_IDS.map((id, i) => (
+            <GuideSection
+              key={id}
+              sectionIndex={i}
+              id={id}
+              read={readSections.has(id)}
+              onToggle={handleToggle}
+            />
+          ))}
+          <Divider />
+          <Checkbox
+            id="agree-terms"
+            checked={agreedToTerms}
+            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            label={t("agreeToTerms")}
           />
-        ))}
-      </div>
-
-      {/* Apply call-to-action */}
-      <div
-        className={`${themed.bgSecondary} rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4`}
-      >
-        <div>
-          <Heading level={3}>{t("applyTitle")}</Heading>
-          <Text variant="secondary" size="sm" className="mt-0.5">
-            {t("applySubtitle")}
-          </Text>
+          <Button
+            variant="primary"
+            onClick={() => becomeSeller()}
+            disabled={!canApply}
+            isLoading={isPending}
+          >
+            {t("applyNow")}
+          </Button>
         </div>
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={handleApply}
-          disabled={!allSectionsRead}
-          isLoading={isApplying}
-          className="sm:flex-shrink-0"
-        >
-          {t("applyButton")}
-        </Button>
-      </div>
-
-      {!allSectionsRead && (
-        <Caption className="text-center text-amber-600 dark:text-amber-400">
-          {t("guide.readAllHint")}
-        </Caption>
       )}
-    </div>
+    />
   );
 }

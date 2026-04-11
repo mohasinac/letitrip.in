@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminUsersView
  *
  * Extracted from src/app/[locale]/admin/users/[[...action]]/page.tsx
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUrlTable } from "@/hooks";
@@ -25,13 +25,13 @@ import {
   Card,
   ConfirmDeleteModal,
   DataTable,
-  ListingLayout,
   RoleBadge,
   Search,
   StatusBadge,
   TablePagination,
   useToast,
 } from "@/components";
+import { AdminUsersView as AdminUsersShell } from "@mohasinac/appkit/features/admin";
 import { UserFilters } from "./UserFilters";
 import { UserDetailDrawer, useUserTableColumns } from ".";
 import type { AdminUser, UserTab } from ".";
@@ -40,7 +40,7 @@ interface AdminUsersViewProps {
   action?: string[];
 }
 
-export function AdminUsersView({ action }: AdminUsersViewProps) {
+function AdminUsersContent({ action }: AdminUsersViewProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const t = useTranslations("adminUsers");
@@ -240,7 +240,8 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
           subtitle={`${t("subtitle")} (${total} total)`}
         />
 
-        <ListingLayout
+        <AdminUsersShell
+          isDashboard
           statusTabsSlot={
             <div className="flex items-center gap-2">
               {(["all", "active", "banned", "admins"] as UserTab[]).map(
@@ -278,6 +279,27 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               compact
             />
           }
+          renderDrawer={() => (
+            <UserDetailDrawer
+              user={selectedUser}
+              isOpen={isDrawerOpen}
+              onClose={handleCloseDrawer}
+              onRoleChange={handleRoleChange}
+              onToggleBan={handleToggleBan}
+              onDelete={handleDeleteUser}
+            />
+          )}
+          renderConfirmModal={() => (
+            <ConfirmDeleteModal
+              isOpen={confirmModal.open}
+              onClose={() =>
+                setConfirmModal((prev) => ({ ...prev, open: false }))
+              }
+              onConfirm={confirmModal.onConfirm}
+              title={confirmModal.title}
+              message={confirmModal.message}
+            />
+          )}
         >
           {isLoading ? (
             <Card>
@@ -342,25 +364,16 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               )}
             />
           )}
-        </ListingLayout>
+        </AdminUsersShell>
       </div>
-
-      <UserDetailDrawer
-        user={selectedUser}
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        onRoleChange={handleRoleChange}
-        onToggleBan={handleToggleBan}
-        onDelete={handleDeleteUser}
-      />
-
-      <ConfirmDeleteModal
-        isOpen={confirmModal.open}
-        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
-        onConfirm={confirmModal.onConfirm}
-        title={confirmModal.title}
-        message={confirmModal.message}
-      />
     </>
+  );
+}
+
+export function AdminUsersView(props: AdminUsersViewProps) {
+  return (
+    <Suspense>
+      <AdminUsersContent {...props} />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, Suspense } from "react";
 import { Star, Heart, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Heading, Main, Nav, Span, Text } from "@mohasinac/appkit/ui";
@@ -41,7 +41,7 @@ interface Props {
   initialChildren?: CategoryItem[];
 }
 
-export function CategoryProductsView({
+function CategoryProductsContent({
   slug,
   initialCategory,
   initialChildren,
@@ -384,5 +384,13 @@ export function CategoryProductsView({
         ) : null
       }
     />
+  );
+}
+
+export function CategoryProductsView(props: Props) {
+  return (
+    <Suspense>
+      <CategoryProductsContent {...props} />
+    </Suspense>
   );
 }

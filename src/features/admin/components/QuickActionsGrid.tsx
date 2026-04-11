@@ -1,17 +1,19 @@
 /**
  * QuickActionsGrid Component
- * Path: src/components/admin/dashboard/QuickActionsGrid.tsx
  *
- * Grid of quick action buttons for admin dashboard.
- * Uses useTranslations (next-intl) for all labels.
+ * Thin adapter: builds letitrip-specific action items and delegates layout to
+ * appkit's QuickActionsPanel with local Card / Button / TextLink rendering.
  */
 
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading } from "@mohasinac/appkit/ui";
 import { Card, Button, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import {
+  QuickActionsPanel,
+  type QuickActionItem,
+} from "@mohasinac/appkit/features/admin";
 
 const { spacing, enhancedCard } = THEME_CONSTANTS;
 
@@ -63,19 +65,22 @@ const ICONS = [
 export function QuickActionsGrid() {
   const t = useTranslations("adminDashboard");
 
-  const QUICK_ACTIONS = [
+  const actions: QuickActionItem[] = [
     {
-      labelKey: "manageUsers" as const,
+      id: "users",
+      label: t("manageUsers"),
       href: ROUTES.ADMIN.USERS,
       icon: ICONS[0],
     },
     {
-      labelKey: "reviewDisabled" as const,
+      id: "disabled",
+      label: t("reviewDisabled"),
       href: `${ROUTES.ADMIN.USERS}?status=disabled`,
       icon: ICONS[1],
     },
     {
-      labelKey: "manageContent" as const,
+      id: "content",
+      label: t("manageContent"),
       href: ROUTES.ADMIN.SECTIONS,
       icon: ICONS[2],
     },
@@ -84,21 +89,22 @@ export function QuickActionsGrid() {
   return (
     <Card className={enhancedCard.base}>
       <div className={spacing.cardPadding}>
-        <Heading level={3} variant="primary" className="mb-4">
-          {t("quickActions")}
-        </Heading>
-        <div
-          className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4`}
-        >
-          {QUICK_ACTIONS.map((action) => (
-            <TextLink key={action.href} href={action.href} className="block">
+        <QuickActionsPanel
+          title={t("quickActions")}
+          actions={actions}
+          renderAction={(action) => (
+            <TextLink
+              key={action.id}
+              href={action.href ?? "#"}
+              className="block"
+            >
               <Button variant="secondary" className="w-full justify-start">
                 {action.icon}
-                {t(action.labelKey)}
+                {action.label}
               </Button>
             </TextLink>
-          ))}
-        </div>
+          )}
+        />
       </div>
     </Card>
   );

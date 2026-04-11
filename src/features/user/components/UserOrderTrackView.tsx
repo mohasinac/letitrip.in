@@ -1,11 +1,12 @@
-"use client";
+﻿"use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button, EmptyState, Spinner } from "@/components";
-import { OrderTrackingView } from "./OrderTrackingView";
+import { UserOrderTrackView as AppkitUserOrderTrackView } from "@mohasinac/appkit/features/account";
 import { useOrderDetail } from "../hooks/useOrderDetail";
+import { OrderTrackingView } from "./OrderTrackingView";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useTranslations } from "next-intl";
 
 interface UserOrderTrackViewProps {
   orderId: string;
@@ -15,37 +16,36 @@ export function UserOrderTrackView({ orderId }: UserOrderTrackViewProps) {
   const router = useRouter();
   const tOrders = useTranslations("orders");
   const { order, isLoading, error } = useOrderDetail(orderId);
-  const { flex } = THEME_CONSTANTS;
 
-  if (isLoading) {
-    return (
-      <div className={`${flex.center} min-h-screen`}>
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (error || !order) {
-    return (
-      <div
-        className={`container mx-auto px-4 py-8 max-w-2xl ${THEME_CONSTANTS.spacing.stack}`}
-      >
+  return (
+    <AppkitUserOrderTrackView
+      isNotFound={!isLoading && (!!error || !order)}
+      renderBack={() => (
         <Button
           variant="secondary"
           onClick={() => router.push(ROUTES.USER.ORDERS)}
           className="w-fit"
         >
-          ← {tOrders("backToOrders")}
+          â† {tOrders("backToOrders")}
         </Button>
+      )}
+      renderTracking={() =>
+        isLoading ? (
+          <div className={`${THEME_CONSTANTS.flex.center} min-h-[400px]`}>
+            <Spinner size="lg" />
+          </div>
+        ) : order ? (
+          <OrderTrackingView order={order} orderId={orderId} />
+        ) : null
+      }
+      renderNotFound={() => (
         <EmptyState
           title={tOrders("orderNotFound")}
           description={tOrders("orderNotFoundMessage")}
           actionLabel={tOrders("viewAllOrders")}
           onAction={() => router.push(ROUTES.USER.ORDERS)}
         />
-      </div>
-    );
-  }
-
-  return <OrderTrackingView order={order} orderId={orderId} />;
+      )}
+    />
+  );
 }

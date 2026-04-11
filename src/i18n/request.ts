@@ -11,6 +11,7 @@ import { setupZodErrorMap } from "@mohasinac/appkit/validation";
 import { routing } from "./routing";
 import { mergeFeatureMessages } from "@mohasinac/appkit/cli";
 import features from "@/features.config";
+import { LOCALE_CONFIG } from "@/constants";
 
 export default getRequestConfig(async ({ requestLocale }) => {
   // Apply custom Zod error messages on every server request (idempotent)
@@ -30,5 +31,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages: { ...featureMessages, ...projectMessages },
+    timeZone: LOCALE_CONFIG.TIMEZONE,
+    now: new Date(),
   };
 });

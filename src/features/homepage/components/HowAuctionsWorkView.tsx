@@ -1,13 +1,16 @@
+"use client";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Span, Text } from "@mohasinac/appkit/ui";
+import { HowItWorksInfoView } from "@mohasinac/appkit/features/homepage";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
-const { themed, flex, page } = THEME_CONSTANTS;
+const { themed } = THEME_CONSTANTS;
 
-export async function HowAuctionsWorkView() {
-  const t = await getTranslations("howAuctionsWork");
+export function HowAuctionsWorkView() {
+  const t = useTranslations("howAuctionsWork");
 
   const STEPS = [
     { number: 1, icon: "🔍", title: t("step1Title"), text: t("step1Text") },
@@ -73,23 +76,16 @@ export async function HowAuctionsWorkView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
-      {/* Header */}
-      <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
-      >
-        <div className={`${page.container.md} text-center`}>
-          <Heading level={1} variant="none" className="mb-4 text-white">
-            {t("title")}
-          </Heading>
-          <Text variant="none" className="text-white/80 max-w-2xl mx-auto">
-            {t("subtitle")}
-          </Text>
-        </div>
-      </Section>
-
-      <div className={`${page.container.md} py-10 md:py-12 lg:py-16`}>
-        {/* ── Auction Journey Diagram ── */}
+    <HowItWorksInfoView
+      title={t("title")}
+      subtitle={t("subtitle")}
+      heroClass={THEME_CONSTANTS.accentBanner.pageHero}
+      stepsTitle={t("stepsTitle")}
+      steps={STEPS}
+      detailsSectionTitle={t("knowMoreTitle")}
+      details={DETAILS}
+      accentClass="bg-primary/10 dark:bg-primary/20 text-primary"
+      renderDiagram={() => (
         <FlowDiagram
           title={`🗺️ ${t("diagramTitle")}`}
           titleClass="text-primary"
@@ -98,7 +94,6 @@ export async function HowAuctionsWorkView() {
           stepWidth="w-[78px]"
           className="mb-12"
         >
-          {/* Outcome cards */}
           <div className="border-t border-dashed border-slate-200 dark:border-slate-700 pt-4 mt-2">
             <Text
               size="xs"
@@ -143,91 +138,46 @@ export async function HowAuctionsWorkView() {
             </div>
           </div>
         </FlowDiagram>
-
-        {/* Steps */}
-        <Heading level={2} className="mb-6">
-          {t("stepsTitle")}
-        </Heading>
-        <div className={`${THEME_CONSTANTS.spacing.stack} mb-14`}>
-          {STEPS.map(({ number, icon, title, text }) => (
-            <Section
-              key={title}
-              className={`flex gap-4 items-start ${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
-            >
-              <div
-                className={`shrink-0 w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 ${flex.center} text-sm font-bold text-primary`}
+      )}
+      renderFooter={() => (
+        <>
+          <div
+            className={`${themed.bgSecondary} rounded-xl p-8 border ${themed.border} text-center`}
+          >
+            <Heading level={2} className="mb-2">
+              {t("ctaTitle")}
+            </Heading>
+            <Text variant="secondary" className="mb-6">
+              {t("ctaText")}
+            </Text>
+            <div className="flex flex-wrap justify-center gap-3">
+              <TextLink
+                href={ROUTES.PUBLIC.AUCTIONS}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold transition-colors text-sm"
               >
-                {number}
-              </div>
-              <div>
-                <Heading level={3} className="font-semibold mb-1">
-                  {icon} {title}
-                </Heading>
-                <Text variant="secondary" size="sm" className="leading-relaxed">
-                  {text}
-                </Text>
-              </div>
-            </Section>
-          ))}
-        </div>
+                {t("ctaBrowse")}
+              </TextLink>
+            </div>
+          </div>
 
-        {/* Good to Know */}
-        <Heading level={2} className="mb-6">
-          {t("knowMoreTitle")}
-        </Heading>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
-          {DETAILS.map(({ title, text }) => (
-            <Section
-              key={title}
-              className={`${themed.bgSecondary} rounded-xl p-5 border ${themed.border}`}
-            >
-              <Heading level={3} className="font-semibold mb-2 text-base">
-                {title}
-              </Heading>
-              <Text variant="secondary" size="sm" className="leading-relaxed">
-                {text}
-              </Text>
-            </Section>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <Section
-          className={`${themed.bgSecondary} rounded-xl p-8 border ${themed.border} text-center`}
-        >
-          <Heading level={2} className="mb-2">
-            {t("ctaTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("ctaText")}
-          </Text>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div
+            className={`mt-10 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
+          >
             <TextLink
               href={ROUTES.PUBLIC.AUCTIONS}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl font-semibold transition-colors text-sm"
+              className="text-primary hover:underline"
             >
-              {t("ctaBrowse")}
+              {t("viewAuctions")}
+            </TextLink>
+            <TextLink
+              href={ROUTES.PUBLIC.FAQS}
+              className="text-primary hover:underline"
+            >
+              {t("faqLink")}
             </TextLink>
           </div>
-        </Section>
-
-        <div
-          className={`mt-10 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
-        >
-          <TextLink
-            href={ROUTES.PUBLIC.AUCTIONS}
-            className="text-primary hover:underline"
-          >
-            {t("viewAuctions")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.FAQS}
-            className="text-primary hover:underline"
-          >
-            {t("faqLink")}
-          </TextLink>
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    />
   );
 }

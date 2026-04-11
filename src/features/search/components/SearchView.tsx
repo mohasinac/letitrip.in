@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, Suspense } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
@@ -35,7 +35,7 @@ interface SearchViewProps {
   initialCategories?: CategoryDocument[];
 }
 
-export function SearchView({ initialCategories }: SearchViewProps = {}) {
+function SearchContent({ initialCategories }: SearchViewProps = {}) {
   const t = useTranslations("search");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -343,5 +343,13 @@ export function SearchView({ initialCategories }: SearchViewProps = {}) {
         )
       }
     />
+  );
+}
+
+export function SearchView(props: SearchViewProps) {
+  return (
+    <Suspense>
+      <SearchContent {...props} />
+    </Suspense>
   );
 }

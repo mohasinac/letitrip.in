@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { useFeaturedAuctions } from "@/hooks";
+import { useFeaturedAuctions } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { AuctionCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";

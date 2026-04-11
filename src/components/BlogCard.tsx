@@ -5,6 +5,7 @@ import type { BlogPostCategory } from "@mohasinac/appkit/features/blog";
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { BlogPost } from "@mohasinac/appkit/features/blog";
+import { Span } from "@mohasinac/appkit/ui";
 
 export const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
   news: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -50,15 +51,15 @@ export function BlogCard({
       }
     >
       {selectable && (
-        <span
+        <Span
           className={`absolute top-2 left-2 z-10 h-5 w-5 rounded border-2 inline-flex items-center justify-center
             ${selected ? "bg-primary border-primary" : "bg-white/90 border-gray-300"}`}
           aria-hidden="true"
         >
           {selected && (
-            <span className="text-white text-xs leading-none">✓</span>
+            <Span className="text-white text-xs leading-none">✓</Span>
           )}
-        </span>
+        </Span>
       )}
       <PkgBlogCard
         post={post}

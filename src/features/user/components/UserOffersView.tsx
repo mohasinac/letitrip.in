@@ -1,17 +1,16 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { useMutation } from "@tanstack/react-query";
 import {
   useUserOffers,
   useAcceptCounter,
   useWithdrawOffer,
 } from "../hooks/useUserOffers";
 import { useMessage } from "@/hooks";
-import { useMutation } from "@tanstack/react-query";
 import { checkoutOfferAction } from "@/actions";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { UserOffersView as AppkitUserOffersView } from "@mohasinac/appkit/features/account";
 import {
   Button,
   DataTable,
@@ -19,12 +18,11 @@ import {
   Spinner,
   StatusBadge,
 } from "@/components";
-import { Caption, Heading, Text } from "@mohasinac/appkit/ui";
+import { Caption, Text } from "@mohasinac/appkit/ui";
 import type { DataTableColumn } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
+import { ROUTES } from "@/constants";
 import type { OfferDocument } from "@/db/schema";
-
-const { flex } = THEME_CONSTANTS;
 
 const STATUS_VARIANT: Record<
   string,
@@ -62,180 +60,116 @@ export function UserOffersView() {
     (err: { message?: string }) => showError(err.message ?? t("actionFailed")),
   );
 
-  const { mutateAsync: checkoutOffer, isPending: checkingOut } = useMutation({
+  const checkoutMutation = useMutation({
     mutationFn: (offerId: string) => checkoutOfferAction(offerId),
-    onSuccess: () => {
-      showSuccess(t("addedToCart"));
-      router.push(ROUTES.USER.CART);
-    },
-    onError: (err: Error) => showError(err.message ?? t("actionFailed")),
   });
 
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [pendingId, setPendingId] = useState<string | null>(null);
-
   const columns: DataTableColumn<OfferDocument>[] = [
-    {
-      key: "productTitle",
-      header: t("colProduct"),
-      render: (o) => <Text className="font-medium">{o.productTitle}</Text>,
-    },
+    { key: "productTitle", header: t("product") },
     {
       key: "offerAmount",
-      header: t("colYourOffer"),
-      render: (o) => (
-        <Text>{formatCurrency(o.offerAmount, o.currency ?? "INR")}</Text>
+      header: t("offered"),
+      render: (o: OfferDocument) => (
+        <Text size="sm">{formatCurrency(o.offerAmount)}</Text>
       ),
     },
     {
       key: "counterAmount",
-      header: t("colCounter"),
-      render: (o) =>
+      header: t("counter"),
+      render: (o: OfferDocument) =>
         o.counterAmount ? (
-          <Text className="font-semibold text-amber-600 dark:text-amber-400">
-            {formatCurrency(o.counterAmount, o.currency ?? "INR")}
-          </Text>
+          <Text size="sm">{formatCurrency(o.counterAmount)}</Text>
         ) : (
-          <Caption>&#8212;</Caption>
-        ),
-    },
-    {
-      key: "lockedPrice",
-      header: t("colLockedPrice"),
-      render: (o) =>
-        o.lockedPrice ? (
-          <Text className="font-semibold text-green-700">
-            {formatCurrency(o.lockedPrice, o.currency ?? "INR")}
-          </Text>
-        ) : (
-          <Caption>&#8212;</Caption>
+          <Caption>—</Caption>
         ),
     },
     {
       key: "status",
-      header: t("colStatus"),
-      render: (o) => (
-        <StatusBadge
-          status={STATUS_VARIANT[o.status] ?? "info"}
-          label={t(`status_${o.status}`)}
-        />
+      header: t("status"),
+      render: (o: OfferDocument) => (
+        <StatusBadge status={STATUS_VARIANT[o.status] ?? "pending"} />
       ),
     },
     {
       key: "createdAt",
-      header: t("colDate"),
-      render: (o) => <Caption>{formatDate(o.createdAt)}</Caption>,
+      header: t("date"),
+      render: (o: OfferDocument) => (
+        <Caption>{formatDate(o.createdAt)}</Caption>
+      ),
     },
     {
-      key: "actions",
-      header: "",
-      render: (o) => {
-        const busy =
-          pendingId === o.id && (accepting || withdrawing || checkingOut);
-
-        if (o.status === "accepted") {
-          return (
+      key: "id",
+      header: tActions("actions"),
+      render: (o: OfferDocument) => (
+        <div className="flex gap-2">
+          {o.status === "countered" && (
             <Button
               size="sm"
-              disabled={busy}
-              onClick={async () => {
-                setPendingId(o.id);
-                try {
-                  await checkoutOffer(o.id);
-                } finally {
-                  setPendingId(null);
-                }
-              }}
+              variant="primary"
+              onClick={() => acceptCounter({ offerId: o.id })}
+              isLoading={accepting}
             >
-              {t("checkoutNow")}
+              {t("acceptCounter")}
             </Button>
-          );
-        }
-
-        if (o.status === "countered") {
-          return (
-            <div className={`${flex.rowCenter} gap-2`}>
-              <Button
-                size="sm"
-                disabled={busy}
-                onClick={async () => {
-                  setPendingId(o.id);
-                  try {
-                    await acceptCounter({ offerId: o.id });
-                  } finally {
-                    setPendingId(null);
-                  }
-                }}
-              >
-                {t("acceptCounter")}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={busy}
-                onClick={async () => {
-                  setPendingId(o.id);
-                  try {
-                    await withdraw({ offerId: o.id });
-                  } finally {
-                    setPendingId(null);
-                  }
-                }}
-              >
-                {tActions("decline")}
-              </Button>
-            </div>
-          );
-        }
-
-        if (o.status === "pending") {
-          return (
+          )}
+          {o.status === "accepted" && (
             <Button
               size="sm"
-              variant="outline"
-              disabled={busy}
-              onClick={async () => {
-                setPendingId(o.id);
-                try {
-                  await withdraw({ offerId: o.id });
-                } finally {
-                  setPendingId(null);
-                }
-              }}
+              variant="secondary"
+              onClick={() => checkoutMutation.mutate(o.id)}
+              isLoading={checkoutMutation.isPending}
+            >
+              {tActions("checkout")}
+            </Button>
+          )}
+          {(o.status === "pending" || o.status === "countered") && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => withdraw({ offerId: o.id })}
+              isLoading={withdrawing}
             >
               {t("withdraw")}
             </Button>
-          );
-        }
-        return null;
-      },
+          )}
+        </div>
+      ),
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className={`${flex.center} p-10`}>
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <Heading level={2}>{t("pageTitle")}</Heading>
-
-      {offers.length === 0 ? (
-        <EmptyState title={t("emptyTitle")} description={t("emptyDesc")} />
-      ) : (
-        <DataTable
-          columns={columns as DataTableColumn<Record<string, any>>[]}
-          data={offers}
-          keyExtractor={(o) => o.id}
-          selectable
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
+    <AppkitUserOffersView
+      isEmpty={!isLoading && !offers?.length}
+      renderTable={() =>
+        isLoading ? (
+          <Spinner />
+        ) : (
+          <DataTable<OfferDocument>
+            columns={columns}
+            data={offers ?? []}
+            loading={isLoading}
+            mobileCardRender={(o: OfferDocument) => (
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-slate-700">
+                <Text size="sm" weight="medium">
+                  {o.productTitle}
+                </Text>
+                <div className="flex justify-between mt-1">
+                  <Caption>{formatCurrency(o.offerAmount)}</Caption>
+                  <StatusBadge status={STATUS_VARIANT[o.status] ?? "pending"} />
+                </div>
+              </div>
+            )}
+          />
+        )
+      }
+      renderEmpty={() => (
+        <EmptyState
+          title={t("noOffers")}
+          description={t("noOffersDesc")}
+          actionLabel={tActions("shopNow")}
+          onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
         />
       )}
-    </div>
+    />
   );
 }

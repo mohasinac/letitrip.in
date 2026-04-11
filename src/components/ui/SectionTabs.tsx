@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { Button } from "@/components";
 import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
 import { Nav } from "@mohasinac/appkit/ui";
@@ -156,7 +157,7 @@ export function SectionTabs({
 
             if (isControlled) {
               return (
-                <button
+                <Button
                   key={key}
                   type="button"
                   role="tab"
@@ -165,7 +166,7 @@ export function SectionTabs({
                   className={tabClass}
                 >
                   {content}
-                </button>
+                </Button>
               );
             }
 

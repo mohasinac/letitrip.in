@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, Suspense } from "react";
 import { PackageSearch, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StoreProductsView as AppkitStoreProductsView } from "@mohasinac/appkit/features/stores";
@@ -32,7 +32,7 @@ interface StoreProductsViewProps {
   storeSlug: string;
 }
 
-export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
+function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
   const t = useTranslations("storePage");
   const tProducts = useTranslations("products");
   const tActions = useTranslations("actions");
@@ -302,5 +302,13 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
         ) : null
       }
     />
+  );
+}
+
+export function StoreProductsView(props: StoreProductsViewProps) {
+  return (
+    <Suspense>
+      <StoreProductsContent {...props} />
+    </Suspense>
   );
 }

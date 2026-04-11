@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { Heading, Span, Text } from "@mohasinac/appkit/ui";
-import { Card, Spinner, EmptyState, MediaImage, Button } from "@/components";
+import { Card, EmptyState, MediaImage, Spinner, Button } from "@/components";
 import { useMessage } from "@/hooks";
+import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
@@ -24,6 +26,7 @@ interface EventDetailViewProps {
 export function EventDetailView({ id, initialData }: EventDetailViewProps) {
   const { event, isLoading } = usePublicEvent(id, { initialData });
   const { showError } = useMessage();
+  const t = useTranslations("events");
   const [codeCopied, setCodeCopied] = useState(false);
 
   const handleCopyCode = async (code: string) => {
@@ -36,121 +39,150 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (!event) {
-    return (
-      <EmptyState
-        title="Event not found"
-        description="This event may have ended or been removed."
-      />
-    );
-  }
-
   return (
-    <div className={`max-w-3xl mx-auto ${spacing.stack}`}>
-      {/* Header */}
-      <div>
-        {event.coverImageUrl && (
-          <MediaImage
-            src={event.coverImageUrl}
-            alt={event.title}
-            size="hero"
-            className="w-full h-56 object-cover rounded-xl mb-4"
-          />
-        )}
-        <div className="flex items-center gap-2 mb-2">
-          <EventStatusBadge status={event.status} />
+    <AppkitEventDetailView
+      isLoading={isLoading}
+      renderSkeleton={() => (
+        <div className="flex justify-center py-20">
+          <Spinner />
         </div>
-        <Heading level={1} className={typography.h2}>
-          {event.title}
-        </Heading>
-        {(event.startsAt || event.endsAt) && (
-          <Text size="sm" variant="secondary" className="mt-1">
-            {event.startsAt && `Starts: ${formatDate(event.startsAt)}`}
-            {event.startsAt && event.endsAt && " · "}
-            {event.endsAt && `Ends: ${formatDate(event.endsAt)}`}
-          </Text>
-        )}
-        <div
-          className={`prose dark:prose-invert max-w-none mt-3 text-sm ${themed.textSecondary}`}
-          dangerouslySetInnerHTML={{ __html: event.description }}
-        />
-      </div>
-
-      {/* Type-specific participation section */}
-      {event.status === "active" && (
-        <Card className="p-6">
-          <Heading level={2} className={`${typography.h4} mb-4`}>
-            {UI_LABELS.EVENTS.PARTICIPATE}
-          </Heading>
-          {event.type === "poll" && event.pollConfig && (
-            <PollVotingSection
-              eventId={event.id}
-              pollConfig={event.pollConfig}
-            />
-          )}
-          {event.type === "survey" && <SurveyEventSection event={event} />}
-          {event.type === "feedback" && event.feedbackConfig && (
-            <FeedbackEventSection
-              eventId={event.id}
-              feedbackConfig={event.feedbackConfig}
-            />
-          )}
-          {event.type === "sale" && event.saleConfig && (
-            <Text size="sm" variant="secondary">
-              {UI_LABELS.EVENTS.SALE_BANNER(event.saleConfig.discountPercent)}
-            </Text>
-          )}
-          {event.type === "offer" && event.offerConfig && (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 flex-1 min-w-0 rounded-lg border border-dashed border-primary/30 bg-primary/5 dark:bg-primary/10 px-4 py-2">
-                <Span className="font-mono font-bold tracking-widest text-primary text-base select-all">
-                  {event.offerConfig.displayCode}
-                </Span>
-                <Text size="xs" variant="secondary" className="flex-1 truncate">
-                  {UI_LABELS.EVENTS.OFFER_BANNER(event.offerConfig.displayCode)}
-                </Text>
+      )}
+      renderNotFound={
+        !event && !isLoading
+          ? () => (
+              <EmptyState
+                title={t("notFound")}
+                description={t("notFoundDesc")}
+              />
+            )
+          : undefined
+      }
+      renderCoverImage={
+        event?.coverImageUrl
+          ? () => (
+              <div className="relative aspect-[21/9] overflow-hidden rounded-xl mb-4">
+                <MediaImage
+                  src={event.coverImageUrl!}
+                  alt={event.title}
+                  size="hero"
+                  priority
+                />
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleCopyCode(event.offerConfig!.displayCode)}
-                className="shrink-0"
-              >
-                {codeCopied
-                  ? UI_LABELS.PROMOTIONS_PAGE.COPIED
-                  : UI_LABELS.PROMOTIONS_PAGE.COPY_CODE}
-              </Button>
-            </div>
-          )}
-        </Card>
-      )}
-
-      {event.status === "ended" && (
-        <Card className="p-6">
-          <Text size="sm" variant="secondary" weight="medium">
-            {UI_LABELS.EVENTS.ENTRIES_CLOSED}
-          </Text>
-        </Card>
-      )}
-
-      {/* Leaderboard — survey/giveaway only */}
-      {event.type === "survey" && event.surveyConfig?.hasLeaderboard && (
-        <Card className="p-6">
-          <EventLeaderboard
-            eventId={event.id}
-            pointsLabel={event.surveyConfig.pointsLabel}
-          />
-        </Card>
-      )}
-    </div>
+            )
+          : undefined
+      }
+      renderHeader={
+        event
+          ? () => (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <EventStatusBadge status={event.status} />
+                </div>
+                <Heading level={1} className={typography.h2}>
+                  {event.title}
+                </Heading>
+                {(event.startsAt || event.endsAt) && (
+                  <Text size="sm" variant="secondary" className="mt-1">
+                    {event.startsAt && `Starts: ${formatDate(event.startsAt)}`}
+                    {event.startsAt && event.endsAt && " · "}
+                    {event.endsAt && `Ends: ${formatDate(event.endsAt)}`}
+                  </Text>
+                )}
+                <div
+                  className={`prose dark:prose-invert max-w-none mt-3 text-sm ${themed.textSecondary}`}
+                  dangerouslySetInnerHTML={{ __html: event.description }}
+                />
+              </div>
+            )
+          : undefined
+      }
+      renderContent={
+        event
+          ? () => (
+              <>
+                {event.status === "active" && (
+                  <Card className="p-6">
+                    <Heading level={2} className={`${typography.h4} mb-4`}>
+                      {UI_LABELS.EVENTS.PARTICIPATE}
+                    </Heading>
+                    {event.type === "poll" && event.pollConfig && (
+                      <PollVotingSection
+                        eventId={event.id}
+                        pollConfig={event.pollConfig}
+                      />
+                    )}
+                    {event.type === "survey" && (
+                      <SurveyEventSection event={event} />
+                    )}
+                    {event.type === "feedback" && event.feedbackConfig && (
+                      <FeedbackEventSection
+                        eventId={event.id}
+                        feedbackConfig={event.feedbackConfig}
+                      />
+                    )}
+                    {event.type === "sale" && event.saleConfig && (
+                      <Text size="sm" variant="secondary">
+                        {UI_LABELS.EVENTS.SALE_BANNER(
+                          event.saleConfig.discountPercent,
+                        )}
+                      </Text>
+                    )}
+                    {event.type === "offer" && event.offerConfig && (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 flex-1 min-w-0 rounded-lg border border-dashed border-primary/30 bg-primary/5 dark:bg-primary/10 px-4 py-2">
+                          <Span className="font-mono font-bold tracking-widest text-primary text-base select-all">
+                            {event.offerConfig.displayCode}
+                          </Span>
+                          <Text
+                            size="xs"
+                            variant="secondary"
+                            className="flex-1 truncate"
+                          >
+                            {UI_LABELS.EVENTS.OFFER_BANNER(
+                              event.offerConfig.displayCode,
+                            )}
+                          </Text>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleCopyCode(event.offerConfig!.displayCode)
+                          }
+                          className="shrink-0"
+                        >
+                          {codeCopied
+                            ? UI_LABELS.PROMOTIONS_PAGE.COPIED
+                            : UI_LABELS.PROMOTIONS_PAGE.COPY_CODE}
+                        </Button>
+                      </div>
+                    )}
+                  </Card>
+                )}
+                {event.status === "ended" && (
+                  <Card className="p-6">
+                    <Text size="sm" variant="secondary" weight="medium">
+                      {UI_LABELS.EVENTS.ENTRIES_CLOSED}
+                    </Text>
+                  </Card>
+                )}
+              </>
+            )
+          : undefined
+      }
+      renderLeaderboard={
+        event?.type === "survey" && event.surveyConfig?.hasLeaderboard
+          ? () => (
+              <Card className="p-6">
+                <EventLeaderboard
+                  eventId={event.id}
+                  pointsLabel={event.surveyConfig?.pointsLabel}
+                />
+              </Card>
+            )
+          : undefined
+      }
+    />
   );
 }

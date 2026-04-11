@@ -12,6 +12,7 @@ import {
   useRevokeSession,
   useRevokeUserSessions,
 } from "@/features/admin";
+import { AdminSessionsManager as AdminSessionsShell } from "@mohasinac/appkit/features/admin";
 import { Grid, Heading, Text } from "@mohasinac/appkit/ui";
 import {
   Card,
@@ -125,100 +126,102 @@ export function AdminSessionsManager() {
   const sessions = data?.sessions || [];
 
   return (
-    <div className="space-y-6">
-      {/* Statistics Cards */}
-      <Grid
-        className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4"
-        gap="md"
-      >
-        <Card className="p-4">
-          <Text variant="secondary" size="sm">
-            {t("stats.active")}
-          </Text>
-          <Text weight="bold" className="text-3xl mt-2">
-            {stats?.totalActive || 0}
-          </Text>
-        </Card>
-        <Card className="p-4">
-          <Text variant="secondary" size="sm">
-            {t("stats.uniqueUsers")}
-          </Text>
-          <Text weight="bold" className="text-3xl mt-2">
-            {stats?.uniqueUsers || 0}
-          </Text>
-        </Card>
-        <Card className="p-4">
-          <Text variant="secondary" size="sm">
-            {t("stats.recentActivity")}
-          </Text>
-          <Text weight="bold" className="text-3xl mt-2">
-            {stats?.recentActivity || 0}
-          </Text>
-        </Card>
-        <Card className="p-4">
-          <Text variant="secondary" size="sm">
-            {t("stats.expired")}
-          </Text>
-          <Text weight="bold" className="text-3xl mt-2">
-            {stats?.totalExpired || 0}
-          </Text>
-        </Card>
-      </Grid>
+    <AdminSessionsShell
+      renderStats={() => (
+        <Grid
+          className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4"
+          gap="md"
+        >
+          <Card className="p-4">
+            <Text variant="secondary" size="sm">
+              {t("stats.active")}
+            </Text>
+            <Text weight="bold" className="text-3xl mt-2">
+              {stats?.totalActive || 0}
+            </Text>
+          </Card>
+          <Card className="p-4">
+            <Text variant="secondary" size="sm">
+              {t("stats.uniqueUsers")}
+            </Text>
+            <Text weight="bold" className="text-3xl mt-2">
+              {stats?.uniqueUsers || 0}
+            </Text>
+          </Card>
+          <Card className="p-4">
+            <Text variant="secondary" size="sm">
+              {t("stats.recentActivity")}
+            </Text>
+            <Text weight="bold" className="text-3xl mt-2">
+              {stats?.recentActivity || 0}
+            </Text>
+          </Card>
+          <Card className="p-4">
+            <Text variant="secondary" size="sm">
+              {t("stats.expired")}
+            </Text>
+            <Text weight="bold" className="text-3xl mt-2">
+              {stats?.totalExpired || 0}
+            </Text>
+          </Card>
+        </Grid>
+      )}
+      renderTable={() => (
+        <Card>
+          <div className={`p-4 border-b ${THEME_CONSTANTS.themed.borderColor}`}>
+            <Heading level={3}>{t("tableTitle")}</Heading>
+            <Text variant="secondary" size="sm" className="mt-1">
+              {t("description")}
+            </Text>
+          </div>
 
-      {/* Sessions Table */}
-      <Card>
-        <div className={`p-4 border-b ${THEME_CONSTANTS.themed.borderColor}`}>
-          <Heading level={3}>{t("tableTitle")}</Heading>
-          <Text variant="secondary" size="sm" className="mt-1">
-            {t("description")}
-          </Text>
-        </div>
-
-        <DataTable
-          columns={SESSION_TABLE_COLUMNS}
-          data={sessions}
-          loading={isLoading}
-          keyExtractor={(session) => session.id}
-          selectable
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          actions={(session) =>
-            session.isActive ? (
-              <div className="flex gap-2 justify-end">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleRevokeSession(session.id)}
-                  disabled={revokeSession.isPending}
-                >
-                  {t("revoke")}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    handleRevokeAllUserSessions(
-                      session.userId,
-                      session.user?.email || "this user",
-                    )
-                  }
-                  disabled={revokeUserSessions.isPending}
-                >
-                  {t("revokeAll")}
-                </Button>
-              </div>
-            ) : null
-          }
+          <DataTable
+            columns={SESSION_TABLE_COLUMNS}
+            data={sessions}
+            loading={isLoading}
+            keyExtractor={(session) => session.id}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            actions={(session) =>
+              session.isActive ? (
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleRevokeSession(session.id)}
+                    disabled={revokeSession.isPending}
+                  >
+                    {t("revoke")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      handleRevokeAllUserSessions(
+                        session.userId,
+                        session.user?.email || "this user",
+                      )
+                    }
+                    disabled={revokeUserSessions.isPending}
+                  >
+                    {t("revokeAll")}
+                  </Button>
+                </div>
+              ) : null
+            }
+          />
+        </Card>
+      )}
+      renderConfirmModal={() => (
+        <ConfirmDeleteModal
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+          onConfirm={confirmModal.onConfirm}
+          title={confirmModal.title}
+          message={confirmModal.message}
         />
-      </Card>
-
-      <ConfirmDeleteModal
-        isOpen={confirmModal.open}
-        onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
-        onConfirm={confirmModal.onConfirm}
-        title={confirmModal.title}
-        message={confirmModal.message}
-      />
-    </div>
+      )}
+    />
   );
 }

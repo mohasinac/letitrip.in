@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks";
 import { useAdminStats } from "@/features/admin";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+import { AdminDashboardView as AppkitAdminDashboardView } from "@mohasinac/appkit/features/admin";
 import { AdminStatsCards } from "./AdminStatsCards";
 import { AdminDashboardSkeleton } from "./AdminDashboardSkeleton";
 import { RecentActivityCard } from "./RecentActivityCard";
@@ -57,36 +58,39 @@ export function AdminDashboardView() {
   }
 
   return (
-    <div className={`${spacing.stack} w-full`}>
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actionLabel={tActions("refresh")}
-        onAction={refresh}
-        actionIcon={
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-        }
-      />
-
-      {stats && <AdminStatsCards stats={stats} />}
-
-      <AdminPriorityAlerts />
-
-      <QuickActionsGrid />
-
-      {stats && <RecentActivityCard stats={stats} />}
-    </div>
+    <AppkitAdminDashboardView
+      className={`${spacing.stack} w-full`}
+      renderHeader={() => (
+        <AdminPageHeader
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={tActions("refresh")}
+          onAction={refresh}
+          actionIcon={
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          }
+        />
+      )}
+      renderAlerts={() => <AdminPriorityAlerts />}
+      renderStats={(_s, _loading) =>
+        stats ? <AdminStatsCards stats={stats} /> : null
+      }
+      renderQuickActions={() => <QuickActionsGrid />}
+      renderRecentActivity={() =>
+        stats ? <RecentActivityCard stats={stats} /> : null
+      }
+    />
   );
 }

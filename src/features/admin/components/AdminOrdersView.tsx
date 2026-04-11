@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminOrdersView
  *
  * Extracted from src/app/[locale]/admin/orders/[[...action]]/page.tsx
@@ -10,7 +10,7 @@
 
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUrlTable, useMessage } from "@/hooks";
@@ -34,11 +34,11 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  ListingLayout,
   OrderFilters,
   Search,
   TablePagination,
 } from "@/components";
+import { AdminOrdersView as AdminOrdersShell } from "@mohasinac/appkit/features/admin";
 import { useOrderTableColumns, OrderStatusForm } from ".";
 import type { OrderStatusFormState } from ".";
 import type { OrderDocument } from "@/db/schema";
@@ -47,7 +47,7 @@ interface AdminOrdersViewProps {
   action?: string[];
 }
 
-export function AdminOrdersView({ action }: AdminOrdersViewProps) {
+function AdminOrdersContent({ action }: AdminOrdersViewProps) {
   const router = useRouter();
   const t = useTranslations("adminOrders");
   const { showSuccess, showError } = useMessage();
@@ -185,7 +185,8 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
 
   return (
     <>
-      <ListingLayout
+      <AdminOrdersShell
+        isDashboard
         headerSlot={
           <AdminPageHeader
             title={t("title")}
@@ -226,6 +227,28 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
         }
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={t("updateStatus")}
+            side="right"
+            footer={
+              selectedOrder ? (
+                <DrawerFormFooter
+                  onCancel={handleCloseDrawer}
+                  onSubmit={handleSave}
+                  isLoading={updateMutation.isPending}
+                  submitLabel={t("updateOrder")}
+                />
+              ) : undefined
+            }
+          >
+            {selectedOrder && (
+              <OrderStatusForm order={selectedOrder} onChange={setFormState} />
+            )}
+          </SideDrawer>
+        )}
       >
         <DataTable
           columns={columns}
@@ -247,29 +270,15 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
             />
           )}
         />
-      </ListingLayout>
-
-      {/* Update order status drawer */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        title={t("updateStatus")}
-        side="right"
-        footer={
-          selectedOrder ? (
-            <DrawerFormFooter
-              onCancel={handleCloseDrawer}
-              onSubmit={handleSave}
-              isLoading={updateMutation.isPending}
-              submitLabel={t("updateOrder")}
-            />
-          ) : undefined
-        }
-      >
-        {selectedOrder && (
-          <OrderStatusForm order={selectedOrder} onChange={setFormState} />
-        )}
-      </SideDrawer>
+      </AdminOrdersShell>
     </>
+  );
+}
+
+export function AdminOrdersView(props: AdminOrdersViewProps) {
+  return (
+    <Suspense>
+      <AdminOrdersContent {...props} />
+    </Suspense>
   );
 }

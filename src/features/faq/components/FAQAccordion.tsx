@@ -6,6 +6,8 @@ import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { FAQDocument } from "@/db/schema";
 import { FAQAccordion as AppkitFAQAccordion } from "@mohasinac/appkit/features/faq";
+import { Button } from "@/components";
+import { Span, Text } from "@mohasinac/appkit/ui";
 
 interface FAQAccordionProps {
   faqs: FAQDocument[];
@@ -20,7 +22,9 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
   if (faqs.length === 0) {
     return (
       <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-800/60">
-        <p className="text-zinc-600 dark:text-zinc-300">{t("noResults")}</p>
+        <Text className="text-zinc-600 dark:text-zinc-300">
+          {t("noResults")}
+        </Text>
       </div>
     );
   }
@@ -31,7 +35,8 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
       renderExpandedFooter={(faq) => (
         <div className="mt-6 border-t border-zinc-200 pt-6 dark:border-slate-700">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={() => {
                 const url = `${window.location.origin}/faqs#${faq.id}`;
@@ -41,12 +46,12 @@ export function FAQAccordion({ faqs }: FAQAccordionProps) {
               className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
             >
               {t("copyLink")}
-            </button>
+            </Button>
 
             {faq.stats?.views ? (
-              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                 {t("views", { count: formatNumber(faq.stats.views) })}
-              </span>
+              </Span>
             ) : null}
           </div>
 

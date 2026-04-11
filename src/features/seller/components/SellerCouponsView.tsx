@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Tag, Plus } from "lucide-react";
 import { Caption, Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { SellerCouponsView as AppkitSellerCouponsView } from "@mohasinac/appkit/features/seller";
 import { Button, Badge, Spinner, EmptyState, Card } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {
@@ -193,63 +194,67 @@ export function SellerCouponsView() {
   }
 
   return (
-    <div className={spacing.stack}>
-      {/* Header */}
-      <div className={`${flex.between} flex-wrap gap-3`}>
-        <div>
-          <Heading level={2} variant="primary">
-            {t("pageTitle")}
-          </Heading>
-          <Text className={`${themed.textSecondary} mt-1`}>
-            {t("pageSubtitle")}
-          </Text>
-        </div>
-        <Button
-          variant="primary"
-          onClick={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
-          className={`${flex.row} gap-2 items-center`}
-        >
-          <Plus className="w-4 h-4" />
-          {t("createCoupon")}
-        </Button>
-      </div>
-
-      {/* Info banner */}
-      <div className="rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4">
-        <div className={`${flex.row} gap-2 items-start`}>
-          <Tag className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-          <Text className="text-sm text-primary">{t("infoBanner")}</Text>
-        </div>
-      </div>
-
-      {/* Coupons list */}
-      {coupons.length === 0 ? (
-        <EmptyState
-          icon={<Tag className="w-10 h-10" />}
-          title={t("emptyTitle")}
-          description={t("emptySubtitle")}
-          actionLabel={t("createCoupon")}
-          onAction={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
-        />
-      ) : (
-        <div className={THEME_CONSTANTS.grid.addressCards}>
-          {coupons.map((coupon) => (
-            <CouponCard
-              key={coupon.id}
-              coupon={coupon}
-              onToggle={handleToggle}
-              onDelete={handleDelete}
-              deleting={
-                deleteCoupon.isPending && deleteCoupon.variables === coupon.id
-              }
-              toggling={
-                toggleActive.isPending &&
-                (toggleActive.variables as { id: string })?.id === coupon.id
-              }
-            />
-          ))}
+    <AppkitSellerCouponsView
+      labels={{ title: t("pageTitle") }}
+      total={coupons.length}
+      isLoading={isLoading}
+      renderHeader={() => (
+        <div className={`${flex.between} flex-wrap gap-3`}>
+          <div>
+            <Heading level={2} variant="primary">
+              {t("pageTitle")}
+            </Heading>
+            <Text className={`${themed.textSecondary} mt-1`}>
+              {t("pageSubtitle")}
+            </Text>
+          </div>
+          <Button
+            variant="primary"
+            onClick={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
+            className={`${flex.row} gap-2 items-center`}
+          >
+            <Plus className="w-4 h-4" />
+            {t("createCoupon")}
+          </Button>
         </div>
       )}
-    </div>
+      renderFilters={() => (
+        <div className="rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4">
+          <div className={`${flex.row} gap-2 items-start`}>
+            <Tag className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <Text className="text-sm text-primary">{t("infoBanner")}</Text>
+          </div>
+        </div>
+      )}
+      renderTable={() =>
+        coupons.length === 0 ? (
+          <EmptyState
+            icon={<Tag className="w-10 h-10" />}
+            title={t("emptyTitle")}
+            description={t("emptySubtitle")}
+            actionLabel={t("createCoupon")}
+            onAction={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
+          />
+        ) : (
+          <div className={THEME_CONSTANTS.grid.addressCards}>
+            {coupons.map((coupon) => (
+              <CouponCard
+                key={coupon.id}
+                coupon={coupon}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+                deleting={
+                  deleteCoupon.isPending && deleteCoupon.variables === coupon.id
+                }
+                toggling={
+                  toggleActive.isPending &&
+                  (toggleActive.variables as { id: string })?.id === coupon.id
+                }
+              />
+            ))}
+          </div>
+        )
+      }
+    />
   );
 }

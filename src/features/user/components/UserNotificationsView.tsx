@@ -1,67 +1,38 @@
-/**
- * UserNotificationsView
- *
- * Tier 2 — feature component.
- * Extracted from src/app/[locale]/user/notifications/page.tsx (was 156 lines).
- * Displays and manages notifications for the authenticated user.
- */
+﻿"use client";
 
-"use client";
-
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo, Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useAuth, useMessage, useUrlTable } from "@/hooks";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useTranslations } from "next-intl";
 import { useUserNotifications } from "../hooks/useUserNotifications";
 import {
   ActiveFilterChips,
   EmptyState,
   FilterFacetSection,
-  ListingLayout,
   Search,
   Spinner,
   TablePagination,
 } from "@/components";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { UserNotificationsView as AppkitUserNotificationsView } from "@mohasinac/appkit/features/account";
 import type { ActiveFilter } from "@/components";
 import { getFilterLabel } from "@/components";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationsBulkActions } from "./NotificationsBulkActions";
-
-const { themed, flex } = THEME_CONSTANTS;
+import { ROUTES, ERROR_MESSAGES } from "@/constants";
 
 const PAGE_SIZE = 20;
 
-const bellIcon = (
-  <svg
-    className="w-12 h-12 text-zinc-400"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-    />
-  </svg>
-);
-
-export function UserNotificationsView() {
+function UserNotificationsContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
   const tNotifications = useTranslations("notifications");
-
   const table = useUrlTable({ defaults: { pageSize: String(PAGE_SIZE) } });
   const searchQ = table.get("q");
   const isReadFilter = table.get("isRead");
   const page = table.getNumber("page", 1);
 
-  // ── Staged filter state (via usePendingTable) ──────────────────────────────
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["isRead"]);
 
@@ -79,13 +50,13 @@ export function UserNotificationsView() {
         ? [
             {
               key: "isRead",
-              label: tNotifications("filterLabel"),
+              label: tNotifications("readStatus"),
               value:
                 getFilterLabel(readStatusOptions, isReadFilter) ?? isReadFilter,
             },
           ]
         : [],
-    [isReadFilter, readStatusOptions, tNotifications],
+    [isReadFilter, tNotifications, readStatusOptions],
   );
 
   useEffect(() => {
@@ -95,15 +66,16 @@ export function UserNotificationsView() {
     }
   }, [user, authLoading, router, showError]);
 
-  const queryParams = useMemo(() => {
-    const p = new URLSearchParams({
-      page: String(page),
-      pageSize: String(PAGE_SIZE),
-    });
-    if (searchQ) p.set("q", searchQ);
-    if (isReadFilter) p.set("isRead", isReadFilter);
-    return p.toString();
-  }, [page, searchQ, isReadFilter]);
+  const queryParams = new URLSearchParams(
+    Object.fromEntries(
+      [
+        ["page", String(page)],
+        ["pageSize", String(PAGE_SIZE)],
+        searchQ && ["q", searchQ],
+        isReadFilter && ["isRead", isReadFilter],
+      ].filter(Boolean) as [string, string][],
+    ),
+  ).toString();
 
   const {
     data,
@@ -113,149 +85,90 @@ export function UserNotificationsView() {
     deleteOne,
     markAllRead,
     isMarkingAll,
-  } = useUserNotifications(queryParams, !!user);
-
-  const handleMarkRead = useCallback(
-    async (id: string) => {
-      try {
-        await markRead(id);
-        refetch();
-        showSuccess(tNotifications("markRead"));
-      } catch {
-        showError(tNotifications("error"));
-      }
-    },
-    [markRead, refetch, showError, tNotifications],
-  );
-
-  const handleDelete = useCallback(
-    async (id: string) => {
-      try {
-        await deleteOne(id);
-        refetch();
-        showSuccess(tNotifications("deleted"));
-      } catch {
-        showError(tNotifications("error"));
-      }
-    },
-    [deleteOne, refetch, showSuccess, showError, tNotifications],
-  );
-
-  const handleMarkAllRead = useCallback(async () => {
-    try {
-      await markAllRead();
-      refetch();
-      showSuccess(tNotifications("markAllRead"));
-    } catch {
-      showError(tNotifications("error"));
-    }
-  }, [markAllRead, refetch, showSuccess, showError, tNotifications]);
-
-  if (authLoading || !user) {
-    return (
-      <div className={`${flex.center} min-h-screen`}>
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  } = useUserNotifications(queryParams, !authLoading && !!user);
 
   const notifications = data?.notifications ?? [];
+  const total = data?.meta?.total ?? 0;
   const unreadCount = data?.unreadCount ?? 0;
   const totalPages = data?.meta?.totalPages ?? 1;
-  const total = data?.meta?.total ?? notifications.length;
 
   return (
-    <ListingLayout
-      headerSlot={
-        <div>
-          <Heading level={3}>{tNotifications("title")}</Heading>
-          <Text variant="secondary" className="mt-1">
-            {unreadCount > 0
-              ? tNotifications("unreadCount", { count: unreadCount })
-              : tNotifications("subtitle")}
-          </Text>
-        </div>
-      }
-      searchSlot={
+    <AppkitUserNotificationsView
+      isEmpty={!isLoading && !notifications.length && !activeFilters.length}
+      renderToolbar={() => (
         <Search
           value={searchQ}
           onChange={(v) => table.set("q", v)}
           placeholder={tNotifications("searchPlaceholder")}
-          onClear={() => table.set("q", "")}
         />
-      }
-      filterContent={
+      )}
+      renderFilters={() => (
         <FilterFacetSection
-          title={tNotifications("filterLabel")}
+          title={tNotifications("readStatus")}
           options={readStatusOptions}
           selected={
             pendingTable.get("isRead") ? [pendingTable.get("isRead")] : []
           }
-          onChange={(vals) => pendingTable.set("isRead", vals[0] ?? "")}
-          selectionMode="single"
-          searchable={false}
+          onChange={(vals: string[]) =>
+            pendingTable.set("isRead", vals[0] ?? "")
+          }
         />
-      }
-      filterActiveCount={filterActiveCount}
-      onFilterApply={onFilterApply}
-      onFilterClear={onFilterClear}
-      activeFiltersSlot={
+      )}
+      renderActiveFilters={() =>
         activeFilters.length > 0 ? (
           <ActiveFilterChips
             filters={activeFilters}
-            onRemove={(key) => table.set(key, "")}
-            onClearAll={onFilterClear}
+            onRemove={(k) => table.set(k, "")}
+            onClearAll={() => table.set("isRead", "")}
           />
-        ) : undefined
+        ) : null
       }
-      actionsSlot={
+      renderBulkActions={() => (
         <NotificationsBulkActions
+          onMarkAllRead={() => markAllRead()}
           unreadCount={unreadCount}
           isMarkingAll={isMarkingAll}
-          onMarkAllRead={handleMarkAllRead}
         />
-      }
-      toolbarPaginationSlot={
-        totalPages > 1 ? (
-          <TablePagination
-            total={total}
-            currentPage={page}
-            totalPages={totalPages}
-            pageSize={PAGE_SIZE}
-            onPageChange={table.setPage}
-            compact
-          />
-        ) : undefined
-      }
-      loading={isLoading}
-    >
-      {!isLoading && notifications.length === 0 ? (
-        <EmptyState
-          icon={bellIcon}
-          title={tNotifications("empty")}
-          description={tNotifications("emptyDesc")}
-        />
-      ) : (
-        <div
-          className={`rounded-xl border ${themed.border} overflow-hidden divide-y ${themed.border}`}
-        >
-          {isLoading
-            ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
-                <div
-                  key={i}
-                  className="animate-pulse h-16 bg-zinc-100 dark:bg-slate-800"
-                />
-              ))
-            : notifications.map((n) => (
-                <NotificationItem
-                  key={n.id}
-                  notification={n}
-                  onMarkRead={handleMarkRead}
-                  onDelete={handleDelete}
-                />
-              ))}
-        </div>
       )}
-    </ListingLayout>
+      renderList={() =>
+        isLoading ? (
+          <Spinner />
+        ) : (
+          <div className="divide-y divide-zinc-100 dark:divide-slate-800 rounded-xl overflow-hidden border border-zinc-200 dark:border-slate-700">
+            {notifications.map((n) => (
+              <NotificationItem
+                key={n.id}
+                notification={n}
+                onMarkRead={() => markRead(n.id)}
+                onDelete={() => deleteOne(n.id)}
+              />
+            ))}
+          </div>
+        )
+      }
+      renderEmpty={() => (
+        <EmptyState
+          title={tNotifications("noNotifications")}
+          description={tNotifications("noNotificationsDesc")}
+        />
+      )}
+      renderPagination={() => (
+        <TablePagination
+          total={total}
+          currentPage={page}
+          totalPages={totalPages}
+          pageSize={PAGE_SIZE}
+          onPageChange={(p) => table.setPage(p)}
+        />
+      )}
+    />
+  );
+}
+
+export function UserNotificationsView() {
+  return (
+    <Suspense>
+      <UserNotificationsContent />
+    </Suspense>
   );
 }

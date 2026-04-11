@@ -13,6 +13,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heading, Text } from "@mohasinac/appkit/ui";
+import { SellerPayoutSettingsView as AppkitSellerPayoutSettingsView } from "@mohasinac/appkit/features/seller";
 import {
   Accordion,
   AccordionItem,
@@ -205,107 +206,118 @@ export function SellerPayoutSettingsView() {
   }
 
   return (
-    <div className={spacing.stack}>
-      <AdminPageHeader
-        title={t("pageTitle")}
-        subtitle={t("pageSubtitle")}
-        badge={
-          isConfigured ? (
-            <Badge variant="success">{t("configured")}</Badge>
-          ) : undefined
-        }
-      />
+    <AppkitSellerPayoutSettingsView
+      labels={{ title: t("pageTitle") }}
+      isLoading={isLoading}
+      renderForm={() => (
+        <div className={spacing.stack}>
+          <AdminPageHeader
+            title={t("pageTitle")}
+            subtitle={t("pageSubtitle")}
+            badge={
+              isConfigured ? (
+                <Badge variant="success">{t("configured")}</Badge>
+              ) : undefined
+            }
+          />
 
-      {!isConfigured && (
-        <Alert variant="warning" title={t("notConfiguredTitle")}>
-          {t("notConfiguredDesc")}
-        </Alert>
-      )}
+          {!isConfigured && (
+            <Alert variant="warning" title={t("notConfiguredTitle")}>
+              {t("notConfiguredDesc")}
+            </Alert>
+          )}
 
-      {/* Method selector */}
-      <Card className="p-6">
-        <Accordion
-          type="multiple"
-          defaultValue={[
-            "seller-payout-settings-method",
-            activeMethod === "upi"
-              ? "seller-payout-settings-upi"
-              : "seller-payout-settings-bank",
-          ]}
-          className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
-        >
-          <AccordionItem
-            value="seller-payout-settings-method"
-            title={<Text className="font-semibold">{t("methodHeading")}</Text>}
-          >
-            <FormGroup columns={2} className="pt-3">
-              {(["upi", "bank_transfer"] as const).map((method) => (
-                <Button
-                  key={method}
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setSelectedMethod(method)}
-                  className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
-                    activeMethod === method
-                      ? "border-primary bg-primary/5 dark:bg-primary/10"
-                      : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
-                  }`}
+          <Card className="p-6">
+            <Accordion
+              type="multiple"
+              defaultValue={[
+                "seller-payout-settings-method",
+                activeMethod === "upi"
+                  ? "seller-payout-settings-upi"
+                  : "seller-payout-settings-bank",
+              ]}
+              className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden"
+            >
+              <AccordionItem
+                value="seller-payout-settings-method"
+                title={
+                  <Text className="font-semibold">{t("methodHeading")}</Text>
+                }
+              >
+                <FormGroup columns={2} className="pt-3">
+                  {(["upi", "bank_transfer"] as const).map((method) => (
+                    <Button
+                      key={method}
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setSelectedMethod(method)}
+                      className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
+                        activeMethod === method
+                          ? "border-primary bg-primary/5 dark:bg-primary/10"
+                          : `${themed.border} ${themed.bgPrimary} hover:border-primary/50`
+                      }`}
+                    >
+                      <Text weight="semibold" className="mb-1">
+                        {method === "upi"
+                          ? t("methodUpiTitle")
+                          : t("methodBankTitle")}
+                      </Text>
+                      <Text variant="secondary" size="sm">
+                        {method === "upi"
+                          ? t("methodUpiDesc")
+                          : t("methodBankDesc")}
+                      </Text>
+                    </Button>
+                  ))}
+                </FormGroup>
+              </AccordionItem>
+
+              {activeMethod === "upi" && (
+                <AccordionItem
+                  value="seller-payout-settings-upi"
+                  title={
+                    <Text className="font-semibold">{t("upiHeading")}</Text>
+                  }
                 >
-                  <Text weight="semibold" className="mb-1">
-                    {method === "upi"
-                      ? t("methodUpiTitle")
-                      : t("methodBankTitle")}
-                  </Text>
-                  <Text variant="secondary" size="sm">
-                    {method === "upi"
-                      ? t("methodUpiDesc")
-                      : t("methodBankDesc")}
-                  </Text>
-                </Button>
-              ))}
-            </FormGroup>
-          </AccordionItem>
+                  <div className="pt-3">
+                    <UpiForm
+                      defaultUpiId={payoutDetails?.upiId ?? ""}
+                      isSaving={isSaving}
+                      onSave={(upiId) =>
+                        updatePayoutSettings({ method: "upi", upiId })
+                      }
+                    />
+                  </div>
+                </AccordionItem>
+              )}
 
-          {activeMethod === "upi" && (
-            <AccordionItem
-              value="seller-payout-settings-upi"
-              title={<Text className="font-semibold">{t("upiHeading")}</Text>}
-            >
-              <div className="pt-3">
-                <UpiForm
-                  defaultUpiId={payoutDetails?.upiId ?? ""}
-                  isSaving={isSaving}
-                  onSave={(upiId) =>
-                    updatePayoutSettings({ method: "upi", upiId })
+              {activeMethod === "bank_transfer" && (
+                <AccordionItem
+                  value="seller-payout-settings-bank"
+                  title={
+                    <Text className="font-semibold">{t("bankHeading")}</Text>
                   }
-                />
-              </div>
-            </AccordionItem>
-          )}
-
-          {activeMethod === "bank_transfer" && (
-            <AccordionItem
-              value="seller-payout-settings-bank"
-              title={<Text className="font-semibold">{t("bankHeading")}</Text>}
-            >
-              <div className="pt-3">
-                <BankForm
-                  defaultMasked={
-                    payoutDetails?.bankAccount?.accountNumberMasked ?? ""
-                  }
-                  isSaving={isSaving}
-                  onSave={(bank) =>
-                    updatePayoutSettings({
-                      method: "bank_transfer",
-                      bankAccount: bank,
-                    })
-                  }
-                />
-              </div>
-            </AccordionItem>
-          )}
-        </Accordion>
-      </Card>
-    </div>
+                >
+                  <div className="pt-3">
+                    <BankForm
+                      defaultMasked={
+                        payoutDetails?.bankAccount?.accountNumberMasked ?? ""
+                      }
+                      isSaving={isSaving}
+                      onSave={(bank) =>
+                        updatePayoutSettings({
+                          method: "bank_transfer",
+                          bankAccount: bank,
+                        })
+                      }
+                    />
+                  </div>
+                </AccordionItem>
+              )}
+            </Accordion>
+          </Card>
+        </div>
+      )}
+    />
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components";
 import { useState, createContext, useContext } from "react";
 
 interface TabsContextValue {
@@ -74,7 +75,7 @@ export function TabsTrigger({
   const { active, setActive } = useContext(TabsContext);
   const isActive = active === value;
   return (
-    <button
+    <Button
       role="tab"
       type="button"
       disabled={disabled}
@@ -89,7 +90,7 @@ export function TabsTrigger({
         ${className}`}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 

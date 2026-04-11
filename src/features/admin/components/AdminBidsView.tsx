@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUrlTable } from "@/hooks";
@@ -16,9 +16,9 @@ import {
   AdminPageHeader,
   TablePagination,
   StatusBadge,
-  ListingLayout,
   Search,
 } from "@/components";
+import { AdminBidsView as AdminBidsShell } from "@mohasinac/appkit/features/admin";
 import { BidFilters } from "./BidFilters";
 import { useBidTableColumns } from ".";
 import { formatCurrency, formatDate } from "@/utils";
@@ -30,7 +30,7 @@ interface Props {
   action?: string[];
 }
 
-export function AdminBidsView({ action }: Props) {
+function AdminBidsContent({ action }: Props) {
   const router = useRouter();
   const t = useTranslations("adminBids");
   const tTable = useTranslations("table");
@@ -125,7 +125,8 @@ export function AdminBidsView({ action }: Props) {
         ))}
       </Grid>
 
-      <ListingLayout
+      <AdminBidsShell
+        isDashboard
         searchSlot={
           <Search
             value={searchTerm}
@@ -147,6 +148,84 @@ export function AdminBidsView({ action }: Props) {
             compact
           />
         }
+        renderDrawer={() => (
+          <SideDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            title={t("title")}
+            side="right"
+          >
+            {selectedBid && (
+              <div className={`flex flex-col h-full p-4 ${spacing.stack}`}>
+                <div>
+                  <Caption className="uppercase tracking-wide font-semibold">
+                    {t("product")}
+                  </Caption>
+                  <Text size="sm" weight="medium" className="mt-1">
+                    {selectedBid.productTitle}
+                  </Text>
+                  <Caption className="font-mono">
+                    {selectedBid.productId}
+                  </Caption>
+                </div>
+
+                <div>
+                  <Caption className="uppercase tracking-wide font-semibold">
+                    {t("bidder")}
+                  </Caption>
+                  <Text size="sm" weight="medium" className="mt-1">
+                    {selectedBid.userName}
+                  </Text>
+                  <Caption>{selectedBid.userEmail}</Caption>
+                </div>
+
+                <Grid className="grid-cols-2" gap="md">
+                  <div>
+                    <Caption className="uppercase tracking-wide font-semibold">
+                      {t("bidAmount")}
+                    </Caption>
+                    <Text weight="bold" className="mt-1 text-lg">
+                      {formatCurrency(selectedBid.bidAmount)}
+                    </Text>
+                  </div>
+                  <div>
+                    <Caption className="uppercase tracking-wide font-semibold">
+                      {tTable("status")}
+                    </Caption>
+                    <Text size="sm" weight="medium" className="mt-1 capitalize">
+                      {selectedBid.status}
+                      {selectedBid.isWinning && (
+                        <Span variant="accent" className="ml-1">
+                          ★ {t("winning")}
+                        </Span>
+                      )}
+                    </Text>
+                  </div>
+                </Grid>
+
+                <div>
+                  <Caption className="uppercase tracking-wide font-semibold">
+                    {t("bidDate")}
+                  </Caption>
+                  <Text size="sm" className="mt-1">
+                    {formatDate(selectedBid.bidDate)}
+                  </Text>
+                </div>
+
+                {selectedBid.autoMaxBid != null && (
+                  <div>
+                    <Caption className="uppercase tracking-wide font-semibold">
+                      Auto Max Bid
+                    </Caption>
+                    <Text size="sm" className="mt-1">
+                      {formatCurrency(selectedBid.autoMaxBid)}
+                    </Text>
+                  </div>
+                )}
+              </div>
+            )}
+          </SideDrawer>
+        )}
       >
         <DataTable
           columns={columns}
@@ -180,88 +259,15 @@ export function AdminBidsView({ action }: Props) {
             </Card>
           )}
         />
-      </ListingLayout>
-
-      {/* Bid detail drawer — read-only */}
-      <SideDrawer
-        isOpen={isDrawerOpen}
-        onClose={handleCloseDrawer}
-        title={t("title")}
-        side="right"
-      >
-        {selectedBid && (
-          <div className={`flex flex-col h-full p-4 ${spacing.stack}`}>
-            {/* Product */}
-            <div>
-              <Caption className="uppercase tracking-wide font-semibold">
-                {t("product")}
-              </Caption>
-              <Text size="sm" weight="medium" className="mt-1">
-                {selectedBid.productTitle}
-              </Text>
-              <Caption className="font-mono">{selectedBid.productId}</Caption>
-            </div>
-
-            {/* Bidder */}
-            <div>
-              <Caption className="uppercase tracking-wide font-semibold">
-                {t("bidder")}
-              </Caption>
-              <Text size="sm" weight="medium" className="mt-1">
-                {selectedBid.userName}
-              </Text>
-              <Caption>{selectedBid.userEmail}</Caption>
-            </div>
-
-            {/* Bid details */}
-            <Grid className="grid-cols-2" gap="md">
-              <div>
-                <Caption className="uppercase tracking-wide font-semibold">
-                  {t("bidAmount")}
-                </Caption>
-                <Text weight="bold" className="mt-1 text-lg">
-                  {formatCurrency(selectedBid.bidAmount)}
-                </Text>
-              </div>
-              <div>
-                <Caption className="uppercase tracking-wide font-semibold">
-                  {tTable("status")}
-                </Caption>
-                <Text size="sm" weight="medium" className="mt-1 capitalize">
-                  {selectedBid.status}
-                  {selectedBid.isWinning && (
-                    <Span variant="accent" className="ml-1">
-                      ★ {t("winning")}
-                    </Span>
-                  )}
-                </Text>
-              </div>
-            </Grid>
-
-            {/* Bid Date */}
-            <div>
-              <Caption className="uppercase tracking-wide font-semibold">
-                {t("bidDate")}
-              </Caption>
-              <Text size="sm" className="mt-1">
-                {formatDate(selectedBid.bidDate)}
-              </Text>
-            </div>
-
-            {/* Auto max bid if set */}
-            {selectedBid.autoMaxBid != null && (
-              <div>
-                <Caption className="uppercase tracking-wide font-semibold">
-                  Auto Max Bid
-                </Caption>
-                <Text size="sm" className="mt-1">
-                  {formatCurrency(selectedBid.autoMaxBid)}
-                </Text>
-              </div>
-            )}
-          </div>
-        )}
-      </SideDrawer>
+      </AdminBidsShell>
     </div>
+  );
+}
+
+export function AdminBidsView(props: Props) {
+  return (
+    <Suspense>
+      <AdminBidsContent {...props} />
+    </Suspense>
   );
 }

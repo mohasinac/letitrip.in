@@ -2,9 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { useBlogArticles } from "@mohasinac/appkit/features/homepage";
 import { BlogCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
-import { useBlogArticles } from "../hooks/useBlogArticles";
 
 export function BlogArticlesSection() {
   const t = useTranslations("homepage");
