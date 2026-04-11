@@ -7,7 +7,7 @@ import "@/providers.config";
  * Client MUST reauthenticate with currentPassword via Firebase SDK before calling.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { changePasswordSchema } from "@/lib/validation/schemas";

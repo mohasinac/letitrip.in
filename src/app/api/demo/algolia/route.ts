@@ -11,7 +11,7 @@ import "@/providers.config";
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@/lib/server-logger";
 import type {
   QueryDocumentSnapshot,

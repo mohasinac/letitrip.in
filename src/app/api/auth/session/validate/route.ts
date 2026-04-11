@@ -8,7 +8,7 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
-import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 
 export async function GET(request: NextRequest) {
   try {

@@ -13,7 +13,7 @@ import {
   orderRepository,
   userRepository,
 } from "@/repositories";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

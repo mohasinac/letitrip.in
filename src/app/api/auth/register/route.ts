@@ -14,7 +14,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import {
   DEFAULT_USER_DATA,
   SCHEMA_DEFAULTS,

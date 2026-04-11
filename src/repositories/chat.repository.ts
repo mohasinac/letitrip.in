@@ -19,7 +19,7 @@
  *   - All participants lose access on next token refresh.
  */
 
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { DatabaseError } from "@mohasinac/appkit/errors";

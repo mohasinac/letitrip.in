@@ -12,7 +12,7 @@
  */
 
 import { FAQ_SEED_DATA } from "@/db/seed-data/faq-seed-data";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { FAQS_COLLECTION } from "@/db/schema/faqs";
 
 async function seedFAQs() {

@@ -9,7 +9,7 @@ import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@/lib/api/request-helpers";
+} from "@mohasinac/appkit/next";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@mohasinac/appkit/errors";

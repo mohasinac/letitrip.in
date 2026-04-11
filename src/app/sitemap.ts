@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SEO_CONFIG } from "@/constants";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import {
   PRODUCT_COLLECTION,
   PRODUCT_FIELDS,

@@ -31,7 +31,7 @@ import "@/providers.config";
  *  6. usePaymentEvent.status → 'success' → UI navigates to order confirmation
  */
 
-import { getAdminAuth, getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";

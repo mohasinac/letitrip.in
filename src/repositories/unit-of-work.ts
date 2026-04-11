@@ -41,7 +41,7 @@
  */
 
 import { Firestore, Transaction, WriteBatch } from "firebase-admin/firestore";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { DatabaseError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 

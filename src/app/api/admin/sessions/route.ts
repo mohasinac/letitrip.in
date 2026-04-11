@@ -7,14 +7,14 @@ import "@/providers.config";
  * Supports filtering by userId and limiting results.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@/lib/api/request-helpers";
+} from "@mohasinac/appkit/next";
 import { sessionRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";

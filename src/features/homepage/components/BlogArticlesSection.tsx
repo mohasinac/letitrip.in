@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useBlogArticles } from "@mohasinac/appkit/features/homepage";
 import { BlogCard } from "@/components";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 export function BlogArticlesSection() {
   const t = useTranslations("homepage");

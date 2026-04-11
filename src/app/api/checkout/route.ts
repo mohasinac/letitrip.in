@@ -43,7 +43,7 @@ import { sendOrderConfirmationEmail } from "@/lib/email";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { PRODUCT_COLLECTION, CART_COLLECTION } from "@/db/schema";
 import {
   consentOtpRef,

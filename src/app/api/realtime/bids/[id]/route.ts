@@ -13,7 +13,7 @@
 
 import { type NextRequest } from "next/server";
 import type { DataSnapshot } from "firebase-admin/database";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@/lib/server-logger";
 
 // Use Node.js runtime — Firebase Admin SDK requires Node.js builtins.

@@ -22,7 +22,7 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.

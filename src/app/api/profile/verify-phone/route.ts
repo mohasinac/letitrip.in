@@ -7,7 +7,7 @@ import "@/providers.config";
  * Updates the phoneVerified flag in Firestore for the authenticated user.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { verifyPhoneSchema } from "@/lib/validation/schemas";

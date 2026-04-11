@@ -8,7 +8,7 @@ import {
   orderRepository,
   userRepository,
 } from "@/repositories";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, FEATURE_FLAGS } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";

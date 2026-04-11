@@ -19,7 +19,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@/lib/server-logger";
 import { AppError } from "@mohasinac/appkit/errors";

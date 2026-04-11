@@ -5,7 +5,7 @@
  * Use these in API routes and server components.
  */
 
-import { getAdminAuth } from "./admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import type { DecodedIdToken } from "firebase-admin/auth";

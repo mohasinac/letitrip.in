@@ -26,7 +26,7 @@ import { DataTable, EmptyState, Search, getFilterLabel } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
-import { BlogFeaturedCard } from "./BlogFeaturedCard";
+import { BlogFeaturedCard } from "@mohasinac/appkit/features/blog";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";

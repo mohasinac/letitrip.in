@@ -9,7 +9,7 @@
  */
 
 import { createHmac, randomInt } from "crypto";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { escapeHtml, resolveDate } from "@/utils";
 import { USER_COLLECTION } from "@/db/schema";
 import { AuthorizationError } from "@mohasinac/appkit/errors";

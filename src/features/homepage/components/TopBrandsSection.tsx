@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useTopBrands } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS } from "@/constants";
 import { CategoryCard } from "@/components";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 export function TopBrandsSection() {
   const t = useTranslations("homepage");

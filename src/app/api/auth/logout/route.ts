@@ -11,12 +11,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@/lib/firebase/admin";
+import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
-import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function POST(request: NextRequest) {

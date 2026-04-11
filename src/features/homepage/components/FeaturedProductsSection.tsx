@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { ProductCard } from "@/components";
 import type { ProductListResponse } from "@mohasinac/appkit/features/products";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 interface FeaturedProductsSectionProps {
   initialData?: ProductListResponse;

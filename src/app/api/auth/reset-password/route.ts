@@ -9,7 +9,7 @@ import "@/providers.config";
  * endpoint to log/acknowledge the change.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { resetPasswordSchema } from "@/lib/validation/schemas";

@@ -5,7 +5,7 @@ import "@/providers.config";
  * Issues a Firebase custom token for Realtime Database read-only subscriptions.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { chatRepository } from "@/repositories";

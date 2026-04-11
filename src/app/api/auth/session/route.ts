@@ -13,7 +13,7 @@ import {
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
-import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@/repositories";
 import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // This will create a profile if one doesn't exist
     const { userRepository } = await import("@/repositories");
     const { getAuth } = await import("firebase-admin/auth");
-    const { getAdminApp } = await import("@/lib/firebase/admin");
+    const { getAdminApp } = await import("@mohasinac/appkit/providers/db-firebase");
     const { DEFAULT_USER_DATA } = await import("@/db/schema/users");
 
     const auth = getAuth(getAdminApp());

@@ -5,7 +5,7 @@ import { useFeaturedPreOrders } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { PreOrderCard } from "@/components";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 export function FeaturedPreOrdersSection() {
   const t = useTranslations("homepage");

@@ -12,7 +12,7 @@ import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@/lib/api/request-helpers";
+} from "@mohasinac/appkit/next";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";

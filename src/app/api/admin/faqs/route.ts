@@ -6,7 +6,7 @@ import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@/lib/api/request-helpers";
+} from "@mohasinac/appkit/next";
 import { faqsRepository } from "@/repositories";
 
 export const GET = createRouteHandler({

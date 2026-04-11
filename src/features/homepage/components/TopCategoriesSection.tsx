@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { useTopCategories } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { CategoryCard } from "@/components";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 

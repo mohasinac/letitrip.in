@@ -11,7 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { orderRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { formatCurrency, formatDate } from "@/utils";

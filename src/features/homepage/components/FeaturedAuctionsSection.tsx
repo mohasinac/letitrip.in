@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { useFeaturedAuctions } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { AuctionCard } from "@/components";
-import { SectionCarousel } from "./SectionCarousel";
+import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 export function FeaturedAuctionsSection() {
   const t = useTranslations("homepage");

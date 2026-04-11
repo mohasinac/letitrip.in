@@ -40,7 +40,7 @@ import {
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
-import { getAdminRealtimeDb, getAdminDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb, getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups } from "@/utils";

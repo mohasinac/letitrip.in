@@ -22,7 +22,7 @@ import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@/lib/api/request-helpers";
+} from "@mohasinac/appkit/next";
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";

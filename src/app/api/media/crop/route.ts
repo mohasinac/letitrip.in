@@ -10,7 +10,7 @@ import { SUCCESS_MESSAGES } from "@/constants";
 import { cropDataSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import { getStorage } from "@/lib/firebase/admin";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { generateCroppedImageFilename } from "@/utils";

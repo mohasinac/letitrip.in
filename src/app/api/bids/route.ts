@@ -6,12 +6,12 @@
  */
 
 import { bidRepository, productRepository, unitOfWork } from "@/repositories";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { maskPublicBid } from "@/lib/pii";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { resolveDate } from "@/utils";
 import { z } from "zod";

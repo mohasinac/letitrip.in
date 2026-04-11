@@ -21,7 +21,7 @@ import {
   ALGOLIA_PAGES_INDEX_NAME,
   type AlgoliaNavRecord,
 } from "@mohasinac/appkit/providers/search-algolia";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import {
   CATEGORIES_COLLECTION,
   CATEGORY_FIELDS,

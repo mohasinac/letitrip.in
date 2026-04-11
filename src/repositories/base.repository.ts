@@ -24,7 +24,7 @@ import {
   Transaction,
   WriteBatch,
 } from "firebase-admin/firestore";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { DatabaseError, NotFoundError } from "@mohasinac/appkit/errors";
 import {
   prepareForFirestore,

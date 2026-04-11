@@ -8,7 +8,7 @@
  * logging failure never blocks the buyer's main flow).
  */
 
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import {
   FAILED_CHECKOUTS_COLLECTION,
   FAILED_PAYMENTS_COLLECTION,

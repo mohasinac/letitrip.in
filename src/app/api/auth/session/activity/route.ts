@@ -10,7 +10,7 @@ import { sessionRepository } from "@/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
-import { getOptionalSessionCookie } from "@/lib/api/request-helpers";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 
 export async function POST(request: NextRequest) {
   try {

@@ -5,7 +5,7 @@
  */
 
 import crypto from "crypto";
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { TOKEN_CONFIG, ERROR_MESSAGES } from "@/constants";
 import { resolveDate } from "@/utils";
 import {

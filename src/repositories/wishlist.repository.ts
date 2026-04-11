@@ -7,7 +7,7 @@
  * Document shape: { productId: string; addedAt: Timestamp }
  */
 
-import { getAdminDb } from "@/lib/firebase/admin";
+import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@/lib/server-logger";
 import { USER_COLLECTION } from "@/db/schema";
 

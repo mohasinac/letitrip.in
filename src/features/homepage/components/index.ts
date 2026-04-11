@@ -1,6 +1,6 @@
 export { HeroCarousel } from "./HeroCarousel";
-export { SectionCarousel } from "./SectionCarousel";
-export type { SectionCarouselProps } from "./SectionCarousel";
+export { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+export type { SectionCarouselProps } from "@mohasinac/appkit/features/homepage";
 export { WelcomeSection } from "./WelcomeSection";
 // Merged replacement for TrustIndicatorsSection + SiteFeaturesSection
 export { TrustFeaturesSection } from "./TrustFeaturesSection";
@@ -26,7 +26,7 @@ export { BeforeAfterCard } from "./BeforeAfterCard";
 export type { BeforeAfterCardProps } from "./BeforeAfterCard";
 export { FeaturedResultsSection } from "./FeaturedResultsSection";
 export { SecurityHighlightsSection } from "./SecurityHighlightsSection";
-export { HomepageSkeleton } from "./HomepageSkeleton";
+export { HomepageSkeleton } from "@mohasinac/appkit/features/homepage";
 export { HomepageView } from "./HomepageView";
 export { HowAuctionsWorkView } from "./HowAuctionsWorkView";
 export { HowPreOrdersWorkView } from "./HowPreOrdersWorkView";

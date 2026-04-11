@@ -6,7 +6,7 @@ import "@/providers.config";
  * Generates a Firebase email verification link and sends it via Resend.
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { sendVerificationSchema } from "@/lib/validation/schemas";

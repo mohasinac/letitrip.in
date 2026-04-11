@@ -10,7 +10,7 @@
 
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { chatRepository } from "@/repositories";
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

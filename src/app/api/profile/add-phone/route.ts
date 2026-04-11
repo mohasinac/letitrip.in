@@ -7,7 +7,7 @@ import "@/providers.config";
  * Actual SMS verification is handled client-side via Firebase signInWithPhoneNumber().
  */
 
-import { getAdminAuth } from "@/lib/firebase/admin";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@/lib/api-response";
 import { addPhoneSchema } from "@/lib/validation/schemas";
