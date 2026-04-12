@@ -20,8 +20,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.72.1(react@19.2.4))
       '@mohasinac/appkit':
-        specifier: 2.0.7
-        version: 2.0.7(@tanstack/react-query@5.96.2(react@19.2.4))(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(firebase-admin@13.7.0)(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(razorpay@2.9.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.8.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))(resend@6.10.0)
+        specifier: ^2.0.8
+        version: 2.0.8(@tanstack/react-query@5.96.2(react@19.2.4))(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(firebase-admin@13.7.0)(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(razorpay@2.9.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.8.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))(resend@6.10.0)
       '@mohasinac/sievejs':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1492,8 +1492,8 @@ packages:
   '@manypkg/get-packages@1.1.3':
     resolution: {integrity: sha512-fo+QhuU3qE/2TQMQmbVMqaQ6EWbMhi4ABWP+O4AM1NqPBuy0OrApV5LO6BrrgnhtAHS2NH6RrVk9OL181tTi8A==}
 
-  '@mohasinac/appkit@2.0.7':
-    resolution: {integrity: sha512-MGvdgNx/hdp9L4lGk8FoAqsPJMoYXTgJgt2D9WPAj5d+8+PF1W99vRIWsmi7hJK/2JQzAS1E1w3Kk0vy68czAA==}
+  '@mohasinac/appkit@2.0.8':
+    resolution: {integrity: sha512-FOejhWTME4jK0t3Bu6mEwcBFJUsktHHX64lRWhVUFwYJV2H2/kt7G9WZzP7vSz4J0f5lAosSzHe1ONArJHGIsg==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       '@upstash/ratelimit': '>=1.0.0'
@@ -7447,7 +7447,7 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@mohasinac/appkit@2.0.7(@tanstack/react-query@5.96.2(react@19.2.4))(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(firebase-admin@13.7.0)(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(razorpay@2.9.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.8.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))(resend@6.10.0)':
+  '@mohasinac/appkit@2.0.8(@tanstack/react-query@5.96.2(react@19.2.4))(@upstash/ratelimit@2.0.8(@upstash/redis@1.37.0))(@upstash/redis@1.37.0)(firebase-admin@13.7.0)(next-intl@4.9.0(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next@16.2.2(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(razorpay@2.9.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(recharts@3.8.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1))(resend@6.10.0)':
     dependencies:
       '@mohasinac/sievejs': 1.0.0
       algoliasearch: 5.50.1

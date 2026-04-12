@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { formatDate } from "@/utils";
+import { formatDate, stripHtml } from "@/utils";
 import { Caption, Text, Badge, Button, Row } from "@mohasinac/appkit/ui";
 
 import { EventStatusBadge } from "./EventStatusBadge";
@@ -30,7 +30,7 @@ export function useEventsTableColumns(
             </Text>
             {e.description && (
               <Caption className="mt-0.5 truncate max-w-xs">
-                {e.description}
+                {stripHtml(e.description)}
               </Caption>
             )}
           </div>

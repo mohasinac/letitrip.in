@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, type Resolver, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
@@ -14,6 +14,7 @@ import {
   Select,
   Input,
 } from "@/components";
+import { RichTextEditor } from "@/features/admin";
 import { useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { sellerCreateCouponAction } from "@/actions";
@@ -61,6 +62,7 @@ export function SellerCouponForm() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
@@ -168,10 +170,25 @@ export function SellerCouponForm() {
                 >
                   {t("fieldDescription")}
                 </Label>
-                <Input
-                  id="description"
-                  {...register("description")}
-                  placeholder={t("fieldDescriptionPlaceholder")}
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      content={field.value ?? ""}
+                      onChange={field.onChange}
+                      placeholder={t("fieldDescriptionPlaceholder")}
+                      minHeight="120px"
+                      imageUploadConfig={{
+                        folder: "coupons",
+                        context: {
+                          type: "rich-text-image",
+                          entity: "coupon-description",
+                          name: sellerCode || "coupon",
+                        },
+                      }}
+                    />
+                  )}
                 />
               </div>
             </FormGroup>

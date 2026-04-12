@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { nowISO } from "@/utils";
 import { Stack } from "@mohasinac/appkit/ui";
 import { FormGroup, Input, Select, Textarea, Toggle } from "@/components";
+import { RichTextEditor } from "./RichTextEditor";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;
@@ -141,13 +142,25 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
         placeholder="Summer Sale Discount"
       />
 
-      <Textarea
-        label={LABELS.DESCRIPTION_LABEL}
-        value={form.description}
-        onChange={(e) => update("description", e.target.value)}
-        placeholder="Short description of this coupon"
-        rows={2}
-      />
+      <div>
+        <label className="block text-sm font-medium mb-1.5">
+          {LABELS.DESCRIPTION_LABEL}
+        </label>
+        <RichTextEditor
+          content={form.description}
+          onChange={(v) => update("description", v)}
+          placeholder="Short description of this coupon"
+          minHeight="120px"
+          imageUploadConfig={{
+            folder: "coupons",
+            context: {
+              type: "rich-text-image",
+              entity: "coupon-description",
+              name: form.name || form.code || "coupon",
+            },
+          }}
+        />
+      </div>
 
       <Select
         label={LABELS.TYPE_LABEL}

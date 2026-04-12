@@ -149,7 +149,7 @@ export async function becomeSellerAction(): Promise<BecomeSellerActionResult> {
 
 const createStoreSchema = z.object({
   storeName: z.string().min(2).max(80),
-  storeDescription: z.string().max(500).optional().or(z.literal("")),
+  storeDescription: z.string().max(10000).optional().or(z.literal("")),
   storeCategory: z.string().max(80).optional().or(z.literal("")),
 });
 
@@ -226,7 +226,7 @@ export async function createStoreAction(
 
 const updateStoreSchema = z.object({
   storeName: z.string().min(2).max(80).optional(),
-  storeDescription: z.string().max(500).optional().or(z.literal("")),
+  storeDescription: z.string().max(10000).optional().or(z.literal("")),
   storeCategory: z.string().max(80).optional().or(z.literal("")),
   storeLogoURL: mediaUrlSchema.optional().or(z.literal("")),
   storeBannerURL: mediaUrlSchema.optional().or(z.literal("")),

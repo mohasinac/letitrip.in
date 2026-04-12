@@ -163,6 +163,14 @@ export function BlogForm({
             onChange={onChange}
             placeholder="Write your blog post content..."
             minHeight="300px"
+            imageUploadConfig={{
+              folder: "blog",
+              context: {
+                type: "blog-content-image",
+                title: post.title || "post",
+                category: post.category || "news",
+              },
+            }}
           />
         )
       }

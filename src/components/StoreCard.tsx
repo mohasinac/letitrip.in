@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { StoreListItem } from "@mohasinac/appkit/features/stores";
 import { Heading, Text, Span, Row } from "@mohasinac/appkit/ui";
+import { stripHtml } from "@mohasinac/appkit/utils";
 import { MediaImage } from "@/components";
 import { Button } from "@mohasinac/appkit/ui";
 
@@ -95,7 +96,7 @@ export function StoreCard({
           </Heading>
           {store.storeDescription && (
             <Text className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
-              {store.storeDescription}
+              {stripHtml(store.storeDescription)}
             </Text>
           )}
           <Row gap="sm" className="mt-2 text-xs text-gray-400">

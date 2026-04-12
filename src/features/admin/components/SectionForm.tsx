@@ -209,6 +209,14 @@ export function SectionForm({
             onChange={(content) => update({ description: content })}
             placeholder={t("descriptionPlaceholder")}
             minHeight="150px"
+            imageUploadConfig={{
+              folder: "sections",
+              context: {
+                type: "rich-text-image",
+                entity: "homepage-section-description",
+                name: section.title || section.type || "section",
+              },
+            }}
           />
         )}
       </div>

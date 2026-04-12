@@ -15,6 +15,7 @@ import {
   ImageUpload,
   Alert,
 } from "@/components";
+import { RichTextEditor } from "@/features/admin";
 import {
   MediaUploadField,
   MediaUploadList,
@@ -88,15 +89,25 @@ export function ProductForm({
         placeholder="Enter product title"
       />
 
-      <FormField
-        name="description"
-        label={t("formDescription")}
-        type="textarea"
-        value={product.description || ""}
-        onChange={(value) => update({ description: value })}
-        disabled={isReadonly}
-        placeholder="Enter product description"
-      />
+      <div>
+        <label className="block text-sm font-medium mb-1.5">
+          {t("formDescription")}
+        </label>
+        <RichTextEditor
+          content={product.description || ""}
+          onChange={(value) => update({ description: value })}
+          placeholder="Enter product description"
+          editable={!isReadonly}
+          imageUploadConfig={{
+            folder: "products",
+            context: {
+              type: "rich-text-image",
+              entity: "product-description",
+              name: product.title || "product",
+            },
+          }}
+        />
+      </div>
 
       <FormGroup columns={2}>
         <CategorySelectorCreate

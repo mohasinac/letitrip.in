@@ -36,6 +36,7 @@ import {
   Toggle,
   useToast,
 } from "@/components";
+import { RichTextEditor } from "@/features/admin";
 import { useAuth, useMediaUpload } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -294,16 +295,25 @@ export function SellerStoreView() {
                     required
                   />
 
-                  <FormField
-                    name="storeDescription"
-                    label={t("storeDescription")}
-                    type="textarea"
-                    rows={3}
-                    value={form.storeDescription}
-                    onChange={set("storeDescription")}
-                    placeholder={t("storeDescriptionPlaceholder")}
-                    helpText={t("storeDescriptionHelp")}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">
+                      {t("storeDescription")}
+                    </label>
+                    <RichTextEditor
+                      content={form.storeDescription}
+                      onChange={(v) => set("storeDescription")(v)}
+                      placeholder={t("storeDescriptionPlaceholder")}
+                      minHeight="150px"
+                      imageUploadConfig={{
+                        folder: "stores",
+                        context: {
+                          type: "rich-text-image",
+                          entity: "store-description",
+                          name: form.storeName || "store",
+                        },
+                      }}
+                    />
+                  </div>
 
                   <FormField
                     name="storeCategory"

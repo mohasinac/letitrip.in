@@ -21,6 +21,7 @@ import {
   Input,
   Select,
 } from "@/components";
+import { RichTextEditor } from "@/features/admin";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { resolveDate } from "@/utils";
 import { useMediaAbort, useMediaUpload } from "@/hooks";
@@ -342,15 +343,24 @@ export function EventFormDrawer({
               placeholder={t("form.titlePlaceholder")}
               required
             />
-            <FormField
-              label={t("form.descriptionLabel")}
-              name="description"
-              type="textarea"
-              value={form.description}
-              onChange={(v) => set("description", v)}
-              placeholder={t("form.descriptionPlaceholder")}
-              rows={2}
-            />
+            <div>
+              <label className="block text-sm font-medium mb-1.5">
+                {t("form.descriptionLabel")}
+              </label>
+              <RichTextEditor
+                content={form.description}
+                onChange={(v) => set("description", v)}
+                placeholder={t("form.descriptionPlaceholder")}
+                minHeight="150px"
+                imageUploadConfig={{
+                  folder: "events",
+                  context: {
+                    type: "event-image",
+                    title: form.title || "event",
+                  },
+                }}
+              />
+            </div>
 
             <FormGroup columns={2}>
               <div>

@@ -1,5 +1,5 @@
 import { SITE_CONFIG } from "@/constants";
-import { resolveDate } from "@/utils";
+import { resolveDate, stripHtml } from "@/utils";
 import type { EventDocument } from "@/db/schema";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
 
@@ -17,7 +17,7 @@ export function EventJsonLd({ event, id }: Props) {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.title,
-    description: event.description,
+    description: stripHtml(event.description ?? ""),
     image: coverImageUrl ? [coverImageUrl] : undefined,
     startDate: resolveDate(event.startsAt)?.toISOString(),
     endDate: resolveDate(event.endsAt)?.toISOString(),

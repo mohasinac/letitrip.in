@@ -1,105 +1,16 @@
 /** @type {import('next').NextConfig} */
-const path = require("path");
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: false,
 });
 
-const withSerwist = require("@serwist/next").default;
-
 // next-intl plugin — wires src/i18n/request.ts as the per-request i18n config
 const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-// ---------------------------------------------------------------------------
-// Local package resolution — only active in local dev (USE_LOCAL_PACKAGES=true)
-//
-// Turbopack limitation: resolveAlias paths that resolve to absolute paths
-// OUTSIDE the project root are automatically externalized by Turbopack.
-// Externalization works for the Node.js server context but not in browser/edge
-// contexts ("chunking context does not support external modules").
-// Therefore resolveAlias is NOT used for Turbopack; both Turbopack (dev) and
-// webpack (prod) use node_modules which already contains compiled dist/.
-//
-// To pick up live source changes during development:
-//   cd D:\proj\packages\packages\<name> && npm run dev   (runs tsup --watch)
-// Then the updated dist/ is used by the Next.js dev server on next HMR reload.
-// ---------------------------------------------------------------------------
-const USE_LOCAL_PACKAGES = process.env.USE_LOCAL_PACKAGES === "true";
-const PACKAGES_ROOT = path.resolve(__dirname, "../packages/packages");
-
-// ---------------------------------------------------------------------------
-// Local appkit resolution — only active in local dev (USE_LOCAL_APPKIT=true)
-//
-// Points @mohasinac/appkit and all its sub-path imports (e.g.
-// @mohasinac/appkit/features/admin) to the local dist/ folder at
-// D:\proj\appkit\dist instead of the installed npm tarball.  This lets you
-// run `npm run watch:features-a` in the appkit repo and have letitrip pick
-// up changes on the next HMR reload without an npm publish cycle.
-// ---------------------------------------------------------------------------
-const USE_LOCAL_APPKIT = process.env.USE_LOCAL_APPKIT === "true";
-const APPKIT_ROOT = path.resolve(__dirname, "../appkit");
-
-const MOHASINAC_PACKAGES = [
-  "auth-firebase",
-  "cli",
-  // NOTE: "contracts" is intentionally excluded from webpack aliases.
-  // It must always be loaded as a Node.js native ESM external via
-  // serverExternalPackages so that both (instrument) and (rsc) webpack
-  // contexts receive the SAME cached module instance and share _registry.
-  "core",
-  "css-tailwind",
-  "css-vanilla",
-  "db-firebase",
-  "email-resend",
-  "errors",
-  "feat-account",
-  "feat-admin",
-  "feat-auctions",
-  "feat-auth",
-  "feat-before-after",
-  "feat-blog",
-  "feat-cart",
-  "feat-categories",
-  "feat-checkout",
-  "feat-collections",
-  "feat-consultation",
-  "feat-corporate",
-  "feat-events",
-  "feat-faq",
-  "feat-filters",
-  "feat-forms",
-  "feat-homepage",
-  "feat-layout",
-  "feat-loyalty",
-  "feat-media",
-  "feat-orders",
-  "feat-payments",
-  "feat-pre-orders",
-  "feat-preorders",
-  "feat-products",
-  "feat-promotions",
-  "feat-reviews",
-  "feat-search",
-  "feat-seller",
-  "feat-stores",
-  "feat-whatsapp-bot",
-  "feat-wishlist",
-  "http",
-  "instrumentation",
-  "monitoring",
-  "next",
-  "react",
-  "security",
-  "seo",
-  "storage-firebase",
-  "tokens",
-  "ui",
-  "utils",
-  "validation",
-];
-
 const nextConfig = {
+  transpilePackages: ["@mohasinac/appkit"],
+
   // Image optimization for Firebase Storage and other remote sources
   images: {
     dangerouslyAllowSVG: true,
@@ -137,127 +48,18 @@ const nextConfig = {
   },
 
   // Allow Turbopack and webpack to handle server-side Node.js modules.
-  // @mohasinac/* packages are Junction-symlinked on Windows; Turbopack cannot
-  // follow junctions so they must be externalized (loaded by Node.js directly).
   serverExternalPackages: [
     "crypto",
     "bcryptjs",
     "firebase-admin",
     "@auth/firebase-adapter",
     "@mohasinac/sievejs",
-    // NOTE: @mohasinac/* packages removed from serverExternalPackages.
-    // The webpack externals function below handles @mohasinac/contracts
-    // (the only package that truly needs singleton native-module loading).
-    // All other @mohasinac/* packages are bundled inline by webpack so that
-    // they can resolve peer deps (react, next, etc.) from letitrip.in's
-    // node_modules and avoid ESM strict-resolution failures in pnpm's
-    // isolated store.
   ],
 
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",
     },
-  },
-
-  // Turbopack is available via `next dev --turbopack` (npm run dev:turbo).
-  // The default `npm run dev` uses webpack to avoid Turbopack's chunk-generation
-  // bug in Next.js 16 with large deeply-nested `as const` objects
-  // (EcmascriptModuleContent::new_merged) — tracked in TECH_DEBT.md.
-  // `turbopack: {}` below preserves any Turbopack-specific config for when it is used.
-  turbopack: {},
-
-  // webpack is used for production builds only (`next build`).
-  // When USE_LOCAL_PACKAGES=true we alias @mohasinac/* to the local dist/
-  // so the production bundle uses the same compiled output as node_modules
-  // but resolves through the workspace source tree for easier debugging.
-  webpack(config, { isServer }) {
-    // Force singleton resolution for packages that use React context.
-    // Junction-symlinked @mohasinac/* packages resolve their peer dependencies
-    // from D:\proj\packages\node_modules (different instances), which breaks
-    // React context (e.g. TanStack Query's QueryClientProvider).
-    // Aliasing to the app's node_modules ensures a single module instance.
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@tanstack/react-query": path.resolve(
-        __dirname,
-        "node_modules/@tanstack/react-query",
-      ),
-      "next-intl$": path.resolve(__dirname, "node_modules/next-intl"),
-      "@mohasinac/http$": path.resolve(__dirname, "src/lib/http/index.ts"),
-    };
-
-    if (isServer) {
-      // Windows NTFS junctions cause webpack to follow symlinks to the real
-      // path (outside the app root), which bypasses Next.js's path-based
-      // serverExternalPackages check and bundles @mohasinac/* packages inline.
-      // Each inline copy has its own isolated _registry variable, so
-      // registerProviders() in the (instrument) context and getProviders() in
-      // the (rsc) context never share state.
-      //
-      // Fix: add a custom externals function that matches the REQUEST string
-      // (not the resolved path), forcing all @mohasinac/* imports to become
-      // native CJS require() calls. Node.js's global require.cache ensures
-      // one module instance is shared across all webpack VM contexts.
-      const existingExternals = Array.isArray(config.externals)
-        ? config.externals
-        : config.externals
-          ? [config.externals]
-          : [];
-      config.externals = [
-        function mohasinacExternals({ request }, callback) {
-          // Only externalize @mohasinac/contracts.  feat-* and other packages
-          // are bundled inline (they need peer deps from letitrip.in's
-          // node_modules, which aren't available from their real paths when
-          // required natively).  But contracts itself has no React peer deps
-          // and must be a single shared CJS module so both the (instrument)
-          // and (rsc) webpack contexts share the same _registry instance.
-          if (request === "@mohasinac/contracts") {
-            return callback(null, `commonjs @mohasinac/contracts`);
-          }
-          callback();
-        },
-        ...existingExternals,
-      ];
-    }
-
-    if (USE_LOCAL_PACKAGES) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        ...Object.fromEntries(
-          MOHASINAC_PACKAGES.flatMap((pkg) => [
-            [
-              `@mohasinac/${pkg}$`,
-              path.join(PACKAGES_ROOT, pkg, "dist", "index.js"),
-            ],
-            [`@mohasinac/${pkg}`, path.join(PACKAGES_ROOT, pkg, "dist")],
-          ]),
-        ),
-      };
-
-      // Preserve local HTTP shim even when package aliases are enabled.
-      config.resolve.alias["@mohasinac/http$"] = path.resolve(
-        __dirname,
-        "src/lib/http/index.ts",
-      );
-    }
-
-    if (USE_LOCAL_APPKIT) {
-      // Exact match for the root import (e.g. import from "@mohasinac/appkit")
-      config.resolve.alias["@mohasinac/appkit$"] = path.join(
-        APPKIT_ROOT,
-        "dist",
-        "index.js",
-      );
-      // Prefix match for all sub-path imports (e.g. "@mohasinac/appkit/features/admin")
-      // webpack replaces the prefix so "@mohasinac/appkit/features/admin" becomes
-      // "<APPKIT_ROOT>/dist/features/admin" → resolved as index.js by node resolver.
-      config.resolve.alias["@mohasinac/appkit"] = path.join(
-        APPKIT_ROOT,
-        "dist",
-      );
-    }
-    return config;
   },
 
   // Security headers
@@ -301,14 +103,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withNextIntl(
-  withBundleAnalyzer(
-    withSerwist({
-      swSrc: "src/sw.ts",
-      swDest: "public/sw.js",
-      reloadOnOnline: true,
-      // Disable in development to avoid service worker caching issues during dev
-      disable: process.env.NODE_ENV === "development",
-    })(nextConfig),
-  ),
-);
+module.exports = withNextIntl(withBundleAnalyzer(nextConfig));

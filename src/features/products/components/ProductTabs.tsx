@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Li, Ol, Text, Ul } from "@mohasinac/appkit/ui";
+import { Li, Ol, Text, Ul, RichText } from "@mohasinac/appkit/ui";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import { SectionTabs } from "@/components";
 import type { SectionTab } from "@/components";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
@@ -56,9 +57,11 @@ export function ProductTabs({ product }: ProductTabsProps) {
       <div className="mt-4">
         {activeTab === "description" && (
           <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed">
-            <Text size="sm" className="whitespace-pre-wrap">
-              {product.description ?? ""}
-            </Text>
+            <RichText
+              html={proseMirrorToHtml(product.description ?? "")}
+              copyableCode
+              className="text-sm"
+            />
           </div>
         )}
 

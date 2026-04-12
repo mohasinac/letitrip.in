@@ -10,11 +10,13 @@ import {
   Span,
   Spinner,
   Row,
+  RichText,
 } from "@mohasinac/appkit/ui";
 import { Card, EmptyState, MediaImage } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
@@ -24,7 +26,7 @@ import { formatDate } from "@/utils";
 import type { EventItem } from "@mohasinac/appkit/features/events";
 import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 
-const { spacing, typography, themed } = THEME_CONSTANTS;
+const { typography, themed } = THEME_CONSTANTS;
 
 interface EventDetailViewProps {
   id: string;
@@ -97,9 +99,10 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
                     {event.endsAt && `Ends: ${formatDate(event.endsAt)}`}
                   </Text>
                 )}
-                <div
-                  className={`prose dark:prose-invert max-w-none mt-3 text-sm ${themed.textSecondary}`}
-                  dangerouslySetInnerHTML={{ __html: event.description }}
+                <RichText
+                  html={proseMirrorToHtml(event.description ?? "")}
+                  copyableCode
+                  className={`mt-3 text-sm ${themed.textSecondary}`}
                 />
               </div>
             )

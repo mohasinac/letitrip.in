@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 23 — TG7 phase-2 batches 8-9 committed (letitrip 06f25258, appkit 2fde676)
+Last updated: session 24 — TG7 phase-2 batch 10 committed in appkit (d3d7fab), letitrip commit pending
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -853,6 +853,8 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **VALIDATION (session 23 batch 8)**: targeted diagnostics are clean on all eight touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
 - **DONE (session 23 batch 9)**: appkit homepage sections (`WelcomeSection`, `TrustIndicatorsSection`, `TrustFeaturesSection`, `SiteFeaturesSection`, `SecurityHighlightsSection`, `StatsCounterSection`) now use semantic `Grid` primitives instead of raw `grid grid-cols-*` wrappers (appkit commit `2fde676`).
 - **VALIDATION (session 23 batch 9)**: targeted diagnostics are clean on all six touched appkit files. Repo-wide `npx tsc --noEmit` in appkit remains blocked by pre-existing `src/ui/components/Accordion.tsx` typing.
+- **DONE (session 24 batch 10)**: appkit homepage follow-up migrated remaining grid bundles in `FeaturedResultsSection`, `HowItWorksSection`, `HowItWorksInfoView`, `HomepageSkeleton`, and `WhatsAppCommunitySection` to semantic `Grid` wrappers while preserving existing responsive breakpoints and spacing (appkit commit `d3d7fab`).
+- **VALIDATION (session 24 batch 10)**: appkit `npx tsc --noEmit` after this batch reports only the pre-existing blocker in `src/ui/components/Accordion.tsx`; targeted diagnostics on touched homepage files are clean.
 
 ---
 

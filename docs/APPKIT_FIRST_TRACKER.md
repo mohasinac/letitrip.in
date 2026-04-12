@@ -199,9 +199,9 @@ These are concrete package gaps currently preventing a fully clean appkit-first 
 
 ### Local live integration
 
-- `appkit` now includes `watch:all` to watch all tsup batches during local development.
+- `appkit` now exposes a single `watch` command that rebuilds the full dist on every source change.
 - `letitrip` is configured to consume local appkit via `"@mohasinac/appkit": "link:../appkit"`.
-- `letitrip` scripts include `dev:appkit:watch` and `dev:appkit:sync` for local iteration.
+- `letitrip` picks up sibling `../appkit/dist` automatically in development when it exists, and its helper scripts call `npm --prefix ../appkit run watch|build`.
 
 ### Task 5 completion (record)
 

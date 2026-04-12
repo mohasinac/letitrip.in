@@ -28,7 +28,7 @@ import {
   Input,
   RadioGroup,
 } from "@/components";
-import { formatDate } from "@/utils";
+import { formatDate, stripHtml } from "@/utils";
 import { EventParticipateView as AppkitEventParticipateView } from "@mohasinac/appkit/features/events";
 import type { SurveyFormField } from "@/db/schema";
 
@@ -244,7 +244,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
               </Text>
             )}
             <Text variant="secondary" className="mt-2">
-              {event.description}
+              {stripHtml(event.description ?? "")}
             </Text>
           </div>
         ) : null

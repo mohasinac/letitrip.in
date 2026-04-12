@@ -12,6 +12,7 @@ import { useState, useCallback } from "react";
 import { Heading, Text, Button } from "@mohasinac/appkit/ui";
 import { SellerStoreSetupView as AppkitSellerStoreSetupView } from "@mohasinac/appkit/features/seller";
 import { Card, Alert, FormField } from "@/components";
+import { RichTextEditor } from "@/features/admin";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";
@@ -84,16 +85,25 @@ export function SellerStoreSetupView() {
                 required
               />
 
-              <FormField
-                name="storeDescription"
-                label={t("storeDescription")}
-                placeholder={t("storeDescriptionPlaceholder")}
-                type="textarea"
-                rows={3}
-                value={form.storeDescription}
-                onChange={set("storeDescription")}
-                helpText={t("storeDescriptionHelp")}
-              />
+              <div>
+                <label className="block text-sm font-medium mb-1.5">
+                  {t("storeDescription")}
+                </label>
+                <RichTextEditor
+                  content={form.storeDescription}
+                  onChange={set("storeDescription")}
+                  placeholder={t("storeDescriptionPlaceholder")}
+                  minHeight="150px"
+                  imageUploadConfig={{
+                    folder: "stores",
+                    context: {
+                      type: "rich-text-image",
+                      entity: "store-description",
+                      name: form.storeName || "store",
+                    },
+                  }}
+                />
+              </div>
 
               <FormField
                 name="storeCategory"

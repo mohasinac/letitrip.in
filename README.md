@@ -123,7 +123,7 @@ Tier 1 — Shared    src/components/ hooks/ utils/…   used by any tier
 # Check if dev server is already running before starting a new one
 netstat -ano | Select-String ":3000.*LISTENING"
 
-npm run dev          # Start dev server (Turbopack)
+npm run dev          # Start Next.js dev server (Turbopack default)
 npm run build        # Production build
 npx tsc --noEmit     # Type-check only
 npm test             # Run Jest tests

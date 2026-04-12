@@ -32,6 +32,7 @@ const EVENT_ADDITIONAL_IMAGE_MAX = 10;
 const BLOG_COVER_MAX = 1;
 const BLOG_CONTENT_IMAGE_MAX = 10;
 const BLOG_ADDITIONAL_IMAGE_MAX = 5;
+const RICH_TEXT_IMAGE_MAX = 20;
 const TMP_UPLOAD_PREFIX = "tmp";
 
 /**
@@ -257,6 +258,23 @@ export const POST = createRouteHandler({
               {
                 maxImages: BLOG_ADDITIONAL_IMAGE_MAX,
                 receivedIndex: imageIndex,
+
+        if (ctx.type === "rich-text-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (isVideo) {
+            return errorResponse("rich-text-image context requires an image file", 400);
+          }
+          if (imageIndex < 1 || imageIndex > RICH_TEXT_IMAGE_MAX) {
+            return errorResponse(
+              "Rich text image index exceeds max allowed",
+              400,
+              {
+                maxImages: RICH_TEXT_IMAGE_MAX,
+                receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
               },
             );
           }

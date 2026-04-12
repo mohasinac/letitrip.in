@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { Gift, Percent, Truck, Tag } from "lucide-react";
 import { useMessage } from "@/hooks";
-import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button, RichText } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import type { CouponDocument, CouponType } from "@/db/schema";
 
 const { themed, flex } = THEME_CONSTANTS;
@@ -102,9 +103,11 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
       </div>
 
       {coupon.description && (
-        <Text size="sm" variant="secondary" className="mb-3">
-          {coupon.description}
-        </Text>
+        <RichText
+          html={proseMirrorToHtml(coupon.description)}
+          copyableCode
+          className="mb-3 text-sm"
+        />
       )}
 
       {coupon.discount.minPurchase && (
