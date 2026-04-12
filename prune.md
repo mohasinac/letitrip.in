@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 23 — TG7 phase-2 batch 8 committed (letitrip 06f25258)
+Last updated: session 23 — TG7 phase-2 batches 8-9 committed (letitrip 06f25258, appkit 2fde676)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -851,6 +851,8 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **VALIDATION (session 23 batch 7)**: targeted diagnostics are clean on both touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
 - **DONE (session 23 batch 8)**: migrated additional letitrip runtime `grid grid-cols-*` wrappers to semantic `Grid` usage in `UserAddressesView`, `DemoSeedView`, `FooterConfigForm`, `FooterLayout`, `HowAuctionsWorkView`, `SellerGuideView`, `StoreAddressesSection`, and `SellerCouponsView` (letitrip commit `06f25258`).
 - **VALIDATION (session 23 batch 8)**: targeted diagnostics are clean on all eight touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
+- **DONE (session 23 batch 9)**: appkit homepage sections (`WelcomeSection`, `TrustIndicatorsSection`, `TrustFeaturesSection`, `SiteFeaturesSection`, `SecurityHighlightsSection`, `StatsCounterSection`) now use semantic `Grid` primitives instead of raw `grid grid-cols-*` wrappers (appkit commit `2fde676`).
+- **VALIDATION (session 23 batch 9)**: targeted diagnostics are clean on all six touched appkit files. Repo-wide `npx tsc --noEmit` in appkit remains blocked by pre-existing `src/ui/components/Accordion.tsx` typing.
 
 ---
 
