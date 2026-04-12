@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components";
-import { Text } from "@mohasinac/appkit/ui";
+import { Text, Grid } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Link } from "@/i18n/navigation";
 
@@ -113,9 +113,7 @@ export function ProfileStatsGrid({
   ];
 
   return (
-    <div
-      className={`grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 ${className}`}
-    >
+    <Grid cols="statTiles" className={className}>
       {statItems.map((stat) => (
         <Link key={stat.label} href={stat.href} className="group block">
           <Card
@@ -138,6 +136,6 @@ export function ProfileStatsGrid({
           </Card>
         </Link>
       ))}
-    </div>
+    </Grid>
   );
 }

@@ -5,7 +5,7 @@
   MediaImage,
   TextLink,
 } from "@/components";
-import { Heading, Text, Span, Badge, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Badge, Row, Grid } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
@@ -386,7 +386,7 @@ export async function PublicProfileView({
 
         {/* Stats Grid */}
         {user.publicProfile?.showOrders && user.stats && (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 mb-6">
+          <Grid cols="statTiles" className="mb-6">
             <Card>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary-700 dark:text-primary-400">
@@ -427,7 +427,7 @@ export async function PublicProfileView({
                 </Text>
               </div>
             </Card>
-          </div>
+          </Grid>
         )}
 
         {/* Rating */}
