@@ -887,6 +887,8 @@
     "reviewFormTitlePlaceholder": "Summarize your experience in a few words",
     "reviewFormComment": "Your Review",
     "reviewFormCommentPlaceholder": "What did you like or dislike? How was the quality, delivery, and overall value?",
+    "reviewFormImages": "Photos (optional)",
+    "reviewFormImagesHelper": "Add up to 5 photos to help other buyers",
     "reviewFormSubmit": "Submit Review",
     "reviewFormSubmitting": "Submitting…",
     "reviewFormSuccess": "Thank you! Your review has been submitted and is pending moderation.",

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, Suspense } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -15,6 +15,10 @@ import {
   Button,
 } from "@mohasinac/appkit/ui";
 import {
+  MediaUploadList,
+  type MediaField,
+} from "@mohasinac/appkit/features/media";
+import {
   Alert,
   FormField,
   MediaAvatar,
@@ -23,7 +27,7 @@ import {
 } from "@/components";
 import { useProductReviews } from "@mohasinac/appkit/features/reviews";
 import { useCreateReview } from "@/hooks/useProductReviews";
-import { useAuth, useMessage, useUrlTable } from "@/hooks";
+import { useAuth, useMediaUpload, useMessage, useUrlTable } from "@/hooks";
 
 const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
 
@@ -178,8 +182,22 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
+  const [reviewImages, setReviewImages] = useState<MediaField[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+
+  // Sequential index ref for SEO-friendly review image filenames
+  const imageIndexRef = useRef(0);
+  const { upload: uploadMedia } = useMediaUpload();
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    imageIndexRef.current += 1;
+    return uploadMedia(file, "tmp/reviews", true, {
+      type: "review-image",
+      productId,
+      index: imageIndexRef.current,
+    });
+  };
 
   const { mutate, isPending: isLoading } = useCreateReview(
     () => {
@@ -232,7 +250,13 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
       setFormError(t("reviewFormRating") + " " + tActions("required"));
       return;
     }
-    mutate({ productId, rating, title, comment });
+    mutate({
+      productId,
+      rating,
+      title,
+      comment,
+      images: reviewImages.map((f) => f.url),
+    });
   };
 
   return (
@@ -268,6 +292,19 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         onChange={(v) => setComment(v)}
         required
         rows={4}
+      />
+
+      {/* Images — max 5 per review */}
+      <MediaUploadList
+        label={t("reviewFormImages")}
+        value={reviewImages}
+        onChange={setReviewImages}
+        onUpload={handleImageUpload}
+        accept="image/*"
+        maxItems={5}
+        maxSizeMB={10}
+        helperText={t("reviewFormImagesHelper")}
+        // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
       />
 
       {/* Form-level error */}
