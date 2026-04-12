@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 22 — TG7 phase-2 batch 6 committed (appkit 48f40ab, letitrip 65b8eb87)
+Last updated: session 23 — TG7 phase-2 batch 7 committed (letitrip bf089731)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -847,7 +847,8 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **VALIDATION (session 22 batch 5)**: targeted diagnostics are clean on all five touched admin files. Repo-wide `npx tsc --noEmit` is still blocked by pre-existing parser errors in `src/app/api/media/upload/route.ts`.
 - **DONE (session 22 batch 6)**: extracted a reusable `productDetailTriplet` Grid preset in appkit `Layout.tsx` and migrated appkit product detail shells (`ProductDetailView`, `AuctionDetailView`) plus letitrip product skeleton surfaces (`ProductDetailView`, `AuctionDetailView`, `PreOrderDetailView`) from repeated custom three-column class bundles to semantic `Grid cols="productDetailTriplet"` (appkit commit `48f40ab`, letitrip commit `65b8eb87`).
 - **VALIDATION (session 22 batch 6)**: targeted diagnostics are clean on all six touched files. Repo-wide `npx tsc --noEmit` remains blocked only by pre-existing `src/ui/components/Accordion.tsx` in appkit and `src/app/api/media/upload/route.ts` parse errors in letitrip.
-- **IN PROGRESS (session 23 batch 1, local edits)**: product detail sub-grids are being migrated from raw `grid grid-cols-*` bundles to semantic `Grid` wrappers in letitrip `AuctionDetailView` (countdown units) and `PreOrderDetailView` (specification pairs). Validation + commit pending.
+- **DONE (session 23 batch 7)**: product detail sub-grids now use semantic `Grid` wrappers in letitrip `AuctionDetailView` (countdown units) and `PreOrderDetailView` (specification pairs), replacing raw `grid grid-cols-*` class bundles (letitrip commit `bf089731`).
+- **VALIDATION (session 23 batch 7)**: targeted diagnostics are clean on both touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
 
 ---
 
