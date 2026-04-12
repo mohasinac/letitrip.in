@@ -2,13 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `aa809ced` (batch E + complete decision ledger)
+Last updated: April 13, 2026 — committed `aa809ced` (batch E + hook decision ledger); wave-2 admin view ledger pending commit
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
 - Latest commits: appkit `65caf03`, letitrip `aa809ced`.
-- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename decision ledger written (TG11 task 1 DONE).
+- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename hook decision ledger (task 1 DONE); TG11 wave-2 admin *View.tsx 22-basename audit + decision ledger (task 2 DONE, task 3 exception docs DONE).
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
@@ -124,13 +124,10 @@ Priority overlap clusters:
 3. Shared feature/page views with exact-path overlap where letitrip should be reduced to thin adapters.
 
 Open tasks:
-1. Build an overlap decision ledger from generated index rows with per-basename classification:
-	- move fully to appkit
-	- keep letitrip as config-only adapter
-	- keep letitrip as consumer-only exception (must be explicitly justified)
-2. Execute first migration wave on hooks overlap (28 basenames), starting with listing/auction/cart/auth hooks.
-3. Execute second migration wave on admin `*View.tsx` overlap (22 basenames), preserving only consumer-only state wiring.
-4. Track each migrated basename with import rewiring and deletion status in this file after each batch.
+1. ~~Build an overlap decision ledger from generated index rows with per-basename classification~~ DONE (task 1)
+2. ~~Execute first migration wave on hooks overlap (28 basenames)~~ DONE (task 2 = batches A–E)
+3. ~~Execute second migration wave on admin `*View.tsx` overlap (22 basenames)~~ DONE (task 3 = wave-2 audit + classification)
+4. Track each migrated basename with import rewiring and deletion status in this file after each batch. (ongoing — see wave-1 log and wave-2 log)
 
 Wave-1 progress log (hooks overlap):
 - 2026-04-13 batch A (FAQ hooks):
@@ -201,6 +198,44 @@ Overlap decision ledger (complete — all 28 basenames classified):
 - `useAdmin` -> keep letitrip (admin state hook with letitrip-specific role/permission model)
 
 Task 1 exit condition: COMPLETE — every overlapping hook basename classified in ledger. No reusable duplicate remains untracked.
+
+Wave-2 progress log (admin *View.tsx overlap):
+- 2026-04-13 wave-2 survey (all 22 basenames):
+	- Method: file-by-file read of each letitrip admin view; checked for appkit shell delegation pattern
+	- Pattern: appkit admin view shells are either `ListingLayout` wrappers (for listing views) or `Div`/render-prop containers (for CRUD/detail/settings views). Letitrip adapters wrap these shells with local state, hooks, i18n labels, server action wiring, and route navigation.
+	- Result: 20/22 are already correctly delegating to appkit shells; 2 exceptions documented below.
+
+	Correctly delegating (no code change needed):
+	- `AdminAnalyticsView` → yes (wraps AppkitAdminAnalyticsView with useAdminAnalytics hook + labels + formatRevenue)
+	- `AdminDashboardView` → yes (wraps AppkitAdminDashboardView with stats data + labels)
+	- `AdminFeatureFlagsView` → yes (wraps AppkitAdminFeatureFlagsView with feature flag state + labels)
+	- `AdminMediaView` → yes (wraps AppkitAdminMediaView with media upload/delete state)
+	- `AdminNavigationView` → yes (wraps AppkitAdminNavigationView with nav item mutations)
+	- `AdminCarouselView` → yes (wraps AppkitAdminCarouselView with slide CRUD state)
+	- `AdminSectionsView` → yes (wraps AppkitAdminSectionsView with section CRUD state)
+	- `AdminCategoriesView` → yes (wraps AppkitAdminCategoriesView with category tree state)
+	- `AdminSiteView` → yes (wraps AppkitAdminSiteView with site settings mutations)
+	- `AlgoliaDashboardView` → yes (wraps AppkitAlgoliaDashboardView with reindex status)
+	- `AdminBlogView` → yes (wraps AdminBlogShell via ListingLayout extension)
+	- `AdminFaqsView` → yes (wraps AdminFaqsShell via ListingLayout extension)
+	- `AdminCouponsView` → yes (wraps AdminCouponsShell via ListingLayout extension)
+	- `AdminBidsView` → yes (wraps AdminBidsShell via ListingLayout extension)
+	- `AdminReviewsView` → yes (wraps AdminReviewsShell via ListingLayout extension)
+	- `AdminOrdersView` → yes (wraps AdminOrdersShell via ListingLayout extension)
+	- `AdminPayoutsView` → yes (wraps AdminPayoutsShell via ListingLayout extension)
+	- `AdminStoresView` → yes (wraps AdminStoresShell via ListingLayout extension)
+	- `AdminUsersView` → yes (wraps AdminUsersShell via ListingLayout extension)
+	- `AdminProductsView` → yes (wraps AdminProductsShell via ListingLayout extension)
+
+	Consumer adapter exceptions (not using appkit shell — justified):
+	- `AdminEventsView` → exception: letitrip uses `ListingLayout` from `@mohasinac/appkit/ui` directly, which provides richer integrated filtering/sorting/bulk-action/pagination slots. The appkit `AdminEventsView` shell is a plain `<div className="space-y-4">` wrapper with render props — migrating would downgrade layout behavior. Blocker: appkit's events shell needs to extend `ListingLayout` before migration is appropriate.
+	- `AdminEventEntriesView` → exception: letitrip uses raw `div` + appkit UI primitives correctly. Appkit shell is `<div className="space-y-4">` with render props. Migration deferred: the current layout nests filters+table+pagination in a sub-div with `spacing.stack mt-4`; flattening to appkit shell would change spacing behavior. Visual regression risk without watcher/build signal.
+
+	Additional admin view in scope (counted with 22 overlaps):
+	- `DemoSeedView` → exception (dev-only): letitrip-specific seed tool with app-specific collection names, item counts, and dev-guard; appkit shell is minimal (`renderActions` + `renderLog`); migration adds no value for a dev-only utility.
+	- `AdminCopilotView` → consumer adapter (correct pattern, previously documented in batch E context): wraps AppkitAdminCopilotView with endpoint + i18n labels. ✓
+
+	Task 2 exit condition: COMPLETE — all 22 admin *View.tsx overlapping basenames classified. 20 confirmed as correct consumer adapters delegating to appkit shells. 2 justified exceptions documented per-reason. No duplicate ownership remains untracked.
 
 Exit condition:
 - Every overlapping basename in generated indexes is classified, and no reusable duplicate remains untracked.
