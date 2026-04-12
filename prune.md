@@ -2,11 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 (session: TypeScript stabilization complete)
+Last updated: April 13, 2026 (session committed: appkit 65caf03, letitrip afd3a4ad)
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
-- `npx tsc --noEmit` now passes in both `letitrip.in` and `appkit` after cross-repo compatibility fixes. Pending task groups below remain the active migration scope.
+- `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` on the committed state.
+- Latest commits in this session: appkit `65caf03`, letitrip `afd3a4ad`.
+- Pending task groups below remain the active migration scope.
 
 ---
 
