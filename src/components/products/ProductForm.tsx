@@ -15,10 +15,15 @@ import {
   ImageUpload,
   Alert,
 } from "@/components";
+import {
+  MediaUploadList,
+  type MediaField,
+} from "@mohasinac/appkit/features/media";
 import { CategorySelectorCreate } from "@/components";
 import { StoreAddressSelectorCreate } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
+import { useRef } from "react";
 import { resolveDate } from "@/utils";
 import type { AdminProduct } from "./Product.types";
 import { PRODUCT_STATUS_OPTIONS } from "./Product.types";
@@ -36,8 +41,26 @@ export function ProductForm({
 }: ProductFormProps) {
   const t = useTranslations("adminProducts");
   const { upload } = useMediaUpload();
+  // Sequential index ref for SEO-friendly gallery image filenames
+  const galleryIndexRef = useRef(0);
   const update = (partial: Partial<AdminProduct>) => {
     onChange({ ...product, ...partial });
+  };
+
+  const galleryImages: MediaField[] = (product.images ?? []).map((url) => ({
+    url,
+    type: "image" as const,
+  }));
+
+  const handleGalleryUpload = async (file: File): Promise<string> => {
+    galleryIndexRef.current += 1;
+    return upload(file, "products", true, {
+      type: "product-image",
+      index: galleryIndexRef.current,
+      name: product.title || "product",
+      category: product.category || product.categoryId || "uncategorized",
+      store: product.sellerName || "store",
+    });
   };
 
   return (
@@ -153,6 +176,23 @@ export function ProductForm({
           value={product.mainImage}
           onChange={() => {}}
           disabled
+        />
+      )}
+
+      {/* Gallery images — max 5 */}
+      {!isReadonly && (
+        <MediaUploadList
+          label={t("formGalleryImages")}
+          value={galleryImages}
+          onChange={(fields) =>
+            update({ images: fields.map((f) => f.url) })
+          }
+          onUpload={handleGalleryUpload}
+          accept="image/*"
+          maxItems={5}
+          maxSizeMB={10}
+          helperText={t("formGalleryImagesHelper")}
+          // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
         />
       )}
 

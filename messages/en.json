@@ -2794,6 +2794,8 @@
     "formStock": "Stock Quantity",
     "formStatus": "Status",
     "formMainImage": "Main Image",
+    "formGalleryImages": "Gallery Images (optional)",
+    "formGalleryImagesHelper": "Add up to 5 additional product photos",
     "formTags": "Tags (comma-separated)",
     "formTagsPlaceholder": "e.g. electronics, gadgets, sale",
     "formFeatured": "Featured",
