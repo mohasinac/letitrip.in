@@ -2,14 +2,14 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 6 — commit 369a404c)
+Last updated: April 12, 2026 (session 7 in progress)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
 - Verdict A (Listing Logic): partial
-- Verdict B (Media Contract 5 images + 1 video): partial
+- Verdict B (Media Contract 5 images + 1 video): partial → **product schema/image cap and upload API product-context guardrails implemented (session 7)**
 - Verdict C (Order imageUrls propagation): pending
-- Verdict D (Dual cleanup strategy): partial → **scheduler job implemented; upload-route tmp/ convention pending (Task Group 1)**
+- Verdict D (Dual cleanup strategy): partial → **scheduler job implemented; upload route now stages under tmp/* (session 7); finalize-on-save endpoint still pending**
 - Verdict E (Semantic wrapper variants + accessibility): pending
 - Verdict F (i18n and INR currency propagation): pending
 - Verdict G (Appkit ownership over duplicate/shared features): pending
@@ -157,8 +157,8 @@ Use this section as the operational tracker for migration decisions and sequenci
 
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
-| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **partial** | adopt tmp/ folder convention in upload route and form save finalization (Task Group 1) | scheduler spec approved and task remains implementation-ready |
-| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement matrix rows in code (forms + schemas + upload API) starting with product/seller flows | each target file mapped with explicit limit policy and migration target |
+| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **partial** | implement finalize-on-save endpoint/action to move `tmp/{uid}/...` to canonical media path after successful entity save | scheduler spec approved and task remains implementation-ready |
+| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | pending | define source-of-truth flow for populate/update of `order.imageUrls` | order image propagation logic fully specified in backlog |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
@@ -315,6 +315,12 @@ Standardize products, auctions, pre-orders, reviews, and stores on a shared medi
 | orders | Schema compatibility | src/db/schema/orders.ts | preserve item/order image arrays compatibility | no new order video field in this slice | ensure order media typing stays image-array only | n/a | appkit/src/features/orders/schema/* | pending implementation |
 | shared media API | API | src/app/api/media/upload/route.ts | enforce max image count at request context boundary | enforce single video per target field context | server-side mime sniff already present; add entity-limit guard | returns staged URLs compatible with onAbort contract | appkit/src/features/media/* + consumer route wiring | pending implementation |
 
+Progress update (session 7 batch 1):
+- `src/lib/validation/schemas.ts`: product `images` max reduced `10 -> 5` for create/update schema validation.
+- `src/app/api/media/upload/route.ts`: product-context guardrails added (`product-image` index <= 5, `product-video` index <= 1).
+- `src/app/api/media/upload/route.ts`: uploads now always stage under `tmp/*` prefix (aligns with Task Group 2 cron cleanup strategy).
+- `src/components/products/ProductForm.tsx`: product image upload context now sends deterministic `index: 1`.
+
 ### Acceptance criteria
 - all target forms use MediaUploadField/MediaUploadList from appkit
 - each form enforces 5 image / 1 video limit
@@ -324,6 +330,8 @@ Standardize products, auctions, pre-orders, reviews, and stores on a shared medi
 Verification: partial
 - Shared appkit primitives exist.
 - **DONE (session 6)**: row-by-row enforcement matrix documented for each listed Task Group 1 form/schema target plus upload API target.
+- **DONE (session 7 batch 1)**: product schema image cap enforced at 5 in validation layer.
+- **DONE (session 7 batch 1)**: upload API enforces product context guardrails (max 5 image indices, max 1 video index).
 - Full 5+1 enforcement across every listed letitrip form/entity remains open.
 
 ---
@@ -358,7 +366,7 @@ Verification: partial
 - **DONE (session 2)**: `functions/src/jobs/mediaTmpCleanup.ts` created and registered in `functions/src/index.ts`.
 - **DONE (session 2)**: `MEDIA_TMP_FOLDER_PREFIX = "tmp/"` and `MEDIA_TMP_TTL_HOURS = 24` added to `functions/src/config/constants.ts`.
 - **DONE (session 2)**: Schedule set to `SCHEDULES.DAILY_0430_UTC` (10:00 AM IST / 04:30 UTC), timezone `Asia/Kolkata`, `maxInstances: 1`.
-- **Pending**: media upload route (`src/app/api/media/upload/route.ts`) must prefix staged uploads with `tmp/` folder convention.
+- **DONE (session 7 batch 1)**: media upload route now prefixes staged uploads under `tmp/*`.
 - **Pending**: form save actions must call a "finalize" endpoint that moves the confirmed URL from `tmp/{uid}/file` → `media/{uid}/file` on successful entity save.
 
 ### Safety constraints

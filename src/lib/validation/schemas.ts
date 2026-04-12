@@ -291,7 +291,7 @@ const productBaseSchema = z.object({
   currency: z.string().length(3).default("INR"), // ISO 4217
   stockQuantity: z.number().int().nonnegative(),
   mainImage: urlSchema,
-  images: z.array(urlSchema).max(10).optional(),
+  images: z.array(urlSchema).max(5).optional(),
   video: videoSchema.optional(),
   specifications: z.array(productSpecificationSchema).max(50).optional(),
   features: z.array(z.string().min(1).max(200)).max(20).optional(),

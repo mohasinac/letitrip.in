@@ -19,6 +19,10 @@ import {
   type MediaFilenameContext,
 } from "@/utils";
 
+const PRODUCT_IMAGE_MAX = 5;
+const PRODUCT_VIDEO_MAX = 1;
+const TMP_UPLOAD_PREFIX = "tmp";
+
 /**
  * POST /api/media/upload
  *
@@ -88,6 +92,7 @@ export const POST = createRouteHandler({
     // Generate SEO-friendly filename when context is supplied, otherwise
     // fall back to a cryptographically random name (safe for anonymous uploads).
     let filename: string;
+    let parsedContext: MediaFilenameContext | null = null;
     if (contextRaw) {
       let ctx: MediaFilenameContext | null = null;
       try {
@@ -96,6 +101,29 @@ export const POST = createRouteHandler({
         // Malformed context — fall back silently; no sensitive info leaked
       }
       if (ctx && typeof ctx === "object" && "type" in ctx) {
+        parsedContext = ctx;
+
+        // Product media guardrails: max 5 images, max 1 video.
+        if (ctx.type === "product-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > PRODUCT_IMAGE_MAX) {
+            return errorResponse("Product image index exceeds max allowed", 400, {
+              maxImages: PRODUCT_IMAGE_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        if (ctx.type === "product-video") {
+          const videoIndex = ctx.index ?? 1;
+          if (videoIndex < 1 || videoIndex > PRODUCT_VIDEO_MAX) {
+            return errorResponse("Only one product video is allowed", 400, {
+              maxVideos: PRODUCT_VIDEO_MAX,
+              receivedIndex: videoIndex,
+            });
+          }
+        }
+
         // Force the correct extension from the server-detected MIME type
         const mimeToExt: Record<string, string> = {
           "image/jpeg": "jpg",
@@ -119,8 +147,14 @@ export const POST = createRouteHandler({
       filename = `${Date.now()}-${randomString}.${detected.ext}`;
     }
 
-    // Determine storage path
-    const basePath = folder || "uploads";
+    // Determine storage path.
+    // New uploads are always staged under tmp/* until entity save finalization.
+    const folderInput = (folder || "uploads").replace(/^\/+|\/+$/g, "");
+    const basePath =
+      folderInput === TMP_UPLOAD_PREFIX ||
+      folderInput.startsWith(`${TMP_UPLOAD_PREFIX}/`)
+        ? folderInput
+        : `${TMP_UPLOAD_PREFIX}/${folderInput}`;
     const storagePath = `${basePath}/${user!.uid}/${filename}`;
 
     // Upload to Firebase Storage
@@ -158,6 +192,7 @@ export const POST = createRouteHandler({
       path: storagePath,
       mime: detectedMime,
       size: file.size,
+      mediaType: parsedContext?.type,
     });
 
     return successResponse(

@@ -133,6 +133,7 @@ export function ProductForm({
           onUpload={(file) =>
             upload(file, "products", true, {
               type: "product-image",
+              index: 1,
               name: product.title || "product",
               category:
                 product.category || product.categoryId || "uncategorized",
