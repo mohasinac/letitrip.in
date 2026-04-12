@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

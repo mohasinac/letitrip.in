@@ -5,7 +5,7 @@
  * DELETE /api/admin/coupons/[id] — Delete coupon
  */
 
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";

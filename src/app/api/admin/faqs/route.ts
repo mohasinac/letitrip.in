@@ -1,7 +1,7 @@
 import "@/providers.config";
 
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
   getSearchParams,

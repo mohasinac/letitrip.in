@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/bids
  */
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { bidRepository } from "@/repositories";
 
 export const GET = createApiHandler({

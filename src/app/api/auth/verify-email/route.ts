@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { SUCCESS_MESSAGES } from "@/constants";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";

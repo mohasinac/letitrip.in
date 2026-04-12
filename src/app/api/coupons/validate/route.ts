@@ -6,7 +6,7 @@ import "@/providers.config";
  * Public endpoint (requires auth — validates per-user usage limits)
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";

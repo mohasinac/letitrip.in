@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/seller/offers — Returns all incoming offers for the authenticated seller
  */
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { offerRepository } from "@/repositories";
 
 export const GET = createApiHandler({

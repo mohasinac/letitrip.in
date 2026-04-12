@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { sessionRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /**

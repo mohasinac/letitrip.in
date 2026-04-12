@@ -7,7 +7,7 @@ import "@/providers.config";
  * Mutations use Server Action: requestPayoutAction.
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import {
   getNumberParam,

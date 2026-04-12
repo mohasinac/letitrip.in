@@ -20,7 +20,7 @@ import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse } from "@mohasinac/appkit/next";
 import {
   ValidationError,
   AuthenticationError,

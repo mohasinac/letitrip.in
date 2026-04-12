@@ -8,7 +8,7 @@
  */
 
 import { orderRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { AuthorizationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";

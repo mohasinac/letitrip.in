@@ -6,7 +6,7 @@
 
 import { faqsRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { faqVoteSchema } from "@/lib/validation/schemas";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

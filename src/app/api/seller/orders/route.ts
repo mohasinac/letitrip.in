@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { orderRepository, productRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
 import {
   getNumberParam,

@@ -1,5 +1,5 @@
 import type { UserDocument } from "@/db/schema";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { NotFoundError, AuthorizationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { userRepository } from "@/repositories";

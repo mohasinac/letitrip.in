@@ -39,7 +39,7 @@ import {
   requireRoleFromRequest,
 } from "@/lib/firebase/auth-server";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@/lib/server-logger";
 import { UI_LABELS } from "@/constants";
 import type { UserRole } from "@/types/auth";

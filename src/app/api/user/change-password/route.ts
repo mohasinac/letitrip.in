@@ -9,7 +9,7 @@ import "@/providers.config";
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { changePasswordSchema } from "@/lib/validation/schemas";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

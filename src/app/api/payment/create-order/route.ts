@@ -14,7 +14,7 @@ import "@/providers.config";
 import { z } from "zod";
 import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
 import { siteSettingsRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

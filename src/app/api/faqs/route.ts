@@ -16,7 +16,7 @@ import "@/providers.config";
  */
 
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import {
   getBooleanParam,
   getNumberParam,
@@ -29,7 +29,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
 import type { FAQDocument } from "@/db/schema";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse } from "@mohasinac/appkit/next";
 
 /**
  * GET /api/faqs

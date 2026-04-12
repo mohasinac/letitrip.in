@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";

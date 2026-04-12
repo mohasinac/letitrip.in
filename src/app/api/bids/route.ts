@@ -7,7 +7,7 @@
 
 import { bidRepository, productRepository, unitOfWork } from "@/repositories";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { maskPublicBid } from "@/lib/pii";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";

@@ -24,7 +24,7 @@ import "@/providers.config";
 
 import { randomUUID } from "crypto";
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@/lib/server-logger";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";

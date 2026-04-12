@@ -7,7 +7,7 @@ import "@/providers.config";
 
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

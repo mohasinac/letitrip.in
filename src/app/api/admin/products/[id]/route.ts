@@ -5,7 +5,7 @@
  * DELETE /api/admin/products/[id] — Hard delete product (admin)
  */
 
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";

@@ -9,7 +9,7 @@ import "@/providers.config";
 
 import { z } from "zod";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";

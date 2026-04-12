@@ -5,7 +5,7 @@ import "@/providers.config";
  * Returns authenticated buyer's offers, newest first.
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { offerRepository } from "@/repositories";
 

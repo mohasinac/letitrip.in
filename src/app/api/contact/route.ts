@@ -6,7 +6,7 @@ import "@/providers.config";
 
 import { z } from "zod";
 import { sendContactEmail } from "@/lib/email";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@/lib/server-logger";

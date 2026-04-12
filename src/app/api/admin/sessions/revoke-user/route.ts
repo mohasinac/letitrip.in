@@ -9,7 +9,7 @@ import "@/providers.config";
  */
 
 import { sessionRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";

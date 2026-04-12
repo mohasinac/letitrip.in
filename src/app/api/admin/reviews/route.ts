@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/reviews
  */
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { piiBlindIndex } from "@/lib/pii";
 import { REVIEW_FIELDS } from "@/db/schema";

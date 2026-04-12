@@ -4,7 +4,7 @@
  */
 
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { eventRepository, eventEntryRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";

@@ -24,7 +24,7 @@ import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { errorResponse } from "@/lib/api-response";
+import { errorResponse } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";

@@ -8,7 +8,7 @@
  */
 
 import { productRepository, reviewRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";

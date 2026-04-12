@@ -7,7 +7,7 @@
  */
 
 import { sessionRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";

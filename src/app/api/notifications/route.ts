@@ -7,7 +7,7 @@ import "@/providers.config";
 
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { notificationRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

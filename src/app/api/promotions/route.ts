@@ -5,7 +5,7 @@ import "@/providers.config";
  */
 
 import { productRepository, couponsRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

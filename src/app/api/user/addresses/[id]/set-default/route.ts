@@ -7,7 +7,7 @@
  */
 
 import { addressRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";

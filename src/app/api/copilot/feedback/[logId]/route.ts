@@ -8,7 +8,7 @@
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { copilotLogRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { AppError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";

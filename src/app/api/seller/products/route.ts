@@ -7,7 +7,7 @@ import "@/providers.config";
  * Mutations use Server Action: createSellerProductAction.
  */
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { productRepository } from "@/repositories";
 
 export const GET = createApiHandler({

@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@/lib/server-logger";
 import { chatRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";

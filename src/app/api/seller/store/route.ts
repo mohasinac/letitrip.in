@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/seller/store — Returns the authenticated seller's own store
  */
 import { createApiHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { storeRepository } from "@/repositories";
 
 export const GET = createApiHandler({

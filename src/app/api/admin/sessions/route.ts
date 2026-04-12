@@ -9,7 +9,7 @@ import "@/providers.config";
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
   getSearchParams,

@@ -10,7 +10,7 @@
 
 import { z } from "zod";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";

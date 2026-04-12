@@ -31,7 +31,7 @@ import {
   userRepository,
   failedCheckoutRepository,
 } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import {
   ApiError,
   ValidationError,

@@ -14,7 +14,7 @@ import "@/providers.config";
 
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";

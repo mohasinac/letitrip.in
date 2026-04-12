@@ -12,7 +12,7 @@ import "@/providers.config";
  * Auth required: yes (payments are only for logged-in users).
  */
 
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { ApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next";

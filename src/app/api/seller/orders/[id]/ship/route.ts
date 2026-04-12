@@ -18,7 +18,7 @@ import {
   NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { ORDER_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";

@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";
 import { userRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

@@ -11,7 +11,7 @@
 
 import { z } from "zod";
 import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { userRepository, storeRepository } from "@/repositories";

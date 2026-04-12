@@ -7,7 +7,7 @@
  */
 
 import { userRepository } from "@/repositories";
-import { successResponse } from "@/lib/api-response";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@/lib/api/api-handler";
 import type { SellerPayoutDetails } from "@/db/schema";
 
