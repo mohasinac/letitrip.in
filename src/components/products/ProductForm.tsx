@@ -16,6 +16,7 @@ import {
   Alert,
 } from "@/components";
 import {
+  MediaUploadField,
   MediaUploadList,
   type MediaField,
 } from "@mohasinac/appkit/features/media";
@@ -58,6 +59,16 @@ export function ProductForm({
     return upload(file, "products", true, {
       type: "product-image",
       index: galleryIndexRef.current,
+      name: product.title || "product",
+      category: product.category || product.categoryId || "uncategorized",
+      store: product.sellerName || "store",
+    });
+  };
+
+  const handleVideoUpload = async (file: File): Promise<string> => {
+    return upload(file, "products", true, {
+      type: "product-video",
+      index: 1,
       name: product.title || "product",
       category: product.category || product.categoryId || "uncategorized",
       store: product.sellerName || "store",
@@ -193,6 +204,30 @@ export function ProductForm({
           maxItems={5}
           maxSizeMB={10}
           helperText={t("formGalleryImagesHelper")}
+          onAbort={onAbort}
+        />
+      )}
+
+      {/* Product video — max 1 */}
+      {!isReadonly && (
+        <MediaUploadField
+          label={t("formVideo")}
+          value={product.video?.url || ""}
+          onChange={(url) =>
+            update({
+              video: url
+                ? {
+                    url,
+                    thumbnailUrl: url,
+                    duration: 1,
+                  }
+                : undefined,
+            })
+          }
+          onUpload={handleVideoUpload}
+          accept="video/*"
+          maxSizeMB={50}
+          helperText={t("formVideoHelper")}
           onAbort={onAbort}
         />
       )}
