@@ -13,6 +13,7 @@ import {
   StatusBadge,
   Span,
   TablePagination,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -105,7 +106,7 @@ function AdminBidsContent({ action }: Props) {
   const { columns } = useBidTableColumns(handleView);
 
   return (
-    <div className="space-y-6">
+    <Stack gap="lg">
       <AdminPageHeader
         title={t("title")}
         subtitle={`${t("subtitle")} — ${totalBids} total`}
@@ -265,7 +266,7 @@ function AdminBidsContent({ action }: Props) {
           )}
         />
       </AdminBidsShell>
-    </div>
+    </Stack>
   );
 }
 

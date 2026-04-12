@@ -24,6 +24,7 @@ import {
   Span,
   Badge,
   Row,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import { TextLink, Accordion, AccordionItem } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
@@ -96,8 +97,8 @@ export function ProductInfo({
     status === "out_of_stock" || status === "sold" || availableQuantity === 0;
   const displayPrice = isAuction ? (currentBid ?? startingBid ?? price) : price;
 
-  return (
-    <div className="space-y-5">
+    return (
+      <Stack gap="md" className="gap-5">
       {/* ——— Product Name ——— */}
       <div>
         <Heading
@@ -355,6 +356,6 @@ export function ProductInfo({
           ))}
         </Row>
       )}
-    </div>
+      </Stack>
   );
 }

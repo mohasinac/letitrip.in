@@ -31,6 +31,7 @@ import {
   Badge,
   Button,
   StatusBadge,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
@@ -297,7 +298,7 @@ function AdminFaqsContent({ action }: AdminFaqsViewProps) {
 
   return (
     <>
-      <div className="space-y-6">
+      <Stack gap="lg">
         <AdminPageHeader
           title={t("title")}
           subtitle={t("subtitle")}
@@ -401,7 +402,7 @@ function AdminFaqsContent({ action }: AdminFaqsViewProps) {
             />
           )}
         </AdminFaqsShell>
-      </div>
+      </Stack>
     </>
   );
 }

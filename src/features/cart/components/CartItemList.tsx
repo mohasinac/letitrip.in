@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { CartItemRow } from "./CartItemRow";
-import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button, Stack } from "@mohasinac/appkit/ui";
 
 import { useRouter } from "@/i18n/navigation";
 import type { CartItemDocument } from "@/db/schema";
@@ -71,7 +71,7 @@ export function CartItemList({
   const groups = groupBySeller(items);
 
   return (
-    <div className="space-y-4">
+    <Stack gap="md">
       {groups.map((group) => (
         <div
           key={group.sellerId}
@@ -105,6 +105,6 @@ export function CartItemList({
           </div>
         </div>
       ))}
-    </div>
+    </Stack>
   );
 }

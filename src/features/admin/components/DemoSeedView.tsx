@@ -334,7 +334,7 @@ export function DemoSeedView() {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <Stack gap="md" className="gap-5">
             {COLLECTION_GROUPS.map((group) => {
               const allGroupSelected = group.collections.every((c) =>
                 selectedCollections.includes(c),
@@ -461,7 +461,7 @@ export function DemoSeedView() {
                 </div>
               );
             })}
-          </div>
+          </Stack>
         </Card>
 
         {/* ── Actions ── */}

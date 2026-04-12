@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { nowMs } from "@/utils";
 import { useMediaCrop, useMediaTrim } from "@/hooks";
 import { useTranslations } from "next-intl";
-import { Heading, Text, Button } from "@mohasinac/appkit/ui";
+import { Heading, Text, Button, Stack } from "@mohasinac/appkit/ui";
 import { AdminMediaView as AppkitAdminMediaView } from "@mohasinac/appkit/features/admin";
 import { Card, AdminPageHeader, DataTable, useToast } from "@/components";
 import { MediaOperationForm } from "./MediaOperationForm";
@@ -95,7 +95,7 @@ export function AdminMediaView() {
         <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
       )}
       renderTable={() => (
-        <div className="space-y-6">
+        <Stack gap="lg">
           {/* Operation Type Selector */}
           <Card className="p-4">
             <div className="flex gap-2">
@@ -157,7 +157,7 @@ export function AdminMediaView() {
               <Text className="text-zinc-500">{t("noOperations")}</Text>
             </Card>
           )}
-        </div>
+          </Stack>
       )}
     />
   );

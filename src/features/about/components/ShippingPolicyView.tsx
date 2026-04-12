@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Stack } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -98,7 +98,7 @@ export async function ShippingPolicyView() {
           note={`📌 ${t("diagramNote")}`}
         />
 
-        <div className="space-y-8">
+        <Stack gap="xl">
           {SECTIONS.map(({ title, text }) => (
             <Section key={title}>
               <Heading level={2} className="mb-3">
@@ -119,7 +119,8 @@ export async function ShippingPolicyView() {
             </Heading>
             <Text variant="secondary">{t("contactText")}</Text>
           </Section>
-        </div>
+        </Stack>
+
 
         <div
           className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}

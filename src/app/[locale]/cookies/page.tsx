@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Stack, Container } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { resolveLocale } from "@/i18n/resolve-locale";
@@ -44,22 +44,22 @@ export default async function CookiePolicyPage({ params }: Props) {
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Container size="sm">
           <Heading level={1} variant="none" className="mb-3 text-white">
             {t("title")}
           </Heading>
           <Text variant="none" className="text-white/80">
             {t("lastUpdated")}
           </Text>
-        </div>
+          </Container>
       </Section>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16">
+      <Container size="sm" className="py-10 md:py-12 lg:py-16">
         <Text size="lg" variant="secondary" className="mb-10">
           {t("subtitle")}
         </Text>
 
-        <div className="space-y-8">
+        <Stack gap="xl">
           {SECTIONS.map(({ title, text }) => (
             <Section key={title}>
               <Heading level={2} className="mb-3">
@@ -80,7 +80,7 @@ export default async function CookiePolicyPage({ params }: Props) {
             </Heading>
             <Text variant="secondary">{t("contactText")}</Text>
           </Section>
-        </div>
+        </Stack>
 
         <div
           className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
@@ -98,7 +98,7 @@ export default async function CookiePolicyPage({ params }: Props) {
             {t("contactUs")}
           </TextLink>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

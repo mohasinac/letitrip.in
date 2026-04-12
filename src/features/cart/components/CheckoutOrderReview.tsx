@@ -15,6 +15,7 @@ import {
   Button,
   Span,
   Row,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import { MediaImage, Textarea } from "@/components";
 
@@ -69,7 +70,7 @@ export function CheckoutOrderReview({
   };
 
   return (
-    <div className="space-y-6">
+    <Stack gap="lg">
       <Accordion
         type="multiple"
         defaultValue={[
@@ -508,6 +509,6 @@ export function CheckoutOrderReview({
           </div>
         </AccordionItem>
       </Accordion>
-    </div>
+    </Stack>
   );
 }

@@ -37,6 +37,7 @@ import {
   Button,
   StatusBadge,
   Badge,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
@@ -219,7 +220,7 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
   const drawerTitle = drawerMode === "create" ? t("create") : t("edit");
 
   return (
-    <div className="space-y-6">
+    <Stack gap="lg">
       <AdminPageHeader
         title={t("title")}
         subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
@@ -327,7 +328,7 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
           )}
         />
       </AdminCouponsShell>
-    </div>
+    </Stack>
   );
 }
 

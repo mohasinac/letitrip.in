@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Stack } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -125,7 +125,7 @@ export async function HowReviewsWorkView() {
           <Heading level={2} className="mb-8 text-center">
             {t("stepsTitle")}
           </Heading>
-          <div className="space-y-5">
+            <Stack gap="md" className="gap-5">
             {STEPS.map(({ number, icon, title, text }) => (
               <div
                 key={number}
@@ -146,7 +146,7 @@ export async function HowReviewsWorkView() {
                 </div>
               </div>
             ))}
-          </div>
+          </Stack>
         </Section>
 
         {/* Flow diagram */}

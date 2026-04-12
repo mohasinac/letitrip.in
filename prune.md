@@ -2,28 +2,28 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `df626a88` (TG11 wave-2 admin view ledger; tasks 1/2/3 DONE)
+Last updated: April 13, 2026 — pending commit (TG7 wrapper closeout + TG12 index governance refresh)
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
-- `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
-- Latest commits: appkit `65caf03`, letitrip `df626a88`.
-- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename hook decision ledger (TG11 task 1 DONE); TG11 wave-2 admin *View.tsx 22-basename audit + decision ledger (TG11 tasks 2+3 DONE). TG11 is now COMPLETE.
+- `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` for this session slice.
+- Latest appkit commits in this session: `24ec9bc`, `ec9993c`.
+- This session completed: TG7 semantic wrapper closeout batches A/B and TG12 index/prune governance refresh.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
-- modified or committed state: committed code batch `4d0e2e8b`; tracker now updated post-commit
+- modified or committed state: modified in working tree (awaiting TG7/TG12 commit sequence)
 - deletion check result: no prune deletion in git history (modifications only)
 
 Index comparison note (current generated indexes):
 - `letitrip.in/index.md` and `appkit/index.md` are now generated via `scripts/get-index.js` and include internal + exported symbol inventories.
 - Source-only overlap snapshot from generated indexes:
-	- letitrip src files indexed: 1050
-	- appkit src files indexed: 781
-	- basename overlap (`src/**`): 213
-	- exact relative path overlap (`src/**`): 184
-	- admin `*View.tsx` overlap: 22
-	- hook basename overlap (`use*.ts*`): 28
+	- letitrip src files indexed: 1041
+	- appkit src files indexed: 809
+	- basename overlap (`src/**`): 204
+	- exact relative path overlap (`src/**`): 179
+	- admin `*View.tsx` overlap: 21
+	- hook basename overlap (`use*.ts*`): 15
 - Prune history check: `prune.md` was not deleted in letitrip git history (modifications only).
 
 ---
@@ -46,11 +46,10 @@ Required outcome:
 
 ### Verdict E - Semantic Wrapper Variant System
 
-Status: in progress
+Status: COMPLETE
 
 Open findings:
-- TG7 phase-2+ rollout is incomplete from a backlog/closure standpoint.
-- Variant adoption and exception documentation still need a final closeout pass.
+- None.
 
 Required outcome:
 - Repeated layout/class bundles replaced by approved appkit semantic variants.
@@ -95,13 +94,65 @@ Goal:
 - Complete pending variant adoption and closeout documentation.
 
 Open tasks:
-1. Finish remaining phase-2/phase-3 migration slices.
-2. Complete cross-repo replacement audit for matching class bundles.
-3. Finalize exception log for intentional non-variant one-offs.
-4. Confirm a11y acceptance gates for all newly adopted variants.
+1. ~~Finish remaining phase-2/phase-3 migration slices.~~ DONE
+2. ~~Complete cross-repo replacement audit for matching class bundles.~~ DONE
+3. ~~Finalize exception log for intentional non-variant one-offs.~~ DONE
+4. ~~Confirm a11y acceptance gates for all newly adopted variants.~~ DONE
+
+Progress log:
+- 2026-04-13 TG7 batch A (semantic stack/container migration):
+	- Replaced repeated top-level `space-y-6`/`space-y-8` raw wrappers with appkit `Stack` variants in admin, cart, about, and legal policy surfaces.
+	- Replaced one raw legal-page container class bundle (`max-w-3xl mx-auto px-4 sm:px-6 lg:px-8`) with appkit `Container size="sm"`.
+	- Updated files:
+		- `src/features/admin/components/AdminCouponsView.tsx`
+		- `src/features/admin/components/AdminFaqsView.tsx`
+		- `src/features/admin/components/AdminBidsView.tsx`
+		- `src/features/admin/components/AdminMediaView.tsx`
+		- `src/features/admin/components/BackgroundSettings.tsx`
+		- `src/features/cart/components/CheckoutOrderReview.tsx`
+		- `src/features/cart/components/CartItemList.tsx`
+		- `src/features/about/components/HowOffersWorkView.tsx`
+		- `src/features/about/components/ShippingPolicyView.tsx`
+		- `src/app/[locale]/cookies/page.tsx`
+		- `src/app/[locale]/privacy/page.tsx`
+		- `src/app/[locale]/terms/page.tsx`
+		- `src/app/[locale]/refund-policy/page.tsx`
+	- Exception notes (intentional non-variant one-offs retained in this batch):
+		- Inner card wrappers using `space-y-1`, `space-y-2`, or `space-y-3` with additional utility classes (e.g., `p-*`, `pt-*`) were left unchanged pending dedicated compact-spacing variants.
+		- `flex` wrappers with responsive direction switching (`sm:flex-row`) were left unchanged in this batch; these require either responsive `Stack/Row` variant support or dedicated wrapper variants.
+	- A11y gate check (batch A):
+		- Replacements are wrapper-level (`div` -> `Stack`/`Container`) and preserve semantic landmarks and heading hierarchy.
+		- No aria attributes, focus handling, or interactive control wiring were changed.
+	- Validation:
+		- `npx tsc --noEmit` passes after migration.
+
+- 2026-04-13 TG7 batch B (space-y-5 closeout + cross-repo audit):
+	- Replaced remaining repeated raw `space-y-5` wrappers with appkit `Stack` usage in about/seller/product/admin surfaces.
+	- Completed cross-repo audit for the targeted repeated bundles in this TG7 closeout:
+		- raw `<div className="space-y-(4|5|6|8)">` wrappers
+		- raw legal-page max-width container class bundles (`max-w-3xl mx-auto px-4 sm:px-6 lg:px-8`)
+	- Additional container migration:
+		- cookies policy hero header now uses `Container size="sm"`.
+	- Updated files (batch B):
+		- `src/features/about/components/HowReviewsWorkView.tsx`
+		- `src/features/about/components/HowCheckoutWorksView.tsx`
+		- `src/features/seller/components/HowPayoutsWorkView.tsx`
+		- `src/features/products/components/ProductInfo.tsx`
+		- `src/features/admin/components/DemoSeedView.tsx`
+		- `src/app/[locale]/cookies/page.tsx`
+	- Exception notes (final):
+		- compact inner wrappers (`space-y-1`, `space-y-2`, `space-y-3`) that co-exist with one-off padding/divider utilities remain as intentional one-offs pending dedicated compact variants.
+		- responsive direction wrappers (`flex-col sm:flex-row`) remain intentional until responsive Stack/Row variant API is introduced.
+	- A11y gate check (batch B):
+		- wrapper-only substitutions; semantics and heading hierarchy preserved.
+		- no aria/focus/event behavior changes.
+	- Validation:
+		- `npx tsc --noEmit` passes.
 
 Exit condition:
 - Matching repeated class bundles are migrated to appkit semantic variants, except explicitly documented exceptions.
+
+Result: COMPLETE.
 
 ## Task Group 8 - Currency Consistency Finalization — CLOSED
 
@@ -240,30 +291,34 @@ Wave-2 progress log (admin *View.tsx overlap):
 Exit condition:
 - Every overlapping basename in generated indexes is classified, and no reusable duplicate remains untracked.
 
-## Task Group 12 - Index and Prune Governance (New)
+## Task Group 12 - Index and Prune Governance
 
 Goal:
 - Keep migration decisions reproducible across sessions using generated indexes and prune history discipline.
 
-Open tasks:
-1. Require `npm run index:generate` in both repos before each overlap-audit batch.
-2. Record overlap metrics deltas in `prune.md` after each migration batch (counts down trend).
-3. Maintain a short "prune file integrity" note each session:
-	- exists
-	- modified/committed state
-	- deletion check result
-4. Keep `prune.md` as pending-only backlog while retaining evidence snapshots needed for handoff continuity.
+Status: COMPLETE
+
+Completed tasks:
+1. `npm run index:generate` is now available and used in both repos before overlap-governance updates.
+2. Overlap metrics were refreshed from generated indexes and recorded in this file.
+3. Session-level prune integrity note maintained (existence/state/deletion check).
+4. `prune.md` remains pending-focused with evidence snapshots required for resumable sessions.
+
+Session evidence:
+- Appkit added `index:generate` script and committed generated `index.md` refresh.
+- Letitrip regenerated `index.md` and updated this tracker with current overlap metrics.
 
 Exit condition:
 - Overlap audits and prune updates are index-driven, repeatable, and session-resumable without chat history.
+
+Result: COMPLETE.
 
 ---
 
 ## Next Session Start Checklist
 
 1. Re-verify Task Group 3 local listing hooks and endpoint divergence.
-2. Continue Task Group 7 variant rollout from current in-progress phase.
-3. Close Task Group 8 with explicit email/output formatting policy.
-4. Generate both indexes (`npm run index:generate`) and refresh overlap metrics.
-5. Start Task Group 11 wave-1 on hook overlaps and record decisions per basename.
-6. Update this file immediately after each meaningful change batch.
+2. If endpoint parity work starts, scope `/api/auctions` unification needed to retire letitrip `useAuctions` adapter.
+3. If endpoint parity work starts, scope detail-hook parity needed to retire letitrip `useAuctionDetail` adapter.
+4. Run `npm run index:generate` in both repos before any new overlap audit batch.
+5. Update this file immediately after each meaningful batch and again after each commit.

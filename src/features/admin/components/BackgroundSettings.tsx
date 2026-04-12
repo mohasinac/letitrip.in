@@ -11,6 +11,7 @@ import {
   Button,
   Row,
   Grid,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
@@ -92,7 +93,7 @@ export default function BackgroundSettings({
 
   return (
     <Card>
-      <div className="space-y-6">
+      <Stack gap="lg">
         {/* Header with Tabs */}
         <div
           className={`${flex.between} border-b ${THEME_CONSTANTS.themed.borderColor}`}
@@ -117,7 +118,7 @@ export default function BackgroundSettings({
         <div>
           <Label
             className={`block text-sm font-medium mb-3 ${THEME_CONSTANTS.themed.textPrimary}`}
-          >
+            >
             Background Type
           </Label>
           <Grid gap="3" className="grid-cols-2 sm:grid-cols-4">
@@ -371,7 +372,7 @@ export default function BackgroundSettings({
             </div>
           </div>
         </div>
-      </div>
+        </Stack>
     </Card>
   );
 }

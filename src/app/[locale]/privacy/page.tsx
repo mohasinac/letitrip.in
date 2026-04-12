@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Stack } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
@@ -59,7 +59,7 @@ export default async function PrivacyPage({ params }: Props) {
           {t("subtitle")}
         </Text>
 
-        <div className="space-y-8">
+        <Stack gap="xl">
           {SECTIONS.map(({ title, text }) => (
             <Section key={title}>
               <Heading level={2} className={`${typography.h3} mb-3`}>
@@ -80,7 +80,8 @@ export default async function PrivacyPage({ params }: Props) {
             </Heading>
             <Text variant="secondary">{t("contactText")}</Text>
           </Section>
-        </div>
+        </Stack>
+
 
         <div
           className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
