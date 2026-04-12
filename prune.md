@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 22 — TG7 phase-2 batch 3 appkit commit recorded (appkit ae65402; letitrip companion pending)
+Last updated: session 22 — TG7 phase-2 batch 3 committed (appkit ae65402, letitrip 7d056e16)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -839,7 +839,8 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **DONE (session 22 batch 1)**: phase-2 `Grid` pattern rollout — consolidated 11 auto-fill grid usages across appkit (DashboardStats, SearchResultsSection, CategoryGrid, ConcernGrid) and letitrip (ProfileStatsGrid, PublicProfileView) to semantic `Grid cols="statTiles"|"categoryCards"` variants; updated DescriptionField doc example to use `Row wrap` instead of raw flex. Updated FormGrid decision: remains as intentional exception (dynamic pixel-level gap and minFieldWidth not suited to semantic variant API) (appkit commit `5e371b1`, letitrip commit `d6325250`).
 - **DONE (session 22 batch 2)**: phase-2 `Grid` follow-up removed remaining letitrip `grid-cols-[repeat(auto-fill,minmax(180px,1fr))]` stat-card bundles in `EventStatsBanner`, `SellerPayoutStats`, `AdminBlogView`, and `AdminPayoutsView` by adopting `Grid cols="statTiles"` (letitrip commit `2b2a0292`).
 - **VALIDATION (session 22 batch 2)**: targeted diagnostics are clean on all four touched files. Repo-wide `npx tsc --noEmit` is blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts` (around line 262), unrelated to TG7 grid migrations.
-- **IN PROGRESS (session 22 batch 3)**: appkit runtime auto-fill cleanup migrated `src/features/stores/components/StoresListView.tsx` from raw `grid-cols-[repeat(auto-fill,minmax(220px,1fr))]` to semantic `Grid cols="storeCards" gap="md"` (appkit commit `ae65402`). letitrip companion change (`src/app/[locale]/help/page.tsx`) prepared and pending commit.
+- **DONE (session 22 batch 3)**: phase-2 `Grid` follow-up removed the last letitrip runtime auto-fill bundle by migrating `src/app/[locale]/help/page.tsx` to `Grid cols="categoryCards"`, and migrated appkit `src/features/stores/components/StoresListView.tsx` to `Grid cols="storeCards" gap="md"` (appkit commit `ae65402`, letitrip commit `7d056e16`).
+- **VALIDATION (session 22 batch 3)**: `grep` now reports zero runtime `grid-cols-[repeat(auto-fill,minmax(...))]` bundles in letitrip source; appkit runtime now only retains one feature-level usage in `src/features/products/components/ProductGrid.tsx` (`fluid` class preset) plus expected token definitions in `src/ui/components/Layout.tsx`.
 
 ---
 
