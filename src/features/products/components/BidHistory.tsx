@@ -3,7 +3,7 @@
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatRelativeTime } from "@/utils";
 import type { PublicBid } from "@/hooks";
-import { Heading, Li, Span, Text, Ul } from "@mohasinac/appkit/ui";
+import { Heading, Li, Span, Text, Ul, Row } from "@mohasinac/appkit/ui";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
@@ -65,7 +65,7 @@ export function BidHistory({
                 index === 0 ? "bg-primary/5 dark:bg-primary/10" : ""
               }`}
             >
-              <div className="flex items-center gap-2 min-w-0">
+              <Row gap="sm" className="min-w-0">
                 <div className="flex flex-col min-w-0">
                   <Span
                     className={`text-sm font-medium ${themed.textPrimary} truncate`}
@@ -83,7 +83,7 @@ export function BidHistory({
                     {UI_LABELS.AUCTIONS_PAGE.WINNING_BID}
                   </Span>
                 )}
-              </div>
+              </Row>
               <Span className="font-bold text-primary shrink-0 ml-2">
                 {formatCurrency(bid.bidAmount)}
               </Span>

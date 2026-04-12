@@ -108,7 +108,11 @@ export function AuctionGrid({
 
   if (auctions.length === 0) {
     return (
-      <Stack centered gap="3" className="py-24 text-center">
+      <Stack
+        align="center"
+        gap="3"
+        className="py-24 text-center justify-center"
+      >
         <Span className="text-6xl">🔨</Span>
         <Text variant="primary" className="text-xl font-medium">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS}

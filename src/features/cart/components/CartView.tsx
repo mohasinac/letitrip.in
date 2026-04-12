@@ -132,7 +132,11 @@ export function CartView() {
           <Heading level={1} className="mb-8">
             {t("title")}
           </Heading>
-          <Stack centered gap="md" className="py-16 text-center">
+          <Stack
+            align="center"
+            gap="md"
+            className="py-16 text-center justify-center"
+          >
             <Text className={themed.textSecondary}>{t("guestSubtitle")}</Text>
             <Row wrap justify="center" gap="3" className="mt-2">
               <Button

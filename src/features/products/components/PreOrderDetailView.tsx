@@ -19,6 +19,7 @@ import {
   Span,
   Button,
   Badge,
+  Row,
 } from "@mohasinac/appkit/ui";
 import {
   Breadcrumbs,
@@ -256,12 +257,12 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
           renderInfo={() => (
             <div className={`flex flex-col gap-5`}>
               {/* Status badge + PRE-ORDER label */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <Row gap="sm" wrap>
                 <Badge variant="info">📅 {t("preOrderBadge")}</Badge>
                 <Badge variant={STATUS_COLORS[productionStatus] ?? "info"}>
                   {STATUS_LABELS[productionStatus] ?? productionStatus}
                 </Badge>
-              </div>
+              </Row>
 
               {/* Title */}
               <Heading level={1} className="text-2xl sm:text-3xl leading-tight">
@@ -439,11 +440,11 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                 className={`${themed.bgPrimary} rounded-xl border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
               >
                 {/* Pre-order label */}
-                <div className="flex items-center gap-2">
+                <Row gap="sm">
                   <Span className="text-xs font-bold uppercase text-purple-600 dark:text-purple-400 tracking-wider">
                     {t("preOrderBadge")}
                   </Span>
-                </div>
+                </Row>
 
                 {/* Price summary */}
                 <div>

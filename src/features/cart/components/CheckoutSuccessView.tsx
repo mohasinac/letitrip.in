@@ -39,7 +39,7 @@ export function CheckoutSuccessView() {
   if (isLoading) {
     return (
       <Main className={`min-h-screen ${themed.bgPrimary}`}>
-        <Stack centered className="min-h-screen">
+        <Stack align="center" className="min-h-screen justify-center">
           <Spinner />
         </Stack>
       </Main>
@@ -49,7 +49,7 @@ export function CheckoutSuccessView() {
   if (error || !order) {
     return (
       <Main className={`min-h-screen ${themed.bgPrimary} p-6`}>
-        <Stack centered className="min-h-full">
+        <Stack align="center" className="min-h-full justify-center">
           <Stack
             className={`${themed.bgSecondary} rounded-xl p-6 max-w-md w-full text-center`}
             gap="md"

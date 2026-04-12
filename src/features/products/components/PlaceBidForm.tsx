@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid, useMessage } from "@/hooks";
-import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { FormGroup, Input, TextLink } from "@/components";
 import type { BidResult } from "@/hooks";
 
@@ -119,7 +119,7 @@ export function PlaceBidForm({
           <Text size="xs" variant="secondary" className="mb-2">
             {t("minimumBidError", { amount: formatCurrency(minimumRequired) })}
           </Text>
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             <Span className={`text-sm font-medium ${themed.textSecondary}`}>
               {currency}
             </Span>
@@ -145,7 +145,7 @@ export function PlaceBidForm({
             >
               {isSubmitting ? tLoading("default") : t("placeBid")}
             </Button>
-          </div>
+          </Row>
         </div>
       </FormGroup>
 

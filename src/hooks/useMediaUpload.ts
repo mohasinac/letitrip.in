@@ -49,11 +49,16 @@ export function useMediaAbort() {
   return async (stagedUrls: string[]): Promise<void> => {
     await Promise.allSettled(
       stagedUrls.map((url) =>
-        apiClient.delete(`${API_ENDPOINTS.MEDIA.DELETE}?url=${encodeURIComponent(url)}`),
+        apiClient.delete(
+          `${API_ENDPOINTS.MEDIA.DELETE}?url=${encodeURIComponent(url)}`,
+        ),
       ),
     );
   };
 }
+
+/**
+ * useMediaCrop
  * Wraps `mediaService.crop()` as a `useApiMutation`.
  */
 export function useMediaCrop<TResult = { url: string }>() {

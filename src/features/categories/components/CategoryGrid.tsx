@@ -32,7 +32,7 @@ export function CategoryGrid({
   const t = useTranslations("categories");
   if (categories.length === 0) {
     return (
-      <Stack centered className="py-20 text-center">
+      <Stack align="center" className="py-20 text-center justify-center">
         <Span className="text-6xl mb-4">🗂️</Span>
         <Heading level={3}>{t("noCategories")}</Heading>
         <Text variant="secondary" size="sm" className="mt-1">

@@ -13,6 +13,8 @@ import {
   HorizontalScroller,
   Span,
   Button,
+  Row,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import {
   MediaUploadList,
@@ -28,7 +30,13 @@ import {
 } from "@/components";
 import { useProductReviews } from "@mohasinac/appkit/features/reviews";
 import { useCreateReview } from "@/hooks/useProductReviews";
-import { useAuth, useMediaUpload, useMediaAbort, useMessage, useUrlTable } from "@/hooks";
+import {
+  useAuth,
+  useMediaUpload,
+  useMediaAbort,
+  useMessage,
+  useUrlTable,
+} from "@/hooks";
 
 const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
 
@@ -69,7 +77,7 @@ function RatingBar({
 }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
-    <div className="flex items-center gap-2 text-xs">
+    <Row gap="sm" className="text-xs">
       <Span className={`w-3 ${themed.textSecondary}`}>{star}</Span>
       <Span className="text-amber-400 text-xs">?</Span>
       <div className="flex-1 bg-zinc-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
@@ -79,7 +87,7 @@ function RatingBar({
         />
       </div>
       <Span className={`w-6 text-right ${themed.textSecondary}`}>{count}</Span>
-    </div>
+    </Row>
   );
 }
 
@@ -137,7 +145,7 @@ function StarPicker({
 }) {
   const [hovered, setHovered] = useState(0);
   return (
-    <div className="flex items-center gap-1">
+    <Row gap="xs">
       {[1, 2, 3, 4, 5].map((star) => (
         <Button
           key={star}
@@ -160,7 +168,7 @@ function StarPicker({
           </Span>
         </Button>
       ))}
-    </div>
+    </Row>
   );
 }
 
@@ -388,11 +396,12 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
 
       {/* Rating summary */}
       {totalReviews > 0 && (
-        <div
-          className={`flex flex-col sm:flex-row gap-6 p-5 ${themed.bgSecondary} rounded-xl mb-6`}
+        <Stack
+          gap="lg"
+          className={`sm:flex-row p-5 ${themed.bgSecondary} rounded-xl mb-6`}
         >
           {/* Average */}
-          <div className="flex flex-col items-center justify-center sm:w-32 shrink-0">
+          <Stack align="center" className="sm:w-32 shrink-0 justify-center">
             <Span className={`text-5xl font-bold ${themed.textPrimary}`}>
               {formatNumber(avgRating, "en-IN", { decimals: 1 })}
             </Span>
@@ -400,7 +409,7 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
             <Span className={`text-xs mt-1 ${themed.textSecondary}`}>
               {totalReviews} reviews
             </Span>
-          </div>
+          </Stack>
 
           {/* Distribution bars */}
           <div className="flex-1 space-y-1.5">
@@ -413,7 +422,7 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
               />
             ))}
           </div>
-        </div>
+        </Stack>
       )}
 
       {/* Loading */}
@@ -452,7 +461,7 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
             >
               {/* Header */}
               <div className={`${flex.betweenStart} gap-3`}>
-                <div className="flex items-center gap-3">
+                <Row gap="3">
                   {review.userAvatar ? (
                     <MediaAvatar
                       src={review.userAvatar}
@@ -472,16 +481,16 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
                     <Text weight="medium" size="sm">
                       {review.userName}
                     </Text>
-                    <div className="flex items-center gap-2">
+                    <Row gap="sm">
                       <StarRating rating={review.rating} />
                       {review.verified && (
                         <Span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                           {t("verifiedPurchase")}
                         </Span>
                       )}
-                    </div>
+                    </Row>
                   </div>
-                </div>
+                </Row>
                 <Span className={`text-xs ${themed.textSecondary} shrink-0`}>
                   {review.createdAt ? formatRelativeTime(review.createdAt) : ""}
                 </Span>
@@ -513,7 +522,7 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className={`${flex.center} gap-2 pt-2`}>
+            <Row gap="sm" className={`${flex.center} pt-2`}>
               <Button
                 onClick={() => table.setPage(Math.max(1, page - 1))}
                 disabled={page <= 1}
@@ -531,7 +540,7 @@ function ProductReviewsContent({ productId }: ProductReviewsProps) {
               >
                 {tActions("next")}
               </Button>
-            </div>
+            </Row>
           )}
         </div>
       )}

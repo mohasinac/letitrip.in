@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Truck, RefreshCw, ShieldCheck } from "lucide-react";
-import { Text } from "@mohasinac/appkit/ui";
+import { Text, Row } from "@mohasinac/appkit/ui";
 
 interface PromoBannerStripProps {
   /** Free-shipping threshold in rupees. Defaults to 499. */
@@ -25,11 +25,17 @@ export function PromoBannerStrip({
   const t = useTranslations("products");
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center py-4 border-y border-zinc-100 dark:border-slate-800">
+    <Row
+      wrap
+      justify="center"
+      gap="md"
+      className="py-4 border-y border-zinc-100 dark:border-slate-800"
+    >
       {CHIPS.map(({ icon: Icon, key }) => (
-        <div
+        <Row
           key={key}
-          className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400"
+          gap="sm"
+          className="text-sm text-zinc-600 dark:text-zinc-400"
         >
           <Icon
             className="w-4 h-4 text-primary"
@@ -41,8 +47,8 @@ export function PromoBannerStrip({
               ? t(key, { threshold: shippingThreshold })
               : t(key)}
           </Text>
-        </div>
+        </Row>
       ))}
-    </div>
+    </Row>
   );
 }
