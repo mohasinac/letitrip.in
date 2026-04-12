@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 24 — TG7 phase-2 batch 10 committed in appkit (d3d7fab), letitrip commit pending
+Last updated: session 24 — TG7 phase-2 batch 10 committed (appkit d3d7fab, letitrip d8bc3c76)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
