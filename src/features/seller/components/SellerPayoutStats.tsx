@@ -1,7 +1,7 @@
 "use client";
 
 import { SellerPayoutStats as AppkitSellerPayoutStats } from "@mohasinac/appkit/features/seller";
-import { Text } from "@mohasinac/appkit/ui";
+import { Grid, Text } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -36,7 +36,7 @@ export function SellerPayoutStats({
       className="mb-8"
       renderLoading={() => <Text variant="secondary">{t("loading")}</Text>}
       renderStats={() => (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+        <Grid cols="statTiles">
           <Card className="p-4">
             <Text size="sm" variant="secondary">
               {t("availableEarnings")}
@@ -61,7 +61,7 @@ export function SellerPayoutStats({
               {formatCurrency(summary?.pendingAmount ?? 0)}
             </Text>
           </Card>
-        </div>
+        </Grid>
       )}
     />
   );

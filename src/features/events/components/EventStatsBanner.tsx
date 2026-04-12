@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Text } from "@mohasinac/appkit/ui";
+import { Grid, Text } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -48,9 +48,7 @@ export function EventStatsBanner({
   ];
 
   return (
-    <div
-      className={`grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4`}
-    >
+    <Grid cols="statTiles">
       {stats.map(({ label, value, color }) => (
         <Card key={label} className={spacing.cardPadding}>
           <Text className={`text-sm ${themed.textSecondary}`}>{label}</Text>
@@ -59,6 +57,6 @@ export function EventStatsBanner({
           </Text>
         </Card>
       ))}
-    </div>
+    </Grid>
   );
 }

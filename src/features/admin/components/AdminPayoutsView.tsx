@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import {
   Text,
   Caption,
+  Grid,
   TablePagination,
   StatusBadge,
 } from "@mohasinac/appkit/ui";
@@ -154,7 +155,7 @@ function AdminPayoutsContent() {
 
       {/* Stats row */}
       {!statusFilter && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+        <Grid cols="statTiles">
           <Card className="p-4">
             <Caption className="uppercase tracking-wide font-medium mb-1">
               {t("totalPending")}
@@ -197,7 +198,7 @@ function AdminPayoutsContent() {
             </Text>
             <Caption className="mt-0.5">{t("thisMonth")}</Caption>
           </Card>
-        </div>
+        </Grid>
       )}
 
       {/* Status filter tabs */}

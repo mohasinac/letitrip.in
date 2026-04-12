@@ -16,6 +16,7 @@ import { useAdminBlog } from "@/features/admin/hooks";
 import {
   Caption,
   Text,
+  Grid,
   StatusBadge,
   Badge,
   Button,
@@ -275,7 +276,7 @@ function AdminBlogContent() {
               onAction={openCreate}
             />
             {/* Stat cards */}
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+            <Grid cols="statTiles">
               {[
                 { label: t("totalPosts"), value: totalPosts },
                 { label: t("publishedPosts"), value: publishedCount },
@@ -293,7 +294,7 @@ function AdminBlogContent() {
                   </Text>
                 </Card>
               ))}
-            </div>
+            </Grid>
           </>
         }
         statusTabsSlot={statusTabsSlot}

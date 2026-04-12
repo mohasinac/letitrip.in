@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 21 — TG7 phase-2 batch 1 complete (flex-wrap rollout across letitrip + appkit, pre-commit)
+Last updated: session 22 — TG7 phase-2 batches 1-2 committed (appkit 5e371b1, letitrip 1f53e42e)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -833,9 +833,12 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **NOTE (session 19)**: letitrip currently type-checks against published `@mohasinac/appkit` dist types where `Stack.centered` is not available; compatibility updates in consumer files use `Stack align="center" + className="justify-center"` until appkit package/version sync is completed.
 - **DONE (session 18 batch 1)**: diagnostics clean on all touched files; appkit watcher (`watch:primitives`) reports build success after changes.
 - **DONE (session 20)**: TG7 phase-1 complete — all remaining `flex items-center gap-*` and `flex flex-col items-center justify-center` patterns across admin, stores, seller, user, events, components, layout, and app-routes subsystems migrated to `Row`/`Stack` appkit primitives (letitrip commit `741efd0f`). Pre-commit prettier caught two regressions (PasswordStrengthIndicator.tsx, StoreProductsView.tsx) — both fixed in same commit.
-- **DONE (session 21 batch 1)**: phase-2 `Row wrap` rollout removed every remaining letitrip runtime `flex flex-wrap*` bundle across admin, seller, products, search, cart, auctions, layout, and shared form/component surfaces.
+- **DONE (session 21 batch 1)**: phase-2 `Row wrap` rollout removed every remaining letitrip runtime `flex flex-wrap*` bundle across admin, seller, products, search, cart, auctions, layout, and shared form/component surfaces (letitrip commit `c92fd55d`).
 - **DONE (session 21 batch 1)**: matching appkit runtime surfaces now use `Row wrap` for homepage CTA/trust/toolbars, search, reviews, orders, FAQ, blog, wishlist, consultation, categories, promotions, media upload, footer, and stores (appkit commit `1ed9834`).
 - **VALIDATION (session 21 batch 1)**: `grep` now reports zero letitrip runtime `flex flex-wrap` matches and only two appkit residual matches: intentional `src/ui/components/FormGrid.tsx` implementation (dynamic pixel gap/min width) and a single doc-comment example in `src/ui/components/DescriptionField.tsx`. Targeted diagnostics are clean on touched files. `npx tsc --noEmit` still reports pre-existing letitrip route/appkit-path typing noise and an unrelated appkit `src/ui/components/Accordion.tsx` type error.
+- **DONE (session 22 batch 1)**: phase-2 `Grid` pattern rollout — consolidated 11 auto-fill grid usages across appkit (DashboardStats, SearchResultsSection, CategoryGrid, ConcernGrid) and letitrip (ProfileStatsGrid, PublicProfileView) to semantic `Grid cols="statTiles"|"categoryCards"` variants; updated DescriptionField doc example to use `Row wrap` instead of raw flex. Updated FormGrid decision: remains as intentional exception (dynamic pixel-level gap and minFieldWidth not suited to semantic variant API) (appkit commit `5e371b1`, letitrip commit `d6325250`).
+- **DONE (session 22 batch 2)**: phase-2 `Grid` follow-up removed remaining letitrip `grid-cols-[repeat(auto-fill,minmax(180px,1fr))]` stat-card bundles in `EventStatsBanner`, `SellerPayoutStats`, `AdminBlogView`, and `AdminPayoutsView` by adopting `Grid cols="statTiles"` (letitrip commit `1f53e42e`).
+- **VALIDATION (session 22 batch 2)**: targeted diagnostics are clean on all four touched files. Repo-wide `npx tsc --noEmit` is blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts` (around line 262), unrelated to TG7 grid migrations.
 
 ---
 
