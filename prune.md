@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 16 — TG1 seller create/edit media list + reviews/stores schema enforcement + product gallery adapter batch, TG9 DONE, TG10 DONE, TG5 DONE, TG3 DONE)
+Last updated: session 20 — TG7 phase-1 complete (all subsystems Row/Stack migration done, commit 741efd0f)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -830,6 +830,7 @@ Status: **Phase 1 in progress (batch 1 complete)**
 - **DONE (session 19 batch 6)**: products phase-1 wrapper migration applied in `ProductReviews.tsx`, `PreOrderDetailView.tsx`, `PromoBannerStrip.tsx`, `BidHistory.tsx`, and `PlaceBidForm.tsx`; repeated `flex items-center gap-*` / centered-stack bundles replaced with `Row`/`Stack` wrappers (letitrip commit `09647e91`).
 - **NOTE (session 19)**: letitrip currently type-checks against published `@mohasinac/appkit` dist types where `Stack.centered` is not available; compatibility updates in consumer files use `Stack align="center" + className="justify-center"` until appkit package/version sync is completed.
 - **DONE (session 18 batch 1)**: diagnostics clean on all touched files; appkit watcher (`watch:primitives`) reports build success after changes.
+- **DONE (session 20)**: TG7 phase-1 complete — all remaining `flex items-center gap-*` and `flex flex-col items-center justify-center` patterns across admin, stores, seller, user, events, components, layout, and app-routes subsystems migrated to `Row`/`Stack` appkit primitives (letitrip commit `741efd0f`). Pre-commit prettier caught two regressions (PasswordStrengthIndicator.tsx, StoreProductsView.tsx) — both fixed in same commit.
 
 ---
 
