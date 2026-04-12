@@ -14,7 +14,7 @@ import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
 import { useProductDetail } from "../hooks";
 import { ProductDetailView as AppkitProductDetailView } from "@mohasinac/appkit/features/products";
-import { Span, Heading, Text } from "@mohasinac/appkit/ui";
+import { Grid, Span, Heading, Text } from "@mohasinac/appkit/ui";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 function formatCategoryLabel(label: string): string {
@@ -53,7 +53,7 @@ export function ProductDetailView({
           renderSkeleton={() => (
             <div className={`${page.container.xl} py-6 sm:py-8`}>
               <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
+              <Grid cols="productDetailTriplet">
                 <div className="animate-pulse space-y-3">
                   <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
                   <div className="flex gap-2">
@@ -74,7 +74,7 @@ export function ProductDetailView({
                   <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
                   <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
                 </div>
-              </div>
+              </Grid>
             </div>
           )}
           renderNotFound={
