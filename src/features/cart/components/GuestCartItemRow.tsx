@@ -1,6 +1,6 @@
 "use client";
 
-import { Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { MediaImage, TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -64,8 +64,8 @@ export function GuestCartItemRow({
         )}
 
         {/* Quantity controls + remove */}
-        <div className="flex items-center gap-3 mt-2">
-          <div className="flex items-center gap-1">
+        <Row gap="3" className="mt-2">
+          <Row gap="xs">
             <Button
               variant="ghost"
               onClick={() =>
@@ -92,7 +92,7 @@ export function GuestCartItemRow({
             >
               +
             </Button>
-          </div>
+          </Row>
 
           <Button
             variant="ghost"
@@ -101,7 +101,7 @@ export function GuestCartItemRow({
           >
             {t("remove")}
           </Button>
-        </div>
+        </Row>
       </div>
 
       {/* Line total */}

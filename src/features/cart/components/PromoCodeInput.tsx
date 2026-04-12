@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { Input } from "@/components";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
@@ -100,8 +100,11 @@ export function PromoCodeInput({
         >
           {t("promoCode")}
         </Label>
-        <div className="flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20">
+        <Row gap="sm">
+          <Row
+            className="flex-1 px-3 py-2 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20"
+            gap="sm"
+          >
             <svg
               className="w-4 h-4 text-emerald-500 flex-shrink-0"
               fill="none"
@@ -128,14 +131,14 @@ export function PromoCodeInput({
             <Span className="text-xs text-emerald-600 dark:text-emerald-500 ml-auto">
               -{formatCurrency(discountAmount)}
             </Span>
-          </div>
+          </Row>
           <Button
             onClick={handleRemove}
             className="text-xs text-zinc-500 hover:text-red-500 transition-colors"
           >
             {t("promoRemove")}
           </Button>
-        </div>
+        </Row>
       </div>
     );
   }
