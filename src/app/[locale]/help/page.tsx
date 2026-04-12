@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Grid, Heading, Text, Section } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { resolveLocale } from "@/i18n/resolve-locale";
 
@@ -72,7 +72,7 @@ export default async function HelpPage({ params }: Props) {
           >
             {t("browseTitle")}
           </Heading>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-4 md:gap-6">
+          <Grid cols="categoryCards" className="md:gap-6">
             {TOPICS.map(({ key, label, q }) => (
               <TextLink
                 key={key}
@@ -89,7 +89,7 @@ export default async function HelpPage({ params }: Props) {
                 </Text>
               </TextLink>
             ))}
-          </div>
+          </Grid>
         </Section>
 
         <Section
