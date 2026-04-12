@@ -754,13 +754,13 @@ Use the overlap between `letitrip.in/index.md` and `appkit/index.md` to eliminat
 
 | Candidate | Appkit path | Letitrip path | Classification | Current state |
 |---|---|---|---|---|
-| Accordion.tsx | `appkit/src/ui/components/Accordion.tsx` | `letitrip.in/src/components/ui/Accordion.tsx` | move fully to appkit | open near-term code slice — appkit primitive needs the richer controlled/single-multiple API before letitrip usage can be rewired and local duplicate deleted |
+| Accordion.tsx | `appkit/src/ui/components/Accordion.tsx` | `letitrip.in/src/components/ui/Accordion.tsx` | move fully to appkit | **DONE (session 15 batch 1)** — local duplicate deleted; letitrip cart checkout now imports `Accordion` and `AccordionItem` from `@mohasinac/appkit/ui` |
 | LocaleSwitcher.tsx | `appkit/src/features/layout/LocaleSwitcher.tsx` | `letitrip.in/src/components/layout/LocaleSwitcher.tsx` | reduce letitrip to config-only adapter | **DONE (session 14 batch 1)** — letitrip now delegates rendering to appkit and keeps only routing/i18n wiring |
 | CustomerReviewsSection.tsx | `appkit/src/features/homepage/components/CustomerReviewsSection.tsx` | `letitrip.in/src/features/homepage/components/CustomerReviewsSection.tsx` | already appkit-owned thin adapter | resolved — letitrip file is adapter-only per index and current usage |
 | FAQSection.tsx | `appkit/src/features/homepage/components/FAQSection.tsx` | `letitrip.in/src/features/homepage/components/FAQSection.tsx` | already appkit-owned thin adapter | resolved — layout ownership is already in appkit |
 | HowItWorksSection.tsx | `appkit/src/features/homepage/components/HowItWorksSection.tsx` | `letitrip.in/src/features/homepage/components/HowItWorksSection.tsx` | already appkit-owned thin adapter | resolved — letitrip only supplies project-specific content/config |
 | SearchFiltersRow.tsx | `appkit/src/features/search/components/SearchFiltersRow.tsx` | `letitrip.in/src/features/search/components/SearchFiltersRow.tsx` | reduce letitrip to config-only adapter | **DONE (session 14 batch 3)** — letitrip now delegates rendering to appkit and only adapts category data plus translated labels |
-| SearchResultsSection.tsx | `appkit/src/features/search/components/SearchResultsSection.tsx` | `letitrip.in/src/features/search/components/SearchResultsSection.tsx` | reduce letitrip to config-only adapter | open near-term code slice — extract local result/grid divergence back into appkit-owned composition |
+| SearchResultsSection.tsx | `appkit/src/features/search/components/SearchResultsSection.tsx` | `letitrip.in/src/features/search/components/SearchResultsSection.tsx` | reduce letitrip to config-only adapter | **DONE (session 15 batch 1)** — local duplicate deleted; letitrip search view now uses appkit `SearchResultsSection` with app-specific render slots |
 | ProductGrid.tsx | `appkit/src/features/products/components/ProductGrid.tsx` | `letitrip.in/src/components/products/ProductGrid.tsx` | move fully to appkit | **DONE (session 14 batch 4)** — letitrip grid now delegates reusable rendering to appkit `ProductGrid` and keeps only thin card selection/cart adaptation |
 | CategoryGrid.tsx | `appkit/src/features/categories/components/CategoryGrid.tsx` | `letitrip.in/src/features/categories/components/CategoryGrid.tsx` | already appkit-owned thin adapter | resolved — letitrip adapts appkit category grid with project copy/config |
 | AdminReviewsView.tsx | `appkit/src/features/admin/components/AdminReviewsView.tsx` | `letitrip.in/src/features/admin/components/AdminReviewsView.tsx` | exception consumer-only wiring | resolved exception — letitrip owns admin review state/mutations while appkit owns the reusable shell |
@@ -778,13 +778,13 @@ Use the overlap between `letitrip.in/index.md` and `appkit/index.md` to eliminat
 - any remaining letitrip file is justified as consumer-only wiring, not reusable implementation drift
 
 ### Verification
-Status: partial
+Status: **done**
 - **DONE (session 14 batch 1)**: overlap re-check confirmed `LocaleSwitcher` existed in both repos; letitrip now uses appkit’s shared `LocaleSwitcher` and retains only consumer-specific locale routing wiring.
 - **DONE (session 14 batch 2)**: TG9 migration decision sheet documented for the current high-confidence overlap list, including resolved adapters, exception files, and remaining near-term code slices.
 - **DONE (session 14 batch 3)**: `SearchFiltersRow` no longer owns a parallel local implementation; letitrip now delegates to appkit and keeps only category-shape and translation-label adaptation.
 - **DONE (session 14 batch 4)**: `ProductGrid` no longer owns a parallel reusable grid implementation; letitrip now delegates rendering to appkit and keeps only project-specific product-card selection/cart behavior.
-- Overlap is still confirmed from the two index inventories for the remaining TG9 candidates.
-- Remaining implementation-heavy TG9 code slices are `Accordion` and `SearchResultsSection`.
+- **DONE (session 15 batch 1)**: `Accordion` no longer owns a parallel local implementation in letitrip; appkit UI ownership is now direct.
+- **DONE (session 15 batch 1)**: `SearchResultsSection` no longer owns a parallel local implementation in letitrip; appkit feature ownership is now direct with configurable render slots.
 
 ---
 
