@@ -31,10 +31,11 @@ import {
   Alert,
   FormField,
   FormGroup,
+  ImageUpload,
   Toggle,
   useToast,
 } from "@/components";
-import { useAuth } from "@/hooks";
+import { useAuth, useMediaUpload } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";
@@ -141,6 +142,7 @@ export function SellerStoreView() {
   const { user, loading: authLoading } = useAuth();
   const t = useTranslations("sellerStore");
   const { showToast } = useToast();
+  const { upload: uploadMedia } = useMediaUpload();
 
   const { store, isLoading, isSaving, error, updateStore } = useSellerStore();
 
@@ -322,19 +324,29 @@ export function SellerStoreView() {
                   />
 
                   <FormGroup columns={2}>
-                    <FormField
-                      name="storeLogoURL"
+                    <ImageUpload
+                      currentImage={form.storeLogoURL || undefined}
+                      onUpload={(file) =>
+                        uploadMedia(file, "tmp/stores", true, {
+                          type: "store-logo",
+                          store: form.storeName || "store",
+                        })
+                      }
+                      onChange={(url) => set("storeLogoURL")(url)}
                       label={t("storeLogoURL")}
-                      value={form.storeLogoURL}
-                      onChange={set("storeLogoURL")}
-                      placeholder="https://..."
+                      helperText="Square logo — recommended 400x400px"
                     />
-                    <FormField
-                      name="storeBannerURL"
+                    <ImageUpload
+                      currentImage={form.storeBannerURL || undefined}
+                      onUpload={(file) =>
+                        uploadMedia(file, "tmp/stores", true, {
+                          type: "store-banner",
+                          store: form.storeName || "store",
+                        })
+                      }
+                      onChange={(url) => set("storeBannerURL")(url)}
                       label={t("storeBannerURL")}
-                      value={form.storeBannerURL}
-                      onChange={set("storeBannerURL")}
-                      placeholder="https://..."
+                      helperText="Wide banner — recommended 1200x400px"
                     />
                   </FormGroup>
 
