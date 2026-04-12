@@ -27,7 +27,7 @@ import {
 import type { ReviewDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { maskPublicReview } from "@/lib/pii";
-import { finalizeStagedMediaArray } from "@/lib/media/finalize";
+import { finalizeStagedMediaArray, finalizeStagedMediaUrl } from "@/lib/media/finalize";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -40,14 +40,16 @@ const createReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   title: z.string().min(1).max(200),
   comment: z.string().min(10).max(2000),
-  images: z.array(z.string()).optional().default([]),
+  images: z.array(z.string()).max(5).optional().default([]),
+  videoUrl: z.string().url().optional(),
 });
 
 const updateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5).optional(),
   title: z.string().min(1).max(200).optional(),
   comment: z.string().min(10).max(2000).optional(),
-  images: z.array(z.string()).optional(),
+  images: z.array(z.string()).max(5).optional(),
+  videoUrl: z.string().url().optional().nullable(),
 });
 
 // ─── Server Actions ────────────────────────────────────────────────────────
@@ -85,6 +87,9 @@ export async function createReviewAction(
 
   // Finalize any staged tmp media URLs before persisting
   const images = await finalizeStagedMediaArray(parsed.data.images);
+  const finalVideoUrl = parsed.data.videoUrl
+    ? await finalizeStagedMediaUrl(parsed.data.videoUrl)
+    : undefined;
 
   serverLogger.debug("createReviewAction", {
     uid: user.uid,
@@ -102,6 +107,7 @@ export async function createReviewAction(
     title: parsed.data.title,
     comment: parsed.data.comment,
     images,
+    video: finalVideoUrl ? { url: finalVideoUrl } : undefined,
     verified: false,
     status: "pending",
   });
@@ -142,11 +148,19 @@ export async function updateReviewAction(
   }
 
   // Finalize any staged tmp media URLs before persisting
-  const updatePayload = parsed.data.images !== undefined
-    ? { ...parsed.data, images: await finalizeStagedMediaArray(parsed.data.images) }
-    : parsed.data;
+  const { videoUrl, images: rawImages, ...rest } = parsed.data;
+  let updatePayload: Record<string, unknown> = { ...rest };
 
-  return reviewRepository.update(reviewId, updatePayload);
+  if (rawImages !== undefined) {
+    updatePayload.images = await finalizeStagedMediaArray(rawImages);
+  }
+  if (videoUrl !== undefined) {
+    updatePayload.video = videoUrl
+      ? { url: await finalizeStagedMediaUrl(videoUrl) }
+      : null;
+  }
+
+  return reviewRepository.update(reviewId, updatePayload as Partial<ReviewDocument>);
 }
 
 /**

@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/ui";
 import {
   MediaUploadList,
+  MediaUploadField,
   type MediaField,
 } from "@mohasinac/appkit/features/media";
 import {
@@ -183,6 +184,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [reviewImages, setReviewImages] = useState<MediaField[]>([]);
+  const [reviewVideoUrl, setReviewVideoUrl] = useState<string>("");
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -256,6 +258,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
       title,
       comment,
       images: reviewImages.map((f) => f.url),
+      videoUrl: reviewVideoUrl || undefined,
     });
   };
 
@@ -304,6 +307,23 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         maxItems={5}
         maxSizeMB={10}
         helperText={t("reviewFormImagesHelper")}
+        // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
+      />
+
+      {/* Video — max 1 per review (optional) */}
+      <MediaUploadField
+        label={t("reviewFormVideo")}
+        value={reviewVideoUrl}
+        onChange={setReviewVideoUrl}
+        onUpload={(file) =>
+          uploadMedia(file, "tmp/reviews", true, {
+            type: "review-video",
+            productId,
+          })
+        }
+        accept="video/*"
+        maxSizeMB={50}
+        helperText={t("reviewFormVideoHelper")}
         // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
       />
 

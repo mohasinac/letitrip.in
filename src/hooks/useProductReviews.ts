@@ -9,6 +9,7 @@ interface CreateReviewInput {
   title: string;
   comment: string;
   images?: string[];
+  videoUrl?: string;
 }
 
 export function useCreateReview(
@@ -20,7 +21,11 @@ export function useCreateReview(
       if ((data.images?.length ?? 0) > 5) {
         return Promise.reject(new Error("Reviews support at most 5 images."));
       }
-      return createReviewAction({ ...data, images: data.images ?? [] });
+      return createReviewAction({
+        ...data,
+        images: data.images ?? [],
+        videoUrl: data.videoUrl,
+      });
     },
     onSuccess,
     onError,

@@ -889,6 +889,8 @@
     "reviewFormCommentPlaceholder": "What did you like or dislike? How was the quality, delivery, and overall value?",
     "reviewFormImages": "Photos (optional)",
     "reviewFormImagesHelper": "Add up to 5 photos to help other buyers",
+    "reviewFormVideo": "Video (optional)",
+    "reviewFormVideoHelper": "Add a short review video (max 50 MB)",
     "reviewFormSubmit": "Submit Review",
     "reviewFormSubmitting": "Submitting…",
     "reviewFormSuccess": "Thank you! Your review has been submitted and is pending moderation.",
