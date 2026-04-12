@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { CheckoutAddressStep as AppkitCheckoutAddressStep } from "@mohasinac/appkit/features/cart";
-import { Heading, Text, Button, Span, Badge } from "@mohasinac/appkit/ui";
+import { Heading, Text, Button, Span, Badge, Row } from "@mohasinac/appkit/ui";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -80,7 +80,7 @@ export function CheckoutAddressStep({
           >
             <div className={`${flex.betweenStart} gap-3`}>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <Row gap="sm" className="mb-1">
                   <Span weight="semibold" size="sm">
                     {addr.label}
                   </Span>
@@ -89,7 +89,7 @@ export function CheckoutAddressStep({
                       Default
                     </Badge>
                   )}
-                </div>
+                </Row>
                 <Text size="sm">{addr.fullName}</Text>
                 <Text size="sm" variant="secondary">
                   {addr.addressLine1}

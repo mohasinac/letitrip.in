@@ -14,6 +14,7 @@ import {
   Text,
   Button,
   Span,
+  Row,
 } from "@mohasinac/appkit/ui";
 import { MediaImage, Textarea } from "@/components";
 
@@ -81,12 +82,12 @@ export function CheckoutOrderReview({
         <AccordionItem
           value="checkout-address"
           title={
-            <div className="flex items-center justify-between gap-3 pr-2">
+            <Row justify="between" gap="3" className="pr-2">
               <Text className="font-semibold">{t("shippingTo")}</Text>
               <Text size="xs" variant="secondary">
                 {address.city}
               </Text>
-            </div>
+            </Row>
           }
         >
           <div className="pt-3">
@@ -120,12 +121,12 @@ export function CheckoutOrderReview({
         <AccordionItem
           value="checkout-items"
           title={
-            <div className="flex items-center justify-between gap-3 pr-2">
+            <Row justify="between" gap="3" className="pr-2">
               <Text className="font-semibold">{t("orderItems")}</Text>
               <Text size="xs" variant="secondary">
                 {items.length}
               </Text>
-            </div>
+            </Row>
           }
         >
           <div className="space-y-3 pt-3">
@@ -163,10 +164,7 @@ export function CheckoutOrderReview({
                     {/* Items */}
                     <div className={`divide-y ${themed.border}`}>
                       {groupItems.map((item) => (
-                        <div
-                          key={item.itemId}
-                          className="flex items-center gap-3 p-3"
-                        >
+                        <Row key={item.itemId} className="p-3" gap="3">
                           {item.productImage ? (
                             <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
                               <MediaImage
@@ -199,7 +197,7 @@ export function CheckoutOrderReview({
                           >
                             {formatCurrency(item.price * item.quantity)}
                           </Text>
-                        </div>
+                        </Row>
                       ))}
                     </div>
                   </div>
@@ -212,7 +210,7 @@ export function CheckoutOrderReview({
         <AccordionItem
           value="checkout-payment"
           title={
-            <div className="flex items-center justify-between gap-3 pr-2">
+            <Row justify="between" gap="3" className="pr-2">
               <Text className="font-semibold">{t("paymentMethod")}</Text>
               <Text size="xs" variant="secondary">
                 {t(
@@ -223,7 +221,7 @@ export function CheckoutOrderReview({
                       : "upiManual",
                 )}
               </Text>
-            </div>
+            </Row>
           }
         >
           <div className="space-y-2 pt-3">
@@ -237,7 +235,7 @@ export function CheckoutOrderReview({
                   : `${themed.border} ${themed.bgPrimary}`
               }`}
             >
-              <div className="flex items-center gap-3">
+              <Row gap="3">
                 <div
                   className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                     paymentMethod === "cod" ? "border-primary" : themed.border
@@ -255,7 +253,7 @@ export function CheckoutOrderReview({
                     {t("paymentOnDelivery")}
                   </Text>
                 </div>
-              </div>
+              </Row>
             </Button>
 
             {/* Online payment (Razorpay) */}
@@ -268,7 +266,7 @@ export function CheckoutOrderReview({
                   : `${themed.border} ${themed.bgPrimary}`
               }`}
             >
-              <div className="flex items-center gap-3">
+              <Row gap="3">
                 <div
                   className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                     paymentMethod === "online"
@@ -288,7 +286,7 @@ export function CheckoutOrderReview({
                     Powered by Razorpay
                   </Text>
                 </div>
-              </div>
+              </Row>
             </Button>
 
             {/* UPI Manual — only shown when a UPI VPA is configured */}
@@ -303,7 +301,7 @@ export function CheckoutOrderReview({
                       : `${themed.border} ${themed.bgPrimary}`
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <Row gap="3">
                     <div
                       className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                         paymentMethod === "upi_manual"
@@ -330,7 +328,7 @@ export function CheckoutOrderReview({
                     >
                       PhonePe · GPay · Paytm
                     </Span>
-                  </div>
+                  </Row>
                 </Button>
 
                 {/* Expanded UPI instructions panel */}

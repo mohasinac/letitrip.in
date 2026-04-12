@@ -824,6 +824,7 @@ Status: **Phase 1 in progress (batch 1 complete)**
 - **DONE (session 18 batch 1)**: appkit `Stack` and `Row` now support `centered` variant prop in `src/ui/components/Layout.tsx` (appkit commit `e33b2a1`).
 - **DONE (session 18 batch 1)**: letitrip cart slice migrated to TG7 phase-1 variants in `CheckoutSuccessView.tsx` and `CartView.tsx` (`Stack centered`, `Row`, and `Row wrap` adoption for repeated flex bundles) (letitrip commit `bdc3d80a`).
 - **DONE (session 18 batch 2)**: cart item and promo surfaces now adopt `Row` variants in `CartItemRow.tsx`, `GuestCartItemRow.tsx`, and `PromoCodeInput.tsx` for repeated `flex items-center gap-*` bundles (letitrip commit `4bbbc57e`).
+- **DONE (session 18 batch 3)**: checkout flow surfaces now adopt `Row` variants in `CheckoutOrderReview.tsx` and `CheckoutAddressStep.tsx`; repeated `flex items-center gap-*` bundles in `CheckoutOrderReview` are removed.
 - **DONE (session 18 batch 1)**: diagnostics clean on all touched files; appkit watcher (`watch:primitives`) reports build success after changes.
 
 ---
