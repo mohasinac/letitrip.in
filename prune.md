@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 22 — TG7 phase-2 batch 6 ready to commit (product detail triplet preset migration)
+Last updated: session 22 — TG7 phase-2 batch 6 committed (appkit 48f40ab, letitrip 65b8eb87)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -845,7 +845,7 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **VALIDATION (session 22 batch 4)**: targeted diagnostics are clean on `Layout.tsx` and `ProductGrid.tsx`; repo-wide `npx tsc --noEmit` remains blocked only by pre-existing `src/ui/components/Accordion.tsx` typing.
 - **DONE (session 22 batch 5)**: admin subsystem fixed-grid wrappers migrated to semantic `Grid` in `AdminDashboardSkeleton`, `BackgroundSettings`, `CarouselSlideForm`, `SiteCommissionsForm`, and `AlgoliaDashboardView` by replacing repeated `grid grid-cols-* gap-*` bundles with `Grid` props (`cols`, `gap`, and scoped `className` overrides as needed) (letitrip commit `6f49fb32`).
 - **VALIDATION (session 22 batch 5)**: targeted diagnostics are clean on all five touched admin files. Repo-wide `npx tsc --noEmit` is still blocked by pre-existing parser errors in `src/app/api/media/upload/route.ts`.
-- **IN PROGRESS (session 22 batch 6)**: extracted a reusable `productDetailTriplet` Grid preset in appkit `Layout.tsx` and migrated appkit product detail shells (`ProductDetailView`, `AuctionDetailView`) plus letitrip product skeleton surfaces (`ProductDetailView`, `AuctionDetailView`, `PreOrderDetailView`) from repeated custom three-column class bundles to semantic `Grid cols="productDetailTriplet"`.
+- **DONE (session 22 batch 6)**: extracted a reusable `productDetailTriplet` Grid preset in appkit `Layout.tsx` and migrated appkit product detail shells (`ProductDetailView`, `AuctionDetailView`) plus letitrip product skeleton surfaces (`ProductDetailView`, `AuctionDetailView`, `PreOrderDetailView`) from repeated custom three-column class bundles to semantic `Grid cols="productDetailTriplet"` (appkit commit `48f40ab`, letitrip commit `65b8eb87`).
 - **VALIDATION (session 22 batch 6)**: targeted diagnostics are clean on all six touched files. Repo-wide `npx tsc --noEmit` remains blocked only by pre-existing `src/ui/components/Accordion.tsx` in appkit and `src/app/api/media/upload/route.ts` parse errors in letitrip.
 
 ---
