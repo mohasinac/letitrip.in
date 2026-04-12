@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 4 — commit 79849e9c)
+Last updated: April 12, 2026 (session 5 in progress)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -161,7 +161,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | map each listed form/schema to limit enforcement checklist row | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | pending | define source-of-truth flow for populate/update of `order.imageUrls` | order image propagation logic fully specified in backlog |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
-| Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | partial | replace and close remaining shim (`performance`) | remaining shim list is empty |
+| Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
 | Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | partial | document deprecation path for `src/utils/id-generators.ts` and call-site replacement sequence | all ID generation ownership points to appkit generators |
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
 | Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | pending | run full translation + currency rendering audit and trace provider/config handoff into appkit formatting | zero unintended dollar-sign displays and documented locale/currency ownership |
@@ -439,7 +439,7 @@ Eliminate shim files and local duplicates after migration.
 
 Still present (candidate for import-replace + delete):
 - ~~src/lib/monitoring/runtime.ts~~ **DELETED (session 2) — MonitoringProvider now imports from `@mohasinac/appkit/monitoring` directly**
-- src/lib/monitoring/performance.ts
+- ~~src/lib/monitoring/performance.ts~~ **DELETED (session 5) — local monitoring barrel now re-exports appkit tracing APIs directly; no remaining call sites required letitrip-only helpers**
 - ~~src/lib/api-response.ts~~ **DELETED (session 3) — all API routes and `src/lib/api/api-handler.ts` now import from `@mohasinac/appkit/next` directly**
 - ~~src/lib/firebase/firestore-helpers.ts~~ **DELETED (session 4) — repositories, `src/lib/query/firebase-sieve.ts`, and `src/lib/tokens.ts` now import from `@mohasinac/appkit/providers/db-firebase` directly**
 
@@ -466,7 +466,8 @@ Verification: partial
 - Process remains correct.
 - **DONE (session 3)**: `src/lib/api-response.ts` removed after rewiring all imports to `@mohasinac/appkit/next`.
 - **DONE (session 4)**: `src/lib/firebase/firestore-helpers.ts` removed after rewiring all imports to `@mohasinac/appkit/providers/db-firebase`.
-- Remaining still-present shim file: `src/lib/monitoring/performance.ts`.
+- **DONE (session 5)**: `src/lib/monitoring/performance.ts` removed; `src/lib/monitoring/index.ts` now re-exports appkit performance APIs directly.
+- Task Group 6 exit condition reached: remaining shim list is empty.
 
 ---
 

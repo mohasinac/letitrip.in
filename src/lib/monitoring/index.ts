@@ -4,21 +4,16 @@
  * Centralized exports for all monitoring utilities
  */
 
-// Performance monitoring
+// Performance monitoring — from @mohasinac/appkit/monitoring
 export {
+  setPerformanceProvider,
   startTrace,
   stopTrace,
   addTraceAttribute,
   addTraceMetric,
-  incrementTraceMetric,
-  measureAsync,
-  measureSync,
-  trackPageLoad,
-  trackApiRequest,
-  trackComponentRender,
-  PERFORMANCE_TRACES,
-  type PerformanceTraceType,
-} from "./performance";
+  type PerformanceTrace,
+  type PerformanceProvider,
+} from "@mohasinac/appkit/monitoring";
 
 // Analytics
 export {
