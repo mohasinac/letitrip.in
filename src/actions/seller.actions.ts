@@ -23,6 +23,7 @@ import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
+import { getAdminStorage } from "@mohasinac/appkit/providers/db-firebase";
 import {
   ApiError,
   AuthorizationError,
@@ -59,6 +60,98 @@ import {
   isShiprocketTokenExpired,
   SHIPROCKET_TOKEN_TTL_MS,
 } from "@/lib/shiprocket/client";
+
+const TMP_MEDIA_PREFIX = "tmp/";
+const FINAL_MEDIA_PREFIX = "media/";
+
+function extractStoragePathFromUrl(url: string, bucketName: string): string | null {
+  try {
+    const parsed = new URL(url);
+
+    // Public URL format: https://storage.googleapis.com/{bucket}/{path}
+    if (parsed.hostname === "storage.googleapis.com") {
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      if (parts.length >= 2 && parts[0] === bucketName) {
+        return parts.slice(1).join("/");
+      }
+    }
+
+    // Firebase download URL format:
+    // https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{encodedPath}?alt=media&token=...
+    if (parsed.hostname === "firebasestorage.googleapis.com") {
+      const match = parsed.pathname.match(/\/v0\/b\/([^/]+)\/o\/(.+)$/);
+      if (match && match[1] === bucketName) {
+        return decodeURIComponent(match[2]);
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function finalizeStagedMediaUrl(url: string): Promise<string> {
+  const storage = getAdminStorage();
+  const bucket = storage.bucket();
+  const sourcePath = extractStoragePathFromUrl(url, bucket.name);
+
+  if (!sourcePath || !sourcePath.startsWith(TMP_MEDIA_PREFIX)) {
+    return url;
+  }
+
+  const destinationPath = sourcePath.replace(TMP_MEDIA_PREFIX, FINAL_MEDIA_PREFIX);
+  if (destinationPath === sourcePath) {
+    return url;
+  }
+
+  const sourceFile = bucket.file(sourcePath);
+  const destinationFile = bucket.file(destinationPath);
+
+  await sourceFile.copy(destinationFile);
+  await destinationFile.makePublic();
+  await sourceFile.delete({ ignoreNotFound: true });
+
+  return `https://storage.googleapis.com/${bucket.name}/${destinationPath}`;
+}
+
+async function finalizeProductMediaReferences<T extends Record<string, unknown>>(
+  data: T,
+): Promise<T> {
+  const finalized = { ...data } as T & {
+    mainImage?: string;
+    images?: string[];
+    video?: {
+      url?: string;
+      thumbnailUrl?: string;
+      duration?: number;
+      trimStart?: number;
+      trimEnd?: number;
+    };
+  };
+
+  if (typeof finalized.mainImage === "string" && finalized.mainImage) {
+    finalized.mainImage = await finalizeStagedMediaUrl(finalized.mainImage);
+  }
+
+  if (Array.isArray(finalized.images) && finalized.images.length > 0) {
+    finalized.images = await Promise.all(
+      finalized.images.map((imageUrl) => finalizeStagedMediaUrl(imageUrl)),
+    );
+  }
+
+  if (finalized.video?.url) {
+    finalized.video = {
+      ...finalized.video,
+      url: await finalizeStagedMediaUrl(finalized.video.url),
+      thumbnailUrl: finalized.video.thumbnailUrl
+        ? await finalizeStagedMediaUrl(finalized.video.thumbnailUrl)
+        : finalized.video.thumbnailUrl,
+    };
+  }
+
+  return finalized as T;
+}
 
 export interface BecomeSellerActionResult {
   storeStatus: "pending" | "approved" | "rejected";
@@ -673,8 +766,10 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
       parsed.error.issues[0]?.message ?? "Invalid input",
     );
 
+  const finalizedMediaData = await finalizeProductMediaReferences(parsed.data);
+
   await productRepository.create({
-    ...parsed.data,
+    ...finalizedMediaData,
     sellerId: user.uid,
     sellerName: user.name ?? user.email ?? "Seller",
     sellerEmail: user.email ?? "",
@@ -868,7 +963,12 @@ export async function sellerUpdateProductAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const updated = await productRepository.updateProduct(id, parsed.data as any);
+  const finalizedMediaData = await finalizeProductMediaReferences(parsed.data);
+
+  const updated = await productRepository.updateProduct(
+    id,
+    finalizedMediaData as any,
+  );
   serverLogger.info("sellerUpdateProductAction", {
     userId: user.uid,
     productId: id,

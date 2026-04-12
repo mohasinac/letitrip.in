@@ -2,14 +2,14 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 7 — commit 18327f38)
+Last updated: April 12, 2026 (session 8 in progress)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
 - Verdict A (Listing Logic): partial
 - Verdict B (Media Contract 5 images + 1 video): partial → **product schema/image cap and upload API product-context guardrails implemented (session 7)**
 - Verdict C (Order imageUrls propagation): pending
-- Verdict D (Dual cleanup strategy): partial → **scheduler job implemented; upload route now stages under tmp/* (session 7); finalize-on-save endpoint still pending**
+- Verdict D (Dual cleanup strategy): partial → **scheduler job implemented; upload route stages under tmp/*; seller create/update actions now finalize tmp media to canonical media paths (session 8)**
 - Verdict E (Semantic wrapper variants + accessibility): pending
 - Verdict F (i18n and INR currency propagation): pending
 - Verdict G (Appkit ownership over duplicate/shared features): pending
@@ -157,7 +157,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
-| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **partial** | implement finalize-on-save endpoint/action to move `tmp/{uid}/...` to canonical media path after successful entity save | scheduler spec approved and task remains implementation-ready |
+| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **partial** | extend finalize-on-save coverage to remaining entity save flows beyond seller product create/update | scheduler spec approved and task remains implementation-ready |
 | Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | pending | define source-of-truth flow for populate/update of `order.imageUrls` | order image propagation logic fully specified in backlog |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
@@ -367,7 +367,8 @@ Verification: partial
 - **DONE (session 2)**: `MEDIA_TMP_FOLDER_PREFIX = "tmp/"` and `MEDIA_TMP_TTL_HOURS = 24` added to `functions/src/config/constants.ts`.
 - **DONE (session 2)**: Schedule set to `SCHEDULES.DAILY_0430_UTC` (10:00 AM IST / 04:30 UTC), timezone `Asia/Kolkata`, `maxInstances: 1`.
 - **DONE (session 7 batch 1)**: media upload route now prefixes staged uploads under `tmp/*`.
-- **Pending**: form save actions must call a "finalize" endpoint that moves the confirmed URL from `tmp/{uid}/file` → `media/{uid}/file` on successful entity save.
+- **DONE (session 8 batch 1)**: seller product save actions (`createSellerProductAction`, `sellerUpdateProductAction`) now finalize staged `tmp/*` media by copying to `media/*` and deleting source objects.
+- **Pending**: extend finalize-on-save logic to remaining non-seller save flows that persist media URLs.
 
 ### Safety constraints
 - never delete non-tmp media in cron job
