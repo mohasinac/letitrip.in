@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 16 — TG1 seller create/edit media list + reviews/stores schema enforcement batches, TG9 DONE, TG10 DONE, TG5 DONE, TG3 DONE)
+Last updated: April 12, 2026 (session 16 — TG1 seller create/edit media list + reviews/stores schema enforcement + product gallery adapter batch, TG9 DONE, TG10 DONE, TG5 DONE, TG3 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -329,7 +329,7 @@ Standardize products, auctions, pre-orders, reviews, and stores on a shared medi
 | products | Form | src/components/products/ProductForm.tsx | `MediaUploadList` maxItems=5 | `MediaUploadField` single video | accept image/* + video/* mapped to shared media type guard | collect staged URLs, invoke onAbort on cancel/unmount | appkit/src/features/products/* + appkit/src/features/media/* | **DONE (session 16 batch 2)** |
 | auctions | Form/View | src/features/products/components/AuctionDetailView.tsx | gallery/selectors capped at 5 | 1 promo/demo video slot | reject non-image/video media at submit boundary | cleanup staged uploads on abort path | appkit/src/features/auctions/* + appkit/src/features/media/* | pending implementation |
 | pre-orders | Form/View | src/features/products/components/PreOrderDetailView.tsx | gallery/selectors capped at 5 | 1 promo/demo video slot | reject non-image/video media at submit boundary | cleanup staged uploads on abort path | appkit/src/features/pre-orders/* + appkit/src/features/media/* | pending implementation |
-| products | Gallery display/input adapter | src/features/products/components/ProductImageGallery.tsx | enforce max visible/selectable images=5 | expose at most 1 video panel | guard unsupported media descriptors before render | n/a (display layer) | appkit/src/features/products/* | pending implementation |
+| products | Gallery display/input adapter | src/features/products/components/ProductImageGallery.tsx | enforce max visible/selectable images=5 | expose at most 1 video panel | guard unsupported media descriptors before render | n/a (display layer) | appkit/src/features/products/* | **DONE (session 16 batch 3)** |
 | reviews | Form/View | src/features/products/components/ProductReviews.tsx | review media images capped at 5 | 1 optional review video | review payload media type validation in submit handler | staged review uploads cleaned via onAbort | appkit/src/features/reviews/* + appkit/src/features/media/* | **DONE (session 16 batch 1)** |
 | products | Seller form | src/features/seller/components/SellerCreateProductView.tsx | `MediaUploadList` maxItems=5 | `MediaUploadField` single video | validate media descriptor type before create action | call onAbort for all staged media on dismiss | appkit/src/features/seller/* + appkit/src/features/media/* | **DONE (session 16 batch 2)** |
 | products | Seller form | src/features/seller/components/SellerEditProductView.tsx | edited media list capped at 5 | edited video slot capped at 1 | validate merged legacy + new media descriptors | abort cleanup for newly staged unsaved files | appkit/src/features/seller/* + appkit/src/features/media/* | **DONE (session 16 batch 2)** |
@@ -363,6 +363,7 @@ Verification: partial
 - **DONE (session 16 batch 1)**: review create/update/admin actions now enforce approved media URLs with image list cap = 5 and single optional video URL; staged media finalization preserved for user + admin update flows.
 - **DONE (session 16 batch 1)**: store update action now enforces approved media URL validation for `storeLogoURL` and `storeBannerURL` before persistence.
 - **DONE (session 16 batch 2)**: `ProductForm` now enforces product video cap = 1 using `MediaUploadField` (`product-video` context) while preserving gallery image cap = 5 and `onAbort` cleanup wiring.
+- **DONE (session 16 batch 3)**: `ProductImageGallery` now hard-caps rendered image media to 5 and preserves a single optional video panel.
 - Full 5+1 enforcement across every listed letitrip form/entity remains open.
 
 ---
