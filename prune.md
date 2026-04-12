@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 15 — TG9 DONE (Accordion + SearchResultsSection ownership collapse), TG10 DONE, TG5 DONE, TG3 DONE)
+Last updated: April 12, 2026 (session 16 — TG1 reviews/stores schema enforcement batch, TG9 DONE, TG10 DONE, TG5 DONE, TG3 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -185,7 +185,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
 | Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
-| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
+| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows for seller create/edit product media list (product-video slot + adapter wiring) after reviews/stores schema-form hardening batch | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | **DONE** | none — order-splitter deleted; usePlaceBid + useRealtimeBids moved to appkit; view components already wrap appkit shells; useAuctionDetail tracked below | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
@@ -330,16 +330,16 @@ Standardize products, auctions, pre-orders, reviews, and stores on a shared medi
 | auctions | Form/View | src/features/products/components/AuctionDetailView.tsx | gallery/selectors capped at 5 | 1 promo/demo video slot | reject non-image/video media at submit boundary | cleanup staged uploads on abort path | appkit/src/features/auctions/* + appkit/src/features/media/* | pending implementation |
 | pre-orders | Form/View | src/features/products/components/PreOrderDetailView.tsx | gallery/selectors capped at 5 | 1 promo/demo video slot | reject non-image/video media at submit boundary | cleanup staged uploads on abort path | appkit/src/features/pre-orders/* + appkit/src/features/media/* | pending implementation |
 | products | Gallery display/input adapter | src/features/products/components/ProductImageGallery.tsx | enforce max visible/selectable images=5 | expose at most 1 video panel | guard unsupported media descriptors before render | n/a (display layer) | appkit/src/features/products/* | pending implementation |
-| reviews | Form/View | src/features/products/components/ProductReviews.tsx | review media images capped at 5 | 1 optional review video | review payload media type validation in submit handler | staged review uploads cleaned via onAbort | appkit/src/features/reviews/* + appkit/src/features/media/* | pending implementation |
+| reviews | Form/View | src/features/products/components/ProductReviews.tsx | review media images capped at 5 | 1 optional review video | review payload media type validation in submit handler | staged review uploads cleaned via onAbort | appkit/src/features/reviews/* + appkit/src/features/media/* | **DONE (session 16 batch 1)** |
 | products | Seller form | src/features/seller/components/SellerCreateProductView.tsx | `MediaUploadList` maxItems=5 | `MediaUploadField` single video | validate media descriptor type before create action | call onAbort for all staged media on dismiss | appkit/src/features/seller/* + appkit/src/features/media/* | pending implementation |
 | products | Seller form | src/features/seller/components/SellerEditProductView.tsx | edited media list capped at 5 | edited video slot capped at 1 | validate merged legacy + new media descriptors | abort cleanup for newly staged unsaved files | appkit/src/features/seller/* + appkit/src/features/media/* | pending implementation |
-| stores | Seller form | src/features/seller/components/SellerStoreSetupView.tsx | store images capped at 5 | 1 optional store video | validate store media descriptor type at submit | staged upload cleanup on cancel/unmount | appkit/src/features/stores/* + appkit/src/features/media/* | pending implementation |
-| reviews | Hook/input adapter | src/hooks/useProductReviews.ts | review image array hard-cap at 5 | review video hard-cap at 1 | hook-level guard before API call | propagate staged URLs to caller abort hook | appkit/src/features/reviews/hooks/* | pending implementation |
+| stores | Seller form | src/features/seller/components/SellerStoreSetupView.tsx | store images capped at 5 | 1 optional store video | validate store media descriptor type at submit | staged upload cleanup on cancel/unmount | appkit/src/features/stores/* + appkit/src/features/media/* | **DONE (session 16 batch 1)** |
+| reviews | Hook/input adapter | src/hooks/useProductReviews.ts | review image array hard-cap at 5 | review video hard-cap at 1 | hook-level guard before API call | propagate staged URLs to caller abort hook | appkit/src/features/reviews/hooks/* | **DONE (session 16 batch 1)** |
 | stores/users | Form component | src/components/AvatarUpload.tsx | out of scope for 5-image list (single avatar) | must disallow video | image-only mime validation retained | abort deletes staged avatar URL | appkit/src/features/media/* | pending implementation |
 | admin media | Form component | src/components/admin/media-upload.client.ts | admin image uploads capped at 5 per entity field | 1 video per entity field | enforce type at client and payload builder | abort deletes staged admin uploads | appkit/src/features/media/* + appkit/src/features/admin/* | pending implementation |
 | products | Schema | src/db/schema/products.ts | schema max=5 images | schema max=1 video | zod/schema accepts only image/video typed descriptors | n/a | appkit/src/features/products/schema/* | pending implementation |
-| reviews | Schema | src/db/schema/reviews.ts | schema max=5 images | schema max=1 video | schema accepts only image/video typed descriptors | n/a | appkit/src/features/reviews/schema/* | pending implementation |
-| stores | Schema | src/db/schema/stores.ts | schema max=5 images | schema max=1 video | schema accepts only image/video typed descriptors | n/a | appkit/src/features/stores/schema/* | pending implementation |
+| reviews | Schema | src/db/schema/reviews.ts | schema max=5 images | schema max=1 video | schema accepts only image/video typed descriptors | n/a | appkit/src/features/reviews/schema/* | **DONE (session 16 batch 1)** |
+| stores | Schema | src/db/schema/stores.ts | schema max=5 images | schema max=1 video | schema accepts only image/video typed descriptors | n/a | appkit/src/features/stores/schema/* | **DONE (session 16 batch 1)** |
 | orders | Schema compatibility | src/db/schema/orders.ts | preserve item/order image arrays compatibility | no new order video field in this slice | ensure order media typing stays image-array only | n/a | appkit/src/features/orders/schema/* | pending implementation |
 | shared media API | API | src/app/api/media/upload/route.ts | enforce max image count at request context boundary | enforce single video per target field context | server-side mime sniff already present; add entity-limit guard | returns staged URLs compatible with onAbort contract | appkit/src/features/media/* + consumer route wiring | pending implementation |
 
@@ -360,6 +360,8 @@ Verification: partial
 - **DONE (session 6)**: row-by-row enforcement matrix documented for each listed Task Group 1 form/schema target plus upload API target.
 - **DONE (session 7 batch 1)**: product schema image cap enforced at 5 in validation layer.
 - **DONE (session 7 batch 1)**: upload API enforces product context guardrails (max 5 image indices, max 1 video index).
+- **DONE (session 16 batch 1)**: review create/update/admin actions now enforce approved media URLs with image list cap = 5 and single optional video URL; staged media finalization preserved for user + admin update flows.
+- **DONE (session 16 batch 1)**: store update action now enforces approved media URL validation for `storeLogoURL` and `storeBannerURL` before persistence.
 - Full 5+1 enforcement across every listed letitrip form/entity remains open.
 
 ---
