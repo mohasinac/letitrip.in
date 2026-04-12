@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: session 23 — TG7 phase-2 batch 7 committed (letitrip bf089731)
+Last updated: session 23 — TG7 phase-2 batch 8 committed (letitrip 06f25258)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -849,7 +849,8 @@ Status: **Phase 2 in progress (batch 1 complete)**
 - **VALIDATION (session 22 batch 6)**: targeted diagnostics are clean on all six touched files. Repo-wide `npx tsc --noEmit` remains blocked only by pre-existing `src/ui/components/Accordion.tsx` in appkit and `src/app/api/media/upload/route.ts` parse errors in letitrip.
 - **DONE (session 23 batch 7)**: product detail sub-grids now use semantic `Grid` wrappers in letitrip `AuctionDetailView` (countdown units) and `PreOrderDetailView` (specification pairs), replacing raw `grid grid-cols-*` class bundles (letitrip commit `bf089731`).
 - **VALIDATION (session 23 batch 7)**: targeted diagnostics are clean on both touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
-- **IN PROGRESS (session 23 batch 8, local edits)**: migrated additional letitrip runtime `grid grid-cols-*` wrappers to semantic `Grid` usage in `UserAddressesView`, `DemoSeedView`, `FooterConfigForm`, `FooterLayout`, `HowAuctionsWorkView`, `SellerGuideView`, `StoreAddressesSection`, and `SellerCouponsView`. Validation + commit pending.
+- **DONE (session 23 batch 8)**: migrated additional letitrip runtime `grid grid-cols-*` wrappers to semantic `Grid` usage in `UserAddressesView`, `DemoSeedView`, `FooterConfigForm`, `FooterLayout`, `HowAuctionsWorkView`, `SellerGuideView`, `StoreAddressesSection`, and `SellerCouponsView` (letitrip commit `06f25258`).
+- **VALIDATION (session 23 batch 8)**: targeted diagnostics are clean on all eight touched files. Repo-wide `npx tsc --noEmit` remains blocked by pre-existing parse errors in `src/app/api/media/upload/route.ts`.
 
 ---
 
