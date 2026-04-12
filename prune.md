@@ -13,6 +13,7 @@ Verification snapshot (April 12, 2026):
 - Verdict E (Semantic wrapper variants + accessibility): pending
 - Verdict F (i18n and INR currency propagation): pending
 - Verdict G (Appkit ownership over duplicate/shared features): pending
+- Verdict H (Multi-image support for events and blog — cover, event, winner, additional): pending
 - Path reference audit: 47 referenced paths, 47 exist (1 previously-planned path `functions/src/jobs/mediaTmpCleanup.ts` now created)
 
 ---
@@ -90,6 +91,27 @@ Status: pending
 - Index overlap shows many high-confidence shared feature candidates already exist in both repos (`Accordion`, homepage sections, search/cart/admin views, `LocaleSwitcher`, `api-response`, repository/utility names).
 - Still needed: merge divergent local implementations into appkit-configurable ownership and remove duplicate letitrip implementations.
 
+### Verdict H - Multi-Image Support for Events and Blog
+Events and blog posts currently hold a single image string (`coverImageUrl` / `coverImage`). Both entities need typed `MediaField` arrays with role-specific slots:
+
+**Events:**
+- `coverImage: MediaField | null` — hero/banner (1 max, replaces `coverImageUrl: string`)
+- `eventImages: MediaField[]` — during/after event photos (max 10)
+- `winnerImages: MediaField[]` — winner/prize announcement photos (max 5)
+- `additionalImages: MediaField[]` — gallery/miscellaneous (max 10)
+
+**Blog:**
+- `coverImage: MediaField | null` — post hero image (1 max, upgrades `coverImage: string`)
+- `contentImages: MediaField[]` — inline illustrations/screenshots (max 10)
+- `additionalImages: MediaField[]` — supplementary gallery (max 5)
+
+Migration must be backward-compatible: existing string-typed `coverImageUrl`/`coverImage` values are coerced to `{ url: value, type: "image" }` during read. Both appkit schemas and letitrip admin forms must enforce these limits.
+
+Status: pending
+- Current appkit schemas use bare `string | undefined` for both cover fields.
+- No multi-image arrays exist on either entity.
+- Still needed: schema migration, new typed arrays, admin form components (EventFormDrawer extension + new blog admin form), API enforcement, and abort cleanup wiring.
+
 ---
 
 ## Rule Checks (Quick Commands)
@@ -148,6 +170,7 @@ Select-String -Path "index.md" -Pattern "Accordion.tsx|LocaleSwitcher.tsx|Custom
 6. Mine semantic-wrapper usage patterns and define variant/config API proposals
 7. Complete i18n + INR propagation audit and close dollar-sign drift
 8. Collapse shared letitrip/appkit overlaps into appkit-owned implementations and remove duplicate local ownership
+9. Multi-image support for events (cover + event + winner + additional) and blog (cover + content + additional)
 
 ---
 
@@ -162,10 +185,11 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
-| Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | partial | document deprecation path for `src/utils/id-generators.ts` and call-site replacement sequence | all ID generation ownership points to appkit generators |
+| Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | **DONE** | none — `src/utils/id-generators.ts` deleted; all generators delegated to `@mohasinac/appkit/utils`; media filename generators, offerId, QR/barcode, idExists, generateUniqueId added to appkit | all ID generation ownership points to appkit generators |
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
 | Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | **DONE** | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented |
 | Task Group 9 - Appkit ownership over duplicated/shared features | P1 | letitrip.in + appkit | pending | merge shared-basenamed files into appkit-owned implementations and reduce letitrip to direct imports or minimal config adapters | no duplicate feature ownership remains in letitrip |
+| Task Group 10 - Multi-image support for events and blog | P1 | appkit + letitrip.in | pending | migrate event/blog schemas to typed `MediaField` arrays; extend `EventFormDrawer`; add blog admin form; wire abort cleanup for all new upload slots | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot |
 
 Legend:
 - P0: blocks architecture safety or data integrity; do first.
@@ -459,9 +483,13 @@ Use shared appkit generators only; eliminate local duplicates/ad-hoc generation.
 - all document IDs generated via appkit typed generators
 - generators support customId for externally provided IDs
 
-Verification: partial
-- Appkit generators with `customId` support are present.
-- Local `src/utils/id-generators.ts` still exists in letitrip and must be fully retired.
+Verification: **DONE** (session 12)
+- **DONE**: All 14 entity ID generators with `customId` support are in appkit (pre-existing).
+- **DONE**: Added to appkit: 17 media filename generators, `MediaFilenameContext` type, `generateMediaFilename` dispatcher, `generateBarcodeFromId`, `generateQRCodeData` (no hardcoded URL default), `generateOfferId`, `idExists`, `generateUniqueId`.
+- **DONE**: `src/utils/id-generators.ts` deleted from letitrip (972 lines removed).
+- **DONE**: `src/utils/index.ts` updated to explicitly export all generators from `@mohasinac/appkit/utils`.
+- **DONE**: All callers (`product.repository.ts`, `offer.repository.ts`, `db/schema/*.ts`, `api/media/upload/route.ts`) import via `@/utils` barrel — verified no errors.
+- appkit commit: `215a4c2` · letitrip commit: `9ca0db53`
 
 ---
 
@@ -586,6 +614,96 @@ Status: **DONE** (session 11)
 - **DONE (session 11)**: 2 letitrip admin files updated: `OrderStatusForm.tsx` and `OrderTableColumns.tsx` replace inline `new Intl.NumberFormat("en-IN", {...})` with shared `formatCurrency`.
 - **DONE (session 11)**: i18n routing confirmed — `routing.ts` has `locales: ["en"]`, `localePrefix: "never"`, `localeCookie: false`. `request.ts` falls back to `"en"` for undefined locale (explicitly handles ISR/static pre-render edge case). Single-locale setup is intentional; translation coverage is complete for `en` namespace.
 - **DONE (session 11)**: Currency config propagation documented — INR config stays in `src/constants/config.ts` (letitrip-specific). Appkit formatters/components default to INR; consumer injects market config via `LOCALE_CONFIG`.
+
+---
+
+## Task Group 10 - Multi-Image Support for Events and Blog
+
+### Goal
+Upgrade event and blog entities from a single string image field to role-specific typed `MediaField` arrays with enforced per-role caps.
+
+### Target entities
+- events
+- blog posts
+
+### New media field model
+
+**EventDocument / `eventItemSchema`:**
+| Role field | Type | Max | Replaces / addition |
+|---|---|---|---|
+| `coverImage` | `MediaField \| null` | 1 | replaces `coverImageUrl: string \| undefined` |
+| `eventImages` | `MediaField[]` | 10 | new — during/after event photos |
+| `winnerImages` | `MediaField[]` | 5 | new — winner/prize/podium photos |
+| `additionalImages` | `MediaField[]` | 10 | new — gallery/miscellaneous |
+
+**BlogPostDocument / `blogPostSchema`:**
+| Role field | Type | Max | Replaces / addition |
+|---|---|---|---|
+| `coverImage` | `MediaField \| null` | 1 | upgrades existing `coverImage: string \| undefined` |
+| `contentImages` | `MediaField[]` | 10 | new — inline illustrations/screenshots |
+| `additionalImages` | `MediaField[]` | 5 | new — supplementary gallery |
+
+### Backward-compatibility rule
+- During reads, bare string values for `coverImageUrl` / `coverImage` are coerced to `{ url, type: "image" }` in a migration helper.
+- Writes always use the typed descriptor.
+- Old fields remain readable/writable until all admin forms are migrated.
+
+### Candidate appkit files
+- `appkit/src/features/events/schemas/index.ts` — add typed fields + coercion helper
+- `appkit/src/features/events/types/index.ts` — update `EventItem` TypeScript type
+- `appkit/src/features/blog/schemas/index.ts` — add typed fields + coercion helper
+- `appkit/src/features/blog/types/index.ts` — update `BlogPost` TypeScript type
+- `appkit/src/features/events/components/EventFormDrawer.tsx` — add upload slots for eventImages, winnerImages, additionalImages
+- `appkit/src/features/blog/components/BlogPostForm.tsx` — new form component with all upload slots
+- `appkit/src/features/media/*` — shared abort cleanup + upload helpers already present
+
+### Candidate letitrip files
+- `src/features/events/components/EventTypeConfig/*.tsx` — event-type config forms may need media slot wiring
+- `src/actions/events.actions.ts` — finalize tmp→canonical on event create/update
+- `src/actions/blog.actions.ts` — finalize tmp→canonical on blog create/update
+- `src/app/api/media/upload/route.ts` — add `event-image`, `event-winner-image`, `event-additional-image`, `blog-content-image`, `blog-additional-image` context guardrails
+
+### Upload API context guardrails to add
+| Context key | Max count | Target entity |
+|---|---|---|
+| `event-cover` | 1 | events |
+| `event-image` | 10 | events |
+| `event-winner-image` | 5 | events |
+| `event-additional-image` | 10 | events |
+| `blog-cover` | 1 | blog posts |
+| `blog-content-image` | 10 | blog posts |
+| `blog-additional-image` | 5 | blog posts |
+
+### Enforcement matrix (entity -> form -> schema -> API)
+
+| Entity | Layer | File | Role | Max | Abort cleanup | Appkit ownership target | Status |
+|---|---|---|---|---|---|---|---|
+| events | Schema | `appkit/src/features/events/schemas/index.ts` | all roles | per table above | n/a | appkit/src/features/events/schema/* | pending |
+| events | Types | `appkit/src/features/events/types/index.ts` | all roles | per table above | n/a | appkit/src/features/events/types/* | pending |
+| events | Form | `appkit/src/features/events/components/EventFormDrawer.tsx` | cover, eventImages, winnerImages, additionalImages | per table above | onAbort wired for all upload slots | appkit/src/features/events/* | pending |
+| events | API | `src/app/api/media/upload/route.ts` | event context keys | per table above | staged URLs under tmp/* | consumer route wiring | pending |
+| events | Actions | `src/actions/events.actions.ts` | all media arrays | n/a | finalize tmp→canonical on save | letitrip consumer action | pending |
+| blog | Schema | `appkit/src/features/blog/schemas/index.ts` | all roles | per table above | n/a | appkit/src/features/blog/schema/* | pending |
+| blog | Types | `appkit/src/features/blog/types/index.ts` | all roles | per table above | n/a | appkit/src/features/blog/types/* | pending |
+| blog | Form | `appkit/src/features/blog/components/BlogPostForm.tsx` | cover, contentImages, additionalImages | per table above | onAbort wired for all upload slots | appkit/src/features/blog/* | pending |
+| blog | API | `src/app/api/media/upload/route.ts` | blog context keys | per table above | staged URLs under tmp/* | consumer route wiring | pending |
+| blog | Actions | `src/actions/blog.actions.ts` | all media arrays | n/a | finalize tmp→canonical on save | letitrip consumer action | pending |
+
+### Acceptance criteria
+- All new media role fields are `MediaField`-typed in appkit schemas and TypeScript types.
+- `EventFormDrawer` exposes upload slots for cover, event photos, winner photos, and additional photos.
+- New `BlogPostForm` exposes upload slots for cover, content images, and additional images.
+- Upload API enforces per-context caps for all new context keys.
+- All new upload slots wire `onAbort` to clean staged tmp URLs on dismiss.
+- Event and blog save actions finalize `tmp/*` uploads to canonical paths.
+- Backward-compatibility coercion helper converts legacy string fields to `MediaField` on read.
+
+### Verification
+Status: pending
+- Appkit event schema currently has `coverImageUrl: string | undefined` only.
+- Appkit blog schema currently has `coverImage: string | undefined` only.
+- No multi-image arrays or typed media descriptors exist on either entity.
+- All implementation items above are open.
 
 ---
 
