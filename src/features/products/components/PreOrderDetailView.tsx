@@ -380,7 +380,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                       value="specifications"
                       title={t("specifications")}
                     >
-                      <div className="grid grid-cols-2 gap-2 text-sm">
+                      <Grid gap="sm" className="grid-cols-2 text-sm">
                         {product!.specifications.map((spec, i) => (
                           <div key={i}>
                             <Span className="text-zinc-500 dark:text-zinc-400 block">
@@ -392,7 +392,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                             </Span>
                           </div>
                         ))}
-                      </div>
+                      </Grid>
                     </AccordionItem>
                   </Accordion>
                 )}

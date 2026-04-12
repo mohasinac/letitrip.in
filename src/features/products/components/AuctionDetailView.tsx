@@ -9,6 +9,7 @@
 import {
   Heading,
   Grid,
+  Row,
   Li,
   Text,
   Ul,
@@ -272,7 +273,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                         {isEnded ? t("auctionEnded") : t("timeRemaining")}
                       </Text>
                       {!isEnded && remaining ? (
-                        <div className="grid grid-cols-4 gap-2 text-center">
+                        <Grid gap="sm" className="grid-cols-4 text-center">
                           {[
                             { value: remaining.days, label: t("days") },
                             { value: remaining.hours, label: t("hours") },
@@ -288,7 +289,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                               </Text>
                             </div>
                           ))}
-                        </div>
+                        </Grid>
                       ) : (
                         <Text className="text-2xl font-bold text-zinc-500 dark:text-zinc-400">
                           {t("auctionEnded")}
