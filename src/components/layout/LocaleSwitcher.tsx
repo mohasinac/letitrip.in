@@ -12,11 +12,13 @@
  * ```
  */
 
+import {
+  LocaleSwitcher as AppkitLocaleSwitcher,
+  type LocaleSwitcherOption,
+} from "@mohasinac/appkit/features/layout";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import { DynamicSelect } from "@/components";
-import type { DynamicSelectOption } from "@/components";
 
 export default function LocaleSwitcher() {
   const t = useTranslations("locale");
@@ -24,26 +26,23 @@ export default function LocaleSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const options: DynamicSelectOption<Locale>[] = routing.locales.map((loc) => ({
-    value: loc as Locale,
+  const options: LocaleSwitcherOption[] = routing.locales.map((loc) => ({
+    value: loc,
     label: t(loc as Locale),
   }));
 
-  function handleChange(next: Locale | null) {
+  function handleChange(next: string) {
     if (next && next !== locale) {
-      router.replace(pathname, { locale: next });
+      router.replace(pathname, { locale: next as Locale });
     }
   }
 
   return (
-    <DynamicSelect<Locale>
-      value={locale}
+    <AppkitLocaleSwitcher
+      locale={locale}
       onChange={handleChange}
       options={options}
       ariaLabel={t("switchTo")}
-      searchPlaceholder={t("search")}
-      noResultsText={t("noResults")}
-      placement="auto"
     />
   );
 }

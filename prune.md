@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 13 — TG10 DONE, TG5 DONE, TG3 DONE)
+Last updated: April 12, 2026 (session 14 — TG9 partial, TG10 DONE, TG5 DONE, TG3 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -12,7 +12,7 @@ Verification snapshot (April 12, 2026):
 - Verdict D (Dual cleanup strategy): **done** → scheduler job implemented; upload route stages under tmp/*; seller create/update + store update + review create/update + profile avatar update all finalize tmp media to canonical media paths (session 9); shared finalize helpers extracted to `src/lib/media/finalize.ts`
 - Verdict E (Semantic wrapper variants + accessibility): pending
 - Verdict F (i18n and INR currency propagation): **done** → INR/en-IN config propagation verified; shared price rendering paths now use appkit currency formatting (session 11)
-- Verdict G (Appkit ownership over duplicate/shared features): pending
+- Verdict G (Appkit ownership over duplicate/shared features): partial → `LocaleSwitcher` reduced to a thin letitrip routing/i18n adapter over appkit’s shared implementation (session 14)
 - Verdict H (Multi-image support for events and blog — cover, event, winner, additional): **done** → appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now support typed multi-image event/blog media with abort cleanup and staged-media finalization (session 13)
 - Path reference audit: 47 referenced paths, 47 exist (1 previously-planned path `functions/src/jobs/mediaTmpCleanup.ts` now created)
 
@@ -87,9 +87,10 @@ Status: pending
 ### Verdict G - Appkit Ownership Over Duplicate/Shared Features
 When a feature/component basename exists in both `letitrip.in/index.md` and `appkit/index.md`, appkit should own the implementation. letitrip should not retain a parallel local version merely because it is currently different.
 
-Status: pending
+Status: partial
 - Index overlap shows many high-confidence shared feature candidates already exist in both repos (`Accordion`, homepage sections, search/cart/admin views, `LocaleSwitcher`, `api-response`, repository/utility names).
-- Still needed: merge divergent local implementations into appkit-configurable ownership and remove duplicate letitrip implementations.
+- **DONE (session 14 batch 1)**: `LocaleSwitcher` no longer owns a parallel local implementation; letitrip now delegates rendering to appkit and keeps only routing/i18n adapter logic.
+- Still needed: merge the remaining divergent local implementations into appkit-configurable ownership and remove duplicate letitrip implementations.
 
 ### Verdict H - Multi-Image Support for Events and Blog
 Events and blog posts currently hold a single image string (`coverImageUrl` / `coverImage`). Both entities need typed `MediaField` arrays with role-specific slots:
@@ -191,7 +192,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | **DONE** | none — `src/utils/id-generators.ts` deleted; all generators delegated to `@mohasinac/appkit/utils`; media filename generators, offerId, QR/barcode, idExists, generateUniqueId added to appkit | all ID generation ownership points to appkit generators |
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
 | Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | **DONE** | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented |
-| Task Group 9 - Appkit ownership over duplicated/shared features | P1 | letitrip.in + appkit | pending | merge shared-basenamed files into appkit-owned implementations and reduce letitrip to direct imports or minimal config adapters | no duplicate feature ownership remains in letitrip |
+| Task Group 9 - Appkit ownership over duplicated/shared features | P1 | letitrip.in + appkit | partial | continue overlap collapse after `LocaleSwitcher`; next smallest candidates are `AdminSectionsView` and other thin adapters in the same ownership sweep | no duplicate feature ownership remains in letitrip |
 | Task Group 10 - Multi-image support for events and blog | P1 | appkit + letitrip.in | **DONE** | none — appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now enforce typed event/blog media slots end-to-end | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot |
 
 Legend:
@@ -755,9 +756,10 @@ Use the overlap between `letitrip.in/index.md` and `appkit/index.md` to eliminat
 - any remaining letitrip file is justified as consumer-only wiring, not reusable implementation drift
 
 ### Verification
-Status: pending
-- Overlap is confirmed from the two index inventories.
-- Appkit migration sheet is not yet documented.
+Status: partial
+- **DONE (session 14 batch 1)**: overlap re-check confirmed `LocaleSwitcher` existed in both repos; letitrip now uses appkit’s shared `LocaleSwitcher` and retains only consumer-specific locale routing wiring.
+- Overlap is still confirmed from the two index inventories for the remaining TG9 candidates.
+- Appkit migration sheet is not yet documented for the rest of the TG9 surface.
 
 ---
 
