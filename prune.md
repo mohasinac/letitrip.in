@@ -2,13 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `4d0e2e8b`
+Last updated: April 13, 2026 — committed `1a2b1616` (batch D); batch E pending commit
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
-- Latest commits: appkit `65caf03`, letitrip `4d0e2e8b`.
-- This session completed: TG11 wave-1 hook batches A/B/C (`useFaqList`, store detail hook shims, cart `useOrder` wrapper) with direct appkit imports + local shim deletions.
+- Latest commits: appkit `65caf03`, letitrip `1a2b1616`.
+- This session completed: TG11 wave-1 hook batches A/B/C/D.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
@@ -162,8 +162,15 @@ Wave-1 progress log (hooks overlap):
 	- deletions: `src/features/wishlist/hooks/useWishlist.ts`, `src/features/wishlist/hooks/index.ts`, `src/features/products/hooks/useProductDetail.ts`
 	- barrel updates: removed `export * from "./hooks"` from `src/features/wishlist/index.ts`; removed `useProductDetail` export from `src/features/products/hooks/index.ts`
 	- status: completed
+- 2026-04-13 batch E (copilot orphaned hook + types):
+	- basenames: `useCopilotChat` (local, no consumers — letitrip AdminCopilotView delegates to appkit directly)
+	- classification: move fully to appkit (orphaned)
+	- rewiring: none needed — letitrip `AdminCopilotView` already wraps `AppkitAdminCopilotView` with `endpoint` + i18n labels; appkit's own `useCopilotChat` is used internally
+	- deletions: `src/features/copilot/hooks/useCopilotChat.ts`, `src/features/copilot/types/index.ts` (dir removed), `src/features/copilot/types/` (empty dir)
+	- barrel updates: removed `useCopilotChat` export from `src/features/copilot/hooks/index.ts`; removed `export * from "./types"` from `src/features/copilot/index.ts`
+	- status: completed
 
-Overlap decision ledger (initial rows):
+Overlap decision ledger (complete — all 28 basenames classified):
 - `useFaqList` -> move fully to appkit (completed)
 - `useStoreBySlug` -> move fully to appkit (completed)
 - `useStoreProducts` -> move fully to appkit (completed)
@@ -172,10 +179,28 @@ Overlap decision ledger (initial rows):
 - `useOrder` (cart) -> move fully to appkit (completed)
 - `useWishlist` (local hook) -> move fully to appkit (completed — no consumers, deleted)
 - `useProductDetail` -> move fully to appkit (completed — exact duplicate removed)
-- `useAuctions` -> keep letitrip as config-only adapter (blocked by endpoint divergence: `/api/products` vs `/api/auctions`)
-- `useAuctionDetail` -> keep letitrip as consumer-only exception until API/detail-hook parity is available
-- `useCheckout` -> keep letitrip as consumer-only exception (local API orchestration hook differs from appkit checkout state hook)
+- `useCopilotChat` -> move fully to appkit (completed — local hook orphaned, letitrip already delegates to appkit AdminCopilotView)
+- `useAuctions` -> keep letitrip as consumer adapter (endpoint divergence: hits letitrip `/api/products`, appkit hits `/api/auctions`; stays until API is unified)
+- `useAuctionDetail` -> keep letitrip as consumer-only exception (uses `FirebaseSieveResult<PublicBid>`, hits `/api/products/{id}` + `/api/bids`; stays until API/detail-hook parity available)
+- `useCheckout` -> keep letitrip as consumer-only exception (local API orchestration differs from appkit checkout state hook)
 - `useAuth` -> keep letitrip as consumer-only exception (local auth/session bridge and route wiring differ from appkit `useCurrentUser` scope)
+- `useUnsavedChanges` -> keep letitrip as consumer adapter (wires appkit hook to letitrip's `eventBus` for in-app confirmation modal)
+- `useUrlTable` -> keep letitrip as consumer adapter (locale-aware next-intl router injection on top of appkit's `useUrlTable`)
+- `useEvents` -> keep letitrip as consumer adapter (admin endpoint: hits `/api/admin/events`; appkit hits `/api/events`)
+- `useEvent` -> keep letitrip as consumer adapter (admin endpoint: hits `/api/admin/events/${id}`; appkit hits `/api/events/${slug}`)
+- `useProducts` -> keep letitrip as consumer adapter (URL param string-parsing layer over appkit's `useFeatureProducts`)
+- `usePreOrders` -> keep letitrip as consumer adapter (hits letitrip `/api/products?type=pre-order`; appkit hits `/api/pre-orders`)
+- `useSellerStore` -> keep letitrip as consumer adapter (uses `createStoreAction` / `updateStoreAction` server actions and `useAuth` guard — consumer-specific wiring)
+- `useSellerPayouts` -> keep letitrip as consumer adapter (uses `requestPayoutAction` server action and auth guard — consumer-specific)
+- `useSellerAnalytics` -> keep letitrip as consumer adapter (uses `useAuth` + `hasAnyRole` — consumer-specific auth gate)
+- `useReviews` -> keep letitrip as consumer adapter (uses local `ReviewDocument` from db schema; different API shape from appkit's review hooks)
+- `useCopilotFeedback` -> letitrip-only (no appkit counterpart; calls letitrip-specific `API_ENDPOINTS.COPILOT.FEEDBACK`)
+- `useStores` -> keep letitrip as consumer adapter (URL table state + local store-listing types not yet in appkit)
+- `useCart` -> keep letitrip (cart state hook uses letitrip cart API wiring; distinct from appkit's `useCartQuery`)
+- `useWishlistToggle` -> letitrip-only (toggle convenience wrapper specific to letitrip's wishlist implementation)
+- `useAdmin` -> keep letitrip (admin state hook with letitrip-specific role/permission model)
+
+Task 1 exit condition: COMPLETE — every overlapping hook basename classified in ledger. No reusable duplicate remains untracked.
 
 Exit condition:
 - Every overlapping basename in generated indexes is classified, and no reusable duplicate remains untracked.
