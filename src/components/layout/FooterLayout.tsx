@@ -100,7 +100,12 @@ export function FooterLayout({
           <div
             className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-4`}
           >
-            <div className="flex flex-wrap gap-4 justify-center items-center divide-x divide-zinc-200 dark:divide-white/5">
+            <Row
+              wrap
+              gap="md"
+              justify="center"
+              className="divide-x divide-zinc-200 dark:divide-white/5"
+            >
               {visibleTrustItems.map((item) => (
                 <Row
                   key={item.label}
@@ -119,7 +124,7 @@ export function FooterLayout({
                   </Text>
                 </Row>
               ))}
-            </div>
+            </Row>
           </div>
         </div>
       )}

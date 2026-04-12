@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Span, Text, Row } from "@mohasinac/appkit/ui";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 interface BuyMoreSaveMoreProps {
@@ -27,7 +27,7 @@ export function BuyMoreSaveMore({
       <Heading level={3} className="text-sm font-semibold mb-3">
         {t("bulkDiscountTitle")}
       </Heading>
-      <div className="flex flex-wrap gap-2">
+      <Row wrap gap="sm">
         {product.bulkDiscounts.map((tier) => {
           const isActive = currentQty >= tier.quantity;
           return (
@@ -53,7 +53,7 @@ export function BuyMoreSaveMore({
             </div>
           );
         })}
-      </div>
+      </Row>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Section, Text } from "@mohasinac/appkit/ui";
+import { Heading, Section, Text, Row } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -216,9 +216,7 @@ export async function HowPayoutsWorkView() {
         </Section>
 
         {/* Footer links */}
-        <div
-          className={`pt-8 border-t ${themed.border} flex flex-wrap gap-6 text-sm`}
-        >
+        <Row wrap gap="lg" className={`pt-8 border-t ${themed.border} text-sm`}>
           <TextLink
             href={ROUTES.PUBLIC.SELLER_GUIDE}
             className="text-primary hover:underline"
@@ -243,7 +241,7 @@ export async function HowPayoutsWorkView() {
           >
             {t("contactLink")}
           </TextLink>
-        </div>
+        </Row>
       </div>
     </div>
   );

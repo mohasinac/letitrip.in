@@ -15,7 +15,9 @@ import {
   Span,
   Button,
   Badge,
+  RichText,
 } from "@mohasinac/appkit/ui";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import { useCountdown } from "@mohasinac/appkit/react";
 import {
   Breadcrumbs,
@@ -218,7 +220,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       >
                         {product.title}
                       </Heading>
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <Row wrap gap="sm" className="mt-2">
                         {product.featured && (
                           <Badge variant="warning">{t("featured")}</Badge>
                         )}
@@ -228,11 +230,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                         {product.autoExtendable && (
                           <Badge variant="info">⏱ {t("autoExtend")}</Badge>
                         )}
-                      </div>
+                      </Row>
                     </div>
 
                     {/* Seller + Category */}
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                    <Row wrap gap="sm" className="gap-x-3 gap-y-1 text-sm">
                       <TextLink
                         href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
                         className="text-primary hover:underline font-medium"
@@ -254,7 +256,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           </Text>
                         </>
                       )}
-                    </div>
+                    </Row>
 
                     {/* Countdown */}
                     <div
@@ -367,7 +369,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                     />
 
                     {/* Shipping / Insurance / Auto-extend badges */}
-                    <div className="flex flex-wrap gap-2">
+                    <Row wrap gap="sm">
                       <Span
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${themed.bgSecondary}`}
                       >
@@ -397,7 +399,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           })}
                         </Span>
                       )}
-                    </div>
+                    </Row>
 
                     <Divider />
 
@@ -406,13 +408,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                         <Heading level={3} className="font-semibold mb-2">
                           {t("description")}
                         </Heading>
-                        <Text
-                          size="sm"
-                          variant="secondary"
-                          className="leading-relaxed whitespace-pre-line"
-                        >
-                          {product.description}
-                        </Text>
+                        <RichText
+                          html={proseMirrorToHtml(product.description)}
+                          copyableCode
+                          className="text-sm"
+                        />
                       </div>
                     )}
 

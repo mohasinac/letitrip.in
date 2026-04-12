@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlgoliaDashboardView as AppkitAlgoliaDashboardView } from "@mohasinac/appkit/features/admin";
 import { Card, useToast } from "@/components";
-import { Text, Span, Badge, Button } from "@mohasinac/appkit/ui";
+import { Text, Span, Badge, Button, Row } from "@mohasinac/appkit/ui";
 import { useAlgoliaSync } from "@/features/admin/hooks";
 
 export function AlgoliaDashboardView() {
@@ -109,7 +109,7 @@ export function AlgoliaDashboardView() {
         <Card>
           <div className="p-4 sm:p-6">
             <Text className="text-sm font-medium mb-4">{t("syncActions")}</Text>
-            <div className="flex flex-wrap gap-3">
+            <Row wrap gap="md">
               {["products", "pages", "categories", "stores"].map((index) => (
                 <Button
                   key={index}
@@ -126,7 +126,7 @@ export function AlgoliaDashboardView() {
                     : `Sync ${index}`}
                 </Button>
               ))}
-            </div>
+            </Row>
           </div>
         </Card>
       )}

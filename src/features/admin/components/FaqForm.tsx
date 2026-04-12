@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Label, Li, Text, Ul, Button } from "@mohasinac/appkit/ui";
+import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { Checkbox, FormField, FormGroup } from "@/components";
 import { TagInput } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
@@ -72,9 +72,9 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
           <Text size="xs" variant="secondary" className="mb-2">
             {t("insertVariableHelp")}
           </Text>
-          <Ul className="flex flex-wrap gap-2 list-none p-0 m-0">
+          <Row wrap gap="sm" as="ul" className="list-none p-0 m-0">
             {VARIABLE_PLACEHOLDERS.map((v) => (
-              <Li key={v.key}>
+              <li key={v.key}>
                 <Button
                   onClick={() => insertVariable(v.key)}
                   className={`px-2 py-1 text-xs ${themed.bgPrimary} border ${themed.border} rounded ${themed.hover}`}
@@ -86,9 +86,9 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
                 >
                   <code>{v.key}</code>
                 </Button>
-              </Li>
+              </li>
             ))}
-          </Ul>
+          </Row>
         </div>
 
         <FormField

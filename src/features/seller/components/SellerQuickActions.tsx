@@ -3,7 +3,7 @@
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components";
-import { Heading, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@/constants";
 
 export function SellerQuickActions() {
@@ -48,7 +48,7 @@ export function SellerQuickActions() {
       <Heading level={4} variant="primary" className="mb-4">
         {t("quickActions")}
       </Heading>
-      <div className="flex flex-wrap gap-3">
+      <Row wrap gap="md">
         {ACTIONS.map(({ label, href, icon, variant }) => (
           <Button
             key={href}
@@ -60,7 +60,7 @@ export function SellerQuickActions() {
             {label}
           </Button>
         ))}
-      </div>
+      </Row>
     </Card>
   );
 }

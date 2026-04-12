@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 
-import { Span, Button } from "@mohasinac/appkit/ui";
+import { Span, Button, Row } from "@mohasinac/appkit/ui";
 
 export interface ActiveFilter {
   /** Unique key for this filter (e.g. "status", "category") */
@@ -55,8 +55,11 @@ export function ActiveFilterChips({
   const tActions = useTranslations("actions");
 
   return (
-    <div
-      className={`flex flex-wrap items-center gap-2 ${className}`}
+    <Row
+      wrap
+      gap="sm"
+      align="center"
+      className={className}
       role="list"
       aria-label="Active filters"
     >
@@ -104,6 +107,6 @@ export function ActiveFilterChips({
       >
         {tActions("clearAll")}
       </Button>
-    </div>
+    </Row>
   );
 }

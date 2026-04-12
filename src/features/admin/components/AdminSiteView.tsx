@@ -1,4 +1,4 @@
-import { Button } from "@mohasinac/appkit/ui";
+import { Button, Row } from "@mohasinac/appkit/ui";
 /**
  * AdminSiteView — Thin Adapter
  *
@@ -191,7 +191,7 @@ export function AdminSiteView() {
                   <div className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
                     {t("algoliaSubtitle")}
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <Row wrap gap="md">
                     <Button
                       variant="outline"
                       onClick={() =>
@@ -220,7 +220,7 @@ export function AdminSiteView() {
                         ? "⏳ Syncing pages…"
                         : "🔄 Sync Pages → Algolia"}
                     </Button>
-                  </div>
+                  </Row>
                 </div>
               </Card>
             </>

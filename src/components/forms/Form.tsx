@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Row } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -136,10 +137,12 @@ export function FormActions({
   };
 
   return (
-    <div
-      className={`flex flex-wrap items-center ${spacing.inline} pt-4 border-t ${themed.borderLight} ${alignClasses[align]} ${className}`}
+    <Row
+      wrap
+      gap="md"
+      className={`${spacing.inline} pt-4 border-t ${themed.borderLight} ${alignClasses[align]} ${className}`}
     >
       {children}
-    </div>
+    </Row>
   );
 }

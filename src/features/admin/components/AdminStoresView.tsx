@@ -16,6 +16,7 @@ import {
   Badge,
   Button,
   StatusBadge,
+  Row,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
@@ -190,7 +191,7 @@ function AdminStoresContent() {
       key: "actions",
       header: "",
       render: (row) => (
-        <div className="flex flex-wrap gap-1 justify-end">
+        <Row wrap gap="px" justify="end">
           {row.storeStatus !== "approved" && (
             <Button
               variant="outline"
@@ -209,7 +210,7 @@ function AdminStoresContent() {
               {t("reject")}
             </Button>
           )}
-        </div>
+        </Row>
       ),
     },
   ];

@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Row } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -183,8 +183,10 @@ export async function SellerGuideView() {
           note={`⌛ ${t("payoutNote")}`}
         />
 
-        <div
-          className={`mt-4 pt-8 border-t ${themed.border} flex flex-wrap gap-6 text-sm`}
+        <Row
+          wrap
+          gap="lg"
+          className={`mt-4 pt-8 border-t ${themed.border} text-sm`}
         >
           <TextLink
             href={ROUTES.PUBLIC.HELP}
@@ -210,7 +212,7 @@ export async function SellerGuideView() {
           >
             Shipping Policy
           </TextLink>
-        </div>
+        </Row>
       </div>
     </div>
   );

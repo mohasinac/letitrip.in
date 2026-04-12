@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, Gavel, ShoppingBag, Clock } from "lucide-react";
-import { Caption, Text, Button, Span } from "@mohasinac/appkit/ui";
+import { Caption, Text, Button, Span, Row } from "@mohasinac/appkit/ui";
 import { useCountdown } from "@mohasinac/appkit/react";
 import type { CountdownRemaining } from "@mohasinac/appkit/react";
 import { BaseListingCard, MediaImage, TextLink } from "@/components";
@@ -181,9 +181,7 @@ export function AuctionCard({
 
         {/* Video play indicator — only on first image */}
         {hasVideo && imgIdx === 0 && (
-          <div
-            className={`${position.fill} ${flex.center} pointer-events-none`}
-          >
+          <div className="absolute top-2 right-2">
             <Span
               className={`bg-black/50 text-white rounded-full w-8 h-8 ${flex.center} text-xs leading-none`}
             >
@@ -305,7 +303,7 @@ export function AuctionCard({
         </div>
 
         {/* Countdown + bid count row */}
-        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+        <Row wrap justify="between" gap="sm" className="gap-x-2 gap-y-1">
           {/* Countdown badge */}
           <div
             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-mono font-semibold ${
@@ -324,10 +322,10 @@ export function AuctionCard({
           <Caption className={`font-mono ${countdownColor}`}>
             {t("totalBids", { count: bidCount })}
           </Caption>
-        </div>
+        </Row>
 
         {/* Action buttons */}
-        <div className="flex flex-wrap gap-1.5 mt-auto">
+        <Row wrap gap="xs" className="mt-auto">
           {isEnded ? (
             <Button
               variant="ghost"
@@ -376,7 +374,7 @@ export function AuctionCard({
               )}
             </>
           )}
-        </div>
+        </Row>
       </BaseListingCard.Info>
     </BaseListingCard>
   );

@@ -256,7 +256,7 @@ export function DemoSeedView() {
           </div>
 
           {/* Summary chips */}
-          <div className="flex flex-wrap gap-3 mt-6">
+          <Row wrap gap="md" className="mt-6">
             {COLLECTION_GROUPS.map((g) => {
               const groupItemTotal = g.collections.reduce(
                 (sum, col) => sum + SEED_ITEM_COUNTS[col],
@@ -286,7 +286,7 @@ export function DemoSeedView() {
               )}{" "}
               docs · {totalCount} collections
             </div>
-          </div>
+          </Row>
         </div>
       </div>
 
@@ -971,7 +971,7 @@ function LoadDeleteStatus({
         <div className="min-w-0">
           <Span className="font-medium block">{message}</Span>
           {details && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5">
+            <Row wrap gap="sm" className="mt-1.5 gap-x-4 gap-y-1">
               {details.created != null && details.created > 0 && (
                 <Span className="text-xs">
                   <Span className="font-bold">{details.created}</Span> created
@@ -999,15 +999,15 @@ function LoadDeleteStatus({
               )}
               {Array.isArray(details.collections) &&
                 details.collections.length > 0 && (
-                  <div className="w-full flex flex-wrap gap-1 mt-1">
+                  <Row wrap gap="px" className="w-full mt-1">
                     {(details.collections as string[]).map((col: string) => (
                       <Badge key={col} variant="info" className="text-[10px]">
                         {col}
                       </Badge>
                     ))}
-                  </div>
+                  </Row>
                 )}
-            </div>
+            </Row>
           )}
         </div>
       </div>

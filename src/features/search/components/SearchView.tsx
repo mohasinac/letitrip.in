@@ -5,6 +5,7 @@ import {
   ViewToggle,
   BulkActionBar,
   Pagination,
+  Row,
 } from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
@@ -13,7 +14,12 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
 import { SearchResultsSection as AppkitSearchResultsSection } from "@mohasinac/appkit/features/search";
 import { useSearch } from "@mohasinac/appkit/features/search";
-import { PRODUCT_SORT_VALUES, ProductGrid, ProductSortBar, Search } from "@/components";
+import {
+  PRODUCT_SORT_VALUES,
+  ProductGrid,
+  ProductSortBar,
+  Search,
+} from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
@@ -238,7 +244,7 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
         />
       )}
       renderFilters={() => (
-        <div className="flex flex-wrap items-center gap-3">
+        <Row wrap gap="3">
           <FilterDrawer
             activeCount={filterActiveCount}
             onApply={onFilterApply}
@@ -285,7 +291,7 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
             />
           </FilterDrawer>
           <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
-        </div>
+        </Row>
       )}
       renderActiveFilters={() => (
         <ActiveFilterChips
@@ -330,7 +336,12 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
               onSortChange={(sort) => table.set("sort", sort)}
               onPageChange={table.setPage}
               renderItem={() => null}
-              renderSortBar={({ total: totalCount, showing, urlSort, onSortChange }) => (
+              renderSortBar={({
+                total: totalCount,
+                showing,
+                urlSort,
+                onSortChange,
+              }) => (
                 <ProductSortBar
                   total={totalCount}
                   showing={showing}
@@ -339,12 +350,18 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                 />
               )}
               renderLoading={({ skeletonCount }) => (
-                <ProductGrid products={[]} loading skeletonCount={skeletonCount} />
+                <ProductGrid
+                  products={[]}
+                  loading
+                  skeletonCount={skeletonCount}
+                />
               )}
               renderEmpty={({ query }) => (
                 <EmptyState
                   title={t("noResultsTitle")}
-                  description={query ? t("noResultsSubtitle", { q: query }) : undefined}
+                  description={
+                    query ? t("noResultsSubtitle", { q: query }) : undefined
+                  }
                 />
               )}
               renderProducts={(products) => (

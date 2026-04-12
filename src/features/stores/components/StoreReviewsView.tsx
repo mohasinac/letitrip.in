@@ -127,13 +127,13 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <Row wrap gap="sm" className="mb-1">
                       <Text weight="semibold" size="sm">
                         {review.userName ?? t("reviews.anonymous")}
                       </Text>
                       <StarRow rating={review.rating} />
                       <Caption>{formatDate(review.createdAt)}</Caption>
-                    </div>
+                    </Row>
                     {review.productTitle && (
                       <Caption className="mb-1 italic">
                         {review.productTitle}

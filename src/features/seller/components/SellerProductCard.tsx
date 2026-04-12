@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Span, Text, Button } from "@mohasinac/appkit/ui";
+import { Span, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { BaseListingCard, MediaImage } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -98,7 +98,7 @@ export function SellerProductCard({
           available={product.availableQuantity}
           total={product.stockQuantity}
         />
-        <div className="flex flex-wrap gap-2 pt-1 mt-auto">
+        <Row wrap gap="sm" className="pt-1 mt-auto">
           <Button
             variant="outline"
             size="sm"
@@ -115,7 +115,7 @@ export function SellerProductCard({
           >
             {tActions("delete")}
           </Button>
-        </div>
+        </Row>
       </BaseListingCard.Info>
     </BaseListingCard>
   );

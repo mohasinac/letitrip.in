@@ -23,6 +23,7 @@ import {
   Divider,
   Span,
   Badge,
+  Row,
 } from "@mohasinac/appkit/ui";
 import { TextLink, Accordion, AccordionItem } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
@@ -107,7 +108,7 @@ export function ProductInfo({
         </Heading>
 
         {/* Badge row */}
-        <div className="flex flex-wrap items-center gap-2 mt-2">
+        <Row wrap gap="sm" className="mt-2">
           {featured && <Badge variant="warning">{t("featured")}</Badge>}
           {isAuction && <Badge variant="info">{t("auction")}</Badge>}
           {isPromoted && <Badge variant="primary">{t("promoted")}</Badge>}
@@ -119,7 +120,7 @@ export function ProductInfo({
           {!isOutOfStock && availableQuantity > 0 && (
             <Badge variant="success">{t("inStock")}</Badge>
           )}
-        </div>
+        </Row>
       </div>
 
       {/* ——— Store + Category row ——— */}
@@ -342,7 +343,7 @@ export function ProductInfo({
 
       {/* ——— Tags ——— */}
       {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <Row wrap gap="sm">
           {tags.map((tag) => (
             <TextLink
               key={tag}
@@ -352,7 +353,7 @@ export function ProductInfo({
               #{tag}
             </TextLink>
           ))}
-        </div>
+        </Row>
       )}
     </div>
   );

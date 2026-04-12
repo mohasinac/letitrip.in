@@ -20,7 +20,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Label, Text, Button } from "@mohasinac/appkit/ui";
+import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { SideDrawer, TextLink, Input } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useCheckoutVerifyOtp } from "../hooks/useCheckoutVerifyOtp";
@@ -180,7 +180,7 @@ export function CheckoutVerifyModal({
             )}
 
             {/* Mode toggle links */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <Row wrap gap="sm" className="gap-x-4 gap-y-1">
               {mode === "sms" && (
                 <Button
                   variant="ghost"
@@ -199,7 +199,7 @@ export function CheckoutVerifyModal({
                   {t("verifyUseSmsInstead")}
                 </Button>
               )}
-            </div>
+            </Row>
 
             <div className={`${flex.start} gap-2`}>
               <Button variant="outline" onClick={onClose} disabled={isSending}>
