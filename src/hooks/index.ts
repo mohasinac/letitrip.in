@@ -80,8 +80,6 @@ export {
 // useMediaQuery, useBreakpoint
 
 export { useRazorpay } from "./useRazorpay";
-export { useRealtimeBids } from "./useRealtimeBids";
-export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";
 export { useRealtimeEvent } from "./useRealtimeEvent";
 export type {
   UseRealtimeEventReturn,
@@ -151,8 +149,6 @@ export { useFaqVote } from "./useFaqVote";
 export { useNewsletter } from "./useNewsletter";
 export { useAuctionDetail } from "./useAuctionDetail";
 export type { PublicBid } from "./useAuctionDetail";
-export { usePlaceBid } from "./usePlaceBid";
-export type { BidResult } from "./usePlaceBid";
 export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";

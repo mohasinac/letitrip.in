@@ -12,7 +12,9 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
+    "pre-commit": "tsc --noEmit",
     "seed:faqs": "tsx scripts/seed-faqs.ts",
+    "index:generate": "node scripts/get-index.js",
     "check:violations": "node scripts/check-violations.js",
     "fix:violations": "node scripts/fix-violations.js",
     "fix:violations:apply": "node scripts/fix-violations.js --apply"

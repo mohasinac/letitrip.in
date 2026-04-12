@@ -5,6 +5,7 @@
  */
 
 import { Resend } from "resend";
+import { formatCurrency } from "@mohasinac/appkit/utils";
 import { serverLogger } from "@/lib/server-logger";
 import { formatDateTime, nowMs, currentYear } from "@/utils";
 import { siteSettingsRepository } from "@/repositories";
@@ -518,10 +519,7 @@ export async function sendOrderConfirmationEmail(
   } = params;
 
   const orderUrl = `${SITE_URL}/user/orders/view/${orderId}`;
-  const formattedTotal = new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-  }).format(totalPrice);
+  const formattedTotal = formatCurrency(totalPrice, currency);
 
   // Build items table rows — used when multiple products are in one order
   const itemsHtml =
@@ -542,7 +540,7 @@ export async function sendOrderConfirmationEmail(
               <tr style="background-color: ${i % 2 === 0 ? "#ffffff" : "#f8f9fa"}; border-top: 1px solid #e9ecef;">
                 <td style="font-size: 14px; color: #333; padding: 8px 12px;">${item.productTitle}</td>
                 <td style="font-size: 14px; color: #333; text-align: center; padding: 8px 12px;">${item.quantity}</td>
-                <td style="font-size: 14px; color: #333; text-align: right; padding: 8px 12px;">${new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(item.totalPrice)}</td>
+                <td style="font-size: 14px; color: #333; text-align: right; padding: 8px 12px;">${formatCurrency(item.totalPrice, currency)}</td>
               </tr>`,
               )
               .join("")}
@@ -563,7 +561,7 @@ export async function sendOrderConfirmationEmail(
       ? items
           .map(
             (item) =>
-              `  • ${item.productTitle} × ${item.quantity} — ${new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(item.totalPrice)}`,
+              `  • ${item.productTitle} × ${item.quantity} — ${formatCurrency(item.totalPrice, currency)}`,
           )
           .join("\n")
       : `  Product: ${productTitle}\n  Quantity: ${quantity}`;

@@ -5,10 +5,11 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { usePlaceBid, useMessage } from "@/hooks";
+import { useMessage } from "@/hooks";
+import { usePlaceBid } from "@mohasinac/appkit/features/auctions";
+import type { BidResult } from "@mohasinac/appkit/features/auctions";
 import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { FormGroup, Input, TextLink } from "@/components";
-import type { BidResult } from "@/hooks";
 
 const { themed } = THEME_CONSTANTS;
 

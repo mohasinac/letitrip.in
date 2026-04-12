@@ -2,13 +2,26 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 (session committed: appkit 65caf03, letitrip afd3a4ad)
+Last updated: April 13, 2026 (uncommitted changes from current session)
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
-- `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` on the committed state.
-- Latest commits in this session: appkit `65caf03`, letitrip `afd3a4ad`.
-- Pending task groups below remain the active migration scope.
+- `npx tsc --noEmit` passes in `letitrip.in` after current session changes.
+- Latest committed state: appkit `65caf03`, letitrip `afd3a4ad`.
+- Current session WIP (uncommitted): TG3 task-1/task-2 done, TG8 closed.
+- TG3: `src/hooks/usePlaceBid.ts` and `src/hooks/useRealtimeBids.ts` deleted. Consumers updated to import from `@mohasinac/appkit/features/auctions`.
+- TG8: All letitrip/src currency formatting goes through `formatCurrency` from appkit. No remaining `Intl.NumberFormat` calls in `src/`. Policy: all money output uses appkit's `formatCurrency` with currency/locale from letitrip config/data.
+
+Index comparison note (current generated indexes):
+- `letitrip.in/index.md` and `appkit/index.md` are now generated via `scripts/get-index.js` and include internal + exported symbol inventories.
+- Source-only overlap snapshot from generated indexes:
+	- letitrip src files indexed: 1050
+	- appkit src files indexed: 781
+	- basename overlap (`src/**`): 213
+	- exact relative path overlap (`src/**`): 184
+	- admin `*View.tsx` overlap: 22
+	- hook basename overlap (`use*.ts*`): 28
+- Prune history check: `prune.md` was not deleted in letitrip git history (modifications only).
 
 ---
 
@@ -16,13 +29,13 @@ Session note:
 
 ### Verdict A - Listing Logic Consolidation
 
-Status: partial
+Status: partial (progressed)
 
 Open findings:
-- `src/hooks/usePlaceBid.ts` still exists in letitrip.
-- `src/hooks/useRealtimeBids.ts` still exists in letitrip.
-- `src/features/products/hooks/useAuctions.ts` still targets `/api/products` (not appkit auction endpoint flow).
-- `src/hooks/useAuctionDetail.ts` remains a local divergence point.
+- ~~`src/hooks/usePlaceBid.ts` still exists in letitrip.~~ DELETED — consumers import from `@mohasinac/appkit/features/auctions`.
+- ~~`src/hooks/useRealtimeBids.ts` still exists in letitrip.~~ DELETED — consumers import from `@mohasinac/appkit/features/auctions`.
+- `src/features/products/hooks/useAuctions.ts` still targets `/api/products` (not appkit's `/api/auctions`). Consumer adapter — stays until API endpoints are unified.
+- `src/hooks/useAuctionDetail.ts` uses `FirebaseSieveResult<PublicBid>` and `/api/products/{id}` + `/api/bids` — app-specific adapter. Stays until API endpoints are unified.
 
 Required outcome:
 - Auction/pre-order/listing behavior owned in appkit.
@@ -43,11 +56,12 @@ Required outcome:
 
 ### Verdict F - i18n and INR Currency Consistency
 
-Status: reopened (partial)
+Status: CLOSED
 
-Open findings:
-- `src/lib/email.ts` still contains direct `Intl.NumberFormat("en-IN", ...)` usage.
-- Currency rendering policy is not fully centralized for all money outputs.
+Verified state:
+- No `Intl.NumberFormat` calls remain in `src/`. All currency formatting routes through `formatCurrency` from `@mohasinac/appkit/utils`, either directly (email.ts) or via the letitrip utils barrel (`@/utils`).
+- Policy: all money output uses appkit's `formatCurrency(amount, currency, locale)`. Currency code and locale are passed from letitrip config/data, not hard-coded in appkit.
+- The `@/utils` barrel re-exports `formatCurrency` from appkit — this is acceptable as `@/utils/index.ts` also contains app-specific helpers and is not a pure re-export shim.
 
 Required outcome:
 - Shared formatter ownership documented and consistently applied (or intentional exceptions documented).
@@ -57,15 +71,17 @@ Required outcome:
 
 ## Pending Task Groups
 
-## Task Group 3 - Listing Consolidation (Reopened)
+## Task Group 3 - Listing Consolidation (Partially Complete)
 
 Goal:
 - Move reusable auction/pre-order/listing behavior fully into appkit.
 
-Open tasks:
-1. Replace local `usePlaceBid` and `useRealtimeBids` ownership with appkit ownership or thin app-level adapters.
-2. Resolve endpoint divergence for `useAuctionDetail` and `useAuctions` (`/api/products` vs appkit auction-oriented flow).
-3. Remove remaining local listing-rule ownership in letitrip after import rewiring.
+Completed:
+1. ~~Replace local `usePlaceBid` and `useRealtimeBids` ownership with appkit ownership.~~ DONE — files deleted, consumers import from `@mohasinac/appkit/features/auctions`.
+
+Blocked (endpoint divergence — needs API unification before resolution):
+2. `src/features/products/hooks/useAuctions.ts`: hits `/api/products`; appkit hits `/api/auctions`. Stays as consumer adapter until `/api/auctions` route exists in letitrip.
+3. `src/hooks/useAuctionDetail.ts`: hits `/api/products/{id}` + `/api/bids?productId={id}`. Uses `FirebaseSieveResult<PublicBid>`. Stays as consumer adapter until API is unified and appkit has equivalent detail hook.
 
 Exit condition:
 - No reusable listing business logic owned in letitrip.
@@ -84,18 +100,54 @@ Open tasks:
 Exit condition:
 - Matching repeated class bundles are migrated to appkit semantic variants, except explicitly documented exceptions.
 
-## Task Group 8 - Currency Consistency Finalization (Reopened)
+## Task Group 8 - Currency Consistency Finalization — CLOSED
+
+Verified: No `Intl.NumberFormat` calls in `letitrip.in/src/`. All money output uses `formatCurrency` from `@mohasinac/appkit/utils`. Policy documented in Verdict F above.
+
+## Task Group 11 - Index-Driven Overlap Consolidation (New)
 
 Goal:
-- Ensure INR/currency formatting is consistently routed through shared ownership or clearly documented exceptions.
+- Use generated index overlap data to eliminate parallel ownership and enforce appkit-first implementation ownership.
+
+Evidence (from current generated indexes):
+1. 213 basename overlaps under `src/**` between letitrip and appkit.
+2. 184 exact relative path overlaps under `src/**`.
+3. 22 overlapping admin `*View.tsx` basenames.
+4. 28 overlapping hook basenames (`use*.ts*`).
+
+Priority overlap clusters:
+1. Admin views with identical basenames (e.g., `AdminAnalyticsView.tsx`, `AdminOrdersView.tsx`, `AdminProductsView.tsx`, `AdminReviewsView.tsx`, `AdminSectionsView.tsx`).
+2. Hooks where letitrip still owns local implementations while appkit already has feature hooks (e.g., `usePlaceBid.ts`, `useRealtimeBids.ts`, `useCheckout.ts`, `useAuth.ts`, `useAuctions.ts`).
+3. Shared feature/page views with exact-path overlap where letitrip should be reduced to thin adapters.
 
 Open tasks:
-1. Decide policy for transactional/generated outputs (including email formatting paths).
-2. Migrate or document `src/lib/email.ts` currency formatting ownership.
-3. Re-run symbol audit for currency formatting drift and update this backlog.
+1. Build an overlap decision ledger from generated index rows with per-basename classification:
+	- move fully to appkit
+	- keep letitrip as config-only adapter
+	- keep letitrip as consumer-only exception (must be explicitly justified)
+2. Execute first migration wave on hooks overlap (28 basenames), starting with listing/auction/cart/auth hooks.
+3. Execute second migration wave on admin `*View.tsx` overlap (22 basenames), preserving only consumer-only state wiring.
+4. Track each migrated basename with import rewiring and deletion status in this file after each batch.
 
 Exit condition:
-- Currency formatting is consistently implemented and documented for all relevant output surfaces.
+- Every overlapping basename in generated indexes is classified, and no reusable duplicate remains untracked.
+
+## Task Group 12 - Index and Prune Governance (New)
+
+Goal:
+- Keep migration decisions reproducible across sessions using generated indexes and prune history discipline.
+
+Open tasks:
+1. Require `npm run index:generate` in both repos before each overlap-audit batch.
+2. Record overlap metrics deltas in `prune.md` after each migration batch (counts down trend).
+3. Maintain a short "prune file integrity" note each session:
+	- exists
+	- modified/committed state
+	- deletion check result
+4. Keep `prune.md` as pending-only backlog while retaining evidence snapshots needed for handoff continuity.
+
+Exit condition:
+- Overlap audits and prune updates are index-driven, repeatable, and session-resumable without chat history.
 
 ---
 
@@ -104,4 +156,6 @@ Exit condition:
 1. Re-verify Task Group 3 local listing hooks and endpoint divergence.
 2. Continue Task Group 7 variant rollout from current in-progress phase.
 3. Close Task Group 8 with explicit email/output formatting policy.
-4. Update this file immediately after each meaningful change batch.
+4. Generate both indexes (`npm run index:generate`) and refresh overlap metrics.
+5. Start Task Group 11 wave-1 on hook overlaps and record decisions per basename.
+6. Update this file immediately after each meaningful change batch.

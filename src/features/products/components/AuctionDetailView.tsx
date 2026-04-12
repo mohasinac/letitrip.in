@@ -38,10 +38,10 @@ import { useTranslations } from "next-intl";
 import {
   useAuth,
   useBottomActions,
-  useRealtimeBids,
   useAuctionDetail,
   useWishlistToggle,
 } from "@/hooks";
+import { useRealtimeBids } from "@mohasinac/appkit/features/auctions";
 import { formatCurrency, formatDate, resolveDate } from "@/utils";
 import { Heart } from "lucide-react";
 
