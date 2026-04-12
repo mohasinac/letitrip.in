@@ -2,13 +2,18 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `9fbab61d`
+Last updated: April 13, 2026 — committed `4d0e2e8b`
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
-- Latest commits: appkit `65caf03`, letitrip `9fbab61d`.
-- This session completed: TG3 tasks 1+2 (usePlaceBid, useRealtimeBids migrated to appkit), TG8 closed (Verdict F).
+- Latest commits: appkit `65caf03`, letitrip `4d0e2e8b`.
+- This session completed: TG11 wave-1 hook batches A/B/C (`useFaqList`, store detail hook shims, cart `useOrder` wrapper) with direct appkit imports + local shim deletions.
+
+Prune file integrity note (session):
+- exists: yes (`prune.md` present)
+- modified or committed state: committed code batch `4d0e2e8b`; tracker now updated post-commit
+- deletion check result: no prune deletion in git history (modifications only)
 
 Index comparison note (current generated indexes):
 - `letitrip.in/index.md` and `appkit/index.md` are now generated via `scripts/get-index.js` and include internal + exported symbol inventories.
