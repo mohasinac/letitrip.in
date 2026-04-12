@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 9 — commit e510f240)
+Last updated: April 12, 2026 (session 11 — TG8 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -158,13 +158,13 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
 | Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
-| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | **DONE** | — | schema/API/forms/abort all enforced — session 10 |
+| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
 | Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | partial | document deprecation path for `src/utils/id-generators.ts` and call-site replacement sequence | all ID generation ownership points to appkit generators |
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
-| Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | pending | run full translation + currency rendering audit and trace provider/config handoff into appkit formatting | zero unintended dollar-sign displays and documented locale/currency ownership |
+| Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | **DONE** | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented |
 | Task Group 9 - Appkit ownership over duplicated/shared features | P1 | letitrip.in + appkit | pending | merge shared-basenamed files into appkit-owned implementations and reduce letitrip to direct imports or minimal config adapters | no duplicate feature ownership remains in letitrip |
 
 Legend:
@@ -332,30 +332,7 @@ Verification: partial
 - **DONE (session 6)**: row-by-row enforcement matrix documented for each listed Task Group 1 form/schema target plus upload API target.
 - **DONE (session 7 batch 1)**: product schema image cap enforced at 5 in validation layer.
 - **DONE (session 7 batch 1)**: upload API enforces product context guardrails (max 5 image indices, max 1 video index).
-- **DONE (session 10)**: `reviewBaseSchema.images` cap updated from max(10) → max(5) in `src/lib/validation/schemas.ts`.
-- **DONE (session 10)**: "max 10 images" comments updated to "max 5 images" in `src/db/schema/reviews.ts` and `src/db/schema/products.ts`.
-- **DONE (session 10)**: `GenerateReviewImageFilenameInput`, `GenerateReviewVideoFilenameInput`, `generateReviewImageFilename`, `generateReviewVideoFilename` added to `src/utils/id-generators.ts`; `review-image` and `review-video` added to `MediaFilenameContext` union + dispatcher.
-- **DONE (session 10)**: Upload API guardrails added for `review-image` (max 5), `review-video` (video-only check), `auction-image` (max 5), `preorder-image` (max 5), `store-logo`/`store-banner`/`user-avatar` (image-only, reject video) in `src/app/api/media/upload/route.ts`.
-- **DONE (session 10)**: `src/components/admin/media-upload.client.ts` re-export shim deleted; `src/components/admin/index.ts` now imports directly from `@mohasinac/appkit/features/media`; `BARREL_MAPPING.json` updated.
-- **DONE (session 10)**: `useCreateReview` in `src/hooks/useProductReviews.ts` now guards `images.length <= 5` before calling server action.
-- **DONE (session 10)**: `AvatarUpload.tsx` confirmed image-only via `accept="image/jpeg,image/png,image/webp,image/gif"` on file input; upload API now also enforces image-only for `user-avatar` context.
-- **DONE (session 10)**: `WriteReviewForm` in `ProductReviews.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` — review images capture path complete. Translation keys `reviewFormImages` + `reviewFormImagesHelper` added to `messages/en.json`.
-- **DONE (session 10)**: `ProductForm.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` for product gallery images field. Translation keys added. `SellerCreateProductView` and `SellerEditProductView` inherit via delegation.
-- **DONE (session 10)**: `SellerStoreView.tsx` — `storeLogoURL` and `storeBannerURL` text inputs replaced with `ImageUpload` (image-only, staged under `tmp/stores`). Store logo and banner uploads now properly restricted to images.
-- **DONE (session 10)**: `DeleteReviewAction` / `updateReviewAction` updated to accept `videoUrl?: string`; finalized via `finalizeStagedMediaUrl` before persisting as `video: { url }` in `ReviewDocument`.
-- **DONE (session 10)**: `useCreateReview` updated with `videoUrl?: string` field.
-- **DONE (session 10)**: `WriteReviewForm` — `MediaUploadField accept="video/*"` added for optional review video (1 slot).
-- **DONE (session 10)**: `DELETE /api/media/delete?url=...` endpoint created in `src/app/api/media/delete/route.ts`. Only deletes files under `tmp/` prefix and only for the authenticated user. Idempotent.
-- **DONE (session 10)**: `useMediaAbort()` hook created in `src/hooks/useMediaUpload.ts`; exported from `src/hooks/index.ts`. Calls `DELETE /api/media/delete` for each staged URL.
-- **DONE (session 10)**: `onAbort` wired to `MediaUploadList` in `ProductForm.tsx` (gallery images) and both `MediaUploadList` + `MediaUploadField` in `ProductReviews.tsx` (review images + video).
-
-**TG1 ALL ACCEPTANCE CRITERIA MET** as of session 10:
-- ✅ All form surfaces use `MediaUploadList`/`MediaUploadField`/`ImageUpload` from appkit
-- ✅ All upload surfaces enforce 5-image / 1-video limits (maxItems, accept props + server-side guardrails)
-- ✅ All schemas and upload API enforce same limits server-side
-- ✅ `onAbort` wired via `useMediaAbort()` — immediate staged URL cleanup on cancel
-
----
+- Full 5+1 enforcement across every listed letitrip form/entity remains open.
 
 ---
 
@@ -601,9 +578,14 @@ Ensure every user-facing page/component is locale-aware and every money display 
 - provider/config handoff for locale and currency is documented and verified
 
 ### Verification
-Status: pending
-- Appkit capability exists.
-- End-to-end letitrip audit and mismatch closure are still open.
+Status: **DONE** (session 11)
+- **DONE (session 11)**: Full audit confirmed no unintended `$` display in INR market routes.
+- **DONE (session 11)**: Config flow verified — `LOCALE_CONFIG.DEFAULT_CURRENCY = "INR"`, `LOCALE_CONFIG.DEFAULT_LOCALE = "en-IN"`. All `formatCurrency` calls in letitrip delegate to appkit which defaults to INR/en-IN Intl.NumberFormat.
+- **DONE (session 11)**: Root cause bug fixed — appkit `ProductCard` (`ProductGrid.tsx`) was rendering `{product.currency ?? "₹"}` literally, causing products stored with ISO code `"INR"` to display `"INR1,234"` instead of `"₹1,234"`. Fixed to use `formatCurrency(product.price, product.currency ?? "INR")`.
+- **DONE (session 11)**: 7 appkit files updated in `fix(currency)` commit: `ProductGrid.tsx`, `WishlistPage.tsx`, `PreorderCard.tsx`, `DashboardStats.tsx`, `CartDrawer.tsx`, `AuctionCard.tsx`, `OrdersList.tsx` — all now route price display through `formatCurrency`.
+- **DONE (session 11)**: 2 letitrip admin files updated: `OrderStatusForm.tsx` and `OrderTableColumns.tsx` replace inline `new Intl.NumberFormat("en-IN", {...})` with shared `formatCurrency`.
+- **DONE (session 11)**: i18n routing confirmed — `routing.ts` has `locales: ["en"]`, `localePrefix: "never"`, `localeCookie: false`. `request.ts` falls back to `"en"` for undefined locale (explicitly handles ISR/static pre-render edge case). Single-locale setup is intentional; translation coverage is complete for `en` namespace.
+- **DONE (session 11)**: Currency config propagation documented — INR config stays in `src/constants/config.ts` (letitrip-specific). Appkit formatters/components default to INR; consumer injects market config via `LOCALE_CONFIG`.
 
 ---
 

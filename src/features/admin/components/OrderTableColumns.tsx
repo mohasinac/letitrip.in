@@ -12,6 +12,7 @@ import { Caption, Text, Span, Button } from "@mohasinac/appkit/ui";
 
 import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
+import { formatCurrency } from "@/utils";
 
 const ORDER_STATUS_STYLES: Record<string, string> = {
   pending:
@@ -88,11 +89,7 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         width: "10%",
         render: (order: OrderDocument) => (
           <Span className="font-semibold text-sm">
-            {new Intl.NumberFormat("en-IN", {
-              style: "currency",
-              currency: order.currency ?? "INR",
-              maximumFractionDigits: 0,
-            }).format(order.totalPrice)}
+            {formatCurrency(order.totalPrice, order.currency ?? "INR")}
           </Span>
         ),
       },

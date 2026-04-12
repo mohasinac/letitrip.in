@@ -12,6 +12,7 @@ import { Span, Text } from "@mohasinac/appkit/ui";
 import { FormGroup, Input, Select, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
+import { formatCurrency } from "@/utils";
 
 const LABELS = UI_LABELS.ADMIN.ORDERS;
 
@@ -78,10 +79,7 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
         </Text>
         <Text weight="medium">
           Total:{" "}
-          {new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: order.currency ?? "INR",
-          }).format(order.totalPrice)}
+          {formatCurrency(order.totalPrice, order.currency ?? "INR")}
         </Text>
       </div>
 
