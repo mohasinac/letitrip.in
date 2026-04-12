@@ -2,17 +2,17 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `e46966bf` (TG7 wrapper closeout + TG12 governance refresh)
+Last updated: April 13, 2026 — tracker synced after TG7/TG12 commit sequence
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` for this session slice.
-- Latest commits: appkit `ec9993c`, letitrip `e46966bf`.
+- Latest commits: appkit `ec9993c`, letitrip TG7/TG12 sequence committed on April 13, 2026.
 - This session completed: TG7 semantic wrapper closeout batches A/B and TG12 index/prune governance refresh.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
-- modified or committed state: committed (`e46966bf`), tracker sync pending current edit only
+- modified or committed state: committed; clean-worktree tracker baseline
 - deletion check result: no prune deletion in git history (modifications only)
 
 Index comparison note (current generated indexes):
