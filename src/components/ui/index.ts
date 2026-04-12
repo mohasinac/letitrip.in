@@ -51,7 +51,6 @@ export {
   DropdownItem,
   DropdownSeparator,
 } from "./Dropdown";
-export { default as Accordion, AccordionItem } from "./Accordion";
 export { default as Avatar, AvatarGroup } from "./Avatar";
 export {
   default as Menu,

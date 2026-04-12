@@ -4,14 +4,16 @@ import {
   ActiveFilterChips,
   ViewToggle,
   BulkActionBar,
+  Pagination,
 } from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
+import { SearchResultsSection as AppkitSearchResultsSection } from "@mohasinac/appkit/features/search";
 import { useSearch } from "@mohasinac/appkit/features/search";
-import { PRODUCT_SORT_VALUES, Search } from "@/components";
+import { PRODUCT_SORT_VALUES, ProductGrid, ProductSortBar, Search } from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
@@ -25,7 +27,6 @@ import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
-import { SearchResultsSection } from "./SearchResultsSection";
 
 const { page } = THEME_CONSTANTS;
 
@@ -318,7 +319,7 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                 ]}
               />
             )}
-            <SearchResultsSection
+            <AppkitSearchResultsSection
               products={items}
               total={total}
               totalPages={totalPages}
@@ -326,12 +327,47 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
               urlSort={urlSort}
               urlPage={urlPage}
               isLoading={isLoading}
-              variant={viewMode}
-              selectable={!!user}
-              selectedIds={selectedIds}
-              onSelectionChange={setSelectedIds}
               onSortChange={(sort) => table.set("sort", sort)}
               onPageChange={table.setPage}
+              renderItem={() => null}
+              renderSortBar={({ total: totalCount, showing, urlSort, onSortChange }) => (
+                <ProductSortBar
+                  total={totalCount}
+                  showing={showing}
+                  sort={urlSort as ProductSortValue}
+                  onSortChange={onSortChange}
+                />
+              )}
+              renderLoading={({ skeletonCount }) => (
+                <ProductGrid products={[]} loading skeletonCount={skeletonCount} />
+              )}
+              renderEmpty={({ query }) => (
+                <EmptyState
+                  title={t("noResultsTitle")}
+                  description={query ? t("noResultsSubtitle", { q: query }) : undefined}
+                />
+              )}
+              renderProducts={(products) => (
+                <ProductGrid
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  products={products as any[]}
+                  variant={viewMode}
+                  selectable={!!user}
+                  selectedIds={selectedIds}
+                  onSelectionChange={setSelectedIds}
+                />
+              )}
+              renderPagination={({ urlPage, totalPages, onPageChange }) =>
+                total > PAGE_SIZE ? (
+                  <div className="flex justify-center">
+                    <Pagination
+                      currentPage={urlPage}
+                      totalPages={totalPages}
+                      onPageChange={onPageChange}
+                    />
+                  </div>
+                ) : null
+              }
             />
           </>
         ) : (
