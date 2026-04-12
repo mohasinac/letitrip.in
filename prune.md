@@ -158,7 +158,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
 | Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
-| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
+| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | near-complete | review video slot + onAbort (pending DELETE API) remaining | schema/API/all major form surfaces enforced |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
@@ -339,7 +339,14 @@ Verification: partial
 - **DONE (session 10)**: `src/components/admin/media-upload.client.ts` re-export shim deleted; `src/components/admin/index.ts` now imports directly from `@mohasinac/appkit/features/media`; `BARREL_MAPPING.json` updated.
 - **DONE (session 10)**: `useCreateReview` in `src/hooks/useProductReviews.ts` now guards `images.length <= 5` before calling server action.
 - **DONE (session 10)**: `AvatarUpload.tsx` confirmed image-only via `accept="image/jpeg,image/png,image/webp,image/gif"` on file input; upload API now also enforces image-only for `user-avatar` context.
-- **OPEN (feature build)**: Form UI components that still need `MediaUploadList`/`MediaUploadField` wired with per-entity limits: `ProductForm.tsx` (product gallery images[] upload UI), `ProductReviews.tsx` (WriteReviewForm image/video upload), `SellerStoreSetupView.tsx` (store logo/banner media upload surface). These require building new upload UIs — tracked as a separate form-layer batch for next session.
+- **DONE (session 10)**: `WriteReviewForm` in `ProductReviews.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` — review images capture path complete. Translation keys `reviewFormImages` + `reviewFormImagesHelper` added to `messages/en.json`.
+- **DONE (session 10)**: `ProductForm.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` for product gallery images field. Translation keys added. `SellerCreateProductView` and `SellerEditProductView` inherit via delegation.
+- **DONE (session 10)**: `SellerStoreView.tsx` — `storeLogoURL` and `storeBannerURL` text inputs replaced with `ImageUpload` (image-only, staged under `tmp/stores`). Store logo and banner uploads now properly restricted to images.
+- **OPEN (next session — video + onAbort)**: Review video upload field in `WriteReviewForm` (1-video slot, `MediaUploadField accept="video/*"`). `onAbort` cleanup for `MediaUploadList`/`MediaUploadField` is pending a media DELETE API endpoint (`DELETE /api/media?url=...`) — tracked in TG2. Display-only views (`AuctionDetailView`, `PreOrderDetailView`, `ProductImageGallery`) need no changes — the schema cap ensures ≤ 5 images.
+
+**TG1 exit condition status**: Schema/API layer fully enforced. All writeable form surfaces now use appkit upload primitives with per-entity limits. `onAbort` cleanup is the last open item requiring a new API endpoint.
+
+---
 
 ---
 
