@@ -42,13 +42,20 @@ export function ProductImageGallery({
 }: ProductImageGalleryProps) {
   const t = useTranslations("products");
 
-  // Build ordered media list: images first (main first), then video last
-  const allMedia: MediaItem[] = [
-    ...[mainImage, ...images].filter(Boolean).map((src, idx) => ({
+  const MAX_IMAGES = 5;
+
+  const imageMedia: MediaItem[] = [mainImage, ...images]
+    .filter(Boolean)
+    .slice(0, MAX_IMAGES)
+    .map((src, idx) => ({
       type: "image" as const,
       src,
       label: `${slug ?? title}-image-${idx + 1}`,
-    })),
+    }));
+
+  // Build ordered media list: images first (main first), then video last
+  const allMedia: MediaItem[] = [
+    ...imageMedia,
     ...(video?.url
       ? [
           {
