@@ -18,7 +18,8 @@ import { OrderSuccessCard } from "./OrderSuccessCard";
 import { OrderSuccessActions } from "./OrderSuccessActions";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useOrder } from "../hooks/useOrder";
+import { useOrder } from "@mohasinac/appkit/features/cart";
+import type { OrderDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
@@ -28,7 +29,10 @@ export function CheckoutSuccessView() {
   const orderId = searchParams.get("orderId");
   const t = useTranslations("orderSuccess");
 
-  const { order, isLoading, error } = useOrder(orderId);
+  const { order, isLoading, error } = useOrder<OrderDocument>(orderId, {
+    endpoint: `/api/user/orders/${orderId}`,
+    queryKeyPrefix: "order",
+  });
 
   useEffect(() => {
     if (!orderId) router.replace(ROUTES.PUBLIC.PRODUCTS);

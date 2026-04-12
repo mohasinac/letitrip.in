@@ -6,7 +6,7 @@ import { ROUTES, FAQ_CATEGORIES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { SectionTabs } from "@/components";
 import type { SectionTab } from "@/components";
-import { useFaqList } from "@/features/faq";
+import { useFaqList } from "@mohasinac/appkit/features/faq";
 import { FAQSection as AppkitFAQSection } from "@mohasinac/appkit/features/homepage";
 import type { FAQItem, FAQTab } from "@mohasinac/appkit/features/homepage";
 

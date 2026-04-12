@@ -14,7 +14,10 @@ import {
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { PackageSearch, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { StoreProductsView as AppkitStoreProductsView } from "@mohasinac/appkit/features/stores";
+import {
+  StoreProductsView as AppkitStoreProductsView,
+  useStoreProducts,
+} from "@mohasinac/appkit/features/stores";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   EmptyState,
@@ -26,7 +29,6 @@ import {
 import type { ViewMode, ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { addToWishlistAction, addToCartAction } from "@/actions";
-import { useStoreProducts } from "../hooks";
 
 const { flex } = THEME_CONSTANTS;
 

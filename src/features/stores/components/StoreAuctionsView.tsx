@@ -12,13 +12,15 @@ import {
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { Gavel } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { StoreAuctionsView as AppkitStoreAuctionsView } from "@mohasinac/appkit/features/stores";
+import {
+  StoreAuctionsView as AppkitStoreAuctionsView,
+  useStoreAuctions,
+} from "@mohasinac/appkit/features/stores";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { AuctionGrid, EmptyState, Search } from "@/components";
 import type { ViewMode } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { addToWishlistAction } from "@/actions";
-import { useStoreAuctions } from "../hooks";
 
 const { flex } = THEME_CONSTANTS;
 

@@ -6,7 +6,7 @@ import { StoreAboutView as AppkitStoreAboutView } from "@mohasinac/appkit/featur
 import { EmptyState, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { useStoreBySlug } from "../hooks";
+import { useStoreBySlug } from "@mohasinac/appkit/features/stores";
 
 interface StoreAboutViewProps {
   storeSlug: string;

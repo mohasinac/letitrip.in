@@ -3,7 +3,7 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { StoreHeader as AppkitStoreHeader } from "@mohasinac/appkit/features/stores";
 import { Skeleton } from "@/components";
-import { useStoreBySlug } from "../hooks";
+import { useStoreBySlug } from "@mohasinac/appkit/features/stores";
 
 const { flex, page } = THEME_CONSTANTS;
 

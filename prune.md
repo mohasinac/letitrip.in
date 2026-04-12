@@ -127,6 +127,41 @@ Open tasks:
 3. Execute second migration wave on admin `*View.tsx` overlap (22 basenames), preserving only consumer-only state wiring.
 4. Track each migrated basename with import rewiring and deletion status in this file after each batch.
 
+Wave-1 progress log (hooks overlap):
+- 2026-04-13 batch A (FAQ hooks):
+	- basename: `useFaqList`
+	- classification: move fully to appkit
+	- rewiring: homepage FAQ section now imports `useFaqList` directly from `@mohasinac/appkit/features/faq`
+	- deletion: removed local shim files `src/features/faq/hooks/useFaqList.ts` and `src/features/faq/hooks/index.ts`
+	- local feature barrel update: removed `export * from "./hooks"` from `src/features/faq/index.ts`
+	- status: completed
+- 2026-04-13 batch B (stores detail hooks):
+	- basenames: `useStoreBySlug`, `useStoreProducts`, `useStoreAuctions`, `useStoreReviews`
+	- classification: move fully to appkit
+	- rewiring: store feature components now import these hooks directly from `@mohasinac/appkit/features/stores`
+	- deletion: removed local shim file `src/features/stores/hooks/useStoreBySlug.ts`
+	- local hooks barrel update: removed `export * from "./useStoreBySlug"` from `src/features/stores/hooks/index.ts`
+	- status: completed
+- 2026-04-13 batch C (cart order hook):
+	- basename: `useOrder` (cart feature hook wrapper)
+	- classification: move fully to appkit
+	- rewiring: checkout success view now imports `useOrder` directly from `@mohasinac/appkit/features/cart` with inline endpoint/queryKey options
+	- deletion: removed local wrapper `src/features/cart/hooks/useOrder.ts`
+	- local hooks barrel update: removed `export { useOrder } from "./useOrder"` from `src/features/cart/hooks/index.ts`
+	- status: completed
+
+Overlap decision ledger (initial rows):
+- `useFaqList` -> move fully to appkit (completed)
+- `useStoreBySlug` -> move fully to appkit (completed)
+- `useStoreProducts` -> move fully to appkit (completed)
+- `useStoreAuctions` -> move fully to appkit (completed)
+- `useStoreReviews` -> move fully to appkit (completed)
+- `useOrder` (cart) -> move fully to appkit (completed)
+- `useAuctions` -> keep letitrip as config-only adapter (blocked by endpoint divergence: `/api/products` vs `/api/auctions`)
+- `useAuctionDetail` -> keep letitrip as consumer-only exception until API/detail-hook parity is available
+- `useCheckout` -> keep letitrip as consumer-only exception (local API orchestration hook differs from appkit checkout state hook)
+- `useAuth` -> keep letitrip as consumer-only exception (local auth/session bridge and route wiring differ from appkit `useCurrentUser` scope)
+
 Exit condition:
 - Every overlapping basename in generated indexes is classified, and no reusable duplicate remains untracked.
 
