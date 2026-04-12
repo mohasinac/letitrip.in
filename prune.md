@@ -158,7 +158,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
 | Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
-| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | near-complete | review video slot + onAbort (pending DELETE API) remaining | schema/API/all major form surfaces enforced |
+| Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | **DONE** | — | schema/API/forms/abort all enforced — session 10 |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
@@ -342,9 +342,18 @@ Verification: partial
 - **DONE (session 10)**: `WriteReviewForm` in `ProductReviews.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` — review images capture path complete. Translation keys `reviewFormImages` + `reviewFormImagesHelper` added to `messages/en.json`.
 - **DONE (session 10)**: `ProductForm.tsx` now includes `MediaUploadList maxItems={5} accept="image/*"` for product gallery images field. Translation keys added. `SellerCreateProductView` and `SellerEditProductView` inherit via delegation.
 - **DONE (session 10)**: `SellerStoreView.tsx` — `storeLogoURL` and `storeBannerURL` text inputs replaced with `ImageUpload` (image-only, staged under `tmp/stores`). Store logo and banner uploads now properly restricted to images.
-- **OPEN (next session — video + onAbort)**: Review video upload field in `WriteReviewForm` (1-video slot, `MediaUploadField accept="video/*"`). `onAbort` cleanup for `MediaUploadList`/`MediaUploadField` is pending a media DELETE API endpoint (`DELETE /api/media?url=...`) — tracked in TG2. Display-only views (`AuctionDetailView`, `PreOrderDetailView`, `ProductImageGallery`) need no changes — the schema cap ensures ≤ 5 images.
+- **DONE (session 10)**: `DeleteReviewAction` / `updateReviewAction` updated to accept `videoUrl?: string`; finalized via `finalizeStagedMediaUrl` before persisting as `video: { url }` in `ReviewDocument`.
+- **DONE (session 10)**: `useCreateReview` updated with `videoUrl?: string` field.
+- **DONE (session 10)**: `WriteReviewForm` — `MediaUploadField accept="video/*"` added for optional review video (1 slot).
+- **DONE (session 10)**: `DELETE /api/media/delete?url=...` endpoint created in `src/app/api/media/delete/route.ts`. Only deletes files under `tmp/` prefix and only for the authenticated user. Idempotent.
+- **DONE (session 10)**: `useMediaAbort()` hook created in `src/hooks/useMediaUpload.ts`; exported from `src/hooks/index.ts`. Calls `DELETE /api/media/delete` for each staged URL.
+- **DONE (session 10)**: `onAbort` wired to `MediaUploadList` in `ProductForm.tsx` (gallery images) and both `MediaUploadList` + `MediaUploadField` in `ProductReviews.tsx` (review images + video).
 
-**TG1 exit condition status**: Schema/API layer fully enforced. All writeable form surfaces now use appkit upload primitives with per-entity limits. `onAbort` cleanup is the last open item requiring a new API endpoint.
+**TG1 ALL ACCEPTANCE CRITERIA MET** as of session 10:
+- ✅ All form surfaces use `MediaUploadList`/`MediaUploadField`/`ImageUpload` from appkit
+- ✅ All upload surfaces enforce 5-image / 1-video limits (maxItems, accept props + server-side guardrails)
+- ✅ All schemas and upload API enforce same limits server-side
+- ✅ `onAbort` wired via `useMediaAbort()` — immediate staged URL cleanup on cancel
 
 ---
 
