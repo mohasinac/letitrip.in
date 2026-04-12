@@ -2,15 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 (uncommitted changes from current session)
+Last updated: April 13, 2026 — committed `9fbab61d`
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
-- `npx tsc --noEmit` passes in `letitrip.in` after current session changes.
-- Latest committed state: appkit `65caf03`, letitrip `afd3a4ad`.
-- Current session WIP (uncommitted): TG3 task-1/task-2 done, TG8 closed.
-- TG3: `src/hooks/usePlaceBid.ts` and `src/hooks/useRealtimeBids.ts` deleted. Consumers updated to import from `@mohasinac/appkit/features/auctions`.
-- TG8: All letitrip/src currency formatting goes through `formatCurrency` from appkit. No remaining `Intl.NumberFormat` calls in `src/`. Policy: all money output uses appkit's `formatCurrency` with currency/locale from letitrip config/data.
+- `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
+- Latest commits: appkit `65caf03`, letitrip `9fbab61d`.
+- This session completed: TG3 tasks 1+2 (usePlaceBid, useRealtimeBids migrated to appkit), TG8 closed (Verdict F).
 
 Index comparison note (current generated indexes):
 - `letitrip.in/index.md` and `appkit/index.md` are now generated via `scripts/get-index.js` and include internal + exported symbol inventories.
