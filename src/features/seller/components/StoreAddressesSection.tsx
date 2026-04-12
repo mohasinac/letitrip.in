@@ -10,7 +10,14 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Text, Badge, Button, Spinner } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Text,
+  Badge,
+  Button,
+  Spinner,
+  Row,
+} from "@mohasinac/appkit/ui";
 import { Card, SideDrawer, AddressForm, Alert } from "@/components";
 import { useMessage } from "@/hooks";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
@@ -137,7 +144,7 @@ export function StoreAddressesSection() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <Row gap="sm">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -156,7 +163,7 @@ export function StoreAddressesSection() {
                         >
                           {tActions("delete")}
                         </Button>
-                      </div>
+                      </Row>
                     </div>
 
                     <div className={spacing.stackSmall}>

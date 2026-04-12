@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
@@ -59,14 +59,14 @@ export function NavbarConfigForm({
             const isVisible = !hidden.includes(key);
             return (
               <div key={key} className={`${THEME_CONSTANTS.flex.between} py-3`}>
-                <div className="flex items-center gap-3">
+                <Row gap="sm">
                   <Span className="text-xl" aria-hidden>
                     {item.icon}
                   </Span>
                   <Text size="sm" weight="medium">
                     {t(key)}
                   </Text>
-                </div>
+                </Row>
                 <Button
                   type="button"
                   role="switch"

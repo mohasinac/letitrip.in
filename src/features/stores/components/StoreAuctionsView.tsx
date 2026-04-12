@@ -6,6 +6,7 @@ import {
   SortDropdown,
   Spinner,
   TablePagination,
+  Row,
 } from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
@@ -117,7 +118,7 @@ function StoreAuctionsContent({ storeSlug }: StoreAuctionsViewProps) {
       isLoading={isLoading}
       renderAuctions={(_items, loading) => (
         <>
-          <div className="flex items-center gap-2 mb-4">
+          <Row gap="sm" className="mb-4">
             <Search
               value={table.get("q")}
               onChange={(v) => table.set("q", v)}
@@ -133,7 +134,7 @@ function StoreAuctionsContent({ storeSlug }: StoreAuctionsViewProps) {
               value={viewMode}
               onChange={(m) => table.set("view", m)}
             />
-          </div>
+          </Row>
           {loading && (
             <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
               <Spinner />

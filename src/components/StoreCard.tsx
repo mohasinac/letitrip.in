@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { StoreListItem } from "@mohasinac/appkit/features/stores";
-import { Heading, Text, Span } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Row } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@/components";
 import { Button } from "@mohasinac/appkit/ui";
 
@@ -98,7 +98,7 @@ export function StoreCard({
               {store.storeDescription}
             </Text>
           )}
-          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+          <Row gap="sm" className="mt-2 text-xs text-gray-400">
             {store.totalProducts != null && store.totalProducts > 0 && (
               <Span>
                 {store.totalProducts} {labels.products ?? "products"}
@@ -112,7 +112,7 @@ export function StoreCard({
             {store.averageRating != null && store.averageRating > 0 && (
               <Span>★ {store.averageRating.toFixed(1)}</Span>
             )}
-          </div>
+          </Row>
         </div>
       </Link>
     </div>

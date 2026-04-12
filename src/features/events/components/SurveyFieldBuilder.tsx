@@ -1,6 +1,6 @@
 "use client";
 
-import { Label, Text, Button } from "@mohasinac/appkit/ui";
+import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { Checkbox, Input, Select } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -70,7 +70,7 @@ export function SurveyFieldBuilder({
           key={field.id}
           className={`border ${themed.border} rounded-lg p-3 space-y-3`}
         >
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             <div className="flex-1">
               <Label className="mb-0.5">{t("fieldLabel")}</Label>
               <Input
@@ -96,7 +96,7 @@ export function SurveyFieldBuilder({
                 }))}
               />
             </div>
-          </div>
+          </Row>
 
           {(field.type === "select" ||
             field.type === "multiselect" ||

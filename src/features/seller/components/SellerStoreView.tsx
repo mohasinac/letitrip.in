@@ -22,6 +22,7 @@ import {
   Span,
   Button,
   Spinner,
+  Row,
 } from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
@@ -268,10 +269,10 @@ export function SellerStoreView() {
                     {t("sectionStoreDetailsSubtitle")}
                   </Text>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <Row gap="sm" className="flex-shrink-0">
                     <Caption>{t("storeStatusLabel")}:</Caption>
                     <StatusBadge status={store.status} label={statusLabel} />
-                  </div>
+                  </Row>
 
                   {store.storeSlug && (
                     <div

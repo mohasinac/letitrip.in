@@ -3,7 +3,7 @@
 import { MediaAvatar, RoleBadge } from "@/components";
 import type { DataTableColumn } from "@/components";
 import { buildAccountColumns } from "@mohasinac/appkit/features/account";
-import { Span, Button, StatusBadge } from "@mohasinac/appkit/ui";
+import { Span, Button, StatusBadge, Row } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./User.types";
@@ -34,7 +34,7 @@ export function useUserTableColumns(
         sortable: true,
         width: "20%",
         render: (user: AccountTableUser) => (
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             {user.photoURL ? (
               <MediaAvatar
                 src={user.photoURL}
@@ -51,7 +51,7 @@ export function useUserTableColumns(
               </div>
             )}
             <Span>{user.displayName || "N/A"}</Span>
-          </div>
+          </Row>
         ),
       },
       email: {

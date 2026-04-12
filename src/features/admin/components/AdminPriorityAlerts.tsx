@@ -3,7 +3,7 @@
 import { AlertTriangle, AlertCircle, Clock, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Span, Stack } from "@mohasinac/appkit/ui";
+import { Span, Stack, Row } from "@mohasinac/appkit/ui";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 interface AdminPriorityAlertsProps {
@@ -37,7 +37,7 @@ function AlertCard({
     <div
       className={`${THEME_CONSTANTS.flex.between} rounded-xl p-4 border-l-4 ${borderColor} ${bgColor}`}
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <Row gap="sm" className="min-w-0">
         <Icon
           className={`h-5 w-5 flex-shrink-0 ${textColor}`}
           strokeWidth={1.5}
@@ -45,7 +45,7 @@ function AlertCard({
         <Span className={`text-sm font-medium ${textColor} truncate`}>
           {message.replace("{count}", String(count))}
         </Span>
-      </div>
+      </Row>
       <Link
         href={href}
         className={`flex items-center gap-1 text-xs font-semibold flex-shrink-0 ml-3 ${textColor} hover:opacity-75 transition-opacity`}

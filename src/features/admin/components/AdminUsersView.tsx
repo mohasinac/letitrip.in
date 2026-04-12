@@ -25,6 +25,7 @@ import {
   Span,
   Button,
   StatusBadge,
+  Row,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
@@ -247,7 +248,7 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
         <AdminUsersShell
           isDashboard
           statusTabsSlot={
-            <div className="flex items-center gap-2">
+            <Row gap="sm">
               {(["all", "active", "banned", "admins"] as UserTab[]).map(
                 (tab) => (
                   <Button
@@ -260,7 +261,7 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
                   </Button>
                 ),
               )}
-            </div>
+            </Row>
           }
           searchSlot={
             <Search
@@ -339,7 +340,7 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
                   className="p-4 space-y-3 cursor-pointer"
                   onClick={() => handleViewUser(user)}
                 >
-                  <div className="flex items-center gap-3">
+                  <Row gap="sm">
                     <div
                       className={`w-9 h-9 rounded-full bg-primary/10 dark:bg-primary/20 ${flex.center} flex-shrink-0`}
                     >
@@ -357,7 +358,7 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
                         {user.email ?? "—"}
                       </Caption>
                     </div>
-                  </div>
+                  </Row>
                   <div className={`${flex.between}`}>
                     <RoleBadge role={user.role} />
                     <StatusBadge

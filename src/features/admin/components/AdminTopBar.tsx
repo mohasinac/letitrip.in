@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@mohasinac/appkit/ui";
+import { Button, Row } from "@mohasinac/appkit/ui";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -32,7 +32,7 @@ export function AdminTopBar({
   return (
     <header className="h-14 flex-shrink-0 flex items-center px-4 md:px-6 justify-between border-b border-zinc-200 dark:border-white/5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
       {/* Left: hamburger + breadcrumbs */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+      <Row gap="sm" className="min-w-0 flex-1">
         {/* Mobile: open drawer */}
         <Button
           variant="ghost"
@@ -60,11 +60,11 @@ export function AdminTopBar({
         <div className="min-w-0 flex-1">
           <AutoBreadcrumbs />
         </div>
-      </div>
+      </Row>
 
       {/* Right: notification + avatar + role */}
       {user && (
-        <div className="flex items-center gap-3 flex-shrink-0 ml-3">
+        <Row gap="sm" className="flex-shrink-0 ml-3">
           <NotificationBell />
           <AvatarDisplay
             cropData={
@@ -77,7 +77,7 @@ export function AdminTopBar({
             size="sm"
           />
           <RoleBadge role={user.role} />
-        </div>
+        </Row>
       )}
     </header>
   );

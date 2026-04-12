@@ -1,10 +1,11 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
+import { ProductGrid as AppkitProductGrid } from "@mohasinac/appkit/features/products";
 import { THEME_CONSTANTS } from "@/constants";
 import { ProductCard } from "./ProductCard";
 import type { ProductCardData } from "./ProductCard";
-import { Heading, Span, Text } from "@mohasinac/appkit/ui";
+import { Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/ui";
 
 const { themed, card } = THEME_CONSTANTS;
 const { dimensions } = card;
@@ -82,14 +83,16 @@ export function ProductGrid({
     }
   };
 
-  const containerClass =
+  const view = variant === "grid" ? "card" : variant;
+
+  const skeletonContainerClass =
     variant === "list"
       ? "flex flex-col gap-4"
       : THEME_CONSTANTS.grid.cards + " gap-4 md:gap-6";
 
   if (loading) {
     return (
-      <div className={containerClass}>
+      <div className={skeletonContainerClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <ProductSkeleton key={i} variant={variant} />
         ))}
@@ -99,7 +102,7 @@ export function ProductGrid({
 
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
+      <Stack align="center" className="py-24 text-center">
         <Span className="text-6xl mb-4">🔍</Span>
         <Heading level={3} className="text-xl font-semibold mb-2">
           {t("noProductsFound")}
@@ -107,23 +110,25 @@ export function ProductGrid({
         <Text size="sm" variant="secondary">
           {t("noProductsSubtitle")}
         </Text>
-      </div>
+      </Stack>
     );
   }
 
   return (
-    <div className={containerClass}>
-      {products.map((product) => (
+    <AppkitProductGrid
+      products={products}
+      view={view}
+      emptyLabel={t("noProductsFound")}
+      renderCard={(product) => (
         <ProductCard
-          key={product.id}
-          product={product}
+          product={product as ProductCardData}
           variant={variant}
           className={variant === "list" ? dimensions.listMinH : undefined}
           selectable={selectable}
           isSelected={selectedIds.includes(product.id)}
           onSelect={handleSelect}
         />
-      ))}
-    </div>
+      )}
+    />
   );
 }

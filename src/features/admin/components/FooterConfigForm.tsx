@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { Card, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
@@ -19,7 +19,7 @@ function ToggleSwitch({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <Row gap="sm">
       <Button
         type="button"
         role="switch"
@@ -39,7 +39,7 @@ function ToggleSwitch({
         />
       </Button>
       <Text size="sm">{label}</Text>
-    </div>
+    </Row>
   );
 }
 

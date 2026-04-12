@@ -20,7 +20,7 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Text, Spinner } from "@mohasinac/appkit/ui";
+import { Text, Spinner, Stack } from "@mohasinac/appkit/ui";
 
 export default function OAuthLoadingPage() {
   const t = useTranslations("auth.oauth");
@@ -49,9 +49,9 @@ export default function OAuthLoadingPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+    <Stack align="center" className="min-h-screen gap-4">
       <Spinner size="xl" variant="primary" />
       <Text variant="secondary">{t("redirecting")}</Text>
-    </div>
+    </Stack>
   );
 }

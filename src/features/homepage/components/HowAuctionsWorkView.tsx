@@ -2,7 +2,7 @@
 
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { HowItWorksInfoView } from "@mohasinac/appkit/features/homepage";
-import { Heading, Text, Span } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Row } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { useTranslations } from "next-intl";
@@ -105,32 +105,32 @@ export function HowAuctionsWorkView() {
             </Text>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-xl border-2 border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 p-3">
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <Row gap="xs" className="mb-1.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                   <Span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
                     {t("diagramWinning")}
                   </Span>
-                </div>
+                </Row>
                 <Text size="xs" variant="secondary">
                   {t("diagramWinningDesc")}
                 </Text>
               </div>
               <div className="rounded-xl border-2 border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20 p-3">
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <Row gap="xs" className="mb-1.5">
                   <Span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
                     ⚡ {t("diagramOutbid")}
                   </Span>
-                </div>
+                </Row>
                 <Text size="xs" variant="secondary">
                   {t("diagramOutbidDesc")}
                 </Text>
               </div>
               <div className="rounded-xl border-2 border-rose-300 dark:border-rose-700 bg-rose-50/50 dark:bg-rose-950/20 p-3">
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <Row gap="xs" className="mb-1.5">
                   <Span className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide">
                     ⚠️ {t("diagramForfeit")}
                   </Span>
-                </div>
+                </Row>
                 <Text size="xs" variant="secondary">
                   {t("diagramForfeitDesc")}
                 </Text>

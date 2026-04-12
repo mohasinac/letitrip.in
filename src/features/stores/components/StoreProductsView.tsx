@@ -8,6 +8,7 @@ import {
   TablePagination,
   Tooltip,
   ActiveFilterChips,
+  Row,
 } from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
@@ -278,7 +279,7 @@ function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
         ) : null
       }
       renderViewToggle={() => (
-        <div className="flex items-center gap-1.5">
+        <Row gap="xs">
           <ViewToggle value={viewMode} onChange={(m) => table.set("view", m)} />
           <Tooltip label={tActions("selectionHint")} side="bottom">
             <Button
@@ -290,7 +291,7 @@ function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
               <Info className="w-4 h-4" />
             </Button>
           </Tooltip>
-        </div>
+        </Row>
       )}
       renderPagination={() =>
         totalPages > 1 ? (

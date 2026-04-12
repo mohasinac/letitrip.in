@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Label, Button } from "@mohasinac/appkit/ui";
+import { Label, Button, Row } from "@mohasinac/appkit/ui";
 import { Checkbox, FormGroup, Input, Select } from "@/components";
 import { useTranslations } from "next-intl";
 import type { PollConfig } from "@/db/schema";
@@ -48,7 +48,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
       <div className="space-y-2">
         <Label>{t("pollOptionsLabel")}</Label>
         {options.map((opt, idx) => (
-          <div key={opt.id} className="flex items-center gap-2">
+          <Row key={opt.id} gap="sm">
             <div className="flex-1">
               <Input
                 id={`poll-option-${opt.id}`}
@@ -67,7 +67,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
             >
               {tActions("delete")}
             </Button>
-          </div>
+          </Row>
         ))}
         <Button variant="outline" size="sm" onClick={addOption} type="button">
           {t("pollAddOption")}

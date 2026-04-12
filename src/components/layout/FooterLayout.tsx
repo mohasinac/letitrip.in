@@ -28,6 +28,7 @@ import {
   BlockFooter,
   Caption,
   Li,
+  Row,
   Text,
   Ul,
   Span,
@@ -101,9 +102,10 @@ export function FooterLayout({
           >
             <div className="flex flex-wrap gap-4 justify-center items-center divide-x divide-zinc-200 dark:divide-white/5">
               {visibleTrustItems.map((item) => (
-                <div
+                <Row
                   key={item.label}
-                  className="flex items-center gap-1.5 px-4 first:pl-0 last:pr-0"
+                  gap="xs"
+                  className="px-4 first:pl-0 last:pr-0"
                 >
                   <Span className="text-base" aria-hidden>
                     {item.icon}
@@ -115,7 +117,7 @@ export function FooterLayout({
                   >
                     {item.label}
                   </Text>
-                </div>
+                </Row>
               ))}
             </div>
           </div>

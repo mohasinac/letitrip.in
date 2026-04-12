@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { Heading, Text, Button, Span, Spinner } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Text,
+  Button,
+  Span,
+  Spinner,
+  Row,
+} from "@mohasinac/appkit/ui";
 import { Card, EmptyState, MediaImage } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
@@ -77,9 +84,9 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
         event
           ? () => (
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <Row gap="sm" className="mb-2">
                   <EventStatusBadge status={event.status} />
-                </div>
+                </Row>
                 <Heading level={1} className={typography.h2}>
                   {event.title}
                 </Heading>
@@ -130,8 +137,11 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
                       </Text>
                     )}
                     {event.type === "offer" && event.offerConfig && (
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 flex-1 min-w-0 rounded-lg border border-dashed border-primary/30 bg-primary/5 dark:bg-primary/10 px-4 py-2">
+                      <Row gap="md">
+                        <Row
+                          gap="sm"
+                          className="flex-1 min-w-0 rounded-lg border border-dashed border-primary/30 bg-primary/5 dark:bg-primary/10 px-4 py-2"
+                        >
                           <Span className="font-mono font-bold tracking-widest text-primary text-base select-all">
                             {event.offerConfig.displayCode}
                           </Span>
@@ -144,7 +154,7 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
                               event.offerConfig.displayCode,
                             )}
                           </Text>
-                        </div>
+                        </Row>
                         <Button
                           type="button"
                           variant="outline"
@@ -158,7 +168,7 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
                             ? UI_LABELS.PROMOTIONS_PAGE.COPIED
                             : UI_LABELS.PROMOTIONS_PAGE.COPY_CODE}
                         </Button>
-                      </div>
+                      </Row>
                     )}
                   </Card>
                 )}

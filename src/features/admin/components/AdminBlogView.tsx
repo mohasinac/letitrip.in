@@ -20,6 +20,7 @@ import {
   Badge,
   Button,
   SortDropdown,
+  Row,
 } from "@mohasinac/appkit/ui";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
@@ -247,7 +248,7 @@ function AdminBlogContent() {
   const featuredCount = data?.meta.featured ?? 0;
 
   const statusTabsSlot = (
-    <div className="flex items-center gap-2">
+    <Row gap="sm">
       {STATUS_TABS.map((tab) => (
         <Button
           key={tab.key}
@@ -258,7 +259,7 @@ function AdminBlogContent() {
           {tab.label}
         </Button>
       ))}
-    </div>
+    </Row>
   );
 
   return (

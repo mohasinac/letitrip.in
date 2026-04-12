@@ -11,7 +11,7 @@
 
 import { useState } from "react";
 import { nowMs } from "@/utils";
-import { Heading, Label, Text, Button } from "@mohasinac/appkit/ui";
+import { Heading, Label, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { Checkbox, FormField, FormGroup, Select } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
@@ -674,7 +674,7 @@ function CardEditor({
                 onChange={(val) => updateButton(i, { link: val })}
               />
             </FormGroup>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
+            <Row gap="sm" className="mt-2 flex-wrap">
               <Select
                 value={btn.variant}
                 onChange={(e) =>
@@ -705,7 +705,7 @@ function CardEditor({
               >
                 {t("removeButton")}
               </Button>
-            </div>
+            </Row>
           </div>
         ))}
         {(card.buttons ?? []).length < 3 && (

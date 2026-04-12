@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Heading, Label, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import {
   Card,
   Checkbox,
@@ -257,7 +257,7 @@ export default function BackgroundSettings({
 
         {/* Overlay Settings */}
         <div className={`border-t ${THEME_CONSTANTS.themed.borderColor} pt-6`}>
-          <div className="flex items-center gap-3 mb-4">
+          <Row gap="sm" className="mb-4">
             <Checkbox
               id="overlay-enabled"
               checked={config.overlay?.enabled || false}
@@ -270,7 +270,7 @@ export default function BackgroundSettings({
               }
               label="Enable Overlay (improves content readability)"
             />
-          </div>
+          </Row>
 
           {config.overlay?.enabled && (
             <FormGroup columns={2} className="ml-7">

@@ -12,7 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
-import { Text, Button } from "@mohasinac/appkit/ui";
+import { Text, Button, Row } from "@mohasinac/appkit/ui";
 import { AdminCategoriesView as AppkitAdminCategoriesView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
@@ -246,7 +246,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       renderHeader={() => (
         <div className="flex items-center justify-between gap-4">
           <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             <div className={`flex border ${themed.border} rounded-md`}>
               <Button
                 onClick={() => setViewMode("tree")}
@@ -272,7 +272,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
             <Button onClick={handleCreate} variant="primary">
               + {tActions("create")}
             </Button>
-          </div>
+          </Row>
         </div>
       )}
       isLoading={isLoading}

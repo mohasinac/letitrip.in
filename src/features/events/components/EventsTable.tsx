@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
-import { Caption, Text, Badge, Button } from "@mohasinac/appkit/ui";
+import { Caption, Text, Badge, Button, Row } from "@mohasinac/appkit/ui";
 
 import { EventStatusBadge } from "./EventStatusBadge";
 import type { EventDocument } from "@/db/schema";
@@ -92,7 +92,7 @@ export function useEventsTableColumns(
         header: tTable("actions"),
         width: "14%",
         render: (e: EventDocument) => (
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             <Button variant="ghost" size="sm" onClick={() => onEdit(e)}>
               {tActions("edit")}
             </Button>
@@ -107,7 +107,7 @@ export function useEventsTableColumns(
             >
               {tActions("delete")}
             </Button>
-          </div>
+          </Row>
         ),
       },
     ],

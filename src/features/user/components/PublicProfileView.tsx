@@ -5,7 +5,7 @@
   MediaImage,
   TextLink,
 } from "@/components";
-import { Heading, Text, Span, Badge } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Badge, Row } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
@@ -131,10 +131,10 @@ async function SellerReviewsSection({
       <div className={`${flex.between} mb-4`}>
         <Heading level={2}>{tProfile("sellerReviewsTitle")}</Heading>
         {reviewsData && reviewsData.totalReviews > 0 && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
+          <Row gap="sm">
+            <Row gap="xs">
               <StarIcons rating={reviewsData.averageRating} />
-            </div>
+            </Row>
             <Text className="text-sm font-semibold">
               {formatNumber(reviewsData.averageRating, "en-IN", {
                 decimals: 1,
@@ -143,7 +143,7 @@ async function SellerReviewsSection({
             <Text variant="secondary" className="text-xs">
               ({reviewsData.totalReviews})
             </Text>
-          </div>
+          </Row>
         )}
       </div>
 
@@ -165,7 +165,7 @@ async function SellerReviewsSection({
                   {review.userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <Row gap="sm" wrap className="mb-1">
                     <Text className="text-sm font-semibold">
                       {review.userName}
                     </Text>
@@ -174,10 +174,10 @@ async function SellerReviewsSection({
                         {tProfile("verifiedPurchase")}
                       </Badge>
                     )}
-                  </div>
-                  <div className="flex items-center gap-1 mb-2">
+                  </Row>
+                  <Row gap="xs" className="mb-2">
                     <StarIcons rating={review.rating} size="sm" />
-                  </div>
+                  </Row>
                   <Text variant="secondary" className="text-sm">
                     {review.comment}
                   </Text>
@@ -263,7 +263,7 @@ export async function PublicProfileView({
 
             <div className={`${flex.center} gap-4 mt-4 text-sm`}>
               {user.publicProfile?.location && (
-                <div className="flex items-center gap-1">
+                <Row gap="xs">
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -276,7 +276,7 @@ export async function PublicProfileView({
                     />
                   </svg>
                   <Span>{user.publicProfile.location}</Span>
-                </div>
+                </Row>
               )}
               {user.publicProfile?.website && (
                 <TextLink

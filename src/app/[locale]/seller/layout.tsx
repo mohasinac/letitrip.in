@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { Main, Button } from "@mohasinac/appkit/ui";
+import { Main, Button, Row } from "@mohasinac/appkit/ui";
 import { ProtectedRoute, AutoBreadcrumbs } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { SellerSidebar } from "@/features/seller";
@@ -38,7 +38,7 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Top bar */}
           <header className="h-14 flex-shrink-0 flex items-center px-4 md:px-6 justify-between border-b border-zinc-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+            <Row gap="md" className="min-w-0 flex-1">
               {/* Mobile: open drawer */}
               <Button
                 variant="ghost"
@@ -62,7 +62,7 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
                 )}
               </Button>
               <AutoBreadcrumbs />
-            </div>
+            </Row>
           </header>
           <Main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</Main>
         </div>

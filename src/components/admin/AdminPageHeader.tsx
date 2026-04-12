@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Heading, Nav, Text, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Nav, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { ChevronRight } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
@@ -77,12 +77,12 @@ export function AdminPageHeader({
       )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className={spacing.stackSmall}>
-          <div className="flex items-center gap-2 flex-wrap">
+          <Row gap="sm" wrap>
             <Heading level={2} className={typography.pageTitle}>
               {title}
             </Heading>
             {badge && <Span className="flex-shrink-0">{badge}</Span>}
-          </div>
+          </Row>
           {subtitle && (
             <Text className={typography.pageSubtitle}>{subtitle}</Text>
           )}

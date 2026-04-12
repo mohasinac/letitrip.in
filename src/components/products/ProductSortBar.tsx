@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Label, Text } from "@mohasinac/appkit/ui";
+import { Label, Row, Text } from "@mohasinac/appkit/ui";
 import SelectField from "../forms/Select";
 
 const { themed, flex } = THEME_CONSTANTS;
@@ -52,7 +52,7 @@ export function ProductSortBar({
       <Text className={`text-sm ${themed.textSecondary}`}>
         {t("showing", { showing, total })}
       </Text>
-      <div className="flex items-center gap-2">
+      <Row gap="sm">
         <Label
           className={`text-sm font-medium ${themed.textSecondary} shrink-0`}
         >
@@ -64,7 +64,7 @@ export function ProductSortBar({
           options={sortOptions}
           className={`text-sm ${themed.bgPrimary} ${themed.textPrimary} min-w-40`}
         />
-      </div>
+      </Row>
     </div>
   );
 }

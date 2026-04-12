@@ -9,7 +9,7 @@
 
 import { UserPlus, Activity } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Row } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -33,7 +33,10 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
         </Heading>
         <div className={spacing.stackSmall}>
           {stats.users.new > 0 && (
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+            <Row
+              gap="sm"
+              className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg"
+            >
               <div
                 className={`w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-full ${flex.center}`}
               >
@@ -45,9 +48,9 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
                   {t("newUsersRegistered", { count: stats.users.new })}
                 </Text>
               </div>
-            </div>
+            </Row>
           )}
-          <div className="flex items-center gap-3 p-3 bg-sky-50 dark:bg-sky-950/30 rounded-lg">
+          <Row gap="sm" className="p-3 bg-sky-50 dark:bg-sky-950/30 rounded-lg">
             <div
               className={`w-10 h-10 bg-sky-100 dark:bg-sky-900 rounded-full ${flex.center}`}
             >
@@ -59,7 +62,7 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
                 {t("allSystemsOperational")}
               </Text>
             </div>
-          </div>
+          </Row>
         </div>
       </div>
     </Card>

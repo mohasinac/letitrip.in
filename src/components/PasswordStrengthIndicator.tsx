@@ -8,8 +8,7 @@
 
 import React from "react";
 import { PASSWORD_CONFIG, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { Span } from "@mohasinac/appkit/ui";
-import { Li, Ul } from "@mohasinac/appkit/ui";
+import { Li, Row, Span, Ul } from "@mohasinac/appkit/ui";
 
 interface PasswordStrengthIndicatorProps {
   password: string;
@@ -66,7 +65,7 @@ export const PasswordStrengthIndicator: React.FC<
   return (
     <div className="mt-2" aria-live="polite" aria-atomic="true">
       {/* Strength Bar */}
-      <div className="flex items-center gap-2 mb-2">
+      <Row gap="sm" className="mb-2">
         <div className="flex-1 h-2 bg-zinc-200 dark:bg-slate-700 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${getStrengthColor()}`}
@@ -85,14 +84,12 @@ export const PasswordStrengthIndicator: React.FC<
             {getStrengthLabel()}
           </Span>
         )}
-      </div>
-
-      {/* Requirements List */}
-      {showRequirements && (
-        <Ul className="space-y-1">
-          {requirements.map((req, index) => (
+      </Row>
+      {showRequirements && requirements && (
+        <Ul className="mt-2 space-y-1">
+          {requirements.map((req) => (
             <Li
-              key={index}
+              key={req.label}
               className={`text-xs flex items-center gap-2 ${
                 req.met
                   ? "text-green-600 dark:text-green-400"

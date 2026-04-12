@@ -14,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
 import { Drawer } from "@mohasinac/appkit/ui";
-import { Span, Text, Nav, Aside } from "@mohasinac/appkit/ui";
+import { Span, Text, Nav, Aside, Row } from "@mohasinac/appkit/ui";
 import { MediaAvatar } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useNotifications } from "@/hooks";
@@ -82,7 +82,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Profile header */}
       {user && (
         <div className="px-4 py-5 border-b border-zinc-200 dark:border-slate-700">
-          <div className="flex items-center gap-3">
+          <Row gap="sm">
             <MediaAvatar
               src={user.photoURL ?? undefined}
               alt={user.displayName ?? user.email ?? "User"}
@@ -96,7 +96,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                 {user.role}
               </Text>
             </div>
-          </div>
+          </Row>
         </div>
       )}
 

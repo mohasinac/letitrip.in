@@ -19,6 +19,7 @@ import {
   Text,
   StatusBadge,
   Spinner,
+  Row,
 } from "@mohasinac/appkit/ui";
 import { UserAccountHubView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -216,12 +217,12 @@ export function UserAccountHub() {
                       {formatCurrency(order.totalPrice)}
                     </Text>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                  <Row gap="sm" className="flex-shrink-0 ml-3">
                     <StatusBadge
                       status={ORDER_STATUS_MAP[order.status] ?? "pending"}
                     />
                     <ChevronRight className="h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors" />
-                  </div>
+                  </Row>
                 </Link>
               ))}
             </div>

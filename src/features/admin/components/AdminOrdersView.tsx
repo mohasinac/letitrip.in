@@ -25,7 +25,7 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { Text, TablePagination, Button } from "@mohasinac/appkit/ui";
+import { Text, TablePagination, Button, Row } from "@mohasinac/appkit/ui";
 import {
   Card,
   OrderCard,
@@ -165,7 +165,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
   );
 
   const statusTabsSlot = (
-    <div className="flex items-center gap-2">
+    <Row gap="sm">
       {STATUS_TABS.map((tab) => (
         <Button
           key={tab.key}
@@ -176,7 +176,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
           {tab.label}
         </Button>
       ))}
-    </div>
+    </Row>
   );
 
   const { columns } = useOrderTableColumns(handleView);

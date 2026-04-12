@@ -65,10 +65,10 @@ export function ReviewDetailView({
           </Grid>
 
           <div>
-            <div className="flex items-center gap-2 mt-1">
+            <Row gap="sm" className="mt-1">
               <RatingDisplay rating={review.rating} size="md" />
               <Span variant="secondary">({review.rating}/5)</Span>
-            </div>
+            </Row>
           </div>
 
           <div>

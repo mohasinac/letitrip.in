@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Li, Text, Ul, Span, Button } from "@mohasinac/appkit/ui";
+import { Li, Row, Text, Ul, Span, Button } from "@mohasinac/appkit/ui";
 import { Input } from "@/components";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
@@ -668,7 +668,7 @@ export default function Search({
         className={`${THEME_CONSTANTS.layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} shadow-md animate-slide-down`}
       >
         <div className="container mx-auto px-4 py-3 md:py-4 relative">
-          <div className="flex items-center gap-2 md:gap-3">
+          <Row gap="sm" className="md:gap-3">
             <div className="flex-1 relative">
               <Input
                 ref={inputRef}
@@ -726,7 +726,7 @@ export default function Search({
                 />
               </svg>
             </Button>
-          </div>
+          </Row>
 
           {/* Results dropdown — absolute so it overlays page content below the header */}
           {(filteredSiteLinks.length > 0 || query) && (

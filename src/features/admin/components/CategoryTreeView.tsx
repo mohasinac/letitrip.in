@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames, Button } from "@mohasinac/appkit/ui";
-import { Span, Text } from "@mohasinac/appkit/ui";
+import { Span, Text, Row } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
@@ -172,7 +172,7 @@ function TreeNode({
         )}
 
         {/* Actions */}
-        <div className="flex items-center gap-1">
+        <Row gap="xs">
           {onEdit && (
             <Button
               type="button"
@@ -225,7 +225,7 @@ function TreeNode({
               </svg>
             </Button>
           )}
-        </div>
+        </Row>
       </div>
 
       {/* Children */}

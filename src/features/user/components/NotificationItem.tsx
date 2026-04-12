@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Text, Button, Span, Badge } from "@mohasinac/appkit/ui";
+import { Text, Button, Span, Badge, Row } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -72,7 +72,7 @@ export function NotificationItem({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <Row gap="sm" className="flex-shrink-0">
             {!n.isRead && (
               <Button
                 variant="ghost"
@@ -117,7 +117,7 @@ export function NotificationItem({
                 />
               </svg>
             </Button>
-          </div>
+          </Row>
         </div>
 
         {/* Action link */}

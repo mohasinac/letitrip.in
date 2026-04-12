@@ -19,7 +19,7 @@ import {
   Tag,
 } from "lucide-react";
 import { Drawer } from "@mohasinac/appkit/ui";
-import { Aside, Nav, Span, Text } from "@mohasinac/appkit/ui";
+import { Aside, Nav, Span, Text, Row } from "@mohasinac/appkit/ui";
 
 interface NavItem {
   href: string;
@@ -103,14 +103,17 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Logo row */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-200 dark:border-slate-700">
+      <Row
+        gap="sm"
+        className="px-4 py-5 border-b border-zinc-200 dark:border-slate-700"
+      >
         <Span className="font-display text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
           LetItRip
         </Span>
         <Span className="bg-cobalt-500/10 text-cobalt-600 dark:text-cobalt-400 text-xs rounded-full px-2 py-0.5 font-medium">
           Seller
         </Span>
-      </div>
+      </Row>
 
       {/* Nav groups */}
       <Nav

@@ -10,7 +10,7 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
-import { Span, Button } from "@mohasinac/appkit/ui";
+import { Row, Span, Button } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@/components";
 import type { AdminProduct } from "./Product.types";
 
@@ -40,7 +40,7 @@ export function useProductTableColumns(
         sortable: true,
         width: "25%",
         render: (product: AdminProduct) => (
-          <div className="flex items-center gap-2">
+          <Row gap="sm">
             {product.mainImage ? (
               <div className="relative w-8 h-8 rounded overflow-hidden flex-shrink-0">
                 <MediaImage
@@ -55,7 +55,7 @@ export function useProductTableColumns(
             <Span className="font-medium truncate max-w-[180px]">
               {product.title}
             </Span>
-          </div>
+          </Row>
         ),
       },
       {

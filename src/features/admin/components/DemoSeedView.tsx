@@ -232,7 +232,7 @@ export function DemoSeedView() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <Row gap="sm" className="mb-2">
                 <Span className="text-4xl">🌱</Span>
                 <Heading
                   level={1}
@@ -241,7 +241,7 @@ export function DemoSeedView() {
                 >
                   Seed Data Manager
                 </Heading>
-              </div>
+              </Row>
               <Text
                 variant="none"
                 className={`${THEME_CONSTANTS.accentBanner.devHeroTextMuted} text-sm sm:text-base max-w-lg`}
@@ -355,7 +355,7 @@ export function DemoSeedView() {
                     disabled={isLoading}
                     className={`w-full ${flex.between} px-4 py-3 ${group.headerBg} transition-opacity ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"}`}
                   >
-                    <div className="flex items-center gap-2">
+                    <Row gap="sm">
                       <Span>{group.emoji}</Span>
                       <Span className={`font-semibold text-sm ${group.color}`}>
                         {group.label}
@@ -363,8 +363,8 @@ export function DemoSeedView() {
                       <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                         ({group.collections.length})
                       </Span>
-                    </div>
-                    <div className="flex items-center gap-2">
+                    </Row>
+                    <Row gap="sm">
                       {someGroupSelected && !allGroupSelected && (
                         <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                           {
@@ -388,7 +388,7 @@ export function DemoSeedView() {
                             ? "Partial"
                             : "All off"}
                       </Span>
-                    </div>
+                    </Row>
                   </Button>
 
                   {/* Group chips */}
@@ -424,7 +424,7 @@ export function DemoSeedView() {
                             ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                           `}
                         >
-                          <div className="flex items-center gap-2">
+                          <Row gap="sm">
                             <Checkbox
                               checked={isSelected}
                               onChange={() => toggleCollection(col)}
@@ -434,7 +434,7 @@ export function DemoSeedView() {
                             <Span className="text-sm font-medium leading-tight">
                               {COLLECTION_LABELS[col]}
                             </Span>
-                          </div>
+                          </Row>
                           {/* Count row */}
                           {statusLoading ? (
                             <Span className="text-[10px] text-zinc-400 pl-5">
@@ -467,7 +467,7 @@ export function DemoSeedView() {
         <Grid cols={2} gap="md">
           {/* Load card */}
           <Card className="p-5 border-2 border-emerald-200 dark:border-emerald-800">
-            <div className="flex items-center gap-2 mb-4">
+            <Row gap="sm" className="mb-4">
               <Span className="text-xl">📥</Span>
               <Heading
                 level={3}
@@ -475,7 +475,7 @@ export function DemoSeedView() {
               >
                 Load Data
               </Heading>
-            </div>
+            </Row>
             <div className="space-y-3">
               <Button
                 onClick={() => handleSeedData("load")}
@@ -512,7 +512,7 @@ export function DemoSeedView() {
 
           {/* Delete card */}
           <Card className="p-5 border-2 border-red-200 dark:border-red-800">
-            <div className="flex items-center gap-2 mb-4">
+            <Row gap="sm" className="mb-4">
               <Span className="text-xl">🗑️</Span>
               <Heading
                 level={3}
@@ -520,7 +520,7 @@ export function DemoSeedView() {
               >
                 Delete Data
               </Heading>
-            </div>
+            </Row>
             <div className="space-y-3">
               <Button
                 onClick={() => setConfirmPending("deleteAll")}
@@ -552,7 +552,7 @@ export function DemoSeedView() {
 
         {/* ── Demo Credentials ── */}
         <Card className="p-5">
-          <div className="flex items-center gap-2 mb-4">
+          <Row gap="sm" className="mb-4">
             <Span className="text-xl">🔑</Span>
             <Heading
               level={3}
@@ -560,7 +560,7 @@ export function DemoSeedView() {
             >
               Demo Credentials
             </Heading>
-          </div>
+          </Row>
           <Text size="sm" variant="secondary" className="mb-4">
             All demo accounts use the password{" "}
             <Span className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
@@ -601,14 +601,14 @@ export function DemoSeedView() {
                 key={role}
                 className={`rounded-xl border-2 p-4 flex flex-col gap-2 ${color}`}
               >
-                <div className="flex items-center gap-2">
+                <Row gap="sm">
                   <Span>{emoji}</Span>
                   <Span
                     className={`text-xs font-bold px-2 py-0.5 rounded-full ${badge}`}
                   >
                     {role}
                   </Span>
-                </div>
+                </Row>
                 <Span
                   className={`font-mono text-xs break-all ${THEME_CONSTANTS.themed.textPrimary}`}
                 >
@@ -947,10 +947,10 @@ function LoadDeleteStatus({
 
   if (isLoading) {
     return (
-      <div className="mt-4 flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+      <Row gap="sm" className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
         <Spinner size="sm" />
         <Span>{action === "load" ? "Loading" : "Deleting"} seed data…</Span>
-      </div>
+      </Row>
     );
   }
 

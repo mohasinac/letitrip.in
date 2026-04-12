@@ -26,7 +26,7 @@ import {
   FolderTree,
   Tag,
 } from "lucide-react";
-import { Drawer } from "@mohasinac/appkit/ui";
+import { Drawer, Row } from "@mohasinac/appkit/ui";
 import { Nav, Span, Text, Aside } from "@mohasinac/appkit/ui";
 
 interface NavItem {
@@ -119,14 +119,17 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Logo row */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-200 dark:border-white/5">
+      <Row
+        gap="sm"
+        className="px-4 py-5 border-b border-zinc-200 dark:border-white/5"
+      >
         <Span className="font-display text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
           LetItRip
         </Span>
         <Span className="bg-primary-500/20 text-primary-600 dark:text-primary-400 text-xs rounded-full px-2 py-0.5 font-medium">
           Admin
         </Span>
-      </div>
+      </Row>
 
       {/* Nav groups */}
       <Nav

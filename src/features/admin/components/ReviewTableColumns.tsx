@@ -2,7 +2,7 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Review } from "./Review.types";
-import { Span, Button } from "@mohasinac/appkit/ui";
+import { Span, Button, Row } from "@mohasinac/appkit/ui";
 
 import { RatingDisplay } from "@mohasinac/appkit/ui";
 
@@ -38,12 +38,12 @@ export function getReviewTableColumns() {
       sortable: true,
       width: "12%",
       render: (review: Review) => (
-        <div className="flex items-center gap-2">
+        <Row gap="sm">
           <RatingDisplay rating={review.rating} />
           <Span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             ({review.rating})
           </Span>
-        </div>
+        </Row>
       ),
     },
     {

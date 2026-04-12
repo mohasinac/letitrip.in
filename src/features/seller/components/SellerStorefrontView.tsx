@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Badge } from "@mohasinac/appkit/ui";
+import { Heading, Text, Badge, Row } from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
   Card,
@@ -104,12 +104,12 @@ export function SellerStorefrontView({
                     </Text>
                   )}
 
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                  <Row gap="sm" wrap className="text-sm">
                     <Text variant="secondary">
                       {tSf("memberSince")} {memberSince}
                     </Text>
                     {seller.publicProfile?.location && (
-                      <div className="flex items-center gap-1">
+                      <Row gap="xs">
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -124,10 +124,10 @@ export function SellerStorefrontView({
                         <Text variant="secondary">
                           {seller.publicProfile.location}
                         </Text>
-                      </div>
+                      </Row>
                     )}
                     {reviewsData && reviewsData.totalReviews > 0 && (
-                      <div className="flex items-center gap-1">
+                      <Row gap="xs">
                         <svg
                           className={`w-4 h-4 ${THEME_CONSTANTS.rating.filled}`}
                           fill="currentColor"
@@ -144,9 +144,9 @@ export function SellerStorefrontView({
                           ({reviewsData.totalReviews}{" "}
                           {tSf("totalReviews").toLowerCase()})
                         </Text>
-                      </div>
+                      </Row>
                     )}
-                  </div>
+                  </Row>
 
                   <div className="mt-3">
                     <TextLink
@@ -251,7 +251,7 @@ export function SellerStorefrontView({
               <div className={`${flex.between} mb-4`}>
                 <Heading level={2}>{tSf("reviewsTitle")}</Heading>
                 {reviewsData && reviewsData.totalReviews > 0 && (
-                  <div className="flex items-center gap-2">
+                  <Row gap="sm">
                     <div className="flex">
                       <StarIcons rating={reviewsData.averageRating} />
                     </div>
@@ -263,7 +263,7 @@ export function SellerStorefrontView({
                     <Text variant="secondary" className="text-xs">
                       ({reviewsData.totalReviews})
                     </Text>
-                  </div>
+                  </Row>
                 )}
               </div>
 
@@ -285,7 +285,7 @@ export function SellerStorefrontView({
                           {review.userName.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <Row gap="sm" wrap className="mb-1">
                             <Text className="text-sm font-semibold">
                               {review.userName}
                             </Text>
@@ -294,7 +294,7 @@ export function SellerStorefrontView({
                                 {tSf("verifiedPurchase")}
                               </Badge>
                             )}
-                          </div>
+                          </Row>
                           <div className="flex gap-0.5 mb-2">
                             <StarIcons rating={review.rating} size="sm" />
                           </div>
