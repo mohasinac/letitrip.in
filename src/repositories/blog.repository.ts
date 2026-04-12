@@ -16,7 +16,7 @@ import {
 } from "@/db/schema";
 import { DatabaseError } from "@mohasinac/appkit/errors";
 import { FieldValue } from "firebase-admin/firestore";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import { generateBlogPostId } from "@/utils";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 

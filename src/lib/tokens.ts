@@ -12,7 +12,7 @@ import {
   EMAIL_VERIFICATION_COLLECTION,
   PASSWORD_RESET_COLLECTION,
 } from "@/db/schema";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 
 export interface TokenData {
   userId: string;

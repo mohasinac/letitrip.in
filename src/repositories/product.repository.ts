@@ -5,7 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import { FieldValue } from "firebase-admin/firestore";
 import type {
   ProductDocument,

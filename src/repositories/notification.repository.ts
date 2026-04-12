@@ -13,7 +13,7 @@ import {
   NOTIFICATION_FIELDS,
 } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import type {
   SieveModel,
   FirebaseSieveFields,

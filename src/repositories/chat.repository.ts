@@ -21,7 +21,7 @@
 
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { BaseRepository } from "./base.repository";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import { DatabaseError } from "@mohasinac/appkit/errors";
 import type { ChatRoomCreateInput, ChatRoomDocument } from "@/db/schema";
 import { CHAT_ROOM_COLLECTION } from "@/db/schema";

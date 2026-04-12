@@ -29,7 +29,7 @@ import { DatabaseError, NotFoundError } from "@mohasinac/appkit/errors";
 import {
   prepareForFirestore,
   deserializeTimestamps,
-} from "@/lib/firebase/firestore-helpers";
+} from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@/lib/server-logger";
 import type {
   FirebaseSieveFields,

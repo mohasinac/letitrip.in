@@ -5,7 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import type { EventEntryDocument, EventEntryCreateInput } from "@/db/schema";
 import { EVENT_ENTRIES_COLLECTION, EVENT_ENTRY_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";

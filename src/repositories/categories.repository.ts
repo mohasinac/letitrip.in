@@ -20,7 +20,7 @@ import {
 } from "@/db/schema/categories";
 import { CATEGORY_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@mohasinac/appkit/errors";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import { FieldValue } from "firebase-admin/firestore";
 import type {
   SieveModel,

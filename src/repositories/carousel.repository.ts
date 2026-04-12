@@ -16,7 +16,7 @@ import {
   createCarouselId,
 } from "@/db/schema/carousel-slides";
 import { DatabaseError } from "@mohasinac/appkit/errors";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import type {
   SieveModel,
   FirebaseSieveFields,

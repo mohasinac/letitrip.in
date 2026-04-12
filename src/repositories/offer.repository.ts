@@ -6,7 +6,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import type {
   OfferDocument,

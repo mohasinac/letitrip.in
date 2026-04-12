@@ -48,7 +48,7 @@ import type {
   DocumentData,
   Query,
 } from "firebase-admin/firestore";
-import { deserializeTimestamps } from "@/lib/firebase/firestore-helpers";
+import { deserializeTimestamps } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
