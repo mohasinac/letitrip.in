@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Main, Text, Button } from "@mohasinac/appkit/ui";
+import { Heading, Main, Text, Button, Row, Stack } from "@mohasinac/appkit/ui";
 import { CartView as AppkitCartView } from "@mohasinac/appkit/features/cart";
 
 import { CartItemList } from "./CartItemList";
@@ -132,9 +132,9 @@ export function CartView() {
           <Heading level={1} className="mb-8">
             {t("title")}
           </Heading>
-          <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+          <Stack centered gap="md" className="py-16 text-center">
             <Text className={themed.textSecondary}>{t("guestSubtitle")}</Text>
-            <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <Row wrap justify="center" gap="3" className="mt-2">
               <Button
                 onClick={() =>
                   router.push(
@@ -154,8 +154,8 @@ export function CartView() {
               >
                 {t("guestCreateAccount")}
               </Button>
-            </div>
-          </div>
+            </Row>
+          </Stack>
         </Main>
       );
     }
@@ -186,16 +186,17 @@ export function CartView() {
 
           {/* Sign-in CTA panel */}
           <div className={`mt-8 lg:mt-0 ${spacing.stack} lg:sticky lg:top-24`}>
-            <div
-              className={`p-6 rounded-xl border ${themed.bgPrimary} ${themed.border} flex flex-col gap-4`}
+            <Stack
+              className={`p-6 rounded-xl border ${themed.bgPrimary} ${themed.border}`}
+              gap="md"
             >
               {hasPrices && (
-                <div className="flex justify-between">
+                <Row justify="between" gap="none">
                   <Text size="sm">{t("subtotal")}</Text>
                   <Text size="sm" weight="bold">
                     {formatCurrency(guestSubtotal)}
                   </Text>
-                </div>
+                </Row>
               )}
               <Text size="sm" className={themed.textSecondary}>
                 {t("guestSubtitle")}
@@ -222,7 +223,7 @@ export function CartView() {
               >
                 {t("guestCreateAccount")}
               </Button>
-            </div>
+            </Stack>
           </div>
         </div>
       </Main>

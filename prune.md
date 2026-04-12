@@ -213,18 +213,18 @@ Select-String -Path "index.md" -Pattern "Accordion.tsx|LocaleSwitcher.tsx|Custom
 
 Use this section as the operational tracker for migration decisions and sequencing.
 
-| Workstream                                                      | Priority | Owner                   | Current Status                      | Next Required Action                                                                                                                                                                           | Exit Condition                                                                                                            |
-| --------------------------------------------------------------- | -------- | ----------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Task Group 2 - Orphaned media cleanup (tmp + cron)              | P0       | letitrip.in + functions | **done**                            | none — all entity save flows that persist media URLs now finalize tmp→canonical on save                                                                                                        | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed                                  |
-| Task Group 1 - Media limits (5 images + 1 video)                | P0       | appkit + letitrip.in    | **DONE**                            | none — seller product form, gallery adapter, review/store schemas, and upload guardrails now enforce the 5+1 contract with appkit media ownership                                              | each target file mapped with explicit limit policy and migration target                                                   |
-| Task Group 4 - Order `imageUrls` aggregation                    | P0       | letitrip.in             | **done**                            | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths                                                                                            | order image propagation logic fully implemented                                                                           |
-| Task Group 3 - Listing consolidation                            | P1       | appkit + letitrip.in    | **DONE**                            | none — order-splitter deleted; usePlaceBid + useRealtimeBids moved to appkit; view components already wrap appkit shells; useAuctionDetail tracked below                                       | no untracked listing-rule owner remains in letitrip backlog                                                               |
-| Task Group 6 - Remaining shim cleanup                           | P1       | letitrip.in             | done                                | none                                                                                                                                                                                           | remaining shim list is empty                                                                                              |
-| Task Group 5 - ID generator standardization                     | P1       | appkit + letitrip.in    | **DONE**                            | none — `src/utils/id-generators.ts` deleted; all generators delegated to `@mohasinac/appkit/utils`; media filename generators, offerId, QR/barcode, idExists, generateUniqueId added to appkit | all ID generation ownership points to appkit generators                                                                   |
-| Task Group 7 - Semantic wrapper variant expansion               | P1       | appkit + letitrip.in    | **discovery done; phase-1 pending** | Phase 1: create `Row` + `CenteredStack` variants in appkit, export, migrate 165+ letitrip instances (batched by phase per rollout order)                                                       | all 4 phases completed; 65–100+ wrapper instances consolidated into variant API; zero new raw-class patterns introduced   |
-| Task Group 8 - i18n and currency propagation (INR)              | P0       | letitrip.in + appkit    | **DONE**                            | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed                                                                                                    | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented                               |
-| Task Group 9 - Appkit ownership over duplicated/shared features | P1       | letitrip.in + appkit    | **DONE**                            | none — local `Accordion` and local `SearchResultsSection` deleted; consumers switched to appkit ownership (`@mohasinac/appkit/ui`, `@mohasinac/appkit/features/search`)                        | no duplicate feature ownership remains in letitrip                                                                        |
-| Task Group 10 - Multi-image support for events and blog         | P1       | appkit + letitrip.in    | **DONE**                            | none — appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now enforce typed event/blog media slots end-to-end                                                                  | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot |
+| Workstream                                                      | Priority | Owner                   | Current Status                     | Next Required Action                                                                                                                                                                                                  | Exit Condition                                                                                                                                                                                                |
+| --------------------------------------------------------------- | -------- | ----------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Task Group 2 - Orphaned media cleanup (tmp + cron)              | P0       | letitrip.in + functions | **done**                           | none — all entity save flows that persist media URLs now finalize tmp→canonical on save                                                                                                                               | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed                                                                                                                      |
+| Task Group 1 - Media limits (5 images + 1 video)                | P0       | appkit + letitrip.in    | **DONE**                           | none — seller product form, gallery adapter, review/store schemas, and upload guardrails now enforce the 5+1 contract with appkit media ownership                                                                     | each target file mapped with explicit limit policy and migration target                                                                                                                                       |
+| Task Group 4 - Order `imageUrls` aggregation                    | P0       | letitrip.in             | **done**                           | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths                                                                                                                   | order image propagation logic fully implemented                                                                                                                                                               |
+| Task Group 3 - Listing consolidation                            | P1       | appkit + letitrip.in    | **DONE**                           | none — order-splitter deleted; usePlaceBid + useRealtimeBids moved to appkit; view components already wrap appkit shells; useAuctionDetail tracked below                                                              | no untracked listing-rule owner remains in letitrip backlog                                                                                                                                                   |
+| Task Group 6 - Remaining shim cleanup                           | P1       | letitrip.in             | done                               | none                                                                                                                                                                                                                  | remaining shim list is empty                                                                                                                                                                                  |
+| Task Group 5 - ID generator standardization                     | P1       | appkit + letitrip.in    | **DONE**                           | none — `src/utils/id-generators.ts` deleted; all generators delegated to `@mohasinac/appkit/utils`; media filename generators, offerId, QR/barcode, idExists, generateUniqueId added to appkit                        | all ID generation ownership points to appkit generators                                                                                                                                                       |
+| Task Group 7 - Semantic wrapper variant expansion               | P1       | appkit + letitrip.in    | **phase-1 partial (batch 1 done)** | Continue Phase 1 rollout: migrate remaining `flex items-center gap-*` and `flex flex-col items-center justify-center gap-*` clusters to `Row`/`Stack centered` across letitrip + appkit surfaces (batch by subsystem) | all 4 phases completed; matching repeated patterns in both repos migrated to approved variants; large className bundles replaced except documented one-off exceptions; zero new raw-class patterns introduced |
+| Task Group 8 - i18n and currency propagation (INR)              | P0       | letitrip.in + appkit    | **DONE**                           | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed                                                                                                                           | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented                                                                                                                   |
+| Task Group 9 - Appkit ownership over duplicated/shared features | P1       | letitrip.in + appkit    | **DONE**                           | none — local `Accordion` and local `SearchResultsSection` deleted; consumers switched to appkit ownership (`@mohasinac/appkit/ui`, `@mohasinac/appkit/features/search`)                                               | no duplicate feature ownership remains in letitrip                                                                                                                                                            |
+| Task Group 10 - Multi-image support for events and blog         | P1       | appkit + letitrip.in    | **DONE**                           | none — appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now enforce typed event/blog media slots end-to-end                                                                                         | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot                                                                                     |
 
 Legend:
 
@@ -627,6 +627,10 @@ Verification: partial
 
 After wrappers are adopted, remove repeated utility-class patterns by introducing named appkit variants/config props for semantic wrappers and layout primitives.
 
+### Mandatory adoption rule
+
+Once a wrapper/layout variant is created in appkit, it must be adopted throughout both appkit and letitrip for all matching repeated patterns. Do not keep large repeated className strings when an approved variant exists; replace them with the variant unless a documented one-off exception is required.
+
 ### Why this is now required
 
 - Index comparison shows appkit already has the foundational primitives (`src/ui/components/Semantic.tsx`, `src/ui/components/Div.tsx`, `src/ui/components/Layout.tsx`, `src/ui/components/Typography.tsx`).
@@ -652,6 +656,7 @@ After wrappers are adopted, remove repeated utility-class patterns by introducin
 - replacement mapping examples
 
 3. Migration rollout order by blast radius (low -> high).
+4. Adoption enforcement plan: for each approved variant, migrate matching usages in both appkit and letitrip and track remaining class-bundle exceptions explicitly.
 
 ### Accessibility acceptance gate (mandatory for each proposed variant)
 
@@ -779,14 +784,26 @@ After wrappers are adopted, remove repeated utility-class patterns by introducin
 
 **Phase 1 (Low-risk, high-consolidation):**
 
-1. `Row` (Priority 2) — 100+ instances; enables the most consolidation; low complexity
-2. `CenteredStack` (Priority 1) — 65+ instances; complements Row; additive variant
+1. `Row` (Priority 2) — 100+ instances; enables the most consolidation; low complexity.
+2. `CenteredStack` (Priority 1) — 65+ instances; complements Row; additive variant.
+3. Adoption requirement: replace matching repeated class bundles in both appkit and letitrip for `Row`/`CenteredStack`; do not leave large parallel className implementations except documented one-off exceptions.
 
-**Phase 2 (Medium-risk):** 3. `Grid` (Priority 5) — 25+ instances; responsive patterns already stable in current code 4. `WrappedRow` (Priority 3) — 30+ instances; simple flex-wrap variant
+**Phase 2 (Medium-risk):**
 
-**Phase 3 (Component-new):** 5. `Card` (Priority 6) — 10+ instances; new component; lowest consumer count 6. `Pill` (Priority 4) — 15+ instances; interactive semantics require careful review
+1. `Grid` (Priority 5) — 25+ instances; responsive patterns already stable in current code.
+2. `WrappedRow` (Priority 3) — 30+ instances; simple flex-wrap variant.
+3. Adoption requirement: migrate matching `grid`/`flex-wrap` class clusters in both appkit and letitrip to these variants and record any explicit exceptions.
 
-**Phase 4 (Refinement):** 7. `ResponsiveStack` (Priority 7) — 20+ instances; depends on phase-1 Stack adoption
+**Phase 3 (Component-new):**
+
+1. `Card` (Priority 6) — 10+ instances; new component; lowest consumer count.
+2. `Pill` (Priority 4) — 15+ instances; interactive semantics require careful review.
+3. Adoption requirement: replace repeated card/pill class bundles in both appkit and letitrip with approved components/variants while preserving interaction semantics and focus behavior.
+
+**Phase 4 (Refinement):**
+
+1. `ResponsiveStack` (Priority 7) — 20+ instances; depends on phase-1 Stack adoption.
+2. Adoption requirement: finish remaining cross-repo replacements so no matching repeated large className bundles remain in appkit or letitrip where an approved variant exists.
 
 ### Implementation Readiness
 
@@ -800,12 +817,13 @@ After wrappers are adopted, remove repeated utility-class patterns by introducin
 
 ### Verification
 
-Status: **Variant proposals ready for review**
+Status: **Phase 1 in progress (batch 1 complete)**
 
-- Pattern inventory complete (65–100 frequency clusters identified)
-- 7 concrete variant proposals with semantic intent + a11y gate + rollout order documented
-- Appkit primitives confirmed as implementation targets
-- Accessibility contract defined for all proposals
+- **DONE (session 17)**: Pattern inventory complete (65–100 frequency clusters identified).
+- **DONE (session 17)**: 7 concrete variant proposals with semantic intent + a11y gate + rollout order documented.
+- **DONE (session 18 batch 1)**: appkit `Stack` and `Row` now support `centered` variant prop in `src/ui/components/Layout.tsx` (appkit commit `e33b2a1`).
+- **DONE (session 18 batch 1)**: letitrip cart slice migrated to TG7 phase-1 variants in `CheckoutSuccessView.tsx` and `CartView.tsx` (`Stack centered`, `Row`, and `Row wrap` adoption for repeated flex bundles).
+- **DONE (session 18 batch 1)**: diagnostics clean on all touched files; appkit watcher (`watch:primitives`) reports build success after changes.
 
 ---
 

@@ -3,7 +3,15 @@
 import React, { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { Heading, Text, Button, Span, Spinner } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Text,
+  Button,
+  Span,
+  Spinner,
+  Main,
+  Stack,
+} from "@mohasinac/appkit/ui";
 
 import { OrderSuccessHero } from "./OrderSuccessHero";
 import { OrderSuccessCard } from "./OrderSuccessCard";
@@ -30,49 +38,54 @@ export function CheckoutSuccessView() {
 
   if (isLoading) {
     return (
-      <div className={`min-h-screen ${flex.center} ${themed.bgPrimary}`}>
-        <Spinner />
-      </div>
+      <Main className={`min-h-screen ${themed.bgPrimary}`}>
+        <Stack centered className="min-h-screen">
+          <Spinner />
+        </Stack>
+      </Main>
     );
   }
 
   if (error || !order) {
     return (
-      <div className={`min-h-screen ${flex.centerCol} ${themed.bgPrimary} p-6`}>
-        <div
-          className={`${themed.bgSecondary} rounded-xl p-6 max-w-md w-full text-center ${spacing.stack}`}
-        >
-          <div className="text-5xl mb-2">✅</div>
-          <Heading level={1} className="text-2xl font-bold">
-            {t("fallbackTitle")}
-          </Heading>
-          <Text variant="secondary">
-            {t("fallbackConfirmed")} — Order ID:{" "}
-            <Span className="font-mono font-semibold" variant="inherit">
-              {orderId}
-            </Span>
-          </Text>
-          <Text size="sm" variant="secondary">
-            {t("fallbackSubtitle")}
-          </Text>
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button
-              variant="primary"
-              onClick={() => router.push(ROUTES.USER.ORDERS)}
-              className="flex-1"
-            >
-              {t("viewOrders")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
-              className="flex-1"
-            >
-              {t("continueShopping")}
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Main className={`min-h-screen ${themed.bgPrimary} p-6`}>
+        <Stack centered className="min-h-full">
+          <Stack
+            className={`${themed.bgSecondary} rounded-xl p-6 max-w-md w-full text-center`}
+            gap="md"
+          >
+            <div className="text-5xl mb-2">✅</div>
+            <Heading level={1} className="text-2xl font-bold">
+              {t("fallbackTitle")}
+            </Heading>
+            <Text variant="secondary">
+              {t("fallbackConfirmed")} — Order ID:{" "}
+              <Span className="font-mono font-semibold" variant="inherit">
+                {orderId}
+              </Span>
+            </Text>
+            <Text size="sm" variant="secondary">
+              {t("fallbackSubtitle")}
+            </Text>
+            <Stack gap="3" className="pt-2 sm:flex-row">
+              <Button
+                variant="primary"
+                onClick={() => router.push(ROUTES.USER.ORDERS)}
+                className="flex-1"
+              >
+                {t("viewOrders")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+                className="flex-1"
+              >
+                {t("continueShopping")}
+              </Button>
+            </Stack>
+          </Stack>
+        </Stack>
+      </Main>
     );
   }
 
