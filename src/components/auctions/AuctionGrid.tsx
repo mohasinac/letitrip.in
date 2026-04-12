@@ -2,7 +2,7 @@
 
 import { AuctionCard } from "./AuctionCard";
 import type { AuctionCardData } from "./AuctionCard";
-import { Span, Text } from "@mohasinac/appkit/ui";
+import { Span, Text, Stack } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { card } = THEME_CONSTANTS;
@@ -108,7 +108,7 @@ export function AuctionGrid({
 
   if (auctions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
+      <Stack centered gap="3" className="py-24 text-center">
         <Span className="text-6xl">🔨</Span>
         <Text variant="primary" className="text-xl font-medium">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS}
@@ -116,7 +116,7 @@ export function AuctionGrid({
         <Text size="sm" variant="secondary">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS_SUBTITLE}
         </Text>
-      </div>
+      </Stack>
     );
   }
 

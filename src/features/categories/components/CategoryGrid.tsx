@@ -9,7 +9,7 @@
 import { useTranslations } from "next-intl";
 import type { CategoryItem } from "@mohasinac/appkit/features/categories";
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Span } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Stack } from "@mohasinac/appkit/ui";
 import { CategoryCard } from "@/components";
 
 const { grid } = THEME_CONSTANTS;
@@ -32,13 +32,13 @@ export function CategoryGrid({
   const t = useTranslations("categories");
   if (categories.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
+      <Stack centered className="py-20 text-center">
         <Span className="text-6xl mb-4">🗂️</Span>
         <Heading level={3}>{t("noCategories")}</Heading>
         <Text variant="secondary" size="sm" className="mt-1">
           {t("noCategoriesSubtitle")}
         </Text>
-      </div>
+      </Stack>
     );
   }
 
