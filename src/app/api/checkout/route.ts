@@ -342,6 +342,15 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
 
       const orderTotal = groupTotal + shippingFee;
 
+      // ── Collect deduplicated main images for order display convenience ────
+      const imageUrls = [
+        ...new Set(
+          group
+            .map(({ product }) => product.mainImage)
+            .filter((url): url is string => typeof url === "string" && url.length > 0),
+        ),
+      ];
+
       const order = await unitOfWork.orders.create({
         productId: firstItem.productId,
         productTitle: firstItem.productTitle,
@@ -365,6 +374,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
         shippingFee: shippingFee > 0 ? shippingFee : undefined,
         depositAmount,
         codRemainingAmount,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
       });
 
       orderIds.push(order.id);

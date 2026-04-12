@@ -27,6 +27,7 @@ import {
 import type { ReviewDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { maskPublicReview } from "@/lib/pii";
+import { finalizeStagedMediaArray } from "@/lib/media/finalize";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -82,6 +83,9 @@ export async function createReviewAction(
 
   const profile = await userRepository.findById(user.uid);
 
+  // Finalize any staged tmp media URLs before persisting
+  const images = await finalizeStagedMediaArray(parsed.data.images);
+
   serverLogger.debug("createReviewAction", {
     uid: user.uid,
     productId: parsed.data.productId,
@@ -97,7 +101,7 @@ export async function createReviewAction(
     rating: parsed.data.rating,
     title: parsed.data.title,
     comment: parsed.data.comment,
-    images: parsed.data.images,
+    images,
     verified: false,
     status: "pending",
   });
@@ -137,7 +141,12 @@ export async function updateReviewAction(
     throw new AuthorizationError("Not authorized to update this review");
   }
 
-  return reviewRepository.update(reviewId, parsed.data);
+  // Finalize any staged tmp media URLs before persisting
+  const updatePayload = parsed.data.images !== undefined
+    ? { ...parsed.data, images: await finalizeStagedMediaArray(parsed.data.images) }
+    : parsed.data;
+
+  return reviewRepository.update(reviewId, updatePayload);
 }
 
 /**

@@ -23,6 +23,7 @@ import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { maskPublicReview } from "@/lib/pii";
 import type { UserDocument } from "@/db/schema";
+import { finalizeStagedMediaField } from "@/lib/media/finalize";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -73,10 +74,13 @@ export async function updateProfileAction(
     );
   }
 
-  return userRepository.updateProfileWithVerificationReset(
-    user.uid,
-    parsed.data,
-  );
+  // Finalize staged tmp avatar URL before persisting
+  const finalPhotoURL = await finalizeStagedMediaField(parsed.data.photoURL);
+  const data = finalPhotoURL !== undefined
+    ? { ...parsed.data, photoURL: finalPhotoURL }
+    : parsed.data;
+
+  return userRepository.updateProfileWithVerificationReset(user.uid, data);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────

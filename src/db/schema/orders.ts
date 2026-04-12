@@ -51,6 +51,12 @@ export interface OrderDocument {
    * Defaults to "standard" when not set (legacy orders).
    */
   orderType?: OrderType;
+  /**
+   * Denormalized main images from purchased products.
+   * Populated at order creation so order UIs can render without extra product fetches.
+   * Deduped — one entry per unique mainImage across all items in this order.
+   */
+  imageUrls?: string[];
   quantity: number;
   unitPrice: number;
   totalPrice: number;

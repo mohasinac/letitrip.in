@@ -305,6 +305,15 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         0,
       );
 
+      // ── Collect deduplicated main images for order display convenience ────
+      const imageUrls = [
+        ...new Set(
+          group
+            .map(({ product }) => product?.mainImage)
+            .filter((url): url is string => typeof url === "string" && url.length > 0),
+        ),
+      ];
+
       const order = await unitOfWork.orders.create({
         productId: firstItem.productId,
         productTitle: firstItem.productTitle,
@@ -328,6 +337,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         notes,
         platformFee,
         shippingFee: shippingFee > 0 ? shippingFee : undefined,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
       });
 
       orderIds.push(order.id);

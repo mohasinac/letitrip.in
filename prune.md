@@ -2,14 +2,14 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 8 — commit 524d5887)
+Last updated: April 12, 2026 (session 9 — pending commit)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
 - Verdict A (Listing Logic): partial
 - Verdict B (Media Contract 5 images + 1 video): partial → **product schema/image cap and upload API product-context guardrails implemented (session 7)**
-- Verdict C (Order imageUrls propagation): pending
-- Verdict D (Dual cleanup strategy): partial → **scheduler job implemented; upload route stages under tmp/*; seller create/update actions now finalize tmp media to canonical media paths (session 8)**
+- Verdict C (Order imageUrls propagation): **done** → `imageUrls` field added to `OrderDocument`; populated at create time in checkout route and payment/verify route (session 9)
+- Verdict D (Dual cleanup strategy): **done** → scheduler job implemented; upload route stages under tmp/*; seller create/update + store update + review create/update + profile avatar update all finalize tmp media to canonical media paths (session 9); shared finalize helpers extracted to `src/lib/media/finalize.ts`
 - Verdict E (Semantic wrapper variants + accessibility): pending
 - Verdict F (i18n and INR currency propagation): pending
 - Verdict G (Appkit ownership over duplicate/shared features): pending
@@ -157,9 +157,9 @@ Use this section as the operational tracker for migration decisions and sequenci
 
 | Workstream | Priority | Owner | Current Status | Next Required Action | Exit Condition |
 |---|---|---|---|---|---|
-| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **partial** | extend finalize-on-save coverage to remaining entity save flows beyond seller product create/update | scheduler spec approved and task remains implementation-ready |
+| Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
 | Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
-| Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | pending | define source-of-truth flow for populate/update of `order.imageUrls` | order image propagation logic fully specified in backlog |
+| Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
 | Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
 | Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | partial | document deprecation path for `src/utils/id-generators.ts` and call-site replacement sequence | all ID generation ownership points to appkit generators |
@@ -368,7 +368,9 @@ Verification: partial
 - **DONE (session 2)**: Schedule set to `SCHEDULES.DAILY_0430_UTC` (10:00 AM IST / 04:30 UTC), timezone `Asia/Kolkata`, `maxInstances: 1`.
 - **DONE (session 7 batch 1)**: media upload route now prefixes staged uploads under `tmp/*`.
 - **DONE (session 8 batch 1)**: seller product save actions (`createSellerProductAction`, `sellerUpdateProductAction`) now finalize staged `tmp/*` media by copying to `media/*` and deleting source objects.
-- **Pending**: extend finalize-on-save logic to remaining non-seller save flows that persist media URLs.
+- **DONE (session 9)**: shared finalize helpers extracted to `src/lib/media/finalize.ts` (`finalizeStagedMediaUrl`, `finalizeStagedMediaField`, `finalizeStagedMediaArray`).
+- **DONE (session 9)**: `updateStoreAction` (store logo + banner), `createReviewAction` (review images), `updateReviewAction` (review images), `updateProfileAction` (avatar photoURL) all finalize tmp media on save.
+- All entity save flows that persist media URLs now finalize tmp→canonical. Task Group 2 exit condition reached.
 
 ### Safety constraints
 - never delete non-tmp media in cron job
@@ -430,8 +432,10 @@ Orders should automatically contain imageUrls derived from purchased item main i
 - order detail views can render from order.imageUrls without additional product reads
 - schema includes imageUrls with stable typing
 
-Verification: pending
-- No definitive `order.imageUrls` propagation in current create/update flow.
+Verification: **done**
+- **DONE (session 9)**: `imageUrls?: string[]` added to `OrderDocument` interface in `src/db/schema/orders.ts`.
+- **DONE (session 9)**: `imageUrls` collected from `product.mainImage` (deduplicated) in `src/app/api/checkout/route.ts` at order creation.
+- **DONE (session 9)**: `imageUrls` also populated in `src/app/api/payment/verify/route.ts` (online payment order creation path).
 
 ---
 
