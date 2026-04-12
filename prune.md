@@ -2,13 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `aa809ced` (batch E + hook decision ledger); wave-2 admin view ledger pending commit
+Last updated: April 13, 2026 — committed `df626a88` (TG11 wave-2 admin view ledger; tasks 1/2/3 DONE)
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
-- Latest commits: appkit `65caf03`, letitrip `aa809ced`.
-- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename hook decision ledger (task 1 DONE); TG11 wave-2 admin *View.tsx 22-basename audit + decision ledger (task 2 DONE, task 3 exception docs DONE).
+- Latest commits: appkit `65caf03`, letitrip `df626a88`.
+- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename hook decision ledger (TG11 task 1 DONE); TG11 wave-2 admin *View.tsx 22-basename audit + decision ledger (TG11 tasks 2+3 DONE). TG11 is now COMPLETE.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
@@ -107,7 +107,7 @@ Exit condition:
 
 Verified: No `Intl.NumberFormat` calls in `letitrip.in/src/`. All money output uses `formatCurrency` from `@mohasinac/appkit/utils`. Policy documented in Verdict F above.
 
-## Task Group 11 - Index-Driven Overlap Consolidation (New)
+## Task Group 11 - Index-Driven Overlap Consolidation — COMPLETE
 
 Goal:
 - Use generated index overlap data to eliminate parallel ownership and enforce appkit-first implementation ownership.
