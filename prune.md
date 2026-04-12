@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 11 — TG8 DONE)
+Last updated: April 12, 2026 (session 12 — TG5 DONE, TG3 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -183,7 +183,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Task Group 2 - Orphaned media cleanup (tmp + cron) | P0 | letitrip.in + functions | **done** | none — all entity save flows that persist media URLs now finalize tmp→canonical on save | all finalize-on-save paths implemented; scheduler + immediate-abort primitives confirmed |
 | Task Group 1 - Media limits (5 images + 1 video) | P0 | appkit + letitrip.in | partial | implement remaining matrix rows (seller edit/create media list + reviews/stores schemas/forms) after product baseline batch | each target file mapped with explicit limit policy and migration target |
 | Task Group 4 - Order `imageUrls` aggregation | P0 | letitrip.in | **done** | none — `imageUrls` added to `OrderDocument` and populated at checkout + payment/verify create paths | order image propagation logic fully implemented |
-| Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | partial | enumerate residual listing logic in letitrip and mark migration target in appkit | no untracked listing-rule owner remains in letitrip backlog |
+| Task Group 3 - Listing consolidation | P1 | appkit + letitrip.in | **DONE** | none — order-splitter deleted; usePlaceBid + useRealtimeBids moved to appkit; view components already wrap appkit shells; useAuctionDetail tracked below | no untracked listing-rule owner remains in letitrip backlog |
 | Task Group 6 - Remaining shim cleanup | P1 | letitrip.in | done | none | remaining shim list is empty |
 | Task Group 5 - ID generator standardization | P1 | appkit + letitrip.in | **DONE** | none — `src/utils/id-generators.ts` deleted; all generators delegated to `@mohasinac/appkit/utils`; media filename generators, offerId, QR/barcode, idExists, generateUniqueId added to appkit | all ID generation ownership points to appkit generators |
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
@@ -430,9 +430,13 @@ Move all auction/pre-order/listing behavior into appkit and keep letitrip as con
 - letitrip passes listingType and marketplace config only
 - appkit owns bidding windows, pre-order eligibility, countdown behavior, and reusable listing rules
 
-Verification: partial
-- Appkit side foundations are present.
-- Letitrip side cleanup/config-only wiring is still an active migration step.
+Verification: **DONE** (session 12)
+- **DONE**: `src/utils/order-splitter.ts` deleted (87 lines removed). `@/utils` barrel now re-exports `splitCartIntoOrderGroups`, `OrderGroup`, `OrderType` from `@mohasinac/appkit/features/orders`.
+- **DONE**: `src/hooks/usePlaceBid.ts` deleted (45 lines). appkit `src/features/auctions/hooks/usePlaceBid.ts` created; uses `apiClient.post('/api/bids', ...)` directly. letitrip `hooks/index.ts` now imports from `@mohasinac/appkit/features/auctions`.
+- **DONE**: `src/hooks/useRealtimeBids.ts` deleted (110 lines). appkit `src/features/auctions/hooks/useRealtimeBids.ts` created; SSE endpoint parameterised, defaults to `/api/realtime/bids/{productId}`. letitrip imports from `@mohasinac/appkit/features/auctions`.
+- **DONE**: Letitrip view components (`AuctionDetailView`, `PreOrderDetailView`, `PreOrdersView`, `PlaceBidForm`) already wrap appkit render-slot shells — verified in session 12. These are legitimate thin adapters passing letitrip data via render props.
+- **Tracked remaining**: `useAuctionDetail` (uses `/api/products` endpoint vs appkit's `/api/auctions` — divergence documented). `useAuctions` in `features/products/hooks` uses `/api/products` not `/api/auctions` (same reason). These stay in letitrip until API endpoint unification or appkit parameterization is done (separate task).
+- appkit commit: `39e0c14` · letitrip commit: `fca85774`
 
 ---
 
