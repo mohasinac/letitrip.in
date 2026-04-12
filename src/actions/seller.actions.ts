@@ -36,6 +36,7 @@ import {
 } from "@/db/schema";
 import {
   productCreateSchema,
+  mediaUrlSchema,
   productUpdateSchema,
 } from "@/lib/validation/schemas";
 import type {
@@ -227,8 +228,8 @@ const updateStoreSchema = z.object({
   storeName: z.string().min(2).max(80).optional(),
   storeDescription: z.string().max(500).optional().or(z.literal("")),
   storeCategory: z.string().max(80).optional().or(z.literal("")),
-  storeLogoURL: z.string().url().optional().or(z.literal("")),
-  storeBannerURL: z.string().url().optional().or(z.literal("")),
+  storeLogoURL: mediaUrlSchema.optional().or(z.literal("")),
+  storeBannerURL: mediaUrlSchema.optional().or(z.literal("")),
   returnPolicy: z.string().max(2000).optional().or(z.literal("")),
   shippingPolicy: z.string().max(2000).optional().or(z.literal("")),
   bio: z.string().max(300).optional().or(z.literal("")),

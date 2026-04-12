@@ -27,6 +27,7 @@ import {
 import type { ReviewDocument } from "@/db/schema";
 import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { maskPublicReview } from "@/lib/pii";
+import { mediaUrlSchema } from "@/lib/validation/schemas";
 import { finalizeStagedMediaArray, finalizeStagedMediaUrl } from "@/lib/media/finalize";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
@@ -40,16 +41,16 @@ const createReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   title: z.string().min(1).max(200),
   comment: z.string().min(10).max(2000),
-  images: z.array(z.string()).max(5).optional().default([]),
-  videoUrl: z.string().url().optional(),
+  images: z.array(mediaUrlSchema).max(5).optional().default([]),
+  videoUrl: mediaUrlSchema.optional(),
 });
 
 const updateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5).optional(),
   title: z.string().min(1).max(200).optional(),
   comment: z.string().min(10).max(2000).optional(),
-  images: z.array(z.string()).max(5).optional(),
-  videoUrl: z.string().url().optional().nullable(),
+  images: z.array(mediaUrlSchema).max(5).optional(),
+  videoUrl: mediaUrlSchema.optional().nullable(),
 });
 
 // ─── Server Actions ────────────────────────────────────────────────────────
@@ -189,7 +190,8 @@ const adminUpdateReviewSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   comment: z.string().min(10).max(2000).optional(),
   status: z.enum(["pending", "approved", "rejected"]).optional(),
-  images: z.array(z.string()).optional(),
+  images: z.array(mediaUrlSchema).max(5).optional(),
+  videoUrl: mediaUrlSchema.optional().nullable(),
 });
 
 /**
@@ -226,7 +228,20 @@ export async function adminUpdateReviewAction(
     adminId: admin.uid,
     reviewId,
   });
-  return reviewRepository.update(reviewId, parsed.data);
+  const { videoUrl, images: rawImages, ...rest } = parsed.data;
+  const updatePayload: Record<string, unknown> = { ...rest };
+
+  if (rawImages !== undefined) {
+    updatePayload.images = await finalizeStagedMediaArray(rawImages);
+  }
+
+  if (videoUrl !== undefined) {
+    updatePayload.video = videoUrl
+      ? { url: await finalizeStagedMediaUrl(videoUrl) }
+      : null;
+  }
+
+  return reviewRepository.update(reviewId, updatePayload as Partial<ReviewDocument>);
 }
 
 /**
