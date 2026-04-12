@@ -16,8 +16,12 @@ export function useCreateReview(
   onError?: (err: { status?: number; message?: string }) => void,
 ) {
   return useMutation<unknown, Error, CreateReviewInput>({
-    mutationFn: (data) =>
-      createReviewAction({ ...data, images: data.images ?? [] }),
+    mutationFn: (data) => {
+      if ((data.images?.length ?? 0) > 5) {
+        return Promise.reject(new Error("Reviews support at most 5 images."));
+      }
+      return createReviewAction({ ...data, images: data.images ?? [] });
+    },
     onSuccess,
     onError,
   });
