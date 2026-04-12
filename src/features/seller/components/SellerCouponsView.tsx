@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Tag, Plus } from "lucide-react";
 import {
   Caption,
+  Grid,
   Heading,
   Text,
   Spinner,
@@ -94,7 +95,10 @@ function CouponCard({
           </Heading>
 
           {/* Discount info grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-2">
+          <Grid
+            gap="none"
+            className="grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-2"
+          >
             <div>
               <Caption className={`text-xs ${themed.textSecondary}`}>
                 {t("labelDiscount")}
@@ -128,7 +132,7 @@ function CouponCard({
                 {coupon.usage.totalLimit ? ` / ${coupon.usage.totalLimit}` : ""}
               </Span>
             </div>
-          </div>
+          </Grid>
         </div>
 
         {/* Actions */}

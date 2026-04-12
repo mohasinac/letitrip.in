@@ -16,6 +16,7 @@ import {
   Badge,
   Button,
   Spinner,
+  Grid,
   Row,
 } from "@mohasinac/appkit/ui";
 import { Card, SideDrawer, AddressForm, Alert } from "@/components";
@@ -127,7 +128,7 @@ export function StoreAddressesSection() {
           )}
 
           {addresses && addresses.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Grid gap="md" className="grid-cols-1 md:grid-cols-2">
               {addresses.map((addr) => (
                 <Card
                   key={addr.id}
@@ -188,7 +189,7 @@ export function StoreAddressesSection() {
                   </div>
                 </Card>
               ))}
-            </div>
+            </Grid>
           )}
         </div>
       </Card>

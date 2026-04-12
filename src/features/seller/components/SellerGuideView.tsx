@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Row, Grid } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -137,7 +137,7 @@ export async function SellerGuideView() {
       </Section>
 
       <div className={`${page.container.md} py-14 md:py-16 lg:py-20`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 xl:gap-10">
+        <Grid gap="xl" className="grid-cols-1 md:grid-cols-2 xl:gap-10">
           {SECTIONS.map(({ icon: Icon, title, text }) => (
             <Section
               key={title}
@@ -160,7 +160,7 @@ export async function SellerGuideView() {
               </div>
             </Section>
           ))}
-        </div>
+        </Grid>
 
         {/* ── Become a Seller Onboarding Diagram ── */}
         <FlowDiagram

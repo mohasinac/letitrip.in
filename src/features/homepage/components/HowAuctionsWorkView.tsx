@@ -2,7 +2,7 @@
 
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { HowItWorksInfoView } from "@mohasinac/appkit/features/homepage";
-import { Heading, Text, Span, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Row, Grid } from "@mohasinac/appkit/ui";
 import { TextLink, FlowDiagram } from "@/components";
 import type { FlowStep } from "@/components";
 import { useTranslations } from "next-intl";
@@ -103,7 +103,7 @@ export function HowAuctionsWorkView() {
             >
               {t("diagramStatusNote")}
             </Text>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Grid gap="3" className="grid-cols-1 sm:grid-cols-3">
               <div className="rounded-xl border-2 border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 p-3">
                 <Row gap="xs" className="mb-1.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
@@ -135,7 +135,7 @@ export function HowAuctionsWorkView() {
                   {t("diagramForfeitDesc")}
                 </Text>
               </div>
-            </div>
+            </Grid>
           </div>
         </FlowDiagram>
       )}

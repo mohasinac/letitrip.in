@@ -392,8 +392,9 @@ export function DemoSeedView() {
                   </Button>
 
                   {/* Group chips */}
-                  <div
-                    className={`p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 ${themed.bgPrimary}`}
+                  <Grid
+                    gap="sm"
+                    className={`p-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 ${themed.bgPrimary}`}
                   >
                     {group.collections.map((col) => {
                       const isSelected = selectedCollections.includes(col);
@@ -456,7 +457,7 @@ export function DemoSeedView() {
                         </div>
                       );
                     })}
-                  </div>
+                  </Grid>
                 </div>
               );
             })}

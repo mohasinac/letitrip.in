@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner, Button } from "@mohasinac/appkit/ui";
+import { Spinner, Button, Grid } from "@mohasinac/appkit/ui";
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -69,7 +69,10 @@ export function UserAddressesView() {
         isLoading ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          <Grid
+            gap="md"
+            className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+          >
             {addresses?.map((address: Address) => (
               <AddressCard
                 key={address.id}
@@ -81,7 +84,7 @@ export function UserAddressesView() {
                 }
               />
             ))}
-          </div>
+          </Grid>
         )
       }
       renderEmpty={() => (

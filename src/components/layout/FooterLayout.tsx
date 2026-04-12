@@ -27,6 +27,7 @@ import { ChevronDown } from "lucide-react";
 import {
   BlockFooter,
   Caption,
+  Grid,
   Li,
   Row,
   Text,
@@ -132,7 +133,10 @@ export function FooterLayout({
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-12 md:py-16`}
       >
         {/* Main grid: brand column + 5 link-group columns (Row 1 on desktop) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 xl:grid-cols-7 2xl:grid-cols-7 gap-x-6 gap-y-0">
+        <Grid
+          gap="none"
+          className="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 xl:grid-cols-7 2xl:grid-cols-7 gap-x-6 gap-y-0"
+        >
           {/* Brand + Social + Newsletter column */}
           <div className="sm:col-span-2 md:col-span-3 lg:col-span-2 pb-8 border-b border-zinc-200 dark:border-white/5 lg:border-none lg:pb-0 lg:pr-8 mb-2 lg:mb-0">
             <Text
@@ -211,7 +215,7 @@ export function FooterLayout({
               </div>
             </div>
           ))}
-        </div>
+        </Grid>
 
         {/* Row 2: copyright bar */}
         <div

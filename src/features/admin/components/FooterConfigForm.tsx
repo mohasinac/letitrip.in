@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Button, Row, Grid } from "@mohasinac/appkit/ui";
 import { Card, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
@@ -101,9 +101,10 @@ export function FooterConfigForm({
               </Text>
               <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {items.map((item, i) => (
-                  <div
+                  <Grid
                     key={i}
-                    className="grid grid-cols-[6rem_1fr_auto] items-end gap-3 py-3"
+                    gap="3"
+                    className="grid-cols-[6rem_1fr_auto] items-end py-3"
                   >
                     <FormField
                       name={`trustbar-icon-${i}`}
@@ -126,7 +127,7 @@ export function FooterConfigForm({
                         label={t("itemVisible")}
                       />
                     </div>
-                  </div>
+                  </Grid>
                 ))}
               </div>
             </div>
