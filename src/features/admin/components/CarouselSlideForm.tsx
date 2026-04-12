@@ -11,7 +11,7 @@
 
 import { useState } from "react";
 import { nowMs } from "@/utils";
-import { Heading, Label, Text, Button, Row } from "@mohasinac/appkit/ui";
+import { Heading, Label, Text, Button, Row, Grid } from "@mohasinac/appkit/ui";
 import { Checkbox, FormField, FormGroup, Select } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
@@ -336,7 +336,7 @@ export function CarouselSlideForm({
               <Label className="block mb-2 text-xs font-semibold uppercase tracking-wide">
                 {row === 1 ? t("topRow") : t("bottomRow")}
               </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Grid cols={3} gap="3" className="grid-cols-1 sm:grid-cols-3">
                 {([1, 2, 3] as const).map((col) => {
                   const card = getCard(row, col);
                   const cellKey: CellKey = `${row},${col}`;
@@ -446,7 +446,7 @@ export function CarouselSlideForm({
                     </div>
                   );
                 })}
-              </div>
+              </Grid>
             </div>
           ))}
         </div>
@@ -509,8 +509,13 @@ function CardEditor({
         <Label className="block mb-1.5 text-xs font-medium">
           {t("cardBackground")}
         </Label>
-        <div
-          className={`grid gap-2 ${card.background.type !== "transparent" ? "grid-cols-2" : "grid-cols-1"}`}
+        <Grid
+          gap="sm"
+          className={
+            card.background.type !== "transparent"
+              ? "grid-cols-2"
+              : "grid-cols-1"
+          }
         >
           <Select
             value={card.background.type}
@@ -541,7 +546,7 @@ function CardEditor({
               placeholder={t("backgroundValue")}
             />
           )}
-        </div>
+        </Grid>
       </div>
 
       {/* Sizing */}
@@ -549,7 +554,7 @@ function CardEditor({
         <Label className="block mb-1.5 text-xs font-medium">
           {t("cardSizing")}
         </Label>
-        <div className="grid grid-cols-3 gap-2">
+        <Grid className="grid-cols-3" gap="sm">
           <div>
             <Label className="block mb-1.5 text-xs">{t("cardWidth")}</Label>
             <Select
@@ -610,7 +615,7 @@ function CardEditor({
               ]}
             />
           </div>
-        </div>
+        </Grid>
       </div>
 
       {/* Button-only toggle */}

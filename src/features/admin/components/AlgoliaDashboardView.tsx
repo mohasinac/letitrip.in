@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AlgoliaDashboardView as AppkitAlgoliaDashboardView } from "@mohasinac/appkit/features/admin";
 import { Card, useToast } from "@/components";
-import { Text, Span, Badge, Button, Row } from "@mohasinac/appkit/ui";
+import { Grid, Text, Span, Badge, Button, Row } from "@mohasinac/appkit/ui";
 import { useAlgoliaSync } from "@/features/admin/hooks";
 
 export function AlgoliaDashboardView() {
@@ -77,7 +77,7 @@ export function AlgoliaDashboardView() {
   return (
     <AppkitAlgoliaDashboardView
       renderStatus={() => (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Grid className="grid-cols-2 md:grid-cols-4">
           {["products", "pages", "categories", "stores"].map((index) => (
             <Card key={index}>
               <div className="p-4 text-center">
@@ -103,7 +103,7 @@ export function AlgoliaDashboardView() {
               </div>
             </Card>
           ))}
-        </div>
+        </Grid>
       )}
       renderActions={() => (
         <Card>

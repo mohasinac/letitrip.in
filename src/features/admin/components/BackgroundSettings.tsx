@@ -3,7 +3,15 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Heading, Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
+import {
+  Heading,
+  Label,
+  Text,
+  Span,
+  Button,
+  Row,
+  Grid,
+} from "@mohasinac/appkit/ui";
 import {
   Card,
   Checkbox,
@@ -112,7 +120,7 @@ export default function BackgroundSettings({
           >
             Background Type
           </Label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Grid gap="3" className="grid-cols-2 sm:grid-cols-4">
             {(["color", "gradient", "image", "video"] as const).map((type) => (
               <Button
                 key={type}
@@ -130,7 +138,7 @@ export default function BackgroundSettings({
                 {type === "video" && "🎥"} {type}
               </Button>
             ))}
-          </div>
+          </Grid>
         </div>
 
         {/* Type-Specific Settings */}
@@ -181,7 +189,7 @@ export default function BackgroundSettings({
               >
                 Quick Presets
               </Label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Grid gap="3" className="grid-cols-2 sm:grid-cols-4">
                 {gradientPresets.map((preset) => (
                   <Button
                     key={preset.name}
@@ -199,7 +207,7 @@ export default function BackgroundSettings({
                     </div>
                   </Button>
                 ))}
-              </div>
+              </Grid>
             </div>
           </div>
         )}

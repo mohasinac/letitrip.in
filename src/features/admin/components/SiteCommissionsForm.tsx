@@ -7,7 +7,7 @@
 
 "use client";
 
-import { Heading, Text, Caption, Label } from "@mohasinac/appkit/ui";
+import { Heading, Text, Caption, Label, Grid } from "@mohasinac/appkit/ui";
 import { Card, FormField, FormGroup } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -81,7 +81,7 @@ export function SiteCommissionsForm({
             <Caption className="font-semibold mb-3 uppercase tracking-wide">
               {t("paymentMethodsLabel")}
             </Caption>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Grid cols={3} gap="3" className="grid-cols-1 sm:grid-cols-3">
               {(
                 [
                   ["razorpayEnabled", t("razorpayLabel")],
@@ -108,7 +108,7 @@ export function SiteCommissionsForm({
                   </Text>
                 </Label>
               ))}
-            </div>
+            </Grid>
           </div>
 
           {/* Razorpay fee */}
