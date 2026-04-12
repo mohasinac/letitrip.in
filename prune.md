@@ -154,6 +154,14 @@ Wave-1 progress log (hooks overlap):
 	- deletion: removed local wrapper `src/features/cart/hooks/useOrder.ts`
 	- local hooks barrel update: removed `export { useOrder } from "./useOrder"` from `src/features/cart/hooks/index.ts`
 	- status: completed
+- 2026-04-13 batch D (wishlist unused hook + productDetail duplicate):
+	- basenames: `useWishlist` (local, no consumers), `useProductDetail` (exact duplicate of appkit export)
+	- classification: move fully to appkit (both)
+	- rewiring for useWishlist: no component consumers found — only barrel export; removed without rewiring
+	- rewiring for useProductDetail: `ProductDetailView.tsx` and `PreOrderDetailView.tsx` now import directly from `@mohasinac/appkit/features/products`
+	- deletions: `src/features/wishlist/hooks/useWishlist.ts`, `src/features/wishlist/hooks/index.ts`, `src/features/products/hooks/useProductDetail.ts`
+	- barrel updates: removed `export * from "./hooks"` from `src/features/wishlist/index.ts`; removed `useProductDetail` export from `src/features/products/hooks/index.ts`
+	- status: completed
 
 Overlap decision ledger (initial rows):
 - `useFaqList` -> move fully to appkit (completed)
@@ -162,6 +170,8 @@ Overlap decision ledger (initial rows):
 - `useStoreAuctions` -> move fully to appkit (completed)
 - `useStoreReviews` -> move fully to appkit (completed)
 - `useOrder` (cart) -> move fully to appkit (completed)
+- `useWishlist` (local hook) -> move fully to appkit (completed — no consumers, deleted)
+- `useProductDetail` -> move fully to appkit (completed — exact duplicate removed)
 - `useAuctions` -> keep letitrip as config-only adapter (blocked by endpoint divergence: `/api/products` vs `/api/auctions`)
 - `useAuctionDetail` -> keep letitrip as consumer-only exception until API/detail-hook parity is available
 - `useCheckout` -> keep letitrip as consumer-only exception (local API orchestration hook differs from appkit checkout state hook)

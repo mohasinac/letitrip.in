@@ -12,8 +12,10 @@ import { ProductTabs } from "./ProductTabs";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
-import { useProductDetail } from "../hooks";
-import { ProductDetailView as AppkitProductDetailView } from "@mohasinac/appkit/features/products";
+import {
+  ProductDetailView as AppkitProductDetailView,
+  useProductDetail,
+} from "@mohasinac/appkit/features/products";
 import { Grid, Span, Heading, Text } from "@mohasinac/appkit/ui";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 

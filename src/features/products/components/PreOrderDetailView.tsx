@@ -40,7 +40,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
-import { useProductDetail } from "../hooks";
+import { useProductDetail } from "@mohasinac/appkit/features/products";
 import { usePreOrderPayment } from "../hooks/usePreOrders";
 import { listAddressesAction } from "@/actions";
 import { formatCurrency, formatDate } from "@/utils";
