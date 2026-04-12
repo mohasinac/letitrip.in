@@ -222,14 +222,12 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                     empty: t("empty.description"),
                   }}
                   slots={{
-                    renderCard: (store) => (
+                    renderCard: (store: StoreListItem) => (
                       <StoreCard
                         key={store.id}
-                        store={store as StoreListItem}
+                        store={store}
                         selectable={!!user}
-                        selected={selectedIds.includes(
-                          (store as StoreListItem).ownerId,
-                        )}
+                        selected={selectedIds.includes(store.ownerId)}
                         onSelect={(id, sel) =>
                           setSelectedIds((prev) =>
                             sel ? [...prev, id] : prev.filter((x) => x !== id),

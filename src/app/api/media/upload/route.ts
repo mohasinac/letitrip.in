@@ -258,6 +258,10 @@ export const POST = createRouteHandler({
               {
                 maxImages: BLOG_ADDITIONAL_IMAGE_MAX,
                 receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
 
         if (ctx.type === "rich-text-image") {
           const imageIndex = ctx.index ?? 1;
@@ -271,10 +275,6 @@ export const POST = createRouteHandler({
               {
                 maxImages: RICH_TEXT_IMAGE_MAX,
                 receivedIndex: imageIndex,
-              },
-            );
-          }
-        }
               },
             );
           }
@@ -314,7 +314,11 @@ export const POST = createRouteHandler({
         };
         const detectedExt = mimeToExt[detectedMime] ?? detected.ext;
         // Inject the server-verified extension into the context
-        filename = generateMediaFilename({ ...ctx, ext: detectedExt });
+        if (ctx.type === "invoice" || ctx.type === "payout-doc") {
+          filename = generateMediaFilename(ctx);
+        } else {
+          filename = generateMediaFilename({ ...ctx, ext: detectedExt });
+        }
       } else {
         const randomString = randomBytes(6).toString("hex");
         filename = `${Date.now()}-${randomString}.${detected.ext}`;

@@ -14,6 +14,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
+  Accordion,
+  AccordionItem,
   Caption,
   Heading,
   Label,
@@ -26,8 +28,6 @@ import {
 } from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
-  Accordion,
-  AccordionItem,
   Card,
   Alert,
   FormField,
@@ -308,7 +308,7 @@ export function SellerStoreView() {
                         folder: "stores",
                         context: {
                           type: "rich-text-image",
-                          entity: "store-description",
+                            entity: "store-description",
                           name: form.storeName || "store",
                         },
                       }}

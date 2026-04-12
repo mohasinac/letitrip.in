@@ -73,7 +73,7 @@ class CartRepository extends BaseRepository<CartDocument> {
       await this.db
         .collection(this.collection)
         .doc(userId)
-        .set(prepareForFirestore(cartData));
+        .set(prepareForFirestore(cartData as unknown as Record<string, unknown>));
 
       return cartData;
     } catch (error) {
@@ -149,7 +149,7 @@ class CartRepository extends BaseRepository<CartDocument> {
       await this.db
         .collection(this.collection)
         .doc(userId)
-        .set(prepareForFirestore(updatedCart));
+        .set(prepareForFirestore(updatedCart as unknown as Record<string, unknown>));
 
       return updatedCart;
     } catch (error) {
@@ -189,7 +189,7 @@ class CartRepository extends BaseRepository<CartDocument> {
       await this.db
         .collection(this.collection)
         .doc(userId)
-        .set(prepareForFirestore(updatedCart));
+        .set(prepareForFirestore(updatedCart as unknown as Record<string, unknown>));
 
       return updatedCart;
     } catch (error) {
@@ -221,7 +221,7 @@ class CartRepository extends BaseRepository<CartDocument> {
       await this.db
         .collection(this.collection)
         .doc(userId)
-        .set(prepareForFirestore(updatedCart));
+        .set(prepareForFirestore(updatedCart as unknown as Record<string, unknown>));
 
       return updatedCart;
     } catch (error) {
@@ -247,7 +247,7 @@ class CartRepository extends BaseRepository<CartDocument> {
       await this.db
         .collection(this.collection)
         .doc(userId)
-        .set(prepareForFirestore(clearedCart));
+        .set(prepareForFirestore(clearedCart as unknown as Record<string, unknown>));
 
       return clearedCart;
     } catch (error) {

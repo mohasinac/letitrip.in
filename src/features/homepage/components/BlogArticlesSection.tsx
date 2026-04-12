@@ -5,6 +5,7 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useBlogArticles } from "@mohasinac/appkit/features/homepage";
 import { BlogCard } from "@/components";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import type { BlogPost } from "@mohasinac/appkit/features/blog";
 
 export function BlogArticlesSection() {
   const t = useTranslations("homepage");
@@ -17,7 +18,7 @@ export function BlogArticlesSection() {
   if (!isLoading && articles.length === 0) return null;
 
   return (
-    <SectionCarousel
+    <SectionCarousel<BlogPost>
       title={t("blogTitle")}
       description={t("blogSubtitle")}
       headingVariant="editorial"

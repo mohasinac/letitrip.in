@@ -90,16 +90,6 @@ export function BlogForm({
     additionalImageIndexRef.current = post.additionalImages?.length ?? 0;
   }, [post.additionalImages?.length, post.contentImages?.length]);
 
-  const handleTitleChange = (value: string) => {
-    const slug = value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-    update({ title: value, slug });
-  };
-
   return (
     <AppkitBlogPostForm
       value={post}
@@ -112,11 +102,11 @@ export function BlogForm({
             .replace(/[^a-z0-9\s-]/g, "")
             .replace(/\s+/g, "-")
             .replace(/-+/g, "-");
-          onChange({ ...next, slug });
+          onChange({ ...next, slug } as BlogFormData);
           return;
         }
 
-        onChange(next);
+        onChange(next as BlogFormData);
       }}
       categoryOptions={categoryOptions}
       statusOptions={statusOptions}
@@ -166,9 +156,9 @@ export function BlogForm({
             imageUploadConfig={{
               folder: "blog",
               context: {
-                type: "blog-content-image",
-                title: post.title || "post",
-                category: post.category || "news",
+                type: "rich-text-image",
+                entity: "blog-content",
+                name: post.title || "post",
               },
             }}
           />

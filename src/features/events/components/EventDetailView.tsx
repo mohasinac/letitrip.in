@@ -74,7 +74,7 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
               <div className="relative aspect-[21/9] overflow-hidden rounded-xl mb-4">
                 <MediaImage
                   src={coverImageUrl}
-                  alt={event.title}
+                  alt={event?.title ?? "Event cover"}
                   size="hero"
                   priority
                 />

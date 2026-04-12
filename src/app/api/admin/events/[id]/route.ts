@@ -12,12 +12,18 @@ import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
-import { mediaFieldSchema } from "@mohasinac/appkit/utils";
 import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@/lib/media/finalize";
+
+const mediaFieldSchema = z.object({
+  url: z.string().url(),
+  type: z.enum(["image", "video", "file"]),
+  alt: z.string().optional(),
+  thumbnailUrl: z.string().url().optional(),
+});
 
 // ---------------------------------------------------------------------------
 // GET — fetch single event

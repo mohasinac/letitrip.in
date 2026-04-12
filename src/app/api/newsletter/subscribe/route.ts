@@ -28,6 +28,7 @@ const subscribeSchema = z.object({
 export const POST = createRouteHandler<(typeof subscribeSchema)["_output"]>({
   schema: subscribeSchema,
   handler: async ({ request, body }) => {
+    type SupportedNewsletterSource = "footer" | "homepage" | "checkout" | "popup";
     const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
     if (!rl.success) return errorResponse("Too many requests", 429);
     const { email, source } = body!;
@@ -52,7 +53,23 @@ export const POST = createRouteHandler<(typeof subscribeSchema)["_output"]>({
         SUCCESS_MESSAGES.NEWSLETTER.RESUBSCRIBED,
       );
     }
-    await newsletterRepository.subscribe({ email, source, ipAddress });
+    const normalizedSource: SupportedNewsletterSource | undefined =
+      source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.FOOTER
+        ? "footer"
+        : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.HOMEPAGE
+          ? "homepage"
+          : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.CHECKOUT
+            ? "checkout"
+            : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.POPUP ||
+                source === "admin" ||
+                source === "import"
+              ? "popup"
+              : undefined;
+    await newsletterRepository.subscribe({
+      email,
+      source: normalizedSource,
+      ipAddress,
+    });
     serverLogger.info("New newsletter subscription", { source });
     return successResponse(
       { subscribed: true },

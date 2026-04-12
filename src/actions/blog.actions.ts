@@ -23,7 +23,6 @@ import {
 import {
   coerceMediaField,
   getMediaUrl,
-  mediaFieldSchema,
   type MediaField,
 } from "@mohasinac/appkit/utils";
 import type {
@@ -40,11 +39,23 @@ import {
 
 const singleImageMediaSchema = z
   .union([
-    mediaFieldSchema,
+    z.object({
+      url: z.string().url(),
+      type: z.enum(["image", "video", "file"]),
+      alt: z.string().optional(),
+      thumbnailUrl: z.string().url().optional(),
+    }),
     z.string().url().transform((url) => ({ url, type: "image" as const })),
   ])
   .nullable()
   .optional();
+
+const mediaFieldSchema = z.object({
+  url: z.string().url(),
+  type: z.enum(["image", "video", "file"]),
+  alt: z.string().optional(),
+  thumbnailUrl: z.string().url().optional(),
+});
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 

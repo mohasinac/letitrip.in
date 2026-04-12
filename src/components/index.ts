@@ -141,3 +141,6 @@ export type { ReviewCardData } from "./ReviewCard";
 export { EventCard } from "./EventCard";
 export { EventBanner } from "./EventBanner";
 export { StoreCard } from "./StoreCard";
+
+// Compatibility exports consumed by feature views still importing from @/components
+export { Accordion, AccordionItem } from "@mohasinac/appkit/ui";

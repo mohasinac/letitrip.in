@@ -57,7 +57,11 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
         await this.db
           .collection(this.collection)
           .doc(this.SINGLETON_ID)
-          .set(prepareForFirestore(defaultSettings));
+          .set(
+            prepareForFirestore(
+              defaultSettings as unknown as Record<string, unknown>,
+            ),
+          );
 
         return defaultSettings;
       }
@@ -260,7 +264,11 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
     await this.db
       .collection(this.collection)
       .doc(this.SINGLETON_ID)
-      .set(prepareForFirestore(defaultSettings));
+      .set(
+        prepareForFirestore(
+          defaultSettings as unknown as Record<string, unknown>,
+        ),
+      );
 
     return defaultSettings;
   }

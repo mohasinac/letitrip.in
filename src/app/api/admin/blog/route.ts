@@ -16,11 +16,17 @@ import {
 import { blogRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { mediaFieldSchema } from "@mohasinac/appkit/utils";
 import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@/lib/media/finalize";
+
+const mediaFieldSchema = z.object({
+  url: z.string().url(),
+  type: z.enum(["image", "video", "file"]),
+  alt: z.string().optional(),
+  thumbnailUrl: z.string().url().optional(),
+});
 
 const createBlogPostSchema = z.object({
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),

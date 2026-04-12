@@ -13,10 +13,15 @@ import type { MediaFilenameContext } from "@/utils";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 
+type RichTextMediaContext = Omit<
+  Extract<MediaFilenameContext, { type: "rich-text-image" }>,
+  "index" | "ext"
+>;
+
 export interface RichTextImageUploadConfig {
   folder?: string;
   isPublic?: boolean;
-  context?: Omit<MediaFilenameContext, "index" | "ext">;
+  context?: RichTextMediaContext;
 }
 
 type ImageAlignment = "left" | "center" | "right";

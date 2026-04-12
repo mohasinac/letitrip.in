@@ -45,6 +45,7 @@ export type SubscribeNewsletterInput = z.infer<typeof subscribeSchema>;
 export async function subscribeNewsletterAction(
   input: SubscribeNewsletterInput,
 ): Promise<{ subscribed: boolean }> {
+  type SupportedNewsletterSource = "footer" | "homepage" | "checkout" | "popup";
   const headersList = await headers();
   const ip =
     headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
@@ -69,6 +70,18 @@ export async function subscribeNewsletterAction(
 
   const { email, source } = parsed.data;
   const ipAddress = ip !== "anonymous" ? ip : undefined;
+  const normalizedSource: SupportedNewsletterSource | undefined =
+    source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.FOOTER
+      ? "footer"
+      : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.HOMEPAGE
+        ? "homepage"
+        : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.CHECKOUT
+          ? "checkout"
+          : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.POPUP ||
+              source === "admin" ||
+              source === "import"
+            ? "popup"
+            : undefined;
 
   const existing = await newsletterRepository.findByEmail(email);
   if (existing) {
@@ -80,7 +93,13 @@ export async function subscribeNewsletterAction(
     return { subscribed: true };
   }
 
-  await newsletterRepository.subscribe({ email, source, ipAddress });
-  serverLogger.info("New newsletter subscription", { source });
+  await newsletterRepository.subscribe({
+    email,
+    source: normalizedSource,
+    ipAddress,
+  });
+  serverLogger.info("New newsletter subscription", {
+    source: normalizedSource,
+  });
   return { subscribed: true };
 }

@@ -30,7 +30,7 @@
  */
 
 import { z } from "zod";
-import type { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createApiHandlerFactory } from "@mohasinac/appkit/next";
 import { initProviders } from "@/providers.config";
 import { applyRateLimit } from "@mohasinac/appkit/security";
@@ -65,7 +65,7 @@ interface ApiHandlerOptions<TInput = any, TParams = Record<string, string>> {
     user?: UserDocument;
     body?: TInput;
     params?: TParams;
-  }) => Promise<NextResponse>;
+  }) => Promise<Response>;
 }
 
 /**
@@ -82,12 +82,12 @@ export function createApiHandler<
     ...options,
     handler: async ({ request, user, body, params }) => {
       await initProviders();
-      return options.handler({
+      return (await options.handler({
         request: request as NextRequest,
         user,
         body,
         params,
-      });
+      })) as unknown as Response;
     },
   });
 }

@@ -108,7 +108,13 @@ export async function createReviewAction(
     title: parsed.data.title,
     comment: parsed.data.comment,
     images,
-    video: finalVideoUrl ? { url: finalVideoUrl } : undefined,
+    video: finalVideoUrl
+      ? {
+          url: finalVideoUrl,
+          thumbnailUrl: finalVideoUrl,
+          duration: 0,
+        }
+      : undefined,
     verified: false,
     status: "pending",
   });

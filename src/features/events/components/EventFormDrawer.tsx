@@ -355,8 +355,9 @@ export function EventFormDrawer({
                 imageUploadConfig={{
                   folder: "events",
                   context: {
-                    type: "event-image",
-                    title: form.title || "event",
+                    type: "rich-text-image",
+                    entity: "event-description",
+                    name: form.title || "event",
                   },
                 }}
               />
