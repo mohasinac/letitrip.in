@@ -22,6 +22,7 @@ import {
   SortDropdown,
 } from "@mohasinac/appkit/ui";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
@@ -47,6 +48,9 @@ const DEFAULT_FORM: BlogFormData = {
   slug: "",
   excerpt: "",
   content: "",
+  coverImage: null,
+  contentImages: [],
+  additionalImages: [],
   category: "news",
   tags: [],
   isFeatured: false,
@@ -132,6 +136,8 @@ function AdminBlogContent() {
         excerpt: post.excerpt,
         content: post.content,
         coverImage: post.coverImage,
+        contentImages: post.contentImages,
+        additionalImages: post.additionalImages,
         category: post.category,
         tags: post.tags,
         isFeatured: post.isFeatured,
@@ -362,10 +368,10 @@ function AdminBlogContent() {
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(post: BlogPostDocument) => (
             <Card className="overflow-hidden cursor-pointer">
-              {post.coverImage && (
+              {getMediaUrl(post.coverImage) && (
                 <div className="relative aspect-video overflow-hidden">
                   <MediaImage
-                    src={post.coverImage}
+                    src={getMediaUrl(post.coverImage)!}
                     alt={post.title}
                     size="card"
                   />

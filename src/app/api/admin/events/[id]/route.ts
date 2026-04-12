@@ -12,6 +12,12 @@ import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { mediaFieldSchema } from "@mohasinac/appkit/utils";
+import {
+  finalizeStagedMediaField,
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@/lib/media/finalize";
 
 // ---------------------------------------------------------------------------
 // GET — fetch single event
@@ -35,7 +41,11 @@ const updateEventSchema = z.object({
   description: z.string().optional(),
   startsAt: z.string().datetime({ offset: true }).optional(),
   endsAt: z.string().datetime({ offset: true }).optional(),
+  coverImage: mediaFieldSchema.nullable().optional(),
   coverImageUrl: z.string().url().optional().nullable(),
+  eventImages: z.array(mediaFieldSchema).max(10).optional(),
+  winnerImages: z.array(mediaFieldSchema).max(5).optional(),
+  additionalImages: z.array(mediaFieldSchema).max(10).optional(),
   saleConfig: z.any().optional(),
   offerConfig: z.any().optional(),
   pollConfig: z.any().optional(),
@@ -59,6 +69,43 @@ export const PUT = createRouteHandler<
     const updateData: Record<string, unknown> = { ...body };
     if (body?.startsAt) updateData.startsAt = new Date(body.startsAt);
     if (body?.endsAt) updateData.endsAt = new Date(body.endsAt);
+    if (body?.coverImageUrl === null) {
+      updateData.coverImage = null;
+      updateData.coverImageUrl = undefined;
+    } else {
+      const coverImageUrl = await finalizeStagedMediaField(
+        body.coverImage?.url ?? body.coverImageUrl ?? existing.coverImageUrl,
+      );
+      const coverImage = body.coverImage
+        ? await finalizeStagedMediaObject({
+            ...body.coverImage,
+            url: coverImageUrl ?? body.coverImage.url,
+          })
+        : body.coverImageUrl
+          ? await finalizeStagedMediaObject({
+              url: coverImageUrl ?? body.coverImageUrl,
+              type: "image",
+            })
+          : existing.coverImage;
+
+      updateData.coverImage = coverImage;
+      updateData.coverImageUrl = coverImage?.url ?? coverImageUrl;
+    }
+    if (body?.eventImages) {
+      updateData.eventImages = await finalizeStagedMediaObjectArray(
+        body.eventImages,
+      );
+    }
+    if (body?.winnerImages) {
+      updateData.winnerImages = await finalizeStagedMediaObjectArray(
+        body.winnerImages,
+      );
+    }
+    if (body?.additionalImages) {
+      updateData.additionalImages = await finalizeStagedMediaObjectArray(
+        body.additionalImages,
+      );
+    }
 
     const updated = await eventRepository.updateEvent(id, updateData as never);
     serverLogger.info("Admin event updated", { eventId: id });

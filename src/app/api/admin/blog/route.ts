@@ -16,6 +16,11 @@ import {
 import { blogRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { mediaFieldSchema } from "@mohasinac/appkit/utils";
+import {
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@/lib/media/finalize";
 
 const createBlogPostSchema = z.object({
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -26,7 +31,9 @@ const createBlogPostSchema = z.object({
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
-  coverImage: z.string().optional(),
+  coverImage: mediaFieldSchema.nullable().optional(),
+  contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),
+  additionalImages: z.array(mediaFieldSchema).max(5).optional().default([]),
   authorId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   authorName: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   authorAvatar: z.string().optional(),
@@ -134,9 +141,19 @@ export const POST = createRouteHandler({
   schema: createBlogPostSchema,
   handler: async ({ body, user }) => {
     const { publishedAt, ...rest } = body!;
+    const coverImage = await finalizeStagedMediaObject(rest.coverImage);
+    const contentImages = await finalizeStagedMediaObjectArray(
+      rest.contentImages,
+    );
+    const additionalImages = await finalizeStagedMediaObjectArray(
+      rest.additionalImages,
+    );
 
     const postData = {
       ...rest,
+      coverImage,
+      contentImages,
+      additionalImages,
       publishedAt: publishedAt
         ? new Date(publishedAt)
         : body!.status === "published"

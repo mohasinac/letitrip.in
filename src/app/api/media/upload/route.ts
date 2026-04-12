@@ -25,6 +25,13 @@ const REVIEW_IMAGE_MAX = 5;
 const REVIEW_VIDEO_MAX = 1;
 const AUCTION_IMAGE_MAX = 5;
 const PREORDER_IMAGE_MAX = 5;
+const EVENT_COVER_MAX = 1;
+const EVENT_IMAGE_MAX = 10;
+const EVENT_WINNER_IMAGE_MAX = 5;
+const EVENT_ADDITIONAL_IMAGE_MAX = 10;
+const BLOG_COVER_MAX = 1;
+const BLOG_CONTENT_IMAGE_MAX = 10;
+const BLOG_ADDITIONAL_IMAGE_MAX = 5;
 const TMP_UPLOAD_PREFIX = "tmp";
 
 /**
@@ -169,11 +176,104 @@ export const POST = createRouteHandler({
           }
         }
 
+        if (ctx.type === "event-cover") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > EVENT_COVER_MAX) {
+            return errorResponse("Only one event cover image is allowed", 400, {
+              maxImages: EVENT_COVER_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        if (ctx.type === "event-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > EVENT_IMAGE_MAX) {
+            return errorResponse("Event image index exceeds max allowed", 400, {
+              maxImages: EVENT_IMAGE_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        if (ctx.type === "event-winner-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > EVENT_WINNER_IMAGE_MAX) {
+            return errorResponse(
+              "Event winner image index exceeds max allowed",
+              400,
+              {
+                maxImages: EVENT_WINNER_IMAGE_MAX,
+                receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
+
+        if (ctx.type === "event-additional-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > EVENT_ADDITIONAL_IMAGE_MAX) {
+            return errorResponse(
+              "Event additional image index exceeds max allowed",
+              400,
+              {
+                maxImages: EVENT_ADDITIONAL_IMAGE_MAX,
+                receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
+
+        if (ctx.type === "blog-cover") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > BLOG_COVER_MAX) {
+            return errorResponse("Only one blog cover image is allowed", 400, {
+              maxImages: BLOG_COVER_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        if (ctx.type === "blog-content-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > BLOG_CONTENT_IMAGE_MAX) {
+            return errorResponse(
+              "Blog content image index exceeds max allowed",
+              400,
+              {
+                maxImages: BLOG_CONTENT_IMAGE_MAX,
+                receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
+
+        if (ctx.type === "blog-additional-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > BLOG_ADDITIONAL_IMAGE_MAX) {
+            return errorResponse(
+              "Blog additional image index exceeds max allowed",
+              400,
+              {
+                maxImages: BLOG_ADDITIONAL_IMAGE_MAX,
+                receivedIndex: imageIndex,
+              },
+            );
+          }
+        }
+
         // Image-only contexts — reject video uploads.
         if (
           ctx.type === "store-logo" ||
           ctx.type === "store-banner" ||
-          ctx.type === "user-avatar"
+          ctx.type === "user-avatar" ||
+          ctx.type === "event-cover" ||
+          ctx.type === "event-image" ||
+          ctx.type === "event-winner-image" ||
+          ctx.type === "event-additional-image" ||
+          ctx.type === "blog-cover" ||
+          ctx.type === "blog-content-image" ||
+          ctx.type === "blog-additional-image"
         ) {
           if (isVideo) {
             return errorResponse(

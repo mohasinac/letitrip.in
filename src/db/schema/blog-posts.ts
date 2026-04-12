@@ -1,3 +1,5 @@
+import type { MediaFieldInput, MediaField } from "@mohasinac/appkit/features/media";
+
 /**
  * Blog Posts Collection Schema
  *
@@ -27,7 +29,9 @@ export interface BlogPostDocument {
   slug: string;
   excerpt: string; // Short description, ~150 chars
   content: string; // Full HTML/markdown content
-  coverImage?: string; // URL to cover image
+  coverImage?: MediaFieldInput; // Backward-compatible cover image descriptor
+  contentImages?: MediaField[];
+  additionalImages?: MediaField[];
 
   // Organization
   category: BlogPostCategory;
@@ -95,6 +99,8 @@ export const BLOG_POST_FIELDS = {
   EXCERPT: "excerpt",
   CONTENT: "content",
   COVER_IMAGE: "coverImage",
+  CONTENT_IMAGES: "contentImages",
+  ADDITIONAL_IMAGES: "additionalImages",
   CATEGORY: "category",
   TAGS: "tags",
   IS_FEATURED: "isFeatured",

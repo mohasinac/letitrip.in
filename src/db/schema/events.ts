@@ -1,3 +1,5 @@
+import type { MediaField } from "@mohasinac/appkit/features/media";
+
 /**
  * Events Collection Schema
  *
@@ -91,7 +93,11 @@ export interface EventDocument {
   status: EventStatus;
   startsAt: Date;
   endsAt: Date;
+  coverImage?: MediaField | null;
   coverImageUrl?: string;
+  eventImages?: MediaField[];
+  winnerImages?: MediaField[];
+  additionalImages?: MediaField[];
   tags?: string[];
 
   // Only one of these is populated per event
@@ -196,6 +202,10 @@ export const EVENT_FIELDS = {
   STARTS_AT: "startsAt",
   ENDS_AT: "endsAt",
   COVER_IMAGE_URL: "coverImageUrl",
+  COVER_IMAGE: "coverImage",
+  EVENT_IMAGES: "eventImages",
+  WINNER_IMAGES: "winnerImages",
+  ADDITIONAL_IMAGES: "additionalImages",
   TAGS: "tags",
   CREATED_BY: "createdBy",
   CREATED_AT: "createdAt",

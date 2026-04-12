@@ -3,6 +3,7 @@ import { blogRepository } from "@/repositories";
 import { BlogPostView } from "@/features/blog/components";
 import type { Metadata } from "next";
 import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog";
+import { getMediaUrl } from "@mohasinac/appkit/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -17,7 +18,9 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
-    openGraph: { images: post.coverImage ? [post.coverImage] : [] },
+    openGraph: {
+      images: getMediaUrl(post.coverImage) ? [getMediaUrl(post.coverImage)!] : [],
+    },
   };
 }
 

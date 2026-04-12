@@ -7,13 +7,11 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Checkbox, FormField, FormFieldSpan, FormGroup } from "@/components";
-import { Label, Span, Text } from "@mohasinac/appkit/ui";
-import { TagInput } from "@mohasinac/appkit/ui";
+import { BlogPostForm as AppkitBlogPostForm } from "@mohasinac/appkit/features/blog";
 import { RichTextEditor } from "./RichTextEditor";
-import { useMediaUpload } from "@/hooks";
+import { useMediaAbort, useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";
 import type {
@@ -62,7 +60,35 @@ export function BlogForm({
     [t],
   );
   const { upload } = useMediaUpload();
-  const update = (partial: BlogFormData) => onChange({ ...post, ...partial });
+  const onAbort = useMediaAbort();
+  const contentImageIndexRef = useRef(0);
+  const additionalImageIndexRef = useRef(0);
+
+  const labels = useMemo(
+    () => ({
+      title: t("formTitle"),
+      slug: t("formSlug"),
+      excerpt: t("formExcerpt"),
+      content: t("formContent"),
+      coverImage: t("formCover"),
+      coverImageHelper: t("formCoverHelper"),
+      contentImages: t("formContentImages"),
+      contentImagesHelper: t("formContentImagesHelper"),
+      additionalImages: t("formAdditionalImages"),
+      additionalImagesHelper: t("formAdditionalImagesHelper"),
+      category: t("formCategory"),
+      status: t("formStatus"),
+      tags: t("formTags"),
+      readTime: t("formReadTime"),
+      featured: t("formFeatured"),
+    }),
+    [t],
+  );
+
+  useEffect(() => {
+    contentImageIndexRef.current = post.contentImages?.length ?? 0;
+    additionalImageIndexRef.current = post.additionalImages?.length ?? 0;
+  }, [post.additionalImages?.length, post.contentImages?.length]);
 
   const handleTitleChange = (value: string) => {
     const slug = value
@@ -75,150 +101,71 @@ export function BlogForm({
   };
 
   return (
-    <div className={spacing.stack}>
-      {/* Title + Slug — side by side on wider screens */}
-      <FormGroup columns={2}>
-        <FormField
-          name="title"
-          label={t("formTitle")}
-          type="text"
-          value={post.title || ""}
-          onChange={handleTitleChange}
-          disabled={isReadonly}
-          required
-        />
+    <AppkitBlogPostForm
+      value={post}
+      onChange={(next) => {
+        const titleChanged = next.title !== post.title;
+        if (titleChanged && next.title) {
+          const slug = next.title
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-");
+          onChange({ ...next, slug });
+          return;
+        }
 
-        <FormField
-          name="slug"
-          label={t("formSlug")}
-          type="text"
-          value={post.slug || ""}
-          onChange={(value) => update({ slug: value })}
-          disabled={isReadonly}
-          required
-        />
-      </FormGroup>
-
-      <FormField
-        name="excerpt"
-        label={t("formExcerpt")}
-        type="textarea"
-        rows={3}
-        value={post.excerpt || ""}
-        onChange={(value) => update({ excerpt: value })}
-        disabled={isReadonly}
-        required
-      />
-
-      {/* Content — rich text editor */}
-      <div>
-        <Label
-          className={`block text-sm font-medium ${themed.textSecondary} mb-1.5`}
-        >
-          {t("formContent")}
-          <Span className="text-red-500 dark:text-red-400 ml-1">*</Span>
-        </Label>
-        {isReadonly ? (
+        onChange(next);
+      }}
+      categoryOptions={categoryOptions}
+      statusOptions={statusOptions}
+      labels={labels}
+      onUploadCover={(file) =>
+        upload(file, "blog", true, {
+          type: "blog-cover",
+          title: post.title || "post",
+          category: post.category || "news",
+          index: 1,
+        })
+      }
+      onUploadContentImage={(file) => {
+        contentImageIndexRef.current += 1;
+        return upload(file, "blog", true, {
+          type: "blog-content-image",
+          title: post.title || "post",
+          category: post.category || "news",
+          index: contentImageIndexRef.current,
+        });
+      }}
+      onUploadAdditionalImage={(file) => {
+        additionalImageIndexRef.current += 1;
+        return upload(file, "blog", true, {
+          type: "blog-additional-image",
+          title: post.title || "post",
+          category: post.category || "news",
+          index: additionalImageIndexRef.current,
+        });
+      }}
+      onAbort={onAbort}
+      isReadonly={isReadonly}
+      renderContentField={({ value, onChange, isReadonly: readonly }) =>
+        readonly ? (
           <div
             className="min-h-[200px] border rounded-md p-3 opacity-60 prose dark:prose-invert max-w-none"
             dangerouslySetInnerHTML={{
-              __html: proseMirrorToHtml(post.content || ""),
+              __html: proseMirrorToHtml(value || ""),
             }}
           />
         ) : (
           <RichTextEditor
-            content={post.content || ""}
-            onChange={(content) => update({ content })}
+            content={value || ""}
+            onChange={onChange}
             placeholder="Write your blog post content..."
             minHeight="300px"
           />
-        )}
-      </div>
-
-      {/* Cover image — uses FormField type="image" */}
-      {!isReadonly ? (
-        <FormField
-          name="coverImage"
-          label={t("formCover")}
-          type="image"
-          value={post.coverImage || ""}
-          onChange={(url) => update({ coverImage: url })}
-          onUpload={(file) =>
-            upload(file, "blog", true, {
-              type: "blog-image",
-              title: post.title || "post",
-              category: post.category || "news",
-            })
-          }
-          helpText="Recommended: 1200x630px (16:9)"
-        />
-      ) : (
-        post.coverImage && (
-          <div>
-            <Label
-              className={`block text-sm font-medium ${themed.textSecondary} mb-1.5`}
-            >
-              {t("formCover")}
-            </Label>
-            <Text size="sm" variant="secondary" className="truncate">
-              {post.coverImage}
-            </Text>
-          </div>
         )
-      )}
-
-      {/* Category + Status — side by side */}
-      <FormGroup columns={2}>
-        <FormField
-          name="category"
-          label={t("formCategory")}
-          type="select"
-          value={post.category || "news"}
-          onChange={(value) => update({ category: value as BlogPostCategory })}
-          disabled={isReadonly}
-          options={categoryOptions}
-          required
-        />
-
-        <FormField
-          name="status"
-          label={t("formStatus")}
-          type="select"
-          value={post.status || "draft"}
-          onChange={(value) => update({ status: value as BlogPostStatus })}
-          disabled={isReadonly}
-          options={statusOptions}
-          required
-        />
-      </FormGroup>
-
-      {/* Tags + Read time — side by side */}
-      <FormGroup columns={2}>
-        <TagInput
-          label={t("formTags")}
-          value={post.tags ?? []}
-          onChange={(tags) => update({ tags })}
-          disabled={isReadonly}
-        />
-
-        <FormField
-          name="readTimeMinutes"
-          label={t("formReadTime")}
-          type="number"
-          value={String(post.readTimeMinutes ?? 5)}
-          onChange={(value) =>
-            update({ readTimeMinutes: parseInt(value, 10) || 5 })
-          }
-          disabled={isReadonly}
-        />
-      </FormGroup>
-
-      <Checkbox
-        label={t("formFeatured")}
-        checked={post.isFeatured || false}
-        onChange={(e) => update({ isFeatured: e.target.checked })}
-        disabled={isReadonly}
-      />
-    </div>
+      }
+    />
   );
 }

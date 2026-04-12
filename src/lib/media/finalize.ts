@@ -13,6 +13,7 @@
  */
 
 import { getAdminStorage } from "@mohasinac/appkit/providers/db-firebase";
+import type { MediaField } from "@mohasinac/appkit/features/media";
 
 const TMP_MEDIA_PREFIX = "tmp/";
 const FINAL_MEDIA_PREFIX = "media/";
@@ -104,4 +105,32 @@ export async function finalizeStagedMediaArray(
 ): Promise<string[]> {
   if (!urls || urls.length === 0) return urls ?? [];
   return Promise.all(urls.map(finalizeStagedMediaUrl));
+}
+
+/**
+ * Finalize a typed media descriptor by promoting its url/thumbnailUrl.
+ */
+export async function finalizeStagedMediaObject(
+  media: MediaField | null | undefined,
+): Promise<MediaField | undefined> {
+  if (!media) return undefined;
+
+  return {
+    ...media,
+    url: await finalizeStagedMediaUrl(media.url),
+    thumbnailUrl: await finalizeStagedMediaField(media.thumbnailUrl),
+  };
+}
+
+/**
+ * Finalize a list of typed media descriptors.
+ */
+export async function finalizeStagedMediaObjectArray(
+  media: MediaField[] | null | undefined,
+): Promise<MediaField[]> {
+  if (!media || media.length === 0) return media ?? [];
+
+  return Promise.all(media.map((item) => finalizeStagedMediaObject(item))).then(
+    (items) => items.filter((item): item is MediaField => Boolean(item)),
+  );
 }

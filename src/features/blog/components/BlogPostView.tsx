@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@mohasinac/appkit/ui";
-("use client");
 
 import { useTranslations } from "next-intl";
 import { BlogPostView as AppkitBlogPostView } from "@mohasinac/appkit/features/blog";
+import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { MediaImage, TextLink } from "@/components";
 import { BlogCard } from "@/components";
 import { ROUTES } from "@/constants";
@@ -35,14 +35,18 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
         featured: t("featured"),
         relatedTitle: t("related"),
       }}
-      renderImage={(post) => (
-        <MediaImage
-          src={post.coverImage!}
-          alt={post.title}
-          size="hero"
-          priority
-        />
-      )}
+      renderImage={(post) => {
+        const coverImageUrl = getMediaUrl(post.coverImage);
+
+        return coverImageUrl ? (
+          <MediaImage
+            src={coverImageUrl}
+            alt={post.title}
+            size="hero"
+            priority
+          />
+        ) : null;
+      }}
       renderContent={(post) => (
         <div
           className="prose dark:prose-invert max-w-none"

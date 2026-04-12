@@ -2,7 +2,7 @@
 
 This document is the single migration backlog for moving reusable code from letitrip.in into appkit while enforcing the architecture rules.
 
-Last updated: April 12, 2026 (session 12 — TG5 DONE, TG3 DONE)
+Last updated: April 12, 2026 (session 13 — TG10 DONE, TG5 DONE, TG3 DONE)
 Source references used: letitrip.in/index.md, appkit/index.md, current workspace scan.
 
 Verification snapshot (April 12, 2026):
@@ -11,9 +11,9 @@ Verification snapshot (April 12, 2026):
 - Verdict C (Order imageUrls propagation): **done** → `imageUrls` field added to `OrderDocument`; populated at create time in checkout route and payment/verify route (session 9)
 - Verdict D (Dual cleanup strategy): **done** → scheduler job implemented; upload route stages under tmp/*; seller create/update + store update + review create/update + profile avatar update all finalize tmp media to canonical media paths (session 9); shared finalize helpers extracted to `src/lib/media/finalize.ts`
 - Verdict E (Semantic wrapper variants + accessibility): pending
-- Verdict F (i18n and INR currency propagation): pending
+- Verdict F (i18n and INR currency propagation): **done** → INR/en-IN config propagation verified; shared price rendering paths now use appkit currency formatting (session 11)
 - Verdict G (Appkit ownership over duplicate/shared features): pending
-- Verdict H (Multi-image support for events and blog — cover, event, winner, additional): pending
+- Verdict H (Multi-image support for events and blog — cover, event, winner, additional): **done** → appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now support typed multi-image event/blog media with abort cleanup and staged-media finalization (session 13)
 - Path reference audit: 47 referenced paths, 47 exist (1 previously-planned path `functions/src/jobs/mediaTmpCleanup.ts` now created)
 
 ---
@@ -107,10 +107,13 @@ Events and blog posts currently hold a single image string (`coverImageUrl` / `c
 
 Migration must be backward-compatible: existing string-typed `coverImageUrl`/`coverImage` values are coerced to `{ url: value, type: "image" }` during read. Both appkit schemas and letitrip admin forms must enforce these limits.
 
-Status: pending
-- Current appkit schemas use bare `string | undefined` for both cover fields.
-- No multi-image arrays exist on either entity.
-- Still needed: schema migration, new typed arrays, admin form components (EventFormDrawer extension + new blog admin form), API enforcement, and abort cleanup wiring.
+Status: **DONE** (session 13)
+- **DONE (session 13 batch 1)**: appkit event/blog schemas now accept typed `MediaField` cover images with backward-compatible string coercion on read.
+- **DONE (session 13 batch 1)**: appkit event/blog types now expose role-specific media arrays (`eventImages`, `winnerImages`, `additionalImages`, `contentImages`) for TG10.
+- **DONE (session 13 batch 2)**: letitrip event/blog schemas, server actions, and admin API routes now validate typed media objects/arrays and finalize staged `tmp/*` media to canonical paths on save.
+- **DONE (session 13 batch 2)**: upload API context guardrails now enforce role-specific event/blog image caps and image-only restrictions for all TG10 context keys.
+- **DONE (session 13 batch 3)**: letitrip admin event/blog forms now expose all new typed media slots, wire `onAbort` cleanup for staged uploads, and preserve backward-compatible cover-image read paths.
+- **DONE (session 13 batch 3)**: reusable ownership moved further into appkit via shared `BlogPostForm`, `EventFormDrawer` media render slots, server-safe media helper exports, and typed public-render fallbacks for event/blog cover media.
 
 ---
 
@@ -189,7 +192,7 @@ Use this section as the operational tracker for migration decisions and sequenci
 | Task Group 7 - Semantic wrapper variant expansion | P1 | appkit + letitrip.in | pending | build wrapper usage pattern inventory and propose named variants/config props replacing repeated classes | approved variant matrix with accessibility criteria and rollout order |
 | Task Group 8 - i18n and currency propagation (INR) | P0 | letitrip.in + appkit | **DONE** | none — all price display paths route through `formatCurrency`; INR/en-IN defaults confirmed | zero unintended dollar-sign displays confirmed; locale/currency config ownership documented |
 | Task Group 9 - Appkit ownership over duplicated/shared features | P1 | letitrip.in + appkit | pending | merge shared-basenamed files into appkit-owned implementations and reduce letitrip to direct imports or minimal config adapters | no duplicate feature ownership remains in letitrip |
-| Task Group 10 - Multi-image support for events and blog | P1 | appkit + letitrip.in | pending | migrate event/blog schemas to typed `MediaField` arrays; extend `EventFormDrawer`; add blog admin form; wire abort cleanup for all new upload slots | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot |
+| Task Group 10 - Multi-image support for events and blog | P1 | appkit + letitrip.in | **DONE** | none — appkit schemas/types/forms and letitrip schemas/actions/APIs/forms now enforce typed event/blog media slots end-to-end | all new image-role slots schema-enforced (appkit) and form-enforced (letitrip); abort cleanup wired for every upload slot |
 
 Legend:
 - P0: blocks architecture safety or data integrity; do first.
@@ -571,7 +574,7 @@ After wrappers are adopted, remove repeated utility-class patterns by introducin
 - color contrast does not regress below WCAG AA
 
 ### Verification
-Status: pending
+Status: partial
 - Appkit primitives exist.
 - Variant mining/proposal and a11y contract are not yet documented to completion.
 
@@ -703,11 +706,13 @@ Upgrade event and blog entities from a single string image field to role-specifi
 - Backward-compatibility coercion helper converts legacy string fields to `MediaField` on read.
 
 ### Verification
-Status: pending
-- Appkit event schema currently has `coverImageUrl: string | undefined` only.
-- Appkit blog schema currently has `coverImage: string | undefined` only.
-- No multi-image arrays or typed media descriptors exist on either entity.
-- All implementation items above are open.
+Status: **DONE** (session 13)
+- **DONE (session 13 batch 1)**: appkit `eventItemSchema` and `blogPostSchema` now accept typed `MediaField` cover media plus role-specific arrays, while still coercing legacy string cover values on read.
+- **DONE (session 13 batch 1)**: appkit event/blog types and public rendering components now support typed cover-image access via shared media helpers.
+- **DONE (session 13 batch 2)**: letitrip event/blog document schemas, create/update actions, admin API routes, and staged-media finalization helpers now persist typed media descriptors end-to-end.
+- **DONE (session 13 batch 2)**: upload API enforces TG10 context caps for `event-cover`, `event-image`, `event-winner-image`, `event-additional-image`, `blog-cover`, `blog-content-image`, and `blog-additional-image`.
+- **DONE (session 13 batch 3)**: letitrip admin blog/event forms expose all new media slots and wire `onAbort` cleanup; reusable ownership is pushed into appkit via `BlogPostForm` and `EventFormDrawer` slot APIs.
+- **DONE (session 13 batch 3)**: validation signal is green via targeted diagnostics on all touched adapter files and successful appkit batch-A/batch-B watcher builds; aggregate `watch:all` remains a separate Windows `spawn EINVAL` issue.
 
 ---
 

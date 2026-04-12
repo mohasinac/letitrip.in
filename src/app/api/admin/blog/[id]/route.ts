@@ -12,6 +12,11 @@ import { blogRepository } from "@/repositories";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { mediaFieldSchema } from "@mohasinac/appkit/utils";
+import {
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@/lib/media/finalize";
 
 const updateBlogPostSchema = z.object({
   title: z.string().min(1).optional(),
@@ -24,7 +29,9 @@ const updateBlogPostSchema = z.object({
   tags: z.array(z.string()).optional(),
   isFeatured: z.boolean().optional(),
   status: z.enum(["draft", "published", "archived"]).optional(),
-  coverImage: z.string().optional(),
+  coverImage: mediaFieldSchema.nullable().optional(),
+  contentImages: z.array(mediaFieldSchema).max(10).optional(),
+  additionalImages: z.array(mediaFieldSchema).max(5).optional(),
   authorName: z.string().optional(),
   authorAvatar: z.string().optional(),
   readTimeMinutes: z.number().int().min(1).optional(),
@@ -68,6 +75,24 @@ export const PATCH = createRouteHandler<
     const { publishedAt, ...rest } = body!;
 
     const updateData: Record<string, unknown> = { ...rest };
+
+    if (body!.coverImage !== undefined) {
+      updateData.coverImage = body!.coverImage
+        ? await finalizeStagedMediaObject(body!.coverImage)
+        : null;
+    }
+
+    if (body!.contentImages) {
+      updateData.contentImages = await finalizeStagedMediaObjectArray(
+        body!.contentImages,
+      );
+    }
+
+    if (body!.additionalImages) {
+      updateData.additionalImages = await finalizeStagedMediaObjectArray(
+        body!.additionalImages,
+      );
+    }
 
     if (publishedAt) {
       updateData.publishedAt = new Date(publishedAt);

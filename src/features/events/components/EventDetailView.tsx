@@ -7,6 +7,7 @@ import { Heading, Text, Button, Span, Spinner } from "@mohasinac/appkit/ui";
 import { Card, EmptyState, MediaImage } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
+import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
@@ -28,6 +29,7 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
   const { showError } = useMessage();
   const t = useTranslations("events");
   const [codeCopied, setCodeCopied] = useState(false);
+  const coverImageUrl = getMediaUrl(event?.coverImage) || event?.coverImageUrl;
 
   const handleCopyCode = async (code: string) => {
     try {
@@ -58,11 +60,11 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
           : undefined
       }
       renderCoverImage={
-        event?.coverImageUrl
+        coverImageUrl
           ? () => (
               <div className="relative aspect-[21/9] overflow-hidden rounded-xl mb-4">
                 <MediaImage
-                  src={event.coverImageUrl!}
+                  src={coverImageUrl}
                   alt={event.title}
                   size="hero"
                   priority

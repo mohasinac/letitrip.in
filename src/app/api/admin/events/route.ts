@@ -17,6 +17,12 @@ import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
+import { mediaFieldSchema } from "@mohasinac/appkit/utils";
+import {
+  finalizeStagedMediaField,
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@/lib/media/finalize";
 
 // ---------------------------------------------------------------------------
 // Validation schema for event creation
@@ -27,7 +33,11 @@ const createEventSchema = z.object({
   description: z.string().default(""),
   startsAt: z.string().datetime({ offset: true }),
   endsAt: z.string().datetime({ offset: true }),
+  coverImage: mediaFieldSchema.nullable().optional(),
   coverImageUrl: z.string().url().optional(),
+  eventImages: z.array(mediaFieldSchema).max(10).optional().default([]),
+  winnerImages: z.array(mediaFieldSchema).max(5).optional().default([]),
+  additionalImages: z.array(mediaFieldSchema).max(10).optional().default([]),
   saleConfig: z
     .object({
       discountPercent: z.number().min(1).max(100),
@@ -146,13 +156,31 @@ export const POST = createRouteHandler({
   handler: async (data) => {
     const body = data.body!;
     const user = data.user!;
+    const coverImageUrl = await finalizeStagedMediaField(
+      body.coverImage?.url ?? body.coverImageUrl,
+    );
+    const coverImage = body.coverImage
+      ? await finalizeStagedMediaObject({
+          ...body.coverImage,
+          url: coverImageUrl ?? body.coverImage.url,
+        })
+      : undefined;
+    const eventImages = await finalizeStagedMediaObjectArray(body.eventImages);
+    const winnerImages = await finalizeStagedMediaObjectArray(body.winnerImages);
+    const additionalImages = await finalizeStagedMediaObjectArray(
+      body.additionalImages,
+    );
     const event = await eventRepository.createEvent({
       type: body.type,
       title: body.title,
       description: body.description ?? "",
       startsAt: new Date(body.startsAt),
       endsAt: new Date(body.endsAt),
-      coverImageUrl: body.coverImageUrl,
+      coverImage,
+      coverImageUrl: coverImage?.url ?? coverImageUrl,
+      eventImages,
+      winnerImages,
+      additionalImages,
       saleConfig: body.saleConfig,
       offerConfig: body.offerConfig,
       pollConfig: body.pollConfig,

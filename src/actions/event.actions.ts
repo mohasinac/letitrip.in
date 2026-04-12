@@ -22,6 +22,12 @@ import {
   NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
+import {
+  coerceMediaField,
+  getMediaUrl,
+  mediaFieldSchema,
+  type MediaField,
+} from "@mohasinac/appkit/utils";
 import type {
   EventDocument,
   EventCreateInput,
@@ -33,20 +39,50 @@ import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 import { resolveDate } from "@/utils";
 import { ERROR_MESSAGES } from "@/constants";
 import { maskPublicEventEntry } from "@/lib/pii";
+import {
+  finalizeStagedMediaField,
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@/lib/media/finalize";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
 const eventIdSchema = z.object({ id: z.string().min(1, "id is required") });
+
+const dateInputSchema = z.preprocess((value) => {
+  if (value === undefined || value === null || value === "") {
+    return undefined;
+  }
+
+  return resolveDate(value);
+}, z.date().optional());
+
+const singleImageMediaSchema = z
+  .union([
+    mediaFieldSchema,
+    z.string().url().transform((url) => ({ url, type: "image" as const })),
+  ])
+  .nullable()
+  .optional();
 
 const createEventSchema = z.object({
   type: z.enum(["sale", "offer", "poll", "survey", "feedback"]),
   title: z.string().min(1),
   description: z.string().optional(),
   status: z.enum(["draft", "active", "paused", "ended"]).default("draft"),
-  startsAt: z.string().optional(),
-  endsAt: z.string().optional(),
-  config: z.record(z.string(), z.unknown()).optional(),
-  imageUrl: z.string().optional(),
+  startsAt: dateInputSchema,
+  endsAt: dateInputSchema,
+  coverImage: singleImageMediaSchema,
+  coverImageUrl: z.string().url().optional(),
+  eventImages: z.array(mediaFieldSchema).max(10).optional().default([]),
+  winnerImages: z.array(mediaFieldSchema).max(5).optional().default([]),
+  additionalImages: z.array(mediaFieldSchema).max(10).optional().default([]),
+  tags: z.array(z.string()).optional(),
+  saleConfig: z.any().optional(),
+  offerConfig: z.any().optional(),
+  pollConfig: z.any().optional(),
+  surveyConfig: z.any().optional(),
+  feedbackConfig: z.any().optional(),
 });
 
 const updateEventSchema = createEventSchema.partial();
@@ -94,8 +130,32 @@ export async function createEventAction(
       parsed.error.issues[0]?.message ?? "Invalid event data",
     );
 
+  const finalizedCoverUrl = await finalizeStagedMediaField(
+    getMediaUrl(parsed.data.coverImage) ?? parsed.data.coverImageUrl,
+  );
+  const finalizedCoverImage = await finalizeStagedMediaObject(
+    coerceMediaField(
+      parsed.data.coverImage ?? finalizedCoverUrl ?? null,
+      "image",
+    ) as MediaField | null,
+  );
+  const finalizedEventImages = await finalizeStagedMediaObjectArray(
+    parsed.data.eventImages,
+  );
+  const finalizedWinnerImages = await finalizeStagedMediaObjectArray(
+    parsed.data.winnerImages,
+  );
+  const finalizedAdditionalImages = await finalizeStagedMediaObjectArray(
+    parsed.data.additionalImages,
+  );
+
   const event = await eventRepository.createEvent({
     ...parsed.data,
+    coverImage: finalizedCoverImage ?? null,
+    coverImageUrl: finalizedCoverImage?.url ?? finalizedCoverUrl,
+    eventImages: finalizedEventImages,
+    winnerImages: finalizedWinnerImages,
+    additionalImages: finalizedAdditionalImages,
     createdBy: admin.uid,
   } as unknown as EventCreateInput);
 
@@ -131,9 +191,43 @@ export async function updateEventAction(
   const existing = await eventRepository.findById(id);
   if (!existing) throw new NotFoundError("Event not found");
 
+  const finalizedCoverUrl = await finalizeStagedMediaField(
+    getMediaUrl(parsed.data.coverImage) ?? parsed.data.coverImageUrl,
+  );
+  const finalizedCoverImage = parsed.data.coverImageUrl === null
+    ? null
+    : await finalizeStagedMediaObject(
+        coerceMediaField(
+          parsed.data.coverImage ?? finalizedCoverUrl ?? null,
+          "image",
+        ) as MediaField | null,
+      );
+  const finalizedEventImages = parsed.data.eventImages
+    ? await finalizeStagedMediaObjectArray(parsed.data.eventImages)
+    : undefined;
+  const finalizedWinnerImages = parsed.data.winnerImages
+    ? await finalizeStagedMediaObjectArray(parsed.data.winnerImages)
+    : undefined;
+  const finalizedAdditionalImages = parsed.data.additionalImages
+    ? await finalizeStagedMediaObjectArray(parsed.data.additionalImages)
+    : undefined;
+
   const updated = await eventRepository.updateEvent(
     id,
-    parsed.data as EventUpdateInput,
+    {
+      ...parsed.data,
+      coverImage:
+        parsed.data.coverImageUrl === null
+          ? null
+          : (finalizedCoverImage ?? undefined),
+      coverImageUrl:
+        parsed.data.coverImageUrl === null
+          ? undefined
+          : (finalizedCoverImage?.url ?? finalizedCoverUrl),
+      eventImages: finalizedEventImages,
+      winnerImages: finalizedWinnerImages,
+      additionalImages: finalizedAdditionalImages,
+    } as EventUpdateInput,
   );
 
   serverLogger.info("updateEventAction", { adminId: admin.uid, eventId: id });

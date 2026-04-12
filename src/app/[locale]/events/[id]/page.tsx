@@ -5,6 +5,7 @@ import { SITE_CONFIG } from "@/constants";
 import { dateToISOString } from "@/utils";
 import type { Metadata } from "next";
 import type { EventItem } from "@mohasinac/appkit/features/events";
+import { getMediaUrl } from "@mohasinac/appkit/utils";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 
@@ -24,7 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      images: event.coverImageUrl ? [event.coverImageUrl] : undefined,
+      images: getMediaUrl(event.coverImage) || event.coverImageUrl
+        ? [getMediaUrl(event.coverImage) || event.coverImageUrl!]
+        : undefined,
       type: "website",
     },
     alternates: { canonical: `${APP_URL}/events/${id}` },
