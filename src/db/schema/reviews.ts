@@ -21,7 +21,7 @@ export interface ReviewDocument {
   title: string;
   comment: string;
 
-  // Media fields (max 1 video, max 10 images)
+  // Media fields (max 1 video, max 5 images)
   images?: string[]; // Review images with crop metadata
   video?: {
     url: string;

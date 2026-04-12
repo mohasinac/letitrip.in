@@ -556,6 +556,44 @@ export function generatePreOrderImageFilename(
   return `preorder-${name}-${category}-${store}-image-${n}.${ext}`;
 }
 
+// ---- Review image / video ----
+
+export interface GenerateReviewImageFilenameInput {
+  productId: string;
+  index?: number;
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate review image filename.
+ * Example: review-prod-vintage-watch-20240301-a7b2c9-image-1.webp
+ */
+export function generateReviewImageFilename(
+  input: GenerateReviewImageFilenameInput,
+): string {
+  const product = slugify(input.productId).substring(0, 40).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `review-${product}-image-${n}.${ext}`;
+}
+
+export interface GenerateReviewVideoFilenameInput {
+  productId: string;
+  ext?: string; // default: 'mp4'
+}
+
+/**
+ * Generate review video filename.
+ * Example: review-prod-vintage-watch-20240301-a7b2c9-video-1.mp4
+ */
+export function generateReviewVideoFilename(
+  input: GenerateReviewVideoFilenameInput,
+): string {
+  const product = slugify(input.productId).substring(0, 40).replace(/-+$/, "");
+  const ext = (input.ext ?? "mp4").replace(/^\./, "");
+  return `review-${product}-video-1.${ext}`;
+}
+
 // ---- Store logo / banner ----
 
 /**
@@ -763,6 +801,8 @@ export function generatePayoutDocFilename(
 export type MediaFilenameContext =
   | ({ type: "product-image" } & GenerateProductImageFilenameInput)
   | ({ type: "product-video" } & GenerateProductVideoFilenameInput)
+  | ({ type: "review-image" } & GenerateReviewImageFilenameInput)
+  | ({ type: "review-video" } & GenerateReviewVideoFilenameInput)
   | ({ type: "auction-image" } & GenerateAuctionImageFilenameInput)
   | ({ type: "preorder-image" } & GeneratePreOrderImageFilenameInput)
   | { type: "store-logo"; store: string; ext?: string }
@@ -788,6 +828,10 @@ export function generateMediaFilename(ctx: MediaFilenameContext): string {
       return generateProductImageFilename(ctx);
     case "product-video":
       return generateProductVideoFilename(ctx);
+    case "review-image":
+      return generateReviewImageFilename(ctx);
+    case "review-video":
+      return generateReviewVideoFilename(ctx);
     case "auction-image":
       return generateAuctionImageFilename(ctx);
     case "preorder-image":

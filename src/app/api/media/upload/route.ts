@@ -21,6 +21,10 @@ import {
 
 const PRODUCT_IMAGE_MAX = 5;
 const PRODUCT_VIDEO_MAX = 1;
+const REVIEW_IMAGE_MAX = 5;
+const REVIEW_VIDEO_MAX = 1;
+const AUCTION_IMAGE_MAX = 5;
+const PREORDER_IMAGE_MAX = 5;
 const TMP_UPLOAD_PREFIX = "tmp";
 
 /**
@@ -121,6 +125,61 @@ export const POST = createRouteHandler({
               maxVideos: PRODUCT_VIDEO_MAX,
               receivedIndex: videoIndex,
             });
+          }
+        }
+
+        // Review media guardrails: max 5 images, max 1 video.
+        if (ctx.type === "review-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > REVIEW_IMAGE_MAX) {
+            return errorResponse("Review image index exceeds max allowed", 400, {
+              maxImages: REVIEW_IMAGE_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        if (ctx.type === "review-video") {
+          // REVIEW_VIDEO_MAX = 1; index is always implicitly 1 — no index check needed
+          if (!isVideo) {
+            return errorResponse("review-video context requires a video file", 400);
+          }
+        }
+
+        // Auction media guardrails: max 5 images.
+        if (ctx.type === "auction-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > AUCTION_IMAGE_MAX) {
+            return errorResponse("Auction image index exceeds max allowed", 400, {
+              maxImages: AUCTION_IMAGE_MAX,
+              receivedIndex: imageIndex,
+            });
+          }
+        }
+
+        // Pre-order media guardrails: max 5 images.
+        if (ctx.type === "preorder-image") {
+          const imageIndex = ctx.index ?? 1;
+          if (imageIndex < 1 || imageIndex > PREORDER_IMAGE_MAX) {
+            return errorResponse(
+              "Pre-order image index exceeds max allowed",
+              400,
+              { maxImages: PREORDER_IMAGE_MAX, receivedIndex: imageIndex },
+            );
+          }
+        }
+
+        // Image-only contexts — reject video uploads.
+        if (
+          ctx.type === "store-logo" ||
+          ctx.type === "store-banner" ||
+          ctx.type === "user-avatar"
+        ) {
+          if (isVideo) {
+            return errorResponse(
+              `${ctx.type} must be an image file, not a video`,
+              400,
+            );
           }
         }
 

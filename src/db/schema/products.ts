@@ -32,7 +32,7 @@ export interface ProductDocument {
   stockQuantity: number;
   availableQuantity: number;
 
-  // Media fields (max 1 video, max 10 images)
+  // Media fields (max 1 video, max 5 images)
   mainImage: string; // 1:1 aspect ratio for grid display
   images: string[]; // Additional images with crop metadata
   video?: {

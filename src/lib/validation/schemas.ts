@@ -487,7 +487,7 @@ const reviewBaseSchema = z.object({
   rating: z.number().int().min(1).max(5),
   title: z.string().min(5).max(100),
   comment: z.string().min(20).max(2000),
-  images: z.array(urlSchema).max(10).optional(),
+  images: z.array(urlSchema).max(5).optional(),
   video: videoSchema.optional(),
 });
 

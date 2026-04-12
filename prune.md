@@ -332,7 +332,11 @@ Verification: partial
 - **DONE (session 6)**: row-by-row enforcement matrix documented for each listed Task Group 1 form/schema target plus upload API target.
 - **DONE (session 7 batch 1)**: product schema image cap enforced at 5 in validation layer.
 - **DONE (session 7 batch 1)**: upload API enforces product context guardrails (max 5 image indices, max 1 video index).
-- Full 5+1 enforcement across every listed letitrip form/entity remains open.
+- **DONE (session 10)**: `reviewBaseSchema.images` cap updated from max(10) → max(5) in `src/lib/validation/schemas.ts`.
+- **DONE (session 10)**: "max 10 images" comments updated to "max 5 images" in `src/db/schema/reviews.ts` and `src/db/schema/products.ts`.
+- **DONE (session 10)**: `GenerateReviewImageFilenameInput`, `GenerateReviewVideoFilenameInput`, `generateReviewImageFilename`, `generateReviewVideoFilename` added to `src/utils/id-generators.ts`; `review-image` and `review-video` added to `MediaFilenameContext` union + dispatcher.
+- **DONE (session 10)**: Upload API guardrails added for `review-image` (max 5), `review-video` (video-only check), `auction-image` (max 5), `preorder-image` (max 5), `store-logo`/`store-banner`/`user-avatar` (image-only, reject video) in `src/app/api/media/upload/route.ts`.
+- Full 5+1 enforcement across every listed letitrip form/entity remains open (form-level React components: SellerCreateProductView, SellerEditProductView, SellerStoreSetupView, ProductReviews, AvatarUpload).
 
 ---
 
