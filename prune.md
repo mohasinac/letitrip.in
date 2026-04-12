@@ -2,13 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — committed `1a2b1616` (batch D); batch E pending commit
+Last updated: April 13, 2026 — committed `aa809ced` (batch E + complete decision ledger)
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in `letitrip.in` (pre-commit hook verified on commit).
-- Latest commits: appkit `65caf03`, letitrip `1a2b1616`.
-- This session completed: TG11 wave-1 hook batches A/B/C/D.
+- Latest commits: appkit `65caf03`, letitrip `aa809ced`.
+- This session completed: TG11 wave-1 hook batches A/B/C/D/E; complete 28-basename decision ledger written (TG11 task 1 DONE).
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
