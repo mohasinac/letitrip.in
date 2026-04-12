@@ -336,7 +336,10 @@ Verification: partial
 - **DONE (session 10)**: "max 10 images" comments updated to "max 5 images" in `src/db/schema/reviews.ts` and `src/db/schema/products.ts`.
 - **DONE (session 10)**: `GenerateReviewImageFilenameInput`, `GenerateReviewVideoFilenameInput`, `generateReviewImageFilename`, `generateReviewVideoFilename` added to `src/utils/id-generators.ts`; `review-image` and `review-video` added to `MediaFilenameContext` union + dispatcher.
 - **DONE (session 10)**: Upload API guardrails added for `review-image` (max 5), `review-video` (video-only check), `auction-image` (max 5), `preorder-image` (max 5), `store-logo`/`store-banner`/`user-avatar` (image-only, reject video) in `src/app/api/media/upload/route.ts`.
-- Full 5+1 enforcement across every listed letitrip form/entity remains open (form-level React components: SellerCreateProductView, SellerEditProductView, SellerStoreSetupView, ProductReviews, AvatarUpload).
+- **DONE (session 10)**: `src/components/admin/media-upload.client.ts` re-export shim deleted; `src/components/admin/index.ts` now imports directly from `@mohasinac/appkit/features/media`; `BARREL_MAPPING.json` updated.
+- **DONE (session 10)**: `useCreateReview` in `src/hooks/useProductReviews.ts` now guards `images.length <= 5` before calling server action.
+- **DONE (session 10)**: `AvatarUpload.tsx` confirmed image-only via `accept="image/jpeg,image/png,image/webp,image/gif"` on file input; upload API now also enforces image-only for `user-avatar` context.
+- **OPEN (feature build)**: Form UI components that still need `MediaUploadList`/`MediaUploadField` wired with per-entity limits: `ProductForm.tsx` (product gallery images[] upload UI), `ProductReviews.tsx` (WriteReviewForm image/video upload), `SellerStoreSetupView.tsx` (store logo/banner media upload surface). These require building new upload UIs — tracked as a separate form-layer batch for next session.
 
 ---
 
