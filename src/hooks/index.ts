@@ -143,7 +143,7 @@ export type {
   PreflightResponse,
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
-export { useMediaUpload, useMediaCrop, useMediaTrim } from "./useMediaUpload";
+export { useMediaUpload, useMediaAbort, useMediaCrop, useMediaTrim } from "./useMediaUpload";
 // useCamera now import directly from @mohasinac/appkit/react
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks

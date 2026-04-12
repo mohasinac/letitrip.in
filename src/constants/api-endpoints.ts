@@ -203,6 +203,7 @@ export const API_ENDPOINTS = {
   // Media endpoints ✅ All routes exist
   MEDIA: {
     UPLOAD: "/api/media/upload", // POST - Upload file to Cloud Storage
+    DELETE: "/api/media/delete", // DELETE - Delete staged tmp file (onAbort cleanup)
     CROP: "/api/media/crop", // POST - Crop image
     TRIM: "/api/media/trim", // POST - Trim video
   },

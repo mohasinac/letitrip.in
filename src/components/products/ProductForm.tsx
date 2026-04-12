@@ -21,7 +21,7 @@ import {
 } from "@mohasinac/appkit/features/media";
 import { CategorySelectorCreate } from "@/components";
 import { StoreAddressSelectorCreate } from "@/components";
-import { useMediaUpload } from "@/hooks";
+import { useMediaUpload, useMediaAbort } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { resolveDate } from "@/utils";
@@ -41,6 +41,7 @@ export function ProductForm({
 }: ProductFormProps) {
   const t = useTranslations("adminProducts");
   const { upload } = useMediaUpload();
+  const onAbort = useMediaAbort();
   // Sequential index ref for SEO-friendly gallery image filenames
   const galleryIndexRef = useRef(0);
   const update = (partial: Partial<AdminProduct>) => {
@@ -192,7 +193,7 @@ export function ProductForm({
           maxItems={5}
           maxSizeMB={10}
           helperText={t("formGalleryImagesHelper")}
-          // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
+          onAbort={onAbort}
         />
       )}
 

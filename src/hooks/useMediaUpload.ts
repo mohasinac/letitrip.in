@@ -40,7 +40,20 @@ export function useMediaUpload() {
 }
 
 /**
- * useMediaCrop
+ * useMediaAbort
+ * Calls DELETE /api/media/delete?url=... for each staged (tmp) URL.
+ * Wire to MediaUploadList / MediaUploadField onAbort props so
+ * orphaned files are cleaned up when a form is cancelled without saving.
+ */
+export function useMediaAbort() {
+  return async (stagedUrls: string[]): Promise<void> => {
+    await Promise.allSettled(
+      stagedUrls.map((url) =>
+        apiClient.delete(`${API_ENDPOINTS.MEDIA.DELETE}?url=${encodeURIComponent(url)}`),
+      ),
+    );
+  };
+}
  * Wraps `mediaService.crop()` as a `useApiMutation`.
  */
 export function useMediaCrop<TResult = { url: string }>() {

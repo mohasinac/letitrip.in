@@ -28,7 +28,7 @@ import {
 } from "@/components";
 import { useProductReviews } from "@mohasinac/appkit/features/reviews";
 import { useCreateReview } from "@/hooks/useProductReviews";
-import { useAuth, useMediaUpload, useMessage, useUrlTable } from "@/hooks";
+import { useAuth, useMediaUpload, useMediaAbort, useMessage, useUrlTable } from "@/hooks";
 
 const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
 
@@ -191,6 +191,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   // Sequential index ref for SEO-friendly review image filenames
   const imageIndexRef = useRef(0);
   const { upload: uploadMedia } = useMediaUpload();
+  const onAbort = useMediaAbort();
 
   const handleImageUpload = async (file: File): Promise<string> => {
     imageIndexRef.current += 1;
@@ -307,7 +308,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         maxItems={5}
         maxSizeMB={10}
         helperText={t("reviewFormImagesHelper")}
-        // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
+        onAbort={onAbort}
       />
 
       {/* Video — max 1 per review (optional) */}
@@ -324,7 +325,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         accept="video/*"
         maxSizeMB={50}
         helperText={t("reviewFormVideoHelper")}
-        // onAbort: pending media DELETE API — orphaned tmp files removed by daily cron
+        onAbort={onAbort}
       />
 
       {/* Form-level error */}
