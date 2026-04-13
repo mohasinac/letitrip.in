@@ -1,3 +1,5 @@
+"use client";
+
 import { Spinner, Button } from "@mohasinac/appkit/ui";
 /**
  * SellerEditProductView
@@ -5,8 +7,6 @@ import { Spinner, Button } from "@mohasinac/appkit/ui";
  * Extracted from src/app/[locale]/seller/products/[id]/edit/page.tsx
  * Receives the product `id` as a prop (resolved by the page shell via `use(params)`).
  */
-
-("use client");
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";

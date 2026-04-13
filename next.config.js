@@ -1,16 +1,9 @@
-/** @type {import('next').NextConfig} */
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-  openAnalyzer: false,
-});
-
 // next-intl plugin — wires src/i18n/request.ts as the per-request i18n config
 const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@mohasinac/appkit"],
-
   // Image optimization for Firebase Storage and other remote sources
   images: {
     dangerouslyAllowSVG: true,
@@ -103,4 +96,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withNextIntl(withBundleAnalyzer(nextConfig));
+module.exports = withNextIntl(nextConfig);

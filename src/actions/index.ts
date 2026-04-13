@@ -420,21 +420,6 @@ export {
 } from "./refund.actions";
 export type { PartialRefundInput, PartialRefundResult } from "./refund.actions";
 
-// Algolia sync (admin only)
-export {
-  algoliaSyncAction,
-  algoliaSyncProductsAction,
-  algoliaSyncPagesAction,
-  algoliaSyncCategoriesAction,
-  algoliaSyncStoresAction,
-} from "./algolia.actions";
-export type {
-  AlgoliaSyncResult,
-  AlgoliaSyncVars,
-  AlgoliaSyncTarget,
-  AlgoliaSyncAction,
-} from "./algolia.actions";
-
 // Demo seed (admin only, dev environment)
 export { demoSeedAction } from "./demo-seed.actions";
 export type {

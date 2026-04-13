@@ -4,14 +4,10 @@
  * Search Server Action
  *
  * Replaces the former searchService → apiClient → /api/search route chain
- * (5 hops → 2 hops). Calls Algolia or falls back to Firestore Sieve search.
+ * (5 hops → 2 hops). Uses Firestore Sieve search only.
  */
 
 import { productRepository } from "@/repositories";
-import {
-  isAlgoliaConfigured,
-  algoliaSearch,
-} from "@mohasinac/appkit/providers/search-algolia";
 import { serverLogger } from "@/lib/server-logger";
 import type { FirebaseSieveResult } from "@/lib/query";
 
@@ -35,7 +31,7 @@ export interface SearchResult extends FirebaseSieveResult<
   import("@/db/schema").ProductDocument
 > {
   q: string;
-  backend: "algolia" | "in-memory";
+  backend: "in-memory";
 }
 
 export async function searchProductsAction(
@@ -56,35 +52,6 @@ export async function searchProductsAction(
     page = 1,
     pageSize = 20,
   } = params;
-
-  if (isAlgoliaConfigured()) {
-    const algoliaResult = await algoliaSearch({
-      q,
-      category,
-      subcategory,
-      minPrice,
-      maxPrice,
-      condition,
-      isAuction,
-      isPreOrder,
-      inStock,
-      minRating,
-      sort,
-      page,
-      pageSize,
-    });
-
-    serverLogger.info("searchProductsAction (Algolia)", {
-      q: q || "(empty)",
-      total: algoliaResult.total,
-    });
-
-    return {
-      ...algoliaResult,
-      q,
-      backend: "algolia",
-    } as unknown as SearchResult;
-  }
 
   const filterParts: string[] = ["status==published"];
   if (category) filterParts.push(`category==${category}`);

@@ -12,9 +12,18 @@
  */
 import { createInstrumentation } from "@mohasinac/appkit/instrumentation";
 
+async function loadProvidersConfig() {
+  const importModule = new Function(
+    "modulePath",
+    "return import(modulePath);",
+  ) as (modulePath: string) => Promise<typeof import("./src/providers.config")>;
+
+  return importModule("./src/providers.config");
+}
+
 const { register } = createInstrumentation({
   onNodeServer: async () => {
-    const { initProviders } = await import("./src/providers.config");
+    const { initProviders } = await loadProvidersConfig();
     await initProviders();
   },
 });

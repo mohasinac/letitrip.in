@@ -14,7 +14,7 @@ import { Heading, Li, Nav, Text, Ul, Button, Span } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
 import { useAuth, useLogout, useMessage } from "@/hooks";
 import { logger } from "@mohasinac/appkit/core";
-import { Sprout, SearchCode } from "lucide-react";
+import { Sprout } from "lucide-react";
 import { AvatarDisplay, LocaleSwitcher, TextLink } from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
@@ -821,25 +821,6 @@ export default function Sidebar({
                     className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-yellow-700 dark:text-yellow-300`}
                   >
                     Seed Data
-                  </Span>
-                </TextLink>
-              </Li>
-              <Li>
-                <TextLink
-                  href={ROUTES.DEMO.ALGOLIA}
-                  variant="inherit"
-                  className={`${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-dashed border-orange-400/40 hover:bg-orange-400/10 ${colors.onPrimary.navItemInactive}`}
-                  onClick={onClose}
-                >
-                  <div
-                    className={`${flex.noShrink} p-1.5 rounded-md ${colors.onPrimary.iconBgInactive}`}
-                  >
-                    <SearchCode className="w-4 h-4 text-orange-500 dark:text-orange-400" />
-                  </div>
-                  <Span
-                    className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-orange-700 dark:text-orange-300`}
-                  >
-                    Algolia
                   </Span>
                 </TextLink>
               </Li>

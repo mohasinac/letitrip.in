@@ -171,7 +171,7 @@ export type { BecomeSellerResult } from "./useBecomeSeller";
 
 // Search: navigation suggestions
 export { useNavSuggestions } from "./useNavSuggestions";
-export type { AlgoliaNavRecord } from "./useNavSuggestions";
+export type { NavSuggestionRecord } from "./useNavSuggestions";
 
 // Bulk action hooks
 // useBulkSelection, useBulkAction now import directly from @mohasinac/appkit/react

@@ -3,9 +3,8 @@
  *
  * Fires on any create, update, or delete of a document in the `products`
  * collection. Responsible for:
- *   1. Algolia search index sync (published ↔ unpublished)
- *   2. Category metrics updates (productCount / auctionCount + ancestors)
- *   3. Store stats updates (totalProducts)
+ *   1. Category metrics updates (productCount / auctionCount + ancestors)
+ *   2. Store stats updates (totalProducts)
  *
  * Counter rules:
  *   - Only "published" products count towards category and store totals.
@@ -16,27 +15,11 @@
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { db } from "../config/firebase-admin";
-import { getAlgoliaClient, ALGOLIA_INDEX } from "../config/algolia";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
 import { categoryRepository, storeRepository } from "../repositories";
-import { decryptPii } from "../lib/pii";
 
 const TRIGGER = "onProductWrite";
-
-/**
- * Convert a Firestore timestamp, Date, or number to epoch ms.
- * Returns undefined when the input is falsy.
- */
-function toEpochMs(val: unknown): number | undefined {
-  if (val == null) return undefined;
-  if (typeof val === "number") return val;
-  if (val instanceof Date) return val.getTime();
-  if (typeof (val as { toMillis?: () => number }).toMillis === "function")
-    return (val as { toMillis: () => number }).toMillis();
-  if (typeof val === "string") return new Date(val).getTime();
-  return undefined;
-}
 
 /**
  * Resolve a category's materialized parentIds from Firestore.
@@ -200,109 +183,11 @@ export const onProductWrite = onDocumentWritten(
       });
     }
 
-    // ── Algolia sync ──────────────────────────────────────────────────────
-    if (isDelete) {
-      logInfo(TRIGGER, "Product deleted — removing from Algolia", {
+    if (isDelete || !isPublished) {
+      logInfo(TRIGGER, "Search indexing skipped (provider removed)", {
         productId,
-      });
-      try {
-        const client = getAlgoliaClient();
-        await client.deleteObject({
-          indexName: ALGOLIA_INDEX,
-          objectID: productId,
-        });
-        logInfo(TRIGGER, "Removed from Algolia", { productId });
-      } catch (err) {
-        logError(TRIGGER, "Failed to remove from Algolia", err, { productId });
-      }
-      return;
-    }
-
-    if (!isPublished) {
-      // Remove from index so non-published products don't appear in search
-      logInfo(TRIGGER, "Product not published — removing from Algolia", {
-        productId,
+        isDelete,
         status: afterStatus,
-      });
-      try {
-        const client = getAlgoliaClient();
-        await client.deleteObject({
-          indexName: ALGOLIA_INDEX,
-          objectID: productId,
-        });
-      } catch (err) {
-        logError(
-          TRIGGER,
-          "Failed to remove unpublished product from Algolia (non-fatal)",
-          err,
-          { productId },
-        );
-      }
-      return;
-    }
-
-    // Upsert into Algolia
-    logInfo(TRIGGER, "Upserting product in Algolia", { productId });
-    try {
-      const client = getAlgoliaClient();
-      const data = afterData!;
-
-      const record = {
-        objectID: productId,
-        title: (data.title as string) ?? "",
-        description: (data.description as string) ?? "",
-        slug: (data.slug as string) ?? undefined,
-        category: (data.category as string) ?? "",
-        subcategory: (data.subcategory as string) ?? "",
-        brand: (data.brand as string) ?? "",
-        price: (data.price as number) ?? 0,
-        currency: (data.currency as string) ?? "INR",
-        mainImage: (data.mainImage as string) ?? "",
-        images: (data.images as string[]) ?? [],
-        tags: (data.tags as string[]) ?? [],
-        sellerId: (data.sellerId as string) ?? "",
-        storeId: (data.storeId as string) ?? undefined,
-        sellerName: decryptPii((data.sellerName as string) ?? "") as string,
-        status: afterStatus,
-        condition: (data.condition as string) ?? undefined,
-
-        stockQuantity: (data.stockQuantity as number) ?? 0,
-        availableQuantity: (data.availableQuantity as number) ?? 0,
-
-        isAuction: isAuction,
-        currentBid: (data.currentBid as number) ?? null,
-        startingBid: (data.startingBid as number) ?? null,
-        bidCount: (data.bidCount as number) ?? null,
-        buyNowPrice: (data.buyNowPrice as number) ?? null,
-        auctionEndDate: toEpochMs(data.auctionEndDate),
-
-        isPreOrder: (data.isPreOrder as boolean) ?? false,
-        preOrderDeliveryDate: toEpochMs(data.preOrderDeliveryDate),
-        preOrderCurrentCount: (data.preOrderCurrentCount as number) ?? null,
-        preOrderMaxQuantity: (data.preOrderMaxQuantity as number) ?? null,
-        preOrderProductionStatus:
-          (data.preOrderProductionStatus as string) ?? null,
-
-        allowOffers: (data.allowOffers as boolean) ?? false,
-        minOfferPercent: (data.minOfferPercent as number) ?? null,
-
-        featured: (data.featured as boolean) ?? false,
-        isPromoted: (data.isPromoted as boolean) ?? false,
-        promotionEndDate: toEpochMs(data.promotionEndDate),
-
-        avgRating: (data.avgRating as number) ?? 0,
-        reviewCount: (data.reviewCount as number) ?? 0,
-        viewCount: (data.viewCount as number) ?? 0,
-
-        createdAt: toEpochMs(data.createdAt) ?? Date.now(),
-        updatedAt: toEpochMs(data.updatedAt) ?? Date.now(),
-      };
-
-      await client.saveObject({ indexName: ALGOLIA_INDEX, body: record });
-      logInfo(TRIGGER, "Upserted in Algolia", { productId });
-    } catch (err) {
-      logError(TRIGGER, "Failed to upsert product in Algolia", err, {
-        productId,
       });
     }
   },

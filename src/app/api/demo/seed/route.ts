@@ -21,11 +21,6 @@ import {
   CHAT_PII_FIELDS,
 } from "@/lib/pii";
 import {
-  isAlgoliaConfigured,
-  clearAlgoliaIndex,
-  ALGOLIA_PAGES_INDEX_NAME,
-} from "@mohasinac/appkit/providers/search-algolia";
-import {
   usersSeedData,
   addressesSeedData,
   storeAddressesSeedData,
@@ -779,25 +774,6 @@ export async function POST(request: NextRequest) {
             err,
           );
           totalErrors++;
-        }
-      }
-
-      // Clear Algolia indexes for affected collections
-      if (isAlgoliaConfigured()) {
-        const shouldClearPages =
-          collectionsToProcess.includes("categories") ||
-          collectionsToProcess.includes("blogPosts") ||
-          collectionsToProcess.includes("events");
-
-        if (shouldClearPages) {
-          try {
-            await clearAlgoliaIndex(ALGOLIA_PAGES_INDEX_NAME);
-            serverLogger.info(
-              "Algolia pages_nav index cleared after seed delete",
-            );
-          } catch (err) {
-            serverLogger.error("Failed to clear Algolia pages_nav index:", err);
-          }
         }
       }
 

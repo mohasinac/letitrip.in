@@ -35,16 +35,16 @@
  * │  onBidPlaced        — bids/{id} onCreate                                │
  * │  onOrderStatusChange— orders/{id} onUpdate                              │
  * │  onProductWrite     — products/{id} onWrite                             │
- * │                       → Algolia sync                                    │
+ * │                       → optional external search sync (disabled)        │
  * │                       → category metrics (productCount/auctionCount)    │
  * │                       → store stats (totalProducts)                     │
  * │  onReviewWrite      — reviews/{id} onWrite                              │
  * │                       → product avgRating / reviewCount                 │
  * │                       → store totalReviews / averageRating              │
  * │  onCategoryWrite    — categories/{id} onWrite                           │
- * │                       → Algolia categories index sync                   │
+ * │                       → external category index sync (disabled)         │
  * │  onStoreWrite       — stores/{id} onWrite                               │
- * │                       → Algolia stores index sync                       │
+ * │                       → external store index sync (disabled)            │
  * └─────────────────────────────────────────────────────────────────────────┘
  */
 

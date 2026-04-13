@@ -1,4 +1,6 @@
-import { Button, Row } from "@mohasinac/appkit/ui";
+"use client";
+
+import { Button } from "@mohasinac/appkit/ui";
 /**
  * AdminSiteView — Thin Adapter
  *
@@ -7,15 +9,12 @@ import { Button, Row } from "@mohasinac/appkit/ui";
  * Manages site settings: basic info, contact, social links, backgrounds.
  */
 
-("use client");
-
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminSiteView as AppkitAdminSiteView } from "@mohasinac/appkit/features/admin";
 import { AdminPageHeader, Card, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
-import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/features/admin";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";
 import {
   SiteBasicInfoForm,
@@ -107,23 +106,6 @@ export function AdminSiteView() {
   };
 
   const isSaving = updateMutation.isPending;
-  const syncProductsMutation = useAlgoliaSyncProducts();
-  const syncPagesMutation = useAlgoliaSyncPages();
-
-  const handleAlgoliaSync = async (
-    mutate: () => Promise<{ indexed?: number } | undefined>,
-    label: string,
-  ) => {
-    try {
-      const result = await mutate();
-      showToast(`✅ Indexed ${result?.indexed ?? 0} records`, "success");
-    } catch (err: unknown) {
-      showToast(
-        err instanceof Error ? err.message : `${label} sync failed`,
-        "error",
-      );
-    }
-  };
 
   return (
     <AppkitAdminSiteView
@@ -181,48 +163,6 @@ export function AdminSiteView() {
                 whatsappNumber={settings.contact?.whatsappNumber}
                 onChange={setCredentialsUpdates}
               />
-
-              {/* Algolia Search Tools */}
-              <Card>
-                <div className="p-4 sm:p-6">
-                  <div className="font-semibold text-base mb-1">
-                    {t("algoliaTitle")}
-                  </div>
-                  <div className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
-                    {t("algoliaSubtitle")}
-                  </div>
-                  <Row wrap gap="md">
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        handleAlgoliaSync(
-                          () => syncProductsMutation.mutateAsync(undefined),
-                          "Products",
-                        )
-                      }
-                      disabled={syncProductsMutation.isPending}
-                    >
-                      {syncProductsMutation.isPending
-                        ? "⏳ Syncing products…"
-                        : "🔄 Sync Products → Algolia"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        handleAlgoliaSync(
-                          () => syncPagesMutation.mutateAsync(undefined),
-                          "Pages",
-                        )
-                      }
-                      disabled={syncPagesMutation.isPending}
-                    >
-                      {syncPagesMutation.isPending
-                        ? "⏳ Syncing pages…"
-                        : "🔄 Sync Pages → Algolia"}
-                    </Button>
-                  </Row>
-                </div>
-              </Card>
             </>
           )}
         </div>

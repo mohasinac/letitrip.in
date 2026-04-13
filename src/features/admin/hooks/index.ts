@@ -18,4 +18,3 @@ export * from "./useAdminUsers";
 export * from "./useAdminStores";
 export * from "./useDemoSeed";
 export * from "./useAdminFeatureFlags";
-export * from "./useAlgoliaSync";

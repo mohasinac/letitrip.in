@@ -19,7 +19,6 @@ export { AdminBidsView } from "./components/AdminBidsView";
 export { AdminPayoutsView } from "./components/AdminPayoutsView";
 export { AdminOrdersView } from "./components/AdminOrdersView";
 export { DemoSeedView } from "./components/DemoSeedView";
-export { AlgoliaDashboardView } from "./components/AlgoliaDashboardView";
 export { AdminMediaView } from "./components/AdminMediaView";
 export { AdminSiteView } from "./components/AdminSiteView";
 export { AdminStoresView } from "./components/AdminStoresView";

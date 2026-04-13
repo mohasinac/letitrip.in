@@ -17,7 +17,7 @@
  *   sorts                       → orderBy()
  *   page / pageSize             → offset() + limit()
  *
- * NOT supported — use Algolia (appkit/providers/search-algolia) instead:
+ * NOT supported — use an external full-text search provider instead:
  *   _-= (endsWith), !@= !_= !_-=  — negated string operators
  *   @=* _=* ==* !=*               — case-insensitive operators
  *   (field1|field2)>10            — multi-field OR filters

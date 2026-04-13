@@ -1,3 +1,5 @@
+"use client";
+
 import {
   SortDropdown,
   Button,
@@ -14,8 +16,6 @@ import {
  *
  * Uses ListingLayout for a unified listing shell.
  */
-
-("use client");
 
 import { Suspense, useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";

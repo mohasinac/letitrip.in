@@ -7,7 +7,7 @@ import { Li, Row, Text, Ul, Span, Button } from "@mohasinac/appkit/ui";
 import { Input } from "@/components";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
-import type { AlgoliaNavRecord } from "@/hooks";
+import type { NavSuggestionRecord } from "@/hooks";
 import {
   ShoppingBag,
   Gavel,
@@ -22,7 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const NAV_TYPE_ICON: Record<AlgoliaNavRecord["type"], string> = {
+const NAV_TYPE_ICON: Record<NavSuggestionRecord["type"], string> = {
   page: "📄",
   category: "🗂️",
   blog: "✍️",
@@ -110,7 +110,7 @@ const SITE_LINKS: SiteLink[] = [
   },
 ];
 
-const NAV_TYPE_BADGE: Record<AlgoliaNavRecord["type"], string> = {
+const NAV_TYPE_BADGE: Record<NavSuggestionRecord["type"], string> = {
   page: "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300",
   category: "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300",
   blog: "bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300",
@@ -288,7 +288,7 @@ export default function Search({
     setActiveIndex(-1);
   }, [isOpen, isInlineMode, query, suggestions.length]);
 
-  const handleSuggestionClick = (record: AlgoliaNavRecord) => {
+  const handleSuggestionClick = (record: NavSuggestionRecord) => {
     setIsInlineOpen(false);
     onClose?.();
     router.push(record.url);

@@ -1,25 +1,25 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  searchNavPages,
-  type AlgoliaNavRecord,
-} from "@mohasinac/appkit/providers/search-algolia";
 
-export type { AlgoliaNavRecord };
+export interface NavSuggestionRecord {
+  objectID: string;
+  type: "page" | "category" | "blog" | "event";
+  title: string;
+  subtitle?: string;
+  url: string;
+}
 
 /**
- * Debounced hook that fetches navigation page suggestions from the Algolia
- * `pages_nav` index as the user types in the global search overlay.
+ * Debounced hook for navigation suggestions.
  *
- * Degrades gracefully — returns empty results when Algolia is not configured
- * (missing NEXT_PUBLIC_ALGOLIA_* env vars).
+ * External search support was removed, so this hook currently returns empty results.
  *
  * @param query - The current search input string
  * @param debounceMs - How long to wait after the last keystroke (default 250 ms)
  */
 export function useNavSuggestions(query: string, debounceMs = 250) {
-  const [suggestions, setSuggestions] = useState<AlgoliaNavRecord[]>([]);
+  const [suggestions, setSuggestions] = useState<NavSuggestionRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -34,8 +34,7 @@ export function useNavSuggestions(query: string, debounceMs = 250) {
     timerRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const results = await searchNavPages(query, 6);
-        setSuggestions(results);
+        setSuggestions([]);
       } catch {
         setSuggestions([]);
       } finally {

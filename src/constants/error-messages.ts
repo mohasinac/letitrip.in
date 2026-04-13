@@ -186,9 +186,6 @@ export const ERROR_MESSAGES = {
     DELETE_USER_FAILED: "Failed to delete user",
     LOAD_SETTINGS_FAILED: "Failed to load settings",
     SAVE_SETTINGS_FAILED: "Failed to save settings",
-    ALGOLIA_NOT_CONFIGURED:
-      "Algolia is not configured. Set ALGOLIA_APP_ID and ALGOLIA_ADMIN_API_KEY.",
-    ALGOLIA_SYNC_FAILED: "Failed to sync products to Algolia",
   },
 
   // Review Errors

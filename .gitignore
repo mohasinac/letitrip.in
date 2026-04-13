@@ -16,6 +16,7 @@ test-output.txt
 test-err.txt
 test4.txt
 test5.txt
+/vendor
 
 # next.js
 /.next/

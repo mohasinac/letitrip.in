@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@mohasinac/appkit/ui";
 /**
  * QuickActionsGrid Component
@@ -5,8 +7,6 @@ import { Button } from "@mohasinac/appkit/ui";
  * Thin adapter: builds letitrip-specific action items and delegates layout to
  * appkit's QuickActionsPanel with local Card / Button / TextLink rendering.
  */
-
-("use client");
 
 import { useTranslations } from "next-intl";
 import { Card, TextLink } from "@/components";

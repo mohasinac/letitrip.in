@@ -1,5 +1,3 @@
-"use server";
-
 /**
  * Media Finalization Utilities
  *

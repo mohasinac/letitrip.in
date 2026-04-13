@@ -1,3 +1,5 @@
+"use client";
+
 import {
   TablePagination,
   Spinner,
@@ -12,8 +14,6 @@ import {
  * Calls /api/seller/products with filters=isAuction==true so results are
  * automatically scoped to the authenticated seller.
  */
-
-("use client");
 
 import { Suspense, useMemo, useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
