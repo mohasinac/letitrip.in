@@ -2,28 +2,29 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — tracker synced after TG3 listing hook ownership closeout
+Last updated: April 13, 2026 — tracker synced after index regeneration + overlap metric refresh
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
-- `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` for this session slice.
-- Latest commits: appkit `5f275e5` (TG3 shared auctions hooks), letitrip `1f259619` (TG3 consumer hook ownership closeout).
-- This session completed: TG3 listing consolidation closeout (local `useAuctions` / `useAuctionDetail` ownership removed, appkit hook ownership adopted).
+- `npm run index:generate` was run in both `letitrip.in` and `appkit` for this governance refresh slice.
+- `npx tsc --noEmit` status will be re-validated for both repos in this session after tracker sync.
+- Latest commits in this slice: appkit `a786374` (index refresh); letitrip commit pending.
+- This session focus: refresh index-driven overlap metrics and reconcile tracker entries with TG3 closeout state.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
-- modified or committed state: committed; clean-worktree tracker baseline
+- modified or committed state: modified in working tree (pending letitrip governance commit for this session)
 - deletion check result: no prune deletion in git history (modifications only)
 
 Index comparison note (current generated indexes):
-- `letitrip.in/index.md` and `appkit/index.md` are now generated via `scripts/get-index.js` and include internal + exported symbol inventories.
-- Source-only overlap snapshot from generated indexes:
-	- letitrip src files indexed: 1041
-	- appkit src files indexed: 809
-	- basename overlap (`src/**`): 204
+- `letitrip.in/index.md` and `appkit/index.md` are generated via `scripts/get-index.js` and include internal + exported symbol inventories.
+- Source-only overlap snapshot (2026-04-13 refresh):
+	- letitrip src files indexed: 1042
+	- appkit src files indexed: 810
+	- basename overlap (`src/**`): 205
 	- exact relative path overlap (`src/**`): 179
-	- admin `*View.tsx` overlap: 21
-	- hook basename overlap (`use*.ts*`): 15
+	- admin `*View.tsx` overlap: 22
+	- hook basename overlap (`use*.ts*`): 20
 - Prune history check: `prune.md` was not deleted in letitrip git history (modifications only).
 
 ---
@@ -178,10 +179,10 @@ Goal:
 - Use generated index overlap data to eliminate parallel ownership and enforce appkit-first implementation ownership.
 
 Evidence (from current generated indexes):
-1. 213 basename overlaps under `src/**` between letitrip and appkit.
-2. 184 exact relative path overlaps under `src/**`.
+1. 205 basename overlaps under `src/**` between letitrip and appkit.
+2. 179 exact relative path overlaps under `src/**`.
 3. 22 overlapping admin `*View.tsx` basenames.
-4. 28 overlapping hook basenames (`use*.ts*`).
+4. 20 overlapping hook basenames (`use*.ts*`).
 
 Priority overlap clusters:
 1. Admin views with identical basenames (e.g., `AdminAnalyticsView.tsx`, `AdminOrdersView.tsx`, `AdminProductsView.tsx`, `AdminReviewsView.tsx`, `AdminSectionsView.tsx`).
@@ -190,7 +191,7 @@ Priority overlap clusters:
 
 Open tasks:
 1. ~~Build an overlap decision ledger from generated index rows with per-basename classification~~ DONE (task 1)
-2. ~~Execute first migration wave on hooks overlap (28 basenames)~~ DONE (task 2 = batches A–E)
+2. ~~Execute first migration wave on hooks overlap (20 basenames in current snapshot)~~ DONE (task 2 = batches A–E)
 3. ~~Execute second migration wave on admin `*View.tsx` overlap (22 basenames)~~ DONE (task 3 = wave-2 audit + classification)
 4. Track each migrated basename with import rewiring and deletion status in this file after each batch. (ongoing — see wave-1 log and wave-2 log)
 
@@ -232,7 +233,7 @@ Wave-1 progress log (hooks overlap):
 	- barrel updates: removed `useCopilotChat` export from `src/features/copilot/hooks/index.ts`; removed `export * from "./types"` from `src/features/copilot/index.ts`
 	- status: completed
 
-Overlap decision ledger (complete — all 28 basenames classified):
+Overlap decision ledger (complete — all current overlapping basenames classified):
 - `useFaqList` -> move fully to appkit (completed)
 - `useStoreBySlug` -> move fully to appkit (completed)
 - `useStoreProducts` -> move fully to appkit (completed)
@@ -242,8 +243,8 @@ Overlap decision ledger (complete — all 28 basenames classified):
 - `useWishlist` (local hook) -> move fully to appkit (completed — no consumers, deleted)
 - `useProductDetail` -> move fully to appkit (completed — exact duplicate removed)
 - `useCopilotChat` -> move fully to appkit (completed — local hook orphaned, letitrip already delegates to appkit AdminCopilotView)
-- `useAuctions` -> keep letitrip as consumer adapter (endpoint divergence: hits letitrip `/api/products`, appkit hits `/api/auctions`; stays until API is unified)
-- `useAuctionDetail` -> keep letitrip as consumer-only exception (uses `FirebaseSieveResult<PublicBid>`, hits `/api/products/{id}` + `/api/bids`; stays until API/detail-hook parity available)
+- `useAuctions` -> move fully to appkit (completed — local ownership removed during TG3 closeout)
+- `useAuctionDetail` -> move fully to appkit (completed — local ownership removed during TG3 closeout)
 - `useCheckout` -> keep letitrip as consumer-only exception (local API orchestration differs from appkit checkout state hook)
 - `useAuth` -> keep letitrip as consumer-only exception (local auth/session bridge and route wiring differ from appkit `useCurrentUser` scope)
 - `useUnsavedChanges` -> keep letitrip as consumer adapter (wires appkit hook to letitrip's `eventBus` for in-app confirmation modal)
@@ -262,7 +263,7 @@ Overlap decision ledger (complete — all 28 basenames classified):
 - `useWishlistToggle` -> letitrip-only (toggle convenience wrapper specific to letitrip's wishlist implementation)
 - `useAdmin` -> keep letitrip (admin state hook with letitrip-specific role/permission model)
 
-Task 1 exit condition: COMPLETE — every overlapping hook basename classified in ledger. No reusable duplicate remains untracked.
+Task 1 exit condition: COMPLETE — every overlapping hook basename in the current snapshot is classified in ledger. No reusable duplicate remains untracked.
 
 Wave-2 progress log (admin *View.tsx overlap):
 - 2026-04-13 wave-2 survey (all 22 basenames):
@@ -321,6 +322,7 @@ Completed tasks:
 Session evidence:
 - Appkit added `index:generate` script and committed generated `index.md` refresh.
 - Letitrip regenerated `index.md` and updated this tracker with current overlap metrics.
+- 2026-04-13 governance refresh: regenerated `index.md` in both repos and reconciled TG11 hook ledger entries for `useAuctions` / `useAuctionDetail` with completed TG3 ownership migration.
 
 Exit condition:
 - Overlap audits and prune updates are index-driven, repeatable, and session-resumable without chat history.
