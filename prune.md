@@ -9,6 +9,7 @@ Session note:
 - `npm run index:generate` was run in both `letitrip.in` and `appkit` for this governance refresh slice.
 - `npx tsc --noEmit` status will be re-validated for both repos in this session after tracker sync.
 - Latest commits in this slice: appkit `a786374` (index refresh) and letitrip HEAD from this session's governance sync sequence.
+- Latest commit recorded for this revalidation session: letitrip `2916c960`.
 - This session focus: refresh index-driven overlap metrics and reconcile tracker entries with TG3 closeout state.
 - Revalidation pass (2026-04-13): `npx tsc --noEmit` passes in both repos; no new open task group emerged from current prune scope.
 
