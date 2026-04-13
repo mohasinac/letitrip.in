@@ -7,7 +7,7 @@ Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` for this session slice.
-- Latest commits: appkit `5f275e5` (TG3 shared auctions hooks), letitrip TG7/TG12 sequence committed on April 13, 2026.
+- Latest commits: appkit `5f275e5` (TG3 shared auctions hooks), letitrip `1f259619` (TG3 consumer hook ownership closeout).
 - This session completed: TG3 listing consolidation closeout (local `useAuctions` / `useAuctionDetail` ownership removed, appkit hook ownership adopted).
 
 Prune file integrity note (session):
