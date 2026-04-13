@@ -4,6 +4,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@mohasinac/appkit"],
+
   // Image optimization for Firebase Storage and other remote sources
   images: {
     dangerouslyAllowSVG: true,

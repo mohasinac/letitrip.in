@@ -1,9 +1,13 @@
 {
   "name": "letitrip.in",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "../appkit"
+  ],
   "scripts": {
     "dev": "next dev",
+    "watch:appkit": "npm --prefix ../appkit run watch",
     "build": "next build",
     "start": "next start",
     "test": "jest",
@@ -13,17 +17,13 @@
     "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
     "pre-commit": "tsc --noEmit",
-    "seed:faqs": "tsx scripts/seed-faqs.ts",
-    "index:generate": "node scripts/get-index.js",
-    "check:violations": "node scripts/check-violations.js",
-    "fix:violations": "node scripts/fix-violations.js",
-    "fix:violations:apply": "node scripts/fix-violations.js --apply"
+    "index:generate": "node scripts/get-index.js"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "^2.1.1",
+    "@mohasinac/appkit": "^2.1.2",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
