@@ -8,7 +8,7 @@ Verification basis: repository scan + targeted path and symbol checks.
 Session note:
 - `npm run index:generate` was run in both `letitrip.in` and `appkit` for this governance refresh slice.
 - `npx tsc --noEmit` status will be re-validated for both repos in this session after tracker sync.
-- Latest commits in this slice: appkit `a786374` (index refresh), letitrip `737509fc` (index + prune governance refresh).
+- Latest commits in this slice: appkit `a786374` (index refresh) and letitrip HEAD from this session's governance sync sequence.
 - This session focus: refresh index-driven overlap metrics and reconcile tracker entries with TG3 closeout state.
 
 Prune file integrity note (session):
@@ -323,7 +323,7 @@ Session evidence:
 - Appkit added `index:generate` script and committed generated `index.md` refresh.
 - Letitrip regenerated `index.md` and updated this tracker with current overlap metrics.
 - 2026-04-13 governance refresh: regenerated `index.md` in both repos and reconciled TG11 hook ledger entries for `useAuctions` / `useAuctionDetail` with completed TG3 ownership migration.
-- 2026-04-13 commit sync: appkit `a786374`; letitrip `737509fc`.
+- 2026-04-13 commit sync: appkit `a786374`; letitrip tracker synchronized to session HEAD at commit time.
 
 Exit condition:
 - Overlap audits and prune updates are index-driven, repeatable, and session-resumable without chat history.
