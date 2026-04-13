@@ -8,12 +8,12 @@ Verification basis: repository scan + targeted path and symbol checks.
 Session note:
 - `npm run index:generate` was run in both `letitrip.in` and `appkit` for this governance refresh slice.
 - `npx tsc --noEmit` status will be re-validated for both repos in this session after tracker sync.
-- Latest commits in this slice: appkit `a786374` (index refresh); letitrip commit pending.
+- Latest commits in this slice: appkit `a786374` (index refresh), letitrip `737509fc` (index + prune governance refresh).
 - This session focus: refresh index-driven overlap metrics and reconcile tracker entries with TG3 closeout state.
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
-- modified or committed state: modified in working tree (pending letitrip governance commit for this session)
+- modified or committed state: committed; tracker synced to latest governance commits in this session
 - deletion check result: no prune deletion in git history (modifications only)
 
 Index comparison note (current generated indexes):
@@ -323,6 +323,7 @@ Session evidence:
 - Appkit added `index:generate` script and committed generated `index.md` refresh.
 - Letitrip regenerated `index.md` and updated this tracker with current overlap metrics.
 - 2026-04-13 governance refresh: regenerated `index.md` in both repos and reconciled TG11 hook ledger entries for `useAuctions` / `useAuctionDetail` with completed TG3 ownership migration.
+- 2026-04-13 commit sync: appkit `a786374`; letitrip `737509fc`.
 
 Exit condition:
 - Overlap audits and prune updates are index-driven, repeatable, and session-resumable without chat history.
@@ -336,3 +337,6 @@ Result: COMPLETE.
 1. Run `npm run index:generate` in both repos before any new overlap audit batch.
 2. Re-check overlap metrics in this file against regenerated `index.md` snapshots.
 3. Keep this file pending-focused and update immediately after each meaningful batch and again after each commit.
+
+Next starting point note:
+- Open this file first, then run `npm run index:generate` in both repos and compare any new overlap deltas against the 205/179/22/20 snapshot before selecting a new migration slice.
