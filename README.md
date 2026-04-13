@@ -1,185 +1,56 @@
-# LetItRip
+# letitrip.in
 
-A full-featured multi-vendor marketplace platform built with Next.js 16 App Router, TypeScript, Firebase, and Tailwind CSS.
+Standalone Next.js marketplace application that consumes `@mohasinac/appkit` from npm registry.
 
----
+## Standalone Model
 
-## What is LetItRip?
+- `letitrip.in` is a standalone app repository.
+- `appkit` is a separate standalone core library repository.
+- Production and CI/server installs resolve `@mohasinac/appkit` from npm registry.
+- Local development overrides (watch/prerelease workflows) are optional and handled manually.
 
-LetItRip is an e-commerce marketplace supporting three purchase modes:
+## Stack
 
-- **Buy Now** — standard add-to-cart product purchases
-- **Auctions** — timed bidding on products with real-time bid updates
-- **Pre-Orders** — reserve products before availability
+- Next.js App Router + TypeScript
+- Firebase (Auth, Firestore, Storage, RTDB)
+- Tailwind CSS
+- next-intl
+- React Query + react-hook-form + Zod
 
-The platform hosts multiple seller stores, supports events/promotions/coupons, includes a virtual currency system (RC), and provides separate portals for admins, sellers, and buyers.
+## Install
 
----
+```bash
+npm install
+```
 
-## Tech Stack
+## Scripts
 
-| Layer         | Technology                                                     |
-| ------------- | -------------------------------------------------------------- |
-| Framework     | Next.js 16.1.6 (App Router, Server Components, Server Actions) |
-| Language      | TypeScript                                                     |
-| Styling       | Tailwind CSS + `THEME_CONSTANTS` tokens                        |
-| Auth          | Firebase Auth (email/password + Google OAuth)                  |
-| Database      | Firestore (primary data) + Firebase Realtime DB (bids, events) |
-| Storage       | Firebase Storage (media)                                       |
-| Search        | Algolia (`@mohasinac/search-algolia`)                          |
-| Payments      | Razorpay (`@mohasinac/payment-razorpay`)                       |
-| Email         | Resend (`@mohasinac/email-resend`)                             |
-| Shipping      | ShipRocket (`@mohasinac/shipping-shiprocket`)                  |
-| Data Fetching | TanStack Query v5                                              |
-| Forms         | react-hook-form v7 + Zod                                       |
-| i18n          | next-intl                                                      |
-| Packages      | `@mohasinac/*` — 58 published npm packages (v1.4.x)            |
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run type-check
+npm test
+npm run index:generate
+```
 
----
+## Appkit Dependency
+
+`package.json` intentionally uses npm registry versioning for appkit:
+
+```json
+"@mohasinac/appkit": "^2.1.1"
+```
+
+If you use a local watch/prerelease workflow, keep that as a local-only override and do not commit file/link-based dependency specs.
 
 ## Repository Layout
 
+```text
+src/             Next.js app code, actions, features, shared modules
+functions/       Firebase functions
+messages/        i18n message catalogs
+scripts/         project tooling
+docs/            architecture and feature documentation
 ```
-letitrip.in/
-├── src/
-│   ├── app/                  # Next.js App Router pages + API routes
-│   │   └── api/              # Route stubs — thin withProviders() wrappers over @mohasinac/feat-*
-│   ├── features/             # App-local feature modules (products, admin, seller, user…)
-│   ├── components/           # Shared UI components
-│   ├── actions/              # Server Actions (all mutations — never apiClient)
-│   ├── hooks/                # Shared React hooks (reads use useQuery + apiClient)
-│   ├── repositories/         # Firestore repository layer (server-only)
-│   ├── constants/            # App-wide constants (routes, RBAC, theme, API_ENDPOINTS)
-│   ├── helpers/              # Pure utility functions (auth, data, buildSieveFilters)
-│   ├── utils/                # Low-level formatters, validators, converters
-│   ├── providers.config.ts   # DI wiring — registerProviders() + withProviders() wrapper
-│   └── lib/
-│       └── api/
-│           └── api-handler.ts  # createApiHandler factory (auth, rate-limit, validation)
-├── functions/                # Firebase Cloud Functions (cron jobs + Firestore triggers)
-├── messages/                 # next-intl translation strings (en.json, hi.json)
-└── scripts/                  # Seed scripts, deployment helpers
-```
-
----
-
-## Provider Architecture
-
-All Firebase, email, storage, and payment access goes through the `@mohasinac/contracts` DI registry:
-
-```ts
-// src/providers.config.ts — registered once at startup
-registerProviders({
-  db,
-  auth,
-  session,
-  email,
-  storage,
-  payment,
-  shipping,
-  search,
-  style,
-});
-
-// withProviders() — guards every feat-* route against cold-start races
-export const GET = withProviders(_GET);
-```
-
-The `withProviders()` wrapper calls `await initProviders()` before every request, eliminating Vercel cold-start 500 errors where `instrumentation.ts` hadn't finished yet.
-
----
-
-## Three-Tier Architecture
-
-```
-Tier 3 — Pages     src/app/[locale]/…page.tsx       thin shell, ≤150 lines
-Tier 2 — Features  src/features/<name>/              owns components, hooks, types
-Tier 1 — Shared    src/components/ hooks/ utils/…   used by any tier
-```
-
-**Import rules:**
-
-- Pages → Tier 1 + 2
-- Features → Tier 1 only (never another feature)
-- Shared → Tier 1 only
-
----
-
-## User Roles
-
-| Role        | Access                                                                   |
-| ----------- | ------------------------------------------------------------------------ |
-| `guest`     | Browse public pages, view products/auctions/events                       |
-| `user`      | Buy, cart, wishlist, orders, notifications, RC                           |
-| `seller`    | Everything user has + seller portal (products, orders, payouts, coupons) |
-| `admin`     | Full platform access + admin portal                                      |
-| `moderator` | Review/content moderation                                                |
-
----
-
-## Development
-
-```bash
-# Check if dev server is already running before starting a new one
-netstat -ano | Select-String ":3000.*LISTENING"
-
-npm run dev          # Start Next.js dev server (Turbopack default)
-npm run build        # Production build
-npx tsc --noEmit     # Type-check only
-npm test             # Run Jest tests
-npm run lint         # ESLint
-```
-
-### Firebase scripts
-
-```powershell
-.\scripts\deploy-firestore-indices.ps1   # Deploy composite indexes
-.\scripts\deploy-firestore-rules.ps1     # Deploy Firestore/Storage/DB rules
-.\scripts\deploy-functions.ps1           # Deploy Cloud Functions
-.\scripts\sync-env-to-vercel.ps1         # Sync .env.local → Vercel
-.\scripts\pull-env-from-vercel.ps1       # Pull env from Vercel
-```
-
----
-
-## Documentation Index
-
-| Document                                                         | Contents                                        |
-| ---------------------------------------------------------------- | ----------------------------------------------- |
-| [docs/architecture.md](docs/architecture.md)                     | Architecture overview, data flow, auth session  |
-| [docs/layouts.md](docs/layouts.md)                               | App layouts (root, locale, admin, seller, user) |
-| [docs/pages-public.md](docs/pages-public.md)                     | Public-facing pages                             |
-| [docs/pages-user.md](docs/pages-user.md)                         | User portal pages                               |
-| [docs/pages-seller.md](docs/pages-seller.md)                     | Seller portal pages                             |
-| [docs/pages-admin.md](docs/pages-admin.md)                       | Admin portal pages                              |
-| [docs/api-routes.md](docs/api-routes.md)                         | All API route endpoints                         |
-| [docs/actions.md](docs/actions.md)                               | Server Actions reference                        |
-| [docs/repositories.md](docs/repositories.md)                     | Firestore repository layer                      |
-| [docs/services.md](docs/services.md)                             | Service layer (read API wrappers)               |
-| [docs/components.md](docs/components.md)                         | Shared component library                        |
-| [docs/hooks.md](docs/hooks.md)                                   | Shared hooks reference                          |
-| [docs/constants.md](docs/constants.md)                           | Constants reference                             |
-| [docs/APPKIT_FIRST_TRACKER.md](docs/APPKIT_FIRST_TRACKER.md)     | Authoritative appkit-first migration contract   |
-| [docs/features/products.md](docs/features/products.md)           | Products, Auctions, Pre-Orders feature          |
-| [docs/features/cart-checkout.md](docs/features/cart-checkout.md) | Cart & Checkout feature                         |
-| [docs/features/orders.md](docs/features/orders.md)               | Orders feature                                  |
-| [docs/features/events.md](docs/features/events.md)               | Events feature                                  |
-| [docs/features/reviews.md](docs/features/reviews.md)             | Reviews feature                                 |
-| [docs/features/blog.md](docs/features/blog.md)                   | Blog feature                                    |
-| [docs/features/categories.md](docs/features/categories.md)       | Categories feature                              |
-| [docs/features/search.md](docs/features/search.md)               | Search feature                                  |
-| [docs/features/stores.md](docs/features/stores.md)               | Stores feature                                  |
-| [docs/features/homepage.md](docs/features/homepage.md)           | Homepage feature                                |
-| [docs/features/auth.md](docs/features/auth.md)                   | Auth feature                                    |
-| [docs/features/seller.md](docs/features/seller.md)               | Seller portal feature                           |
-| [docs/features/admin.md](docs/features/admin.md)                 | Admin portal feature                            |
-| [docs/features/user.md](docs/features/user.md)                   | User portal feature                             |
-| [docs/features/promotions.md](docs/features/promotions.md)       | Promotions & Coupons feature                    |
-| [docs/features/rc.md](docs/features/rc.md)                       | RC virtual currency feature                     |
-| [docs/features/notifications.md](docs/features/notifications.md) | Notifications feature                           |
-| [docs/features/wishlist.md](docs/features/wishlist.md)           | Wishlist feature                                |
-| [docs/packages/core.md](docs/packages/core.md)                   | @mohasinac/core package                         |
-| [docs/packages/http.md](docs/packages/http.md)                   | @mohasinac/http package                         |
-| [docs/packages/next.md](docs/packages/next.md)                   | @mohasinac/next package                         |
-| [docs/packages/react.md](docs/packages/react.md)                 | @mohasinac/react package                        |
-| [docs/packages/ui.md](docs/packages/ui.md)                       | @mohasinac/ui package                           |
