@@ -48,7 +48,8 @@ import type {
   DocumentData,
   Query,
 } from "firebase-admin/firestore";
-import { deserializeTimestamps } from "@mohasinac/appkit/providers/db-firebase";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
+const getDbFirebase = () => (module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -153,7 +154,7 @@ export async function applySieveToFirestore<T extends DocumentData>(params: {
 
   const items = snapshot.docs.map(
     (doc) =>
-      deserializeTimestamps({ id: doc.id, ...doc.data() }) as unknown as T,
+      getDbFirebase().deserializeTimestamps({ id: doc.id, ...doc.data() }) as unknown as T,
   );
 
   // ── Step 3: pagination meta ───────────────────────────────────────────────

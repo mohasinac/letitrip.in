@@ -10,7 +10,9 @@
 
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { chatRepository } from "@/repositories";
-import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
+const _getAdminAuth = () =>
+  ((module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase")).getAdminAuth;
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -44,7 +46,7 @@ export async function getRealtimeTokenAction(): Promise<RealtimeTokenResult> {
     });
   }
 
-  const customToken = await getAdminAuth().createCustomToken(user.uid, {
+  const customToken = await _getAdminAuth()().createCustomToken(user.uid, {
     role: (user as any).role ?? "user",
     chatIds,
   });

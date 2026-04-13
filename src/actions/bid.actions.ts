@@ -18,7 +18,14 @@ import {
   unitOfWork,
   userRepository,
 } from "@/repositories";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
+// getAdminRealtimeDb is imported lazily inside the function body to prevent
+// firebase-admin from being traced into the browser bundle via the
+// next-flight-action loader (which processes server action files in a browser
+// compilation context to generate the React Server Components action manifest).
+// module.require() prevents webpack's static analysis from following the chain.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
+const _getAdminRealtimeDb = () =>
+  ((module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase")).getAdminRealtimeDb;
 import { serverLogger } from "@/lib/server-logger";
 import {
   rateLimitByIdentifier,
@@ -145,7 +152,7 @@ export async function placeBidAction(
 
   // ── Write to Realtime DB for live bid streaming ───────────────────────────
   try {
-    const rtdb = getAdminRealtimeDb();
+    const rtdb = _getAdminRealtimeDb()();
     await rtdb.ref(`/auction-bids/${productId}`).set({
       currentBid: bidAmount,
       bidCount: (product.bidCount ?? 0) + 1,

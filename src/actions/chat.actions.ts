@@ -13,7 +13,9 @@ import {
   orderRepository,
   userRepository,
 } from "@/repositories";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
+const _getAdminRealtimeDb = () =>
+  ((module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase")).getAdminRealtimeDb;
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -144,7 +146,7 @@ export async function sendChatMessageAction(
     throw new AuthorizationError("Not a participant of this chat");
 
   const messageId = await (async () => {
-    const rtdb = getAdminRealtimeDb();
+    const rtdb = _getAdminRealtimeDb()();
     const msgRef = rtdb.ref(`/chat/${chatId}/messages`).push();
     const id = msgRef.key as string;
     const userName =

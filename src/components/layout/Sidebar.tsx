@@ -13,7 +13,6 @@ import {
 import { Heading, Li, Nav, Text, Ul, Button, Span } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
 import { useAuth, useLogout, useMessage } from "@/hooks";
-import { logger } from "@mohasinac/appkit/core";
 import { Sprout } from "lucide-react";
 import { AvatarDisplay, LocaleSwitcher, TextLink } from "@/components";
 import { preventBodyScroll } from "@/utils";
@@ -79,7 +78,7 @@ export default function Sidebar({
       // This avoids full page reload and preserves Next.js app state
       router.push(ROUTES.AUTH.LOGIN);
     } catch (error) {
-      logger.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
+      console.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
       showError(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR);
       // Even on error, redirect to login (session might be cleared)
       onClose();

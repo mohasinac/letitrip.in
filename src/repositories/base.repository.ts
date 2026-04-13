@@ -14,7 +14,7 @@
  * ```
  */
 
-import {
+import type {
   CollectionReference,
   DocumentData,
   DocumentReference,
@@ -24,12 +24,16 @@ import {
   Transaction,
   WriteBatch,
 } from "firebase-admin/firestore";
-import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { DatabaseError, NotFoundError } from "@mohasinac/appkit/errors";
-import {
-  prepareForFirestore,
-  deserializeTimestamps,
-} from "@mohasinac/appkit/providers/db-firebase";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+function getDbProvider() {
+  // module.require() is used instead of require() because webpack does not
+  // statically trace module.require() calls, preventing firebase-admin from
+  // being bundled into the browser chunk via this server-only file.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase");
+}
 import { serverLogger } from "@/lib/server-logger";
 import type {
   FirebaseSieveFields,
@@ -50,7 +54,7 @@ export abstract class BaseRepository<T extends DocumentData> {
    * Get Firestore instance (uses admin SDK)
    */
   protected get db(): Firestore {
-    return getAdminDb();
+    return getDbProvider().getAdminDb();
   }
 
   /**
@@ -68,7 +72,7 @@ export abstract class BaseRepository<T extends DocumentData> {
    * ever changes, only this one method needs to be updated.
    */
   protected mapDoc<D = T>(snap: DocumentSnapshot): D {
-    return deserializeTimestamps({
+    return getDbProvider().deserializeTimestamps({
       id: snap.id,
       ...(snap.data() ?? {}),
     }) as unknown as D;
@@ -164,7 +168,7 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async create(data: Partial<T> | any): Promise<T> {
     try {
-      const cleanData = prepareForFirestore({
+      const cleanData = getDbProvider().prepareForFirestore({
         ...data,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -185,7 +189,7 @@ export abstract class BaseRepository<T extends DocumentData> {
   async createWithId(id: string, data: Partial<T>): Promise<T> {
     try {
       const now = new Date();
-      const cleanData = prepareForFirestore({
+      const cleanData = getDbProvider().prepareForFirestore({
         ...data,
         createdAt: now,
         updatedAt: now,
@@ -219,7 +223,7 @@ export abstract class BaseRepository<T extends DocumentData> {
    */
   async update(id: string, data: Partial<T>): Promise<T> {
     try {
-      const cleanData = prepareForFirestore({
+      const cleanData = getDbProvider().prepareForFirestore({
         ...data,
         updatedAt: new Date(),
       });
@@ -350,7 +354,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const now = new Date();
     tx.set(
       docRef,
-      prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
+      getDbProvider().prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
     );
     return docRef;
   }
@@ -367,7 +371,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const now = new Date();
     tx.set(
       docRef,
-      prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
+      getDbProvider().prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
     );
     return docRef;
   }
@@ -379,7 +383,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const docRef = this.getCollection().doc(id);
     tx.update(
       docRef,
-      prepareForFirestore({ ...data, updatedAt: new Date() }) as any,
+      getDbProvider().prepareForFirestore({ ...data, updatedAt: new Date() }) as any,
     );
   }
 
@@ -406,7 +410,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const now = new Date();
     batch.set(
       docRef,
-      prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
+      getDbProvider().prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
     );
     return docRef;
   }
@@ -423,7 +427,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const now = new Date();
     batch.set(
       docRef,
-      prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
+      getDbProvider().prepareForFirestore({ ...data, createdAt: now, updatedAt: now }),
     );
   }
 
@@ -434,7 +438,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const docRef = this.getCollection().doc(id);
     batch.update(
       docRef,
-      prepareForFirestore({ ...data, updatedAt: new Date() }) as any,
+      getDbProvider().prepareForFirestore({ ...data, updatedAt: new Date() }) as any,
     );
   }
 

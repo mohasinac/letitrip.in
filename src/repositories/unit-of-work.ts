@@ -40,8 +40,14 @@
  * ```
  */
 
-import { Firestore, Transaction, WriteBatch } from "firebase-admin/firestore";
-import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
+import type { Firestore, Transaction, WriteBatch } from "firebase-admin/firestore";
+
+// Lazy accessor — see base.repository.ts for rationale.
+// module.require() prevents webpack static analysis from following the
+// firebase-admin import chain into the browser bundle.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
+const getAdminDb: () => Firestore = () =>
+  ((module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase")).getAdminDb();
 import { DatabaseError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@/lib/server-logger";
 

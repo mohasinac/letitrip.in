@@ -48,7 +48,6 @@ import {
   ConfirmDeleteModal,
   Search,
 } from "@/components";
-import { AdminCouponsView as AdminCouponsShell } from "@mohasinac/appkit/features/admin";
 import { CouponFilters } from "./CouponFilters";
 import { formatDate } from "@/utils";
 import {
@@ -228,20 +227,26 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
         onAction={handleCreate}
       />
 
-      <AdminCouponsShell
-        isDashboard
-        searchSlot={
-          <Search
-            value={searchTerm}
-            onChange={(v) => table.set("q", v)}
-            placeholder={t("searchPlaceholder")}
-          />
-        }
-        filterContent={<CouponFilters table={pendingTable} />}
-        filterActiveCount={filterActiveCount}
-        onFilterApply={onFilterApply}
-        onFilterClear={onFilterClear}
-        toolbarPaginationSlot={
+      <Card className="space-y-4 p-4">
+        <Search
+          value={searchTerm}
+          onChange={(v) => table.set("q", v)}
+          placeholder={t("searchPlaceholder")}
+        />
+
+        <CouponFilters table={pendingTable} />
+
+        <div className={flex.between}>
+          <div className="flex items-center gap-2">
+            <Button onClick={onFilterApply}>{tActions("apply")}</Button>
+            <Button variant="ghost" onClick={onFilterClear}>
+              {tActions("clear")}
+            </Button>
+            {filterActiveCount > 0 ? (
+              <StatusBadge variant="info">{filterActiveCount}</StatusBadge>
+            ) : null}
+          </div>
+
           <TablePagination
             currentPage={data?.meta?.page ?? 1}
             totalPages={data?.meta?.totalPages ?? 1}
@@ -250,45 +255,8 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
             onPageChange={table.setPage}
             compact
           />
-        }
-        renderDrawer={() => (
-          <SideDrawer
-            isOpen={isDrawerOpen}
-            onClose={handleCloseDrawer}
-            title={drawerTitle}
-            side="right"
-            footer={
-              <DrawerFormFooter
-                onCancel={handleCloseDrawer}
-                onSubmit={handleSave}
-                isLoading={isSaving}
-                isSubmitDisabled={!isDirty && drawerMode === "edit"}
-                submitLabel={
-                  drawerMode === "create" ? t("create") : tActions("save")
-                }
-              />
-            }
-          >
-            {isDrawerOpen && (
-              <CouponForm
-                initialData={selectedCoupon ?? undefined}
-                onChange={setFormState}
-                isEdit={drawerMode === "edit"}
-              />
-            )}
-          </SideDrawer>
-        )}
-        renderConfirmModal={() => (
-          <ConfirmDeleteModal
-            isOpen={!!couponToDelete}
-            onClose={() => setCouponToDelete(null)}
-            onConfirm={handleDeleteConfirm}
-            title={t("delete")}
-            message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
-            isDeleting={deleteMutation.isPending}
-          />
-        )}
-      >
+        </div>
+
         <DataTable
           columns={columns}
           data={coupons}
@@ -327,7 +295,42 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
             </Card>
           )}
         />
-      </AdminCouponsShell>
+      </Card>
+
+      <SideDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        title={drawerTitle}
+        side="right"
+        footer={
+          <DrawerFormFooter
+            onCancel={handleCloseDrawer}
+            onSubmit={handleSave}
+            isLoading={isSaving}
+            isSubmitDisabled={!isDirty && drawerMode === "edit"}
+            submitLabel={
+              drawerMode === "create" ? t("create") : tActions("save")
+            }
+          />
+        }
+      >
+        {isDrawerOpen && (
+          <CouponForm
+            initialData={selectedCoupon ?? undefined}
+            onChange={setFormState}
+            isEdit={drawerMode === "edit"}
+          />
+        )}
+      </SideDrawer>
+
+      <ConfirmDeleteModal
+        isOpen={!!couponToDelete}
+        onClose={() => setCouponToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+        title={t("delete")}
+        message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
+        isDeleting={deleteMutation.isPending}
+      />
     </Stack>
   );
 }

@@ -10,7 +10,6 @@ import React, { Component, ReactNode } from "react";
 import { Text, Heading } from "@mohasinac/appkit/ui";
 import { Button } from "@mohasinac/appkit/ui";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { Logger } from "@mohasinac/appkit/core";
 import { useTranslations } from "next-intl";
 import { nowISO } from "@/utils";
 
@@ -96,11 +95,6 @@ function ErrorFallbackView({
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  private logger = Logger.getInstance({
-    enableConsole: true,
-    enableFileLogging: true, // Write errors to files
-  });
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -117,8 +111,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log to Logger class for centralized error tracking
-    this.logger.error("ErrorBoundary caught an error", {
+    console.error("ErrorBoundary caught an error", {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,

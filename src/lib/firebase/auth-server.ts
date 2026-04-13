@@ -5,7 +5,6 @@
  * Use these in API routes and server components.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import type { DecodedIdToken } from "firebase-admin/auth";
@@ -18,6 +17,16 @@ import { serverLogger } from "@/lib/server-logger";
 import type { SessionUser, UserRole } from "@/types/auth";
 import type { NextRequest } from "next/server";
 import type { UserDocument } from "@/db/schema/users";
+
+// Lazy loader — (module as any).require() prevents webpack from tracing firebase-admin
+// into the browser bundle when this file appears in the flight-action module graph.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getAdminAuth = () =>
+  (
+    (module as any).require(
+      "@mohasinac/appkit/providers/db-firebase",
+    ) as typeof import("@mohasinac/appkit/providers/db-firebase")
+  ).getAdminAuth();
 
 /** Firebase error codes that represent a normal "not authenticated" state. */
 const EXPECTED_AUTH_CODES = new Set([

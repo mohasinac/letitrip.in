@@ -11,19 +11,10 @@
  * Reference: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
  */
 import { createInstrumentation } from "@mohasinac/appkit/instrumentation";
-
-async function loadProvidersConfig() {
-  const importModule = new Function(
-    "modulePath",
-    "return import(modulePath);",
-  ) as (modulePath: string) => Promise<typeof import("./src/providers.config")>;
-
-  return importModule("./src/providers.config");
-}
+import { initProviders } from "./src/providers.config";
 
 const { register } = createInstrumentation({
   onNodeServer: async () => {
-    const { initProviders } = await loadProvidersConfig();
     await initProviders();
   },
 });

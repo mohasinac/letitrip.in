@@ -11,8 +11,6 @@
 
 import { useEffect } from "react";
 import { NextIntlClientProvider, useTranslations } from "next-intl";
-import { logger } from "@mohasinac/appkit/core";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { Button } from "@mohasinac/appkit/ui";
@@ -33,20 +31,17 @@ function GlobalErrorContent({
 }) {
   const t = useTranslations("errorPages.criticalError");
   const tActions = useTranslations("actions");
-  const { themed, spacing, flex } = THEME_CONSTANTS;
 
   return (
-    <div className={`min-h-screen ${flex.center} ${themed.bgPrimary} p-8`}>
-      <div
-        className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
-      >
+    <div className="flex min-h-screen items-center justify-center bg-background p-8">
+      <div className="mx-auto w-full max-w-2xl space-y-6 text-center">
         {/* Error Icon */}
-        <div className="flex justify-center mb-8">
+        <div className="mb-8 flex justify-center">
           <div
-            className={`${themed.bgSecondary} ${themed.border} rounded-full p-8 inline-block`}
+            className="inline-block rounded-full border border-border bg-secondary p-8"
           >
             <svg
-              className={`w-16 h-16 ${themed.textError}`}
+              className="h-16 w-16 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -74,7 +69,7 @@ function GlobalErrorContent({
         {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === "development" && error.message && (
           <div
-            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} rounded-lg p-4 mb-8 text-left`}
+            className="mb-8 rounded-lg border border-border bg-red-50 p-4 text-left"
           >
             <Text size="sm" variant="error" className="font-mono break-all">
               <strong>Error:</strong> {error.message}
@@ -88,7 +83,7 @@ function GlobalErrorContent({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-4 items-center">
+        <div className="flex flex-col items-center gap-4">
           <Button
             variant="primary"
             onClick={reset}
@@ -97,8 +92,8 @@ function GlobalErrorContent({
             {tActions("retry")}
           </Button>
           <TextLink
-            href={ROUTES.HOME}
-            className={`px-6 py-3 rounded-lg border-2 border-primary text-primary text-lg font-medium min-w-[200px] inline-block text-center`}
+            href="/"
+            className="inline-block min-w-[200px] rounded-lg border-2 border-primary px-6 py-3 text-center text-lg font-medium text-primary"
           >
             {t("backToHome")}
           </TextLink>
@@ -110,8 +105,7 @@ function GlobalErrorContent({
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    // Log critical error using centralized Logger
-    logger.error("Global Critical Error", {
+    console.error("Global Critical Error", {
       message: error.message,
       stack: error.stack,
       digest: error.digest,

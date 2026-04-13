@@ -18,8 +18,14 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mohasinac/appkit": ["../appkit/src/index.ts"],
+      "@mohasinac/appkit/*": [
+        "../appkit/src/*/index.ts",
+        "../appkit/src/*"
+      ]
     }
   },
   "include": [

@@ -5,10 +5,15 @@
  * Automatically detects environment and uses appropriate logger.
  */
 
-import { logger } from "@mohasinac/appkit/core";
-import { Logger } from "@mohasinac/appkit/core";
 import { AppError } from "@mohasinac/appkit/errors";
-import { redactPii } from "@mohasinac/appkit/security";
+
+// Inline-safe logger wrapper — avoids pulling Node-only crypto via appkit/core
+const logger = {
+  error: (msg: string, data?: unknown) => console.error(msg, data),
+  warn: (msg: string, data?: unknown) => console.warn(msg, data),
+  info: (msg: string, data?: unknown) => console.info(msg, data),
+  debug: (msg: string, data?: unknown) => console.debug(msg, data),
+};
 
 /**
  * Error context information for better debugging
@@ -215,11 +220,7 @@ export const logApplicationError = (
  * Call this in your root layout or app initialization
  */
 export const initializeClientLogger = (): void => {
-  // Enable PII redaction for all client-side logs
-  Logger.setSanitizer(redactPii);
-
-  // Enable file logging for errors in production
-  logger.error.bind(logger); // Ensure binding is correct
+  // PII redaction via appkit/security is server-only; skip it in browser bundles.
 
   // Set up global error handlers
   if (typeof window !== "undefined") {
