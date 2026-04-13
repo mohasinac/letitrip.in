@@ -10,7 +10,7 @@ import { BlogCard } from "@/components";
 import { ROUTES } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";
 import type { BlogPost } from "@mohasinac/appkit/features/blog";
-import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog";
+import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog/server";
 
 interface BlogPostViewProps {
   slug: string;

@@ -243,7 +243,10 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
               {tActions("clear")}
             </Button>
             {filterActiveCount > 0 ? (
-              <StatusBadge variant="info">{filterActiveCount}</StatusBadge>
+              <StatusBadge
+                status="info"
+                label={String(filterActiveCount)}
+              />
             ) : null}
           </div>
 

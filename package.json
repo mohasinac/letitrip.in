@@ -2,9 +2,6 @@
   "name": "letitrip.in",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "../appkit"
-  ],
   "scripts": {
     "dev": "next dev",
     "watch:appkit": "npm --prefix ../appkit run watch",
@@ -23,7 +20,7 @@
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "^2.1.2",
+      "@mohasinac/appkit": "^2.1.3",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",

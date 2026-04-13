@@ -60,6 +60,18 @@ declare module "@mohasinac/appkit/providers/auth-firebase" {
   export function requireRole(...args: unknown[]): Promise<unknown>;
 }
 
+declare module "@mohasinac/feat-products" {
+  export type ProductItem = import("@mohasinac/appkit/features/products").ProductItem;
+
+  export interface ProductListResponse {
+    items?: ProductItem[];
+    total?: number;
+    page?: number;
+    pageSize?: number;
+    [key: string]: unknown;
+  }
+}
+
 declare module "@mohasinac/appkit/providers/shipping-shiprocket" {
   export interface ShiprocketAuthRequest {
     email: string;
