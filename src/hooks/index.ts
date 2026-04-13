@@ -147,12 +147,11 @@ export { useMediaUpload, useMediaAbort, useMediaCrop, useMediaTrim } from "./use
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
 export { useFaqVote } from "./useFaqVote";
 export { useNewsletter } from "./useNewsletter";
-export { useAuctionDetail } from "./useAuctionDetail";
-export type { PublicBid } from "./useAuctionDetail";
 export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
 export { useStoreAddressSelector } from "./useStoreAddressSelector";
+export type { PublicBid } from "@mohasinac/appkit/features/auctions";
 
 // Chat hooks
 export {

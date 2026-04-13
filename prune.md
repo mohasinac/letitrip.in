@@ -2,13 +2,13 @@
 
 This file now contains only open migration work. Completed items were removed after verification against the current workspace.
 
-Last updated: April 13, 2026 — tracker synced after TG7/TG12 commit sequence
+Last updated: April 13, 2026 — tracker synced after TG3 listing hook ownership closeout
 Verification basis: repository scan + targeted path and symbol checks.
 
 Session note:
 - `npx tsc --noEmit` passes in both `letitrip.in` and `appkit` for this session slice.
-- Latest commits: appkit `ec9993c`, letitrip TG7/TG12 sequence committed on April 13, 2026.
-- This session completed: TG7 semantic wrapper closeout batches A/B and TG12 index/prune governance refresh.
+- Latest commits: appkit `5f275e5` (TG3 shared auctions hooks), letitrip TG7/TG12 sequence committed on April 13, 2026.
+- This session completed: TG3 listing consolidation closeout (local `useAuctions` / `useAuctionDetail` ownership removed, appkit hook ownership adopted).
 
 Prune file integrity note (session):
 - exists: yes (`prune.md` present)
@@ -32,13 +32,10 @@ Index comparison note (current generated indexes):
 
 ### Verdict A - Listing Logic Consolidation
 
-Status: partial (progressed)
+Status: COMPLETE
 
 Open findings:
-- ~~`src/hooks/usePlaceBid.ts` still exists in letitrip.~~ DELETED — consumers import from `@mohasinac/appkit/features/auctions`.
-- ~~`src/hooks/useRealtimeBids.ts` still exists in letitrip.~~ DELETED — consumers import from `@mohasinac/appkit/features/auctions`.
-- `src/features/products/hooks/useAuctions.ts` still targets `/api/products` (not appkit's `/api/auctions`). Consumer adapter — stays until API endpoints are unified.
-- `src/hooks/useAuctionDetail.ts` uses `FirebaseSieveResult<PublicBid>` and `/api/products/{id}` + `/api/bids` — app-specific adapter. Stays until API endpoints are unified.
+- None.
 
 Required outcome:
 - Auction/pre-order/listing behavior owned in appkit.
@@ -73,17 +70,34 @@ Required outcome:
 
 ## Pending Task Groups
 
-## Task Group 3 - Listing Consolidation (Partially Complete)
+## Task Group 3 - Listing Consolidation (COMPLETE)
 
 Goal:
 - Move reusable auction/pre-order/listing behavior fully into appkit.
 
 Completed:
 1. ~~Replace local `usePlaceBid` and `useRealtimeBids` ownership with appkit ownership.~~ DONE — files deleted, consumers import from `@mohasinac/appkit/features/auctions`.
+2. Retire local `useAuctions` ownership in favor of appkit hook ownership — DONE.
+3. Retire local `useAuctionDetail` ownership in favor of appkit hook ownership — DONE.
 
-Blocked (endpoint divergence — needs API unification before resolution):
-2. `src/features/products/hooks/useAuctions.ts`: hits `/api/products`; appkit hits `/api/auctions`. Stays as consumer adapter until `/api/auctions` route exists in letitrip.
-3. `src/hooks/useAuctionDetail.ts`: hits `/api/products/{id}` + `/api/bids?productId={id}`. Uses `FirebaseSieveResult<PublicBid>`. Stays as consumer adapter until API is unified and appkit has equivalent detail hook.
+Blocked:
+- None.
+
+Progress log:
+- 2026-04-13 TG3 batch A (appkit hook ownership closeout):
+	- Added endpoint-configurable appkit auctions hooks so consumers can use shared hooks against non-default endpoints.
+	- Added shared appkit `useAuctionDetail` hook and shared `PublicBid` type under `@mohasinac/appkit/features/auctions`.
+	- Rewired letitrip consumers to import directly from appkit:
+		- `src/features/products/components/AuctionsView.tsx`
+		- `src/features/products/components/AuctionDetailView.tsx`
+	- Deleted local letitrip hook ownership files:
+		- `src/features/products/hooks/useAuctions.ts`
+		- `src/hooks/useAuctionDetail.ts`
+	- Updated letitrip barrels:
+		- `src/features/products/hooks/index.ts` (removed local auctions hook export)
+		- `src/hooks/index.ts` (removed local detail hook export; type export now sourced from appkit)
+	- Validation: `npx tsc --noEmit` passes in both `letitrip.in` and `appkit`.
+	- Appkit declaration surface sync: updated `dist/features/auctions/**/*.d.ts` to reflect the new shared hook/type exports used by letitrip typechecking.
 
 Exit condition:
 - No reusable listing business logic owned in letitrip.
@@ -317,8 +331,6 @@ Result: COMPLETE.
 
 ## Next Session Start Checklist
 
-1. Re-verify Task Group 3 local listing hooks and endpoint divergence.
-2. If endpoint parity work starts, scope `/api/auctions` unification needed to retire letitrip `useAuctions` adapter.
-3. If endpoint parity work starts, scope detail-hook parity needed to retire letitrip `useAuctionDetail` adapter.
-4. Run `npm run index:generate` in both repos before any new overlap audit batch.
-5. Update this file immediately after each meaningful batch and again after each commit.
+1. Run `npm run index:generate` in both repos before any new overlap audit batch.
+2. Re-check overlap metrics in this file against regenerated `index.md` snapshots.
+3. Keep this file pending-focused and update immediately after each meaningful batch and again after each commit.

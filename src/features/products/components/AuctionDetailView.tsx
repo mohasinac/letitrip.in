@@ -33,15 +33,13 @@ import { BidHistory } from "./BidHistory";
 import { PlaceBidForm } from "./PlaceBidForm";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import { AuctionDetailView as AppkitAuctionDetailView } from "@mohasinac/appkit/features/products";
+import {
+  useAuctionDetail,
+  useRealtimeBids,
+} from "@mohasinac/appkit/features/auctions";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import {
-  useAuth,
-  useBottomActions,
-  useAuctionDetail,
-  useWishlistToggle,
-} from "@/hooks";
-import { useRealtimeBids } from "@mohasinac/appkit/features/auctions";
+import { useAuth, useBottomActions, useWishlistToggle } from "@/hooks";
 import { formatCurrency, formatDate, resolveDate } from "@/utils";
 import { Heart } from "lucide-react";
 

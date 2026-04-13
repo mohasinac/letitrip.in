@@ -12,6 +12,10 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
+  useAuctions,
+  type AuctionListResponse,
+} from "@mohasinac/appkit/features/auctions";
+import {
   Container,
   Heading,
   Text,
@@ -32,8 +36,6 @@ import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
-import { useAuctions } from "../hooks";
-import type { AuctionsListResult } from "../hooks";
 import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
@@ -41,7 +43,7 @@ const PAGE_SIZE = 24;
 function AuctionsContent({
   initialData,
 }: {
-  initialData?: AuctionsListResult;
+  initialData?: AuctionListResponse;
 }) {
   const t = useTranslations("auctions");
   const tActions = useTranslations("actions");
@@ -131,10 +133,11 @@ function AuctionsContent({
     return sp.toString();
   }, [minBid, maxBid, sort, page, searchQuery, brandParam]);
 
-  const { auctions, total, totalPages, isLoading } = useAuctions(
-    auctionParams,
-    { initialData },
-  );
+  const { auctions, total, totalPages, isLoading } = useAuctions(auctionParams, {
+    endpoint: "/api/products",
+    initialData,
+    queryKeyPrefix: "auctions-products",
+  });
   const { brandOptions } = useBrands();
 
   // ── Bulk wishlist handler ─────────────────────────────────────────
@@ -315,7 +318,7 @@ function AuctionsContent({
 
 export function AuctionsView({
   initialData,
-}: { initialData?: AuctionsListResult } = {}) {
+}: { initialData?: AuctionListResponse } = {}) {
   return (
     <Suspense>
       <AuctionsContent initialData={initialData} />
