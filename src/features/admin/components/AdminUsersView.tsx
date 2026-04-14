@@ -8,6 +8,7 @@
 
 "use client";
 
+import { useToast } from "@mohasinac/appkit/ui";
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
@@ -19,23 +20,9 @@ import { useTranslations } from "next-intl";
 
 const { flex } = THEME_CONSTANTS;
 import {
-  Caption,
-  Text,
-  TablePagination,
-  Span,
-  Button,
-  StatusBadge,
-  Row,
-  DataTable,
-} from "@mohasinac/appkit/ui";
+  Caption, Text, TablePagination, Span, Button, StatusBadge, Row, DataTable, } from "@mohasinac/appkit/ui";
 import {
-  AdminPageHeader,
-  Card,
-  ConfirmDeleteModal,
-  RoleBadge,
-  Search,
-  useToast,
-} from "@/components";
+  AdminPageHeader, Card, ConfirmDeleteModal, RoleBadge, Search } from "@/components";
 import { AdminUsersView as AdminUsersShell } from "@mohasinac/appkit/features/admin";
 import { UserFilters } from "./UserFilters";
 import { UserDetailDrawer, useUserTableColumns } from ".";

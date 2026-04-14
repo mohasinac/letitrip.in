@@ -12,10 +12,11 @@
  */
 
 import React, { useEffect, useId, useState } from "react";
+import { Input } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import * as AppkitCartFeature from "@mohasinac/appkit/features/cart";
 import { Label, Text, Button } from "@mohasinac/appkit/ui";
-import { SideDrawer, Input, TextLink } from "@/components";
+import { SideDrawer, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { usePaymentOtp } from "../hooks/usePaymentOtp";
 

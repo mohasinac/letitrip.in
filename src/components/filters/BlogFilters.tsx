@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import { SwitchFilter } from "./SwitchFilter";
+import { FilterFacetSection, SwitchFilter } from "@/components";
 import type { UrlTable } from "./ProductFilters";
 
 export const BLOG_SORT_OPTIONS = [
@@ -73,7 +72,7 @@ export function BlogFilters({ table, variant = "admin" }: BlogFiltersProps) {
           title={t("isFeatured")}
           label={t("showFeaturedOnly")}
           checked={table.get("isFeatured") === "true"}
-          onChange={(v) => table.set("isFeatured", v ? "true" : "")}
+          onChange={(v: boolean) => table.set("isFeatured", v ? "true" : "")}
           defaultCollapsed={true}
         />
       )}

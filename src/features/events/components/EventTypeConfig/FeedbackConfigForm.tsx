@@ -1,9 +1,10 @@
 ﻿"use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { FeedbackConfig } from "@/db/schema";
-import { Checkbox, FormGroup } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
 
 interface FeedbackConfigFormProps {
   value: Partial<FeedbackConfig>;

@@ -1,8 +1,10 @@
 ﻿"use client";
 
+import { RadioGroup } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { Label, Text, Button, Span, Alert } from "@mohasinac/appkit/ui";
-import { Input, RadioGroup, Textarea } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;

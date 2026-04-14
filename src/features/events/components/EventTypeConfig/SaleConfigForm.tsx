@@ -1,6 +1,7 @@
 "use client";
 
-import { FormField, FormGroup } from "@/components";
+import { FormGroup } from "@mohasinac/appkit/ui";
+import { FormField } from "@/components";
 import type { SaleConfig } from "@/db/schema";
 
 interface SaleConfigFormProps {

@@ -1,28 +1,14 @@
 "use client";
 
+import { Checkbox, FormGroup, Input, Slider } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import {
-  Heading,
-  Label,
-  Text,
-  Span,
-  Button,
-  Row,
-  Grid,
-  Stack,
-  SectionTabs,
-} from "@mohasinac/appkit/ui";
+  Heading, Label, Text, Span, Button, Row, Grid, Stack, SectionTabs, } from "@mohasinac/appkit/ui";
 import {
-  Card,
-  Checkbox,
-  FormGroup,
-  Input,
-  MediaVideo,
-  Slider,
-  Textarea,
-} from "@/components";
+  Card, MediaVideo } from "@/components";
 
 const { flex, position } = THEME_CONSTANTS;
 

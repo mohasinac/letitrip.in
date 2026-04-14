@@ -15,7 +15,7 @@ import {
 import { AdminSessionsManager as AdminSessionsShell } from "@mohasinac/appkit/features/admin";
 import { Grid, Heading, Text, Badge, Button, DataTable, Alert } from "@mohasinac/appkit/ui";
 import { Card, ConfirmDeleteModal } from "@/components";
-import { useToast } from "@/components";
+import { useToast } from "@mohasinac/appkit/ui";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

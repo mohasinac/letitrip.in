@@ -1,8 +1,9 @@
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { Text, Button } from "@mohasinac/appkit/ui";
-import { FormField, FormGroup, Card } from "@/components";
+import { FormField, Card } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;

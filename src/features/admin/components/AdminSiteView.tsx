@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@mohasinac/appkit/ui";
 import { Button } from "@mohasinac/appkit/ui";
 /**
  * AdminSiteView — Thin Adapter
@@ -13,7 +14,7 @@ import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminSiteView as AppkitAdminSiteView } from "@mohasinac/appkit/features/admin";
-import { AdminPageHeader, Card, useToast } from "@/components";
+import { AdminPageHeader, Card } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";
 import {

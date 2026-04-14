@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Span, Text, Button } from "@mohasinac/appkit/ui";
-import { Input } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 
 // ─── Dual range slider sub-component ────────────────────────────────────────

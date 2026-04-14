@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
@@ -7,7 +8,7 @@ const { spacing, themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
 import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
-import { Checkbox, Textarea } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
 import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 

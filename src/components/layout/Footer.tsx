@@ -11,7 +11,7 @@ import { FooterLayout } from "./FooterLayout";
 import type { FooterSocialLink, FooterLinkGroup } from "./FooterLayout";
 import { THEME_CONSTANTS } from "@/constants";
 import { Text, Button } from "@mohasinac/appkit/ui";
-import { Input } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 
 interface FooterProps {
   footerConfig?: SiteSettingsDocument["footerConfig"];

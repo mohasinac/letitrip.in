@@ -1,11 +1,12 @@
 ﻿"use client";
 
+import { Checkbox } from "@mohasinac/appkit/ui";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useBecomeSeller } from "@/hooks";
 import { Alert } from "@mohasinac/appkit/ui";
-import { Card, Checkbox } from "@/components";
+import { Card } from "@/components";
 import {
   Caption,
   Heading,

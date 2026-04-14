@@ -8,10 +8,11 @@
  * confirm consent before checkout proceeds.
  */
 
+import { Input } from "@mohasinac/appkit/ui";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heading, Label, Text, Button } from "@mohasinac/appkit/ui";
-import { SideDrawer, Input } from "@/components";
+import { SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useAddressConsentOtp } from "../hooks/useAddressConsentOtp";
 

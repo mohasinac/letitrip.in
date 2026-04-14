@@ -10,7 +10,8 @@ import { z } from "zod";
 import { subscribeNewsletterAction } from "@/actions";
 import { useMessage } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { Input, TextLink } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 import { Text, Button } from "@mohasinac/appkit/ui";
 import { NewsletterSection as AppkitNewsletterSection } from "@mohasinac/appkit/features/homepage";
 

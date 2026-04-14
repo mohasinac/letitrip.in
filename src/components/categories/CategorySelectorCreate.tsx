@@ -20,17 +20,13 @@
  * ```
  */
 
+import { Select } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useCategories, useCreateCategory, useMessage } from "@/hooks";
 import { Label, Button } from "@mohasinac/appkit/ui";
 import {
-  SideDrawer,
-  CategoryForm,
-  DrawerFormFooter,
-  Select,
-  flattenCategories,
-} from "@/components";
+  SideDrawer, CategoryForm, DrawerFormFooter, flattenCategories } from "@/components";
 import type { Category } from "@/components";
 import {
   UI_PLACEHOLDERS,

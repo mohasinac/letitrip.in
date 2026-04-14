@@ -7,10 +7,12 @@
 
 "use client";
 
+import { Input, Select, Textarea } from "@mohasinac/appkit/ui";
+import { Toggle } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
 import { nowISO } from "@/utils";
 import { Stack } from "@mohasinac/appkit/ui";
-import { FormGroup, Input, Select, Textarea, Toggle } from "@/components";
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { RichTextEditor } from "./RichTextEditor";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 

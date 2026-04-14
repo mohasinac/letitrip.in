@@ -13,19 +13,14 @@
  * ```
  */
 
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import { ChatWindow as AppkitChatWindow } from "@mohasinac/appkit/features/account";
 import {
-  Caption,
-  Heading,
-  Text,
-  Spinner,
-  Span,
-  Button,
-} from "@mohasinac/appkit/ui";
+  Caption, Heading, Text, Spinner, Span, Button, } from "@mohasinac/appkit/ui";
 import { Alert } from "@mohasinac/appkit/ui";
-import { Card, Textarea } from "@/components";
+import { Card } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";

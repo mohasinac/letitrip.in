@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Heading, Text, Button, Accordion, AccordionItem } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { Alert } from "@mohasinac/appkit/ui";
-import { FormField, FormGroup } from "@/components";
+import { FormField } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";

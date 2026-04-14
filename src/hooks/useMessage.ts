@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { useToast } from "@/components";
+import { useToast } from "@mohasinac/appkit/ui";
 
 type MessageType = "success" | "error";
 

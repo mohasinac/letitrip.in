@@ -1,25 +1,16 @@
 "use client";
 
+import { FormGroup, Input } from "@mohasinac/appkit/ui";
+import { Select } from "@mohasinac/appkit/ui";
 import { useState, useEffect, useRef } from "react";
 import { Button, Label, TagInput, Text, Alert } from "@mohasinac/appkit/ui";
 import { EventFormDrawer as AppkitEventFormDrawer } from "@mohasinac/appkit/features/events";
 import {
-  MediaUploadField,
-  MediaUploadList,
-  type MediaField,
-} from "@mohasinac/appkit/features/media";
+  MediaUploadField, MediaUploadList, type MediaField, } from "@mohasinac/appkit/features/media";
 import {
-  coerceMediaField,
-  coerceMediaFieldArray,
-  getMediaUrl,
-} from "@mohasinac/appkit/utils";
+  coerceMediaField, coerceMediaFieldArray, getMediaUrl, } from "@mohasinac/appkit/utils";
 import {
-  SideDrawer,
-  FormField,
-  FormGroup,
-  Input,
-  Select,
-} from "@/components";
+  SideDrawer, FormField } from "@/components";
 import { RichTextEditor } from "@/features/admin";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { resolveDate } from "@/utils";

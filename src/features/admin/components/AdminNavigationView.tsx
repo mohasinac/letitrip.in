@@ -1,18 +1,12 @@
 "use client";
 
+import { useToast } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Text, Button } from "@mohasinac/appkit/ui";
 import { AdminNavigationView as AppkitAdminNavigationView } from "@mohasinac/appkit/features/admin";
 import {
-  AdminPageHeader,
-  Card,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  useToast,
-} from "@/components";
+  AdminPageHeader, Card, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";
 import { NavbarConfigForm } from "./NavbarConfigForm";
 import { FooterConfigForm } from "./FooterConfigForm";

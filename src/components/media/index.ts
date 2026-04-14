@@ -1,8 +1,8 @@
-export { MediaImage } from "./MediaImage";
-export type { MediaImageProps, MediaImageSize } from "./MediaImage";
-export { MediaVideo } from "./MediaVideo";
-export type { MediaVideoProps } from "./MediaVideo";
-export { MediaAvatar } from "./MediaAvatar";
-export type { MediaAvatarProps } from "./MediaAvatar";
-export { MediaLightbox } from "./MediaLightbox";
-export type { MediaLightboxProps, LightboxItem } from "./MediaLightbox";
+export { MediaImage } from "@mohasinac/appkit/features/media";
+export type { MediaImageProps, MediaImageSize } from "@mohasinac/appkit/features/media";
+export { MediaVideo } from "@mohasinac/appkit/features/media";
+export type { MediaVideoProps } from "@mohasinac/appkit/features/media";
+export { MediaAvatar } from "@mohasinac/appkit/features/media";
+export type { MediaAvatarProps } from "@mohasinac/appkit/features/media";
+export { MediaLightbox } from "@mohasinac/appkit/features/media";
+export type { MediaLightboxProps, LightboxItem } from "@mohasinac/appkit/features/media";

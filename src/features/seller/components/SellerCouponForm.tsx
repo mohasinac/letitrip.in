@@ -1,5 +1,7 @@
 "use client";
 
+import { FormGroup, Select } from "@mohasinac/appkit/ui";
+import { Input } from "@mohasinac/appkit/ui";
 import { useForm, type Resolver, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,11 +9,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Heading, Label, Text, Button, Span, Accordion, AccordionItem } from "@mohasinac/appkit/ui";
 import {
-  Card,
-  FormGroup,
-  Select,
-  Input,
-} from "@/components";
+  Card } from "@/components";
 import { RichTextEditor } from "@/features/admin";
 import { useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";

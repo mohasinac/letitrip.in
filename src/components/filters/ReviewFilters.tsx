@@ -1,8 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import { SwitchFilter } from "./SwitchFilter";
+import { FilterFacetSection, SwitchFilter } from "@/components";
 import type { UrlTable, FacetOption } from "./ProductFilters";
 
 export const REVIEW_SORT_OPTIONS = [
@@ -89,7 +88,7 @@ export function ReviewFilters({
             title={t("verified")}
             label={t("showVerifiedOnly")}
             checked={table.get("verified") === "true"}
-            onChange={(v) => table.set("verified", v ? "true" : "")}
+            onChange={(v: boolean) => table.set("verified", v ? "true" : "")}
             defaultCollapsed={true}
           />
 
@@ -97,7 +96,7 @@ export function ReviewFilters({
             title={t("featured")}
             label={t("showFeaturedOnly")}
             checked={table.get("featured") === "true"}
-            onChange={(v) => table.set("featured", v ? "true" : "")}
+            onChange={(v: boolean) => table.set("featured", v ? "true" : "")}
             defaultCollapsed={true}
           />
         </>

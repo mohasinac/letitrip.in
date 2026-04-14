@@ -9,10 +9,13 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
+import { Select } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { nowMs } from "@/utils";
 import { Heading, Label, Text, Button, Row, Grid } from "@mohasinac/appkit/ui";
-import { Checkbox, FormField, FormGroup, Select } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
+import { FormField } from "@/components";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";

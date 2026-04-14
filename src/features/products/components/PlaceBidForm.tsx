@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { Input } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -9,7 +10,8 @@ import { useMessage } from "@/hooks";
 import { usePlaceBid } from "@mohasinac/appkit/features/auctions";
 import type { BidResult } from "@mohasinac/appkit/features/auctions";
 import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
-import { FormGroup, Input, TextLink } from "@/components";
+import { FormGroup } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
 

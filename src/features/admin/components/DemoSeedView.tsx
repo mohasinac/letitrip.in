@@ -1,26 +1,10 @@
 ﻿"use client";
 
+import { Checkbox } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import {
-  Heading,
-  Text,
-  Caption,
-  Ul,
-  Li,
-  Div,
-  Section,
-  BlockHeader,
-  Row,
-  Stack,
-  Grid,
-  IndeterminateProgress,
-  Span,
-  Badge,
-  Spinner,
-  Progress,
-  Button,
-} from "@mohasinac/appkit/ui";
-import { Card, ConfirmDeleteModal, Checkbox } from "@/components";
+  Heading, Text, Caption, Ul, Li, Div, Section, BlockHeader, Row, Stack, Grid, IndeterminateProgress, Span, Badge, Spinner, Progress, Button, } from "@mohasinac/appkit/ui";
+import { Card, ConfirmDeleteModal } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useDemoSeed } from "@/features/admin/hooks";
 import type { SeedCollectionName } from "@/features/admin/hooks";

@@ -1,7 +1,8 @@
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
-import { FormField, FormGroup, AvatarUpload, Card } from "@/components";
+import { FormField, AvatarUpload, Card } from "@/components";
 import { Heading, Button } from "@mohasinac/appkit/ui";
 import type { ImageCropData } from "@/components";
 import { useTranslations } from "next-intl";

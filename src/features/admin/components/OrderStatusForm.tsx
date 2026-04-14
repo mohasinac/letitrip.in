@@ -7,9 +7,11 @@
 
 "use client";
 
+import { Input, Select } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { Span, Text } from "@mohasinac/appkit/ui";
-import { FormGroup, Input, Select, Textarea } from "@/components";
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
 import { formatCurrency } from "@/utils";

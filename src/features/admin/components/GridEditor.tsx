@@ -1,10 +1,12 @@
 "use client";
 
+import { Select } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Label, Span, Button } from "@mohasinac/appkit/ui";
-import { Input, Select, Textarea } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 
 const { flex } = THEME_CONSTANTS;
 

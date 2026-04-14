@@ -8,15 +8,12 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { Label, Span } from "@mohasinac/appkit/ui";
 import { ImageUpload } from "@mohasinac/appkit/features/media";
-import {
-  Checkbox,
-  FormField,
-  FormGroup,
-  MediaImage,
-} from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
+import { FormField, MediaImage } from "@/components";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./Category.types";

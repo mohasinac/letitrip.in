@@ -1,7 +1,9 @@
 "use client";
 
+import { Input } from "@mohasinac/appkit/ui";
+import { Select } from "@mohasinac/appkit/ui";
 import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
-import { Checkbox, Input, Select } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { FORM_FIELD_TYPE_VALUES } from "../constants/FORM_FIELD_TYPE_OPTIONS";

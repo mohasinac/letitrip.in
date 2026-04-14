@@ -10,11 +10,12 @@
  * Used by: ProductForm (pickup address field)
  */
 
+import { Select } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useStoreAddressSelector, useMessage } from "@/hooks";
 import { Label, Button } from "@mohasinac/appkit/ui";
-import { SideDrawer, AddressForm, Select } from "@/components";
+import { SideDrawer, AddressForm } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { UI_PLACEHOLDERS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 

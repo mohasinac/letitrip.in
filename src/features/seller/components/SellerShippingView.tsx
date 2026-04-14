@@ -8,17 +8,13 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heading, Text, Spinner, Button, Badge, Accordion, AccordionItem, Alert } from "@mohasinac/appkit/ui";
 import { SellerShippingView as AppkitSellerShippingView } from "@mohasinac/appkit/features/seller";
 import {
-  AdminPageHeader,
-  Card,
-  FormField,
-  FormGroup,
-  SideDrawer,
-} from "@/components";
+  AdminPageHeader, Card, FormField, SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSellerShipping } from "@/features/seller";
 

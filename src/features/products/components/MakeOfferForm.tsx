@@ -1,5 +1,7 @@
 "use client";
 
+import { FormGroup, Input } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -11,7 +13,7 @@ import { formatCurrency } from "@/utils";
 import { useMessage } from "@/hooks";
 import { makeOfferAction } from "@/actions";
 import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
-import { Card, FormGroup, Input, Textarea } from "@/components";
+import { Card } from "@/components";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 const { themed } = THEME_CONSTANTS;

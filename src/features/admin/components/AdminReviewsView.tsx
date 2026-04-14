@@ -36,8 +36,9 @@ import {
   Search,
 } from "@/components";
 import { AdminReviewsView as AdminReviewsShell } from "@mohasinac/appkit/features/admin";
-import { useToast } from "@/components";
-import { SideDrawer, ConfirmDeleteModal, Textarea } from "@/components";
+import { useToast } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
+import { SideDrawer, ConfirmDeleteModal } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
 import type { Review, ReviewStatus } from ".";
 

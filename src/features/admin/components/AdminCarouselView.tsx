@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@mohasinac/appkit/ui";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -10,13 +11,7 @@ import { useTranslations } from "next-intl";
 import { Caption, Text, StatusBadge, Button, DataTable } from "@mohasinac/appkit/ui";
 import { AdminCarouselView as AppkitAdminCarouselView } from "@mohasinac/appkit/features/admin";
 import {
-  AdminPageHeader,
-  Card,
-  DrawerFormFooter,
-  MediaImage,
-  SideDrawer,
-  useToast,
-} from "@/components";
+  AdminPageHeader, Card, DrawerFormFooter, MediaImage, SideDrawer } from "@/components";
 import { CarouselSlideForm, useCarouselTableColumns } from ".";
 import type { CarouselSlide, DrawerMode } from ".";
 

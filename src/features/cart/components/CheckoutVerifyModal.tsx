@@ -18,10 +18,11 @@
  * The buyer can switch between modes before sending.
  */
 
+import { Input } from "@mohasinac/appkit/ui";
 import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
-import { SideDrawer, TextLink, Input } from "@/components";
+import { SideDrawer, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useCheckoutVerifyOtp } from "../hooks/useCheckoutVerifyOtp";
 

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Li, Row, Text, Ul, Span, Button } from "@mohasinac/appkit/ui";
-import { Input } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { useNavSuggestions } from "@/hooks";
 import type { NavSuggestionRecord } from "@/hooks";

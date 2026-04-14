@@ -1,13 +1,11 @@
 "use client";
 
+import { Select } from "@mohasinac/appkit/ui";
 import { TablePagination, DataTable } from "@mohasinac/appkit/ui";
 
 import { useState, useCallback, Suspense } from "react";
 import {
-  AdminPageHeader,
-  AdminFilterBar,
-  Select,
-} from "@/components";
+  AdminPageHeader, AdminFilterBar } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";

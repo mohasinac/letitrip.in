@@ -7,12 +7,11 @@
 
 "use client";
 
+import { Checkbox } from "@mohasinac/appkit/ui";
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { Heading, Stack, Text, Alert } from "@mohasinac/appkit/ui";
 import {
-  FormField,
-  Checkbox,
-  FormGroup,
-} from "@/components";
+  FormField } from "@/components";
 import { RichTextEditor } from "@/features/admin";
 import {
   ImageUpload,

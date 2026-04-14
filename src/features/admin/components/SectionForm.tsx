@@ -9,8 +9,11 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
+import { Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/ui";
-import { Checkbox, FormField, FormGroup, Textarea } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
+import { FormField } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";

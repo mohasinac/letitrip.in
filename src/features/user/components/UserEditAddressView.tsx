@@ -8,14 +8,11 @@
 
 "use client";
 
+import { useToast } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
 import {
-  useAuth,
-  useAddress,
-  useUpdateAddress,
-  useDeleteAddress,
-} from "@/hooks";
-import { Card, AddressForm, ConfirmDeleteModal, useToast } from "@/components";
+  useAuth, useAddress, useUpdateAddress, useDeleteAddress, } from "@/hooks";
+import { Card, AddressForm, ConfirmDeleteModal } from "@/components";
 import { Heading, Row, Button, Spinner } from "@mohasinac/appkit/ui";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Checkbox, FormGroup } from "@/components";
+import { Checkbox, FormGroup } from "@mohasinac/appkit/ui";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { SurveyConfig } from "@/db/schema";
 

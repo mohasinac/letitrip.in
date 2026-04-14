@@ -14,15 +14,13 @@
 
 "use client";
 
+import { FormFieldSpan } from "@mohasinac/appkit/ui";
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heading, Text, Accordion, AccordionItem, Div, Row } from "@mohasinac/appkit/ui";
 import {
-  Card,
-  FormField,
-  FormFieldSpan,
-  FormGroup,
-} from "@/components";
+  Card, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsCredentialsMasked } from "@/db/schema";
 
@@ -150,13 +148,13 @@ export function SiteCredentialsForm({
             }
           >
             <FormGroup columns={2} className="pt-2">
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("razorpayKeyId")}
                   </Text>
                   {statusBadge(maskedCredentials.razorpayKeyId)}
-                </div>
+                </Row>
                 <FormField
                   name="razorpayKeyId"
                   label=""
@@ -166,15 +164,15 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("razorpayKeyId", v)}
                   autoComplete="off"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("razorpayKeySecret")}
                   </Text>
                   {statusBadge(maskedCredentials.razorpayKeySecret)}
-                </div>
+                </Row>
                 <FormField
                   name="razorpayKeySecret"
                   label=""
@@ -184,16 +182,16 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("razorpayKeySecret", v)}
                   autoComplete="new-password"
                 />
-              </div>
+              </Div>
 
               <FormFieldSpan>
-                <div>
-                  <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                <Div>
+                  <Row justify="between" className="mb-1">
                     <Text size="sm" className="font-medium">
                       {t("razorpayWebhookSecret")}
                     </Text>
                     {statusBadge(maskedCredentials.razorpayWebhookSecret)}
-                  </div>
+                  </Row>
                   <FormField
                     name="razorpayWebhookSecret"
                     label=""
@@ -203,7 +201,7 @@ export function SiteCredentialsForm({
                     onChange={(v) => update("razorpayWebhookSecret", v)}
                     autoComplete="new-password"
                   />
-                </div>
+                </Div>
               </FormFieldSpan>
             </FormGroup>
           </AccordionItem>
@@ -221,14 +219,14 @@ export function SiteCredentialsForm({
               </Row>
             }
           >
-            <div className="pt-2">
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+            <Div className="pt-2">
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("resendApiKey")}
                   </Text>
                   {statusBadge(maskedCredentials.resendApiKey)}
-                </div>
+                </Row>
                 <FormField
                   name="resendApiKey"
                   label=""
@@ -238,14 +236,14 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("resendApiKey", v)}
                   autoComplete="new-password"
                 />
-              </div>
-            </div>
+              </Div>
+            </Div>
           </AccordionItem>
 
           <AccordionItem
             value="whatsapp"
             title={
-              <div className="flex items-center justify-between gap-3 pr-2">
+              <Row justify="between" className="gap-3 pr-2">
                 <Text size="sm" className="font-semibold">
                   {t("whatsappSection")}
                 </Text>
@@ -256,7 +254,7 @@ export function SiteCredentialsForm({
                   ])}
                   /2
                 </Text>
-              </div>
+              </Row>
             }
           >
             <FormGroup columns={2} className="pt-2">
@@ -269,13 +267,13 @@ export function SiteCredentialsForm({
                 onChange={(v) => update("whatsappNumber", v)}
               />
 
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("whatsappApiKey")}
                   </Text>
                   {statusBadge(maskedCredentials.whatsappApiKey)}
-                </div>
+                </Row>
                 <FormField
                   name="whatsappApiKey"
                   label=""
@@ -285,14 +283,14 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("whatsappApiKey", v)}
                   autoComplete="new-password"
                 />
-              </div>
+              </Div>
             </FormGroup>
           </AccordionItem>
 
           <AccordionItem
             value="shiprocket"
             title={
-              <div className="flex items-center justify-between gap-3 pr-2">
+              <Row justify="between" className="gap-3 pr-2">
                 <Text size="sm" className="font-semibold">
                   {t("shiprocketSection")}
                 </Text>
@@ -303,17 +301,17 @@ export function SiteCredentialsForm({
                   ])}
                   /2
                 </Text>
-              </div>
+              </Row>
             }
           >
             <FormGroup columns={2} className="pt-2">
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("shiprocketEmail")}
                   </Text>
                   {statusBadge(maskedCredentials.shiprocketEmail)}
-                </div>
+                </Row>
                 <FormField
                   name="shiprocketEmail"
                   label=""
@@ -323,15 +321,15 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("shiprocketEmail", v)}
                   autoComplete="off"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("shiprocketPassword")}
                   </Text>
                   {statusBadge(maskedCredentials.shiprocketPassword)}
-                </div>
+                </Row>
                 <FormField
                   name="shiprocketPassword"
                   label=""
@@ -341,14 +339,14 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("shiprocketPassword", v)}
                   autoComplete="new-password"
                 />
-              </div>
+              </Div>
             </FormGroup>
           </AccordionItem>
 
           <AccordionItem
             value="meta"
             title={
-              <div className="flex items-center justify-between gap-3 pr-2">
+              <Row justify="between" className="gap-3 pr-2">
                 <Text size="sm" className="font-semibold">
                   {t("metaSection")}
                 </Text>
@@ -361,17 +359,17 @@ export function SiteCredentialsForm({
                   ])}
                   /4
                 </Text>
-              </div>
+              </Row>
             }
           >
             <FormGroup columns={2} className="pt-2">
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("metaAppId")}
                   </Text>
                   {statusBadge(maskedCredentials.metaAppId)}
-                </div>
+                </Row>
                 <FormField
                   name="metaAppId"
                   label=""
@@ -381,15 +379,15 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("metaAppId", v)}
                   autoComplete="off"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Div>
+                <Row justify="between" className="mb-1">
                   <Text size="sm" className="font-medium">
                     {t("metaAppSecret")}
                   </Text>
                   {statusBadge(maskedCredentials.metaAppSecret)}
-                </div>
+                </Row>
                 <FormField
                   name="metaAppSecret"
                   label=""
@@ -399,16 +397,16 @@ export function SiteCredentialsForm({
                   onChange={(v) => update("metaAppSecret", v)}
                   autoComplete="new-password"
                 />
-              </div>
+              </Div>
 
               <FormFieldSpan>
-                <div>
-                  <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+                <Div>
+                  <Row justify="between" className="mb-1">
                     <Text size="sm" className="font-medium">
                       {t("metaPageAccessToken")}
                     </Text>
                     {statusBadge(maskedCredentials.metaPageAccessToken)}
-                  </div>
+                  </Row>
                   <FormField
                     name="metaPageAccessToken"
                     label=""
@@ -421,7 +419,7 @@ export function SiteCredentialsForm({
                   <Text size="xs" variant="secondary" className="mt-1">
                     {t("metaPageAccessTokenHint")}
                   </Text>
-                </div>
+                </Div>
               </FormFieldSpan>
 
               <FormField

@@ -10,16 +10,13 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Heading, Text, Spinner, Button, Badge, Accordion, AccordionItem, Alert } from "@mohasinac/appkit/ui";
 import { SellerPayoutSettingsView as AppkitSellerPayoutSettingsView } from "@mohasinac/appkit/features/seller";
 import {
-  AdminPageHeader,
-  Card,
-  FormField,
-  FormGroup,
-} from "@/components";
+  AdminPageHeader, Card, FormField } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSellerPayoutSettings } from "@/features/seller";
 

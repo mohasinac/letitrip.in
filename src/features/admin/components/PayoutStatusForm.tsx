@@ -8,9 +8,10 @@
 
 "use client";
 
+import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { Span, Text, Button, Stack, Row, Div } from "@mohasinac/appkit/ui";
-import { Select, Textarea } from "@/components";
+import { Select } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { PayoutDocument, PayoutStatus } from "@/db/schema";

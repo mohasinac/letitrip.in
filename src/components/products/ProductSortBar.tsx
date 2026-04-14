@@ -2,8 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Label, Row, Text } from "@mohasinac/appkit/ui";
-import SelectField from "../forms/Select";
+import { Label, Row, Select, Text } from "@mohasinac/appkit/ui";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -58,7 +57,7 @@ export function ProductSortBar({
         >
           {t("sortBy")}
         </Label>
-        <SelectField
+        <Select
           value={sort}
           onChange={(e) => onSortChange(e.target.value)}
           options={sortOptions}

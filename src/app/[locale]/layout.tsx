@@ -1,11 +1,8 @@
-import {
-  LayoutClient,
-  MonitoringProvider,
-  QueryProvider,
-  SkipToMain,
-  ToastProvider,
-  ZodSetup,
-} from "@/components";
+import { ToastProvider } from "@mohasinac/appkit/ui";
+import { MonitoringProvider, QueryProvider, SkipToMain } from "@/components";
+import { LayoutClient } from "@mohasinac/appkit/features/layout";
+import { ZodSetup } from "@mohasinac/appkit/validation";
+import LayoutShellClient from "./LayoutShellClient";
 import {
   ThemeProvider,
   SessionProvider,
@@ -79,7 +76,9 @@ export default async function LocaleLayout({
                 <ToastProvider position="top-right">
                   <BottomActionsProvider>
                     <DashboardNavProvider>
-                      <LayoutClient>{children}</LayoutClient>
+                      <LayoutClient>
+                        <LayoutShellClient>{children}</LayoutShellClient>
+                      </LayoutClient>
                     </DashboardNavProvider>
                   </BottomActionsProvider>
                 </ToastProvider>

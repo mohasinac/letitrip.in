@@ -11,43 +11,26 @@ import {
   Footer,
   BottomNavbar,
   BottomActions,
-} from "./layout";
-import MainNavbar from "./layout/MainNavbar";
-import Search from "./utility/Search";
-import BackToTop from "./utility/BackToTop";
-import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
+} from "@/components/layout";
+import MainNavbar from "@/components/layout/MainNavbar";
+import Search from "@/components/utility/Search";
+import BackToTop from "@/components/utility/BackToTop";
+import AutoBreadcrumbs from "@/components/layout/AutoBreadcrumbs";
+import { EventBanner } from "@/components";
+import UnsavedChangesModal from "@/components/modals/UnsavedChangesModal";
+import { BackgroundRenderer } from "@/components/utility";
 import { Main } from "@mohasinac/appkit/ui";
-import { BackgroundRenderer } from "./utility";
 import { logger } from "@mohasinac/appkit/core";
 import { useSiteSettings } from "@/hooks";
-import { EventBanner } from "@/components";
-import UnsavedChangesModal from "./modals/UnsavedChangesModal";
 
-/**
- * LayoutClient Component
- *
- * The main client-side layout wrapper that manages all navigation components,
- * sidebar state, search functionality, theme toggling, and dynamic backgrounds.
- * Provides the complete app shell with responsive navigation.
- *
- * @component
- * @example
- * ```tsx
- * <LayoutClient>
- *   <YourPageContent />
- * </LayoutClient>
- * ```
- */
-
-export default function LayoutClient({
+export default function LayoutShellClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const isAdminRoute =
-    pathname.startsWith("/admin") || pathname.startsWith("/seller");
+  const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/seller");
   const isUserRoute = pathname.startsWith("/user");
   const isDashboardRoute = isAdminRoute || isUserRoute;
 
@@ -56,8 +39,6 @@ export default function LayoutClient({
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
-  // Expand bottom margin when BottomActions bar is visible so content
-  // is never hidden behind the stacked fixed bars on mobile.
   const { state: baState } = useBottomActionsContext();
   const hasBottomActions =
     baState.actions.length > 0 ||
@@ -75,8 +56,6 @@ export default function LayoutClient({
     overlay: { enabled: false, color: "#000000", opacity: 0 },
   };
 
-  // Fetch background settings from site settings API.
-  // The API returns background.light / background.dark.
   const { data: siteSettings } = useSiteSettings<{
     background?: {
       light?: typeof DEFAULT_LIGHT_BG;
@@ -97,42 +76,37 @@ export default function LayoutClient({
     darkMode: siteSettings?.background?.dark ?? DEFAULT_DARK_BG,
   };
 
-  // Sidebar always starts closed — user opens it explicitly.
   useEffect(() => {
     const savedPreference = localStorage.getItem("sidebarOpen");
     if (savedPreference !== null) {
       setSidebarOpen(savedPreference === "true");
     }
-    // No resize-based auto-open — sidebar is opt-in.
   }, []);
 
-  // Handle sidebar toggle and save preference
   const handleToggleSidebar = () => {
     setSidebarOpen((prev) => {
-      const newState = !prev;
-      // Save user preference
-      localStorage.setItem("sidebarOpen", String(newState));
-      return newState;
+      const next = !prev;
+      localStorage.setItem("sidebarOpen", String(next));
+      return next;
     });
   };
 
   if (isDashboardRoute) {
     return (
-      <div className="flex flex-col min-h-screen w-full">
-        <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
+      <div className="flex min-h-screen w-full flex-col">
+        <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
         <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full overflow-x-clip transition-colors duration-300">
-      {/* Dynamic Background */}
+    <div className="flex min-h-screen w-full flex-col overflow-x-clip transition-colors duration-300">
       <BackgroundRenderer
         lightMode={backgroundConfig.lightMode}
         darkMode={backgroundConfig.darkMode}
       />
-      {/* Unified sticky site header: TitleBar + Navbar + Search row */}
+
       <div className={`sticky top-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}>
         <TitleBar
           onToggleSidebar={handleToggleSidebar}
@@ -142,9 +116,7 @@ export default function LayoutClient({
           isDark={isDark}
           onToggleTheme={toggleTheme}
         />
-        <MainNavbar
-          hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems}
-        />
+        <MainNavbar hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems} />
         <Search
           isOpen={searchOpen}
           onOpen={() => setSearchOpen(true)}
@@ -159,14 +131,10 @@ export default function LayoutClient({
         />
       </div>
 
-      {/* Dismissible event banner for active sales / offers */}
       <EventBanner />
-
-      {/* Breadcrumbs - shown on all pages except home */}
       <AutoBreadcrumbs />
 
-      {/* Content with Sidebar */}
-      <div className="flex flex-1 relative w-full overflow-x-clip">
+      <div className="relative flex w-full flex-1 overflow-x-clip">
         <Sidebar
           isOpen={sidebarOpen}
           isDark={isDark}
@@ -174,11 +142,7 @@ export default function LayoutClient({
           onToggleTheme={toggleTheme}
         />
 
-        {/* Main Content - modern spacing and transitions */}
-        <Main
-          id="main-content"
-          className={`flex-1 ${hasBottomActions ? "mb-28" : "mb-16"} md:mb-0 w-full`}
-        >
+        <Main id="main-content" className={`flex-1 ${hasBottomActions ? "mb-28" : "mb-16"} w-full md:mb-0`}>
           <div
             className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
           >
@@ -187,17 +151,10 @@ export default function LayoutClient({
         </Main>
       </div>
 
-      <BackToTop
-        sidebarOpen={sidebarOpen}
-        hasBottomActions={hasBottomActions}
-      />
-
+      <BackToTop sidebarOpen={sidebarOpen} hasBottomActions={hasBottomActions} />
       <Footer footerConfig={siteSettings?.footerConfig} />
-
       <BottomActions />
       <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
-
-      {/* Global unsaved-changes confirmation modal */}
       <UnsavedChangesModal />
     </div>
   );

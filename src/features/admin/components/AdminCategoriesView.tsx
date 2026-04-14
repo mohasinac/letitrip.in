@@ -21,7 +21,7 @@ import {
   SideDrawer,
 } from "@/components";
 import { CategoryTreeView } from "./CategoryTreeView";
-import { useToast } from "@/components";
+import { useToast } from "@mohasinac/appkit/ui";
 import { CategoryForm, flattenCategories, getCategoryTableColumns } from ".";
 import type { Category, CategoryDrawerMode } from ".";
 

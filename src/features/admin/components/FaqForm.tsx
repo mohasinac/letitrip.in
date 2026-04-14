@@ -1,9 +1,11 @@
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Label, Text, Button, Row } from "@mohasinac/appkit/ui";
-import { Checkbox, FormField, FormGroup } from "@/components";
+import { Checkbox } from "@mohasinac/appkit/ui";
+import { FormField } from "@/components";
 import { TagInput } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import type { FAQ } from "./Faq.types";

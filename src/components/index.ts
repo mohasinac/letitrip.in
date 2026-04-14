@@ -15,11 +15,12 @@
  * @example
  * ```tsx
  * // Import from main barrel
- * import { Input, Alert } from "@/components";
+ * import { Input } from "@mohasinac/appkit/ui";
+import { Alert } from "@/components";
  *
  * // Import from specific subdirectory
  * import { Card } from "@/components";
- * import { Input, Select } from '@/components/forms';
+ * import { Input, Select } from "@mohasinac/appkit/ui";
  * ```
  */
 
@@ -27,13 +28,12 @@
 // Re-export from ui subdirectory
 export * from "./ui";
 
-// ==================== FORM COMPONENTS ====================
-// Re-export from forms subdirectory
-export * from "./forms";
-
 // FormField (standalone form component)
-export { FormField } from "./FormField";
-export type { FormFieldProps, SelectOption } from "./FormField";
+export { FormField } from "@mohasinac/appkit/ui";
+export type {
+  SmartFormFieldProps as FormFieldProps,
+  SelectOption,
+} from "@mohasinac/appkit/ui";
 
 // ==================== TYPOGRAPHY ====================
 // Typography (Heading, Text, Label, Caption, Span) now imported directly from @mohasinac/appkit/ui
@@ -44,10 +44,8 @@ export type { TextLinkProps } from "./typography/TextLink";
 // Semantic HTML (Section, Article, Main, Aside, Nav, etc.) now imported directly from @mohasinac/appkit/ui
 
 // ==================== FEEDBACK COMPONENTS ====================
-// Re-export from feedback subdirectory
-export * from "./feedback";
 // Error Handling
-export { ErrorBoundary } from "./ErrorBoundary";
+export { ErrorBoundary } from "@mohasinac/appkit/next";
 
 // ==================== MODALS ====================
 export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
@@ -72,15 +70,15 @@ export * from "./utility";
 export * from "./media";
 
 // ==================== UPLOAD COMPONENTS ====================
-export { AvatarUpload } from "./AvatarUpload";
-export { AvatarDisplay } from "./AvatarDisplay";
+export { AvatarUpload } from "@mohasinac/appkit/features/media";
+export { AvatarDisplay } from "@mohasinac/appkit/ui";
 
 // ==================== PASSWORD STRENGTH ====================
-export { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
+export { PasswordStrengthIndicator } from "@mohasinac/appkit/ui";
 
 // ==================== LAYOUT ====================
 // Main Layout Client (stays in components root)
-export { default as LayoutClient } from "./LayoutClient";
+export { LayoutClient } from "@mohasinac/appkit/features/layout";
 
 // Re-export all layout components
 export * from "./layout";
@@ -90,10 +88,8 @@ export * from "./layout";
 export * from "./admin";
 
 // ==================== DASHBOARD STATS CARD ====================
-export { DashboardStatsCard } from "./DashboardStatsCard";
-export type { DashboardStatsCardProps } from "./DashboardStatsCard";
-export { RowActionMenu } from "./RowActionMenu";
-export type { RowAction } from "./RowActionMenu";
+export { DashboardStatsCard, RowActionMenu } from "@mohasinac/appkit/ui";
+export type { DashboardStatsCardProps, RowAction } from "@mohasinac/appkit/ui";
 
 // ==================== USER COMPONENTS ====================
 export * from "./user";
@@ -130,11 +126,11 @@ export * from "./filters";
 
 // ==================== SETUP UTILITIES ====================
 // Zod global error map (renders nothing, side-effect only)
-export { default as ZodSetup } from "./ZodSetup";
+export { ZodSetup } from "@mohasinac/appkit/validation";
 
 // ==================== ELEVATED FEATURE COMPONENTS ====================
 // Purely presentational components elevated from features to Tier-1
 // so shared-tier layout components and other features can import them.
-export { EventBanner } from "./EventBanner";
+export { EventBanner } from "@mohasinac/appkit/features/events";
 export { InteractiveStoreCard } from "./stores";
 export type { InteractiveStoreCardProps, StoreListItem as StoreListItemUI } from "./stores";

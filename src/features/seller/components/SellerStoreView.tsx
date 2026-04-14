@@ -11,31 +11,17 @@
 
 "use client";
 
+import { FormGroup, Toggle } from "@mohasinac/appkit/ui";
+import { useToast } from "@mohasinac/appkit/ui";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
-  Accordion,
-  AccordionItem,
-  Caption,
-  Heading,
-  Label,
-  Text,
-  Divider,
-  Span,
-  Button,
-  Spinner,
-  Row,
-} from "@mohasinac/appkit/ui";
+  Accordion, AccordionItem, Caption, Heading, Label, Text, Divider, Span, Button, Spinner, Row, } from "@mohasinac/appkit/ui";
 import { Alert } from "@mohasinac/appkit/ui";
 import { ImageUpload } from "@mohasinac/appkit/features/media";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
-  Card,
-  FormField,
-  FormGroup,
-  Toggle,
-  useToast,
-} from "@/components";
+  Card, FormField } from "@/components";
 import { RichTextEditor } from "@/features/admin";
 import { useAuth } from "@/hooks";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";

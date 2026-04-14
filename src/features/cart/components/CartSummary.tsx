@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Span, Button } from "@mohasinac/appkit/ui";
+import { Heading, Span, Button, Div, Row, Stack } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 
 const { themed, flex, spacing } = THEME_CONSTANTS;
@@ -30,7 +30,7 @@ export function CartSummary({
   const total = Math.max(0, subtotal - discount);
 
   return (
-    <div
+    <Div
       className={`${themed.bgPrimary} rounded-xl border ${themed.border} p-5 ${spacing.stack} sticky top-20`}
     >
       <Heading level={2} className="text-base font-bold">
@@ -38,45 +38,45 @@ export function CartSummary({
       </Heading>
 
       {/* Line items */}
-      <div className="space-y-2">
-        <div className={`${flex.between} text-sm`}>
+      <Stack gap="sm">
+        <Row justify="between" className="text-sm">
           <Span className={themed.textSecondary}>
             {t("itemsSubtotal")} ({t("itemCount", { count: itemCount })})
           </Span>
           <Span className={themed.textPrimary}>{formatCurrency(subtotal)}</Span>
-        </div>
+        </Row>
         {discount > 0 && couponCode && (
-          <div className={`${flex.between} text-sm`}>
+          <Row justify="between" className="text-sm">
             <Span className="text-emerald-600 dark:text-emerald-400">
               {t("discount")} ({couponCode})
             </Span>
             <Span className="text-emerald-600 dark:text-emerald-400 font-medium">
               -{formatCurrency(discount)}
             </Span>
-          </div>
+          </Row>
         )}
-        <div className={`${flex.between} text-sm`}>
+        <Row justify="between" className="text-sm">
           <Span className={themed.textSecondary}>{t("shipping")}</Span>
           <Span className="text-emerald-600 dark:text-emerald-400 font-medium">
             {t("shippingCalculated")}
           </Span>
-        </div>
-        <div className={`${flex.between} text-sm`}>
+        </Row>
+        <Row justify="between" className="text-sm">
           <Span className={themed.textSecondary}>{t("tax")}</Span>
           <Span className={themed.textSecondary}>{t("taxCalculated")}</Span>
-        </div>
-      </div>
+        </Row>
+      </Stack>
 
       {/* Divider */}
-      <div className={`border-t ${themed.border}`} />
+      <Div className={`border-t ${themed.border}`} />
 
       {/* Total */}
-      <div className={flex.between}>
+      <Row justify="between">
         <Span className={`font-bold ${themed.textPrimary}`}>{t("total")}</Span>
         <Span className="font-bold text-lg text-primary">
           {formatCurrency(total)}
         </Span>
-      </div>
+      </Row>
 
       {/* CTA */}
       <Button
@@ -97,6 +97,6 @@ export function CartSummary({
       >
         ← {t("continueShopping")}
       </TextLink>
-    </div>
+    </Div>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
-import { Input } from "@/components";
+import { Input } from "@mohasinac/appkit/ui";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { CartItemDocument } from "@/db/schema";

@@ -21,7 +21,7 @@ import { ProfileInfoForm } from "./ProfileInfoForm";
 import type { ProfileInfoData } from "./ProfileInfoForm";
 import { PasswordChangeForm } from "./PasswordChangeForm";
 import { AccountInfoCard } from "./AccountInfoCard";
-import { useToast } from "@/components";
+import { useToast } from "@mohasinac/appkit/ui";
 
 export function UserSettingsView() {
   const { user: profile, loading, refreshUser } = useAuth();

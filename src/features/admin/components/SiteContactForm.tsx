@@ -8,8 +8,9 @@
 
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
 import { Heading } from "@mohasinac/appkit/ui";
-import { Card, FormField, FormGroup } from "@/components";
+import { Card, FormField } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 

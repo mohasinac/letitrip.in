@@ -1,8 +1,10 @@
 "use client";
 
+import { FormGroup } from "@mohasinac/appkit/ui";
+import { Checkbox } from "@mohasinac/appkit/ui";
 import { Button } from "@mohasinac/appkit/ui";
 import { useState } from "react";
-import { FormField, FormGroup, Checkbox } from "@/components";
+import { FormField } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
 
