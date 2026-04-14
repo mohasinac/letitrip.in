@@ -18,7 +18,7 @@
 // useLongPress, usePullToRefresh, useCamera, useCountdown, usePendingFilters, usePendingTable
 
 export { useProfile } from "./useProfile";
-export { useProfileStats } from "./useProfileStats";
+export { useProfileStats } from "@mohasinac/appkit/features/account";
 export { usePublicProfile } from "./usePublicProfile";
 export type {
   PublicUserProfile,
@@ -112,7 +112,7 @@ export type { UseUrlTableOptions } from "./useUrlTable";
 // useLongPress, usePullToRefresh
 
 // Phase 37: Service layer — homepage hooks now live in @mohasinac/appkit/features/homepage
-export { useHomepageReviews } from "./useHomepageReviews";
+export { useHomepageReviews } from "@mohasinac/appkit/features/homepage";
 export { useBrands } from "@mohasinac/appkit/features/products";
 export { useSiteSettings } from "@mohasinac/appkit/core";
 export { useHomepageSections } from "./useHomepageSections";
@@ -145,8 +145,8 @@ export { useMediaAbort, useMediaCrop, useMediaTrim } from "@mohasinac/appkit/fea
 // useCamera now import directly from @mohasinac/appkit/react
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
-export { useFaqVote } from "./useFaqVote";
-export { useNewsletter } from "./useNewsletter";
+export { useFaqVote } from "@mohasinac/appkit/features/faq";
+export { useNewsletter } from "@mohasinac/appkit/features/homepage";
 export { useLogout } from "@mohasinac/appkit/features/auth";
 export { useCategories, useCreateCategory } from "@mohasinac/appkit/features/categories";
 export { useAddressSelector } from "@mohasinac/appkit/features/account";
@@ -169,8 +169,8 @@ export type { BecomeSellerResult } from "@mohasinac/appkit/features/seller";
 // usePendingFilters, usePendingTable now import directly from @mohasinac/appkit/react
 
 // Search: navigation suggestions
-export { useNavSuggestions } from "./useNavSuggestions";
-export type { NavSuggestionRecord } from "./useNavSuggestions";
+export { useNavSuggestions } from "@mohasinac/appkit/features/search";
+export type { NavSuggestionRecord } from "@mohasinac/appkit/features/search";
 
 // Bulk action hooks
 // useBulkSelection, useBulkAction now import directly from @mohasinac/appkit/react

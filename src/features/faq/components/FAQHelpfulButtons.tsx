@@ -29,7 +29,10 @@ export function FAQHelpfulButtons({
       initialHelpful={initialHelpful}
       initialNotHelpful={initialNotHelpful}
       onVote={async (input) => {
-        await mutation.mutateAsync(input);
+        await mutation.mutateAsync({
+          faqId: input.faqId,
+          vote: input.vote === "not-helpful" ? "not_helpful" : input.vote,
+        });
       }}
       labels={{
         yes: tActions("yes"),
