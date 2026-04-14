@@ -12,6 +12,7 @@ import {
   Row,
   Grid,
   Stack,
+  SectionTabs,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
@@ -19,7 +20,6 @@ import {
   FormGroup,
   Input,
   MediaVideo,
-  SectionTabs,
   Slider,
   Textarea,
 } from "@/components";

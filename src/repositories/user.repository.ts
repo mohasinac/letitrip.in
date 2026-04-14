@@ -388,8 +388,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
   static readonly SIEVE_FIELDS = {
     uid: { canFilter: true, canSort: false },
     emailIndex: { canFilter: true, canSort: false },
-    displayNameIndex: { canFilter: true, canSort: false },
-    displayName: { canFilter: false, canSort: false }, // encrypted — cannot Sieve filter
+    displayName: { canFilter: true, canSort: true },
     role: { canFilter: true, canSort: true },
     emailVerified: { canFilter: true, canSort: false },
     disabled: { canFilter: true, canSort: true },

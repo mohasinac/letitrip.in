@@ -15,21 +15,23 @@ import {
   Container,
   Heading,
   Text,
+  Span,
   TablePagination,
   Button,
   ListingLayout,
   SortDropdown,
   ActiveFilterChips,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { DataTable, EmptyState, Search, getFilterLabel } from "@/components";
-import type { ActiveFilter } from "@/components";
+import { EmptyState, Search, getFilterLabel } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { BlogFilters } from "@/components";
-import { BlogCard } from "@/components";
-import { BlogFeaturedCard } from "@mohasinac/appkit/features/blog";
+import { BlogCard, BlogFeaturedCard } from "@mohasinac/appkit/features/blog";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
+import { Link } from "@/i18n/navigation";
 import {
   useBlogPosts,
   type BlogListParams,
@@ -240,18 +242,44 @@ function BlogListContent({ initialData }: { initialData?: BlogListResponse }) {
                     description={t("noArticlesSubtitle")}
                   />
                 }
-                mobileCardRender={(post) => (
-                  <BlogCard
-                    post={post as any}
-                    selectable={!!user}
-                    selected={selectedIds.includes(post.id)}
-                    onSelect={(id, sel) =>
-                      setSelectedIds((prev) =>
-                        sel ? [...prev, id] : prev.filter((x) => x !== id),
-                      )
-                    }
-                  />
-                )}
+                mobileCardRender={(post) => {
+                  const selected = selectedIds.includes(post.id);
+                  const href = `${ROUTES.PUBLIC.BLOG}/${(post as any).slug}`;
+
+                  return (
+                    <Link
+                      href={href}
+                      className="relative block"
+                      onClick={
+                        user
+                          ? (e) => {
+                              e.preventDefault();
+                              setSelectedIds((prev) =>
+                                selected
+                                  ? prev.filter((x) => x !== post.id)
+                                  : [...prev, post.id],
+                              );
+                            }
+                          : undefined
+                      }
+                    >
+                      {user && (
+                        <Span
+                          className={`absolute top-2 left-2 z-10 inline-flex h-5 w-5 items-center justify-center rounded border-2 ${selected ? "border-primary bg-primary" : "border-gray-300 bg-white/90"}`}
+                          aria-hidden="true"
+                        >
+                          {selected && (
+                            <Span className="text-xs leading-none text-white">✓</Span>
+                          )}
+                        </Span>
+                      )}
+                      <BlogCard
+                        post={post as any}
+                        className={`h-full ${THEME_CONSTANTS.card.dimensions.minW} ${THEME_CONSTANTS.card.dimensions.minH}`}
+                      />
+                    </Link>
+                  );
+                }}
               />
             </div>
           )}

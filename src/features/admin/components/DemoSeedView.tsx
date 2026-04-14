@@ -7,6 +7,7 @@ import {
   Caption,
   Ul,
   Li,
+  Div,
   Section,
   BlockHeader,
   Row,
@@ -206,9 +207,9 @@ export function DemoSeedView() {
   // Guard: dev only
   if (process.env.NODE_ENV !== "development") {
     return (
-      <div className={`min-h-screen ${flex.center} p-4`}>
+      <Div className={`min-h-screen ${flex.center} p-4`}>
         <Card className="max-w-md w-full p-10 text-center">
-          <div className="text-5xl mb-4">🔒</div>
+          <Div className="text-5xl mb-4">🔒</Div>
           <Heading
             level={1}
             className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2"
@@ -219,19 +220,19 @@ export function DemoSeedView() {
             This page is only available in development mode.
           </Text>
         </Card>
-      </div>
+      </Div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} pb-16`}>
+    <Div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} pb-16`}>
       {/* ── Hero Header ── */}
-      <div
+      <Div
         className={`${THEME_CONSTANTS.accentBanner.devHero} px-6 py-10 sm:py-14`}
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
+        <Div className="max-w-5xl mx-auto">
+          <Row wrap className="flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <Div>
               <Row gap="sm" className="mb-2">
                 <Span className="text-4xl">🌱</Span>
                 <Heading
@@ -249,11 +250,11 @@ export function DemoSeedView() {
                 Load or remove deterministic seed documents from Firestore. All
                 operations are ID-scoped — safe alongside real data.
               </Text>
-            </div>
+            </Div>
             <Span className="self-start sm:self-auto px-3 py-1.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full uppercase tracking-wide shrink-0">
               Dev Only
             </Span>
-          </div>
+          </Row>
 
           {/* Summary chips */}
           <Row wrap gap="md" className="mt-6">
@@ -263,9 +264,10 @@ export function DemoSeedView() {
                 0,
               );
               return (
-                <div
+                <Row
                   key={g.label}
-                  className={`flex items-center gap-1.5 px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBg} rounded-full text-xs ${THEME_CONSTANTS.accentBanner.devHeroChipText}`}
+                  gap="xs"
+                  className={`px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBg} rounded-full text-xs ${THEME_CONSTANTS.accentBanner.devHeroChipText}`}
                 >
                   <Span>{g.emoji}</Span>
                   <Span>{g.label}</Span>
@@ -274,23 +276,24 @@ export function DemoSeedView() {
                   >
                     {groupItemTotal}
                   </Span>
-                </div>
+                </Row>
               );
             })}
-            <div
-              className={`flex items-center gap-1.5 px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBoldBg} rounded-full text-xs font-semibold ${THEME_CONSTANTS.accentBanner.devHeroChipBoldText}`}
+            <Row
+              gap="xs"
+              className={`px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBoldBg} rounded-full text-xs font-semibold ${THEME_CONSTANTS.accentBanner.devHeroChipBoldText}`}
             >
               {ALL_COLLECTIONS.reduce(
                 (sum, col) => sum + SEED_ITEM_COUNTS[col],
                 0,
               )}{" "}
               docs · {totalCount} collections
-            </div>
+            </Row>
           </Row>
-        </div>
-      </div>
+        </Div>
+      </Div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6 mt-8">
+      <Stack gap="lg" className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">
         {/* ── Seed Status Banner ── */}
         <SeedStatusBanner
           statusMap={statusMap}
@@ -300,8 +303,8 @@ export function DemoSeedView() {
 
         {/* ── Collection Selector ── */}
         <Card className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-            <div>
+          <Row wrap className="flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <Div>
               <Heading
                 level={2}
                 className={`text-xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
@@ -313,8 +316,8 @@ export function DemoSeedView() {
                   ? "None selected — actions below will target all collections"
                   : `${selCount} of ${totalCount} selected`}
               </Text>
-            </div>
-            <div className="flex gap-2 shrink-0">
+            </Div>
+            <Row gap="sm" className="shrink-0">
               <Button
                 onClick={selectAll}
                 variant="outline"
@@ -331,8 +334,8 @@ export function DemoSeedView() {
               >
                 Clear
               </Button>
-            </div>
-          </div>
+            </Row>
+          </Row>
 
           <Stack gap="md" className="gap-5">
             {COLLECTION_GROUPS.map((group) => {
@@ -343,7 +346,7 @@ export function DemoSeedView() {
                 selectedCollections.includes(c),
               );
               return (
-                <div
+                <Div
                   key={group.label}
                   className={`rounded-xl overflow-hidden border ${themed.border}`}
                 >
@@ -409,7 +412,7 @@ export function DemoSeedView() {
                       const noneExist =
                         existingCount !== null && existingCount === 0;
                       return (
-                        <div
+                        <Div
                           key={col}
                           onClick={() => !isLoading && toggleCollection(col)}
                           onKeyDown={(e) =>
@@ -418,12 +421,12 @@ export function DemoSeedView() {
                           role="checkbox"
                           aria-checked={isSelected}
                           tabIndex={0}
-                          className={`
-                            flex flex-col gap-1 px-3 py-2.5 rounded-lg border-2 cursor-pointer
-                            transition-all duration-150 select-none
-                            ${isSelected ? group.chipSelected : group.chipBg + " text-zinc-700 dark:text-zinc-300"}
-                            ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
-                          `}
+                          className={[
+                            "flex flex-col gap-1 px-3 py-2.5 rounded-lg border-2 cursor-pointer",
+                            "transition-all duration-150 select-none",
+                            isSelected ? group.chipSelected : group.chipBg + " text-zinc-700 dark:text-zinc-300",
+                            isLoading ? "opacity-50 cursor-not-allowed" : "",
+                          ].filter(Boolean).join(" ")}
                         >
                           <Row gap="sm">
                             <Checkbox
@@ -454,11 +457,11 @@ export function DemoSeedView() {
                               {existingCount}/{seedCount} seeded
                             </Span>
                           ) : null}
-                        </div>
+                        </Div>
                       );
                     })}
                   </Grid>
-                </div>
+                </Div>
               );
             })}
           </Stack>
@@ -477,16 +480,16 @@ export function DemoSeedView() {
                 Load Data
               </Heading>
             </Row>
-            <div className="space-y-3">
+            <Stack gap="sm">
               <Button
                 onClick={() => handleSeedData("load")}
                 disabled={isLoading}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold"
               >
                 {isLoading && lastAction === "load" ? (
-                  <Span className={`${flex.center} gap-2`}>
+                  <Row gap="sm" className="justify-center">
                     <Spinner size="sm" variant="white" /> Loading…
-                  </Span>
+                  </Row>
                 ) : (
                   "Load All Collections"
                 )}
@@ -499,7 +502,7 @@ export function DemoSeedView() {
               >
                 Load Selected{selCount > 0 ? ` (${selCount})` : ""}
               </Button>
-            </div>
+            </Stack>
             <Caption className="mt-3">
               Upserts documents using seed IDs. Existing docs are merged, not
               overwritten.
@@ -522,7 +525,7 @@ export function DemoSeedView() {
                 Delete Data
               </Heading>
             </Row>
-            <div className="space-y-3">
+            <Stack gap="sm">
               <Button
                 onClick={() => setConfirmPending("deleteAll")}
                 disabled={isLoading}
@@ -538,7 +541,7 @@ export function DemoSeedView() {
               >
                 Delete Selected{selCount > 0 ? ` (${selCount})` : ""}
               </Button>
-            </div>
+            </Stack>
             <Caption className="mt-3">
               Removes only documents matching seed IDs. Safe — won&apos;t touch
               non-seed data.
@@ -598,7 +601,7 @@ export function DemoSeedView() {
                 emoji: "🏪",
               },
             ].map(({ role, email, color, badge, emoji }) => (
-              <div
+              <Div
                 key={role}
                 className={`rounded-xl border-2 p-4 flex flex-col gap-2 ${color}`}
               >
@@ -615,13 +618,13 @@ export function DemoSeedView() {
                 >
                   {email}
                 </Span>
-              </div>
+              </Div>
             ))}
           </Grid>
         </Card>
 
         {/* ── Info footer ── */}
-        <div
+        <Div
           className={`rounded-xl border ${themed.border} ${themed.bgSecondary} px-5 py-4`}
         >
           <Caption className="font-semibold uppercase tracking-wider mb-2">
@@ -662,8 +665,8 @@ export function DemoSeedView() {
               categories · 3 stores · 532 docs total
             </Li>
           </Ul>
-        </div>
-      </div>
+        </Div>
+      </Stack>
 
       <ConfirmDeleteModal
         isOpen={confirmPending !== null}
@@ -689,7 +692,7 @@ export function DemoSeedView() {
         confirmText="Delete"
         isDeleting={isLoading}
       />
-    </div>
+    </Div>
   );
 }
 
@@ -841,14 +844,14 @@ function SeedStatusBanner({
           />
 
           {/* Collections breakdown tile */}
-          <div
+          <Div
             className={`rounded-xl px-4 py-3 border ${themed.bgSecondary} ${themed.border}`}
           >
             <Caption className="text-[10px] uppercase tracking-widest font-semibold text-zinc-500 dark:text-zinc-400">
               Collections
             </Caption>
             {statusLoading ? (
-              <div className="h-6 w-20 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+              <Div className="h-6 w-20 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
             ) : (
               <Row
                 gap="xs"
@@ -879,7 +882,7 @@ function SeedStatusBanner({
             <Caption className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
               full · partial · empty
             </Caption>
-          </div>
+          </Div>
         </Grid>
       </Stack>
     </Section>
@@ -912,19 +915,19 @@ function SeedStatTile({
     : `text-2xl font-bold ${themed.textPrimary}`;
 
   return (
-    <div className={tileCls}>
+    <Div className={tileCls}>
       <Caption className="text-[10px] uppercase tracking-widest font-semibold text-zinc-500 dark:text-zinc-400">
         {label}
       </Caption>
       {loading ? (
-        <div className="h-7 w-14 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+        <Div className="h-7 w-14 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
       ) : (
         <Span className={valueCls}>{value.toLocaleString()}</Span>
       )}
       <Caption className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
         {sub}
       </Caption>
-    </div>
+    </Div>
   );
 }
 
@@ -960,16 +963,16 @@ function LoadDeleteStatus({
   const { success, message, details } = result;
 
   return (
-    <div
+    <Div
       className={`mt-4 rounded-lg px-4 py-3 text-sm border ${
         success
           ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200"
           : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
       }`}
     >
-      <div className="flex items-start gap-2">
+      <Row gap="sm" align="start">
         <Span className="shrink-0">{success ? "✅" : "❌"}</Span>
-        <div className="min-w-0">
+        <Div className="min-w-0">
           <Span className="font-medium block">{message}</Span>
           {details && (
             <Row wrap gap="sm" className="mt-1.5 gap-x-4 gap-y-1">
@@ -1010,8 +1013,8 @@ function LoadDeleteStatus({
                 )}
             </Row>
           )}
-        </div>
-      </div>
-    </div>
+        </Div>
+      </Row>
+    </Div>
   );
 }

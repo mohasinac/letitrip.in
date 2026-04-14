@@ -5,7 +5,7 @@
   MediaImage,
   TextLink,
 } from "@/components";
-import { Heading, Text, Span, Badge, Row, Grid } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Badge, Row, Grid, Div, Stack } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
@@ -66,18 +66,18 @@ async function SellerProductsSection({
         {tProfile("sellerProductsTitle")}
       </Heading>
       {productsLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Row justify="center" className="py-8">
+          <Div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+        </Row>
       ) : productsData?.data && productsData.data.length > 0 ? (
-        <div className={THEME_CONSTANTS.grid.productCards}>
+        <Grid cols="productCards" className={THEME_CONSTANTS.grid.productCards}>
           {productsData.data.map((product: ProductItem) => (
             <TextLink
               key={product.id}
               href={`/products/${product.id}`}
               className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
             >
-              <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
+              <Div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
                 {product.mainImage ? (
                   <MediaImage
                     src={product.mainImage}
@@ -85,14 +85,14 @@ async function SellerProductsSection({
                     size="card"
                   />
                 ) : (
-                  <div
-                    className={`w-full h-full ${flex.center} text-zinc-400 text-4xl`}
-                  >
-                    🛍️
-                  </div>
+                    <Div
+                      className={`w-full h-full ${flex.center} text-zinc-400 text-4xl`}
+                    >
+                      🛍️
+                    </Div>
                 )}
-              </div>
-              <div className="p-2">
+              </Div>
+              <Div className="p-2">
                 <Text className="text-sm font-medium line-clamp-2 mb-1">
                   {product.title}
                 </Text>
@@ -104,10 +104,10 @@ async function SellerProductsSection({
                     {tProfile("auctionBadge")}
                   </Badge>
                 )}
-              </div>
+              </Div>
             </TextLink>
           ))}
-        </div>
+        </Grid>
       ) : (
         <EmptyState
           title={tProfile("noProducts")}
@@ -128,7 +128,7 @@ async function SellerReviewsSection({
   const tProfile = await getTranslations("profile");
   return (
     <Card className="mb-6">
-      <div className={`${flex.between} mb-4`}>
+      <Row justify="between" className={`${flex.between} mb-4`}>
         <Heading level={2}>{tProfile("sellerReviewsTitle")}</Heading>
         {reviewsData && reviewsData.totalReviews > 0 && (
           <Row gap="sm">
@@ -145,26 +145,26 @@ async function SellerReviewsSection({
             </Text>
           </Row>
         )}
-      </div>
+      </Row>
 
       {reviewsLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <Row justify="center" className="py-8">
+          <Div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+        </Row>
       ) : reviewsData?.reviews && reviewsData.reviews.length > 0 ? (
-        <div className={THEME_CONSTANTS.spacing.stack}>
+        <Stack gap="md" className={THEME_CONSTANTS.spacing.stack}>
           {reviewsData.reviews.map((review) => (
-            <div
+            <Div
               key={review.id}
               className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
             >
-              <div className="flex items-start gap-3">
-                <div
+              <Row gap="sm" align="start" className="flex items-start gap-3">
+                <Div
                   className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-800 dark:text-primary-200 font-semibold text-sm flex-shrink-0`}
                 >
                   {review.userName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
+                </Div>
+                <Div className="flex-1 min-w-0">
                   <Row gap="sm" wrap className="mb-1">
                     <Text className="text-sm font-semibold">
                       {review.userName}
@@ -192,11 +192,11 @@ async function SellerReviewsSection({
                       </TextLink>
                     </Text>
                   )}
-                </div>
-              </div>
-            </div>
+                </Div>
+              </Row>
+            </Div>
           ))}
-        </div>
+        </Stack>
       ) : (
         <EmptyState
           title={tProfile("noReviews")}
@@ -221,23 +221,22 @@ export async function PublicProfileView({
   const tProfile = await getTranslations("profile");
   const tRoles = await getTranslations("roles");
   return (
-    <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
+    <Div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Header Banner */}
-      <div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
+      <Div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
 
-      <div className={`${page.container.md} -mt-24`}>
+      <Div className={`${page.container.md} -mt-24`}>
         {/* Profile Card */}
         <Card className="mb-6">
-          <div className="text-center">
-            <div className="inline-block mb-4">
+          <Div className="text-center">
+            <Div className="inline-block mb-4">
               <AvatarDisplay
                 cropData={avatarCropData}
                 size="2xl"
                 className={`border-4 ${THEME_CONSTANTS.themed.border} shadow-lg`}
               />
-            </div>
-
-            <Heading level={1} className="mb-2">
+            </Div>
+            <Heading level={2} className="mb-2">
               {profileName}
             </Heading>
             <Badge
@@ -261,7 +260,7 @@ export async function PublicProfileView({
               </Text>
             )}
 
-            <div className={`${flex.center} gap-4 mt-4 text-sm`}>
+            <Row justify="center" gap="md" className={`${flex.center} gap-4 mt-4 text-sm`}>
               {user.publicProfile?.location && (
                 <Row gap="xs">
                   <svg
@@ -295,10 +294,10 @@ export async function PublicProfileView({
                   <Span>{tProfile("website")}</Span>
                 </TextLink>
               )}
-            </div>
+            </Row>
 
             {user.publicProfile?.socialLinks && (
-              <div className={`${flex.center} gap-3 mt-4`}>
+              <Row justify="center" gap="sm" className={`${flex.center} gap-3 mt-4`}>
                 {user.publicProfile.socialLinks.twitter && (
                   <TextLink
                     href={`https://twitter.com/${user.publicProfile.socialLinks.twitter}`}
@@ -347,12 +346,12 @@ export async function PublicProfileView({
                     </svg>
                   </TextLink>
                 )}
-              </div>
+              </Row>
             )}
 
-            <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
+            <Stack gap="sm" className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
               {user.publicProfile?.showEmail && user.email && (
-                <div className={`${flex.center} gap-2 text-sm`}>
+                <Row justify="center" gap="sm" className={`${flex.center} gap-2 text-sm`}>
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -362,10 +361,10 @@ export async function PublicProfileView({
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
                   <Span>{user.email}</Span>
-                </div>
+                </Row>
               )}
               {user.publicProfile?.showPhone && user.phoneNumber && (
-                <div className={`${flex.center} gap-2 text-sm`}>
+                <Row justify="center" gap="sm" className={`${flex.center} gap-2 text-sm`}>
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -374,58 +373,58 @@ export async function PublicProfileView({
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
                   <Span>{user.phoneNumber}</Span>
-                </div>
+                </Row>
               )}
-            </div>
+            </Stack>
 
             <Text variant="secondary" className="text-xs mt-4">
               {tProfile("memberSince")} {memberSince}
             </Text>
-          </div>
+          </Div>
         </Card>
 
         {/* Stats Grid */}
         {user.publicProfile?.showOrders && user.stats && (
           <Grid cols="statTiles" className="mb-6">
             <Card>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary-700 dark:text-primary-400">
+              <Div className="text-center">
+                <Div className="text-2xl font-bold text-primary-700 dark:text-primary-400">
                   {user.stats.totalOrders}
-                </div>
+                </Div>
                 <Text variant="secondary" className="text-sm mt-1">
                   {tProfile("statOrders")}
                 </Text>
-              </div>
+              </Div>
             </Card>
             <Card>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <Div className="text-center">
+                <Div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                   {user.stats.auctionsWon}
-                </div>
+                </Div>
                 <Text variant="secondary" className="text-sm mt-1">
                   {tProfile("statAuctionsWon")}
                 </Text>
-              </div>
+              </Div>
             </Card>
             <Card>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+              <Div className="text-center">
+                <Div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                   {user.stats.itemsSold}
-                </div>
+                </Div>
                 <Text variant="secondary" className="text-sm mt-1">
                   {tProfile("statItemsSold")}
                 </Text>
-              </div>
+              </Div>
             </Card>
             <Card>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
+              <Div className="text-center">
+                <Div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
                   {user.stats.reviewsCount}
-                </div>
+                </Div>
                 <Text variant="secondary" className="text-sm mt-1">
                   {tProfile("statReviews")}
                 </Text>
-              </div>
+              </Div>
             </Card>
           </Grid>
         )}
@@ -433,10 +432,10 @@ export async function PublicProfileView({
         {/* Rating */}
         {user.stats?.rating && (
           <Card className="mb-6">
-            <div className={`${flex.center} gap-2`}>
-              <div className="flex items-center">
+            <Row justify="center" gap="sm" className={`${flex.center} gap-2`}>
+              <Div className="flex items-center">
                 <StarIcons rating={Math.floor(user.stats.rating)} />
-              </div>
+              </Div>
               <Text className="font-semibold">
                 {formatNumber(user.stats.rating, "en-IN", { decimals: 1 })}
               </Text>
@@ -444,7 +443,7 @@ export async function PublicProfileView({
                 ({user.stats.reviewsCount}{" "}
                 {tProfile("statReviews").toLowerCase()})
               </Text>
-            </div>
+            </Row>
           </Card>
         )}
 
@@ -461,7 +460,7 @@ export async function PublicProfileView({
             />
           </>
         )}
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }

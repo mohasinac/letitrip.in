@@ -2,7 +2,7 @@
 
 import { AuctionCard } from "./AuctionCard";
 import type { AuctionCardData } from "./AuctionCard";
-import { Span, Text, Stack } from "@mohasinac/appkit/ui";
+import { Span, Text, Stack, Div, Row } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { card } = THEME_CONSTANTS;
@@ -34,41 +34,41 @@ function AuctionCardSkeleton({
 }) {
   if (variant === "list") {
     return (
-      <div
+      <Div
         className={`bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse flex flex-row ${dimensions.listMinH}`}
       >
-        <div
+        <Div
           className={`${dimensions.listMediaW} aspect-square bg-zinc-300 dark:bg-slate-600 flex-shrink-0`}
         />
-        <div className="flex-1 p-3 space-y-2">
-          <div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-2/3" />
-          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-full" />
-          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
-          <div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
-          <div className="flex gap-2">
-            <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
-            <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
-          </div>
-        </div>
-      </div>
+        <Div className="flex-1 p-3 space-y-2">
+          <Div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-2/3" />
+          <Div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-full" />
+          <Div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
+          <Div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
+          <Row gap="sm">
+            <Div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
+            <Div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
+          </Row>
+        </Div>
+      </Div>
     );
   }
   return (
-    <div className="bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse">
-      <div className="aspect-square bg-zinc-300 dark:bg-slate-600" />
-      <div className="p-3 space-y-2">
-        <div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
-        <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
-        <div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
-        <div className="flex justify-between">
-          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/4" />
-          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
-        </div>
-        <div className="flex gap-2">
-          <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
-        </div>
-      </div>
-    </div>
+    <Div className="bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse">
+      <Div className="aspect-square bg-zinc-300 dark:bg-slate-600" />
+      <Div className="p-3 space-y-2">
+        <Div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
+        <Div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
+        <Div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
+        <Row justify="between">
+          <Div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/4" />
+          <Div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
+        </Row>
+        <Row gap="sm">
+          <Div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
+        </Row>
+      </Div>
+    </Div>
   );
 }
 
@@ -98,11 +98,11 @@ export function AuctionGrid({
 
   if (loading) {
     return (
-      <div className={containerClass}>
+      <Div className={containerClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <AuctionCardSkeleton key={i} variant={variant} />
         ))}
-      </div>
+      </Div>
     );
   }
 
@@ -125,7 +125,7 @@ export function AuctionGrid({
   }
 
   return (
-    <div className={containerClass}>
+    <Div className={containerClass}>
       {auctions.map((auction) => (
         <AuctionCard
           key={auction.id}
@@ -136,6 +136,6 @@ export function AuctionGrid({
           onSelect={handleSelect}
         />
       ))}
-    </div>
+    </Div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { MediaAvatar, RoleBadge } from "@/components";
-import type { DataTableColumn } from "@/components";
+import type { DataTableColumn } from "@mohasinac/appkit/ui";
 import { buildAccountColumns } from "@mohasinac/appkit/features/account";
 import { Span, Button, StatusBadge, Row } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";

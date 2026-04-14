@@ -16,9 +16,9 @@ import {
 } from "@mohasinac/appkit/ui";
 import { StoresListView as AppkitStoresListView } from "@mohasinac/appkit/features/stores";
 import { EmptyState, Search } from "@/components";
+import { InteractiveStoreCard } from "@/components/stores";
 import type { ViewMode } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { StoreCard } from "@/components";
 import { useStores } from "../hooks";
 import { useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
@@ -185,7 +185,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                     />
                   ))
                 : stores.map((store) => (
-                    <StoreCard
+                    <InteractiveStoreCard
                       key={store.id}
                       store={store}
                       selectable={!!user}
@@ -223,7 +223,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                   }}
                   slots={{
                     renderCard: (store: StoreListItem) => (
-                      <StoreCard
+                      <InteractiveStoreCard
                         key={store.id}
                         store={store}
                         selectable={!!user}

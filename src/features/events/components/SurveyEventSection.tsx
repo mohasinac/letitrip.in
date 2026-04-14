@@ -1,7 +1,7 @@
 "use client";
 
-import { Text } from "@mohasinac/appkit/ui";
-import { Alert, TextLink } from "@/components";
+import { Text, Alert } from "@mohasinac/appkit/ui";
+import { TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;

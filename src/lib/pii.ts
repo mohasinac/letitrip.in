@@ -30,15 +30,33 @@ const PII_PREFIX = "pii:v1:";
 
 let _cachedKey: Buffer | null = null;
 
-function getPiiKey(): Buffer {
-  if (_cachedKey) return _cachedKey;
-  const hex = process.env.PII_SECRET;
+function normalizePiiSecretValue(raw: string | undefined): string {
+  return (raw ?? "")
+    .replace(/(?:\\r|\\n|\r|\n)+$/g, "")
+    .trim();
+}
+
+export function getPiiConfigError(): string | null {
+  const hex = normalizePiiSecretValue(process.env.PII_SECRET);
   if (!hex || hex.length !== 64) {
-    throw new Error(
+    return (
       "PII_SECRET must be a 64-character hex string (32 bytes). " +
-        "Generate with: node -e \"require('crypto').randomBytes(32).toString('hex')\"",
+      'Generate with: node -e "require(\'crypto\').randomBytes(32).toString(\'hex\')"'
     );
   }
+
+  if (!/^[0-9a-fA-F]{64}$/.test(hex)) {
+    return "PII_SECRET must contain only hexadecimal characters (0-9, a-f).";
+  }
+
+  return null;
+}
+
+function getPiiKey(): Buffer {
+  if (_cachedKey) return _cachedKey;
+  const configError = getPiiConfigError();
+  if (configError) throw new Error(configError);
+  const hex = normalizePiiSecretValue(process.env.PII_SECRET);
   _cachedKey = Buffer.from(hex, "hex");
   return _cachedKey;
 }
@@ -165,13 +183,12 @@ export function addPiiIndices<T extends Record<string, unknown>>(
 // ─── Collection-specific PII field definitions ──────────────────────────────
 
 /** PII fields in the users collection (top-level string fields) */
-export const USER_PII_FIELDS = ["email", "phoneNumber", "displayName"] as const;
+export const USER_PII_FIELDS = ["email", "phoneNumber"] as const;
 
 /** Blind-index mapping for queryable user PII: source → index field name */
 export const USER_PII_INDEX_MAP: Record<string, string> = {
   email: "emailIndex",
   phoneNumber: "phoneIndex",
-  displayName: "displayNameIndex",
 };
 
 /** PII fields in the addresses subcollection */
@@ -186,40 +203,35 @@ export const ADDRESS_PII_FIELDS = [
 export const ORDER_PII_FIELDS = [
   "userName",
   "userEmail",
-  "sellerName",
   "sellerEmail",
 ] as const;
 
 /** PII fields in payouts */
 export const PAYOUT_PII_FIELDS = [
-  "sellerName",
   "sellerEmail",
   "upiId",
 ] as const;
 
 /** Blind-index mapping for queryable payout PII */
 export const PAYOUT_PII_INDEX_MAP: Record<string, string> = {
-  sellerName: "sellerNameIndex",
   sellerEmail: "sellerEmailIndex",
 };
 
 /** PII fields in bids */
-export const BID_PII_FIELDS = ["userName", "userEmail"] as const;
+export const BID_PII_FIELDS = [] as const;
 
 /** PII fields in newsletter subscribers */
-export const NEWSLETTER_PII_FIELDS = ["email", "ipAddress"] as const;
+export const NEWSLETTER_PII_FIELDS = [] as const;
 
 /** Blind-index mapping for newsletter subscribers */
 export const NEWSLETTER_PII_INDEX_MAP: Record<string, string> = {
-  email: "emailIndex",
 };
 
 /** PII fields in tokens (email verification / password reset) */
-export const TOKEN_PII_FIELDS = ["email"] as const;
+export const TOKEN_PII_FIELDS = [] as const;
 
 /** Blind-index mapping for token email queries */
 export const TOKEN_PII_INDEX_MAP: Record<string, string> = {
-  email: "emailIndex",
 };
 
 /** PII fields in reviews */
@@ -250,33 +262,43 @@ export const EVENT_ENTRY_PII_FIELDS = [
 // ─── Nested-object PII helpers ──────────────────────────────────────────────
 
 /**
- * Encrypt PII inside a shipping address object stored in an order.
+ * Encrypt PII inside a shipping address stored in an order.
+ * Supports string and object address shapes.
  */
-export function encryptShippingAddress<T extends Record<string, unknown>>(
+export function encryptShippingAddress<T>(
   addr: T | undefined | null,
 ): T | undefined | null {
   if (!addr) return addr;
-  return encryptPiiFields(addr, [
+  if (typeof addr === "string") {
+    return encryptPii(addr) as T;
+  }
+  if (typeof addr !== "object") return addr;
+  return encryptPiiFields(addr as Record<string, unknown>, [
     "fullName",
     "phone",
     "addressLine1",
     "addressLine2",
-  ]);
+  ]) as T;
 }
 
 /**
- * Decrypt PII inside a shipping address object read from an order.
+ * Decrypt PII inside a shipping address read from an order.
+ * Supports string and object address shapes.
  */
-export function decryptShippingAddress<T extends Record<string, unknown>>(
+export function decryptShippingAddress<T>(
   addr: T | undefined | null,
 ): T | undefined | null {
   if (!addr) return addr;
-  return decryptPiiFields(addr, [
+  if (typeof addr === "string") {
+    return decryptPii(addr) as T;
+  }
+  if (typeof addr !== "object") return addr;
+  return decryptPiiFields(addr as Record<string, unknown>, [
     "fullName",
     "phone",
     "addressLine1",
     "addressLine2",
-  ]);
+  ]) as T;
 }
 
 /**
@@ -298,7 +320,7 @@ export function encryptPayoutDetails<T extends Record<string, unknown>>(
   if (bank) {
     (result as Record<string, unknown>).bankAccount = encryptPiiFields(
       { ...bank },
-      ["accountHolderName", "accountNumber"],
+      ["accountNumber"],
     );
   }
   return result as T;
@@ -321,7 +343,7 @@ export function decryptPayoutDetails<T extends Record<string, unknown>>(
   if (bank) {
     (result as Record<string, unknown>).bankAccount = decryptPiiFields(
       { ...bank },
-      ["accountHolderName", "accountNumber"],
+      ["accountNumber"],
     );
   }
   return result as T;
@@ -345,7 +367,7 @@ export function encryptShippingConfig<T extends Record<string, unknown>>(
   if (addr) {
     (result as Record<string, unknown>).pickupAddress = encryptPiiFields(
       { ...addr },
-      ["name", "phone", "email", "address", "address2"],
+      ["phone", "email", "address", "address2"],
     );
   }
   return result as T;
@@ -368,7 +390,7 @@ export function decryptShippingConfig<T extends Record<string, unknown>>(
   if (addr) {
     (result as Record<string, unknown>).pickupAddress = decryptPiiFields(
       { ...addr },
-      ["name", "phone", "email", "address", "address2"],
+      ["phone", "email", "address", "address2"],
     );
   }
   return result as T;
@@ -381,7 +403,7 @@ export function encryptPayoutBankAccount<T extends Record<string, unknown>>(
   bank: T | undefined | null,
 ): T | undefined | null {
   if (!bank) return bank;
-  return encryptPiiFields({ ...bank }, ["accountHolderName"]);
+  return encryptPiiFields({ ...bank }, []);
 }
 
 /**
@@ -391,7 +413,7 @@ export function decryptPayoutBankAccount<T extends Record<string, unknown>>(
   bank: T | undefined | null,
 ): T | undefined | null {
   if (!bank) return bank;
-  return decryptPiiFields({ ...bank }, ["accountHolderName"]);
+  return decryptPiiFields({ ...bank }, []);
 }
 
 // ─── Public display masking ──────────────────────────────────────────────────
@@ -443,11 +465,10 @@ export function maskPublicReview<T extends { userName: string }>(review: T): T {
 
 /**
  * Return a copy of a bid document with PII masked for public display
- * (auction product page). userEmail is already stripped at the API boundary;
- * this additionally masks userName so other bidders stay anonymous.
+ * (auction product page).
  */
 export function maskPublicBid<T extends { userName: string }>(bid: T): T {
-  return { ...bid, userName: maskName(bid.userName) };
+  return { ...bid };
 }
 
 /**
@@ -462,7 +483,6 @@ export function maskPublicEventEntry<
     ipAddress?: string;
   },
 >(entry: T): Omit<T, "userEmail" | "ipAddress"> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {
     userEmail: _e,
     ipAddress: _ip,

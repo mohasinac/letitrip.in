@@ -10,10 +10,13 @@ import {
   WishlistView as AppkitWishlistView,
   type WishlistTab,
 } from "@mohasinac/appkit/features/wishlist";
-import { EmptyState, ProductGrid, Search, SectionTabs } from "@/components";
-import { Row, ViewToggle, SortDropdown, Spinner } from "@mohasinac/appkit/ui";
+import { EmptyState, Search } from "@/components";
+import {
+  ProductGrid as AppkitProductGrid,
+  type ProductItem,
+} from "@mohasinac/appkit/features/products";
+import { Row, ViewToggle, SortDropdown, Spinner, SectionTabs } from "@mohasinac/appkit/ui";
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
-import type { ProductCardData } from "@/components";
 
 const WISHLIST_SORT_OPTIONS_KEYS = [
   { value: "-addedAt", key: "sortNewest" },
@@ -118,7 +121,7 @@ function WishlistContent() {
           currency: item.productCurrency ?? "INR",
           images: item.productImage ? [item.productImage] : [],
           status: item.productStatus ?? "published",
-        })) as unknown as ProductCardData[];
+        })) as unknown as ProductItem[];
 
         if (!isLoading && products.length === 0) {
           return (
@@ -133,11 +136,30 @@ function WishlistContent() {
         }
 
         return (
-          <ProductGrid
-            products={products}
-            loading={isLoading}
-            variant={viewMode}
-          />
+          <>
+            {isLoading ? (
+              <div
+                className={
+                  viewMode === "list"
+                    ? "flex flex-col gap-4"
+                    : "grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+                }
+              >
+                {Array.from({ length: 24 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-[4/5] animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800"
+                  />
+                ))}
+              </div>
+            ) : (
+              <AppkitProductGrid
+                products={products}
+                view={viewMode}
+                emptyLabel={t("noProductsFound")}
+              />
+            )}
+          </>
         );
       }}
       renderTabPlaceholder={(tab) => (

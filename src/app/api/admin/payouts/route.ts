@@ -98,7 +98,7 @@ export const GET = createRouteHandler({
     const qFilter = q
       ? q.includes("@")
         ? `${PAYOUT_FIELDS.SELLER_EMAIL_INDEX}==${piiBlindIndex(q)}`
-        : `${PAYOUT_FIELDS.SELLER_NAME_INDEX}==${piiBlindIndex(q)}`
+        : `${PAYOUT_FIELDS.SELLER_NAME}==${q}`
       : undefined;
 
     const effectiveFilters =

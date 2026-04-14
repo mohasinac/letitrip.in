@@ -13,16 +13,16 @@ import {
   StatusBadge,
   Span,
   Button,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
-  DataTable,
   EmptyState,
   FormGroup,
   Input,
   SideDrawer,
   Textarea,
 } from "@/components";
-import type { DataTableColumn } from "@/components";
+import type { DataTableColumn } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useMessage } from "@/hooks";
 import { formatCurrency, formatDate } from "@/utils";

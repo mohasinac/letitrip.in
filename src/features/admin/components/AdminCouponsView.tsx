@@ -38,11 +38,11 @@ import {
   StatusBadge,
   Badge,
   Stack,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
   SideDrawer,
-  DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,

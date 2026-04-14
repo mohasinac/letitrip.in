@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -10,11 +10,16 @@ import {
   SUCCESS_MESSAGES,
   MAIN_NAV_ITEMS,
 } from "@/constants";
-import { Heading, Li, Nav, Text, Ul, Button, Span } from "@mohasinac/appkit/ui";
+import { Heading, Li, Nav, Text, Ul, Button, Span, Div, Row, Stack } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
+import {
+  LocaleSwitcher as AppkitLocaleSwitcher,
+  type LocaleSwitcherOption,
+} from "@mohasinac/appkit/features/layout";
 import { useAuth, useLogout, useMessage } from "@/hooks";
 import { Sprout } from "lucide-react";
-import { AvatarDisplay, LocaleSwitcher, TextLink } from "@/components";
+import { AvatarDisplay, TextLink } from "@/components";
+import { routing, type Locale } from "@/i18n/routing";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
 import { SidebarLayout } from "./SidebarLayout";
@@ -58,11 +63,24 @@ export default function Sidebar({
   const { flex, colors } = THEME_CONSTANTS;
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
+  const tLocale = useTranslations("locale");
   const tA = useTranslations("accessibility");
+  const locale = useLocale() as Locale;
   const [supportOpen, setSupportOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const logoutMutation = useLogout();
   const { showSuccess, showError } = useMessage();
+
+  const localeOptions: LocaleSwitcherOption[] = routing.locales.map((loc) => ({
+    value: loc,
+    label: tLocale(loc as Locale),
+  }));
+
+  const handleLocaleChange = (next: string) => {
+    if (next && next !== locale) {
+      router.replace(pathname, { locale: next as Locale });
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -107,12 +125,12 @@ export default function Sidebar({
       onClose={onClose}
       header={
         isAuthenticated ? (
-          <div className={`${flex.between} gap-3`}>
+          <Row gap="md" className="gap-3">
             {/* User Details */}
-            <div className={`${flex.rowCenter} gap-3 flex-1 min-w-0`}>
+            <Row gap="md" className={`${flex.rowCenter} gap-3 flex-1 min-w-0`}>
               {/* Avatar with modern badge */}
-              <div className={`${flex.colCenter} gap-1.5 ${flex.noShrink}`}>
-                <div className="relative">
+              <Div className={`${flex.colCenter} gap-1.5 ${flex.noShrink}`}>
+                <Div className="relative">
                   <AvatarDisplay
                     cropData={
                       user.avatarMetadata ||
@@ -140,9 +158,9 @@ export default function Sidebar({
                   >
                     {user.role || "user"}
                   </Span>
-                </div>
-              </div>
-              <div className={flex.growMin}>
+                </Div>
+              </Div>
+              <Div className={flex.growMin}>
                 <Text
                   className={`${THEME_CONSTANTS.typography.small} font-medium ${colors.onPrimary.text} truncate`}
                 >
@@ -153,8 +171,8 @@ export default function Sidebar({
                 >
                   {user.email || ""}
                 </Text>
-              </div>
-            </div>
+              </Div>
+            </Row>
 
             {/* Close Button - Modern circular */}
             <Button
@@ -177,11 +195,11 @@ export default function Sidebar({
                 />
               </svg>
             </Button>
-          </div>
+          </Row>
         ) : (
-          <div className="space-y-3">
-            {/* Close Button Row - Modern circular */}
-            <div className="flex justify-end">
+          <Stack gap="sm" className="space-y-3">
+            {/* Close Button Row */}
+            <Row justify="end">
               <Button
                 variant="ghost"
                 onClick={onClose}
@@ -202,10 +220,10 @@ export default function Sidebar({
                   />
                 </svg>
               </Button>
-            </div>
+            </Row>
 
-            {/* Auth Buttons - Modern with gradients */}
-            <div className="space-y-2.5">
+            {/* Auth Buttons */}
+            <Stack gap="sm" className="space-y-2.5">
               <TextLink
                 href={ROUTES.AUTH.LOGIN}
                 variant="inherit"
@@ -236,27 +254,25 @@ export default function Sidebar({
               >
                 {tNav("register")}
               </TextLink>
-            </div>
-          </div>
+            </Stack>
+          </Stack>
         )
       }
     >
       <Nav aria-label={tA("sidebarLinks")} className="space-y-6">
         {/* User Profile Actions - Only shown when logged in */}
         {isAuthenticated && (
-          <div className="space-y-2">
-            <div
-              className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-            >
-              <div className={colors.onPrimary.divider}></div>
+          <Stack gap="sm" className="space-y-2">
+            <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+              <Div className={colors.onPrimary.divider} />
               <Heading
                 level={3}
                 className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
               >
                 {tNav("profile")}
               </Heading>
-              <div className={colors.onPrimary.divider}></div>
-            </div>
+              <Div className={colors.onPrimary.divider} />
+            </Row>
 
             <Ul className="space-y-1">
               {[
@@ -334,7 +350,7 @@ export default function Sidebar({
                         `}
                       onClick={onClose}
                     >
-                      <div
+                      <Div
                         className={`
                           ${flex.noShrink} p-1.5 rounded-md transition-colors
                           ${
@@ -352,7 +368,7 @@ export default function Sidebar({
                         >
                           {item.icon}
                         </svg>
-                      </div>
+                      </Div>
                       <Span
                         className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                       >
@@ -404,26 +420,24 @@ export default function Sidebar({
               </svg>
               {tNav("logout")}
             </Button>
-          </div>
+          </Stack>
         )}
 
         {/* Role-based Actions - Only shown when logged in with special roles */}
         {isAuthenticated &&
           user?.role &&
           hasAnyRole(user.role, ["admin", "moderator", "seller"]) && (
-            <div className="space-y-2">
-              <div
-                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-              >
-                <div className={colors.onPrimary.divider}></div>
+            <Stack gap="sm" className="space-y-2">
+              <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+                <Div className={colors.onPrimary.divider} />
                 <Heading
                   level={3}
                   className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                 >
                   {tNav("dashboard")}
                 </Heading>
-                <div className={colors.onPrimary.divider}></div>
-              </div>
+                <Div className={colors.onPrimary.divider} />
+              </Row>
 
               <Ul className="space-y-1">
                 {/* Admin Dashboard */}
@@ -444,7 +458,7 @@ export default function Sidebar({
                       `}
                       onClick={onClose}
                     >
-                      <div
+                      <Div
                         className={`
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
@@ -473,12 +487,7 @@ export default function Sidebar({
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                           />
                         </svg>
-                      </div>
-                      <Span
-                        className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
-                      >
-                        {tNav("adminDashboard")}
-                      </Span>
+                      </Div>
                       {(pathname === ROUTES.ADMIN.DASHBOARD ||
                         pathname?.startsWith("/admin/")) && (
                         <svg
@@ -515,7 +524,7 @@ export default function Sidebar({
                       `}
                       onClick={onClose}
                     >
-                      <div
+                      <Div
                         className={`
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
@@ -544,7 +553,7 @@ export default function Sidebar({
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                           />
                         </svg>
-                      </div>
+                      </Div>
                       <Span
                         className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                       >
@@ -568,23 +577,21 @@ export default function Sidebar({
                   </Li>
                 )}
               </Ul>
-            </div>
+            </Stack>
           )}
 
-        {/* Browse Section - Main navigation links for sidebar access */}
-        <div className="space-y-2">
-          <div
-            className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-          >
-            <div className={colors.onPrimary.divider}></div>
+        {/* Browse Section */}
+        <Stack gap="sm" className="space-y-2">
+          <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+            <Div className={colors.onPrimary.divider} />
             <Heading
               level={3}
               className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
             >
               {tNav("browse")}
             </Heading>
-            <div className={colors.onPrimary.divider}></div>
-          </div>
+            <Div className={colors.onPrimary.divider} />
+          </Row>
 
           <Ul className="space-y-1">
             {MAIN_NAV_ITEMS.map((item, i) => {
@@ -618,8 +625,8 @@ export default function Sidebar({
                       `}
                     onClick={onClose}
                   >
-                    <div
-                      className={`
+                      <Div
+                        className={`
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           isActive
@@ -627,13 +634,8 @@ export default function Sidebar({
                             : colors.onPrimary.iconBgInactive
                         }
                       `}
-                    >
-                      <Span
-                        className={`${flex.rowCenter} ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
                       >
-                        {item.icon}
-                      </Span>
-                    </div>
+                    </Div>
                     <Span
                       className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                     >
@@ -657,21 +659,19 @@ export default function Sidebar({
               );
             })}
           </Ul>
-        </div>
+        </Stack>
 
         {/* Support Section - Collapsible */}
-        <div className="space-y-2">
-          <div
-            className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-          >
-            <div className={colors.onPrimary.divider}></div>
+        <Stack gap="sm" className="space-y-2">
+          <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+            <Div className={colors.onPrimary.divider} />
             <Heading
               level={3}
               className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
             >
               {tNav("support")}
             </Heading>
-            <div className={colors.onPrimary.divider}></div>
+            <Div className={colors.onPrimary.divider} />
             <Button
               variant="ghost"
               onClick={() => setSupportOpen((v) => !v)}
@@ -694,10 +694,9 @@ export default function Sidebar({
                 />
               </svg>
             </Button>
-          </div>
+          </Row>
 
-          <div
-            className={`overflow-hidden transition-all duration-300 ${supportOpen ? "max-h-48" : "max-h-0"}`}
+          <Div
           >
             <Ul className="space-y-1">
               {[
@@ -743,7 +742,7 @@ export default function Sidebar({
                       `}
                       onClick={onClose}
                     >
-                      <div
+                      <Div
                         className={`
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
@@ -761,7 +760,7 @@ export default function Sidebar({
                         >
                           {item.icon}
                         </svg>
-                      </div>
+                      </Div>
                       <Span
                         className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                       >
@@ -785,24 +784,21 @@ export default function Sidebar({
                 );
               })}
             </Ul>
-          </div>
-        </div>
-
+          </Div>
+        </Stack>
         {/* Dev Tools Section - only in development */}
         {process.env.NODE_ENV === "development" && (
-          <div className="space-y-2">
-            <div
-              className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-            >
-              <div className={colors.onPrimary.divider}></div>
+          <Stack gap="sm" className="space-y-2">
+            <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+              <Div className={colors.onPrimary.divider} />
               <Heading
                 level={3}
                 className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
               >
                 Dev Tools
               </Heading>
-              <div className={colors.onPrimary.divider}></div>
-            </div>
+              <Div className={colors.onPrimary.divider} />
+            </Row>
             <Ul className="space-y-1">
               <Li>
                 <TextLink
@@ -811,11 +807,11 @@ export default function Sidebar({
                   className={`${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-dashed border-yellow-400/40 hover:bg-yellow-400/10 ${colors.onPrimary.navItemInactive}`}
                   onClick={onClose}
                 >
-                  <div
+                  <Div
                     className={`${flex.noShrink} p-1.5 rounded-md ${colors.onPrimary.iconBgInactive}`}
                   >
                     <Sprout className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />
-                  </div>
+                  </Div>
                   <Span
                     className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-yellow-700 dark:text-yellow-300`}
                   >
@@ -824,22 +820,20 @@ export default function Sidebar({
                 </TextLink>
               </Li>
             </Ul>
-          </div>
+          </Stack>
         )}
 
-        {/* Settings Section - Collapsible (mobile only; desktop has titlebar controls) */}
-        <div className="space-y-2 md:hidden">
-          <div
-            className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
-          >
-            <div className={colors.onPrimary.divider}></div>
+        {/* Settings Section - Collapsible (mobile only) */}
+        <Stack gap="sm" className="space-y-2 md:hidden">
+          <Row gap="sm" className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}>
+            <Div className={colors.onPrimary.divider} />
             <Heading
               level={3}
               className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
             >
               {tNav("settings")}
             </Heading>
-            <div className={colors.onPrimary.divider}></div>
+            <Div className={colors.onPrimary.divider} />
             <Button
               variant="ghost"
               onClick={() => setSettingsOpen((v) => !v)}
@@ -862,9 +856,9 @@ export default function Sidebar({
                 />
               </svg>
             </Button>
-          </div>
+          </Row>
 
-          <div
+          <Div
             className={`overflow-hidden transition-all duration-300 ${settingsOpen ? "max-h-40" : "max-h-0"}`}
           >
             <Button
@@ -877,7 +871,7 @@ export default function Sidebar({
               `}
               aria-label={tA("toggleTheme")}
             >
-              <div
+              <Div
                 className={`
                   ${flex.noShrink} p-1.5 rounded-md transition-colors
                   ${colors.onPrimary.iconBgInactive}
@@ -905,37 +899,32 @@ export default function Sidebar({
                     />
                   )}
                 </svg>
-              </div>
-              <Span
-                className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
-              >
-                {tNav("darkMode")}
-              </Span>
+              </Div>
               {/* Toggle indicator */}
-              <div
+              <Div
                 className={`
                   relative w-10 h-5 rounded-full transition-colors duration-200
                   ${isDark ? "bg-primary-600" : "bg-zinc-300 dark:bg-zinc-600"}
                 `}
               >
-                <div
+                <Div
                   className={`
                     absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm
                     transition-transform duration-200
                     ${isDark ? "translate-x-5" : "translate-x-0.5"}
                   `}
                 />
-              </div>
+              </Div>
             </Button>
 
             {/* Language Switcher */}
-            <div
+            <Div
               className={`
                 ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg w-full
                 ${colors.onPrimary.text}
               `}
             >
-              <div
+              <Div
                 className={`
                   ${flex.noShrink} p-1.5 rounded-md transition-colors
                 `}
@@ -953,16 +942,21 @@ export default function Sidebar({
                     d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-              </div>
+              </Div>
               <Span
                 className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
               >
                 {tNav("language")}
               </Span>
-              <LocaleSwitcher />
-            </div>
-          </div>
-        </div>
+              <AppkitLocaleSwitcher
+                locale={locale}
+                onChange={handleLocaleChange}
+                options={localeOptions}
+                ariaLabel={tLocale("switchTo")}
+              />
+            </Div>
+          </Div>
+        </Stack>
       </Nav>
     </SidebarLayout>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text, Badge, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Badge, Row, Div, Stack } from "@mohasinac/appkit/ui";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
   Card,
@@ -80,23 +80,23 @@ export function SellerStorefrontView({
       className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}
       renderHeader={() => (
         <>
-          <div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
-          <div className={`${page.container.lg} -mt-24`}>
+          <Div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
+          <Div className={`${page.container.lg} -mt-24`}>
             <Card className="mb-6">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                <div className="flex-shrink-0">
+              <Row gap="md" align="start" className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                <Div className="flex-shrink-0">
                   <AvatarDisplay
                     cropData={avatarCropData}
                     size="2xl"
                     className={`border-4 ${THEME_CONSTANTS.themed.border} shadow-lg`}
                   />
-                </div>
+                </Div>
 
-                <div className="flex-1 text-center sm:text-left">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                <Div className="flex-1 text-center sm:text-left">
+                  <Row gap="sm" wrap className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                     <Heading level={1}>{sellerName}</Heading>
                     <Badge variant="success">Seller</Badge>
-                  </div>
+                  </Row>
 
                   {seller.publicProfile?.bio && (
                     <Text variant="secondary" className="mt-2 mb-3 max-w-xl">
@@ -148,65 +148,65 @@ export function SellerStorefrontView({
                     )}
                   </Row>
 
-                  <div className="mt-3">
+                  <Div className="mt-3">
                     <TextLink
                       href={ROUTES.PUBLIC.PROFILE(sellerId)}
                       className="text-sm text-primary-700 dark:text-primary-400 hover:underline"
                     >
                       {tSf("visitProfile")} →
                     </TextLink>
-                  </div>
-                </div>
+                  </Div>
+                </Div>
 
-                <div className="flex-shrink-0 flex gap-4 sm:flex-col sm:gap-2 text-center">
+                <Stack gap="sm" className="flex-shrink-0 flex gap-4 sm:flex-col sm:gap-2 text-center">
                   {seller.stats && (
                     <>
-                      <div>
-                        <div className="text-xl font-bold text-primary-700 dark:text-primary-400">
+                      <Div>
+                        <Div className="text-xl font-bold text-primary-700 dark:text-primary-400">
                           {productsData?.meta?.total ??
                             seller.stats.itemsSold ??
                             0}
-                        </div>
+                        </Div>
                         <Text variant="secondary" className="text-xs">
                           {tSf("totalProducts")}
                         </Text>
-                      </div>
-                      <div>
-                        <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                      </Div>
+                      <Div>
+                        <Div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                           {seller.stats.itemsSold ?? 0}
-                        </div>
+                        </Div>
                         <Text variant="secondary" className="text-xs">
                           {tSf("totalSales")}
                         </Text>
-                      </div>
+                      </Div>
                     </>
                   )}
-                </div>
-              </div>
+                </Stack>
+              </Row>
             </Card>
-          </div>
+          </Div>
         </>
       )}
       renderContent={() => (
         <>
-          <div className={`${page.container.lg}`}>
+          <Div className={`${page.container.lg}`}>
             <Card className="mb-6">
               <Heading level={2} className="mb-4">
                 {tSf("productsTitle")}
               </Heading>
               {productsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-                </div>
+                <Row justify="center" className="py-8">
+                  <Div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+                </Row>
               ) : hasProducts ? (
-                <div className={THEME_CONSTANTS.grid.productCards}>
+                <Stack gap="sm" className={THEME_CONSTANTS.grid.productCards}>
                   {productsData!.data.map((product: ProductItem) => (
                     <TextLink
                       key={product.id}
                       href={`/products/${product.id}`}
                       className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
                     >
-                      <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
+                      <Div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
                         {product.mainImage ? (
                           <MediaImage
                             src={product.mainImage}
@@ -214,14 +214,14 @@ export function SellerStorefrontView({
                             size="card"
                           />
                         ) : (
-                          <div
+                          <Div
                             className={`w-full h-full ${flex.center} text-zinc-400 text-4xl`}
                           >
                             🛍️
-                          </div>
+                          </Div>
                         )}
-                      </div>
-                      <div className="p-2">
+                      </Div>
+                      <Div className="p-2">
                         <Text className="text-sm font-medium line-clamp-2 mb-1">
                           {product.title}
                         </Text>
@@ -235,10 +235,10 @@ export function SellerStorefrontView({
                             {tSf("auctionBadge")}
                           </Badge>
                         )}
-                      </div>
+                      </Div>
                     </TextLink>
                   ))}
-                </div>
+                </Stack>
               ) : (
                 <EmptyState
                   title={tSf("noProducts")}
@@ -248,7 +248,7 @@ export function SellerStorefrontView({
             </Card>
 
             <Card className="mb-6">
-              <div className={`${flex.between} mb-4`}>
+              <Row justify="between" className={`${flex.between} mb-4`}>
                 <Heading level={2}>{tSf("reviewsTitle")}</Heading>
                 {reviewsData && reviewsData.totalReviews > 0 && (
                   <Row gap="sm">
@@ -265,26 +265,26 @@ export function SellerStorefrontView({
                     </Text>
                   </Row>
                 )}
-              </div>
+              </Row>
 
               {reviewsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
-                </div>
+                <Row justify="center" className="py-8">
+                  <Div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+                </Row>
               ) : hasReviews ? (
-                <div className={THEME_CONSTANTS.spacing.stack}>
+                <Stack gap="md" className={THEME_CONSTANTS.spacing.stack}>
                   {reviewsData!.reviews.map((review) => (
-                    <div
+                    <Div
                       key={review.id}
                       className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div
+                      <Row gap="sm" align="start" className="flex items-start gap-3">
+                        <Div
                           className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-800 dark:text-primary-200 font-semibold text-sm flex-shrink-0`}
                         >
                           {review.userName.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
+                        </Div>
+                        <Div className="flex-1 min-w-0">
                           <Row gap="sm" wrap className="mb-1">
                             <Text className="text-sm font-semibold">
                               {review.userName}
@@ -295,9 +295,9 @@ export function SellerStorefrontView({
                               </Badge>
                             )}
                           </Row>
-                          <div className="flex gap-0.5 mb-2">
+                          <Row gap="xs" className="flex gap-0.5 mb-2">
                             <StarIcons rating={review.rating} size="sm" />
-                          </div>
+                          </Row>
                           <Text variant="secondary" className="text-sm">
                             {review.comment}
                           </Text>
@@ -312,11 +312,11 @@ export function SellerStorefrontView({
                               </TextLink>
                             </Text>
                           )}
-                        </div>
-                      </div>
-                    </div>
+                        </Div>
+                      </Row>
+                    </Div>
                   ))}
-                </div>
+                </Stack>
               ) : (
                 <EmptyState
                   title={tSf("noReviews")}
@@ -324,18 +324,18 @@ export function SellerStorefrontView({
                 />
               )}
             </Card>
-          </div>
+          </Div>
 
-          <div className={`${page.container.lg} pb-12`}>
-            <div className="text-center">
+          <Div className={`${page.container.lg} pb-12`}>
+            <Div className="text-center">
               <TextLink
                 href={ROUTES.PUBLIC.STORES}
                 className="text-primary-700 dark:text-primary-400 hover:underline text-sm"
               >
                 ← {tSf("back")}
               </TextLink>
-            </div>
-          </div>
+            </Div>
+          </Div>
         </>
       )}
     />

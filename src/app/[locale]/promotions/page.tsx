@@ -11,7 +11,7 @@ import { productRepository, couponsRepository } from "@/repositories";
 import { SEO_CONFIG, SITE_CONFIG } from "@/constants";
 import { PromotionsView } from "@/features/promotions/components/PromotionsView";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
-import type { ProductCardData } from "@/components";
+import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { nowMs } from "@/utils";
 
 export const revalidate = 60;
@@ -53,8 +53,8 @@ export default async function PromotionsPage() {
 
   return (
     <PromotionsView
-      promotedProducts={promotedProducts as unknown as ProductCardData[]}
-      featuredProducts={featuredProducts as unknown as ProductCardData[]}
+      promotedProducts={promotedProducts as unknown as ProductItem[]}
+      featuredProducts={featuredProducts as unknown as ProductItem[]}
       activeCoupons={activeCoupons}
     />
   );

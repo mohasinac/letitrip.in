@@ -141,7 +141,7 @@ export type {
   PreflightResponse,
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
-export { useMediaUpload, useMediaAbort, useMediaCrop, useMediaTrim } from "./useMediaUpload";
+export { useMediaAbort, useMediaCrop, useMediaTrim } from "./useMediaUpload";
 // useCamera now import directly from @mohasinac/appkit/react
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
@@ -151,7 +151,6 @@ export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
 export { useStoreAddressSelector } from "./useStoreAddressSelector";
-export type { PublicBid } from "@mohasinac/appkit/features/auctions";
 
 // Chat hooks
 export {

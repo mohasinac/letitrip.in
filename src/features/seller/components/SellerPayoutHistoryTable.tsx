@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { SellerPayoutHistoryTable as AppkitSellerPayoutHistoryTable } from "@mohasinac/appkit/features/seller";
-import { Heading, Text, Badge } from "@mohasinac/appkit/ui";
-import { Card, DataTable } from "@/components";
+import { Heading, Text, Badge, DataTable } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";

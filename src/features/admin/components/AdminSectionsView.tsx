@@ -20,12 +20,12 @@ import {
   StatusBadge,
   Badge,
   Button,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { AdminSectionsView as AppkitAdminSectionsView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   DrawerFormFooter,
   SideDrawer,
   useToast,

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useStores } from "@mohasinac/appkit/features/stores";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { StoreCard } from "@/components";
+import { InteractiveStoreCard } from "@/components/stores";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
 
 export function FeaturedStoresSection() {
@@ -22,7 +22,7 @@ export function FeaturedStoresSection() {
       viewMoreHref={ROUTES.PUBLIC.STORES}
       viewMoreLabel={tActions("viewAllArrow")}
       items={stores}
-      renderItem={(store) => <StoreCard store={store} />}
+      renderItem={(store) => <InteractiveStoreCard store={store} />}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll

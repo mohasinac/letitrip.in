@@ -16,10 +16,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@mohasinac/appkit/ui";
+import { Heading, Text, Accordion, AccordionItem, Div, Row } from "@mohasinac/appkit/ui";
 import {
-  Accordion,
-  AccordionItem,
   Card,
   FormField,
   FormFieldSpan,
@@ -120,7 +118,7 @@ export function SiteCredentialsForm({
 
   return (
     <Card className={enhancedCard.base}>
-      <div className={spacing.cardPadding}>
+      <Div className={spacing.cardPadding}>
         <Heading level={3} className={`${typography.cardTitle} mb-1`}>
           {t("credentialsTitle")}
         </Heading>
@@ -136,7 +134,7 @@ export function SiteCredentialsForm({
           <AccordionItem
             value="razorpay"
             title={
-              <div className="flex items-center justify-between gap-3 pr-2">
+              <Row justify="between" className="gap-3 pr-2">
                 <Text size="sm" className="font-semibold">
                   {t("razorpaySection")}
                 </Text>
@@ -148,7 +146,7 @@ export function SiteCredentialsForm({
                   ])}
                   /3
                 </Text>
-              </div>
+              </Row>
             }
           >
             <FormGroup columns={2} className="pt-2">
@@ -213,14 +211,14 @@ export function SiteCredentialsForm({
           <AccordionItem
             value="resend"
             title={
-              <div className="flex items-center justify-between gap-3 pr-2">
+              <Row justify="between" className="gap-3 pr-2">
                 <Text size="sm" className="font-semibold">
                   {t("resendSection")}
                 </Text>
                 <Text size="xs" variant="secondary">
                   {countConfigured([maskedCredentials.resendApiKey])}/1
                 </Text>
-              </div>
+              </Row>
             }
           >
             <div className="pt-2">
@@ -438,7 +436,7 @@ export function SiteCredentialsForm({
             </FormGroup>
           </AccordionItem>
         </Accordion>
-      </div>
+      </Div>
     </Card>
   );
 }

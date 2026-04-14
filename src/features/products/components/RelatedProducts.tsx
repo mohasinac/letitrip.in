@@ -1,38 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useRelatedProducts } from "@/hooks";
 import { Heading, Section, HorizontalScroller } from "@mohasinac/appkit/ui";
-import { ProductCard } from "@/components";
-import type { ProductDocument } from "@/db/schema";
+import {
+  ProductCard,
+  type ProductItem,
+} from "@mohasinac/appkit/features/products";
+import { Link } from "@/i18n/navigation";
 
 const { themed } = THEME_CONSTANTS;
 
-type RelatedProduct = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "description"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "images"
-  | "video"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "slug"
-  | "category"
-  | "availableQuantity"
->;
-
-interface RelatedProductsResponse {
-  data: RelatedProduct[];
-  meta: { total: number };
-}
+type RelatedProduct = ProductItem;
 
 interface RelatedProductsProps {
   category: string;
@@ -86,7 +66,14 @@ export function RelatedProducts({
       ) : (
         <HorizontalScroller
           items={products}
-          renderItem={(product) => <ProductCard product={product} />}
+          renderItem={(product) => (
+            <Link
+              href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
+              className="block"
+            >
+              <ProductCard product={product} className="h-full" />
+            </Link>
+          )}
           keyExtractor={(p) => p.id}
           perView={{ base: 2, sm: 3, md: 4 }}
           gap={12}

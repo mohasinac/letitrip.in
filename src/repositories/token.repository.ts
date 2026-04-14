@@ -89,7 +89,9 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
    * Find tokens by email (uses blind index for query)
    */
   async findByEmail(email: string): Promise<EmailVerificationTokenDocument[]> {
-    return this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
+    const byIndex = await this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
+    if (byIndex.length) return byIndex;
+    return this.findBy(TOKEN_FIELDS.EMAIL, email);
   }
 
   /**
@@ -194,7 +196,9 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
    * Find tokens by email (uses blind index for query)
    */
   async findByEmail(email: string): Promise<PasswordResetTokenDocument[]> {
-    return this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
+    const byIndex = await this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
+    if (byIndex.length) return byIndex;
+    return this.findBy(TOKEN_FIELDS.EMAIL, email);
   }
 
   /**

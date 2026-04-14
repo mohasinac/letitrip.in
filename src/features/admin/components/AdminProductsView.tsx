@@ -33,11 +33,11 @@ import {
   TablePagination,
   Button,
   StatusBadge,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   DrawerFormFooter,
   MediaImage,
   ProductFilters,

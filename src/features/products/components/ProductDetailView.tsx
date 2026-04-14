@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Breadcrumbs, BreadcrumbItem, TextLink } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductActions } from "./ProductActions";
@@ -8,15 +9,16 @@ import { ProductReviews } from "./ProductReviews";
 import { RelatedProducts } from "./RelatedProducts";
 import { PromoBannerStrip } from "./PromoBannerStrip";
 import { BuyMoreSaveMore } from "./BuyMoreSaveMore";
-import { ProductTabs } from "./ProductTabs";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
 import {
   ProductDetailView as AppkitProductDetailView,
+  ProductTabs,
   useProductDetail,
 } from "@mohasinac/appkit/features/products";
-import { Grid, Span, Heading, Text } from "@mohasinac/appkit/ui";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
+import { Grid, Span, Heading, Text, RichText, Ul, Li, Ol, TabStrip, Div, Row, Stack } from "@mohasinac/appkit/ui";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 function formatCategoryLabel(label: string): string {
@@ -38,6 +40,7 @@ export function ProductDetailView({
   initialData,
 }: ProductDetailViewProps) {
   const t = useTranslations("products");
+  const [tabKey, setTabKey] = useState("description");
   const { product, isLoading, error } = useProductDetail(slug, { initialData });
 
   const isOutOfStock =
@@ -48,8 +51,8 @@ export function ProductDetailView({
   const statusLabel = product?.status === "sold" ? t("sold") : t("outOfStock");
 
   return (
-    <div className={`min-h-screen ${themed.bgSecondary}`}>
-      <div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
+    <Div className={`min-h-screen ${themed.bgSecondary}`}>
+      <Div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
         <AppkitProductDetailView
           isLoading={isLoading}
           renderSkeleton={() => (
@@ -82,10 +85,10 @@ export function ProductDetailView({
           renderNotFound={
             error || (!product && !isLoading)
               ? () => (
-                  <div
+                  <Div
                     className={`min-h-screen ${themed.bgSecondary} ${flex.center}`}
                   >
-                    <div className="text-center py-16 px-4">
+                    <Div className="text-center py-16 px-4">
                       <Span className="text-6xl mb-4 block">🔍</Span>
                       <Heading level={1} className="text-2xl font-bold mb-2">
                         {t("productNotFound")}
@@ -99,8 +102,8 @@ export function ProductDetailView({
                       >
                         ← {t("backToProducts")}
                       </TextLink>
-                    </div>
-                  </div>
+                    </Div>
+                  </Div>
                 )
               : undefined
           }
@@ -200,11 +203,87 @@ export function ProductDetailView({
           renderTabs={
             product
               ? () => (
-                  <div className="mt-8 lg:mt-10 space-y-6">
+                  <Div className="mt-8 lg:mt-10 space-y-6">
                     <PromoBannerStrip />
-                    <ProductTabs product={product} />
+                    <ProductTabs
+                      defaultTab={tabKey}
+                      renderDescription={() => (
+                        <Div className="prose dark:prose-invert max-w-none text-sm leading-relaxed">
+                          <RichText
+                            html={proseMirrorToHtml(product.description ?? "")}
+                            copyableCode
+                            className="text-sm"
+                          />
+                        </Div>
+                      )}
+                      extraTabs={[
+                        { value: "ingredients", label: t("tabIngredients") },
+                        { value: "howToUse", label: t("tabHowToUse") },
+                        { value: "reviews", label: t("tabReviews") },
+                      ]}
+                      renderTabBar={(activeTab, onChange, tabs) => (
+                        <TabStrip
+                          activeKey={activeTab}
+                          onChange={(next) => {
+                            setTabKey(next);
+                            if (next === "reviews") {
+                              const el = document.getElementById("reviews");
+                              el?.scrollIntoView({ behavior: "smooth" });
+                            }
+                            onChange(next);
+                          }}
+                          tabs={tabs.map((tab) => {
+                            if (tab.value === "description") {
+                              return { key: tab.value, label: t("tabDescription") };
+                            }
+                            return { key: tab.value, label: tab.label };
+                          })}
+                        />
+                      )}
+                      renderExtraTab={(value) => {
+                        if (value === "ingredients") {
+                          return product.ingredients?.length ? (
+                            <Ul className="space-y-1">
+                              {product.ingredients.map((item, i) => (
+                                <Li
+                                  key={i}
+                                  className="text-sm text-zinc-700 dark:text-zinc-300 list-disc ml-4"
+                                >
+                                  {item}
+                                </Li>
+                              ))}
+                            </Ul>
+                          ) : (
+                            <Text variant="secondary" size="sm">
+                              {t("noIngredients")}
+                            </Text>
+                          );
+                        }
+
+                        if (value === "howToUse") {
+                          return product.howToUse?.length ? (
+                            <Ol className="space-y-2 list-decimal ml-4">
+                              {product.howToUse.map((step, i) => (
+                                <Li
+                                  key={i}
+                                  className="text-sm text-zinc-700 dark:text-zinc-300"
+                                >
+                                  {step}
+                                </Li>
+                              ))}
+                            </Ol>
+                          ) : (
+                            <Text variant="secondary" size="sm">
+                              {t("noHowToUse")}
+                            </Text>
+                          );
+                        }
+
+                        return null;
+                      }}
+                    />
                     <BuyMoreSaveMore product={product} />
-                  </div>
+                  </Div>
                 )
               : undefined
           }
@@ -212,12 +291,12 @@ export function ProductDetailView({
             product
               ? () => (
                   <>
-                    <div
+                    <Div
                       id="reviews"
                       className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
                     >
                       <ProductReviews productId={product.id} />
-                    </div>
+                    </Div>
                     <RelatedProducts
                       category={product.category ?? ""}
                       excludeId={product.id}
@@ -228,7 +307,7 @@ export function ProductDetailView({
               : undefined
           }
         />
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }

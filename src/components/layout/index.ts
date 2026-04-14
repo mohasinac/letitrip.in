@@ -66,8 +66,5 @@ export { default as Breadcrumbs, BreadcrumbItem } from "./Breadcrumbs";
 // Auto-generated breadcrumb trail (reads from Next.js pathname)
 export { default as AutoBreadcrumbs } from "./AutoBreadcrumbs";
 
-// Locale Switcher
-export { default as LocaleSwitcher } from "./LocaleSwitcher";
-
 // Bottom Actions Bar (above BottomNavbar on mobile)
 export { default as BottomActions } from "./BottomActions";

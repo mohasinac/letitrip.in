@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button, Label, TagInput, Text } from "@mohasinac/appkit/ui";
+import { Button, Label, TagInput, Text, Alert } from "@mohasinac/appkit/ui";
 import { EventFormDrawer as AppkitEventFormDrawer } from "@mohasinac/appkit/features/events";
 import {
   MediaUploadField,
@@ -16,7 +16,6 @@ import {
 import {
   SideDrawer,
   FormField,
-  Alert,
   FormGroup,
   Input,
   Select,
@@ -24,7 +23,8 @@ import {
 import { RichTextEditor } from "@/features/admin";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { resolveDate } from "@/utils";
-import { useMediaAbort, useMediaUpload } from "@/hooks";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
+import { useMediaAbort } from "@/hooks";
 
 const { themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";

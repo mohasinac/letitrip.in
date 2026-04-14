@@ -8,7 +8,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { Label, Button, Row } from "@mohasinac/appkit/ui";
 import { Input } from "@/components";
-import { useMediaUpload } from "@/hooks";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import type { MediaFilenameContext } from "@/utils";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";

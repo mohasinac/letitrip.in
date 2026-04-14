@@ -13,7 +13,7 @@ import { useState } from "react";
 import { nowMs } from "@/utils";
 import { Heading, Label, Text, Button, Row, Grid } from "@mohasinac/appkit/ui";
 import { Checkbox, FormField, FormGroup, Select } from "@/components";
-import { useMediaUpload } from "@/hooks";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { CarouselSlide, GridCard } from "./Carousel.types";

@@ -7,6 +7,7 @@ import {
   ActiveFilterChips,
   ListingLayout,
   Spinner,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 /**
  * SellerProductsView
@@ -22,7 +23,6 @@ import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SellerProductsView as AppkitSellerProductsView } from "@mohasinac/appkit/features/seller";
 import {
-  DataTable,
   AdminPageHeader,
   SideDrawer,
   ConfirmDeleteModal,
@@ -33,7 +33,8 @@ import {
   ProductFilters,
   getFilterLabel,
 } from "@/components";
-import type { ActiveFilter, AdminProduct } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
+import type { AdminProduct } from "@/components";
 import { Store } from "lucide-react";
 import { useAuth, useMessage, useUrlTable, useCategories } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";

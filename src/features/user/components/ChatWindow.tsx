@@ -24,7 +24,8 @@ import {
   Span,
   Button,
 } from "@mohasinac/appkit/ui";
-import { Alert, Card, Textarea } from "@/components";
+import { Alert } from "@mohasinac/appkit/ui";
+import { Card, Textarea } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";

@@ -6,6 +6,7 @@ import {
   ListingLayout,
   SortDropdown,
   ActiveFilterChips,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 /**
  * SellerAuctionsView
@@ -19,12 +20,11 @@ import { Suspense, useMemo, useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { SellerAuctionsView as AppkitSellerAuctionsView } from "@mohasinac/appkit/features/seller";
 import {
-  DataTable,
   FilterFacetSection,
   Search,
   getFilterLabel,
 } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { Gavel } from "lucide-react";
 import { useAuth, useUrlTable, useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";

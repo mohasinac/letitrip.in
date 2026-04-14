@@ -21,10 +21,9 @@ import { FeaturedAuctionsSection } from "./FeaturedAuctionsSection";
 import { FeaturedPreOrdersSection } from "./FeaturedPreOrdersSection";
 import { FeaturedStoresSection } from "./FeaturedStoresSection";
 import { FeaturedEventsSection } from "./FeaturedEventsSection";
-import { AdvertisementBanner } from "./AdvertisementBanner";
+import { HomepageFaqAndBannerBlocks } from "./HomepageFaqAndBannerBlocks";
 import { CustomerReviewsSection } from "./CustomerReviewsSection";
 import { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
-import { FAQSection } from "./FAQSection";
 import { BlogArticlesSection } from "./BlogArticlesSection";
 import { FeaturedResultsSection } from "./FeaturedResultsSection";
 import { HowItWorksSection } from "./HowItWorksSection";
@@ -103,11 +102,10 @@ export async function HomepageView() {
       <FeaturedPreOrdersSection />
       <FeaturedStoresSection />
       <FeaturedEventsSection />
-      <AdvertisementBanner />
+      <HomepageFaqAndBannerBlocks />
       <CustomerReviewsSection initialReviews={reviews} />
       <SecurityHighlightsSection />
       <WhatsAppCommunitySection />
-      <FAQSection />
       <NewsletterSection />
       <BlogArticlesSection />
       <FeaturedResultsSection />

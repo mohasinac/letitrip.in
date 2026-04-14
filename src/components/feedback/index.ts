@@ -9,6 +9,5 @@
  * ```
  */
 
-export { default as Alert } from './Alert';
 export { default as Modal, ModalFooter } from './Modal';
 export { ToastProvider, useToast } from './Toast';

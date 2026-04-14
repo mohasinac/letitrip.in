@@ -15,6 +15,7 @@ import {
   Container,
   Grid,
   Heading,
+  Span,
   Text,
   TablePagination,
   Button,
@@ -24,18 +25,19 @@ import {
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { EmptyState, Search, getFilterLabel } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { EventFilters } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import {
   useEvents,
+  EventCard,
   type EventItem,
   type EventListParams,
   type EventListResponse,
 } from "@mohasinac/appkit/features/events";
-import { EventCard } from "@/components";
+import { Link } from "@/i18n/navigation";
 
 const PAGE_SIZE = 24;
 
@@ -244,19 +246,44 @@ function EventsListContent({
                       className="animate-pulse rounded-xl bg-zinc-200 dark:bg-slate-700 aspect-[4/3]"
                     />
                   ))
-                : events.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      selectable={!!user}
-                      selected={selectedIds.includes(event.id)}
-                      onSelect={(id, sel) =>
-                        setSelectedIds((prev) =>
-                          sel ? [...prev, id] : prev.filter((x) => x !== id),
-                        )
-                      }
-                    />
-                  ))}
+                : events.map((event) => {
+                    const selected = selectedIds.includes(event.id);
+
+                    return (
+                      <Link
+                        key={event.id}
+                        href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
+                        className="relative block"
+                        onClick={
+                          user
+                            ? (e) => {
+                                e.preventDefault();
+                                setSelectedIds((prev) =>
+                                  selected
+                                    ? prev.filter((x) => x !== event.id)
+                                    : [...prev, event.id],
+                                );
+                              }
+                            : undefined
+                        }
+                      >
+                        {user && (
+                          <Span
+                            className={`absolute top-2 left-2 z-10 inline-flex h-5 w-5 items-center justify-center rounded border-2 ${selected ? "border-primary bg-primary" : "border-gray-300 bg-white/90"}`}
+                            aria-hidden="true"
+                          >
+                            {selected && (
+                              <Span className="text-xs leading-none text-white">✓</Span>
+                            )}
+                          </Span>
+                        )}
+                        <EventCard
+                          event={event}
+                          className={`${THEME_CONSTANTS.card.dimensions.minW} ${THEME_CONSTANTS.card.dimensions.minH}`}
+                        />
+                      </Link>
+                    );
+                  })}
             </Grid>
           )}
         </ListingLayout>

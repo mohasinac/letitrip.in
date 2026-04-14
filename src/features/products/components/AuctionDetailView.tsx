@@ -18,6 +18,10 @@ import {
   Button,
   Badge,
   RichText,
+  Accordion,
+  AccordionItem,
+  Div,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import { useCountdown } from "@mohasinac/appkit/react";
@@ -25,8 +29,6 @@ import {
   Breadcrumbs,
   BreadcrumbItem,
   TextLink,
-  Accordion,
-  AccordionItem,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
@@ -119,45 +121,45 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   });
 
   return (
-    <div className={`min-h-screen ${themed.bgSecondary}`}>
-      <div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
+    <Div className={`min-h-screen ${themed.bgSecondary}`}>
+      <Div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
         <AppkitAuctionDetailView
           isLoading={productQuery.isLoading}
           renderSkeleton={() => (
-            <div className={`${page.container.xl} py-6 sm:py-8`}>
-              <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
+            <Div className={`${page.container.xl} py-6 sm:py-8`}>
+              <Div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
               <Grid cols="productDetailTriplet">
-                <div className="animate-pulse space-y-3">
-                  <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
-                  <div className="flex gap-2">
+                <Div className="animate-pulse space-y-3">
+                  <Div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
+                  <Div className="flex gap-2">
                     {Array.from({ length: 4 }).map((_, i) => (
-                      <div
+                      <Div
                         key={i}
                         className="w-16 h-16 bg-zinc-200 dark:bg-slate-700 rounded-lg shrink-0"
                       />
                     ))}
-                  </div>
-                </div>
-                <div className={`animate-pulse ${spacing.stack}`}>
-                  <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
-                  <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
-                  <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl w-1/3" />
-                  <div className="h-32 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
-                </div>
-                <div className="hidden lg:block animate-pulse space-y-3">
-                  <div className="h-48 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
-                  <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
-                </div>
+                  </Div>
+                </Div>
+                <Div className={`animate-pulse ${spacing.stack}`}>
+                  <Div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+                  <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
+                  <Div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl w-1/3" />
+                  <Div className="h-32 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
+                </Div>
+                <Div className="hidden lg:block animate-pulse space-y-3">
+                  <Div className="h-48 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
+                  <Div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
+                </Div>
               </Grid>
-            </div>
+            </Div>
           )}
           renderNotFound={
             productQuery.error || (!product && !productQuery.isLoading)
               ? () => (
-                  <div
+                  <Div
                     className={`min-h-screen ${themed.bgSecondary} ${flex.center}`}
                   >
-                    <div className="text-center py-16 px-4">
+                    <Div className="text-center py-16 px-4">
                       <Span className="text-6xl mb-4 block">🔨</Span>
                       <Heading level={1} className="text-2xl font-bold mb-2">
                         {t("notFound")}
@@ -171,8 +173,8 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       >
                         ← {t("backToAuctions")}
                       </TextLink>
-                    </div>
-                  </div>
+                    </Div>
+                  </Div>
                 )
               : undefined
           }
@@ -211,9 +213,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           renderInfo={
             product
               ? () => (
-                  <div className={spacing.stack}>
+                  <Stack gap="md" className={spacing.stack}>
                     {/* Title + badges */}
-                    <div>
+                    <Div>
                       <Heading
                         level={1}
                         className="text-xl sm:text-2xl xl:text-3xl font-bold leading-tight"
@@ -231,9 +233,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           <Badge variant="info">⏱ {t("autoExtend")}</Badge>
                         )}
                       </Row>
-                    </div>
-
-                    {/* Seller + Category */}
+                    </Div>
                     <Row wrap gap="sm" className="gap-x-3 gap-y-1 text-sm">
                       <TextLink
                         href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
@@ -259,7 +259,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                     </Row>
 
                     {/* Countdown */}
-                    <div
+                    <Div
                       className={`rounded-xl border-2 ${isEnded ? "border-zinc-300 dark:border-slate-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-primary/60"} p-4`}
                     >
                       <Text
@@ -278,14 +278,14 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                             { value: remaining.minutes, label: t("minutes") },
                             { value: remaining.seconds, label: t("seconds") },
                           ].map((unit) => (
-                            <div key={unit.label}>
+                            <Div key={unit.label}>
                               <Text className="text-2xl sm:text-3xl font-bold font-mono text-primary">
                                 {String(unit.value).padStart(2, "0")}
                               </Text>
                               <Text size="xs" variant="secondary">
                                 {unit.label}
                               </Text>
-                            </div>
+                            </Div>
                           ))}
                         </Grid>
                       ) : (
@@ -307,22 +307,20 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           </Text>
                         </time>
                       )}
-                    </div>
-
-                    {/* Bid Info */}
-                    <div
+                    </Div>
+                    <Div
                       className={`${themed.bgPrimary} rounded-xl p-4 ${spacing.stack}`}
                     >
-                      <div className={flex.between}>
-                        <div>
+                      <Row justify="between" className={flex.between}>
+                        <Div>
                           <Text size="xs" variant="secondary">
                             {hasCurrentBid ? t("currentBid") : t("startingBid")}
                           </Text>
                           <Text className="text-3xl font-bold text-primary">
                             {formatCurrency(displayBid)}
                           </Text>
-                        </div>
-                        <div className="text-right">
+                        </Div>
+                        <Div className="text-right">
                           <Text size="xs" variant="secondary">
                             {t("totalBids", { count: liveBidCount })}
                           </Text>
@@ -331,10 +329,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                               {lastRtdbBid.bidderName}
                             </Text>
                           )}
-                        </div>
-                      </div>
+                        </Div>
+                      </Row>
                       {product.reservePrice && product.reservePrice > 0 && (
-                        <div
+                        <Row
+                          gap="sm"
                           className={`flex items-center gap-2 text-sm ${reserveMet ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}
                         >
                           <Span>{reserveMet ? "✓" : "⚠"}</Span>
@@ -345,7 +344,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                             ({t("reservePrice")}:{" "}
                             {formatCurrency(product.reservePrice)})
                           </Text>
-                        </div>
+                        </Row>
                       )}
                       {product.minBidIncrement &&
                         product.minBidIncrement > 0 && (
@@ -355,8 +354,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                             })}
                           </Text>
                         )}
-                    </div>
-
+                    </Div>
                     <ProductFeatureBadges
                       condition={product.condition}
                       isAuction
@@ -404,7 +402,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                     <Divider />
 
                     {product.description && (
-                      <div>
+                      <Div>
                         <Heading level={3} className="font-semibold mb-2">
                           {t("description")}
                         </Heading>
@@ -413,11 +411,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           copyableCode
                           className="text-sm"
                         />
-                      </div>
+                      </Div>
                     )}
 
                     {product.features && product.features.length > 0 && (
-                      <div>
+                      <Div>
                         <Heading level={3} className="font-semibold mb-2">
                           {t("features")}
                         </Heading>
@@ -433,7 +431,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                             ),
                           )}
                         </Ul>
-                      </div>
+                      </Div>
                     )}
 
                     <Accordion type="multiple" defaultValue={[]}>
@@ -449,7 +447,8 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                                   spec: { name: string; value: string },
                                   i: number,
                                 ) => (
-                                  <div
+                                  <Row
+                                    justify="between"
                                     key={i}
                                     className="flex justify-between gap-4"
                                   >
@@ -463,7 +462,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                                         {spec.value}
                                       </Text>
                                     </dd>
-                                  </div>
+                                  </Row>
                                 ),
                               )}
                             </dl>
@@ -474,9 +473,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           value="delivery"
                           title={t("deliveryReturns")}
                         >
-                          <div className={spacing.stack}>
+                          <Stack gap="md" className={spacing.stack}>
                             {product.shippingInfo && (
-                              <div>
+                              <Div>
                                 <Text
                                   size="sm"
                                   weight="semibold"
@@ -487,10 +486,10 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                                 <Text size="sm" variant="secondary">
                                   {product.shippingInfo}
                                 </Text>
-                              </div>
+                              </Div>
                             )}
                             {product.returnPolicy && (
-                              <div>
+                              <Div>
                                 <Text
                                   size="sm"
                                   weight="semibold"
@@ -501,21 +500,21 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                                 <Text size="sm" variant="secondary">
                                   {product.returnPolicy}
                                 </Text>
-                              </div>
+                              </Div>
                             )}
-                          </div>
+                          </Stack>
                         </AccordionItem>
                       )}
                     </Accordion>
-                  </div>
+                  </Stack>
                 )
               : undefined
           }
           renderBidForm={
             product
               ? () => (
-                  <div className={`sticky top-24 ${spacing.stack}`}>
-                    <div
+                  <Div className={`sticky top-24 ${spacing.stack}`}>
+                    <Div
                       className={`${themed.bgPrimary} rounded-xl p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
                     >
                       <PlaceBidForm
@@ -553,8 +552,8 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           ? `♥ ${t("removeFromWishlist")}`
                           : `🤍 ${t("addToWishlist")}`}
                       </Button>
-                    </div>
-                    <div
+                    </Div>
+                    <Div
                       className={`${themed.bgPrimary} rounded-xl p-4 border ${themed.border}`}
                     >
                       <Text
@@ -571,15 +570,15 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       >
                         {t("viewStore")} →
                       </TextLink>
-                    </div>
-                  </div>
+                    </Div>
+                  </Div>
                 )
               : undefined
           }
           renderMobileBidForm={
             product
               ? () => (
-                  <div
+                  <Div
                     id="place-bid-mobile"
                     className={`lg:hidden mt-6 scroll-mt-4 ${themed.bgPrimary} rounded-xl p-4 sm:p-5 border ${themed.border} ${spacing.stack}`}
                   >
@@ -614,14 +613,14 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                           </Button>
                         </>
                       )}
-                  </div>
+                  </Div>
                 )
               : undefined
           }
           renderBidHistory={
             product
               ? () => (
-                  <div
+                  <Div
                     className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
                   >
                     <BidHistory
@@ -629,12 +628,12 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       loading={bidsQuery.isLoading}
                       currentUserId={user?.uid}
                     />
-                  </div>
+                  </Div>
                 )
               : undefined
           }
         />
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }

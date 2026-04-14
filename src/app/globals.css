@@ -54,6 +54,15 @@
 
 @layer utilities {
   /* Scrollbar Utilities */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -167,6 +176,27 @@
 
   .grid-auto-fit {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  /* Fluid Grid Utilities used by appkit tokens (THEME_CONSTANTS.fluidGrid) */
+  .fluid-grid-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .fluid-grid-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .fluid-grid-wide {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .fluid-grid-thumb {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 
   /* Flexbox Utilities */

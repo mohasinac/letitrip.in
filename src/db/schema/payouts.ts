@@ -110,7 +110,7 @@ export const PAYOUT_FIELDS = {
   SELLER_ID: "sellerId",
   SELLER_NAME: "sellerName",
   SELLER_EMAIL: "sellerEmail",
-  SELLER_NAME_INDEX: "sellerNameIndex",
+  // sellerEmail remains encrypted and queryable through a blind index
   SELLER_EMAIL_INDEX: "sellerEmailIndex",
   STATUS: "status",
   REQUESTED_AT: "requestedAt",

@@ -121,6 +121,7 @@ async function runApiSmoke(baseUrl) {
     { method: "GET", path: "/api/products", expected: [200] },
     { method: "GET", path: "/api/blog", expected: [200] },
     { method: "GET", path: "/api/categories", expected: [200] },
+    { method: "GET", path: "/api/search?q=sieve", expected: [200] },
     { method: "GET", path: "/api/search?q=test", expected: [200] },
     { method: "GET", path: "/api/events", expected: [200] },
     { method: "GET", path: "/api/stores", expected: [200] },
@@ -134,6 +135,46 @@ async function runApiSmoke(baseUrl) {
   ];
 
   const results = [];
+
+  const safeJsonParse = (text) => {
+    try {
+      return { ok: true, value: JSON.parse(text) };
+    } catch {
+      return { ok: false, value: null };
+    }
+  };
+
+  const getShapeSignature = (value) => {
+    if (Array.isArray(value)) {
+      if (value.length === 0) return "array[]";
+      return `array[${getShapeSignature(value[0])}]`;
+    }
+    if (value && typeof value === "object") {
+      const keys = Object.keys(value).sort();
+      return `object{${keys.join(",")}}`;
+    }
+    return typeof value;
+  };
+
+  const getResultCount = (payload) => {
+    if (Array.isArray(payload)) return payload.length;
+    if (!payload || typeof payload !== "object") return 0;
+    if (Array.isArray(payload.results)) return payload.results.length;
+    if (Array.isArray(payload.items)) return payload.items.length;
+    if (Array.isArray(payload.data)) return payload.data.length;
+    return 0;
+  };
+
+  const canonicalize = (value) => {
+    if (Array.isArray(value)) return value.map(canonicalize);
+    if (!value || typeof value !== "object") return value;
+
+    const out = {};
+    for (const key of Object.keys(value).sort()) {
+      out[key] = canonicalize(value[key]);
+    }
+    return out;
+  };
 
   for (const ep of endpoints) {
     try {
@@ -157,6 +198,60 @@ async function runApiSmoke(baseUrl) {
         detail: String(error),
       });
     }
+  }
+
+  try {
+    const fetchSearch = async (query) => {
+      const response = await fetch(`${baseUrl}/api/search?q=${encodeURIComponent(query)}`, {
+        method: "GET",
+      });
+      const text = await response.text();
+      const parsed = safeJsonParse(text);
+      return {
+        query,
+        status: response.status,
+        parsed,
+        body: parsed.ok ? parsed.value : text,
+      };
+    };
+
+    const sieve = await fetchSearch("sieve");
+    const test = await fetchSearch("test");
+
+    const shapeSieve = sieve.parsed.ok ? getShapeSignature(sieve.body) : "non-json";
+    const shapeTest = test.parsed.ok ? getShapeSignature(test.body) : "non-json";
+    const sameShape = shapeSieve === shapeTest;
+
+    const sieveCount = sieve.parsed.ok ? getResultCount(sieve.body) : 0;
+    const testCount = test.parsed.ok ? getResultCount(test.body) : 0;
+
+    const canonicalSieve = JSON.stringify(canonicalize(sieve.body));
+    const canonicalTest = JSON.stringify(canonicalize(test.body));
+    const responsesIdentical = canonicalSieve === canonicalTest;
+
+    const statusesOk = sieve.status === 200 && test.status === 200;
+    const suspiciousIdentical = responsesIdentical && (sieveCount > 0 || testCount > 0);
+
+    results.push({
+      type: "api",
+      name: "GET /api/search comparison (sieve vs test)",
+      ok: statusesOk && sameShape && !suspiciousIdentical,
+      detail: [
+        `sieve_status=${sieve.status}`,
+        `test_status=${test.status}`,
+        `same_shape=${sameShape}`,
+        `sieve_count=${sieveCount}`,
+        `test_count=${testCount}`,
+        `identical=${responsesIdentical}`,
+      ].join(", "),
+    });
+  } catch (error) {
+    results.push({
+      type: "api",
+      name: "GET /api/search comparison (sieve vs test)",
+      ok: false,
+      detail: String(error),
+    });
   }
 
   return results;

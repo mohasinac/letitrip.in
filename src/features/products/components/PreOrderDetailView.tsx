@@ -21,13 +21,15 @@ import {
   Button,
   Badge,
   Row,
+  Accordion,
+  AccordionItem,
+  Div,
+  Stack,
 } from "@mohasinac/appkit/ui";
 import {
   Breadcrumbs,
   BreadcrumbItem,
   TextLink,
-  Accordion,
-  AccordionItem,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
@@ -192,26 +194,26 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
   // Loading skeleton
   if (productQuery.isLoading) {
     return (
-      <div className={`min-h-screen ${themed.bgSecondary}`}>
-        <div className={`${page.container.xl} py-6 sm:py-8`}>
-          <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
+      <Div className={`min-h-screen ${themed.bgSecondary}`}>
+        <Div className={`${page.container.xl} py-6 sm:py-8`}>
+          <Div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
           <Grid cols="productDetailTriplet">
-            <div className="animate-pulse space-y-3">
-              <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
-            </div>
-            <div className={`animate-pulse ${spacing.stack}`}>
-              <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
-              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
-            </div>
+            <Div className="animate-pulse space-y-3">
+              <Div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
+            </Div>
+            <Div className={`animate-pulse ${spacing.stack}`}>
+              <Div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+              <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
+            </Div>
           </Grid>
-        </div>
-      </div>
+        </Div>
+      </Div>
     );
   }
 
   if (productQuery.error || (!productQuery.isLoading && !product)) {
     return (
-      <div
+      <Div
         className={`min-h-screen ${themed.bgSecondary} ${flex.center} flex-col gap-4`}
       >
         <Text variant="secondary">{t("notFound")}</Text>
@@ -221,15 +223,15 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
         >
           {t("backToPreOrders")}
         </Button>
-      </div>
+      </Div>
     );
   }
 
   const productionStatus = product!.preOrderProductionStatus ?? "upcoming";
 
   return (
-    <div className={`min-h-screen ${themed.bgSecondary}`}>
-      <div className={`${page.container.xl} py-6 sm:py-8`}>
+    <Div className={`min-h-screen ${themed.bgSecondary}`}>
+      <Div className={`${page.container.xl} py-6 sm:py-8`}>
         <AppkitPreOrderDetailView
           renderBreadcrumb={() => (
             <Breadcrumbs className="mb-6">
@@ -256,7 +258,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
             />
           )}
           renderInfo={() => (
-            <div className={`flex flex-col gap-5`}>
+            <Stack gap="5">
               {/* Status badge + PRE-ORDER label */}
               <Row gap="sm" wrap>
                 <Badge variant="info">📅 {t("preOrderBadge")}</Badge>
@@ -286,7 +288,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
               <Divider />
 
               {/* Price & deposit */}
-              <div className={`flex flex-col gap-1`}>
+              <Div className="flex flex-col gap-1">
                 <Text size="sm" variant="secondary">
                   {t("totalPrice")}
                 </Text>
@@ -307,18 +309,18 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                     })}
                   </Text>
                 )}
-              </div>
+              </Div>
 
               {/* Delivery date */}
               {product!.preOrderDeliveryDate && (
-                <div className={`${flex.rowCenter} gap-2`}>
+                <Row className="gap-2">
                   <Span className="text-sm text-zinc-500 dark:text-zinc-400">
                     🚚 {t("estimatedDelivery")}:
                   </Span>
                   <Span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
                     {formatDate(product!.preOrderDeliveryDate)}
                   </Span>
-                </div>
+                </Row>
               )}
 
               {/* Spots info */}
@@ -358,7 +360,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
 
               {/* Description */}
               {product!.description && (
-                <div>
+                <Div>
                   <Heading level={3} className="text-base mb-2">
                     {t("description")}
                   </Heading>
@@ -369,7 +371,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                   >
                     {product!.description}
                   </Text>
-                </div>
+                </Div>
               )}
 
               {/* Specifications */}
@@ -382,7 +384,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                     >
                       <Grid gap="sm" className="grid-cols-2 text-sm">
                         {product!.specifications.map((spec, i) => (
-                          <div key={i}>
+                          <Div key={i}>
                             <Span className="text-zinc-500 dark:text-zinc-400 block">
                               {spec.name}
                             </Span>
@@ -390,7 +392,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                               {spec.value}
                               {spec.unit ? ` ${spec.unit}` : ""}
                             </Span>
-                          </div>
+                          </Div>
                         ))}
                       </Grid>
                     </AccordionItem>
@@ -433,11 +435,11 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                   )}
                 </AccordionItem>
               </Accordion>
-            </div>
+            </Stack>
           )}
           renderBuyBar={() => (
-            <div className="lg:sticky lg:top-24 self-start">
-              <div
+            <Div className="lg:sticky lg:top-24 self-start">
+              <Div
                 className={`${themed.bgPrimary} rounded-xl border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
               >
                 {/* Pre-order label */}
@@ -448,7 +450,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                 </Row>
 
                 {/* Price summary */}
-                <div>
+                <Div>
                   <Text size="sm" variant="secondary">
                     {t("totalPrice")}
                   </Text>
@@ -463,15 +465,15 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                       {t("payNow", { amount: formatCurrency(depositAmount) })}
                     </Text>
                   )}
-                </div>
+                </Div>
 
                 {/* Delivery */}
                 {product!.preOrderDeliveryDate && (
-                  <div
+                  <Div
                     className={`bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3 ${flex.rowCenter} gap-2`}
                   >
                     <Span className="text-xl">🗓️</Span>
-                    <div>
+                    <Div>
                       <Text size="xs" variant="secondary">
                         {t("estimatedDelivery")}
                       </Text>
@@ -481,8 +483,8 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                       >
                         {formatDate(product!.preOrderDeliveryDate)}
                       </Text>
-                    </div>
-                  </div>
+                    </Div>
+                  </Div>
                 )}
 
                 {/* Spots */}
@@ -540,11 +542,11 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                     ✅ {t("cancellableShort")}
                   </Text>
                 )}
-              </div>
-            </div>
+              </Div>
+            </Div>
           )}
         />
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }

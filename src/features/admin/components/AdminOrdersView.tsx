@@ -25,12 +25,11 @@ import {
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { Text, TablePagination, Button, Row } from "@mohasinac/appkit/ui";
+import { Text, TablePagination, Button, Row, DataTable } from "@mohasinac/appkit/ui";
 import {
   Card,
   OrderCard,
   SideDrawer,
-  DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   OrderFilters,

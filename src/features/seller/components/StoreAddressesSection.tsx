@@ -19,7 +19,8 @@ import {
   Grid,
   Row,
 } from "@mohasinac/appkit/ui";
-import { Card, SideDrawer, AddressForm, Alert } from "@/components";
+import { Alert } from "@mohasinac/appkit/ui";
+import { Card, SideDrawer, AddressForm } from "@/components";
 import { useMessage } from "@/hooks";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { StoreAddressDocument } from "@/db/schema";

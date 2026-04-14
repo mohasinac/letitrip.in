@@ -3,9 +3,10 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useBlogArticles } from "@mohasinac/appkit/features/homepage";
-import { BlogCard } from "@/components";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import { BlogCard } from "@mohasinac/appkit/features/blog";
 import type { BlogPost } from "@mohasinac/appkit/features/blog";
+import { Link } from "@/i18n/navigation";
 
 export function BlogArticlesSection() {
   const t = useTranslations("homepage");
@@ -26,7 +27,11 @@ export function BlogArticlesSection() {
       viewMoreHref={ROUTES.PUBLIC.BLOG}
       viewMoreLabel={tActions("viewAllArrow")}
       items={articles}
-      renderItem={(article) => <BlogCard post={article} />}
+      renderItem={(article) => (
+        <Link href={`${ROUTES.PUBLIC.BLOG}/${article.slug}`} className="block">
+          <BlogCard post={article} className="h-full" />
+        </Link>
+      )}
       perView={{ base: 1, sm: 2, md: 3, xl: 4 }}
       gap={24}
       keyExtractor={(a) => a.id}

@@ -7,12 +7,11 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 const { flex } = THEME_CONSTANTS;
 import { useAdminCarousel } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
-import { Caption, Text, StatusBadge, Button } from "@mohasinac/appkit/ui";
+import { Caption, Text, StatusBadge, Button, DataTable } from "@mohasinac/appkit/ui";
 import { AdminCarouselView as AppkitAdminCarouselView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   DrawerFormFooter,
   MediaImage,
   SideDrawer,

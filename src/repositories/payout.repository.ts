@@ -207,9 +207,8 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
   static readonly SIEVE_FIELDS = {
     id: { canFilter: true, canSort: false },
     sellerId: { canFilter: true, canSort: false },
-    sellerNameIndex: { canFilter: true, canSort: false },
     sellerEmailIndex: { canFilter: true, canSort: false },
-    sellerName: { canFilter: false, canSort: false }, // encrypted — use sellerNameIndex
+    sellerName: { canFilter: true, canSort: true },
     sellerEmail: { canFilter: false, canSort: false }, // encrypted — use sellerEmailIndex
     status: { canFilter: true, canSort: true },
     paymentMethod: { canFilter: true, canSort: false },

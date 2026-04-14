@@ -11,7 +11,6 @@ import { decryptPiiFields, encryptPii } from "../lib/pii";
 const ORDER_PII_FIELDS = [
   "userName",
   "userEmail",
-  "sellerName",
   "sellerEmail",
 ] as const;
 

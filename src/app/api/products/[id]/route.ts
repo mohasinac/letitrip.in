@@ -11,7 +11,7 @@ export const DELETE = withProviders(productItemDELETE);
 
 // Override GET to use the project's ProductRepository, which auto-decrypts
 // PII fields (sellerName, sellerEmail) via the mapDoc override.
-export async function GET(
+async function _GET(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -33,3 +33,5 @@ export async function GET(
     );
   }
 }
+
+export const GET = withProviders(_GET);

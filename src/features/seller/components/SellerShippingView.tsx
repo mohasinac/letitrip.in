@@ -10,16 +10,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heading, Text, Spinner, Button, Badge } from "@mohasinac/appkit/ui";
+import { Heading, Text, Spinner, Button, Badge, Accordion, AccordionItem, Alert } from "@mohasinac/appkit/ui";
 import { SellerShippingView as AppkitSellerShippingView } from "@mohasinac/appkit/features/seller";
 import {
-  Accordion,
-  AccordionItem,
   AdminPageHeader,
   Card,
   FormField,
   FormGroup,
-  Alert,
   SideDrawer,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";

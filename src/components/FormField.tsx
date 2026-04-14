@@ -11,10 +11,9 @@
 
 import React from "react";
 import { Label, Text, Span } from "@mohasinac/appkit/ui";
+import { ImageUpload, MediaUploadField } from "@mohasinac/appkit/features/media";
 import {
-  ImageUpload,
   Input,
-  MediaUploadField,
   Select,
   Textarea,
 } from "@/components";

@@ -20,12 +20,12 @@ import {
   ListingLayout,
   SortDropdown,
   StatusBadge,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   EventFilters,
   MediaImage,
   Search,

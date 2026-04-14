@@ -68,12 +68,8 @@ export type { FlowStep, FlowDiagramProps } from "./FlowDiagram";
 // Phase 2: Shared UI Primitives
 export { FilterFacetSection } from "./FilterFacetSection";
 export { FilterDrawer } from "./FilterDrawer";
-export { ActiveFilterChips } from "./ActiveFilterChips";
-export type { ActiveFilter } from "./ActiveFilterChips";
 
 // Phase 3: Shared UI Infrastructure
-export { SectionTabs } from "./SectionTabs";
-export type { SectionTab } from "./SectionTabs";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
 

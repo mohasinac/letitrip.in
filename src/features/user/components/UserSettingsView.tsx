@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { updateProfileAction } from "@/actions";
-import { Alert } from "@/components";
+import { Alert } from "@mohasinac/appkit/ui";
 import { UserSettingsView as AppkitUserSettingsView } from "@mohasinac/appkit/features/account";
 import {
   ROUTES,

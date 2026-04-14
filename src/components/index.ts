@@ -135,12 +135,6 @@ export { default as ZodSetup } from "./ZodSetup";
 // ==================== ELEVATED FEATURE COMPONENTS ====================
 // Purely presentational components elevated from features to Tier-1
 // so shared-tier layout components and other features can import them.
-export { BlogCard, CATEGORY_BADGE } from "./BlogCard";
-export { ReviewCard } from "./ReviewCard";
-export type { ReviewCardData } from "./ReviewCard";
-export { EventCard } from "./EventCard";
 export { EventBanner } from "./EventBanner";
-export { StoreCard } from "./StoreCard";
-
-// Compatibility exports consumed by feature views still importing from @/components
-export { Accordion, AccordionItem } from "@mohasinac/appkit/ui";
+export { InteractiveStoreCard } from "./stores";
+export type { InteractiveStoreCardProps, StoreListItem as StoreListItemUI } from "./stores";

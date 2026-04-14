@@ -14,13 +14,13 @@ import {
   Span,
   TablePagination,
   Stack,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
   SideDrawer,
-  DataTable,
   AdminPageHeader,
   Search,
 } from "@/components";

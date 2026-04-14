@@ -26,12 +26,12 @@ import {
   Button,
   StatusBadge,
   Row,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Card,
   ConfirmDeleteModal,
-  DataTable,
   RoleBadge,
   Search,
   useToast,

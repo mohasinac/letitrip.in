@@ -22,6 +22,7 @@ import {
   Button,
   SortDropdown,
   Row,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
@@ -31,7 +32,6 @@ import {
   BlogFilters,
   Card,
   ConfirmDeleteModal,
-  DataTable,
   DrawerFormFooter,
   MediaImage,
   Search,

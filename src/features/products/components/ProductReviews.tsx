@@ -22,7 +22,6 @@ import {
   type MediaField,
 } from "@mohasinac/appkit/features/media";
 import {
-  Alert,
   FormField,
   MediaAvatar,
   MediaImage,
@@ -30,9 +29,10 @@ import {
 } from "@/components";
 import { useProductReviews } from "@mohasinac/appkit/features/reviews";
 import { useCreateReview } from "@/hooks/useProductReviews";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
+import { Alert } from "@mohasinac/appkit/ui";
 import {
   useAuth,
-  useMediaUpload,
   useMediaAbort,
   useMessage,
   useUrlTable,

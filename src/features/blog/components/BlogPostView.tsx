@@ -3,13 +3,15 @@
 import { Button } from "@mohasinac/appkit/ui";
 
 import { useTranslations } from "next-intl";
-import { BlogPostView as AppkitBlogPostView } from "@mohasinac/appkit/features/blog";
+import {
+  BlogCard,
+  BlogPostView as AppkitBlogPostView,
+} from "@mohasinac/appkit/features/blog";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { MediaImage, TextLink } from "@/components";
-import { BlogCard } from "@/components";
 import { ROUTES } from "@/constants";
+import { Link } from "@/i18n/navigation";
 import { proseMirrorToHtml } from "@/utils";
-import type { BlogPost } from "@mohasinac/appkit/features/blog";
 import type { BlogPostDetailResponse } from "@mohasinac/appkit/features/blog/server";
 
 interface BlogPostViewProps {
@@ -60,7 +62,11 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
           <Button variant="outline">{t("backToBlog")}</Button>
         </TextLink>
       )}
-      renderRelatedCard={(post) => <BlogCard post={post} key={post.id} />}
+      renderRelatedCard={(post) => (
+        <Link href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`} className="block" key={post.id}>
+          <BlogCard post={post} className="h-full" />
+        </Link>
+      )}
     />
   );
 }

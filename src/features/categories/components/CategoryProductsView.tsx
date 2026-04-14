@@ -16,19 +16,19 @@ import {
   Spinner,
   TablePagination,
   ActiveFilterChips,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { CategoryProductsView as AppkitCategoryProductsView } from "@mohasinac/appkit/features/categories";
 import {
-  DataTable,
   MediaImage,
   PRODUCT_SORT_VALUES,
-  ProductCard,
   Search,
-  SectionTabs,
   TextLink,
+  InteractiveProductCard,
 } from "@/components";
-import type { ActiveFilter, ProductSortValue } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
+import type { ProductSortValue } from "@/components";
 import { RangeFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
@@ -361,7 +361,7 @@ function CategoryProductsContent({
             </div>
           }
           mobileCardRender={(item) => (
-            <ProductCard
+            <InteractiveProductCard
               product={item as any}
               variant={
                 (table.get("view") || "grid") === "list" ? "list" : "grid"

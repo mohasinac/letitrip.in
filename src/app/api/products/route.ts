@@ -82,7 +82,7 @@ function buildFilters(url: URL): string {
   return parts.join(",");
 }
 
-export async function GET(request: Request): Promise<NextResponse> {
+async function _GET(request: Request): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
     const page = numParam(url, "page", 1);
@@ -112,7 +112,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
     );
     return response;
-  } catch {
+  } catch (error) {
+    console.error("[products] GET /api/products failed", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
       { status: 500 },
@@ -120,4 +121,5 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 }
 
+export const GET = withProviders(_GET);
 export const POST = withProviders(_POST);

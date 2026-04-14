@@ -25,8 +25,10 @@ import {
   Badge,
   Row,
   Stack,
+  Accordion,
+  AccordionItem,
 } from "@mohasinac/appkit/ui";
-import { TextLink, Accordion, AccordionItem } from "@/components";
+import { TextLink } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import type { ProductStatus } from "@mohasinac/appkit/features/products";
 import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";

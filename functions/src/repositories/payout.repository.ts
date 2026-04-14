@@ -52,13 +52,13 @@ export const payoutRepository = {
     const ref = db.collection(COLLECTIONS.PAYOUTS).doc();
     const encrypted = {
       ...input,
-      sellerName: encryptPii(input.sellerName),
+      sellerName: input.sellerName,
       sellerEmail: encryptPii(input.sellerEmail),
       upiId: input.upiId ? encryptPii(input.upiId) : undefined,
       bankAccount: input.bankAccount
         ? {
             ...input.bankAccount,
-            accountHolderName: encryptPii(input.bankAccount.accountHolderName),
+            accountHolderName: input.bankAccount.accountHolderName,
             accountNumberMasked: encryptPii(
               input.bankAccount.accountNumberMasked,
             ),
@@ -95,9 +95,7 @@ export const payoutRepository = {
           bankAccount: raw.bankAccount
             ? {
                 ...raw.bankAccount,
-                accountHolderName: decryptPii(
-                  raw.bankAccount.accountHolderName,
-                ) as string,
+                accountHolderName: raw.bankAccount.accountHolderName,
                 accountNumberMasked: decryptPii(
                   raw.bankAccount.accountNumberMasked,
                 ) as string,

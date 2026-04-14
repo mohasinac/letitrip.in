@@ -13,17 +13,17 @@ import {
   ListingLayout,
   Button,
   Tooltip,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
-  DataTable,
-  ProductCard,
   Search,
   PRODUCT_SORT_VALUES,
   EmptyState,
+  InteractiveProductCard,
 } from "@/components";
 import { ProductFilters } from "@/components";
-import type { ActiveFilter, ViewMode } from "@/components";
+import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -368,7 +368,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
               />
             }
             mobileCardRender={(item) => (
-              <ProductCard
+              <InteractiveProductCard
                 product={item as any}
                 variant={viewMode}
                 selectable={!!user}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, Text, Button } from "@mohasinac/appkit/ui";
-import { Accordion, AccordionItem, Card } from "@/components";
-import { Alert } from "@/components";
+import { Heading, Text, Button, Accordion, AccordionItem } from "@mohasinac/appkit/ui";
+import { Card } from "@/components";
+import { Alert } from "@mohasinac/appkit/ui";
 import { FormField, FormGroup } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";

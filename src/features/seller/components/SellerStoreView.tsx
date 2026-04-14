@@ -26,18 +26,19 @@ import {
   Spinner,
   Row,
 } from "@mohasinac/appkit/ui";
+import { Alert } from "@mohasinac/appkit/ui";
+import { ImageUpload } from "@mohasinac/appkit/features/media";
 import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/features/seller";
 import {
   Card,
-  Alert,
   FormField,
   FormGroup,
-  ImageUpload,
   Toggle,
   useToast,
 } from "@/components";
 import { RichTextEditor } from "@/features/admin";
-import { useAuth, useMediaUpload } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";

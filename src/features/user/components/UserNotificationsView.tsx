@@ -14,7 +14,7 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { useUserNotifications } from "../hooks/useUserNotifications";
 import { EmptyState, FilterFacetSection, Search } from "@/components";
 import { UserNotificationsView as AppkitUserNotificationsView } from "@mohasinac/appkit/features/account";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { getFilterLabel } from "@/components";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationsBulkActions } from "./NotificationsBulkActions";

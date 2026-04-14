@@ -5,6 +5,7 @@ import {
   ListingLayout,
   SortDropdown,
   ActiveFilterChips,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { Star } from "lucide-react";
@@ -12,17 +13,16 @@ import { useTranslations } from "next-intl";
 import { ReviewsListView as AppkitReviewsListView } from "@mohasinac/appkit/features/reviews";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
-  DataTable,
   EmptyState,
   REVIEW_SORT_OPTIONS,
   ReviewFilters,
-  ReviewCard,
   Search,
   getFilterLabel,
 } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useBrands } from "@/hooks";
+import { ReviewCard } from "@mohasinac/appkit/features/reviews";
 import type { ReviewDocument } from "@/db/schema";
 import { useReviews, type ReviewsApiResult } from "../hooks/useReviews";
 

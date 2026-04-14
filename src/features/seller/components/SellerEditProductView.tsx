@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner, Button } from "@mohasinac/appkit/ui";
+import { Spinner, Button, Alert } from "@mohasinac/appkit/ui";
 /**
  * SellerEditProductView
  *
@@ -10,7 +10,7 @@ import { Spinner, Button } from "@mohasinac/appkit/ui";
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Card, Alert, AdminPageHeader, ProductForm } from "@/components";
+import { Card, AdminPageHeader, ProductForm } from "@/components";
 import type { AdminProduct } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {

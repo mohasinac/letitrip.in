@@ -3,7 +3,7 @@ import { db } from "../config/firebase-admin";
 import { COLLECTIONS } from "../config/constants";
 import { decryptPiiFields } from "../lib/pii";
 
-const BID_PII_FIELDS = ["userName", "userEmail"] as const;
+const BID_PII_FIELDS = [] as const;
 
 export interface BidRow {
   id: string;

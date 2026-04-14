@@ -16,6 +16,7 @@ import {
   Span,
   Row,
   Stack,
+  Div,
 } from "@mohasinac/appkit/ui";
 import { MediaImage, Textarea } from "@/components";
 
@@ -91,9 +92,9 @@ export function CheckoutOrderReview({
             </Row>
           }
         >
-          <div className="pt-3">
-            <div className={`${flex.between} mb-3`}>
-              <div />
+          <Div className="pt-3">
+            <Row justify="between" className={`${flex.between} mb-3`}>
+              <Div />
               <Button
                 variant="ghost"
                 size="sm"
@@ -102,7 +103,7 @@ export function CheckoutOrderReview({
               >
                 {t("changeAddress")}
               </Button>
-            </div>
+            </Row>
             <Text size="sm" weight="medium">
               {address.fullName}
             </Text>
@@ -116,7 +117,7 @@ export function CheckoutOrderReview({
             <Text size="sm" variant="secondary">
               {address.phone}
             </Text>
-          </div>
+          </Div>
         </AccordionItem>
 
         <AccordionItem
@@ -130,7 +131,7 @@ export function CheckoutOrderReview({
             </Row>
           }
         >
-          <div className="space-y-3 pt-3">
+          <Stack gap="sm" className="space-y-3 pt-3">
             {(() => {
               const sellerMap = new Map<
                 string,
@@ -149,37 +150,35 @@ export function CheckoutOrderReview({
               }
               return Array.from(sellerMap.entries()).map(
                 ([sellerId, { sellerName, items: groupItems }]) => (
-                  <div
+                  <Div
                     key={sellerId}
                     className={`rounded-xl border ${themed.border} overflow-hidden`}
                   >
                     {/* Seller header */}
-                    <div
-                      className={`flex items-center gap-2 px-3 py-2 border-b ${themed.border} ${themed.bgSecondary}`}
-                    >
+                    <Row gap="sm" className={`flex items-center gap-2 px-3 py-2 border-b ${themed.border} ${themed.bgSecondary}`}>
                       <Span className="text-sm">🏪</Span>
                       <Text size="xs" weight="semibold">
                         {t("soldBy", { name: sellerName })}
                       </Text>
-                    </div>
+                    </Row>
                     {/* Items */}
-                    <div className={`divide-y ${themed.border}`}>
+                    <Div className={`divide-y ${themed.border}`}>
                       {groupItems.map((item) => (
                         <Row key={item.itemId} className="p-3" gap="3">
                           {item.productImage ? (
-                            <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
+                            <Div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
                               <MediaImage
                                 src={item.productImage}
                                 alt={item.productTitle}
                                 size="thumbnail"
                               />
-                            </div>
+                            </Div>
                           ) : (
-                            <div
+                            <Div
                               className={`w-14 h-14 rounded-lg flex-shrink-0 ${themed.bgSecondary}`}
                             />
                           )}
-                          <div className="flex-1 min-w-0">
+                          <Div className="flex-1 min-w-0">
                             <Text
                               size="sm"
                               weight="medium"
@@ -190,7 +189,7 @@ export function CheckoutOrderReview({
                             <Text size="xs" variant="secondary">
                               {tCart("quantity")} × {item.quantity}
                             </Text>
-                          </div>
+                          </Div>
                           <Text
                             size="sm"
                             weight="semibold"
@@ -200,12 +199,12 @@ export function CheckoutOrderReview({
                           </Text>
                         </Row>
                       ))}
-                    </div>
-                  </div>
+                    </Div>
+                  </Div>
                 ),
               );
             })()}
-          </div>
+          </Stack>
         </AccordionItem>
 
         <AccordionItem
@@ -225,7 +224,7 @@ export function CheckoutOrderReview({
             </Row>
           }
         >
-          <div className="space-y-2 pt-3">
+          <Stack gap="xs" className="space-y-2 pt-3">
             {/* Cash on Delivery */}
             <Button
               variant="outline"
@@ -237,23 +236,23 @@ export function CheckoutOrderReview({
               }`}
             >
               <Row gap="3">
-                <div
+                <Div
                   className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                     paymentMethod === "cod" ? "border-primary" : themed.border
                   }`}
                 >
                   {paymentMethod === "cod" && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                    <Div className="w-2.5 h-2.5 rounded-full bg-primary" />
                   )}
-                </div>
-                <div>
+                </Div>
+                <Div>
                   <Text size="sm" weight="medium">
                     {t("cod")}
                   </Text>
                   <Text size="xs" variant="secondary">
                     {t("paymentOnDelivery")}
                   </Text>
-                </div>
+                </Div>
               </Row>
             </Button>
 
@@ -268,7 +267,7 @@ export function CheckoutOrderReview({
               }`}
             >
               <Row gap="3">
-                <div
+                <Div
                   className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                     paymentMethod === "online"
                       ? "border-primary"
@@ -276,23 +275,23 @@ export function CheckoutOrderReview({
                   }`}
                 >
                   {paymentMethod === "online" && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                    <Div className="w-2.5 h-2.5 rounded-full bg-primary" />
                   )}
-                </div>
-                <div>
+                </Div>
+                <Div>
                   <Text size="sm" weight="medium">
                     {t("online")}
                   </Text>
                   <Text size="xs" className="text-emerald-600">
                     Powered by Razorpay
                   </Text>
-                </div>
+                </Div>
               </Row>
             </Button>
 
             {/* UPI Manual — only shown when a UPI VPA is configured */}
             {upiVpa && (
-              <div className="space-y-0">
+              <Div className="space-y-0">
                 <Button
                   variant="outline"
                   onClick={() => onPaymentMethodChange("upi_manual")}
@@ -303,7 +302,7 @@ export function CheckoutOrderReview({
                   }`}
                 >
                   <Row gap="3">
-                    <div
+                    <Div
                       className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                         paymentMethod === "upi_manual"
                           ? "border-primary"
@@ -311,17 +310,17 @@ export function CheckoutOrderReview({
                       }`}
                     >
                       {paymentMethod === "upi_manual" && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                        <Div className="w-2.5 h-2.5 rounded-full bg-primary" />
                       )}
-                    </div>
-                    <div>
+                    </Div>
+                    <Div>
                       <Text size="sm" weight="medium">
                         {t("upiManual")}
                       </Text>
                       <Text size="xs" variant="secondary">
                         {t("upiManualDesc")}
                       </Text>
-                    </div>
+                    </Div>
                     {/* UPI app logos */}
                     <Span
                       className="ml-auto text-xs font-medium text-violet-600 dark:text-violet-400"
@@ -334,14 +333,10 @@ export function CheckoutOrderReview({
 
                 {/* Expanded UPI instructions panel */}
                 {paymentMethod === "upi_manual" && (
-                  <div
-                    className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-primary bg-primary/5 dark:bg-primary/10 ${spacing.stack}`}
-                  >
+                  <Stack gap="md" className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-primary bg-primary/5 dark:bg-primary/10 ${spacing.stack}`}>
                     {/* UPI ID display + copy */}
-                    <div
-                      className={`flex items-center gap-3 p-3 rounded-lg border ${themed.border} ${themed.bgPrimary}`}
-                    >
-                      <div className="flex-1 min-w-0">
+                    <Row gap="sm" className={`flex items-center gap-3 p-3 rounded-lg border ${themed.border} ${themed.bgPrimary}`}>
+                      <Div className="flex-1 min-w-0">
                         <Caption>{t("upiId")}</Caption>
                         <Text
                           weight="semibold"
@@ -349,7 +344,7 @@ export function CheckoutOrderReview({
                         >
                           {upiVpa}
                         </Text>
-                      </div>
+                      </Div>
                       <Button
                         variant="secondary"
                         size="sm"
@@ -358,10 +353,10 @@ export function CheckoutOrderReview({
                       >
                         {upiCopied ? t("upiIdCopied") : t("copyUpiId")}
                       </Button>
-                    </div>
+                    </Row>
 
                     {/* Steps */}
-                    <div>
+                    <Div>
                       <Caption className="font-medium mb-2">
                         {t("upiInstructions")}
                       </Caption>
@@ -382,27 +377,26 @@ export function CheckoutOrderReview({
                           </Li>
                         ))}
                       </Ol>
-                    </div>
+                    </Div>
 
-                    {/* Note */}
                     <Text
                       size="xs"
                       className="text-amber-700 dark:text-amber-400"
                     >
                       ⚠ {t("upiPaymentNote")}
                     </Text>
-                  </div>
+                  </Stack>
                 )}
-              </div>
+              </Div>
             )}
-          </div>
+          </Stack>
         </AccordionItem>
 
         <AccordionItem
           value="checkout-notes"
           title={<Text className="font-semibold">{t("sellerNotesLabel")}</Text>}
         >
-          <div className="pt-3">
+          <Div className="pt-3">
             <Textarea
               name="sellerNotes"
               value={notes}
@@ -413,59 +407,59 @@ export function CheckoutOrderReview({
               className={`w-full text-sm rounded-xl border px-3 py-2 ${themed.border} ${themed.bgPrimary}`}
             />
             <Caption className="mt-1">{t("sellerNotesHint")}</Caption>
-          </div>
+          </Div>
         </AccordionItem>
 
         <AccordionItem
           value="checkout-summary"
           title={<Text className="font-semibold">{t("orderSummary")}</Text>}
         >
-          <div className="pt-3">
-            <div
+          <Div className="pt-3">
+            <Div
               className={`p-3 rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 dark:border-primary/30 mb-4`}
             >
               <Text size="xs" className="text-primary">
                 ℹ️ {t("commissionInfoNote")}
               </Text>
-            </div>
+            </Div>
 
-            <div className={`space-y-2 pt-1 border-t ${themed.border}`}>
-              <div className={flex.between}>
+            <Stack gap="xs" className={`space-y-2 pt-1 border-t ${themed.border}`}>
+              <Row justify="between" className={flex.between}>
                 <Text size="sm" variant="secondary">
                   {t("subtotal")}
                 </Text>
                 <Text size="sm">{formatCurrency(subtotal)}</Text>
-              </div>
+              </Row>
               {shippingFee > 0 && (
-                <div className={flex.between}>
+                <Row justify="between" className={flex.between}>
                   <Text size="sm" variant="secondary">
                     {t("shippingFee")}
                   </Text>
                   <Text size="sm">{formatCurrency(shippingFee)}</Text>
-                </div>
+                </Row>
               )}
               {paymentMethod === "online" && platformFee > 0 && (
-                <div className={flex.between}>
-                  <div>
+                <Row justify="between" className={flex.between}>
+                  <Div>
                     <Text size="sm" variant="secondary">
                       {t("razorpayFeeLabel")}
                     </Text>
                     <Caption className="text-amber-600 dark:text-amber-400">
                       {t("razorpayFeeNote")}
                     </Caption>
-                  </div>
+                  </Div>
                   <Text
                     size="sm"
                     className="text-amber-600 dark:text-amber-400"
                   >
                     +{formatCurrency(platformFee)}
                   </Text>
-                </div>
+                </Row>
               )}
               {(paymentMethod === "cod" || paymentMethod === "upi_manual") &&
                 depositAmount != null && (
-                  <div className="space-y-1">
-                    <div className={flex.between}>
+                  <Stack gap="xs" className="space-y-1">
+                    <Row justify="between" className={flex.between}>
                       <Text size="sm" variant="secondary">
                         {t("codDepositLabel")}
                       </Text>
@@ -475,8 +469,8 @@ export function CheckoutOrderReview({
                       >
                         {formatCurrency(depositAmount)} {t("codDepositNow")}
                       </Text>
-                    </div>
-                    <div className={flex.between}>
+                    </Row>
+                    <Row justify="between" className={flex.between}>
                       <Text size="sm" variant="secondary">
                         {t("codRemainingLabel")}
                       </Text>
@@ -484,16 +478,19 @@ export function CheckoutOrderReview({
                         {formatCurrency(subtotal + shippingFee - depositAmount)}{" "}
                         {t("codRemainingOnDelivery")}
                       </Text>
-                    </div>
+                    </Row>
                     <Text
                       size="xs"
                       className="text-amber-600 dark:text-amber-400"
                     >
                       ⚠ {t("codDepositNote")}
                     </Text>
-                  </div>
+                  </Stack>
                 )}
-              <div className={`${flex.between} pt-2 border-t ${themed.border}`}>
+              <Row
+                justify="between"
+                className={`${flex.between} pt-2 border-t ${themed.border}`}
+              >
                 <Span weight="semibold" variant="primary">
                   {t("orderTotal")}
                 </Span>
@@ -504,9 +501,9 @@ export function CheckoutOrderReview({
                       (paymentMethod === "online" ? platformFee : 0),
                   )}
                 </Span>
-              </div>
-            </div>
-          </div>
+              </Row>
+            </Stack>
+          </Div>
         </AccordionItem>
       </Accordion>
     </Stack>

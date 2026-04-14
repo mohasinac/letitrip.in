@@ -1,6 +1,4 @@
-export { ProductCard } from "./ProductCard";
-export type { ProductCardData, ProductCardProps } from "./ProductCard";
-export { ProductGrid } from "./ProductGrid";
+export { InteractiveProductCard } from "./InteractiveProductCard";
 export { ProductSortBar, PRODUCT_SORT_VALUES } from "./ProductSortBar";
 export type { ProductSortValue } from "./ProductSortBar";
 // Admin/seller-only form and types

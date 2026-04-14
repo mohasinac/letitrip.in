@@ -49,12 +49,11 @@ export const GET = createRouteHandler({
       q: q ? "[redacted]" : "",
     });
 
-    // PII fields are encrypted, so `q` is translated into blind-index equality
-    // filters to keep the entire list path query-level (no in-memory filtering).
+    // Email remains encrypted (blind index lookup). displayName is now plain text.
     const qFilter = q
       ? q.includes("@")
         ? `${USER_FIELDS.EMAIL_INDEX}==${piiBlindIndex(q)}`
-        : `${USER_FIELDS.DISPLAY_NAME_INDEX}==${piiBlindIndex(q)}`
+        : `${USER_FIELDS.DISPLAY_NAME}==${q}`
       : undefined;
 
     const effectiveFilters =

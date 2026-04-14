@@ -17,12 +17,12 @@ import {
   Button,
   StatusBadge,
   Row,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Card,
   ConfirmDeleteModal,
-  DataTable,
   Search,
 } from "@/components";
 import { AdminStoresView as AdminStoresShell } from "@mohasinac/appkit/features/admin";

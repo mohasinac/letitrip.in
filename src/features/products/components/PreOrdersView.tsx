@@ -19,14 +19,14 @@ import {
   ListingLayout,
   SortDropdown,
   ActiveFilterChips,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
-  DataTable,
   FilterFacetSection,
   PreOrderCard,
   Search,
 } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";

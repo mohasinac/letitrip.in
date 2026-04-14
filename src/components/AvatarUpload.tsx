@@ -13,10 +13,9 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
-import { useMediaUpload } from "@/hooks";
-import { Text, Progress, Button } from "@mohasinac/appkit/ui";
+import { useMediaUpload } from "@mohasinac/appkit/features/media";
+import { Text, Progress, Button, Alert } from "@mohasinac/appkit/ui";
 import {
-  Alert,
   Input,
   ImageCropModal,
   AvatarDisplay,

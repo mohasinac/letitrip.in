@@ -14,19 +14,20 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { SearchView as AppkitSearchView } from "@mohasinac/appkit/features/search";
 import { SearchResultsSection as AppkitSearchResultsSection } from "@mohasinac/appkit/features/search";
 import { useSearch } from "@mohasinac/appkit/features/search";
+import { ProductGrid as AppkitProductGrid } from "@mohasinac/appkit/features/products";
 import {
   PRODUCT_SORT_VALUES,
-  ProductGrid,
   ProductSortBar,
   Search,
 } from "@/components";
+import { InteractiveProductCard } from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
   EmptyState,
   SwitchFilter,
 } from "@/components";
-import type { ActiveFilter, ViewMode } from "@/components";
+import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
@@ -350,11 +351,14 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                 />
               )}
               renderLoading={({ skeletonCount }) => (
-                <ProductGrid
-                  products={[]}
-                  loading
-                  skeletonCount={skeletonCount}
-                />
+                <div className="grid grid-cols-2 gap-4 md:gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {Array.from({ length: skeletonCount }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-[4/5] animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800"
+                    />
+                  ))}
+                </div>
               )}
               renderEmpty={({ query }) => (
                 <EmptyState
@@ -365,13 +369,30 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                 />
               )}
               renderProducts={(products) => (
-                <ProductGrid
+                <AppkitProductGrid
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   products={products as any[]}
-                  variant={viewMode}
-                  selectable={!!user}
-                  selectedIds={selectedIds}
-                  onSelectionChange={setSelectedIds}
+                  view={viewMode}
+                  emptyLabel={t("noResultsTitle")}
+                  renderCard={(product) => (
+                    <InteractiveProductCard
+                      key={product.id}
+                      product={product as any}
+                      variant={viewMode}
+                      className={
+                        viewMode === "list"
+                          ? THEME_CONSTANTS.card.dimensions.listMinH
+                          : undefined
+                      }
+                      selectable={!!user}
+                      isSelected={selectedIds.includes(product.id)}
+                      onSelect={(id, sel) =>
+                        setSelectedIds((prev) =>
+                          sel ? [...prev, id] : prev.filter((x) => x !== id),
+                        )
+                      }
+                    />
+                  )}
                 />
               )}
               renderPagination={({ urlPage, totalPages, onPageChange }) =>

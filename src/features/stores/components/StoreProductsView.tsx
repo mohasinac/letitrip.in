@@ -18,15 +18,17 @@ import {
   StoreProductsView as AppkitStoreProductsView,
   useStoreProducts,
 } from "@mohasinac/appkit/features/stores";
+import { ProductGrid as AppkitProductGrid } from "@mohasinac/appkit/features/products";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   EmptyState,
   ProductFilters,
-  ProductGrid,
   PRODUCT_SORT_VALUES,
   Search,
 } from "@/components";
-import type { ViewMode, ActiveFilter } from "@/components";
+import { InteractiveProductCard } from "@/components";
+import type { ViewMode } from "@mohasinac/appkit/ui";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 
@@ -234,18 +236,29 @@ function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
             />
           )}
           {!loading && !error && items.length > 0 && (
-            <ProductGrid
-              products={
-                items as unknown as Parameters<
-                  typeof ProductGrid
-                >[0]["products"]
-              }
-              loading={false}
-              variant={viewMode}
-              selectable={!!user}
-              selectedIds={selectedIds}
-              onSelectionChange={setSelectedIds}
-              skeletonCount={PAGE_SIZE}
+            <AppkitProductGrid
+              products={items as any[]}
+              view={viewMode}
+              emptyLabel={t("products.empty.title")}
+              renderCard={(product) => (
+                <InteractiveProductCard
+                  key={product.id}
+                  product={product as any}
+                  variant={viewMode}
+                  className={
+                    viewMode === "list"
+                      ? THEME_CONSTANTS.card.dimensions.listMinH
+                      : undefined
+                  }
+                  selectable={!!user}
+                  isSelected={selectedIds.includes(product.id)}
+                  onSelect={(id, sel) =>
+                    setSelectedIds((prev) =>
+                      sel ? [...prev, id] : prev.filter((x) => x !== id),
+                    )
+                  }
+                />
+              )}
             />
           )}
         </>

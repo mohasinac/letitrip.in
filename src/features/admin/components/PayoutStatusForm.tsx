@@ -9,7 +9,7 @@
 "use client";
 
 import { useState } from "react";
-import { Span, Text, Button } from "@mohasinac/appkit/ui";
+import { Span, Text, Button, Stack, Row, Div } from "@mohasinac/appkit/ui";
 import { Select, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
@@ -48,89 +48,89 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
   };
 
   return (
-    <div className={spacing.stack}>
+    <Stack gap="md">
       {/* Read-only payout summary */}
-      <div
+      <Div
         className={`rounded-lg border ${themed.border} p-4 space-y-2 text-sm`}
       >
-        <div className="flex justify-between">
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.SELLER}</Span>
           <Span className={`font-medium ${themed.textPrimary}`}>
             {payout.sellerName}
           </Span>
-        </div>
-        <div className="flex justify-between">
+        </Row>
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.AMOUNT}</Span>
           <Span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
             {formatCurrency(payout.amount)}
           </Span>
-        </div>
-        <div className="flex justify-between">
+        </Row>
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.GROSS_AMOUNT}</Span>
           <Span className={`${themed.textPrimary} tabular-nums`}>
             {formatCurrency(payout.grossAmount)}
           </Span>
-        </div>
-        <div className="flex justify-between">
+        </Row>
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.PLATFORM_FEE}</Span>
           <Span className={`${themed.textPrimary} tabular-nums`}>
             {formatCurrency(payout.platformFee)}
           </Span>
-        </div>
-        <div className="flex justify-between">
+        </Row>
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.METHOD}</Span>
           <Span className={themed.textPrimary}>
             {payout.paymentMethod === "bank_transfer"
               ? LABELS.PAYMENT_METHOD_BANK
               : LABELS.PAYMENT_METHOD_UPI}
           </Span>
-        </div>
+        </Row>
         {payout.paymentMethod === "bank_transfer" && payout.bankAccount && (
           <>
-            <div className="flex justify-between">
+            <Row justify="between">
               <Span className={themed.textSecondary}>
                 {LABELS.BANK_DETAILS}
               </Span>
               <Span className={themed.textPrimary}>
                 {payout.bankAccount.bankName}
               </Span>
-            </div>
-            <div className="flex justify-between">
+            </Row>
+            <Row justify="between">
               <Span className={themed.textSecondary}>
                 {LABELS.ACCOUNT_MASKED}
               </Span>
               <Span className={`font-mono ${themed.textPrimary}`}>
                 ****{payout.bankAccount.accountNumberMasked}
               </Span>
-            </div>
-            <div className="flex justify-between">
+            </Row>
+            <Row justify="between">
               <Span className={themed.textSecondary}>{LABELS.IFSC}</Span>
               <Span className={`font-mono ${themed.textPrimary}`}>
                 {payout.bankAccount.ifscCode}
               </Span>
-            </div>
+            </Row>
           </>
         )}
         {payout.paymentMethod === "upi" && payout.upiId && (
-          <div className="flex justify-between">
+          <Row justify="between">
             <Span className={themed.textSecondary}>{LABELS.UPI_ID}</Span>
             <Span className={themed.textPrimary}>{payout.upiId}</Span>
-          </div>
+          </Row>
         )}
-        <div className="flex justify-between">
+        <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.REQUESTED}</Span>
           <Span className={themed.textPrimary}>
             {payout.requestedAt ? formatDate(payout.requestedAt) : "—"}
           </Span>
-        </div>
+        </Row>
         {payout.notes && (
-          <div className={`pt-1 border-t border-dashed ${themed.border}`}>
+          <Div className={`pt-1 border-t border-dashed ${themed.border}`}>
             <Text variant="secondary" size="xs" className="italic">
               "{payout.notes}"
             </Text>
-          </div>
+          </Div>
         )}
-      </div>
+      </Div>
 
       {/* Editable fields */}
       <Select
@@ -152,6 +152,6 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
         rows={3}
         placeholder="Add a note about this payout (visible to admin only)"
       />
-    </div>
+    </Stack>
   );
 }

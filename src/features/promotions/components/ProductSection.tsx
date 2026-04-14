@@ -1,14 +1,17 @@
 import { Heading, Section, Text } from "@mohasinac/appkit/ui";
-import { ProductCard } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
-import type { ProductCardData } from "@/components";
+import {
+  ProductCard,
+  type ProductItem,
+} from "@mohasinac/appkit/features/products";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { Link } from "@/i18n/navigation";
 
 const { themed, typography } = THEME_CONSTANTS;
 
 interface ProductSectionProps {
   title: string;
   subtitle: string;
-  products: ProductCardData[];
+  products: ProductItem[];
 }
 
 export function ProductSection({
@@ -28,7 +31,13 @@ export function ProductSection({
       </div>
       <div className={THEME_CONSTANTS.grid.productCards}>
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <Link
+            key={product.id}
+            href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
+            className="block"
+          >
+            <ProductCard product={product} className="h-full" />
+          </Link>
         ))}
       </div>
     </Section>

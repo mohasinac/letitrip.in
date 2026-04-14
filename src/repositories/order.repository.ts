@@ -19,8 +19,6 @@ import {
   encryptPiiFields,
   decryptPiiFields,
   ORDER_PII_FIELDS,
-  encryptShippingAddress,
-  decryptShippingAddress,
 } from "@/lib/pii";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
@@ -30,28 +28,15 @@ class OrderRepository extends BaseRepository<OrderDocument> {
 
   /** Decrypt PII fields on an order document after Firestore read */
   private decryptOrder(doc: OrderDocument): OrderDocument {
-    const decrypted = decryptPiiFields(
+    return decryptPiiFields(
       doc as unknown as Record<string, unknown>,
       [...ORDER_PII_FIELDS],
     ) as unknown as OrderDocument;
-    if (decrypted.shippingAddress) {
-      decrypted.shippingAddress = decryptShippingAddress(
-        decrypted.shippingAddress as unknown as Record<string, unknown>,
-      ) as unknown as typeof decrypted.shippingAddress;
-    }
-    return decrypted;
   }
 
   /** Encrypt PII fields on order data before Firestore write */
   private encryptOrderData<T extends Record<string, unknown>>(data: T): T {
-    const encrypted = encryptPiiFields(data, [...ORDER_PII_FIELDS]);
-    if (encrypted.shippingAddress) {
-      (encrypted as Record<string, unknown>).shippingAddress =
-        encryptShippingAddress(
-          encrypted.shippingAddress as Record<string, unknown>,
-        );
-    }
-    return encrypted;
+    return encryptPiiFields(data, [...ORDER_PII_FIELDS]);
   }
 
   /** Override mapDoc to auto-decrypt PII on every Firestore read */

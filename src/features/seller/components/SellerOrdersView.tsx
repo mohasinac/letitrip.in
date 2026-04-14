@@ -22,21 +22,21 @@ import {
   SortDropdown,
   Spinner,
   ActiveFilterChips,
+  SectionTabs,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { SellerOrdersView as AppkitSellerOrdersView } from "@mohasinac/appkit/features/seller";
 import {
   Card,
   OrderCard,
-  DataTable,
   AdminPageHeader,
   OrderFilters,
   FormField,
-  SectionTabs,
   SideDrawer,
   Search,
 } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { getFilterLabel } from "@/components";
 import { useAuth, useUrlTable, useMessage } from "@/hooks";
 import {

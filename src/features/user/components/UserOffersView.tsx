@@ -11,15 +11,16 @@ import {
 import { useMessage } from "@/hooks";
 import { checkoutOfferAction } from "@/actions";
 import { UserOffersView as AppkitUserOffersView } from "@mohasinac/appkit/features/account";
-import { DataTable, EmptyState } from "@/components";
+import { EmptyState } from "@/components";
 import {
   Caption,
   Text,
   StatusBadge,
   Spinner,
   Button,
+  DataTable,
 } from "@mohasinac/appkit/ui";
-import type { DataTableColumn } from "@/components";
+import type { DataTableColumn } from "@mohasinac/appkit/ui";
 import { formatCurrency, formatDate } from "@/utils";
 import { ROUTES } from "@/constants";
 import type { OfferDocument } from "@/db/schema";

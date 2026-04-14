@@ -26,10 +26,10 @@ import {
   StatusBadge,
   TablePagination,
   Badge,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
-  DataTable,
   AdminPageHeader,
   REVIEW_SORT_OPTIONS,
   ReviewFilters,

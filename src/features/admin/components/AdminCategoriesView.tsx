@@ -12,12 +12,11 @@ import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
-import { Text, Button, Row } from "@mohasinac/appkit/ui";
+import { Text, Button, Row, DataTable } from "@mohasinac/appkit/ui";
 import { AdminCategoriesView as AppkitAdminCategoriesView } from "@mohasinac/appkit/features/admin";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   DrawerFormFooter,
   SideDrawer,
 } from "@/components";

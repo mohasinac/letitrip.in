@@ -249,6 +249,7 @@ export type OrderAdminUpdateInput = Partial<
  */
 export const orderQueryHelpers = {
   byUser: (userId: string) => ["userId", "==", userId] as const,
+  bySeller: (sellerId: string) => ["sellerId", "==", sellerId] as const,
   byProduct: (productId: string) => ["productId", "==", productId] as const,
   byStatus: (status: OrderStatus) => ["status", "==", status] as const,
   byPaymentStatus: (status: PaymentStatus) =>

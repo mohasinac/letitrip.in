@@ -3,8 +3,9 @@
 import { useTranslations } from "next-intl";
 import { useEvents } from "@mohasinac/appkit/features/events";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { EventCard } from "@/components";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import { EventCard } from "@mohasinac/appkit/features/events";
+import { Link } from "@/i18n/navigation";
 
 export function FeaturedEventsSection() {
   const t = useTranslations("homepage");
@@ -22,7 +23,11 @@ export function FeaturedEventsSection() {
       viewMoreHref={ROUTES.PUBLIC.EVENTS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={events}
-      renderItem={(event) => <EventCard event={event} />}
+      renderItem={(event) => (
+        <Link href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)} className="block">
+          <EventCard event={event} className="h-full" />
+        </Link>
+      )}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll

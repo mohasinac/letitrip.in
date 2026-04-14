@@ -3,14 +3,13 @@
 import { Link } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { StoreListItem } from "@mohasinac/appkit/features/stores";
-import { Heading, Text, Span, Row } from "@mohasinac/appkit/ui";
+import { Heading, Text, Span, Row, Button } from "@mohasinac/appkit/ui";
 import { stripHtml } from "@mohasinac/appkit/utils";
 import { MediaImage } from "@/components";
-import { Button } from "@mohasinac/appkit/ui";
 
 export type { StoreListItem };
 
-export interface StoreCardProps {
+export interface InteractiveStoreCardProps {
   store: StoreListItem;
   selectable?: boolean;
   selected?: boolean;
@@ -21,15 +20,16 @@ export interface StoreCardProps {
 
 /**
  * Locale-aware store card with optional selection.
+ * Adapter for app-specific behavior (selection, locale-aware links).
  */
-export function StoreCard({
+export function InteractiveStoreCard({
   store,
   selectable,
   selected,
   onSelect,
   labels = {},
   className = "",
-}: StoreCardProps) {
+}: InteractiveStoreCardProps) {
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
   const { dimensions } = THEME_CONSTANTS.card;
 

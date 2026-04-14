@@ -7,11 +7,15 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    // @mohasinac/* packages — scan all JS files (including chunk files) so
-    // dark-mode and opacity-modifier utility classes aren't purged.
-    // The dist/index.js files are just re-export stubs; actual class strings
-    // live in the split chunk files (e.g. chunk-G6ATVCOC.js).
-    "./node_modules/@mohasinac/*/dist/**/*.js",
+    // @mohasinac packages are often consumed as source in dev.
+    // Scan all package source files so shared utility classes are not purged.
+    "./node_modules/@mohasinac/*/src/**/*.{js,ts,jsx,tsx,mdx}",
+    // Local workspace fallback when appkit is consumed from sibling repo source.
+    "../appkit/src/**/*.{js,ts,jsx,tsx,mdx}",
+    // Explicit appkit source fallback (kept for clarity).
+    "./node_modules/@mohasinac/appkit/src/**/*.{js,ts,jsx,tsx,mdx}",
+    // Keep dist scan for environments where packages are built prepublish.
+    "./node_modules/@mohasinac/*/dist/**/*.{js,mjs,cjs}",
   ],
   safelist: [
     // Zinc neutrals (light mode)

@@ -1,38 +1,31 @@
-﻿/**
- * ProductCard — thin wrapper around @mohasinac/feat-products
- *
- * Injects letitrip-specific hooks (wishlist, cart, messages) and routing.
- */
 "use client";
 
 import { Link } from "@/i18n/navigation";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useWishlistToggle, useAddToCart, useMessage } from "@/hooks";
-import { ProductCard as PkgProductCard } from "@mohasinac/appkit/features/products";
-import type { ProductItem } from "@mohasinac/appkit/features/products";
+import {
+  ProductCard as AppkitProductCard,
+  type ProductItem,
+} from "@mohasinac/appkit/features/products";
 
-// Re-export data type so consumers can still import from here
-export type ProductCardData = ProductItem;
-
-export interface ProductCardProps {
-  product: ProductCardData;
+interface InteractiveProductCardProps {
+  product: ProductItem;
   className?: string;
   variant?: "grid" | "card" | "fluid" | "list";
   selectable?: boolean;
   isSelected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;
-  /** Initial wishlist state for optimistic UI. */
   inWishlist?: boolean;
 }
 
-export function ProductCard({
+export function InteractiveProductCard({
   product,
   className,
   selectable,
   isSelected,
   onSelect,
   inWishlist: initialInWishlist = false,
-}: ProductCardProps) {
+}: InteractiveProductCardProps) {
   const { showSuccess, showError } = useMessage();
   const { inWishlist, toggle: toggleWishlist } = useWishlistToggle(
     product.id,
@@ -59,7 +52,7 @@ export function ProductCard({
           : undefined
       }
     >
-      <PkgProductCard
+      <AppkitProductCard
         product={product}
         className={className}
         isWishlisted={inWishlist}

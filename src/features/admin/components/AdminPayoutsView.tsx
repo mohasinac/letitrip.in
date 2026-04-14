@@ -13,11 +13,11 @@ import {
   Grid,
   TablePagination,
   StatusBadge,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   Card,
   SideDrawer,
-  DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   Search,

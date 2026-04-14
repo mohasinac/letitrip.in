@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Categories Seed Data
  * Hierarchical category structure for products
  */
@@ -16,7 +16,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     id: "category-electronics",
     name: "Scale Figures",
     slug: "electronics",
-    description: "Premium anime scale figures and collectibles",
+    description: "Premium Beyblade products and collectibles",
     rootId: "category-electronics",
     parentIds: [],
     childrenIds: [
@@ -43,15 +43,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 1,
     seo: {
-      title: "Scale Figures — Anime Collectibles | LetItRip",
+      title: "Scale Figures — Beyblade Collectibles | LetItRip",
       description:
-        "Shop premium anime scale figures including Dragon Ball Z, One Piece, Demon Slayer, and more",
+        "Shop premium Beyblade products including Beyblade Z, Beyblade, Beyblade, and more",
       keywords: [
-        "anime figures",
+        "beyblade figures",
         "scale figures",
         "collectibles",
-        "dragon ball",
-        "one piece",
+        "beyblade",
+        "beyblade",
       ],
       ogImage:
         "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&h=630&fit=crop",
@@ -103,13 +103,13 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     seo: {
       title: "Nendoroids & Chibis | LetItRip",
       description:
-        "Browse Nendoroids, chibi figurines, and small-scale anime collectibles",
+        "Browse Nendoroids, chibi figurines, and small-scale Beyblade collectibles",
       keywords: [
         "nendoroid",
         "chibi",
         "good smile company",
         "mini figurine",
-        "anime",
+        "beyblade",
       ],
     },
     display: {
@@ -127,12 +127,12 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     updatedAt: daysAgo(29),
     ancestors: [{ id: "category-electronics", name: "Scale Figures", tier: 0 }],
   },
-  // Scale Figures > Nendoroids > Dragon Ball Figures
+  // Scale Figures > Nendoroids > Beyblade Figures
   {
     id: "category-smartphones-mobiles-accessories",
-    name: "Dragon Ball Figures",
+    name: "Beyblade Figures",
     slug: "smartphones",
-    description: "Dragon Ball Z and Dragon Ball Super scale figures",
+    description: "Beyblade Z and Beyblade Super scale figures",
     rootId: "category-electronics",
     parentIds: [
       "category-electronics",
@@ -161,10 +161,10 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 2,
     seo: {
-      title: "Dragon Ball Figures — Goku, Vegeta & More | LetItRip",
+      title: "Beyblade Figures — Dran Sword, Valkyrie & More | LetItRip",
       description:
-        "Shop Dragon Ball Z and Super scale figures by Bandai Spirits, MegaHouse, and Banpresto",
-      keywords: ["dragon ball", "goku", "vegeta", "bandai", "scale figure"],
+        "Shop Beyblade Z and Super scale figures by Takara Tomy, Takara Tomy, and Hasbro",
+      keywords: ["beyblade", "dran-sword", "valkyrie", "takara-tomy", "scale figure"],
     },
     display: {
       icon: "ðŸ”¥",
@@ -219,7 +219,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     seo: {
       title: "Chibi Figurines & Mini Collectibles | LetItRip",
       description:
-        "Shop Nendoroids, gashapon, mini figurines, and chibi anime collectibles",
+        "Shop Nendoroids, gashapon, mini figurines, and chibi Beyblade collectibles",
       keywords: [
         "chibi",
         "mini figurine",
@@ -255,7 +255,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     id: "category-laptops-computers-electronics",
     name: "Premium Statues",
     slug: "laptops-computers",
-    description: "Large-scale One Piece, Bleach, and premium anime statues",
+    description: "Large-scale Beyblade, Beyblade X, and premium beyblade statues",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -281,15 +281,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 3,
     seo: {
-      title: "Premium Anime Statues — One Piece, Bleach | LetItRip",
+      title: "Premium Beyblade Statues — Beyblade, Beyblade X | LetItRip",
       description:
-        "Browse large-scale One Piece, Bleach, and premium anime statues by Bandai Spirits and MegaHouse",
+        "Browse large-scale Beyblade, Beyblade X, and premium beyblade statues by Takara Tomy and Takara Tomy",
       keywords: [
-        "one piece",
-        "bleach",
+        "beyblade",
+        "beyblade-x",
         "premium statue",
         "large scale",
-        "megahouse",
+        "takara-tomy",
       ],
     },
     display: {
@@ -312,7 +312,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     id: "category-audio-electronics",
     name: "Limited Edition Figures",
     slug: "audio",
-    description: "Limited and sold-out exclusive anime figures",
+    description: "Limited and sold-out exclusive beyblade figures",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -329,7 +329,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       auctionCount: 4,
       auctionIds: [
         "auction-chainsaw-man-makima-figure-fashion-1",
-        "auction-jjk-sukuna-figure-homeessentials-1",
+        "auction-jjk-cobalt-drake-figure-homeessentials-1",
         "auction-fate-saber-alter-figure-techhub-1",
         "auction-rezero-rem-wedding-figure-techhub-1",
       ],
@@ -341,15 +341,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Limited Edition Anime Figures | LetItRip",
+      title: "Limited Edition Beyblade Figures | LetItRip",
       description:
-        "Shop exclusive, limited-run anime figures — Alter Co., Union Creative, limited releases",
+        "Shop exclusive, limited-run beyblade figures — Alter Co., Union Creative, limited releases",
       keywords: [
         "limited edition",
         "exclusive figure",
         "alter co",
         "sold out",
-        "rare anime",
+        "rare beyblade",
       ],
     },
     display: {
@@ -373,7 +373,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     name: "Signed Art & Collectibles",
     slug: "cameras-photography",
     description:
-      "Signed production art, original cels, and rare anime collectibles",
+      "Signed production art, original cels, and rare Beyblade collectibles",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -400,15 +400,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Signed Anime Art & Rare Collectibles | LetItRip",
+      title: "Signed Beyblade Art & Rare Collectibles | LetItRip",
       description:
-        "Shop original production cels, signed posters, and rare anime collectibles from Gainax, Toei, and more",
+        "Shop original production cels, signed posters, and rare Beyblade collectibles from Gainax, Toei, and more",
       keywords: [
         "production cel",
         "signed poster",
         "evangelion",
         "gainax",
-        "anime auction",
+        "beyblade auction",
       ],
     },
     display: {
@@ -432,7 +432,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     id: "category-fashion",
     name: "Cosplay & Apparel",
     slug: "fashion",
-    description: "Anime cosplay, apparel, and accessories",
+    description: "Beyblade cosplay, apparel, and accessories",
     rootId: "category-fashion",
     parentIds: [],
     childrenIds: [
@@ -457,14 +457,14 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 4,
     seo: {
-      title: "Cosplay & Anime Apparel | LetItRip",
+      title: "Cosplay & Beyblade Apparel | LetItRip",
       description:
-        "Shop anime cosplay outfits, graphic tees, hoodies, and official licensed apparel",
+        "Shop beyblade cosplay outfits, graphic tees, hoodies, and official licensed apparel",
       keywords: [
         "cosplay",
-        "anime apparel",
+        "beyblade apparel",
         "cosplay outfit",
-        "anime tee",
+        "beyblade tee",
         "hoodie",
       ],
     },
@@ -516,15 +516,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 5,
     seo: {
-      title: "Men's Cosplay & Anime Apparel | LetItRip",
+      title: "Men's Cosplay & Beyblade Apparel | LetItRip",
       description:
-        "Shop men's anime cosplay sets, Scout Regiment jackets, Akatsuki cloaks, and graphic hoodies",
+        "Shop men's beyblade cosplay sets, Scout Regiment jackets, Beyblade X cloaks, and graphic hoodies",
       keywords: [
         "mens cosplay",
-        "anime jacket",
+        "beyblade jacket",
         "attack on titan",
-        "naruto",
-        "akatsuki cloak",
+        "beyblade",
+        "beyblade-x cloak",
       ],
     },
     display: {
@@ -547,7 +547,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     id: "category-womens-fashion-fashion",
     name: "Women's Cosplay",
     slug: "womens-fashion",
-    description: "Cosplay dresses, kimono sets, and anime apparel for women",
+    description: "Cosplay dresses, kimono sets, and beyblade apparel for women",
     rootId: "category-fashion",
     parentIds: ["category-fashion"],
     childrenIds: [],
@@ -574,13 +574,13 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 6,
     seo: {
-      title: "Women's Cosplay & Anime Apparel | LetItRip",
+      title: "Women's Cosplay & Beyblade Apparel | LetItRip",
       description:
-        "Shop women's cosplay dresses, Sailor Moon sets, Genshin Impact cosplay, and anime bags",
+        "Shop women's cosplay dresses, Beyblade Burst sets, Beyblade X cosplay, and beyblade bags",
       keywords: [
         "womens cosplay",
-        "sailor moon",
-        "genshin impact",
+        "beyblade burst",
+        "beyblade x",
         "nezuko",
         "cosplay dress",
       ],
@@ -635,7 +635,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 7,
     seo: {
-      title: "Anime Collectibles & Display Sets | LetItRip",
+      title: "Beyblade Collectibles & Display Sets | LetItRip",
       description:
         "Shop Nendoroids, studio display sets, garage kits, 3D Maneuver Gear replicas and more",
       keywords: [
@@ -698,7 +698,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     seo: {
       title: "Gunpla & Model Kits | LetItRip",
       description:
-        "Shop Gundam Perfect Grade, Master Grade model kits, ship models, and Naruto Figures",
+        "Shop Gundam Perfect Grade, Master Grade model kits, ship models, and Beyblade Figures",
       keywords: [
         "gunpla",
         "gundam",

@@ -1,19 +1,22 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   PromotionsView as AppkitPromotionsView,
   PromotionsViewProductSection,
 } from "@mohasinac/appkit/features/promotions";
 import { CouponCard } from "@/features/promotions/components/CouponCard";
-import { ProductCard } from "@/components";
-import type { ProductCardData } from "@/components";
+import {
+  ProductCard,
+  type ProductItem,
+} from "@mohasinac/appkit/features/products";
 import type { CouponDocument } from "@/db/schema";
+import { Link } from "@/i18n/navigation";
 
 interface PromotionsViewProps {
-  promotedProducts: ProductCardData[];
-  featuredProducts: ProductCardData[];
+  promotedProducts: ProductItem[];
+  featuredProducts: ProductItem[];
   activeCoupons: CouponDocument[];
 }
 
@@ -63,7 +66,13 @@ export function PromotionsView({
           renderProducts={() => (
             <div className={THEME_CONSTANTS.grid.productCards}>
               {promotedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <Link
+                  key={product.id}
+                  href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
+                  className="block"
+                >
+                  <ProductCard product={product} className="h-full" />
+                </Link>
               ))}
             </div>
           )}
@@ -77,7 +86,13 @@ export function PromotionsView({
           renderProducts={() => (
             <div className={THEME_CONSTANTS.grid.productCards}>
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <Link
+                  key={product.id}
+                  href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
+                  className="block"
+                >
+                  <ProductCard product={product} className="h-full" />
+                </Link>
               ))}
             </div>
           )}

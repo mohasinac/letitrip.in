@@ -32,11 +32,11 @@ import {
   Button,
   StatusBadge,
   Stack,
+  DataTable,
 } from "@mohasinac/appkit/ui";
 import {
   AdminPageHeader,
   Card,
-  DataTable,
   DrawerFormFooter,
   FormField,
   Search,

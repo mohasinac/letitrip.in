@@ -27,7 +27,6 @@ export const USER_FIELDS = {
   // PII blind indices (HMAC-SHA256 for equality queries on encrypted fields)
   EMAIL_INDEX: "emailIndex",
   PHONE_INDEX: "phoneIndex",
-  DISPLAY_NAME_INDEX: "displayNameIndex",
   PHOTO_URL: "photoURL",
   AVATAR_METADATA: "avatarMetadata",
   ROLE: "role",
@@ -98,7 +97,7 @@ export const TOKEN_FIELDS = {
   ID: "id",
   USER_ID: "userId",
   EMAIL: "email",
-  // PII blind index (HMAC-SHA256 for equality queries on encrypted email)
+  // Legacy blind index kept for backwards-compatible token lookups
   EMAIL_INDEX: "emailIndex",
   TOKEN: "token",
   EXPIRES_AT: "expiresAt",

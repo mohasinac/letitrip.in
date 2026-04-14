@@ -38,6 +38,35 @@ interface LogEntry {
   data?: any;
 }
 
+function serializeError(error: Error): Record<string, unknown> {
+  const serialized: Record<string, unknown> = {
+    name: error.name,
+    message: error.message,
+  };
+
+  if (error.stack) {
+    serialized.stack = error.stack;
+  }
+
+  for (const [key, value] of Object.entries(error)) {
+    serialized[key] = value;
+  }
+
+  return serialized;
+}
+
+function normalizeLogData(data: any): any {
+  if (data instanceof Error) return serializeError(data);
+  if (Array.isArray(data)) return data.map(normalizeLogData);
+  if (data instanceof Date || data === null || data === undefined) return data;
+  if (typeof data === "object") {
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [key, normalizeLogData(value)]),
+    );
+  }
+  return data;
+}
+
 /**
  * Ensure logs directory exists
  */
@@ -158,13 +187,13 @@ async function writeLog(entry: LogEntry): Promise<void> {
  */
 export const serverLogger = {
   debug(message: string, data?: any): void {
-    const sanitized = data ? redactPii(data) : undefined;
+    const sanitized = data ? redactPii(normalizeLogData(data)) : undefined;
     console.debug(`[DEBUG] ${message}`, sanitized);
     // Don't write debug logs to files (too noisy)
   },
 
   info(message: string, data?: any): void {
-    const sanitized = data ? redactPii(data) : undefined;
+    const sanitized = data ? redactPii(normalizeLogData(data)) : undefined;
     const entry: LogEntry = {
       level: "info",
       message,
@@ -176,7 +205,7 @@ export const serverLogger = {
   },
 
   warn(message: string, data?: any): void {
-    const sanitized = data ? redactPii(data) : undefined;
+    const sanitized = data ? redactPii(normalizeLogData(data)) : undefined;
     const entry: LogEntry = {
       level: "warn",
       message,
@@ -188,7 +217,7 @@ export const serverLogger = {
   },
 
   error(message: string, data?: any): void {
-    const sanitized = data ? redactPii(data) : undefined;
+    const sanitized = data ? redactPii(normalizeLogData(data)) : undefined;
     const entry: LogEntry = {
       level: "error",
       message,

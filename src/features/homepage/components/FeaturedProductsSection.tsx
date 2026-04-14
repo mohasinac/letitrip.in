@@ -3,10 +3,13 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { ProductCard } from "@/components";
-import type { ProductListResponse } from "@mohasinac/appkit/features/products";
-import type { ProductItem } from "@mohasinac/appkit/features/products";
+import {
+  ProductCard,
+  type ProductItem,
+  type ProductListResponse,
+} from "@mohasinac/appkit/features/products";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import { Link } from "@/i18n/navigation";
 
 interface FeaturedProductsSectionProps {
   initialData?: ProductListResponse;
@@ -32,7 +35,14 @@ export function FeaturedProductsSection({
       viewMoreHref={ROUTES.PUBLIC.PRODUCTS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={products}
-      renderItem={(product) => <ProductCard product={product} />}
+      renderItem={(product) => (
+        <Link
+          href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
+          className="block"
+        >
+          <ProductCard product={product} className="h-full" />
+        </Link>
+      )}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll

@@ -75,7 +75,12 @@ export function NewsletterSection() {
                   </Text>
                 )}
               </div>
-              <Button type="submit" variant="primary" disabled={isPending}>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isPending}
+                className="rounded-full px-6 py-2.5 font-semibold bg-primary-600 hover:bg-primary-700 active:bg-primary-800 dark:bg-secondary-500 dark:hover:bg-secondary-400 dark:active:bg-secondary-600 text-white dark:text-white shadow-[0_10px_24px_-12px_rgba(34,197,94,0.7)] dark:shadow-[0_10px_24px_-12px_rgba(236,72,153,0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 dark:focus-visible:ring-secondary-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              >
                 {isPending ? t("newsletter.sending") : t("newsletter.cta")}
               </Button>
             </div>

@@ -5,7 +5,6 @@ import { serverLogger } from "@/lib/server-logger";
 import {
   encryptPiiFields,
   addPiiIndices,
-  encryptShippingAddress,
   encryptPayoutDetails,
   encryptPayoutBankAccount,
   encryptShippingConfig,
@@ -19,6 +18,7 @@ import {
   OFFER_PII_FIELDS,
   EVENT_ENTRY_PII_FIELDS,
   CHAT_PII_FIELDS,
+  getPiiConfigError,
 } from "@/lib/pii";
 import {
   usersSeedData,
@@ -143,6 +143,18 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   carts: cartsSeedData,
 };
 
+const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
+  "users",
+  "addresses",
+  "storeAddresses",
+  "products",
+  "orders",
+  "reviews",
+  "bids",
+  "payouts",
+  "eventEntries",
+]);
+
 /** Recursively remove keys whose value is `undefined` so Firestore doesn't reject them. */
 function stripUndefined(obj: any): any {
   if (Array.isArray(obj)) return obj.map(stripUndefined);
@@ -158,7 +170,7 @@ function stripUndefined(obj: any): any {
 }
 
 /** Apply PII encryption to seed data based on collection type */
-function encryptSeedPii(collection: string, data: any, original?: any): any {
+function encryptSeedPii(collection: string, data: any, _original?: any): any {
   const PII_MAP: Record<string, readonly string[]> = {
     orders: ORDER_PII_FIELDS,
     bids: BID_PII_FIELDS,
@@ -172,13 +184,55 @@ function encryptSeedPii(collection: string, data: any, original?: any): any {
   const fields = PII_MAP[collection];
   if (!fields) return data;
   let result = encryptPiiFields(data, [...fields]);
-  if (collection === "orders" && result.shippingAddress) {
-    result.shippingAddress = encryptShippingAddress(result.shippingAddress);
-  }
   if (collection === "payouts" && result.bankAccount) {
     result.bankAccount = encryptPayoutBankAccount(result.bankAccount);
   }
   return result;
+}
+
+/**
+ * Remove any existing Firebase Auth users that hold the same email or phone
+ * as the seed user we're about to create. In a demo environment this lets us
+ * always assign the canonical seed UID to the identity for reproducible data.
+ */
+async function resolveAuthConflicts(
+  auth: ReturnType<typeof getAdminAuth>,
+  uid: string,
+  authUserData: { email?: string; phoneNumber?: string },
+): Promise<void> {
+  if (authUserData.email) {
+    try {
+      const conflicting = await auth.getUserByEmail(authUserData.email);
+      if (conflicting.uid !== uid) {
+        serverLogger.warn(`Seed: removing conflicting auth account`, {
+          email: authUserData.email,
+          conflictingUid: conflicting.uid,
+          targetUid: uid,
+        });
+        await auth.deleteUser(conflicting.uid);
+      }
+    } catch (e: any) {
+      if (e?.code !== "auth/user-not-found") throw e;
+    }
+  }
+
+  if (authUserData.phoneNumber) {
+    try {
+      const conflicting = await auth.getUserByPhoneNumber(
+        authUserData.phoneNumber,
+      );
+      if (conflicting.uid !== uid) {
+        serverLogger.warn(`Seed: removing conflicting auth account`, {
+          phoneNumber: authUserData.phoneNumber,
+          conflictingUid: conflicting.uid,
+          targetUid: uid,
+        });
+        await auth.deleteUser(conflicting.uid);
+      }
+    } catch (e: any) {
+      if (e?.code !== "auth/user-not-found") throw e;
+    }
+  }
 }
 
 export async function GET(_request: NextRequest) {
@@ -329,6 +383,30 @@ export async function POST(request: NextRequest) {
     const db = getAdminDb();
     const auth = getAdminAuth();
 
+    if (action === "load") {
+      const encryptedCollections = collectionsToProcess.filter((collectionName) =>
+        PII_ENCRYPTED_COLLECTIONS.has(collectionName),
+      );
+      const piiConfigError =
+        encryptedCollections.length > 0 ? getPiiConfigError() : null;
+
+      if (piiConfigError) {
+        serverLogger.error("Demo seed aborted: invalid PII configuration", {
+          piiConfigError,
+          collections: encryptedCollections,
+        });
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Demo seed requires a valid PII_SECRET before loading encrypted collections. " +
+              piiConfigError,
+          },
+          { status: 500 },
+        );
+      }
+    }
+
     let totalCreated = 0;
     let totalDeleted = 0;
     let totalSkipped = 0;
@@ -400,6 +478,10 @@ export async function POST(request: NextRequest) {
                 }
 
                 if (!userExists) {
+                  // Remove any auth accounts that already hold this email/phone
+                  // so the seed identity is always created with its canonical UID.
+                  await resolveAuthConflicts(auth, uid, authUserData);
+
                   await auth.createUser({
                     uid,
                     ...authUserData,
