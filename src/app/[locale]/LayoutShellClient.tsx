@@ -4,18 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useBottomActionsContext } from "@/contexts/BottomActionsContext";
+import { useBottomActionsContext } from "@mohasinac/appkit/features/layout";
 import {
   TitleBar,
   Sidebar,
   Footer,
   BottomNavbar,
-  BottomActions,
 } from "@/components/layout";
+import { AutoBreadcrumbs, BottomActions } from "@mohasinac/appkit/features/layout";
 import MainNavbar from "@/components/layout/MainNavbar";
 import Search from "@/components/utility/Search";
 import BackToTop from "@/components/utility/BackToTop";
-import AutoBreadcrumbs from "@/components/layout/AutoBreadcrumbs";
 import { EventBanner } from "@/components";
 import UnsavedChangesModal from "@/components/modals/UnsavedChangesModal";
 import { BackgroundRenderer } from "@/components/utility";

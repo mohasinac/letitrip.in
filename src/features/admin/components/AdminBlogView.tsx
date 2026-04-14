@@ -29,7 +29,6 @@ import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
-  BlogFilters,
   Card,
   ConfirmDeleteModal,
   DrawerFormFooter,
@@ -37,6 +36,7 @@ import {
   Search,
   SideDrawer,
 } from "@/components";
+import { BlogFilters } from "@mohasinac/appkit/features/blog";
 import { AdminBlogView as AdminBlogShell } from "@mohasinac/appkit/features/admin";
 import type { BlogPostDocument } from "@/db/schema";
 import { BlogForm, useBlogTableColumns } from ".";

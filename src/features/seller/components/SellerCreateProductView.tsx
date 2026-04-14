@@ -12,7 +12,8 @@ import React, { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { SellerCreateProductView as AppkitSellerCreateProductView } from "@mohasinac/appkit/features/seller";
-import { AdminPageHeader, ProductForm, type AdminProduct } from "@/components";
+import { ProductForm } from "@mohasinac/appkit/features/products";
+import { AdminPageHeader, type AdminProduct } from "@/components";
 import { useMessage } from "@/hooks";
 import { useCreateSellerProduct } from "../hooks/useSellerProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -82,7 +83,11 @@ export function SellerCreateProductView() {
               onSubmit={handleSubmit}
               className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack}`}
             >
-              <ProductForm product={product} onChange={setProduct} />
+              <ProductForm
+                product={product}
+                onChange={(updated) => setProduct(updated as Partial<AdminProduct>)}
+                currencyPrefix="₹"
+              />
 
               <div className="flex justify-start gap-3 pt-4">
                 <Button

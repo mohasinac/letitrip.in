@@ -10,9 +10,9 @@ import { UserOrdersView as AppkitUserOrdersView } from "@mohasinac/appkit/featur
 import {
   EmptyState,
   OrderCard,
-  OrderFilters,
   Search,
 } from "@/components";
+import { OrderFilters } from "@mohasinac/appkit/features/orders";
 import {
   TablePagination,
   Span,

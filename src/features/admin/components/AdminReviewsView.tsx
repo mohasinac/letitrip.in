@@ -31,10 +31,12 @@ import {
 import {
   Card,
   AdminPageHeader,
-  REVIEW_SORT_OPTIONS,
-  ReviewFilters,
   Search,
 } from "@/components";
+import {
+  REVIEW_SORT_OPTIONS,
+  ReviewFilters,
+} from "@mohasinac/appkit/features/reviews";
 import { AdminReviewsView as AdminReviewsShell } from "@mohasinac/appkit/features/admin";
 import { useToast } from "@mohasinac/appkit/ui";
 import { Textarea } from "@mohasinac/appkit/ui";

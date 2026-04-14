@@ -9,9 +9,13 @@
 // Products (shared with seller — sourced from Tier 1)
 export {
   ProductForm,
-  useProductTableColumns,
+  getProductTableColumns,
   PRODUCT_STATUS_OPTIONS,
-} from "@/components";
+} from "@mohasinac/appkit/features/products";
+export type {
+  ProductFormValue,
+  ProductFormProps,
+} from "@mohasinac/appkit/features/products";
 export type {
   AdminProduct,
   ProductStatus,

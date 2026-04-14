@@ -27,33 +27,33 @@ export { default as BottomNavbar } from "./BottomNavbar";
 // ==================== NAVIGATION UTILITIES ====================
 
 // Reusable Navigation Item
-export { default as NavItem } from "./NavItem";
+export { NavItem } from "@mohasinac/appkit/features/layout";
 
 // ==================== GENERIC LAYOUT SHELLS ====================
 
 // Fixed bottom mobile navigation shell
-export { BottomNavLayout } from "./BottomNavLayout";
-export type { BottomNavLayoutProps } from "./BottomNavLayout";
+export { BottomNavLayout } from "@mohasinac/appkit/features/layout";
+export type { BottomNavLayoutProps } from "@mohasinac/appkit/features/layout";
 
 // Right slide-out sidebar shell
-export { SidebarLayout } from "./SidebarLayout";
-export type { SidebarLayoutProps } from "./SidebarLayout";
+export { SidebarLayout } from "@mohasinac/appkit/features/layout";
+export type { SidebarLayoutProps } from "@mohasinac/appkit/features/layout";
 
 // Top sticky title-bar shell
-export { TitleBarLayout } from "./TitleBarLayout";
-export type { TitleBarLayoutProps } from "./TitleBarLayout";
+export { TitleBarLayout } from "@mohasinac/appkit/features/layout";
+export type { TitleBarLayoutProps } from "@mohasinac/appkit/features/layout";
 
-// Site footer shell
-export { FooterLayout } from "./FooterLayout";
+// Site footer shell — moved to @mohasinac/appkit/features/layout
+export { FooterLayout } from "@mohasinac/appkit/features/layout";
 export type {
   FooterLayoutProps,
   FooterLinkGroup,
   FooterSocialLink,
-} from "./FooterLayout";
+} from "@mohasinac/appkit/features/layout";
 
-// Main horizontal navbar shell
-export { NavbarLayout } from "./NavbarLayout";
-export type { NavbarLayoutProps, NavbarLayoutItem } from "./NavbarLayout";
+// Main horizontal navbar shell — moved to @mohasinac/appkit/features/layout
+export { NavbarLayout } from "@mohasinac/appkit/features/layout";
+export type { NavbarLayoutProps, NavbarLayoutItem } from "@mohasinac/appkit/features/layout";
 
 // ==================== FOOTER ====================
 
@@ -61,10 +61,9 @@ export type { NavbarLayoutProps, NavbarLayoutItem } from "./NavbarLayout";
 export { default as Footer } from "./Footer";
 
 // Breadcrumb Navigation
-export { default as Breadcrumbs, BreadcrumbItem } from "./Breadcrumbs";
+export { Breadcrumbs, BreadcrumbItem } from "@mohasinac/appkit/features/layout";
 
 // Auto-generated breadcrumb trail (reads from Next.js pathname)
-export { default as AutoBreadcrumbs } from "./AutoBreadcrumbs";
+export { AutoBreadcrumbs } from "@mohasinac/appkit/features/layout";
 
-// Bottom Actions Bar (above BottomNavbar on mobile)
-export { default as BottomActions } from "./BottomActions";
+// Bottom Actions Bar — moved to @mohasinac/appkit/features/layout

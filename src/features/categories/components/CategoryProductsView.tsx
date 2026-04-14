@@ -22,14 +22,16 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import { CategoryProductsView as AppkitCategoryProductsView } from "@mohasinac/appkit/features/categories";
 import {
   MediaImage,
-  PRODUCT_SORT_VALUES,
   Search,
   TextLink,
-  InteractiveProductCard,
 } from "@/components";
+import {
+  InteractiveProductCard,
+  PRODUCT_SORT_VALUES,
+  type ProductSortValue,
+} from "@mohasinac/appkit/features/products";
+import { RangeFilter } from "@mohasinac/appkit/features/filters";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
-import type { ProductSortValue } from "@/components";
-import { RangeFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction, addToCartAction } from "@/actions";
@@ -363,6 +365,7 @@ function CategoryProductsContent({
           mobileCardRender={(item) => (
             <InteractiveProductCard
               product={item as any}
+              href={ROUTES.PUBLIC.PRODUCT_DETAIL(item.slug ?? item.id)}
               variant={
                 (table.get("view") || "grid") === "list" ? "list" : "grid"
               }
@@ -373,6 +376,31 @@ function CategoryProductsContent({
                   sel ? [...prev, id] : prev.filter((x) => x !== id),
                 )
               }
+              onToggleWishlist={async (productId) => {
+                try {
+                  await addToWishlistAction(productId);
+                  showSuccess(tActions("bulkSuccess", { count: 1 }));
+                } catch {
+                  showError(tActions("bulkFailed"));
+                }
+              }}
+              onAddToCart={async (p) => {
+                try {
+                  await addToCartAction({
+                    productId: p.id,
+                    quantity: 1,
+                    productTitle: p.title,
+                    productImage: p.mainImage ?? "",
+                    price: p.price,
+                    currency: p.currency ?? "INR",
+                    sellerId: p.sellerId ?? "",
+                    sellerName: p.sellerName ?? "",
+                  });
+                  showSuccess(tActions("bulkSuccess", { count: 1 }));
+                } catch {
+                  showError(tActions("bulkFailed"));
+                }
+              }}
             />
           )}
         />

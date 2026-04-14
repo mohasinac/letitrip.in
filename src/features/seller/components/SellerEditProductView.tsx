@@ -10,7 +10,8 @@ import { Spinner, Button, Alert } from "@mohasinac/appkit/ui";
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Card, AdminPageHeader, ProductForm } from "@/components";
+import { ProductForm } from "@mohasinac/appkit/features/products";
+import { Card, AdminPageHeader } from "@/components";
 import type { AdminProduct } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import {
@@ -179,7 +180,11 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
             )}
 
             {formData && (
-              <ProductForm product={formData} onChange={setFormData} />
+              <ProductForm
+                product={formData}
+                onChange={(updated) => setFormData(updated as Partial<AdminProduct>)}
+                currencyPrefix="₹"
+              />
             )}
 
             <div className="mt-6 flex gap-3 justify-start">

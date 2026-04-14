@@ -26,7 +26,7 @@ import {
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { EmptyState, Search, getFilterLabel } from "@/components";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
-import { EventFilters } from "@/components";
+import { EventFilters } from "@mohasinac/appkit/features/events";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";

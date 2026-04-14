@@ -14,8 +14,8 @@
 | [P02](#phase-02--ui-primitives) | 10 | Card, EmptyState, Dropdown, DynamicSelect, Menu, Avatar, RoleBadge, SkipToMain, Tabs, FilterDrawer | ✅ |
 | [P03](#phase-03--infrastructure-components) | 10 | ErrorBoundary, ZodSetup, LayoutClient, FormField, RowActionMenu, PasswordStrengthIndicator, DashboardStatsCard, AvatarDisplay, AvatarUpload, EventBanner | ✅ |
 | [P04](#phase-04--media--filter-ui) | 10 | MediaImage, MediaAvatar, MediaLightbox, MediaVideo, ImageGallery, FlowDiagram, FilterFacetSection, BaseListingCard, FilterPanel, SwitchFilter | ✅ |
-| [P05](#phase-05--feature-filter-components--product-ui) | 10 | BlogFilters, EventFilters, OrderFilters, ProductFilters, ReviewFilters, RangeFilter, ProductSortBar, ProductTableColumns, InteractiveProductCard, ProductForm | ⬜ |
-| [P06](#phase-06--layout-shell-part-1) | 10 | NavItem, TitleBar, TitleBarLayout, BottomActions, BottomNavbar, BottomNavLayout, Breadcrumbs, AutoBreadcrumbs, Sidebar, SidebarLayout | ⬜ |
+| [P05](#phase-05--feature-filter-components--product-ui) | 10 | BlogFilters, EventFilters, OrderFilters, ProductFilters, ReviewFilters, RangeFilter, ProductSortBar, ProductTableColumns, InteractiveProductCard, ProductForm | ✅ |
+| [P06](#phase-06--layout-shell-part-1) | 10 | NavItem, TitleBar, TitleBarLayout, BottomActions, BottomNavbar, BottomNavLayout, Breadcrumbs, AutoBreadcrumbs, Sidebar, SidebarLayout | 🔄 (5/10) |
 | [P07](#phase-07--layout-shell-part-2--core-hooks) | 10 | Footer, FooterLayout, MainNavbar, NavbarLayout, InteractiveStoreCard + useUrlTable, useUnsavedChanges, useLogout, useRBAC, useMessage | ⬜ |
 | [P08](#phase-08--auth--media-hooks) | 10 | useMediaAbort, useMediaCrop, useMediaTrim, useAuthEvent, useBecomeSeller, useBottomActions, useBrands, useCategorySelector, useNotifications, useSiteSettings | ⬜ |
 | [P09](#phase-09--cart--checkout-hooks) | 10 | useAddresses, useAddressForm, useAddressSelector, useAddToCart, useCartCount, useGuestCart, useGuestCartMerge, useCheckout, useCouponValidate, usePaymentEvent | ⬜ |
@@ -205,7 +205,7 @@ Each phase follows this exact workflow:
 | 9 | `src/components/products/InteractiveProductCard.tsx` | ✅ delete | `appkit/features/products/ProductCard` interactive variant |
 | 10 | `src/components/products/ProductForm.tsx` | ✅ delete | `appkit/features/products/components/ProductForm` |
 
-**Phase 05 status: ⬜ Not started**
+**Phase 05 status: ✅ Completed**
 
 ---
 
@@ -232,7 +232,21 @@ Each phase follows this exact workflow:
 | 9 | `src/components/layout/Sidebar.tsx` | ✅ delete | `appkit/features/layout/Sidebar` (create) |
 | 10 | `src/components/layout/SidebarLayout.tsx` | ✅ delete | `appkit/features/layout/SidebarLayout` |
 
-**Phase 06 status: ⬜ Not started**
+**Phase 06 status: 🔄 In progress (5/10 complete)**
+
+Completed in this batch:
+- `src/components/layout/TitleBarLayout.tsx` → appkit (`@mohasinac/appkit/features/layout`)
+- `src/components/layout/BottomNavLayout.tsx` → appkit (`@mohasinac/appkit/features/layout`)
+- `src/components/layout/Breadcrumbs.tsx` → appkit (`@mohasinac/appkit/features/layout`)
+- `src/components/layout/AutoBreadcrumbs.tsx` → appkit (`@mohasinac/appkit/features/layout`)
+- `src/components/layout/SidebarLayout.tsx` → appkit (`@mohasinac/appkit/features/layout`)
+
+Remaining in P06:
+- `NavItem`
+- `TitleBar`
+- `BottomActions`
+- `BottomNavbar`
+- `Sidebar`
 
 ---
 

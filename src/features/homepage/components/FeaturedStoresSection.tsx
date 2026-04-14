@@ -22,7 +22,7 @@ export function FeaturedStoresSection() {
       viewMoreHref={ROUTES.PUBLIC.STORES}
       viewMoreLabel={tActions("viewAllArrow")}
       items={stores}
-      renderItem={(store) => <InteractiveStoreCard store={store} />}
+      renderItem={(store) => <InteractiveStoreCard store={store} href={ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug)} />}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll

@@ -26,11 +26,11 @@ import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   AdminPageHeader,
   Card,
-  EventFilters,
   MediaImage,
   Search,
   ConfirmDeleteModal,
 } from "@/components";
+import { EventFilters } from "@mohasinac/appkit/features/events";
 import { formatDate } from "@/utils";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 

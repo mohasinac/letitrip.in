@@ -26,8 +26,7 @@ import {
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { EmptyState, Search, getFilterLabel } from "@/components";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
-import { BlogFilters } from "@/components";
-import { BlogCard, BlogFeaturedCard } from "@mohasinac/appkit/features/blog";
+import { BlogCard, BlogFeaturedCard, BlogFilters } from "@mohasinac/appkit/features/blog";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";

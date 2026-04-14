@@ -26,13 +26,15 @@ import {
   AdminPageHeader,
   SideDrawer,
   ConfirmDeleteModal,
-  ProductForm,
-  useProductTableColumns,
   EmptyState,
   Search,
-  ProductFilters,
   getFilterLabel,
 } from "@/components";
+import {
+  ProductForm,
+  ProductFilters,
+  getProductTableColumns,
+} from "@mohasinac/appkit/features/products";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import type { AdminProduct } from "@/components";
 import { Store } from "lucide-react";
@@ -236,9 +238,25 @@ function SellerProductsContent() {
     [selectedIds, updateMutation, refetch, showSuccess, showError, tActions],
   );
 
-  const { columns, actions } = useProductTableColumns(openEdit, (p) =>
-    setDeleteTarget(p),
-  );
+  const { columns, actions } = getProductTableColumns<AdminProduct>({
+    labels: {
+      title: t("colTitle"),
+      category: t("colCategory"),
+      price: t("colPrice"),
+      stock: t("colStock"),
+      status: t("colStatus"),
+      seller: t("colSeller"),
+      featured: t("colFeatured"),
+      edit: tActions("edit"),
+      delete: tActions("delete"),
+      yes: tActions("yes"),
+      no: tActions("no"),
+    },
+    onEdit: openEdit,
+    onDelete: (p) => setDeleteTarget(p),
+    currencyCode: "INR",
+    locale: "en-IN",
+  });
 
   if (authLoading)
     return (
@@ -412,9 +430,10 @@ function SellerProductsContent() {
             <ProductForm
               product={formProduct}
               onChange={(updated) => {
-                setFormProduct(updated);
+                setFormProduct(updated as Partial<AdminProduct>);
                 setIsFormDirty(true);
               }}
+              currencyPrefix="₹"
             />
           </SideDrawer>
 

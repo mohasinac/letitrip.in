@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createStoreAddressAction } from "@/actions";
 import { apiClient } from "@mohasinac/appkit/http";
-import type { AddressFormData } from "./useAddresses";
+import type { AddressFormData } from "@mohasinac/appkit/features/account";
 
 interface SavedAddress {
   id: string;

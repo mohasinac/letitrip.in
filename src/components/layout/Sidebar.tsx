@@ -22,7 +22,7 @@ import { AvatarDisplay, TextLink } from "@/components";
 import { routing, type Locale } from "@/i18n/routing";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
-import { SidebarLayout } from "./SidebarLayout";
+import { SidebarLayout } from "@mohasinac/appkit/features/layout";
 
 /**
  * Sidebar Component

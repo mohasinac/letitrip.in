@@ -14,11 +14,10 @@ import { ReviewsListView as AppkitReviewsListView } from "@mohasinac/appkit/feat
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   EmptyState,
-  REVIEW_SORT_OPTIONS,
-  ReviewFilters,
   Search,
   getFilterLabel,
 } from "@/components";
+import { REVIEW_SORT_OPTIONS, ReviewFilters } from "@mohasinac/appkit/features/reviews";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useBrands } from "@/hooks";

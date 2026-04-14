@@ -31,11 +31,11 @@ import {
   Card,
   OrderCard,
   AdminPageHeader,
-  OrderFilters,
   FormField,
   SideDrawer,
   Search,
 } from "@/components";
+import { OrderFilters } from "@mohasinac/appkit/features/orders";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { getFilterLabel } from "@/components";
 import { useAuth, useUrlTable, useMessage } from "@/hooks";

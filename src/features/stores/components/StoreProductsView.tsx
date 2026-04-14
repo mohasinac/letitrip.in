@@ -22,11 +22,13 @@ import { ProductGrid as AppkitProductGrid } from "@mohasinac/appkit/features/pro
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import {
   EmptyState,
-  ProductFilters,
-  PRODUCT_SORT_VALUES,
   Search,
 } from "@/components";
-import { InteractiveProductCard } from "@/components";
+import {
+  InteractiveProductCard,
+  ProductFilters,
+  PRODUCT_SORT_VALUES,
+} from "@mohasinac/appkit/features/products";
 import type { ViewMode } from "@mohasinac/appkit/ui";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
@@ -244,6 +246,7 @@ function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
                 <InteractiveProductCard
                   key={product.id}
                   product={product as any}
+                  href={`/products/${product.slug ?? product.id}`}
                   variant={viewMode}
                   className={
                     viewMode === "list"
@@ -257,6 +260,31 @@ function StoreProductsContent({ storeSlug }: StoreProductsViewProps) {
                       sel ? [...prev, id] : prev.filter((x) => x !== id),
                     )
                   }
+                  onToggleWishlist={async (productId) => {
+                    try {
+                      await addToWishlistAction(productId);
+                      showSuccess(tActions("bulkSuccess", { count: 1 }));
+                    } catch {
+                      showError(tActions("bulkFailed"));
+                    }
+                  }}
+                  onAddToCart={async (p) => {
+                    try {
+                      await addToCartAction({
+                        productId: p.id,
+                        quantity: 1,
+                        productTitle: p.title,
+                        productImage: p.mainImage ?? "",
+                        price: p.price,
+                        currency: p.currency ?? "INR",
+                        sellerId: p.sellerId ?? "",
+                        sellerName: p.sellerName ?? "",
+                      });
+                      showSuccess(tActions("bulkSuccess", { count: 1 }));
+                    } catch {
+                      showError(tActions("bulkFailed"));
+                    }
+                  }}
                 />
               )}
             />

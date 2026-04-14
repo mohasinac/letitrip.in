@@ -4,7 +4,7 @@ import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useCartCount } from "@/hooks";
 import { NotificationBell } from "@/components";
 import { useDashboardNav } from "@/contexts";
-import { TitleBarLayout } from "./TitleBarLayout";
+import { TitleBarLayout } from "@mohasinac/appkit/features/layout";
 
 /**
  * TitleBar Component

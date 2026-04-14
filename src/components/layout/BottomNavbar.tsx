@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
 import { Li, Button, Span } from "@mohasinac/appkit/ui";
+import { NavItem } from "@mohasinac/appkit/features/layout";
 import { AvatarDisplay, TextLink } from "@/components";
 import { Home, ShoppingBag } from "lucide-react";
-import { BottomNavLayout } from "./BottomNavLayout";
-import NavItem from "./NavItem";
+import { BottomNavLayout } from "@mohasinac/appkit/features/layout";
 
 /**
  * BottomNavbar Component
@@ -48,6 +48,10 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           icon={<Home className="w-5 h-5" />}
           isActive={pathname === SITE_CONFIG.nav.home}
           variant="vertical"
+          activeClassName={colors.bottomNav.active}
+          inactiveClassName={colors.bottomNav.inactive}
+          iconClassName={colors.bottomNav.icon}
+          labelClassName={colors.bottomNav.text}
         />
       </Li>
 
@@ -59,6 +63,10 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           icon={<ShoppingBag className="w-5 h-5" />}
           isActive={pathname === SITE_CONFIG.nav.products}
           variant="vertical"
+          activeClassName={colors.bottomNav.active}
+          inactiveClassName={colors.bottomNav.inactive}
+          iconClassName={colors.bottomNav.icon}
+          labelClassName={colors.bottomNav.text}
         />
       </Li>
 
@@ -178,6 +186,10 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             }
             isActive={pathname === ROUTES.AUTH.LOGIN}
             variant="vertical"
+            activeClassName={colors.bottomNav.active}
+            inactiveClassName={colors.bottomNav.inactive}
+            iconClassName={colors.bottomNav.icon}
+            labelClassName={colors.bottomNav.text}
           />
         )}
       </Li>

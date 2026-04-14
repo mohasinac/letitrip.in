@@ -40,12 +40,15 @@ import {
   Card,
   DrawerFormFooter,
   MediaImage,
-  ProductFilters,
   Search,
   SideDrawer,
 } from "@/components";
+import {
+  ProductFilters,
+  ProductForm,
+  getProductTableColumns,
+} from "@mohasinac/appkit/features/products";
 import { AdminProductsView as AdminProductsShell } from "@mohasinac/appkit/features/admin";
-import { ProductForm, useProductTableColumns } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
 interface AdminProductsViewProps {
@@ -266,10 +269,25 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
         ? t("deleteProduct")
         : t("editProduct");
 
-  const { columns, actions } = useProductTableColumns(
-    handleEdit,
-    handleDeleteDrawer,
-  );
+  const { columns, actions } = getProductTableColumns<AdminProduct>({
+    labels: {
+      title: t("formTitle"),
+      category: t("formCategory"),
+      price: t("formPrice"),
+      stock: t("formStock"),
+      status: t("formStatus"),
+      seller: t("formSeller"),
+      featured: t("formFeatured"),
+      edit: tActions("edit"),
+      delete: tActions("delete"),
+      yes: tActions("yes"),
+      no: tActions("no"),
+    },
+    onEdit: handleEdit,
+    onDelete: handleDeleteDrawer,
+    currencyCode: "INR",
+    locale: "en-IN",
+  });
 
   const drawerFooter =
     drawerMode === "delete" ? (
@@ -357,8 +375,9 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
               ) : (
                 <ProductForm
                   product={editingProduct}
-                  onChange={setEditingProduct}
+                  onChange={(updated) => setEditingProduct(updated as Partial<AdminProduct>)}
                   isReadonly={isReadonly}
+                  currencyPrefix="₹"
                 />
               )}
             </SideDrawer>

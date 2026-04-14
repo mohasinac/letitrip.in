@@ -18,7 +18,7 @@ import { StoresListView as AppkitStoresListView } from "@mohasinac/appkit/featur
 import { EmptyState, Search } from "@/components";
 import { InteractiveStoreCard } from "@/components/stores";
 import type { ViewMode } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useStores } from "../hooks";
 import { useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
@@ -188,6 +188,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                     <InteractiveStoreCard
                       key={store.id}
                       store={store}
+                      href={ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug)}
                       selectable={!!user}
                       selected={selectedIds.includes(store.ownerId)}
                       onSelect={(id, sel) =>
@@ -226,6 +227,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                       <InteractiveStoreCard
                         key={store.id}
                         store={store}
+                        href={ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug)}
                         selectable={!!user}
                         selected={selectedIds.includes(store.ownerId)}
                         onSelect={(id, sel) =>

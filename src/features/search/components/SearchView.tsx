@@ -6,6 +6,7 @@ import {
   BulkActionBar,
   Pagination,
   Row,
+  SortDropdown,
 } from "@mohasinac/appkit/ui";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
@@ -16,24 +17,23 @@ import { SearchResultsSection as AppkitSearchResultsSection } from "@mohasinac/a
 import { useSearch } from "@mohasinac/appkit/features/search";
 import { ProductGrid as AppkitProductGrid } from "@mohasinac/appkit/features/products";
 import {
-  PRODUCT_SORT_VALUES,
-  ProductSortBar,
   Search,
-} from "@/components";
-import { InteractiveProductCard } from "@/components";
-import {
   FilterDrawer,
   FilterFacetSection,
   EmptyState,
   SwitchFilter,
 } from "@/components";
+import {
+  InteractiveProductCard,
+  PRODUCT_SORT_VALUES,
+  type ProductSortValue,
+} from "@mohasinac/appkit/features/products";
 import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage } from "@/hooks";
 import { addToWishlistAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
-import type { ProductSortValue } from "@/components";
 
 const { page } = THEME_CONSTANTS;
 
@@ -343,11 +343,19 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                 urlSort,
                 onSortChange,
               }) => (
-                <ProductSortBar
-                  total={totalCount}
-                  showing={showing}
-                  sort={urlSort as ProductSortValue}
-                  onSortChange={onSortChange}
+                <SortDropdown
+                  value={urlSort as ProductSortValue}
+                  onChange={onSortChange}
+                  label={t("sortBy")}
+                  countText={t("resultsCount", { count: totalCount, query: urlQ || "" })}
+                  options={[
+                    { value: PRODUCT_SORT_VALUES.NEWEST, label: t("sortNewest") },
+                    { value: PRODUCT_SORT_VALUES.OLDEST, label: t("sortOldest") },
+                    { value: PRODUCT_SORT_VALUES.PRICE_LOW, label: t("sortPriceLow") },
+                    { value: PRODUCT_SORT_VALUES.PRICE_HIGH, label: t("sortPriceHigh") },
+                    { value: PRODUCT_SORT_VALUES.NAME_AZ, label: t("sortNameAZ") },
+                    { value: PRODUCT_SORT_VALUES.NAME_ZA, label: t("sortNameZA") },
+                  ]}
                 />
               )}
               renderLoading={({ skeletonCount }) => (
@@ -378,6 +386,7 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                     <InteractiveProductCard
                       key={product.id}
                       product={product as any}
+                      href={`/products/${product.slug ?? product.id}`}
                       variant={viewMode}
                       className={
                         viewMode === "list"
@@ -391,6 +400,14 @@ function SearchContent({ initialCategories }: SearchViewProps = {}) {
                           sel ? [...prev, id] : prev.filter((x) => x !== id),
                         )
                       }
+                      onToggleWishlist={async (productId) => {
+                        try {
+                          await addToWishlistAction(productId);
+                          showSuccess(tActions("bulkSuccess", { count: 1 }));
+                        } catch {
+                          showError(tActions("bulkFailed"));
+                        }
+                      }}
                     />
                   )}
                 />

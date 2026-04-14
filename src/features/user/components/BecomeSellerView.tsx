@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useBecomeSeller } from "@/hooks";
+import { becomeSellerAction } from "@/actions";
 import { Alert } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import {
@@ -20,7 +21,12 @@ import {
   Spinner,
 } from "@mohasinac/appkit/ui";
 import { BecomeSellerView as AppkitBecomeSellerView } from "@mohasinac/appkit/features/account";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import {
+  ERROR_MESSAGES,
+  ROUTES,
+  SUCCESS_MESSAGES,
+  THEME_CONSTANTS,
+} from "@/constants";
 
 const SECTION_IDS = [
   "howItWorks",
@@ -67,7 +73,11 @@ export function BecomeSellerView() {
   const router = useRouter();
   const t = useTranslations("becomeSeller");
   const { user, loading } = useAuth();
-  const { mutate: becomeSeller, isPending, isSuccess } = useBecomeSeller();
+  const { mutate: becomeSeller, isPending, isSuccess } = useBecomeSeller({
+    mutationFn: becomeSellerAction,
+    successMessage: SUCCESS_MESSAGES.USER.SELLER_APPLICATION_SUBMITTED,
+    errorMessage: ERROR_MESSAGES.USER.SELLER_APPLICATION_FAILED,
+  });
   const [readSections, setReadSections] = useState<Set<SectionId>>(new Set());
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 

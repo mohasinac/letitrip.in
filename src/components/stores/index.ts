@@ -1,2 +1,2 @@
-export { InteractiveStoreCard } from "./InteractiveStoreCard";
-export type { InteractiveStoreCardProps, StoreListItem } from "./InteractiveStoreCard";
+export { InteractiveStoreCard } from "@mohasinac/appkit/features/stores";
+export type { InteractiveStoreCardProps, StoreListItem } from "@mohasinac/appkit/features/stores";

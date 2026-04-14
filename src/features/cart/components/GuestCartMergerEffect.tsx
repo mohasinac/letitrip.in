@@ -1,6 +1,8 @@
 "use client";
 
 import { useGuestCartMerge } from "@/hooks";
+import { useAuth } from "@/contexts";
+import { useRouter } from "@/i18n/navigation";
 
 /**
  * GuestCartMergerEffect
@@ -12,6 +14,12 @@ import { useGuestCartMerge } from "@/hooks";
  * Must be mounted inside `SessionProvider`.
  */
 export function GuestCartMergerEffect() {
-  useGuestCartMerge();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useGuestCartMerge({
+    userId: user?.uid,
+    onNavigate: (url) => router.push(url),
+  });
   return null;
 }

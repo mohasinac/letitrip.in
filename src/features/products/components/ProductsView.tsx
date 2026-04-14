@@ -18,11 +18,13 @@ import {
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
   Search,
-  PRODUCT_SORT_VALUES,
   EmptyState,
-  InteractiveProductCard,
 } from "@/components";
-import { ProductFilters } from "@/components";
+import {
+  InteractiveProductCard,
+  ProductFilters,
+  PRODUCT_SORT_VALUES,
+} from "@mohasinac/appkit/features/products";
 import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -370,6 +372,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
             mobileCardRender={(item) => (
               <InteractiveProductCard
                 product={item as any}
+                href={ROUTES.PUBLIC.PRODUCT_DETAIL(item.slug ?? item.id)}
                 variant={viewMode}
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
@@ -378,6 +381,31 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
                     sel ? [...prev, id] : prev.filter((x) => x !== id),
                   )
                 }
+                onToggleWishlist={async (productId) => {
+                  try {
+                    await addToWishlistAction(productId);
+                    showSuccess(tActions("wishlistSuccess"));
+                  } catch {
+                    showError(tActions("wishlistFailed"));
+                  }
+                }}
+                onAddToCart={async (product) => {
+                  try {
+                    await addToCartAction({
+                      productId: product.id,
+                      quantity: 1,
+                      productTitle: product.title,
+                      productImage: product.mainImage ?? "",
+                      price: product.price,
+                      currency: product.currency ?? "INR",
+                      sellerId: product.sellerId ?? "",
+                      sellerName: product.sellerName ?? "",
+                    });
+                    showSuccess(tActions("cartSuccess"));
+                  } catch {
+                    showError(tActions("cartFailed"));
+                  }
+                }}
               />
             )}
           />

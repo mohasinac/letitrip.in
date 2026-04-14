@@ -32,9 +32,9 @@ import {
   SideDrawer,
   AdminPageHeader,
   DrawerFormFooter,
-  OrderFilters,
   Search,
 } from "@/components";
+import { OrderFilters } from "@mohasinac/appkit/features/orders";
 import { AdminOrdersView as AdminOrdersShell } from "@mohasinac/appkit/features/admin";
 import { useOrderTableColumns, OrderStatusForm } from ".";
 import type { OrderStatusFormState } from ".";

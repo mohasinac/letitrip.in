@@ -71,12 +71,14 @@ import {
   RealtimeEventStatus,
   useRealtimeEvent,
   type RTDBEventPayload,
-} from "./useRealtimeEvent";
+} from "@mohasinac/appkit/react";
 import type {
   BulkActionResult,
   BulkActionSummary,
   BulkActionItemFailure,
 } from "@mohasinac/appkit/react";
+import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
+import { logger } from "@mohasinac/appkit/core";
 
 // Re-export status so callers don't need a separate import.
 export type { RealtimeEventStatus as BulkEventStatus };
@@ -133,7 +135,10 @@ export function useBulkEvent<
   } = useRealtimeEvent<BulkActionResult<TData>>({
     type: RealtimeEventType.BULK,
     rtdbPath: RTDB_PATHS.BULK_EVENTS,
+    realtimeApp,
+    realtimeDb: chatRealtimeDb,
     timeoutMs: BULK_EVENT_TIMEOUT_MS,
+    onLogError: (message, err) => logger.error(message, err),
     extractData: extractBulkResult as (
       raw: RTDBEventPayload,
     ) => BulkActionResult<TData> | null,

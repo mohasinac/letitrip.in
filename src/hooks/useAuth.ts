@@ -20,7 +20,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { useAuthEvent } from "./useAuthEvent";
+import { useAuthEvent } from "@mohasinac/appkit/features/auth";
 import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@mohasinac/appkit/errors";

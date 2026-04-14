@@ -3,7 +3,7 @@
 import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { MAIN_NAV_ITEMS } from "@/constants";
-import { NavbarLayout } from "./NavbarLayout";
+import { NavbarLayout } from "@mohasinac/appkit/features/layout";
 
 const NAV_TRANSLATION_KEYS = [
   "home",
