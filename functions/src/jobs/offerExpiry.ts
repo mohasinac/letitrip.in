@@ -59,7 +59,9 @@ export const offerExpiry = onSchedule(
           relatedType: "offer",
         });
       } catch (err) {
-        logWarn(JOB, `Failed to process expiry for offer ${offer.id}`, err);
+        logWarn(JOB, `Failed to process expiry for offer ${offer.id}`, {
+          error: err instanceof Error ? err.message : String(err),
+        });
         // Don't throw — continue processing remaining offers
       }
     }

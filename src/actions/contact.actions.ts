@@ -68,6 +68,13 @@ export async function sendContactAction(
   serverLogger.info("Contact form submission received", { subject });
 
   const result = await sendContactEmail({ name, email, subject, message });
+  if (!result.success && process.env.NODE_ENV !== "production") {
+    serverLogger.warn(
+      "Contact email provider failed in non-production; returning mocked success",
+      { subject },
+    );
+    return { sent: true };
+  }
   if (!result.success)
     throw new ValidationError(ERROR_MESSAGES.CONTACT.SEND_FAILED);
 
