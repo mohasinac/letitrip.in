@@ -12,99 +12,11 @@
  * - Prevents typos in query builders and serializers
  */
 
-// ============================================================================
-// USER FIELDS
-// ============================================================================
-
-export const USER_FIELDS = {
-  // Core identity
-  ID: "id",
-  UID: "uid",
-  EMAIL: "email",
-  PHONE_NUMBER: "phoneNumber",
-  PHONE_VERIFIED: "phoneVerified",
-  DISPLAY_NAME: "displayName",
-  // PII blind indices (HMAC-SHA256 for equality queries on encrypted fields)
-  EMAIL_INDEX: "emailIndex",
-  PHONE_INDEX: "phoneIndex",
-  PHOTO_URL: "photoURL",
-  AVATAR_METADATA: "avatarMetadata",
-  ROLE: "role",
-  PASSWORD_HASH: "passwordHash",
-  EMAIL_VERIFIED: "emailVerified",
-  DISABLED: "disabled",
-  CREATED_AT: "createdAt",
-  UPDATED_AT: "updatedAt",
-  // Store identity
-  STORE_ID: "storeId",
-  STORE_SLUG: "storeSlug",
-  STORE_STATUS: "storeStatus",
-
-  // Avatar metadata sub-fields
-  AVATAR: {
-    URL: "avatarMetadata.url",
-    POSITION: "avatarMetadata.position",
-    POSITION_X: "avatarMetadata.position.x",
-    POSITION_Y: "avatarMetadata.position.y",
-    ZOOM: "avatarMetadata.zoom",
-  },
-
-  // Public profile
-  PUBLIC_PROFILE: "publicProfile",
-  PROFILE: {
-    IS_PUBLIC: "publicProfile.isPublic",
-    SHOW_EMAIL: "publicProfile.showEmail",
-    SHOW_PHONE: "publicProfile.showPhone",
-    SHOW_ORDERS: "publicProfile.showOrders",
-    SHOW_WISHLIST: "publicProfile.showWishlist",
-    BIO: "publicProfile.bio",
-    LOCATION: "publicProfile.location",
-    WEBSITE: "publicProfile.website",
-    SOCIAL_LINKS: "publicProfile.socialLinks",
-    SOCIAL: {
-      TWITTER: "publicProfile.socialLinks.twitter",
-      INSTAGRAM: "publicProfile.socialLinks.instagram",
-      FACEBOOK: "publicProfile.socialLinks.facebook",
-      LINKEDIN: "publicProfile.socialLinks.linkedin",
-    },
-    // Store profile fields are in StoreDocument — see STORE_FIELDS
-  },
-
-  // User statistics
-  STATS: "stats",
-  STAT: {
-    TOTAL_ORDERS: "stats.totalOrders",
-    AUCTIONS_WON: "stats.auctionsWon",
-    ITEMS_SOLD: "stats.itemsSold",
-    REVIEWS_COUNT: "stats.reviewsCount",
-    RATING: "stats.rating",
-  },
-
-  // Metadata (login tracking)
-  METADATA: "metadata",
-  META: {
-    LAST_SIGN_IN_TIME: "metadata.lastSignInTime",
-    CREATION_TIME: "metadata.creationTime",
-    LOGIN_COUNT: "metadata.loginCount",
-  },
-} as const;
-
-// ============================================================================
-// TOKEN FIELDS
-// ============================================================================
-
-export const TOKEN_FIELDS = {
-  ID: "id",
-  USER_ID: "userId",
-  EMAIL: "email",
-  // Legacy blind index kept for backwards-compatible token lookups
-  EMAIL_INDEX: "emailIndex",
-  TOKEN: "token",
-  EXPIRES_AT: "expiresAt",
-  CREATED_AT: "createdAt",
-  USED: "used",
-  USED_AT: "usedAt",
-} as const;
+// Migrated to @mohasinac/appkit — imported here to keep @/db/schema barrel working
+export { USER_FIELDS } from "@mohasinac/appkit/features/auth";
+export { TOKEN_FIELDS } from "@mohasinac/appkit/features/auth";
+export { SESSION_FIELDS } from "@mohasinac/appkit/features/auth";
+export { CATEGORY_FIELDS } from "@mohasinac/appkit/features/categories";
 
 // ============================================================================
 // PRODUCT FIELDS
@@ -369,34 +281,6 @@ export const BID_FIELDS = {
 } as const;
 
 // ============================================================================
-// SESSION FIELDS
-// ============================================================================
-
-export const SESSION_FIELDS = {
-  ID: "id",
-  USER_ID: "userId",
-  DEVICE_INFO: "deviceInfo",
-  DEVICE: {
-    USER_AGENT: "deviceInfo.userAgent",
-    BROWSER: "deviceInfo.browser",
-    OS: "deviceInfo.os",
-    DEVICE: "deviceInfo.device",
-    IP: "deviceInfo.ip",
-  },
-  LOCATION: "location",
-  LOC: {
-    COUNTRY: "location.country",
-    CITY: "location.city",
-  },
-  CREATED_AT: "createdAt",
-  LAST_ACTIVITY: "lastActivity",
-  EXPIRES_AT: "expiresAt",
-  IS_ACTIVE: "isActive",
-  REVOKED_AT: "revokedAt",
-  REVOKED_BY: "revokedBy",
-} as const;
-
-// ============================================================================
 // CAROUSEL SLIDE FIELDS
 // ============================================================================
 
@@ -417,46 +301,6 @@ export const CAROUSEL_FIELDS = {
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
   CREATED_BY: "createdBy",
-} as const;
-
-// ============================================================================
-// CATEGORY FIELDS
-// ============================================================================
-
-export const CATEGORY_FIELDS = {
-  ID: "id",
-  NAME: "name",
-  SLUG: "slug",
-  DESCRIPTION: "description",
-  ROOT_ID: "rootId",
-  PARENT_IDS: "parentIds",
-  CHILDREN_IDS: "childrenIds",
-  TIER: "tier",
-  PATH: "path",
-  ORDER: "order",
-  IS_LEAF: "isLeaf",
-  METRICS: "metrics",
-  METRIC: {
-    PRODUCT_COUNT: "metrics.productCount",
-    PRODUCT_IDS: "metrics.productIds",
-    AUCTION_COUNT: "metrics.auctionCount",
-    AUCTION_IDS: "metrics.auctionIds",
-    TOTAL_PRODUCT_COUNT: "metrics.totalProductCount",
-    TOTAL_AUCTION_COUNT: "metrics.totalAuctionCount",
-    TOTAL_ITEM_COUNT: "metrics.totalItemCount",
-    LAST_UPDATED: "metrics.lastUpdated",
-  },
-  IS_FEATURED: "isFeatured",
-  IS_BRAND: "isBrand",
-  FEATURED_PRIORITY: "featuredPriority",
-  SEO: "seo",
-  DISPLAY: "display",
-  IS_ACTIVE: "isActive",
-  IS_SEARCHABLE: "isSearchable",
-  CREATED_BY: "createdBy",
-  CREATED_AT: "createdAt",
-  UPDATED_AT: "updatedAt",
-  ANCESTORS: "ancestors",
 } as const;
 
 // ============================================================================
