@@ -1,4 +1,4 @@
-import "@/providers.config";
+﻿import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
@@ -27,24 +27,22 @@ import {
   categoriesSeedData,
   storesSeedData,
   sessionsSeedData,
+  productsSeedData,
+  ordersSeedData,
+  reviewsSeedData,
+  cartsSeedData,
+  bidsSeedData,
+  couponsSeedData,
+  eventsSeedData,
+  eventEntriesSeedData,
+  payoutsSeedData,
+  notificationsSeedData,
+  blogPostsSeedData,
 } from "@mohasinac/appkit/seed";
-import { ordersSeedData } from "@/db/seed-data/orders-seed-data";
-import { reviewsSeedData } from "@/db/seed-data/reviews-seed-data";
-import { bidsSeedData } from "@/db/seed-data/bids-seed-data";
-import { couponsSeedData } from "@/db/seed-data/coupons-seed-data";
 import { carouselSlidesSeedData } from "@/db/seed-data/carousel-slides-seed-data";
 import { homepageSectionsSeedData } from "@/db/seed-data/homepage-sections-seed-data";
 import { siteSettingsSeedData } from "@/db/seed-data/site-settings-seed-data";
 import { faqSeedData } from "@/db/seed-data/faq-seed-data";
-import { notificationsSeedData } from "@/db/seed-data/notifications-seed-data";
-import { payoutsSeedData } from "@/db/seed-data/payouts-seed-data";
-import { blogPostsSeedData } from "@/db/seed-data/blog-posts-seed-data";
-import {
-  eventsSeedData,
-  eventEntriesSeedData,
-} from "@/db/seed-data/events-seed-data";
-import { cartsSeedData } from "@/db/seed-data/cart-seed-data";
-import { productsSeedData } from "@/db/seed-data/products-seed-data";
 import {
   USER_COLLECTION,
   ORDER_COLLECTION,
@@ -76,14 +74,14 @@ type CollectionName =
   | "categories"
   | "stores"
   | "products"
-  | "orders"
-  | "reviews"
-  | "bids"
-  | "coupons"
   | "carouselSlides"
   | "homepageSections"
   | "siteSettings"
   | "faqs"
+  | "orders"
+  | "reviews"
+  | "bids"
+  | "coupons"
   | "notifications"
   | "payouts"
   | "blogPosts"
@@ -312,7 +310,7 @@ export async function GET(_request: NextRequest) {
               ).length;
             }
           } else if (colName === "faqs") {
-            // FAQs use generated IDs — build them the same way the POST handler does
+            // FAQs use generated IDs â€” build them the same way the POST handler does
             const { generateFAQId } = await import("@/utils");
             const refs = (seedData as any[]).map((faq: any) => {
               const id = generateFAQId({
@@ -423,7 +421,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
+            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -441,7 +439,7 @@ export async function POST(request: NextRequest) {
                   disabled,
                 } = userData as any;
 
-                // Check if Firestore document already exists — skip if so
+                // Check if Firestore document already exists â€” skip if so
                 const docRef = db.collection(firestoreCollection).doc(uid);
                 const docSnapshot = await docRef.get();
                 if (docSnapshot.exists) {
@@ -491,7 +489,7 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
-                // Write new Firestore document — encrypt PII fields
+                // Write new Firestore document â€” encrypt PII fields
                 let docData = stripUndefined({ ...userData });
                 // Add blind indices from plaintext BEFORE encrypting
                 docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
@@ -596,7 +594,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else {
-            // Regular collections — bulk-check existence then batch write (500 per batch)
+            // Regular collections â€” bulk-check existence then batch write (500 per batch)
             type WriteItem = {
               docRef: FirebaseFirestore.DocumentReference;
               data: Record<string, any>;
@@ -686,7 +684,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
+            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
             continue;
           }
 

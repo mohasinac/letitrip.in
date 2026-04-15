@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-15 — Session 13, Phase 5 wishlist/sms/unit-of-work + Phase 6 seed batch 1 migrated into appkit  
-**Last session ended at:** Phase 6 — src/db/seed-data/categories-seed-data.ts migrated  
+**Last verified:** 2026-04-15 — Session 14, Phase 6 seed batch 2 (10 files) migrated into appkit  
+**Last session ended at:** Phase 6 — src/db/seed-data/blog-posts-seed-data.ts migrated  
 **Goal:** Reduce letitrip.in to a thin consumer — routes, server-action entrypoints, provider wiring, market config, and SDK drivers only.
 
 ---
@@ -15,7 +15,7 @@
 | 3 | Phase 3 | Validation | ~15 | ❌ partially blocked |
 | 4 | Phase 4 | Server Infrastructure (pii, query, logger, helpers) | 18 | ✅ done |
 | 5 | Phase 5 | Repository Layer | 32 | 🔄 30/32 done |
-| 6 | Phase 6 | Seed Data | 21 | 🔄 7/21 done |
+| 6 | Phase 6 | Seed Data | 21 | 🔄 17/21 done |
 | 7 | Phase 7 | Actions → Appkit | 35 | ⬜ |
 | 8 | Phase 8 | Hooks | 16 | ⬜ |
 | 9 | Phase 9 | Shared UI Components | 30 | ⬜ |
@@ -241,16 +241,16 @@ Note: `copilot-log.repository.ts` and `newsletter.repository.ts` are already in 
 | `src/db/seed-data/stores-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 | `src/db/seed-data/store-addresses-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 | `src/db/seed-data/categories-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
-| `src/db/seed-data/products-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/orders-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/reviews-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/cart-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/bids-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/coupons-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/events-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/payouts-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/notifications-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/blog-posts-seed-data.ts` | `src/seed/` | ⬜ |
+| `src/db/seed-data/products-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/orders-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/reviews-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/cart-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/bids-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/coupons-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/events-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/payouts-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/notifications-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/blog-posts-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 | `src/db/seed-data/faq-seed-data.ts` | `src/seed/` | ⬜ |
 | `src/db/seed-data/homepage-sections-seed-data.ts` | `src/seed/` | ⬜ |
 | `src/db/seed-data/site-settings-seed-data.ts` | `src/seed/` | ⬜ |
@@ -564,7 +564,7 @@ Superseded by the concrete repository merge above.
 
 ## Last Session
 
-**Last session ended at:** `Phase 6 — src/db/seed-data/categories-seed-data.ts` (next actionable file by table state: `Phase 6 — src/db/seed-data/products-seed-data.ts`)
+**Last session ended at:** `Phase 6 — src/db/seed-data/blog-posts-seed-data.ts` (next actionable files: `faq-seed-data.ts`, `homepage-sections-seed-data.ts`, `site-settings-seed-data.ts`, `carousel-slides-seed-data.ts`)
 
 **Commit message:** `migrate: phase5 closure + phase6 seed batch1 into appkit — 10 files`
 
@@ -590,3 +590,5 @@ Superseded by the concrete repository merge above.
 - Commit message: migrate: phase5 homepage sections repository into appkit — 1 file
 - 2026-04-15 Session 13: Migrated three remaining Phase 5 repositories (`wishlist`, `sms-counter`, `unit-of-work`) into appkit feature/core ownership, then migrated the first seven Phase 6 seed files (`index`, `users`, `sessions`, `addresses`, `stores`, `store-addresses`, `categories`) into `@mohasinac/appkit/seed` and deleted local copies.
 - Commit message: migrate: phase5 closure + phase6 seed batch1 into appkit — 10 files
+- 2026-04-15 Session 14: Migrated next 10 Phase 6 seed files (`products`, `orders`, `reviews`, `cart`, `bids`, `coupons`, `events`, `payouts`, `notifications`, `blog-posts`) into `@mohasinac/appkit/seed`, rewired all 4 importer routes (demo/seed, events/[id], events/[id]/enter, events/[id]/leaderboard) to `@mohasinac/appkit/seed`, and deleted local copies.
+- Commit message: migrate: phase6 seed batch2 — 10 files
