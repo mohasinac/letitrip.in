@@ -565,6 +565,7 @@ Superseded by the concrete repository merge above.
 ## Last Session
 
 **Last session ended at:** `Phase 6 — src/db/seed-data/blog-posts-seed-data.ts` (next actionable files: `faq-seed-data.ts`, `homepage-sections-seed-data.ts`, `site-settings-seed-data.ts`, `carousel-slides-seed-data.ts`)
+**Commit message (Session 14):** `migrate: phase6 seed batch2 - rewire routes to appkit/seed, delete 10 local files`
 
 **Commit message:** `migrate: phase5 closure + phase6 seed batch1 into appkit — 10 files`
 
