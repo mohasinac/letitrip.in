@@ -60,3 +60,4 @@ export function useAdminProducts(sieveParams: string) {
 
   return { ...query, createMutation, updateMutation, deleteMutation };
 }
+

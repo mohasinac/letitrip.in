@@ -38,3 +38,4 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
     />
   );
 }
+

@@ -29,7 +29,7 @@ import {
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const loginSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -184,3 +184,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

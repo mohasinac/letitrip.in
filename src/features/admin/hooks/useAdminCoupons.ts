@@ -60,3 +60,4 @@ export function useAdminCoupons(sieveParams: string) {
 
   return { ...query, createMutation, updateMutation, deleteMutation };
 }
+

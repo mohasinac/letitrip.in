@@ -1,45 +1,24 @@
+import "@/providers.config";
 /**
- * User Wishlist API — Single Item
+ * User Sessions API - My Sessions
+ * GET /api/user/sessions - Get my active sessions
+ * DELETE /api/user/sessions/[id] - Revoke my session
  *
- * GET    /api/user/wishlist/[productId] — Check if product is in wishlist
- * DELETE /api/user/wishlist/[productId] — Remove product from wishlist
+ * Allows users to view and manage their own sessions.
  */
 
-import { wishlistRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { sessionRepository } from "@/repositories";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
-export const GET = createRouteHandler<never, { productId: string }>({
+/**
+ * Get current user's sessions
+ */
+export const GET = createRouteHandler({
   auth: true,
-  handler: async ({ request, user, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { productId } = params!;
-    const inWishlist = await wishlistRepository.isInWishlist(
-      user!.uid,
-      productId,
-    );
-    return successResponse({ inWishlist, productId });
-  },
-});
-
-export const DELETE = createRouteHandler<never, { productId: string }>({
-  auth: true,
-  handler: async ({ request, user, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { productId } = params!;
-
-    const inWishlist = await wishlistRepository.isInWishlist(
-      user!.uid,
-      productId,
-    );
-    if (!inWishlist)
-      return errorResponse(ERROR_MESSAGES.WISHLIST.NOT_FOUND, 404);
-
-    await wishlistRepository.removeItem(user!.uid, productId);
-    return successResponse({ productId }, SUCCESS_MESSAGES.WISHLIST.REMOVED);
+  handler: async ({ user }) => {
+    const sessions = await sessionRepository.findAllByUser(user!.uid, 20);
+    const activeCount = await sessionRepository.countActiveByUser(user!.uid);
+    return successResponse({ sessions, activeCount, total: sessions.length });
   },
 });

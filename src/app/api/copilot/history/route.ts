@@ -12,7 +12,7 @@ import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES } from "@/constants";
 import { AppError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 export const GET = createRouteHandler({
   auth: true,
@@ -48,3 +48,4 @@ export const GET = createRouteHandler({
     }
   },
 });
+

@@ -1,5 +1,5 @@
-﻿/**
- * AuthSocialButtons — shared Google + Apple sign-in button pair with OR divider.
+/**
+ * AuthSocialButtons � shared Google + Apple sign-in button pair with OR divider.
  * Used by LoginForm and RegisterForm.
  */
 
@@ -27,3 +27,4 @@ export function AuthSocialButtons({
     />
   );
 }
+

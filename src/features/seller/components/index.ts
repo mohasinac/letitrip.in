@@ -35,3 +35,4 @@ export { SellerPayoutsView } from "./SellerPayoutsView";
 export { SellerOffersView } from "./SellerOffersView";
 export { PayoutBreakdownModal } from "./PayoutBreakdownModal";
 export type { PayoutBreakdown } from "./PayoutBreakdownModal";
+

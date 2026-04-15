@@ -20,10 +20,10 @@ import {
   ValidationError,
 } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { faqCreateSchema, faqUpdateSchema } from "@/lib/validation/schemas";
 import type { FAQDocument } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -242,3 +242,4 @@ export async function getFaqByIdAction(
 ): Promise<FAQDocument | null> {
   return faqsRepository.findById(id);
 }
+

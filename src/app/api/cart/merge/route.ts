@@ -14,7 +14,7 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const mergeCartSchema = z.object({
@@ -70,3 +70,4 @@ export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
     });
   },
 });
+

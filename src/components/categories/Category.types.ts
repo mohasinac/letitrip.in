@@ -45,3 +45,4 @@ export function flattenCategories(cats: Category[]): Category[] {
   flatten(cats);
   return result;
 }
+

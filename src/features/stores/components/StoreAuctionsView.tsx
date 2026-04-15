@@ -202,3 +202,4 @@ export function StoreAuctionsView(props: StoreAuctionsViewProps) {
     </Suspense>
   );
 }
+

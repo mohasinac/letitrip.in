@@ -12,3 +12,4 @@ interface EventStatusBadgeProps {
 export function EventStatusBadge({ status }: EventStatusBadgeProps) {
   return <AppkitEventStatusBadge status={status} />;
 }
+

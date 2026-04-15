@@ -6,7 +6,7 @@ import "@/providers.config";
  * Uses storeRepository (stores collection) as the source of truth.
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -15,7 +15,7 @@ import {
 } from "@mohasinac/appkit/next";
 import { storeRepository } from "@/repositories";
 import type { StoreDocument } from "@/db/schema";
-import type { SieveModel } from "@/lib/query/firebase-sieve";
+import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 export const GET = createRouteHandler({
   auth: true,
@@ -73,3 +73,4 @@ export const GET = createRouteHandler({
     return successResponse({ ...result, items: stores });
   },
 });
+

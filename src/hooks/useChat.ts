@@ -170,3 +170,4 @@ export function useDeleteChatRoom() {
     mutationFn: (chatId: string) => deleteChatRoomAction(chatId),
   });
 }
+

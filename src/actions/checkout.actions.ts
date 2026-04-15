@@ -16,11 +16,11 @@
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { rateLimitByIdentifier } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import { timingSafeEqual } from "crypto";
 import { addressRepository, userRepository } from "@/repositories";
-import { sendEmail } from "@/lib/email";
+import { sendEmail } from "@mohasinac/appkit/features/contact";
 import { resolveDate } from "@/utils";
 import {
   CONSENT_OTP_EXPIRY_MS,
@@ -34,7 +34,7 @@ import {
   saveConsentOtp,
   readConsentOtp,
   patchConsentOtp,
-} from "@/lib/consent-otp";
+} from "@mohasinac/appkit/features/auth";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -222,3 +222,4 @@ export async function grantCheckoutConsentViaSmsAction(
     `Checkout consent granted via SMS: uid=${user.uid} addressId=${addressId}`,
   );
 }
+

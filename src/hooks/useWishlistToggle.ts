@@ -41,3 +41,4 @@ export function useWishlistToggle(productId: string, initial = false) {
 
   return { inWishlist, isLoading, toggle };
 }
+

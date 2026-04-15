@@ -9,7 +9,7 @@ import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
@@ -392,3 +392,4 @@ export const POST = createRouteHandler({
     );
   },
 });
+

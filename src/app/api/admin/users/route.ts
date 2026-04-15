@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/users - List users with search, role filter, disabled filter
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -13,8 +13,8 @@ import {
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { userRepository } from "@/repositories";
-import { piiBlindIndex } from "@/lib/pii";
-import { serverLogger } from "@/lib/server-logger";
+import { piiBlindIndex } from "@mohasinac/appkit/security";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { USER_FIELDS } from "@/db/schema";
 
 /**
@@ -106,3 +106,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

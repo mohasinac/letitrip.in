@@ -1,37 +1,88 @@
+import "@/providers.config";
 /**
- * POST /api/admin/orders/[id]/refund
- *
- * Admin-only: issue a partial (net of processing fees) or full refund.
- * Body: { deductFees: boolean; refundNote?: string }
+ * Admin Newsletter API Route
+ * GET /api/admin/newsletter â€” List subscribers with stats
  */
 
-import { z } from "zod";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { adminPartialRefundAction } from "@/actions";
-import { SUCCESS_MESSAGES } from "@/constants";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { newsletterRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 
-const refundSchema = z.object({
-  deductFees: z.boolean().default(true),
-  refundNote: z.string().max(500).optional(),
-});
-
-export const POST = createRouteHandler<
-  z.infer<typeof refundSchema>,
-  { id: string }
->({
+/**
+ * GET /api/admin/newsletter
+ *
+ * Query params:
+ *  - filters  (string) â€” Sieve filters (e.g. status==active)
+ *  - sorts    (string) â€” Sieve sorts (e.g. -createdAt)
+ *  - page     (number) â€” page number (default 1)
+ *  - pageSize (number) â€” results per page (default 50, max 200)
+ *
+ * meta.total / active / unsubscribed are always computed from the
+ * full unfiltered dataset so stat cards remain accurate.
+ */
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin"],
-  schema: refundSchema,
-  handler: async ({ body, params }) => {
-    const result = await adminPartialRefundAction({
-      orderId: params!.id,
-      deductFees: body!.deductFees,
-      refundNote: body?.refundNote,
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
+
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
+      min: 1,
+      max: 200,
     });
-    return successResponse(
-      result,
-      SUCCESS_MESSAGES.ORDER?.REFUNDED ?? "Refund initiated",
-    );
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+
+    serverLogger.info("Admin newsletter subscribers list requested", {
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+
+    // Compute summary counts + paginated results in parallel
+    const [totalResult, activeResult, unsubscribedResult, sieveResult] =
+      await Promise.all([
+        newsletterRepository.list({
+          sorts: "createdAt",
+          page: "1",
+          pageSize: "1",
+        }),
+        newsletterRepository.list({
+          filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.ACTIVE}`,
+          sorts: "createdAt",
+          page: "1",
+          pageSize: "1",
+        }),
+        newsletterRepository.list({
+          filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.UNSUBSCRIBED}`,
+          sorts: "createdAt",
+          page: "1",
+          pageSize: "1",
+        }),
+        newsletterRepository.list({
+          filters,
+          sorts,
+          page: String(page),
+          pageSize: String(pageSize),
+        }),
+      ]);
+
+    return successResponse({
+      ...sieveResult,
+      meta: {
+        total: totalResult.total,
+        active: activeResult.total,
+        unsubscribed: unsubscribedResult.total,
+      },
+    });
   },
 });

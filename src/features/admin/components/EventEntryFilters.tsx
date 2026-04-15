@@ -35,3 +35,4 @@ export function EventEntryFilters({ table }: EventEntryFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

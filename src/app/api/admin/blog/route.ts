@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -14,12 +14,12 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { blogRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@/lib/media/finalize";
+} from "@mohasinac/appkit/features/media";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -178,3 +178,4 @@ export const POST = createRouteHandler({
     return successResponse(post, SUCCESS_MESSAGES.BLOG.CREATED);
   },
 });
+

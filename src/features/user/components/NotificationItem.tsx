@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Text, Button, Span, Badge, Row } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
@@ -10,21 +10,21 @@ import type { NotificationDocument } from "@/db/schema";
 const { themed, flex } = THEME_CONSTANTS;
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
-  order_placed: "🛍️",
-  order_confirmed: "✅",
-  order_shipped: "📦",
-  order_delivered: "🎉",
-  order_cancelled: "❌",
-  bid_placed: "🔨",
-  bid_outbid: "⚡",
-  bid_won: "🏆",
-  bid_lost: "😔",
-  review_approved: "⭐",
-  review_replied: "💬",
-  product_available: "🔔",
-  promotion: "🏷️",
-  system: "ℹ️",
-  welcome: "👋",
+  order_placed: "???",
+  order_confirmed: "?",
+  order_shipped: "??",
+  order_delivered: "??",
+  order_cancelled: "?",
+  bid_placed: "??",
+  bid_outbid: "?",
+  bid_won: "??",
+  bid_lost: "??",
+  review_approved: "?",
+  review_replied: "??",
+  product_available: "??",
+  promotion: "???",
+  system: "??",
+  welcome: "??",
 };
 
 interface NotificationItemProps {
@@ -48,7 +48,7 @@ export function NotificationItem({
     >
       {/* Type icon */}
       <Span className="text-2xl flex-shrink-0 mt-0.5">
-        {NOTIFICATION_TYPE_ICONS[n.type] ?? "🔔"}
+        {NOTIFICATION_TYPE_ICONS[n.type] ?? "??"}
       </Span>
 
       {/* Content */}
@@ -130,10 +130,11 @@ export function NotificationItem({
             }}
             className="inline-block mt-2 text-xs text-primary hover:underline font-medium"
           >
-            {n.actionLabel ?? tActions("view")} →
+            {n.actionLabel ?? tActions("view")} ?
           </TextLink>
         )}
       </div>
     </div>
   );
 }
+

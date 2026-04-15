@@ -3,7 +3,7 @@
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
-import { hasAnyRole } from "@/helpers";
+import { hasAnyRole } from "@mohasinac/appkit/features/auth";
 import type {
   SellerAnalyticsSummary,
   SellerAnalyticsMonthEntry,
@@ -42,3 +42,4 @@ export function useSellerAnalytics() {
     error,
   };
 }
+

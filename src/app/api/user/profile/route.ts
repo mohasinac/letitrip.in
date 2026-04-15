@@ -12,7 +12,7 @@
 import { z } from "zod";
 import { userRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { SUCCESS_MESSAGES } from "@/constants";
 
 export const GET = createApiHandler({
@@ -98,3 +98,4 @@ export const PATCH = createApiHandler<(typeof updateProfileSchema)["_output"]>({
     );
   },
 });
+

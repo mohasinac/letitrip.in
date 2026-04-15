@@ -37,8 +37,8 @@ import {
   SCHEMA_DEFAULTS,
   DEFAULT_USER_DATA,
 } from "@/db/schema";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
-import { serverLogger } from "@/lib/server-logger";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { UserRole } from "@/types/auth";
 
@@ -345,3 +345,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

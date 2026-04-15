@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Heading, Nav, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
@@ -108,3 +108,4 @@ export function AdminPageHeader({
     </div>
   );
 }
+

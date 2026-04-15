@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import { categoriesRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -30,7 +30,7 @@ import type {
   CategoryUpdateInput,
   CategoryTreeNode,
 } from "@/db/schema/categories";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -237,3 +237,4 @@ export async function buildCategoryTreeAction(
 ): Promise<CategoryTreeNode[]> {
   return categoriesRepository.buildTree(rootId);
 }
+

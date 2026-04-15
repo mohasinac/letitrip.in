@@ -61,3 +61,4 @@ export function FaqFilters({ table }: FaqFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

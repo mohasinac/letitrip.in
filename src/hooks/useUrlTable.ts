@@ -28,3 +28,4 @@ export function useUrlTable(options?: UseUrlTableOptions) {
     pathname,
   } as UseUrlTableOptions);
 }
+

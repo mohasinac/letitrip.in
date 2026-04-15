@@ -52,3 +52,4 @@ export function useStores(options?: UseStoresOptions) {
 
   return { query, table };
 }
+

@@ -117,3 +117,4 @@ export const SESSION_TABLE_COLUMNS: Column[] = [
       ),
   },
 ];
+

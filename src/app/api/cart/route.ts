@@ -13,7 +13,7 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 // Validation schema for adding to cart
@@ -93,3 +93,4 @@ export const DELETE = createRouteHandler({
     );
   },
 });
+

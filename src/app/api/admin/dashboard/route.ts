@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/dashboard
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   userRepository,
@@ -55,3 +55,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

@@ -21,3 +21,4 @@ export function mapStoreDocument(store: StoreDocument): StoreListItem {
     createdAt: store.createdAt.toISOString(),
   };
 }
+

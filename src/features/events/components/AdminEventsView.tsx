@@ -1,7 +1,7 @@
-﻿/**
+/**
  * AdminEventsView
  *
- * Tier 2 — feature component.
+ * Tier 2 � feature component.
  * Extracted from src/app/[locale]/admin/events/page.tsx (was 153 lines).
  * Manages the admin events list with filtering, pagination, and CRUD.
  * Uses the unified ListingLayout shell.
@@ -64,11 +64,11 @@ function AdminEventsContent() {
   const [editTarget, setEditTarget] = useState<EventDocument | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<EventDocument | null>(null);
 
-  // ── Bulk selection state ────────────────────────────────────────────
+  // -- Bulk selection state --------------------------------------------
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
 
-  // ── Filter state (pending until Apply) ─────────────────────────────
+  // -- Filter state (pending until Apply) -----------------------------
   const typeFilter = table.get("type");
   const statusFilter = table.get("status");
 
@@ -89,7 +89,7 @@ function AdminEventsContent() {
     refetch();
   });
 
-  // ── Bulk action handlers ────────────────────────────────────────────
+  // -- Bulk action handlers --------------------------------------------
   const handleBulkStatusChange = useCallback(
     async (status: "active" | "paused" | "ended") => {
       if (selectedIds.length === 0) return;
@@ -188,7 +188,7 @@ function AdminEventsContent() {
         headerSlot={
           <AdminPageHeader
             title={t("title")}
-            subtitle={`${t("subtitle")} — ${total} total`}
+            subtitle={`${t("subtitle")} � ${total} total`}
             actionLabel={t("newEvent")}
             onAction={() => {
               setEditTarget(null);
@@ -321,3 +321,4 @@ export function AdminEventsView() {
     </Suspense>
   );
 }
+

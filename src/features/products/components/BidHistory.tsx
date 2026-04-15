@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatRelativeTime } from "@/utils";
@@ -95,9 +95,10 @@ export function BidHistory({
   );
 }
 
-/** Anonymize bidder name to protect privacy: "John Smith" → "John S." */
+/** Anonymize bidder name to protect privacy: "John Smith" ? "John S." */
 function anonymizeName(name: string): string {
   const parts = name.trim().split(" ");
   if (parts.length <= 1) return parts[0] ?? "Bidder";
   return `${parts[0]} ${parts[parts.length - 1].charAt(0)}.`;
 }
+

@@ -8,11 +8,11 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { copilotLogRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { AppError } from "@mohasinac/appkit/errors";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -143,3 +143,4 @@ export const POST = createApiHandler<(typeof chatSchema)["_output"]>({
     }
   },
 });
+

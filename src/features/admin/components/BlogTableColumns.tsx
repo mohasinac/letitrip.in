@@ -1,9 +1,9 @@
-﻿/**
+/**
  * BlogTableColumns
  * Path: src/components/admin/blog/BlogTableColumns.tsx
  *
  * Column definitions for the admin Blog DataTable.
- * Uses useTranslations (next-intl) — no UI_LABELS in JSX (Rule 2).
+ * Uses useTranslations (next-intl) � no UI_LABELS in JSX (Rule 2).
  */
 
 "use client";
@@ -91,9 +91,9 @@ export function useBlogTableColumns(
         width: "8%",
         render: (post: BlogPostDocument) =>
           post.isFeatured ? (
-            <Span className="text-yellow-500 text-base">★</Span>
+            <Span className="text-yellow-500 text-base">?</Span>
           ) : (
-            <Span className={`text-xs ${themed.textSecondary}`}>—</Span>
+            <Span className={`text-xs ${themed.textSecondary}`}>�</Span>
           ),
       },
       {
@@ -117,7 +117,7 @@ export function useBlogTableColumns(
         width: "12%",
         render: (post: BlogPostDocument) => (
           <Text size="sm" variant="secondary">
-            {post.publishedAt ? formatDate(post.publishedAt) : "—"}
+            {post.publishedAt ? formatDate(post.publishedAt) : "�"}
           </Text>
         ),
       },
@@ -154,3 +154,4 @@ export function useBlogTableColumns(
     ],
   };
 }
+

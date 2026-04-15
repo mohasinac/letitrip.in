@@ -14,7 +14,7 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 export async function getSiteSettingsAction(): Promise<unknown> {
   const settings = await siteSettingsRepository.getSingleton();
@@ -41,3 +41,4 @@ export async function updateSiteSettingsAction(
 
   serverLogger.info("updateSiteSettingsAction", { adminId: admin.uid });
 }
+

@@ -1,160 +1,152 @@
-"use client";
+/**
+ * POST /api/webhooks/shiprocket
+ *
+ * Receives Shiprocket shipment status update webhooks.
+ * Shiprocket sends a webhook whenever a shipment's status changes.
+ *
+ * Security: Shiprocket allows setting a secret key for webhook verification.
+ * When SHIPROCKET_WEBHOOK_SECRET is set in env, the X-Shiprocket-Signature
+ * header is validated via HMAC-SHA256.
+ *
+ * On receipt:
+ *   - Maps Shiprocket status to our internal order status
+ *   - Updates order.shiprocketStatus, shiprocketUpdatedAt, trackingUrl
+ *   - If status = "Delivered": sets order.status='delivered', deliveryDate=now,
+ *                               payoutStatus='eligible'
+ */
 
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useTheme } from "@/contexts/ThemeContext";
-import { useBottomActionsContext } from "@mohasinac/appkit/features/layout";
-import {
-  TitleBar,
-  Sidebar,
-  Footer,
-  BottomNavbar,
-} from "@/components/layout";
-import { AutoBreadcrumbs, BottomActions } from "@mohasinac/appkit/features/layout";
-import MainNavbar from "@/components/layout/MainNavbar";
-import Search from "@/components/utility/Search";
-import BackToTop from "@/components/utility/BackToTop";
-import { EventBanner } from "@/components";
-import UnsavedChangesModal from "@/components/modals/UnsavedChangesModal";
-import { BackgroundRenderer } from "@/components/utility";
-import { Main } from "@mohasinac/appkit/ui";
-import { logger } from "@mohasinac/appkit/core";
-import { useSiteSettings } from "@/hooks";
+import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
+import { orderRepository } from "@/repositories";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
-export default function LayoutShellClient({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/seller");
-  const isUserRoute = pathname.startsWith("/user");
-  const isDashboardRoute = isAdminRoute || isUserRoute;
+// Vercel Hobby max is 60 s; Firestore read + write fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
+// â”€â”€â”€ Shiprocket â†’ our internal order status mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const { state: baState } = useBottomActionsContext();
-  const hasBottomActions =
-    baState.actions.length > 0 ||
-    !!(baState.bulk && baState.bulk.selectedCount > 0) ||
-    !!baState.infoLabel;
+const SHIPPED_STATUSES = new Set([
+  "Shipped",
+  "In Transit",
+  "Out For Delivery",
+  "Pickup Scheduled",
+  "Picked Up",
+]);
 
-  const DEFAULT_LIGHT_BG = {
-    type: "color" as const,
-    value: "#f9fafb",
-    overlay: { enabled: false, color: "#000000", opacity: 0 },
-  };
-  const DEFAULT_DARK_BG = {
-    type: "color" as const,
-    value: "#030712",
-    overlay: { enabled: false, color: "#000000", opacity: 0 },
-  };
+const DELIVERED_STATUS = "Delivered";
 
-  const { data: siteSettings } = useSiteSettings<{
-    background?: {
-      light?: typeof DEFAULT_LIGHT_BG;
-      dark?: typeof DEFAULT_DARK_BG;
-    };
-    navbarConfig?: { hiddenNavItems?: string[] };
-    footerConfig?: {
-      trustBar?: {
-        enabled?: boolean;
-        items?: { icon: string; label: string; visible: boolean }[];
-      };
-      newsletterEnabled?: boolean;
-    };
-  }>();
+const CANCELLED_STATUSES = new Set([
+  "Cancelled",
+  "RTO Initiated",
+  "RTO Delivered",
+  "Lost",
+  "Damaged",
+]);
 
-  const backgroundConfig = {
-    lightMode: siteSettings?.background?.light ?? DEFAULT_LIGHT_BG,
-    darkMode: siteSettings?.background?.dark ?? DEFAULT_DARK_BG,
-  };
+// â”€â”€â”€ Signature verification helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  useEffect(() => {
-    const savedPreference = localStorage.getItem("sidebarOpen");
-    if (savedPreference !== null) {
-      setSidebarOpen(savedPreference === "true");
-    }
-  }, []);
-
-  const handleToggleSidebar = () => {
-    setSidebarOpen((prev) => {
-      const next = !prev;
-      localStorage.setItem("sidebarOpen", String(next));
-      return next;
-    });
-  };
-
-  if (isDashboardRoute) {
-    return (
-      <div className="flex min-h-screen w-full flex-col">
-        <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
-        <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
-      </div>
-    );
+function verifyShiprocketSignature(body: string, signature: string): boolean {
+  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true;
   }
-
-  return (
-    <div className="flex min-h-screen w-full flex-col overflow-x-clip transition-colors duration-300">
-      <BackgroundRenderer
-        lightMode={backgroundConfig.lightMode}
-        darkMode={backgroundConfig.darkMode}
-      />
-
-      <div className={`sticky top-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}>
-        <TitleBar
-          onToggleSidebar={handleToggleSidebar}
-          sidebarOpen={sidebarOpen}
-          onSearchToggle={() => setSearchOpen(!searchOpen)}
-          searchOpen={searchOpen}
-          isDark={isDark}
-          onToggleTheme={toggleTheme}
-        />
-        <MainNavbar hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems} />
-        <Search
-          isOpen={searchOpen}
-          onOpen={() => setSearchOpen(true)}
-          onClose={() => setSearchOpen(false)}
-          onSearch={(query) => {
-            setSearchOpen(false);
-            router.push(
-              `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
-            );
-            logger.debug("Search navigating to products:", query);
-          }}
-        />
-      </div>
-
-      <EventBanner />
-      <AutoBreadcrumbs />
-
-      <div className="relative flex w-full flex-1 overflow-x-clip">
-        <Sidebar
-          isOpen={sidebarOpen}
-          isDark={isDark}
-          onClose={handleToggleSidebar}
-          onToggleTheme={toggleTheme}
-        />
-
-        <Main id="main-content" className={`flex-1 ${hasBottomActions ? "mb-28" : "mb-16"} w-full md:mb-0`}>
-          <div
-            className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
-          >
-            {children}
-          </div>
-        </Main>
-      </div>
-
-      <BackToTop sidebarOpen={sidebarOpen} hasBottomActions={hasBottomActions} />
-      <Footer footerConfig={siteSettings?.footerConfig} />
-      <BottomActions />
-      <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
-      <UnsavedChangesModal />
-    </div>
+  const expected = createHmac("sha256", secret).update(body).digest("hex");
+  // Length guard: hex-encoded SHA-256 is always 64 chars
+  if (signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(signature, "hex"),
   );
+}
+
+// â”€â”€â”€ Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export async function POST(request: NextRequest) {
+  let rawBody = "";
+  try {
+    rawBody = await request.text();
+
+    // Verify signature when configured
+    const signature = request.headers.get("X-Shiprocket-Signature") ?? "";
+    if (!verifyShiprocketSignature(rawBody, signature)) {
+      serverLogger.warn("Shiprocket webhook: invalid signature", { signature });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    const payload = JSON.parse(rawBody) as ShiprocketWebhookPayload;
+    const { order_id: srOrderId, current_status: status, awb } = payload;
+
+    if (!srOrderId || !status) {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Build standard Shiprocket tracking URL if AWB is present
+    const trackingUrl = awb
+      ? `https://shiprocket.co/tracking/${awb}`
+      : undefined;
+
+    // Find matching order by shiprocketOrderId numeric field
+    const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);
+
+    if (!orders || orders.length === 0) {
+      serverLogger.warn("Shiprocket webhook: order not found", { srOrderId });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    const order = orders[0];
+    const orderId = order.id!;
+
+    // Determine updates
+    const updates: Record<string, unknown> = {
+      shiprocketStatus: status,
+      shiprocketUpdatedAt: new Date(),
+    };
+    if (trackingUrl) updates.trackingUrl = trackingUrl;
+    if (awb) updates.shiprocketAWB = awb;
+
+    if (status === DELIVERED_STATUS) {
+      updates.status = "delivered";
+      updates.deliveryDate = new Date();
+      updates.payoutStatus = "eligible";
+      serverLogger.info("Shiprocket webhook: order delivered", {
+        orderId,
+        srOrderId,
+      });
+    } else if (SHIPPED_STATUSES.has(status)) {
+      if (order.status !== "delivered") {
+        updates.status = "shipped";
+      }
+    } else if (CANCELLED_STATUSES.has(status)) {
+      serverLogger.info("Shiprocket webhook: order cancelled/returned", {
+        orderId,
+        srOrderId,
+        status,
+      });
+      // Do not override status automatically on cancellation â€” admin handles manually
+    }
+
+    await orderRepository.update(
+      orderId,
+      updates as Partial<import("@/db/schema").OrderDocument>,
+    );
+
+    serverLogger.info("Shiprocket webhook processed", {
+      orderId,
+      srOrderId,
+      status,
+      awb,
+    });
+
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    serverLogger.error("Shiprocket webhook error", {
+      error,
+      rawBody: rawBody.slice(0, 500),
+    });
+    return handleApiError(error);
+  }
 }

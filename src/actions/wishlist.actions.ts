@@ -87,3 +87,4 @@ export async function getWishlistAction(): Promise<{
 
   return { items: enriched, meta: { total: enriched.length } };
 }
+

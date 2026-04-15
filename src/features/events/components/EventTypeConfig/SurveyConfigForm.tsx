@@ -37,3 +37,4 @@ export function SurveyConfigForm({ value, onChange }: SurveyConfigFormProps) {
     </FormGroup>
   );
 }
+

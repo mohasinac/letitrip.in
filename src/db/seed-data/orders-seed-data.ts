@@ -608,3 +608,4 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     updatedAt: daysAgo(48),
   },
 ];
+

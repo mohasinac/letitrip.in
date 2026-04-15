@@ -70,3 +70,4 @@ export function useUpdateProfile(options?: {
     onError: options?.onError,
   });
 }
+

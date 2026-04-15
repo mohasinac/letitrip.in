@@ -21,3 +21,4 @@ export function useAdminSiteSettings() {
 
   return { ...query, updateMutation };
 }
+

@@ -47,3 +47,4 @@ export const GET = createRouteHandler({
     return successResponse(result);
   },
 });
+

@@ -68,3 +68,4 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
     </Card>
   );
 }
+

@@ -54,3 +54,4 @@ export function CouponFilters({ table }: CouponFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

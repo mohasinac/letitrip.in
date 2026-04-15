@@ -122,3 +122,4 @@ export const LOCALE_CONFIG = {
    */
   SUPPORTED_LOCALES: ["en"] as const,
 } as const;
+

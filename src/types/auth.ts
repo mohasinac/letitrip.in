@@ -146,3 +146,4 @@ export interface RegisterData {
   displayName?: string;
   acceptTerms: boolean;
 }
+

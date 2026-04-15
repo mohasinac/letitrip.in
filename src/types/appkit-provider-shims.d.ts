@@ -4,9 +4,15 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
   import type { Database } from "firebase-admin/database";
   import type { Bucket } from "firebase-admin/storage";
   import type {
+    CollectionReference,
     DocumentData,
+    DocumentReference,
+    DocumentSnapshot,
     Firestore,
+    Query,
     QueryDocumentSnapshot,
+    Transaction,
+    WriteBatch,
   } from "firebase-admin/firestore";
   import type { IDbProvider } from "@mohasinac/appkit/contracts";
 
@@ -29,6 +35,54 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
     constructor(collection: string);
   }
 
+  export class BaseRepository<T extends DocumentData> {
+    protected collection: string;
+    constructor(collection: string);
+    protected get db(): Firestore;
+    protected getCollection(): CollectionReference;
+    protected mapDoc<D = T>(snap: DocumentSnapshot): D;
+    findById(id: string): Promise<T | null>;
+    findByIdOrFail(id: string): Promise<T>;
+    findBy(field: string, value: unknown): Promise<T[]>;
+    findOneBy(field: string, value: unknown): Promise<T | null>;
+    findAll(limit?: number): Promise<T[]>;
+    create(data: Partial<T> | Record<string, unknown>): Promise<T>;
+    createWithId(id: string, data: Partial<T>): Promise<T>;
+    update(id: string, data: Partial<T>): Promise<T>;
+    delete(id: string): Promise<void>;
+    exists(id: string): Promise<boolean>;
+    count(): Promise<number>;
+    protected sieveQuery<TResult extends DocumentData = T>(
+      model: SieveModel,
+      fields: FirebaseSieveFields,
+      options?: FirebaseSieveOptions & { baseQuery?: CollectionReference | Query },
+    ): Promise<FirebaseSieveResult<TResult>>;
+    findByIdInTx(tx: Transaction, id: string): Promise<T | null>;
+    findByIdOrFailInTx(tx: Transaction, id: string): Promise<T>;
+    createInTx(
+      tx: Transaction,
+      data: Partial<T> | Record<string, unknown>,
+    ): DocumentReference;
+    createWithIdInTx(
+      tx: Transaction,
+      id: string,
+      data: Partial<T> | Record<string, unknown>,
+    ): DocumentReference;
+    updateInTx(tx: Transaction, id: string, data: Partial<T>): void;
+    deleteInTx(tx: Transaction, id: string): void;
+    createInBatch(
+      batch: WriteBatch,
+      data: Partial<T> | Record<string, unknown>,
+    ): DocumentReference;
+    createWithIdInBatch(
+      batch: WriteBatch,
+      id: string,
+      data: Partial<T> | Record<string, unknown>,
+    ): void;
+    updateInBatch(batch: WriteBatch, id: string, data: Partial<T>): void;
+    deleteInBatch(batch: WriteBatch, id: string): void;
+  }
+
   export const firebaseDbProvider: IDbProvider;
 
   export type SieveModel = Record<string, unknown>;
@@ -36,8 +90,23 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
   export type SieveFieldConfig = Record<string, unknown>;
   export type SieveOptions = Record<string, unknown>;
   export type SieveResult = {
-    docs: QueryDocumentSnapshot<DocumentData>[];
-    total?: number;
+    items: QueryDocumentSnapshot<DocumentData>[] | DocumentData[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+  export type FirebaseSieveFieldConfig = SieveFieldConfig;
+  export type FirebaseSieveFields = SieveFields;
+  export type FirebaseSieveOptions = SieveOptions;
+  export type FirebaseSieveResult<T> = {
+    items: T[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasMore: boolean;
   };
 }
 
@@ -333,3 +402,4 @@ declare module "@mohasinac/appkit/providers/storage-firebase" {
 
   export const firebaseStorageProvider: IStorageProvider;
 }
+

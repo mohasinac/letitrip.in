@@ -31,3 +31,4 @@ export function usePollVote(
     onError: options?.onError,
   });
 }
+

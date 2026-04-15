@@ -49,3 +49,4 @@ export function useAdminFaqs(paramsString: string) {
 
   return { ...query, createMutation, updateMutation, deleteMutation };
 }
+

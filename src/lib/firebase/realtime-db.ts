@@ -21,9 +21,9 @@ import {
   Unsubscribe,
 } from "firebase/database";
 import { realtimeDb } from "./config";
-import { RTDB_PATHS } from "./rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
 
-export { RTDB_PATHS } from "./rtdb-paths";
+export { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
 
 /**
  * Set user online presence
@@ -282,3 +282,4 @@ export function listenToData(
     callback(snapshot.val());
   });
 }
+

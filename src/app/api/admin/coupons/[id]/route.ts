@@ -1,93 +1,180 @@
+import "@/providers.config";
 /**
- * Admin Coupon Detail API Route
- * GET    /api/admin/coupons/[id] — Get single coupon
- * PATCH  /api/admin/coupons/[id] — Update coupon
- * DELETE /api/admin/coupons/[id] — Delete coupon
+ * Admin Blog API Route
+ * GET  /api/admin/blog â€” List all blog posts
+ * POST /api/admin/blog â€” Create a new blog post
  */
 
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { z } from "zod";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { successResponse } from "@mohasinac/appkit/next";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { blogRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import {
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
+} from "@mohasinac/appkit/features/media";
 
-type IdParams = { id: string };
+const mediaFieldSchema = z.object({
+  url: z.string().url(),
+  type: z.enum(["image", "video", "file"]),
+  alt: z.string().optional(),
+  thumbnailUrl: z.string().url().optional(),
+});
 
-const COUPON_ALLOWED_FIELDS = [
-  "name",
-  "description",
-  "discount",
-  "bxgy",
-  "tiers",
-  "usage",
-  "validity",
-  "restrictions",
-] as const;
+const createBlogPostSchema = z.object({
+  title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  slug: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  excerpt: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  content: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  category: z.enum(["news", "tips", "guides", "updates", "community"]),
+  tags: z.array(z.string()).default([]),
+  isFeatured: z.boolean().default(false),
+  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  coverImage: mediaFieldSchema.nullable().optional(),
+  contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),
+  additionalImages: z.array(mediaFieldSchema).max(5).optional().default([]),
+  authorId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  authorName: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
+  authorAvatar: z.string().optional(),
+  readTimeMinutes: z.number().int().min(1).default(5),
+  publishedAt: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+});
 
 /**
- * GET /api/admin/coupons/[id]
+ * GET /api/admin/blog
+ *
+ * Query params:
+ *  - filters  (string) â€” Sieve filters (e.g. status==published, isFeatured==true)
+ *  - sorts    (string) â€” Sieve sorts (e.g. -publishedAt)
+ *  - page     (number) â€” page number (default 1)
+ *  - pageSize (number) â€” results per page (default 50, max 200)
+ *
+ * meta.total / published / drafts / featured are always computed from the
+ * full unfiltered dataset so stat cards remain accurate regardless of filter.
  */
-export const GET = createRouteHandler<never, IdParams>({
+export const GET = createRouteHandler({
+  auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const coupon = await couponsRepository.findById(id);
-    if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);
-    return successResponse(coupon);
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
+
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
+      min: 1,
+      max: 200,
+    });
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+
+    serverLogger.info("Admin blog posts list requested", {
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+
+    // Compute summary counts + paginated results in parallel (Rule 8 â€” no findAll())
+    const [
+      publishedResult,
+      draftsResult,
+      featuredResult,
+      allResult,
+      sieveResult,
+    ] = await Promise.all([
+      blogRepository.listAll({
+        filters: "status==published",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({
+        filters: "status==draft",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({
+        filters: "isFeatured==true",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      blogRepository.listAll({
+        filters,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      }),
+    ]);
+
+    const published = publishedResult.total;
+    const drafts = draftsResult.total;
+    const featured = featuredResult.total;
+
+    return successResponse({
+      posts: sieveResult.items,
+      meta: {
+        total: allResult.total, // Always full count for stat cards
+        published,
+        drafts,
+        featured,
+        filteredTotal: sieveResult.total,
+        page: sieveResult.page,
+        pageSize: sieveResult.pageSize,
+        totalPages: sieveResult.totalPages,
+        hasMore: sieveResult.hasMore,
+      },
+    });
   },
 });
 
 /**
- * PATCH /api/admin/coupons/[id] — Update allowed coupon fields
+ * POST /api/admin/blog â€” Create a new blog post
  */
-export const PATCH = createRouteHandler<Record<string, unknown>, IdParams>({
-  roles: ["admin"],
-  handler: async ({ request, user, body, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const coupon = await couponsRepository.findById(id);
-    if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);
+export const POST = createRouteHandler({
+  auth: true,
+  roles: ["admin", "moderator"],
+  schema: createBlogPostSchema,
+  handler: async ({ body, user }) => {
+    const { publishedAt, ...rest } = body!;
+    const coverImage = await finalizeStagedMediaObject(rest.coverImage);
+    const contentImages = await finalizeStagedMediaObjectArray(
+      rest.contentImages,
+    );
+    const additionalImages = await finalizeStagedMediaObjectArray(
+      rest.additionalImages,
+    );
 
-    const update: Record<string, unknown> = {};
-    for (const field of COUPON_ALLOWED_FIELDS) {
-      if (body && field in body) update[field] = body[field];
-    }
+    const postData = {
+      ...rest,
+      coverImage,
+      contentImages,
+      additionalImages,
+      publishedAt: publishedAt
+        ? new Date(publishedAt)
+        : body!.status === "published"
+          ? new Date()
+          : undefined,
+      authorId: body!.authorId || user?.uid || "",
+    };
 
-    const updated = await couponsRepository.update(id, {
-      ...update,
-      updatedAt: new Date(),
+    serverLogger.info("Creating blog post", {
+      title: postData.title,
+      authorId: postData.authorId,
     });
-    serverLogger.info("Admin coupon updated", {
-      couponId: id,
-      adminUid: user!.uid,
-    });
-    return successResponse(updated, SUCCESS_MESSAGES.COUPON.UPDATED);
-  },
-});
 
-/**
- * DELETE /api/admin/coupons/[id]
- */
-export const DELETE = createRouteHandler<never, IdParams>({
-  roles: ["admin"],
-  handler: async ({ request, user, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const coupon = await couponsRepository.findById(id);
-    if (!coupon) throw new NotFoundError(ERROR_MESSAGES.COUPON.NOT_FOUND);
+    const post = await blogRepository.create(postData);
 
-    await couponsRepository.delete(id);
-    serverLogger.info("Admin coupon deleted", {
-      couponId: id,
-      code: coupon.code,
-      adminUid: user!.uid,
-    });
-    return successResponse(null, SUCCESS_MESSAGES.COUPON.DELETED);
+    return successResponse(post, SUCCESS_MESSAGES.BLOG.CREATED);
   },
 });

@@ -63,3 +63,4 @@ export function useRevokeUserSessions() {
     mutationFn: ({ userId }) => revokeUserSessionsAction({ userId }),
   });
 }
+

@@ -23,3 +23,4 @@ export function TrustFeaturesSection() {
 
   return <AppkitTrustFeaturesSection items={items} />;
 }
+

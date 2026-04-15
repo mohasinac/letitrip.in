@@ -289,3 +289,4 @@ export function AdminCarouselView({ action }: Props) {
     />
   );
 }
+

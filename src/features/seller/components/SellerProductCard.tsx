@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { Span, Text, Button, Row } from "@mohasinac/appkit/ui";
@@ -61,7 +61,7 @@ export function SellerProductCard({
           src={product.video?.thumbnailUrl || product.mainImage || undefined}
           alt={product.title}
           size="card"
-          fallback="📦"
+          fallback="??"
         />
         {product.video?.url && (
           <div
@@ -70,7 +70,7 @@ export function SellerProductCard({
             <Span
               className={`bg-black/50 text-white rounded-full w-8 h-8 ${flex.center} text-sm leading-none`}
             >
-              ▶
+              ?
             </Span>
           </div>
         )}
@@ -120,3 +120,4 @@ export function SellerProductCard({
     </BaseListingCard>
   );
 }
+

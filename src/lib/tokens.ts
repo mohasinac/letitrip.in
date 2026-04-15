@@ -1,204 +1,61 @@
 /**
- * Token Management Utilities
+ * Integration Keys — Centralized Credential Resolver
  *
- * Centralized token generation and validation
+ * Server-only. Resolves all provider credentials with a two-tier priority:
+ *   1. Firestore siteSettings.credentials (encrypted with AES-256-GCM)
+ *   2. Environment variables (fallback for local dev / initial setup)
+ *
+ * Results are cached in process memory for 60 seconds so Firestore is not
+ * hit on every API request. Call invalidateIntegrationKeysCache() after an
+ * admin saves new credentials so the next request picks up the fresh values.
+ *
+ * Usage:
+ *   const keys = await resolveKeys();
+ *   const razorpay = new Razorpay({ key_id: keys.razorpayKeyId, key_secret: keys.razorpayKeySecret });
  */
+import "server-only";
+import { siteSettingsRepository } from "@/repositories";
 
-import crypto from "crypto";
-import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
-import { TOKEN_CONFIG, ERROR_MESSAGES } from "@/constants";
-import { resolveDate } from "@/utils";
-import {
-  EMAIL_VERIFICATION_COLLECTION,
-  PASSWORD_RESET_COLLECTION,
-} from "@/db/schema";
-import { prepareForFirestore } from "@mohasinac/appkit/providers/db-firebase";
-
-export interface TokenData {
-  userId: string;
-  email: string;
-  token: string;
-  expiresAt: Date;
-  createdAt: Date;
+export interface ResolvedKeys {
+  // Razorpay
+  razorpayKeyId: string;
+  razorpayKeySecret: string;
+  razorpayWebhookSecret: string;
+  // Resend email
+  resendApiKey: string;
+  // WhatsApp Business Cloud
+  whatsappApiKey: string;
 }
 
-export interface PasswordResetTokenData extends TokenData {
-  used: boolean;
-  usedAt?: Date;
+let _cache: { value: ResolvedKeys; expiresAt: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 1 minute
+
+/** Drops the in-process cache. Call this after admin saves new credentials. */
+export function invalidateIntegrationKeysCache(): void {
+  _cache = null;
 }
 
 /**
- * Generate a secure random token
+ * Resolve all integration keys: Firestore DB first, env var fallback.
+ * Results are cached for 60 s per process instance.
  */
-export function generateToken(length: number = 32): string {
-  return crypto.randomBytes(length).toString("hex");
+export async function resolveKeys(): Promise<ResolvedKeys> {
+  if (_cache && _cache.expiresAt > Date.now()) return _cache.value;
+
+  // getDecryptedCredentials already decrypts + falls back gracefully
+  const db = await siteSettingsRepository.getDecryptedCredentials();
+
+  const value: ResolvedKeys = {
+    razorpayKeyId: db.razorpayKeyId || process.env.RAZORPAY_KEY_ID || "",
+    razorpayKeySecret:
+      db.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || "",
+    razorpayWebhookSecret:
+      db.razorpayWebhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET || "",
+    resendApiKey: db.resendApiKey || process.env.RESEND_API_KEY || "",
+    whatsappApiKey: db.whatsappApiKey || process.env.WHATSAPP_API_KEY || "",
+  };
+
+  _cache = { value, expiresAt: Date.now() + CACHE_TTL_MS };
+  return value;
 }
 
-/**
- * Create an email verification token
- */
-export async function createVerificationToken(
-  userId: string,
-  email: string,
-): Promise<string> {
-  const token = generateToken();
-  const expiresAt = new Date(
-    Date.now() + TOKEN_CONFIG.EMAIL_VERIFICATION.EXPIRY_MS,
-  );
-
-  const tokenData = prepareForFirestore({
-    userId,
-    email,
-    token,
-    expiresAt,
-    createdAt: new Date(),
-  });
-
-  await getAdminDb()
-    .collection(EMAIL_VERIFICATION_COLLECTION)
-    .doc(token)
-    .set(tokenData);
-
-  return token;
-}
-
-/**
- * Create a password reset token
- */
-export async function createPasswordResetToken(
-  userId: string,
-  email: string,
-): Promise<string> {
-  const token = generateToken();
-  const expiresAt = new Date(
-    Date.now() + TOKEN_CONFIG.PASSWORD_RESET.EXPIRY_MS,
-  );
-
-  const tokenData = prepareForFirestore({
-    userId,
-    email,
-    token,
-    expiresAt,
-    createdAt: new Date(),
-    used: false,
-  });
-
-  await getAdminDb()
-    .collection(PASSWORD_RESET_COLLECTION)
-    .doc(token)
-    .set(tokenData);
-
-  return token;
-}
-
-/**
- * Verify and consume an email verification token
- */
-export async function verifyEmailToken(token: string): Promise<{
-  valid: boolean;
-  userId?: string;
-  error?: string;
-}> {
-  const tokenDoc = await getAdminDb()
-    .collection(EMAIL_VERIFICATION_COLLECTION)
-    .doc(token)
-    .get();
-
-  if (!tokenDoc.exists) {
-    return { valid: false, error: ERROR_MESSAGES.EMAIL.TOKEN_INVALID };
-  }
-
-  const tokenData = tokenDoc.data();
-
-  if (!tokenData) {
-    return { valid: false, error: ERROR_MESSAGES.EMAIL.TOKEN_INVALID };
-  }
-
-  // Check expiration
-  const expiresAt = resolveDate(tokenData.expiresAt);
-
-  if (!expiresAt || expiresAt < new Date()) {
-    await getAdminDb()
-      .collection(EMAIL_VERIFICATION_COLLECTION)
-      .doc(token)
-      .delete();
-    return { valid: false, error: ERROR_MESSAGES.EMAIL.TOKEN_EXPIRED };
-  }
-
-  // Delete token after use
-  await getAdminDb()
-    .collection(EMAIL_VERIFICATION_COLLECTION)
-    .doc(token)
-    .delete();
-
-  return { valid: true, userId: tokenData?.userId };
-}
-
-/**
- * Verify and get password reset token data
- */
-export async function verifyPasswordResetToken(token: string): Promise<{
-  valid: boolean;
-  userId?: string;
-  error?: string;
-}> {
-  const tokenDoc = await getAdminDb()
-    .collection(PASSWORD_RESET_COLLECTION)
-    .doc(token)
-    .get();
-
-  if (!tokenDoc.exists) {
-    return { valid: false, error: ERROR_MESSAGES.PASSWORD.TOKEN_INVALID };
-  }
-
-  const tokenData = tokenDoc.data();
-
-  if (!tokenData) {
-    return { valid: false, error: ERROR_MESSAGES.PASSWORD.TOKEN_INVALID };
-  }
-
-  // Check expiration
-  const expiresAt = resolveDate(tokenData.expiresAt);
-
-  if (!expiresAt || expiresAt < new Date()) {
-    await getAdminDb()
-      .collection(PASSWORD_RESET_COLLECTION)
-      .doc(token)
-      .delete();
-    return { valid: false, error: ERROR_MESSAGES.PASSWORD.TOKEN_EXPIRED };
-  }
-
-  // Check if already used
-  if (tokenData.used) {
-    return { valid: false, error: ERROR_MESSAGES.PASSWORD.TOKEN_USED };
-  }
-
-  return { valid: true, userId: tokenData.userId };
-}
-
-/**
- * Mark a password reset token as used
- */
-export async function markPasswordResetTokenAsUsed(
-  token: string,
-): Promise<void> {
-  const updateData = prepareForFirestore({
-    used: true,
-    usedAt: new Date(),
-  });
-
-  await getAdminDb()
-    .collection(PASSWORD_RESET_COLLECTION)
-    .doc(token)
-    .update(updateData);
-}
-
-/**
- * Delete a token (cleanup on failure)
- */
-export async function deleteToken(
-  collection: "emailVerificationTokens" | "passwordResetTokens",
-  token: string,
-): Promise<void> {
-  await getAdminDb().collection(collection).doc(token).delete();
-}

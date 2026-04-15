@@ -201,3 +201,4 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
     />
   );
 }
+

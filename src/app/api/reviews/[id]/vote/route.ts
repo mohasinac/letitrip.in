@@ -1,50 +1,40 @@
+import "@/providers.config";
 /**
- * Reviews API - Vote Endpoint
+ * POST /api/realtime/token
  *
- * Handles review helpful/not helpful voting
+ * Issues a Firebase custom token for Realtime Database read-only subscriptions.
  */
 
-import { reviewRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { reviewVoteSchema } from "@/lib/validation/schemas";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
+import { successResponse } from "@mohasinac/appkit/next";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { chatRepository } from "@/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
-/**
- * POST /api/reviews/[id]/vote
- *
- * Vote on a review (helpful / not helpful).
- * Requires authentication. Rate-limited to prevent vote stuffing.
- */
-export const POST = createRouteHandler<
-  (typeof reviewVoteSchema)["_output"],
-  { id: string }
->({
+export const POST = createRouteHandler({
   auth: true,
-  schema: reviewVoteSchema,
-  handler: async ({ request, user: _user, body, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-
-    const review = await reviewRepository.findById(id);
-    if (!review) {
-      throw new NotFoundError(ERROR_MESSAGES.REVIEW.NOT_FOUND);
+  handler: async ({ user }) => {
+    let chatIds: Record<string, boolean> = {};
+    try {
+      const userChatIds = await chatRepository.getChatIdsForUser(user!.uid);
+      chatIds = Object.fromEntries(userChatIds.map((id) => [id, true]));
+    } catch (err) {
+      serverLogger.warn("Could not resolve chatIds for realtime token", {
+        uid: user!.uid,
+        err,
+      });
     }
 
-    const helpful = body!.vote === "helpful";
-    const updateData: Record<string, number> = {};
-    if (helpful) {
-      updateData.helpfulCount = (review.helpfulCount || 0) + 1;
-    }
+    const customToken = await getAdminAuth().createCustomToken(user!.uid, {
+      role: (user as any).role ?? "user",
+      chatIds,
+    });
 
-    const updatedReview = await reviewRepository.update(id, updateData);
+    serverLogger.info("Realtime DB custom token issued", {
+      uid: user!.uid,
+      chatCount: Object.keys(chatIds).length,
+    });
 
-    return successResponse(
-      { helpfulCount: updatedReview.helpfulCount },
-      SUCCESS_MESSAGES.REVIEW.VOTE_RECORDED,
-    );
+    return successResponse({ customToken, expiresAt: Date.now() + 3_600_000 });
   },
 });

@@ -113,3 +113,4 @@ export const PAYOUT_TABLE_COLUMNS: Column[] = [
     ),
   },
 ];
+

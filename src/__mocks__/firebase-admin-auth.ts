@@ -14,3 +14,4 @@ export const getAuth = jest.fn(() => ({
   setCustomUserClaims: jest.fn().mockResolvedValue(undefined),
   createCustomToken: jest.fn().mockResolvedValue("mock-custom-token"),
 }));
+

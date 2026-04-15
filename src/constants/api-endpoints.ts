@@ -361,3 +361,4 @@ export const API_ENDPOINTS = {
 
 // Type for API endpoints
 export type ApiEndpoint = string | ((id: string) => string);
+

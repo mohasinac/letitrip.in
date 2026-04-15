@@ -17,7 +17,7 @@ import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,3 +66,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

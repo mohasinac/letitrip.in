@@ -26,7 +26,7 @@ import {
   ValidationError,
 } from "@mohasinac/appkit/errors";
 import { FEATURE_FLAGS, ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import type { ChatRoomDocument } from "@/repositories";
 
@@ -201,3 +201,4 @@ export async function deleteChatRoomAction(
   });
   return { deleted: true };
 }
+

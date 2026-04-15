@@ -6,10 +6,10 @@ import "@/providers.config";
  */
 
 import { NextRequest } from "next/server";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   validateRequestBody,
@@ -84,3 +84,4 @@ export const POST = createApiHandler({
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   },
 });
+

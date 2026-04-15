@@ -1,69 +1,18 @@
+import "@/providers.config";
 /**
- * Cancel Order API
+ * GET /api/user/offers
  *
- * POST /api/user/orders/[id]/cancel
- *
- * Cancels a user order. Only orders with status "pending" or "confirmed"
- * can be cancelled by the user. Shipped/delivered orders require admin action.
+ * Returns authenticated buyer's offers, newest first.
  */
 
-import { orderRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { AuthorizationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { z } from "zod";
+import { offerRepository } from "@/repositories";
 
-const cancelSchema = z.object({
-  reason: z.string().min(1, "Cancellation reason is required").max(500),
-});
-
-const CANCELLABLE_STATUSES = ["pending", "confirmed"] as const;
-
-/**
- * POST /api/user/orders/[id]/cancel
- *
- * Cancels the order if it is still in a cancellable state.
- * Requires a cancellation reason in the request body.
- * Rate-limited to prevent cancel-spam attacks.
- */
-export const POST = createRouteHandler<
-  (typeof cancelSchema)["_output"],
-  { id: string }
->({
+export const GET = createRouteHandler({
   auth: true,
-  schema: cancelSchema,
-  handler: async ({ user, body, params, request }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-
-    const order = await orderRepository.findById(id);
-
-    if (!order) {
-      return errorResponse(ERROR_MESSAGES.ORDER.NOT_FOUND, 404);
-    }
-
-    if (order.userId !== user!.uid) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    if (!CANCELLABLE_STATUSES.includes(order.status as any)) {
-      return errorResponse(ERROR_MESSAGES.ORDER.CANNOT_CANCEL, 422);
-    }
-
-    const reason = body?.reason ?? "Cancelled by user";
-
-    const cancelled = await orderRepository.cancelOrder(id, reason);
-
-    serverLogger.info("Order cancelled by user", {
-      userId: user!.uid,
-      orderId: id,
-      reason,
-    });
-
-    return successResponse(cancelled, SUCCESS_MESSAGES.ORDER.CANCELLED);
+  handler: async ({ user }) => {
+    const result = await offerRepository.findByBuyer(user!.uid);
+    return successResponse(result);
   },
 });

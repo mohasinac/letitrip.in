@@ -1,66 +1,57 @@
+import "@/providers.config";
 /**
- * Admin Event Entries API Route
- * GET /api/admin/events/[id]/entries — Paginated entry list with review-status filter
+ * API Route: Admin Dashboard Statistics
+ * GET /api/admin/dashboard
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit/next";
-import { eventRepository, eventEntryRepository } from "@/repositories";
-import { ERROR_MESSAGES } from "@/constants";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
-import type { SieveModel } from "@/lib/query/firebase-sieve";
+  userRepository,
+  productRepository,
+  orderRepository,
+} from "@/repositories";
 
-export const GET = createRouteHandler<never, { id: string }>({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request, params }) => {
-    const id = params!.id;
+  handler: async () => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const event = await eventRepository.findById(id);
-    if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
-
-    const searchParams = getSearchParams(request);
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 25, {
-      min: 1,
-      max: 100,
-    });
-    const sorts = getStringParam(searchParams, "sorts") || "-submittedAt";
-    const reviewStatus = getStringParam(searchParams, "reviewStatus");
-
-    const filtersArr: string[] = [];
-    if (reviewStatus) filtersArr.push(`reviewStatus==${reviewStatus}`);
-    const rawFilters = getStringParam(searchParams, "filters");
-    if (rawFilters) filtersArr.push(rawFilters);
-
-    const model: SieveModel = {
-      filters: filtersArr.join(",") || undefined,
-      sorts,
-      page,
-      pageSize,
-    };
-
-    serverLogger.info("Admin event entries list requested", {
-      eventId: id,
-      model,
-    });
-
-    const result = await eventEntryRepository.listForEvent(id, model);
+    // Parallel execution of all count queries for speed
+    const [
+      totalUsers,
+      activeUsers,
+      newUsers,
+      disabledUsers,
+      adminUsers,
+      totalProducts,
+      totalOrders,
+    ] = await Promise.all([
+      userRepository.count().catch(() => 0),
+      userRepository.countActive().catch(() => 0),
+      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
+      userRepository.countDisabled().catch(() => 0),
+      userRepository.countByRole("admin").catch(() => 0),
+      productRepository.count().catch(() => 0),
+      orderRepository.count().catch(() => 0),
+    ]);
 
     return successResponse({
-      items: result.items,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalPages: result.totalPages,
-      hasMore: result.hasMore,
-      event,
+      users: {
+        total: totalUsers,
+        active: activeUsers,
+        new: newUsers,
+        newThisMonth: newUsers,
+        disabled: disabledUsers,
+        admins: adminUsers,
+      },
+      products: {
+        total: totalProducts,
+      },
+      orders: {
+        total: totalOrders,
+      },
     });
   },
 });

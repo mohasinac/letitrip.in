@@ -99,3 +99,4 @@ export function NotificationFilters({ table }: NotificationFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

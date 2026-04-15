@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { THEME_CONSTANTS } from "@/constants";
 import { StoreHeader as AppkitStoreHeader } from "@mohasinac/appkit/features/stores";
@@ -61,3 +61,4 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
     </div>
   );
 }
+

@@ -115,3 +115,4 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
     </div>
   );
 }
+

@@ -3,7 +3,7 @@ import "@/providers.config";
  * Seller Offers API Route
  * GET /api/seller/offers — Returns all incoming offers for the authenticated seller
  */
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { offerRepository } from "@/repositories";
 
@@ -44,3 +44,4 @@ export const GET = createApiHandler({
     });
   },
 });
+

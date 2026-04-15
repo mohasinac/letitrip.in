@@ -35,3 +35,4 @@ export default getRequestConfig(async ({ requestLocale }) => {
     now: new Date(),
   };
 });
+

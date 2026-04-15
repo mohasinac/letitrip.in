@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { Heading, Text, Span, Button, Row, Grid } from "@mohasinac/appkit/ui";
@@ -155,3 +155,4 @@ export function FooterConfigForm({
     </div>
   );
 }
+

@@ -1,99 +1,152 @@
 /**
- * Public Profile Page
+ * POST /api/webhooks/shiprocket
  *
- * Route: /profile/[userId]
- * SSR: fetches the user profile, and (if seller) their products and reviews,
- * server-side so the page ships with full HTML for SEO and zero CLS.
+ * Receives Shiprocket shipment status update webhooks.
+ * Shiprocket sends a webhook whenever a shipment's status changes.
+ *
+ * Security: Shiprocket allows setting a secret key for webhook verification.
+ * When SHIPROCKET_WEBHOOK_SECRET is set in env, the X-Shiprocket-Signature
+ * header is validated via HMAC-SHA256.
+ *
+ * On receipt:
+ *   - Maps Shiprocket status to our internal order status
+ *   - Updates order.shiprocketStatus, shiprocketUpdatedAt, trackingUrl
+ *   - If status = "Delivered": sets order.status='delivered', deliveryDate=now,
+ *                               payoutStatus='eligible'
  */
 
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { userRepository, productRepository } from "@/repositories";
-import { hasRole } from "@/helpers";
-import { formatMonthYear } from "@/utils";
-import { SITE_CONFIG } from "@/constants";
-import { PublicProfileView } from "@/features/user";
-import { buildSellerReviews } from "@/features/user/server";
-import type { UserDocument, ProductDocument } from "@/db/schema";
-import type { ImageCropData } from "@/components";
-import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
-import type { ProductItem } from "@mohasinac/appkit/features/products";
+import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
+import { orderRepository } from "@/repositories";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
-interface Props {
-  params: Promise<{ userId: string; locale: string }>;
-}
+// Vercel Hobby max is 60 s; Firestore read + write fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { userId } = await params;
-  const userData = await userRepository.findById(userId).catch(() => null);
-  const displayName =
-    userData?.displayName || userData?.email?.split("@")[0] || "User";
-  const title = `${displayName}'s Profile`;
-  const description = `View ${displayName}'s public profile on ${SITE_CONFIG.brand.name}.`;
-  return {
-    title: `${title} — ${SITE_CONFIG.brand.name}`,
-    description,
-    openGraph: { title, description },
-  };
-}
+// â”€â”€â”€ Shiprocket â†’ our internal order status mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-export default async function PublicProfilePage({ params }: Props) {
-  const { userId } = await params;
+const SHIPPED_STATUSES = new Set([
+  "Shipped",
+  "In Transit",
+  "Out For Delivery",
+  "Pickup Scheduled",
+  "Picked Up",
+]);
 
-  const userData = await userRepository.findById(userId).catch(() => null);
+const DELIVERED_STATUS = "Delivered";
 
-  if (!userData || !userData.publicProfile?.isPublic) {
-    notFound();
+const CANCELLED_STATUSES = new Set([
+  "Cancelled",
+  "RTO Initiated",
+  "RTO Delivered",
+  "Lost",
+  "Damaged",
+]);
+
+// â”€â”€â”€ Signature verification helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function verifyShiprocketSignature(body: string, signature: string): boolean {
+  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true;
   }
-
-  const isSeller = hasRole(userData.role ?? "user", "seller");
-  const profileName =
-    userData.displayName || userData.email?.split("@")[0] || "User";
-  const memberSince = formatMonthYear(userData.createdAt);
-  const avatarCropData: ImageCropData | null =
-    userData.avatarMetadata ||
-    (userData.photoURL
-      ? { url: userData.photoURL, position: { x: 50, y: 50 }, zoom: 1 }
-      : null);
-
-  let productsData: ProductsApiResponse | undefined;
-  let reviewsData: SellerReviewsData | undefined;
-
-  if (isSeller) {
-    const [productsResult, sellerReviews] = await Promise.all([
-      productRepository
-        .list(
-          { sorts: "-createdAt", page: 1, pageSize: 12 },
-          { sellerId: userId, status: "published" },
-        )
-        .catch(() => null),
-      buildSellerReviews(userId),
-    ]);
-
-    if (productsResult) {
-      productsData = {
-        data: productsResult.items as unknown as ProductItem[],
-        meta: {
-          total: productsResult.total,
-          page: productsResult.page,
-          pageSize: productsResult.pageSize,
-        },
-      };
-    }
-    reviewsData = sellerReviews;
-  }
-
-  return (
-    <PublicProfileView
-      user={userData as unknown as import("@/hooks").PublicUserProfile}
-      isSeller={isSeller}
-      profileName={profileName}
-      memberSince={memberSince}
-      avatarCropData={avatarCropData}
-      productsData={productsData}
-      productsLoading={false}
-      reviewsData={reviewsData}
-      reviewsLoading={false}
-    />
+  const expected = createHmac("sha256", secret).update(body).digest("hex");
+  // Length guard: hex-encoded SHA-256 is always 64 chars
+  if (signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(signature, "hex"),
   );
+}
+
+// â”€â”€â”€ Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+export async function POST(request: NextRequest) {
+  let rawBody = "";
+  try {
+    rawBody = await request.text();
+
+    // Verify signature when configured
+    const signature = request.headers.get("X-Shiprocket-Signature") ?? "";
+    if (!verifyShiprocketSignature(rawBody, signature)) {
+      serverLogger.warn("Shiprocket webhook: invalid signature", { signature });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    const payload = JSON.parse(rawBody) as ShiprocketWebhookPayload;
+    const { order_id: srOrderId, current_status: status, awb } = payload;
+
+    if (!srOrderId || !status) {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    // Build standard Shiprocket tracking URL if AWB is present
+    const trackingUrl = awb
+      ? `https://shiprocket.co/tracking/${awb}`
+      : undefined;
+
+    // Find matching order by shiprocketOrderId numeric field
+    const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);
+
+    if (!orders || orders.length === 0) {
+      serverLogger.warn("Shiprocket webhook: order not found", { srOrderId });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    const order = orders[0];
+    const orderId = order.id!;
+
+    // Determine updates
+    const updates: Record<string, unknown> = {
+      shiprocketStatus: status,
+      shiprocketUpdatedAt: new Date(),
+    };
+    if (trackingUrl) updates.trackingUrl = trackingUrl;
+    if (awb) updates.shiprocketAWB = awb;
+
+    if (status === DELIVERED_STATUS) {
+      updates.status = "delivered";
+      updates.deliveryDate = new Date();
+      updates.payoutStatus = "eligible";
+      serverLogger.info("Shiprocket webhook: order delivered", {
+        orderId,
+        srOrderId,
+      });
+    } else if (SHIPPED_STATUSES.has(status)) {
+      if (order.status !== "delivered") {
+        updates.status = "shipped";
+      }
+    } else if (CANCELLED_STATUSES.has(status)) {
+      serverLogger.info("Shiprocket webhook: order cancelled/returned", {
+        orderId,
+        srOrderId,
+        status,
+      });
+      // Do not override status automatically on cancellation â€” admin handles manually
+    }
+
+    await orderRepository.update(
+      orderId,
+      updates as Partial<import("@/db/schema").OrderDocument>,
+    );
+
+    serverLogger.info("Shiprocket webhook processed", {
+      orderId,
+      srOrderId,
+      status,
+      awb,
+    });
+
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    serverLogger.error("Shiprocket webhook error", {
+      error,
+      rawBody: rawBody.slice(0, 500),
+    });
+    return handleApiError(error);
+  }
 }

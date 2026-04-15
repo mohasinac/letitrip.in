@@ -1,7 +1,7 @@
-﻿/**
+/**
  * AdminStoresView
  *
- * Tier 2 — feature component.
+ * Tier 2 � feature component.
  * Admin store approval management: approve/reject seller stores and grant/revoke listing rights.
  * Uses URL-driven Sieve pagination + DataTable.
  */
@@ -78,8 +78,8 @@ function AdminStoresContent() {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["storeStatus"]);
 
-  // Build Sieve filter string — storeName is plaintext in StoreDocument so the API
-  // handles it via `q` → `storeName_=` (startsWith). Do NOT embed displayName/email
+  // Build Sieve filter string � storeName is plaintext in StoreDocument so the API
+  // handles it via `q` ? `storeName_=` (startsWith). Do NOT embed displayName/email
   // here; those are user fields that don't exist in the stores collection.
   const activeTab = table.get("storeStatus");
   const rawSieveParams = table.buildSieveParams(
@@ -145,7 +145,7 @@ function AdminStoresContent() {
       render: (row) => (
         <div className="space-y-0.5">
           <Text weight="medium" size="sm">
-            {row.displayName ?? "—"}
+            {row.displayName ?? "�"}
           </Text>
           <Caption>{row.email ?? ""}</Caption>
         </div>
@@ -154,13 +154,13 @@ function AdminStoresContent() {
     {
       key: "storeSlug",
       header: t("colSlug"),
-      render: (row) => <Caption>{row.storeSlug ?? "—"}</Caption>,
+      render: (row) => <Caption>{row.storeSlug ?? "�"}</Caption>,
     },
     {
       key: "storeName",
       header: t("colStoreName"),
       render: (row) => (
-        <Text size="sm">{row.publicProfile?.storeName ?? "—"}</Text>
+        <Text size="sm">{row.publicProfile?.storeName ?? "�"}</Text>
       ),
     },
     {
@@ -184,7 +184,7 @@ function AdminStoresContent() {
       key: "createdAt",
       header: t("colCreated"),
       render: (row) => (
-        <Caption>{row.createdAt ? formatDate(row.createdAt) : "—"}</Caption>
+        <Caption>{row.createdAt ? formatDate(row.createdAt) : "�"}</Caption>
       ),
     },
     {
@@ -219,7 +219,7 @@ function AdminStoresContent() {
     <div className={spacing.stack}>
       <AdminPageHeader
         title={t("title")}
-        subtitle={`${t("subtitle")} — ${total} ${t("total")}`}
+        subtitle={`${t("subtitle")} � ${total} ${t("total")}`}
       />
 
       <AdminStoresShell
@@ -298,3 +298,4 @@ export function AdminStoresView() {
     </Suspense>
   );
 }
+

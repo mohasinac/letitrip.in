@@ -3,7 +3,7 @@ import "@/providers.config";
  * Seller Store API Route
  * GET /api/seller/store — Returns the authenticated seller's own store
  */
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { storeRepository } from "@/repositories";
 
@@ -14,3 +14,4 @@ export const GET = createApiHandler({
     return successResponse({ store: store ?? null });
   },
 });
+

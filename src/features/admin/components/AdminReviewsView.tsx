@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminReviewsView
  *
  * Contains all review management state, mutations, handlers, and JSX.
@@ -72,7 +72,7 @@ function AdminReviewsContent({ action }: AdminReviewsViewProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Review | null>(null);
   const [bulkApproveConfirm, setBulkApproveConfirm] = useState(false);
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["status", "rating", "verified", "featured"]);
 
@@ -411,8 +411,8 @@ function AdminReviewsContent({ action }: AdminReviewsViewProps) {
               <Caption>{review.userName}</Caption>
               <div className={`${flex.between}`}>
                 <Badge>
-                  {"★".repeat(review.rating)}
-                  {"☆".repeat(5 - review.rating)}
+                  {"?".repeat(review.rating)}
+                  {"?".repeat(5 - review.rating)}
                 </Badge>
                 <StatusBadge status={review.status as any} />
               </div>
@@ -432,3 +432,4 @@ export function AdminReviewsView(props: AdminReviewsViewProps) {
     </Suspense>
   );
 }
+

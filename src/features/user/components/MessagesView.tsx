@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Button } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
@@ -34,7 +34,7 @@ export function MessagesView() {
           className="md:hidden self-start"
           onClick={() => router.push(ROUTES.USER.MESSAGES)}
         >
-          â† {t("backToList")}
+          ← {t("backToList")}
         </Button>
       )}
       renderEmptyState={() => (
@@ -43,3 +43,4 @@ export function MessagesView() {
     />
   );
 }
+

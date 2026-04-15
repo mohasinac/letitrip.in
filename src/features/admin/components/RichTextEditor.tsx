@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -95,7 +95,7 @@ interface RichTextEditorProps {
 }
 
 /**
- * Inline URL input popover — replaces window.prompt()
+ * Inline URL input popover � replaces window.prompt()
  */
 function UrlInputPopover({
   isOpen,
@@ -510,7 +510,7 @@ function MenuBar({
         }`}
         title="Bullet List"
       >
-        • List
+        � List
       </Button>
 
       <Button
@@ -608,7 +608,7 @@ function MenuBar({
         className="px-3 py-1.5 text-sm font-medium rounded hover:bg-zinc-200 dark:hover:bg-slate-700 disabled:opacity-50"
         title="Undo (Ctrl+Z)"
       >
-        ↶
+        ?
       </Button>
 
       <Button
@@ -620,7 +620,7 @@ function MenuBar({
         className="px-3 py-1.5 text-sm font-medium rounded hover:bg-zinc-200 dark:hover:bg-slate-700 disabled:opacity-50"
         title="Redo (Ctrl+Shift+Z)"
       >
-        ↷
+        ?
       </Button>
     </Row>
   );
@@ -677,3 +677,4 @@ export function RichTextEditor({
     </div>
   );
 }
+

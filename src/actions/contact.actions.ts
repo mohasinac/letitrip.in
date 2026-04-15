@@ -9,14 +9,14 @@
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import { sendContactEmail } from "@/lib/email";
+import { sendContactEmail } from "@mohasinac/appkit/features/contact";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -80,3 +80,4 @@ export async function sendContactAction(
 
   return { sent: true };
 }
+

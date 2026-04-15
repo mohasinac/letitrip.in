@@ -1,168 +1,152 @@
-import type { Metadata } from "next";
-import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section, Stack } from "@mohasinac/appkit/ui";
-import { TextLink, FlowDiagram } from "@/components";
-import type { FlowStep } from "@/components";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { resolveLocale } from "@/i18n/resolve-locale";
+/**
+ * POST /api/webhooks/shiprocket
+ *
+ * Receives Shiprocket shipment status update webhooks.
+ * Shiprocket sends a webhook whenever a shipment's status changes.
+ *
+ * Security: Shiprocket allows setting a secret key for webhook verification.
+ * When SHIPROCKET_WEBHOOK_SECRET is set in env, the X-Shiprocket-Signature
+ * header is validated via HMAC-SHA256.
+ *
+ * On receipt:
+ *   - Maps Shiprocket status to our internal order status
+ *   - Updates order.shiprocketStatus, shiprocketUpdatedAt, trackingUrl
+ *   - If status = "Delivered": sets order.status='delivered', deliveryDate=now,
+ *                               payoutStatus='eligible'
+ */
 
-export const revalidate = 3600;
+import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
+import { orderRepository } from "@/repositories";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
-const { themed, page } = THEME_CONSTANTS;
+// Vercel Hobby max is 60 s; Firestore read + write fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ locale: string }> };
+// â”€â”€â”€ Shiprocket â†’ our internal order status mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale: rawLocale } = await params;
-  const locale = resolveLocale(rawLocale);
-  const t = await getTranslations({ locale, namespace: "refundPolicy" });
-  return {
-    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
-    description: t("metaDescription"),
-  };
+const SHIPPED_STATUSES = new Set([
+  "Shipped",
+  "In Transit",
+  "Out For Delivery",
+  "Pickup Scheduled",
+  "Picked Up",
+]);
+
+const DELIVERED_STATUS = "Delivered";
+
+const CANCELLED_STATUSES = new Set([
+  "Cancelled",
+  "RTO Initiated",
+  "RTO Delivered",
+  "Lost",
+  "Damaged",
+]);
+
+// â”€â”€â”€ Signature verification helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function verifyShiprocketSignature(body: string, signature: string): boolean {
+  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true;
+  }
+  const expected = createHmac("sha256", secret).update(body).digest("hex");
+  // Length guard: hex-encoded SHA-256 is always 64 chars
+  if (signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(signature, "hex"),
+  );
 }
 
-export default async function RefundPolicyPage({ params }: Props) {
-  const { locale: rawLocale } = await params;
-  const locale = resolveLocale(rawLocale);
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "refundPolicy" });
+// â”€â”€â”€ Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const SECTIONS = [
-    { title: t("eligibilityTitle"), text: t("eligibilityText") },
-    { title: t("processTitle"), text: t("processText") },
-    { title: t("timelineTitle"), text: t("timelineText") },
-    { title: t("auctionsTitle"), text: t("auctionsText") },
-    { title: t("exchangesTitle"), text: t("exchangesText") },
-    { title: t("shippingTitle"), text: t("shippingText") },
-    { title: t("nonRefundableTitle"), text: t("nonRefundableText") },
-  ];
+export async function POST(request: NextRequest) {
+  let rawBody = "";
+  try {
+    rawBody = await request.text();
 
-  const DIAGRAM_STEPS: FlowStep[] = [
-    {
-      emoji: "📋",
-      circleClass:
-        "bg-slate-100 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600",
-      badge: t("diagramS1"),
-      badgeClass:
-        "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300",
-      desc: t("diagramS1Desc"),
-    },
-    {
-      emoji: "✋",
-      circleClass:
-        "bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-300 dark:border-amber-600",
-      badge: t("diagramS2"),
-      badgeClass:
-        "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
-      desc: t("diagramS2Desc"),
-    },
-    {
-      emoji: "🔍",
-      circleClass:
-        "bg-sky-100 dark:bg-sky-900/40 border-2 border-sky-300 dark:border-sky-600",
-      badge: t("diagramS3"),
-      badgeClass:
-        "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300",
-      desc: t("diagramS3Desc"),
-    },
-    {
-      emoji: "✅",
-      circleClass:
-        "bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600",
-      badge: t("diagramS4"),
-      badgeClass:
-        "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
-      desc: t("diagramS4Desc"),
-    },
-    {
-      emoji: "💚",
-      circleClass:
-        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-600",
-      badge: t("diagramS5"),
-      badgeClass:
-        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
-      desc: t("diagramS5Desc"),
-    },
-  ];
+    // Verify signature when configured
+    const signature = request.headers.get("X-Shiprocket-Signature") ?? "";
+    if (!verifyShiprocketSignature(rawBody, signature)) {
+      serverLogger.warn("Shiprocket webhook: invalid signature", { signature });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
 
-  return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
-      {/* Header */}
-      <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
-      >
-        <div className={`${page.container.sm}`}>
-          <Heading level={1} variant="none" className="mb-3 text-white">
-            {t("title")}
-          </Heading>
-          <Text variant="none" className="text-white/80">
-            {t("lastUpdated")}
-          </Text>
-        </div>
-      </Section>
+    const payload = JSON.parse(rawBody) as ShiprocketWebhookPayload;
+    const { order_id: srOrderId, current_status: status, awb } = payload;
 
-      <div className={`${page.container.sm} py-10 md:py-12 lg:py-16`}>
-        <Text size="lg" variant="secondary" className="mb-8">
-          {t("subtitle")}
-        </Text>
+    if (!srOrderId || !status) {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
-        {/* ── Refund Request Flow Diagram ── */}
-        <FlowDiagram
-          title={`💸 ${t("diagramTitle")}`}
-          titleClass="text-emerald-700 dark:text-emerald-300"
-          connectorClass="bg-emerald-200 dark:bg-emerald-800"
-          steps={DIAGRAM_STEPS}
-          className="mb-10"
-        />
+    // Build standard Shiprocket tracking URL if AWB is present
+    const trackingUrl = awb
+      ? `https://shiprocket.co/tracking/${awb}`
+      : undefined;
 
-        <Stack gap="xl">
-          {SECTIONS.map(({ title, text }) => (
-            <Section key={title}>
-              <Heading level={2} className="mb-3">
-                {title}
-              </Heading>
-              <Text variant="secondary" className="leading-relaxed">
-                {text}
-              </Text>
-            </Section>
-          ))}
+    // Find matching order by shiprocketOrderId numeric field
+    const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);
 
-          {/* Contact */}
-          <Section
-            className={`${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
-          >
-            <Heading level={2} className="mb-2">
-              {t("contactTitle")}
-            </Heading>
-            <Text variant="secondary">{t("contactText")}</Text>
-          </Section>
-        </Stack>
+    if (!orders || orders.length === 0) {
+      serverLogger.warn("Shiprocket webhook: order not found", { srOrderId });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
+    const order = orders[0];
+    const orderId = order.id!;
 
-        <div
-          className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
-        >
-          <TextLink
-            href={ROUTES.PUBLIC.HELP}
-            className="text-primary hover:underline"
-          >
-            {t("helpCenter")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.CONTACT}
-            className="text-primary hover:underline"
-          >
-            {t("contactUs")}
-          </TextLink>
-          <TextLink
-            href={ROUTES.PUBLIC.SHIPPING_POLICY}
-            className="text-primary hover:underline"
-          >
-            Shipping Policy
-          </TextLink>
-        </div>
-      </div>
-    </div>
-  );
+    // Determine updates
+    const updates: Record<string, unknown> = {
+      shiprocketStatus: status,
+      shiprocketUpdatedAt: new Date(),
+    };
+    if (trackingUrl) updates.trackingUrl = trackingUrl;
+    if (awb) updates.shiprocketAWB = awb;
+
+    if (status === DELIVERED_STATUS) {
+      updates.status = "delivered";
+      updates.deliveryDate = new Date();
+      updates.payoutStatus = "eligible";
+      serverLogger.info("Shiprocket webhook: order delivered", {
+        orderId,
+        srOrderId,
+      });
+    } else if (SHIPPED_STATUSES.has(status)) {
+      if (order.status !== "delivered") {
+        updates.status = "shipped";
+      }
+    } else if (CANCELLED_STATUSES.has(status)) {
+      serverLogger.info("Shiprocket webhook: order cancelled/returned", {
+        orderId,
+        srOrderId,
+        status,
+      });
+      // Do not override status automatically on cancellation â€” admin handles manually
+    }
+
+    await orderRepository.update(
+      orderId,
+      updates as Partial<import("@/db/schema").OrderDocument>,
+    );
+
+    serverLogger.info("Shiprocket webhook processed", {
+      orderId,
+      srOrderId,
+      status,
+      awb,
+    });
+
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    serverLogger.error("Shiprocket webhook error", {
+      error,
+      rawBody: rawBody.slice(0, 500),
+    });
+    return handleApiError(error);
+  }
 }

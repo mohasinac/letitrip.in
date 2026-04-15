@@ -38,9 +38,23 @@ export * from "./hooks";
 export * from "./utils";
 
 // ==================== HELPERS ====================
-export * from "./helpers/auth";
-// Note: helpers/validation exports via @/helpers directly; not re-exported here
-// to avoid ambiguity with hooks exports of the same types.
+export {
+  hasRole,
+  hasAnyRole,
+  getDefaultRole,
+  formatAuthProvider,
+  isSessionExpired,
+  getSessionTimeRemaining,
+  generateInitials,
+  calculatePasswordScore,
+  generateVerificationToken,
+  generateVerificationCode,
+  calculateTokenExpiration,
+  isTokenExpired,
+  getTokenTimeRemaining,
+  maskToken,
+  generateSessionId,
+} from "@mohasinac/appkit/features/auth";
 
 // ==================== CLASSES (now from appkit) ====================
 export {
@@ -59,3 +73,4 @@ export { apiClient, ApiClient } from "@mohasinac/appkit/http";
 
 // ==================== TYPES ====================
 export * from "./types/auth";
+

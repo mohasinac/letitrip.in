@@ -198,3 +198,4 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
     </div>
   );
 }
+

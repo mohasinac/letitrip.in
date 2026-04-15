@@ -82,3 +82,4 @@ export function CategoryFilters({ table }: CategoryFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

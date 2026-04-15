@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PayoutStatusForm
  * Path: src/components/admin/payouts/PayoutStatusForm.tsx
  *
@@ -121,7 +121,7 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
         <Row justify="between">
           <Span className={themed.textSecondary}>{LABELS.REQUESTED}</Span>
           <Span className={themed.textPrimary}>
-            {payout.requestedAt ? formatDate(payout.requestedAt) : "—"}
+            {payout.requestedAt ? formatDate(payout.requestedAt) : "�"}
           </Span>
         </Row>
         {payout.notes && (
@@ -156,3 +156,4 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
     </Stack>
   );
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Repositories
  *
  * Centralized export for all repository instances.
@@ -12,76 +12,103 @@
  * ```
  */
 
-// Base repository
-export * from "./base.repository";
+// Shared repository foundations
+export { BaseRepository } from "@mohasinac/appkit/providers/db-firebase";
 
 // Unit of Work — atomic multi-collection operations
-export { unitOfWork } from "./unit-of-work";
-export type { UnitOfWork } from "./unit-of-work";
+export { unitOfWork } from "@mohasinac/appkit/core";
+export type { UnitOfWork } from "@mohasinac/appkit/core";
 
 // Core repositories
-export * from "./user.repository";
-export * from "./address.repository";
-export * from "./token.repository";
-export * from "./product.repository";
-export * from "./order.repository";
-export * from "./review.repository";
-export * from "./session.repository";
-export * from "./bid.repository";
-export * from "./cart.repository";
-export * from "./store.repository";
-export * from "./store-address.repository";
-
-// Platform configuration repositories
-export * from "./site-settings.repository";
-export * from "./carousel.repository";
-export * from "./homepage-sections.repository";
-export * from "./categories.repository";
-export * from "./coupons.repository";
-export * from "./faqs.repository";
-export * from "./wishlist.repository";
-export * from "./blog.repository";
-export * from "./payout.repository";
-export * from "./offer.repository";
-
-// Re-export singleton instances for convenience
-export { userRepository } from "./user.repository";
 export {
+  UserRepository,
+  userRepository,
+  EmailVerificationTokenRepository,
+  PasswordResetTokenRepository,
   emailVerificationTokenRepository,
   passwordResetTokenRepository,
   tokenRepository,
-} from "./token.repository";
-export { productRepository } from "./product.repository";
-export { orderRepository } from "./order.repository";
-export { reviewRepository } from "./review.repository";
-export { sessionRepository } from "./session.repository";
-export { bidRepository } from "./bid.repository";
-export { cartRepository } from "./cart.repository";
-export { siteSettingsRepository } from "./site-settings.repository";
-export { carouselRepository } from "./carousel.repository";
-export { homepageSectionsRepository } from "./homepage-sections.repository";
-export { categoriesRepository } from "./categories.repository";
-export { storeRepository } from "./store.repository";
-export { couponsRepository } from "./coupons.repository";
-export { faqsRepository } from "./faqs.repository";
-export { addressRepository } from "./address.repository";
-export { wishlistRepository } from "./wishlist.repository";
-export { blogRepository } from "./blog.repository";
-export type { WishlistItem } from "./wishlist.repository";
-export * from "./notification.repository";
-export { notificationRepository } from "./notification.repository";
-export { payoutRepository } from "./payout.repository";
-export * from "./event.repository";
-export * from "./newsletter.repository";
-export { newsletterRepository } from "./newsletter.repository";
-export { eventRepository } from "./event.repository";
-export * from "./eventEntry.repository";
-export { eventEntryRepository } from "./eventEntry.repository";
-export * from "./chat.repository";
-export { chatRepository } from "./chat.repository";
-export * from "./sms-counter.repository";
-export { smsCounterRepository } from "./sms-counter.repository";
-export * from "./failed-checkout.repository";
-export { failedCheckoutRepository } from "./failed-checkout.repository";
-export * from "./copilot-log.repository";
-export { copilotLogRepository } from "./copilot-log.repository";
+  SessionRepository,
+  sessionRepository,
+} from "@mohasinac/appkit/features/auth";
+export { AddressRepository, addressRepository } from "@mohasinac/appkit/features/account";
+export {
+  ProductRepository,
+  ProductsRepository,
+  productRepository,
+} from "@mohasinac/appkit/features/products";
+export {
+  OrderRepository,
+  OrdersRepository,
+  orderRepository,
+} from "@mohasinac/appkit/features/orders";
+export {
+  ReviewRepository,
+  ReviewsRepository,
+  reviewRepository,
+} from "@mohasinac/appkit/features/reviews";
+
+// Canonical appkit-owned repositories
+export { bidRepository } from "@mohasinac/appkit/features/auctions";
+export { CartRepository, cartRepository } from "@mohasinac/appkit/features/cart";
+export {
+  StoreRepository,
+  storeRepository,
+  storeAddressRepository,
+} from "@mohasinac/appkit/features/stores";
+export {
+  siteSettingsRepository,
+  notificationRepository,
+  chatRepository,
+} from "@mohasinac/appkit/features/admin";
+export {
+  carouselRepository,
+  homepageSectionsRepository,
+} from "@mohasinac/appkit/features/homepage";
+export { CategoriesRepository, categoriesRepository } from "@mohasinac/appkit/features/categories";
+export { couponsRepository } from "@mohasinac/appkit/features/promotions";
+export {
+  FAQsRepository,
+  FirebaseFAQsRepository,
+  faqsRepository,
+} from "@mohasinac/appkit/features/faq";
+export { BlogRepository, blogRepository } from "@mohasinac/appkit/features/blog";
+export { payoutRepository } from "@mohasinac/appkit/features/payments";
+export { OfferRepository, offerRepository } from "@mohasinac/appkit/features/seller";
+
+export {
+  wishlistRepository,
+  type UserWishlistItem as WishlistItem,
+} from "@mohasinac/appkit/features/wishlist";
+
+// Feature repositories already appkit-owned
+export {
+  EventRepository,
+  EventsRepository,
+  eventRepository,
+  EventEntryRepository,
+  EventEntriesRepository,
+  eventEntryRepository,
+} from "@mohasinac/appkit/features/events";
+export {
+  NewsletterRepository,
+  newsletterRepository,
+} from "@mohasinac/appkit/core/newsletter.repository";
+export type {
+  NewsletterSubscriberDocument,
+  NewsletterSubscriberCreateInput,
+  NewsletterSubscriberUpdateInput,
+  NewsletterListModel,
+} from "@mohasinac/appkit/core/newsletter.repository";
+
+export { SmsCounterRepository, smsCounterRepository } from "@mohasinac/appkit/features/auth";
+
+export {
+  CopilotLogRepository,
+  copilotLogRepository,
+} from "@mohasinac/appkit/core";
+export type {
+  CopilotFeedback,
+  CopilotLogDocument,
+  CopilotLogCreateInput,
+} from "@mohasinac/appkit/core";

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState, ReactNode, useCallback } from "react";
 import { useTranslations } from "next-intl";
@@ -176,7 +176,7 @@ export default function SideDrawer({
         aria-hidden="true"
       />
 
-      {/* Drawer — full width on mobile, wider on desktop */}
+      {/* Drawer � full width on mobile, wider on desktop */}
       <div
         ref={drawerRef}
         className={`fixed ${positionClass} top-0 bottom-0 z-50 ${themed.bgPrimary} shadow-2xl flex flex-col transition-transform duration-300 ease-in-out`}
@@ -280,3 +280,4 @@ export default function SideDrawer({
     </>
   );
 }
+

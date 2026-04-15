@@ -1,71 +1,72 @@
+import "@/providers.config";
 /**
- * Cart Item API Routes
+ * POST /api/cart/merge
  *
- * PATCH  /api/cart/[itemId]  — Update item quantity (auth required)
- * DELETE /api/cart/[itemId]  — Remove item from cart (auth required)
+ * Merges guest cart items (sent from the client's localStorage) into the
+ * authenticated user's Firestore cart.
+ *
+ * Called automatically by `useGuestCartMerge` immediately after login.
+ * Skips any products that no longer exist or are unavailable.
  */
 
 import { z } from "zod";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { cartRepository } from "@/repositories";
+import { productRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 
-const updateCartItemSchema = z.object({
-  quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
+const mergeCartSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        quantity: z.number().int().min(1).max(99),
+      }),
+    )
+    .min(1)
+    .max(50), // Reasonable cap to prevent abuse
 });
 
-/**
- * PATCH /api/cart/[itemId]
- *
- * Update the quantity of a cart item.
- */
-export const PATCH = createRouteHandler<
-  (typeof updateCartItemSchema)["_output"],
-  { itemId: string }
->({
+export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
-  schema: updateCartItemSchema,
-  handler: async ({ request, user, body, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { itemId } = params!;
+  schema: mergeCartSchema,
+  handler: async ({ user, body }) => {
+    const { items } = body!;
 
-    const cart = await cartRepository.updateItem(user!.uid, itemId, body!);
+    // Merge each guest item â€” skip products that are unavailable, continue on others
+    let cart = await cartRepository.getOrCreate(user!.uid);
 
-    return successResponse(
-      {
-        cart,
-        itemCount: cartRepository.getItemCount(cart),
-        subtotal: cartRepository.getSubtotal(cart),
-      },
-      SUCCESS_MESSAGES.CART.ITEM_UPDATED,
-    );
-  },
-});
+    for (const item of items) {
+      const product = await productRepository.findById(item.productId);
+      if (!product || product.status !== "published") continue;
+      if (product.availableQuantity < 1) continue;
 
-/**
- * DELETE /api/cart/[itemId]
- *
- * Remove a specific item from the user's cart.
- */
-export const DELETE = createRouteHandler<never, { itemId: string }>({
-  auth: true,
-  handler: async ({ request, user, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { itemId } = params!;
+      const safeQty = Math.min(item.quantity, product.availableQuantity);
 
-    const cart = await cartRepository.removeItem(user!.uid, itemId);
+      cart = await cartRepository.addItem(user!.uid, {
+        productId: product.id,
+        productTitle: product.title,
+        productImage: product.mainImage,
+        price: product.price,
+        currency: product.currency,
+        quantity: safeQty,
+        sellerId: product.sellerId,
+        sellerName: product.sellerName,
+        isAuction: product.isAuction ?? false,
+      });
+    }
 
-    return successResponse(
-      {
-        cart,
-        itemCount: cartRepository.getItemCount(cart),
-        subtotal: cartRepository.getSubtotal(cart),
-      },
-      SUCCESS_MESSAGES.CART.ITEM_REMOVED,
-    );
+    serverLogger.info("Guest cart merged", {
+      uid: user!.uid,
+      requested: items.length,
+    });
+
+    return successResponse({
+      cart,
+      itemCount: cartRepository.getItemCount(cart),
+      subtotal: cartRepository.getSubtotal(cart),
+    });
   },
 });

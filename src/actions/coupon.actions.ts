@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -151,3 +151,4 @@ export async function validateCouponForCartAction(
     error: result.message,
   };
 }
+

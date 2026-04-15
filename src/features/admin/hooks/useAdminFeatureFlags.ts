@@ -32,3 +32,4 @@ export function useAdminFeatureFlags() {
 
   return { ...query, updateMutation };
 }
+

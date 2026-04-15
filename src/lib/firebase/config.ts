@@ -44,3 +44,4 @@ const realtimeDb: Database = canInitializeClientFirebase
   : (null as unknown as Database);
 
 export { app, auth, storage, realtimeDb };
+

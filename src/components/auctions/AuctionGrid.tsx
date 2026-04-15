@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { AuctionCard } from "./AuctionCard";
 import type { AuctionCardData } from "./AuctionCard";
@@ -21,7 +21,7 @@ interface AuctionGridProps {
   onSelectionChange?: (ids: string[]) => void;
   /**
    * Tailwind grid class for the card grid (variant="grid" only).
-   * Defaults to THEME_CONSTANTS.grid.cards (2→3→max 4 across breakpoints).
+   * Defaults to THEME_CONSTANTS.grid.cards (2?3?max 4 across breakpoints).
    * Use THEME_CONSTANTS.grid.* presets or any custom Tailwind grid class.
    */
   gridClassName?: string;
@@ -113,7 +113,7 @@ export function AuctionGrid({
         gap="3"
         className="py-24 text-center justify-center"
       >
-        <Span className="text-6xl">🔨</Span>
+        <Span className="text-6xl">??</Span>
         <Text variant="primary" className="text-xl font-medium">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS}
         </Text>
@@ -139,3 +139,4 @@ export function AuctionGrid({
     </Div>
   );
 }
+

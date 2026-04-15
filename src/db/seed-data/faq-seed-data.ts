@@ -2587,3 +2587,4 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
 
 // Export with camelCase name for consistency with other seed data files
 export const faqSeedData = FAQ_SEED_DATA.map(normalizeFaqSeed);
+

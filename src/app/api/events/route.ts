@@ -5,3 +5,4 @@ export async function GET(...args: Parameters<typeof import("@mohasinac/appkit/f
 	const { GET } = await import("@mohasinac/appkit/features/events/server");
 	return GET(...args);
 }
+

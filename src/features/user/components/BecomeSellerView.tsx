@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Checkbox } from "@mohasinac/appkit/ui";
 import { useEffect, useState } from "react";
@@ -170,3 +170,4 @@ export function BecomeSellerView() {
     />
   );
 }
+

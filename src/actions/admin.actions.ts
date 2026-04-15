@@ -19,7 +19,7 @@ import {
   userRepository,
   productRepository,
 } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -443,3 +443,4 @@ export async function adminDeleteProductAction(id: string): Promise<void> {
     productId: id,
   });
 }
+

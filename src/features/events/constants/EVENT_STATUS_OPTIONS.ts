@@ -12,3 +12,4 @@ export const EVENT_STATUS_VALUES = [
 ] as const;
 
 export type EventStatusFilterValue = (typeof EVENT_STATUS_VALUES)[number];
+

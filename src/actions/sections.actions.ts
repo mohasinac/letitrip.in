@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import { homepageSectionsRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -25,7 +25,7 @@ import type {
   HomepageSectionCreateInput,
   HomepageSectionUpdateInput,
 } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -201,3 +201,4 @@ export async function getHomepageSectionByIdAction(
 ): Promise<HomepageSectionDocument | null> {
   return homepageSectionsRepository.findById(id);
 }
+

@@ -18,3 +18,4 @@ export function useSellerProductDetail(id: string | undefined) {
 
   return { productData: data ?? null, isLoading, error };
 }
+

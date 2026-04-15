@@ -12,3 +12,4 @@ export const EVENT_TYPE_VALUES = [
 ] as const;
 
 export type EventTypeValue = (typeof EVENT_TYPE_VALUES)[number];
+

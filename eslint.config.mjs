@@ -285,11 +285,9 @@ export default tseslint.config(
   {
     // server-logger.ts IS the console transport for server-side logging.
     // proxy.ts uses console.error for Edge-compatible error reporting.
-    // merge-indices.ts is a build-time CLI script (not production code).
     files: [
       "src/lib/server-logger.ts",
       "src/proxy.ts",
-      "src/db/indices/merge-indices.ts",
     ],
     rules: {
       "no-console": "off",

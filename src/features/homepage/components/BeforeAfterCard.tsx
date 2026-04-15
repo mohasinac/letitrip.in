@@ -146,3 +146,4 @@ export function BeforeAfterCard({
     </div>
   );
 }
+

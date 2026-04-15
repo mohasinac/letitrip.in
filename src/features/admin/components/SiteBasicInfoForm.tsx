@@ -51,3 +51,4 @@ export function SiteBasicInfoForm({
     </Card>
   );
 }
+

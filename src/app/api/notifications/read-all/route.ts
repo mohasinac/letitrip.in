@@ -7,7 +7,7 @@ import "@/providers.config";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
 import { notificationRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { SUCCESS_MESSAGES } from "@/constants";
 
 /**
@@ -23,3 +23,4 @@ export const PATCH = createRouteHandler({
     return successResponse({ count }, SUCCESS_MESSAGES.NOTIFICATION.ALL_READ);
   },
 });
+

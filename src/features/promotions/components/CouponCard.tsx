@@ -142,3 +142,4 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
     </Card>
   );
 }
+

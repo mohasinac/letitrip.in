@@ -8,8 +8,8 @@
  */
 
 import { productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
-import type { FirebaseSieveResult } from "@/lib/query";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export interface SearchParams {
   q?: string;
@@ -78,3 +78,4 @@ export async function searchProductsAction(
 
   return { ...sieveResult, q, backend: "in-memory" };
 }
+

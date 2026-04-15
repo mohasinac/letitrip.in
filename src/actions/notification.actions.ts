@@ -89,3 +89,4 @@ export async function getUnreadNotificationCountAction(): Promise<number> {
   const user = await requireAuth();
   return notificationRepository.getUnreadCount(user.uid);
 }
+

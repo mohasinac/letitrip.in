@@ -43,3 +43,4 @@ export function ProductSection({
     </Section>
   );
 }
+

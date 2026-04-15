@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminBlogView
  *
  * Extracted from src/app/[locale]/admin/blog/[[...action]]/page.tsx
@@ -91,7 +91,7 @@ function AdminBlogContent() {
   );
   const initialFormRef = useRef<string>("");
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["status", "category", "isFeatured"]);
 
@@ -271,7 +271,7 @@ function AdminBlogContent() {
           <>
             <AdminPageHeader
               title={t("title")}
-              subtitle={`${t("subtitle")} — ${totalPosts} total`}
+              subtitle={`${t("subtitle")} � ${totalPosts} total`}
               actionLabel={t("create")}
               onAction={openCreate}
             />
@@ -405,3 +405,4 @@ export function AdminBlogView() {
     </Suspense>
   );
 }
+

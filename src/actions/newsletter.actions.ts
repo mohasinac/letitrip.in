@@ -16,7 +16,7 @@ import {
 } from "@mohasinac/appkit/security";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
@@ -103,3 +103,4 @@ export async function subscribeNewsletterAction(
   });
   return { subscribed: true };
 }
+

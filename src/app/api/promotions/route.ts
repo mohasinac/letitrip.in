@@ -6,7 +6,7 @@ import "@/providers.config";
 
 import { productRepository, couponsRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 /**
@@ -58,3 +58,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

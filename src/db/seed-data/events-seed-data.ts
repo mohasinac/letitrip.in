@@ -715,3 +715,4 @@ export const eventEntriesSeedData: EventEntryDocument[] = [
     submittedAt: daysAgo(1),
   },
 ];
+

@@ -13,7 +13,7 @@ import {
   AuthorizationError,
 } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { SessionUser, UserRole } from "@/types/auth";
 import type { NextRequest } from "next/server";
 import type { UserDocument } from "@/db/schema/users";
@@ -298,3 +298,4 @@ export async function requireRoleFromRequest(
   }
   return user;
 }
+

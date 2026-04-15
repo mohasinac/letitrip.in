@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AuctionsView
  *
  * Extracted from src/app/[locale]/auctions/page.tsx
@@ -82,7 +82,7 @@ function AuctionsContent({
   const searchQuery = table.get("q");
   const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
-  // ── Staged filter state (applied on button click) ──────────────────────
+  // -- Staged filter state (applied on button click) ----------------------
   const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
     priceRange ? [priceRange] : [],
   );
@@ -140,7 +140,7 @@ function AuctionsContent({
   });
   const { brandOptions } = useBrands();
 
-  // ── Bulk wishlist handler ─────────────────────────────────────────
+  // -- Bulk wishlist handler -----------------------------------------
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
       selectedIds.map((id) => addToWishlistAction(id)),
@@ -325,3 +325,4 @@ export function AuctionsView({
     </Suspense>
   );
 }
+

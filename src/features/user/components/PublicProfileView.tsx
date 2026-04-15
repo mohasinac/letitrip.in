@@ -1,4 +1,4 @@
-﻿import {
+import {
   AvatarDisplay,
   Card,
   EmptyState,
@@ -88,7 +88,7 @@ async function SellerProductsSection({
                     <Div
                       className={`w-full h-full ${flex.center} text-zinc-400 text-4xl`}
                     >
-                      🛍️
+                      ???
                     </Div>
                 )}
               </Div>
@@ -464,3 +464,4 @@ export async function PublicProfileView({
     </Div>
   );
 }
+

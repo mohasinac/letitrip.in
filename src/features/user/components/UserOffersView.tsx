@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -81,7 +81,7 @@ export function UserOffersView() {
         o.counterAmount ? (
           <Text size="sm">{formatCurrency(o.counterAmount)}</Text>
         ) : (
-          <Caption>—</Caption>
+          <Caption>�</Caption>
         ),
     },
     {
@@ -174,3 +174,4 @@ export function UserOffersView() {
     />
   );
 }
+

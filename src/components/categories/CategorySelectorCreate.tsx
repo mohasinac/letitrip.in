@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * CategorySelectorCreate Component
@@ -6,7 +6,7 @@
  *
  * Searchable category selector with an inline "New category" trigger.
  * Opens a SideDrawer with CategoryForm when the user wants to create a new
- * category on-the-fly — without leaving the form they are filling in.
+ * category on-the-fly � without leaving the form they are filling in.
  *
  * Used by: ProductForm (admin, seller)
  *
@@ -165,3 +165,4 @@ export function CategorySelectorCreate({
     </>
   );
 }
+

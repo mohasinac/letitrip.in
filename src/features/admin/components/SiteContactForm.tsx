@@ -67,3 +67,4 @@ export function SiteContactForm({ settings, onChange }: SiteContactFormProps) {
     </Card>
   );
 }
+

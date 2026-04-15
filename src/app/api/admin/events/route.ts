@@ -6,7 +6,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -15,13 +15,13 @@ import {
 } from "@mohasinac/appkit/next";
 import { eventRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
-import type { SieveModel } from "@/lib/query/firebase-sieve";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@/lib/media/finalize";
+} from "@mohasinac/appkit/features/media";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -209,3 +209,4 @@ export const POST = createRouteHandler({
     return successResponse(event, SUCCESS_MESSAGES.EVENT.CREATED, 201);
   },
 });
+

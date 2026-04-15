@@ -1,10 +1,95 @@
-import { withProviders } from "@/providers.config";
-import {
-  categoryItemGET,
-  categoryItemPATCH,
-  categoryItemDELETE,
-} from "@mohasinac/appkit/features/categories/server";
+import "@/providers.config";
+/**
+ * Cart API Routes
+ *
+ * GET  /api/cart          â€” Get current user's cart (auth required)
+ * POST /api/cart          â€” Add item to cart (auth required)
+ * DELETE /api/cart        â€” Clear entire cart (auth required)
+ */
 
-export const GET = withProviders(categoryItemGET);
-export const PATCH = withProviders(categoryItemPATCH);
-export const DELETE = withProviders(categoryItemDELETE);
+import { z } from "zod";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { cartRepository } from "@/repositories";
+import { productRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { createRouteHandler } from "@mohasinac/appkit/next";
+
+// Validation schema for adding to cart
+const addToCartSchema = z.object({
+  productId: z.string().min(1, "productId is required"),
+  quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
+});
+
+export const GET = createRouteHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const cart = await cartRepository.getOrCreate(user!.uid);
+    return successResponse({
+      cart,
+      itemCount: cartRepository.getItemCount(cart),
+      subtotal: cartRepository.getSubtotal(cart),
+    });
+  },
+});
+
+export const POST = createRouteHandler<(typeof addToCartSchema)["_output"]>({
+  auth: true,
+  schema: addToCartSchema,
+  handler: async ({ user, body }) => {
+    const { productId, quantity } = body!;
+
+    // Validate product exists and is available
+    const product = await productRepository.findById(productId);
+    if (!product) {
+      return ApiErrors.notFound(ERROR_MESSAGES.CART.PRODUCT_NOT_FOUND);
+    }
+
+    if (
+      product.status === "out_of_stock" ||
+      product.status === "discontinued" ||
+      product.status === "sold" ||
+      product.status === "draft"
+    ) {
+      return ApiErrors.badRequest(ERROR_MESSAGES.CART.OUT_OF_STOCK);
+    }
+
+    if (product.availableQuantity < quantity) {
+      return ApiErrors.badRequest(ERROR_MESSAGES.CART.INSUFFICIENT_STOCK);
+    }
+
+    const cart = await cartRepository.addItem(user!.uid, {
+      productId: product.id,
+      productTitle: product.title,
+      productImage: product.mainImage,
+      price: product.price,
+      currency: product.currency,
+      quantity,
+      sellerId: product.sellerId,
+      sellerName: product.sellerName,
+      isAuction: product.isAuction ?? false,
+    });
+
+    return successResponse(
+      {
+        cart,
+        itemCount: cartRepository.getItemCount(cart),
+        subtotal: cartRepository.getSubtotal(cart),
+      },
+      SUCCESS_MESSAGES.CART.ITEM_ADDED,
+      201,
+    );
+  },
+});
+
+export const DELETE = createRouteHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const cart = await cartRepository.clearCart(user!.uid);
+    return successResponse(
+      { cart, itemCount: 0, subtotal: 0 },
+      SUCCESS_MESSAGES.CART.CLEARED,
+    );
+  },
+});

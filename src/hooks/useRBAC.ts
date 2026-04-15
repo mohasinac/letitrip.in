@@ -15,7 +15,7 @@ import {
   isSeller,
   ERROR_MESSAGES,
 } from "@/constants";
-import { hasRole as checkRoleHierarchy } from "@/helpers";
+import { hasRole as checkRoleHierarchy } from "@mohasinac/appkit/features/auth";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -179,3 +179,4 @@ export function useRequireRole(role: UserRole | UserRole[]): {
 
   return { user, loading };
 }
+

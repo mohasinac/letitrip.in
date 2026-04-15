@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import { blogRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -30,12 +30,12 @@ import type {
   BlogPostCreateInput,
   BlogPostUpdateInput,
 } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@/lib/media/finalize";
+} from "@mohasinac/appkit/features/media";
 
 const singleImageMediaSchema = z
   .union([
@@ -266,3 +266,4 @@ export async function getBlogPostBySlugAction(
 ): Promise<BlogPostDocument | null> {
   return blogRepository.findBySlug(slug);
 }
+

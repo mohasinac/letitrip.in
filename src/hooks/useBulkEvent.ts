@@ -155,3 +155,4 @@ export function useBulkEvent<
 
   return { status, error, result, subscribe, reset };
 }
+

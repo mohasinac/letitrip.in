@@ -452,3 +452,4 @@ export function onAuthStateChanged(
   }
   return firebaseOnAuthStateChanged(auth, callback);
 }
+

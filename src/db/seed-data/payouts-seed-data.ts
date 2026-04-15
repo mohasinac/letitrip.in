@@ -221,3 +221,4 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
     updatedAt: daysAgo(30),
   },
 ];
+

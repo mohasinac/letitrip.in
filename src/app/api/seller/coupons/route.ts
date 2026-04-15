@@ -3,7 +3,7 @@ import "@/providers.config";
  * Seller Coupons API Route
  * GET /api/seller/coupons — Returns all coupons owned by the authenticated seller
  */
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@/repositories";
 
@@ -31,3 +31,4 @@ export const GET = createApiHandler({
     return successResponse({ coupons: result.items, total: result.total });
   },
 });
+

@@ -80,3 +80,4 @@ export function createAdminListQuery<TApiResult, TResult = TApiResult>(
     },
   });
 }
+

@@ -12,7 +12,7 @@ import "@/providers.config";
  *  - Top 5 products by total revenue
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { orderRepository, productRepository } from "@/repositories";
 import { formatMonthYear } from "@/utils";
@@ -217,3 +217,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

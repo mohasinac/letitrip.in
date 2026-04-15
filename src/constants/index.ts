@@ -11,14 +11,16 @@
  */
 
 // Messages constants
-// Messages split into two files to avoid Turbopack chunk-generation bug
-// (EcmascriptModuleContent::new_merged error in Next.js 16).
-export { ERROR_MESSAGES } from "./error-messages";
+// Messages split into multiple files to avoid Turbopack chunk-generation bug
+// (EcmascriptModuleContent::new_merged error in Next.js 16 Turbopack).
+// ERROR_MESSAGES now comes from appkit (Phase 2 migration)
+export { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+// SUCCESS/INFO/CONFIRMATION messages now come from appkit (Phase 2 migration)
 export {
   SUCCESS_MESSAGES,
   INFO_MESSAGES,
   CONFIRMATION_MESSAGES,
-} from "./success-messages";
+} from "@mohasinac/appkit/values";
 
 // UI constants (labels, placeholders, help text)
 export * from "./ui";
@@ -34,9 +36,6 @@ export * from "./config";
 
 // API Endpoints constants
 export * from "./api-endpoints";
-
-// Address constants
-export * from "./address";
 
 // Theme constants
 export { THEME_CONSTANTS } from "./theme";
@@ -83,3 +82,4 @@ export type {
 // FAQ category constants
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";
+

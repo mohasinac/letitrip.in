@@ -56,3 +56,4 @@ export function BidFilters({ table }: BidFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

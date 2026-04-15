@@ -196,3 +196,4 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
     </BottomNavLayout>
   );
 }
+

@@ -1,1072 +1,1183 @@
 /**
- * Email Service using Resend
+ * Zod Validation Schemas for API Requests
  *
- * Handles all email sending functionality for the application
- */
-
-import { Resend } from "resend";
-import { formatCurrency } from "@mohasinac/appkit/utils";
-import { serverLogger } from "@/lib/server-logger";
-import { formatDateTime, nowMs, currentYear } from "@/utils";
-import { siteSettingsRepository } from "@/repositories";
-
-/**
- * Resolve the Resend API key: Firestore DB first, env var fallback.
- * Returns a lazy Resend instance so the key is read fresh per-use,
- * allowing admin key rotations without a server restart.
- */
-async function getResend(): Promise<Resend> {
-  let apiKey = "";
-  try {
-    const creds = await siteSettingsRepository.getDecryptedCredentials();
-    apiKey = creds.resendApiKey || "";
-  } catch {
-    // DB unavailable — fall through to env var
-  }
-  return new Resend(apiKey || process.env.RESEND_API_KEY || "");
-}
-
-async function getEmailConfig() {
-  const settings = await siteSettingsRepository
-    .getSingleton()
-    .catch(() => null);
-  return {
-    fromName:
-      settings?.emailSettings?.fromName ||
-      process.env.EMAIL_FROM_NAME ||
-      "Letitrip",
-    fromEmail:
-      settings?.emailSettings?.fromEmail ||
-      process.env.EMAIL_FROM ||
-      "noreply@letitrip.in",
-  };
-}
-
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Letitrip";
-const SITE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
-
-/**
- * Send an email using Resend with DB-first credential resolution.
- * DB Resend API key takes precedence over RESEND_API_KEY env var.
- * From address is resolved from Firestore emailSettings (DB) then env vars.
+ * Centralized request validation using Zod
  *
- * Use this instead of calling `resend.emails.send()` directly.
+ * TODO (Future) - Phase 2:
+ * - Add custom error messages for better UX
+ * - Implement conditional validation rules
+ * - Add cross-field validation (e.g., end date > start date)
+ * - Create reusable schema fragments
+ * - Add transform functions for data normalization
+ * - Implement schema versioning for API versions
+ * - Add localized error messages (i18n)
+ * - Create OpenAPI schema generation from Zod
  */
-export async function sendEmail(
-  opts: Record<string, unknown> & { to: string | string[]; subject: string },
-): Promise<{ data: unknown; error: unknown }> {
-  const resend = await getResend();
-  const { fromName, fromEmail } = await getEmailConfig();
-  return resend.emails.send({
-    from: `${fromName} <${fromEmail}>`,
-    ...opts,
-  } as any) as any;
-}
 
-// ─── Module-level fallbacks for legacy functions ──────────────────────────────
-// Keep legacy helpers on the same lazy DB-first path so importing this module
-// never depends on RESEND_API_KEY being present at build time.
-async function sendConfiguredEmail(
-  opts: Record<string, unknown> & { to: string | string[]; subject: string },
-): Promise<{ data: unknown; error: unknown }> {
-  return sendEmail(opts);
-}
+import { z } from "zod";
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@letitrip.in";
-const FROM_NAME = process.env.EMAIL_FROM_NAME || "Letitrip";
+// ============================================
+// COMMON SCHEMAS
+// ============================================
 
 /**
- * Send email verification email
+ * Pagination query schema
+ * NOTE: Max limit is enforced per field (max 100) — role-based limit reduction is a future enhancement
  */
-export async function sendVerificationEmail(email: string, token: string) {
-  const verificationLink = `${SITE_URL}/auth/verify-email?token=${token}`;
+export const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  search: z.string().min(1).max(100).optional(),
+});
 
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Verify your ${SITE_NAME} email address`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Verify Your Email</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
-            <tr>
-              <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Verify Your Email</h1>
-                    </td>
-                  </tr>
-                  
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding: 40px;">
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hello,</p>
-                      
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                        Thank you for creating a ${SITE_NAME} account! To get started, please verify your email address by clicking the button below:
-                      </p>
-                      
-                      <!-- Button -->
-                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
-                        <tr>
-                          <td align="center">
-                            <a href="${verificationLink}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);">
-                              Verify Email Address
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0 0; padding-top: 20px; border-top: 1px solid #eeeeee;">
-                        Or copy and paste this link into your browser:
-                      </p>
-                      <p style="color: #667eea; font-size: 14px; word-break: break-all; margin: 10px 0;">
-                        ${verificationLink}
-                      </p>
-                      
-                      <p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 30px 0 0;">
-                        This verification link will expire in 24 hours for security reasons.
-                      </p>
-                      
-                      <p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 20px 0 0;">
-                        If you didn't create a ${SITE_NAME} account, you can safely ignore this email.
-                      </p>
-                    </td>
-                  </tr>
-                  
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                      <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `
-Hello,
+/**
+ * MongoDB ObjectId validation (also accepts Firestore IDs and SEO-friendly slugs)
+ * Pattern accepts lowercase alphanumeric + hyphens to support both ID formats
+ */
+export const objectIdSchema = z.string().regex(/^[a-z0-9-]+$/);
 
-Thank you for creating a ${SITE_NAME} account! To get started, please verify your email address by clicking the link below:
+/**
+ * URL validation — generic (no domain restriction).
+ * For media/CDN URLs use `mediaUrlSchema` which enforces the approved-domain whitelist.
+ */
+export const urlSchema = z.string().url().max(2048);
+/**
+ * Media URL validation — restricts to approved CDN/storage domains.
+ * Use this for product images, videos, and avatars uploaded via /api/media/upload.
+ */
+const APPROVED_MEDIA_DOMAINS = [
+  "firebasestorage.googleapis.com",
+  "storage.googleapis.com",
+  "res.cloudinary.com",
+  "images.unsplash.com",
+  "cdn.letitrip.in",
+];
 
-${verificationLink}
+export const mediaUrlSchema = z
+  .string()
+  .url()
+  .max(2048)
+  .refine(
+    (url) => {
+      try {
+        const { hostname } = new URL(url);
+        return APPROVED_MEDIA_DOMAINS.some(
+          (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+        );
+      } catch {
+        return false;
+      }
+    },
+    { message: "Image or video URL must be hosted on an approved CDN domain" },
+  );
+/**
+ * Date string validation (ISO 8601)
+ */
+export const dateStringSchema = z.string().datetime();
 
-This verification link will expire in 24 hours for security reasons.
+/**
+ * Strong password validation with advanced rules
+ */
+export const passwordSchema = z
+  .string()
+  .min(12, "Password must be at least 12 characters")
+  .max(128, "Password must be less than 128 characters")
+  .refine((password) => {
+    // At least one uppercase
+    if (!/[A-Z]/.test(password)) return false;
+    // At least one lowercase
+    if (!/[a-z]/.test(password)) return false;
+    // At least one digit
+    if (!/\d/.test(password)) return false;
+    // At least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return false;
+    return true;
+  }, "Password must contain uppercase, lowercase, number, and special character")
+  .refine((password) => {
+    // Prevent common keyboard patterns
+    const patterns = ["qwerty", "asdf", "zxcv", "123456", "password", "admin"];
+    return !patterns.some((p) => password.toLowerCase().includes(p));
+  }, "Password contains common patterns");
 
-If you didn't create a ${SITE_NAME} account, you can safely ignore this email.
+/**
+ * Phone number validation (E.164 format)
+ */
+export const phoneSchema = z
+  .string()
+  .refine((phone) => {
+    // E.164 format validation: +[country code][number]
+    const e164Pattern = /^\+?[1-9]\d{1,14}$/;
+    return e164Pattern.test(phone.replace(/\D/g, ""));
+  }, "Invalid phone number format")
+  .refine((phone) => {
+    // Check length after removing non-digits
+    const digits = phone.replace(/\D/g, "");
+    return digits.length >= 10 && digits.length <= 15;
+  }, "Phone number must have 10-15 digits");
 
-© ${currentYear()} ${SITE_NAME}. All rights reserved.
-      `.trim(),
-    });
+/**
+ * Email validation
+ */
+export const emailSchema = z.string().email().max(255);
 
-    if (error) {
-      serverLogger.error("Failed to send verification email", { error });
-      throw error;
+/**
+ * Address schema with field validation
+ */
+export const addressSchema = z.object({
+  street: z
+    .string()
+    .min(5, "Street address too short")
+    .max(100, "Street address too long")
+    .refine(
+      (street) => !/^[\d\s]+$/.test(street),
+      "Street must contain non-numeric characters",
+    ),
+  city: z
+    .string()
+    .min(2, "City name too short")
+    .regex(/^[a-zA-Z\s\-']+$/, "Invalid city name"),
+  state: z.string().min(2, "State code required").max(50, "Invalid state"),
+  pincode: z
+    .string()
+    .refine((pin) => /^\d{5,6}$/.test(pin), "Invalid pincode format"),
+  country: z
+    .string()
+    .length(2, "Country code must be 2 characters")
+    .toUpperCase(),
+});
+
+// ============================================
+// ADDRESS SCHEMAS (user subcollection)
+// ============================================
+
+/**
+ * Base user address schema — covers Indian addresses
+ */
+const userAddressBaseSchema = z.object({
+  label: z.string().min(1, "Label is required").max(50, "Label too long"),
+  fullName: z
+    .string()
+    .min(2, "Full name too short")
+    .max(100, "Full name too long"),
+  phone: z.string().regex(/^\+?[0-9]{10,15}$/, "Invalid phone number"),
+  addressLine1: z
+    .string()
+    .min(5, "Address line 1 too short")
+    .max(150, "Address line 1 too long"),
+  addressLine2: z.string().max(150, "Address line 2 too long").optional(),
+  landmark: z.string().max(100, "Landmark too long").optional(),
+  city: z.string().min(2, "City too short").max(60, "City too long"),
+  state: z.string().min(2, "State too short").max(60, "State too long"),
+  postalCode: z.string().regex(/^\d{6}$/, "Pincode must be exactly 6 digits"),
+  country: z.string().min(2, "Country required").max(60).default("India"),
+  isDefault: z.boolean().optional().default(false),
+});
+
+export const userAddressCreateSchema = userAddressBaseSchema;
+
+export const userAddressUpdateSchema = userAddressBaseSchema.partial();
+
+// ============================================
+// PRODUCT SCHEMAS
+// ============================================
+
+/**
+ * Product specification schema
+ */
+const productSpecificationSchema = z.object({
+  name: z.string().min(1).max(100),
+  value: z.string().min(1).max(200),
+  unit: z.string().max(20).optional(),
+});
+
+/**
+ * Video metadata schema (reusable)
+ * Validates URL, duration, and trim ranges.
+ * Video format: URL must end with a recognised container extension.
+ */
+const ALLOWED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg", ".mov", ".m4v"];
+
+const videoSchema = z
+  .object({
+    url: urlSchema.refine(
+      (u) =>
+        ALLOWED_VIDEO_EXTENSIONS.some((ext) =>
+          u.toLowerCase().split("?")[0].endsWith(ext),
+        ),
+      { message: "Video must be mp4, webm, ogg, mov, or m4v format" },
+    ),
+    thumbnailUrl: urlSchema,
+    duration: z.number().positive().max(600), // Max 10 minutes
+    trimStart: z.number().min(0).optional(),
+    trimEnd: z.number().positive().optional(),
+  })
+  .refine(
+    (data) => !data.trimEnd || !data.trimStart || data.trimEnd > data.trimStart,
+    { message: "Trim end must be after trim start" },
+  )
+  .refine((data) => !data.trimEnd || data.trimEnd <= data.duration, {
+    message: "Trim end cannot exceed video duration",
+  });
+
+/**
+ * Product list query validation
+ * Supports both named params (category, brand, minPrice, maxPrice, inStock, q, etc.) and
+ * raw Sieve DSL via the `filters` param. Named params are merged into a compound Sieve filter
+ * string in the GET /api/products route handler — see compound filter assembly logic there.
+ */
+export const productListQuerySchema = paginationQuerySchema
+  .extend({
+    category: z.string().min(1).optional(),
+    subcategory: z.string().min(1).optional(),
+    status: z
+      .enum(["draft", "published", "out_of_stock", "discontinued", "sold"])
+      .optional(),
+    sellerId: objectIdSchema.optional(),
+    featured: z.coerce.boolean().optional(),
+    isAuction: z.coerce.boolean().optional(),
+    isPromoted: z.coerce.boolean().optional(),
+    minPrice: z.coerce.number().nonnegative().optional(),
+    maxPrice: z.coerce.number().positive().optional(),
+    brand: z.string().min(1).max(100).optional(),
+    condition: z.enum(["new", "used", "refurbished"]).optional(),
+    inStock: z.coerce.boolean().optional(),
+    rating: z
+      .object({
+        min: z.coerce.number().min(0).max(5).optional(),
+      })
+      .optional(),
+    tags: z.array(z.string()).or(z.string()).optional(), // Support comma-separated or array
+  })
+  .refine(
+    (data) =>
+      !data.maxPrice || !data.minPrice || data.maxPrice >= data.minPrice,
+    { message: "Max price must be greater than or equal to min price" },
+  );
+
+/**
+ * Prohibited words/content that cannot appear in product titles or descriptions.
+ * Extend this list as the moderation policy grows.
+ */
+const PROHIBITED_WORDS = ["scam", "fraud", "counterfeit", "replica", "illegal"];
+
+const containsProhibited = (text: string) =>
+  PROHIBITED_WORDS.some((word) => text.toLowerCase().includes(word));
+
+/**
+ * Base product schema (without refinements)
+ */
+const productBaseSchema = z.object({
+  title: z
+    .string()
+    .min(3)
+    .max(200)
+    .refine((t) => !containsProhibited(t), {
+      message: "Title contains prohibited content",
+    }),
+  description: z
+    .string()
+    .min(20)
+    .max(5000)
+    .refine((d) => !containsProhibited(d), {
+      message: "Description contains prohibited content",
+    }),
+  category: z.string().min(1).max(100),
+  subcategory: z.string().min(1).max(100).optional(),
+  brand: z.string().min(1).max(100).optional(),
+  price: z.number().positive().max(10000000), // Max 10 million
+  originalPrice: z.number().positive().max(10000000).optional(), // For discounts
+  currency: z.string().length(3).default("INR"), // ISO 4217
+  stockQuantity: z.number().int().nonnegative(),
+  mainImage: urlSchema,
+  images: z.array(urlSchema).max(5).optional(),
+  video: videoSchema.optional(),
+  specifications: z.array(productSpecificationSchema).max(50).optional(),
+  features: z.array(z.string().min(1).max(200)).max(20).optional(),
+  tags: z.array(z.string().min(1).max(50)).max(10).optional(),
+  shippingInfo: z.string().max(1000).optional(),
+  returnPolicy: z.string().max(1000).optional(),
+  isDraft: z.boolean().default(false), // Draft auto-save support
+
+  // Product condition
+  condition: z.enum(["new", "used", "refurbished", "broken"]).optional(),
+
+  // Insurance
+  insurance: z.boolean().optional(),
+  insuranceCost: z.number().nonnegative().optional(),
+
+  // Shipping
+  shippingPaidBy: z.enum(["seller", "buyer"]).optional(),
+  pickupAddressId: objectIdSchema.optional(),
+
+  // SEO overrides
+  seoTitle: z.string().max(60).optional(),
+  seoDescription: z.string().max(160).optional(),
+  seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
+
+  // Auction fields
+  isAuction: z.boolean().optional(),
+  auctionEndDate: dateStringSchema.optional(),
+  startingBid: z.number().positive().optional(),
+  reservePrice: z.number().positive().optional(),
+  buyNowPrice: z.number().positive().optional(),
+  minBidIncrement: z.number().positive().optional(),
+  autoExtendable: z.boolean().optional(),
+  auctionExtensionMinutes: z.number().int().positive().optional(),
+  auctionShippingPaidBy: z.enum(["seller", "winner"]).optional(),
+
+  // Pre-order fields
+  isPreOrder: z.boolean().optional(),
+  preOrderDeliveryDate: dateStringSchema.optional(),
+  preOrderDepositPercent: z.number().min(0).max(100).optional(),
+  preOrderDepositAmount: z.number().nonnegative().optional(),
+  preOrderMaxQuantity: z.number().int().nonnegative().optional(),
+  preOrderProductionStatus: z
+    .enum(["upcoming", "in_production", "ready_to_ship"])
+    .optional(),
+  preOrderCancellable: z.boolean().optional(),
+});
+
+/**
+ * Product creation validation
+ * Auth: seller/moderator/admin role required (enforced in API route via requireRoleFromRequest)
+ * Seller email verification: enforced in API route via requireEmailVerified — ✅ Done (Phase 7.4)
+ */
+export const productCreateSchema = productBaseSchema
+  .refine(
+    (data) => !data.isAuction || (data.auctionEndDate && data.startingBid),
+    { message: "Auction items must have end date and starting bid" },
+  )
+  .refine(
+    (data) =>
+      !data.auctionEndDate || new Date(data.auctionEndDate) > new Date(),
+    { message: "Auction end date must be in the future" },
+  );
+
+/**
+ * Product update validation
+ * Status transition logic: enforced in PATCH route via PRODUCT_STATUS_TRANSITIONS map — ✅ Done (Phase 7.5)
+ */
+export const productUpdateSchema = productBaseSchema.partial().extend({
+  status: z
+    .enum(["draft", "published", "out_of_stock", "discontinued", "sold"])
+    .optional(),
+  version: z.number().optional(), // For optimistic locking
+  // Admin-managed fields (not settable at creation by sellers)
+  featured: z.boolean().optional(),
+  isPromoted: z.boolean().optional(),
+  promotionEndDate: dateStringSchema.optional(),
+});
+
+/**
+ * Product bulk creation validation
+ */
+export const productBulkCreateSchema = z.object({
+  products: z.array(productBaseSchema).min(1).max(100),
+  importSource: z.enum(["csv", "url", "api"]).optional(),
+  dryRun: z.boolean().default(false), // Validate without creating
+});
+
+// ============================================
+// CATEGORY SCHEMAS
+// ============================================
+
+/**
+ * Category list query validation
+ */
+export const categoryListQuerySchema = z.object({
+  rootId: objectIdSchema.optional(),
+  parentId: objectIdSchema.optional(),
+  featured: z.coerce.boolean().optional(),
+  includeMetrics: z.coerce.boolean().default(false),
+  flat: z.coerce.boolean().default(false),
+  maxDepth: z.coerce.number().int().positive().max(10).optional(),
+  includeInactive: z.coerce.boolean().default(false),
+  expandChildren: z.coerce.boolean().optional(),
+});
+
+/**
+ * Base category schema
+ */
+const categoryBaseSchema = z.object({
+  name: z.string().min(1).max(100),
+  parentId: objectIdSchema.optional(),
+  description: z.string().max(500).optional(),
+  display: z
+    .object({
+      icon: z.string().max(100).optional(),
+      coverImage: urlSchema.optional(),
+      color: z
+        .string()
+        .regex(/^#[0-9A-Fa-f]{6}$/)
+        .optional(), // Hex color
+      showInMenu: z.boolean().default(true),
+      showInFooter: z.boolean().default(false),
+    })
+    .optional(),
+  seo: z
+    .object({
+      title: z.string().min(1).max(200).optional(),
+      description: z.string().min(1).max(500).optional(),
+      keywords: z.array(z.string().min(1).max(50)).max(20).optional(),
+    })
+    .optional(),
+});
+
+/**
+ * Category creation validation
+ * NOTE: Name uniqueness per parent requires a DB lookup — enforced at the API route level
+ * before calling categoryRepository.create() (not implementable in Zod alone). — ✅ Documented
+ */
+export const categoryCreateSchema = categoryBaseSchema;
+
+/**
+ * Category update validation
+ */
+export const categoryUpdateSchema = categoryBaseSchema.partial().extend({
+  order: z.number().int().nonnegative().optional(),
+  isActive: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  isBrand: z.boolean().optional(),
+  showOnHomepage: z.boolean().optional(),
+  isSearchable: z.boolean().optional(),
+});
+
+/**
+ * Category bulk import validation
+ */
+export const categoryBulkImportSchema = z.object({
+  categories: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(100),
+        parentId: objectIdSchema.optional(),
+        image: urlSchema.optional(),
+        description: z.string().max(500).optional(),
+      }),
+    )
+    .min(1)
+    .max(100),
+});
+
+// ============================================
+// REVIEW SCHEMAS
+// ============================================
+
+/**
+ * Review list query validation
+ */
+export const reviewListQuerySchema = paginationQuerySchema.extend({
+  productId: objectIdSchema,
+  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  ratingRange: z
+    .tuple([z.coerce.number().min(1).max(5), z.coerce.number().min(1).max(5)])
+    .optional(),
+  verified: z.coerce.boolean().optional(),
+  minHelpful: z.coerce.number().nonnegative().optional(),
+  sortBy: z.enum(["recent", "helpful", "rating"]).optional(),
+});
+
+/**
+ * Base review schema
+ */
+const reviewBaseSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  title: z.string().min(5).max(100),
+  comment: z.string().min(20).max(2000),
+  images: z.array(urlSchema).max(5).optional(),
+  video: videoSchema.optional(),
+});
+
+/**
+ * Review creation validation
+ * Duplicate prevention: enforced at the API route level (checks existing reviews before insert)
+ */
+export const reviewCreateSchema = reviewBaseSchema.extend({
+  productId: objectIdSchema,
+  template: z.enum(["quick", "detailed"]).optional(),
+  verified: z.boolean().optional(), // Verified purchase flag
+});
+
+/**
+ * Review update validation
+ */
+export const reviewUpdateSchema = reviewBaseSchema.partial();
+
+/**
+ * Review vote validation
+ */
+export const reviewVoteSchema = z.object({
+  vote: z.enum(["helpful", "not_helpful"]),
+});
+
+// ============================================
+// SITE SETTINGS SCHEMAS
+// ============================================
+
+/**
+ * Site settings update validation (admin only)
+ * Includes deep nested validation for emailSettings, socialLinks, and features.
+ * — ✅ Done (Phase 23)
+ */
+export const siteSettingsUpdateSchema = z
+  .object({
+    siteName: z.string().min(1).max(100).optional(),
+    siteDescription: z.string().min(1).max(500).optional(),
+    contactEmail: z.string().email().optional(),
+    supportEmail: z.string().email().optional(),
+    maintenanceMode: z.boolean().optional(),
+    maintenanceMessage: z.string().max(500).optional(),
+    emailSettings: z
+      .object({
+        fromName: z.string().min(1).max(100),
+        fromEmail: z.string().email(),
+        replyTo: z.string().email(),
+      })
+      .optional(),
+    socialLinks: z
+      .object({
+        facebook: z.string().url().optional().or(z.literal("")),
+        twitter: z.string().url().optional().or(z.literal("")),
+        instagram: z.string().url().optional().or(z.literal("")),
+        linkedin: z.string().url().optional().or(z.literal("")),
+      })
+      .optional(),
+    features: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(100),
+          name: z.string().min(1).max(100),
+          description: z.string().max(500).default(""),
+          icon: z.string().max(100).default(""),
+          enabled: z.boolean(),
+        }),
+      )
+      .max(50)
+      .optional(),
+    payment: z
+      .object({
+        razorpayEnabled: z.boolean(),
+        upiManualEnabled: z.boolean(),
+        codEnabled: z.boolean(),
+      })
+      .optional(),
+    featureFlags: z
+      .object({
+        chats: z.boolean(),
+        smsVerification: z.boolean(),
+        translations: z.boolean(),
+        wishlists: z.boolean(),
+        auctions: z.boolean(),
+        reviews: z.boolean(),
+        events: z.boolean(),
+        blog: z.boolean(),
+        coupons: z.boolean(),
+        notifications: z.boolean(),
+        sellerRegistration: z.boolean(),
+        preOrders: z.boolean(),
+      })
+      .optional(),
+    commissions: z
+      .object({
+        razorpayFeePercent: z.number().min(0).max(100),
+        codDepositPercent: z.number().min(0).max(100),
+        sellerShippingFixed: z.number().min(0),
+        platformShippingPercent: z.number().min(0).max(100),
+        platformShippingFixedMin: z.number().min(0),
+      })
+      .optional(),
+    /**
+     * Provider credentials — plaintext on input, encrypted at rest.
+     * Empty string = keep existing value unchanged.
+     * Max 512 chars covers all real-world API key lengths.
+     */
+    credentials: z
+      .object({
+        razorpayKeyId: z.string().max(512).optional(),
+        razorpayKeySecret: z.string().max(512).optional(),
+        razorpayWebhookSecret: z.string().max(512).optional(),
+        resendApiKey: z.string().max(512).optional(),
+        whatsappApiKey: z.string().max(512).optional(),
+      })
+      .optional(),
+  })
+  .partial();
+
+// ============================================
+// CAROUSEL SCHEMAS
+// ============================================
+
+/**
+ * Carousel list query validation
+ */
+export const carouselListQuerySchema = z.object({
+  includeInactive: z.coerce.boolean().default(false),
+});
+
+/**
+ * Grid card schema for carousel
+ * NOTE: Max 2 cards per slide. Grid validation (row 1-2, col 1-3) is enforced per card.
+ */
+const gridCardSchema = z.object({
+  /** 1 = Top row, 2 = Bottom row */
+  gridRow: z.number().int().min(1).max(2),
+  /** 1 = Left, 2 = Center, 3 = Right */
+  gridCol: z.number().int().min(1).max(3),
+  background: z.object({
+    type: z.enum(["color", "gradient", "image"]),
+    value: z.string().min(1).max(500),
+  }),
+  content: z
+    .object({
+      title: z.string().max(100).optional(),
+      subtitle: z.string().max(200).optional(),
+      description: z.string().max(500).optional(),
+    })
+    .optional(),
+  buttons: z
+    .array(
+      z.object({
+        text: z.string().min(1).max(50),
+        link: urlSchema,
+        variant: z.enum(["primary", "secondary", "outline"]),
+        openInNewTab: z.boolean().default(false),
+      }),
+    )
+    .max(3)
+    .optional(),
+  isButtonOnly: z.boolean().default(false),
+  sizing: z
+    .object({
+      widthPct: z
+        .union([z.literal(25), z.literal(50), z.literal(75), z.literal(100)])
+        .optional(),
+      heightPct: z
+        .union([z.literal(25), z.literal(50), z.literal(75), z.literal(100)])
+        .optional(),
+      padding: z.enum(["none", "sm", "md", "lg"]).optional(),
+    })
+    .optional(),
+});
+
+/**
+ * Carousel base object schema (no refinements — safe to call .partial() on)
+ */
+const carouselBaseSchema = z.object({
+  title: z.string().min(1).max(200),
+  order: z.number().int().nonnegative(),
+  active: z.boolean().default(false),
+  media: z.object({
+    type: z.enum(["image", "video"]),
+    url: urlSchema,
+    alt: z.string().min(1).max(200),
+    thumbnail: urlSchema.optional(),
+  }),
+  link: z
+    .object({
+      url: urlSchema,
+      openInNewTab: z.boolean().default(false),
+    })
+    .optional(),
+  cards: z.array(gridCardSchema).min(0).max(6),
+  startDate: dateStringSchema.optional(),
+  endDate: dateStringSchema.optional(),
+  template: z.string().max(100).optional(),
+  duplicateFrom: objectIdSchema.optional(),
+});
+
+/**
+ * Carousel creation validation
+ * NOTE: Active slides count limit (max 5) is enforced at the API route level (not in schema)
+ * as it requires a DB query to count current active slides.
+ * Grid overlap detection: validates that no two cards occupy overlapping cells.
+ */
+export const carouselCreateSchema = carouselBaseSchema
+  .refine(
+    (data) =>
+      !data.endDate ||
+      !data.startDate ||
+      new Date(data.endDate) > new Date(data.startDate),
+    { message: "End date must be after start date" },
+  )
+  .refine(
+    (data) => {
+      const positions = data.cards.map((c) => `${c.gridRow},${c.gridCol}`);
+      return new Set(positions).size === positions.length;
+    },
+    {
+      message:
+        "Each grid cell (row 1\u20132, col 1\u20133) may contain at most one card",
+    },
+  )
+  .refine(
+    (data) => {
+      const rows = data.cards.map((c) => c.gridRow);
+      return new Set(rows).size === rows.length;
+    },
+    {
+      message: "Each row may contain at most one card",
+    },
+  );
+
+/**
+ * Carousel update validation
+ * Uses carouselBaseSchema (no refinements) so .partial() works correctly.
+ */
+export const carouselUpdateSchema = carouselBaseSchema.partial();
+
+/**
+ * Carousel reorder validation
+ */
+export const carouselReorderSchema = z.object({
+  slideIds: z.array(objectIdSchema).min(1).max(5),
+});
+
+/**
+ * Generic reorder validation for drag-and-drop operations
+ */
+export const reorderSchema = z.object({
+  itemId: objectIdSchema,
+  newOrder: z.number().int().nonnegative(),
+  targetPosition: z.enum(["before", "after"]).optional(),
+  targetItemId: objectIdSchema.optional(),
+});
+
+// ============================================
+// HOMEPAGE SECTIONS SCHEMAS
+// ============================================
+
+/**
+ * Homepage sections list query validation
+ */
+export const homepageSectionsListQuerySchema = z.object({
+  includeDisabled: z.coerce.boolean().default(false),
+});
+
+/**
+ * Homepage section base object schema (no refinements — safe to call .partial() on)
+ */
+const homepageSectionBaseSchema = z.object({
+  type: z.enum([
+    "welcome",
+    "trust-indicators",
+    "categories",
+    "products",
+    "auctions",
+    "banner",
+    "features",
+    "reviews",
+    "whatsapp-community",
+    "faq",
+    "blog-articles",
+    "newsletter",
+    "stores",
+    "events",
+  ]),
+  title: z.string().min(1).max(200),
+  order: z.number().int().nonnegative(),
+  enabled: z.boolean().default(true),
+  config: z.record(z.string(), z.any()).optional(),
+});
+
+/**
+ * Homepage section creation validation.
+ * Type-specific config rules:
+ *   - 'featured' and 'trending': config.maxItems must be a positive integer when provided
+ *   - 'welcome': config.layout must be 'grid', 'carousel', or 'list' when provided
+ */
+export const homepageSectionCreateSchema = homepageSectionBaseSchema.refine(
+  (data) => {
+    if (
+      (data.type === "products" || data.type === "auctions") &&
+      (data.config as any)?.maxItems !== undefined
+    ) {
+      return (data.config as any).maxItems > 0;
     }
-
-    return { success: true, data };
-  } catch (error) {
-    serverLogger.error("Error sending verification email", { error });
-    throw error;
-  }
-}
-
-/**
- * Send email verification email using a pre-built full Firebase link
- * Use this when the full action link is generated by Firebase Admin SDK
- * (auth.generateEmailVerificationLink)
- */
-export async function sendVerificationEmailWithLink(
-  email: string,
-  verificationLink: string,
-): ReturnType<typeof sendVerificationEmail> {
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Verify your ${SITE_NAME} email address`,
-      html: `<p>Click <a href="${verificationLink}">here</a> to verify your email address. This link expires in 24 hours.</p>`,
-      text: `Verify your email: ${verificationLink}\n\nThis link expires in 24 hours.`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send verification email (link)", { error });
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    serverLogger.error("Error sending verification email (link)", { error });
-    throw error;
-  }
-}
-
-/**
- * Send password reset email using a pre-built full Firebase link
- * Use this when the full action link is generated by Firebase Admin SDK
- * (auth.generatePasswordResetLink)
- */
-export async function sendPasswordResetEmailWithLink(
-  email: string,
-  resetLink: string,
-): ReturnType<typeof sendPasswordResetEmail> {
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Reset your ${SITE_NAME} password`,
-      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p><p>If you didn't request this, you can safely ignore this email.</p>`,
-      text: `Reset your password: ${resetLink}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send password reset email (link)", {
-        error,
-      });
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    serverLogger.error("Error sending password reset email (link)", { error });
-    throw error;
-  }
-}
-
-/**
- * Send password reset email
- */
-export async function sendPasswordResetEmail(email: string, token: string) {
-  const resetLink = `${SITE_URL}/auth/reset-password?token=${token}`;
-
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Reset your ${SITE_NAME} password`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Reset Your Password</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
-            <tr>
-              <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 40px; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Reset Your Password</h1>
-                    </td>
-                  </tr>
-                  
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding: 40px;">
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hello,</p>
-                      
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                        We received a request to reset your password for your ${SITE_NAME} account. Click the button below to create a new password:
-                      </p>
-                      
-                      <!-- Button -->
-                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
-                        <tr>
-                          <td align="center">
-                            <a href="${resetLink}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);">
-                              Reset Password
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0 0; padding-top: 20px; border-top: 1px solid #eeeeee;">
-                        Or copy and paste this link into your browser:
-                      </p>
-                      <p style="color: #f5576c; font-size: 14px; word-break: break-all; margin: 10px 0;">
-                        ${resetLink}
-                      </p>
-                      
-                      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                        <p style="color: #856404; font-size: 14px; line-height: 1.6; margin: 0;">
-                          <strong>⚠️ Important:</strong> This password reset link will expire in 1 hour for security reasons.
-                        </p>
-                      </div>
-                      
-                      <p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 20px 0 0;">
-                        If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
-                      </p>
-                      
-                      <p style="color: #999999; font-size: 13px; line-height: 1.6; margin: 20px 0 0;">
-                        For security reasons, we recommend choosing a strong password that you haven't used before.
-                      </p>
-                    </td>
-                  </tr>
-                  
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                      <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
-                      </p>
-                      <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 10px 0 0;">
-                        This is an automated email. Please do not reply to this message.
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `
-Hello,
-
-We received a request to reset your password for your ${SITE_NAME} account. Click the link below to create a new password:
-
-${resetLink}
-
-⚠️ Important: This password reset link will expire in 1 hour for security reasons.
-
-If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
-
-For security reasons, we recommend choosing a strong password that you haven't used before.
-
-© ${currentYear()} ${SITE_NAME}. All rights reserved.
-      `.trim(),
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send password reset email", { error });
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    serverLogger.error("Error sending password reset email", { error });
-    throw error;
-  }
-}
-
-/**
- * Send password change notification email
- */
-export async function sendPasswordChangedEmail(email: string) {
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Your ${SITE_NAME} password has been changed`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Password Changed</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
-            <tr>
-              <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 40px; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Password Changed</h1>
-                    </td>
-                  </tr>
-                  
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding: 40px;">
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hello,</p>
-                      
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                        This is a confirmation that the password for your ${SITE_NAME} account has been successfully changed.
-                      </p>
-                      
-                      <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                        <p style="color: #155724; font-size: 14px; line-height: 1.6; margin: 0;">
-                          <strong>✓ Confirmed:</strong> Your password was changed on ${formatDateTime(nowMs())}.
-                        </p>
-                      </div>
-                      
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 20px 0;">
-                        If you made this change, you can safely ignore this email.
-                      </p>
-                      
-                      <div style="background-color: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 30px 0; border-radius: 4px;">
-                        <p style="color: #721c24; font-size: 14px; line-height: 1.6; margin: 0 0 10px;">
-                          <strong>⚠️ Didn't make this change?</strong>
-                        </p>
-                        <p style="color: #721c24; font-size: 14px; line-height: 1.6; margin: 0;">
-                          If you didn't change your password, someone else may have accessed your account. Please reset your password immediately and contact our support team.
-                        </p>
-                      </div>
-                      
-                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
-                        <tr>
-                          <td align="center">
-                            <a href="${SITE_URL}/auth/forgot-password" style="display: inline-block; padding: 14px 40px; background: #dc3545; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600;">
-                              Reset Password Now
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
-                      <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `
-Hello,
-
-This is a confirmation that the password for your ${SITE_NAME} account has been successfully changed on ${formatDateTime(nowMs())}.
-
-If you made this change, you can safely ignore this email.
-
-⚠️ Didn't make this change?
-If you didn't change your password, someone else may have accessed your account. Please reset your password immediately at:
-${SITE_URL}/auth/forgot-password
-
-© ${currentYear()} ${SITE_NAME}. All rights reserved.
-      `.trim(),
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send password changed email", { error });
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    serverLogger.error("Error sending password changed email", { error });
-    throw error;
-  }
-}
-
-/**
- * Send order confirmation email
- */
-export interface OrderConfirmationEmailParams {
-  to: string;
-  userName: string;
-  orderId: string;
-  productTitle: string;
-  quantity: number;
-  totalPrice: number;
-  currency: string;
-  shippingAddress: string;
-  paymentMethod: string;
-  /** Per-store multi-item orders: list of all items in the order */
-  items?: Array<{
-    productId: string;
-    productTitle: string;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-  }>;
-}
-
-export async function sendOrderConfirmationEmail(
-  params: OrderConfirmationEmailParams,
-) {
-  const {
-    to,
-    userName,
-    orderId,
-    productTitle,
-    quantity,
-    totalPrice,
-    currency,
-    shippingAddress,
-    paymentMethod,
-    items,
-  } = params;
-
-  const orderUrl = `${SITE_URL}/user/orders/view/${orderId}`;
-  const formattedTotal = formatCurrency(totalPrice, currency);
-
-  // Build items table rows — used when multiple products are in one order
-  const itemsHtml =
-    items && items.length > 1
-      ? `
-        <table width="100%" cellpadding="8" cellspacing="0" border="0" style="border-collapse: collapse; margin-bottom: 8px;">
-          <thead>
-            <tr style="background-color: #e9ecef;">
-              <th style="text-align: left; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Product</th>
-              <th style="text-align: center; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Qty</th>
-              <th style="text-align: right; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items
-              .map(
-                (item, i) => `
-              <tr style="background-color: ${i % 2 === 0 ? "#ffffff" : "#f8f9fa"}; border-top: 1px solid #e9ecef;">
-                <td style="font-size: 14px; color: #333; padding: 8px 12px;">${item.productTitle}</td>
-                <td style="font-size: 14px; color: #333; text-align: center; padding: 8px 12px;">${item.quantity}</td>
-                <td style="font-size: 14px; color: #333; text-align: right; padding: 8px 12px;">${formatCurrency(item.totalPrice, currency)}</td>
-              </tr>`,
-              )
-              .join("")}
-          </tbody>
-        </table>`
-      : `
-        <tr>
-          <td style="color: #666; font-size: 14px;">Product</td>
-          <td style="color: #333; font-size: 14px;">${productTitle}</td>
-        </tr>
-        <tr>
-          <td style="color: #666; font-size: 14px;">Quantity</td>
-          <td style="color: #333; font-size: 14px;">${quantity}</td>
-        </tr>`;
-
-  const itemsText =
-    items && items.length > 1
-      ? items
-          .map(
-            (item) =>
-              `  • ${item.productTitle} × ${item.quantity} — ${formatCurrency(item.totalPrice, currency)}`,
-          )
-          .join("\n")
-      : `  Product: ${productTitle}\n  Quantity: ${quantity}`;
-
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to,
-      subject: `Order Confirmed — ${orderId}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Order Confirmation</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
-            <tr>
-              <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px; text-align: center;">
-                      <p style="font-size: 48px; margin: 0 0 12px;">✅</p>
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Order Confirmed!</h1>
-                    </td>
-                  </tr>
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding: 40px;">
-                      <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hi ${userName},</p>
-                      <p style="color: #333; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
-                        Thank you for your order! We've received it and will process it shortly.
-                      </p>
-
-                      <!-- Order Details -->
-                      <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background-color: #f8f9fa; border-radius: 8px; margin-bottom: 24px;">
-                        <tr>
-                          <td style="color: #666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e9ecef;" colspan="2">Order Details</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #666; font-size: 14px; width: 40%;">Order ID</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 600;">${orderId}</td>
-                        </tr>
-                        ${
-                          items && items.length > 1
-                            ? `
-                        <tr>
-                          <td style="color: #666; font-size: 14px; vertical-align: top;" colspan="2">
-                            <div style="font-weight: 600; margin-bottom: 8px;">Items (${items.length})</div>
-                            ${itemsHtml}
-                          </td>
-                        </tr>`
-                            : itemsHtml
-                        }
-                        <tr>
-                          <td style="color: #666; font-size: 14px;">Total</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 700;">${formattedTotal}</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #666; font-size: 14px;">Payment</td>
-                          <td style="color: #333; font-size: 14px;">${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #666; font-size: 14px; vertical-align: top;">Ship to</td>
-                          <td style="color: #333; font-size: 14px;">${shippingAddress}</td>
-                        </tr>
-                      </table>
-
-                      <!-- CTA -->
-                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
-                        <tr>
-                          <td align="center">
-                            <a href="${orderUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600;">
-                              View Order
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
-
-                      <p style="color: #999; font-size: 13px; line-height: 1.6; margin: 0;">
-                        We'll send you another email when your order is shipped.
-                      </p>
-                    </td>
-                  </tr>
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eee;">
-                      <p style="color: #999; font-size: 12px; margin: 0;">
-                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\n${itemsText}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${currentYear()} ${SITE_NAME}`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send order confirmation email", { error });
-      // Don't throw — email failure should not break checkout
-    }
-
-    return { success: !error, data };
-  } catch (error) {
-    serverLogger.error("Error sending order confirmation email", { error });
-    // Don't rethrow — email failure should not break checkout
-    return { success: false };
-  }
-}
-
-/**
- * Send contact form message to support
- */
-export async function sendContactEmail(params: {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}) {
-  const { name, email, subject, message } = params;
-  const supportEmail = process.env.EMAIL_SUPPORT || "info@letitrip.in";
-
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: supportEmail,
-      replyTo: email,
-      subject: `[Contact] ${subject}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head><meta charset="utf-8"><title>Contact Form</title></head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px 0;">
-          <table width="600" style="margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <tr><td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px; text-align: center;">
-              <h1 style="color: #fff; margin: 0; font-size: 24px;">New Contact Message</h1>
-            </td></tr>
-            <tr><td style="padding: 32px;">
-              <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
-              <p><strong>Subject:</strong> ${subject}</p>
-              <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;">
-              <p style="white-space: pre-wrap;">${message}</p>
-            </td></tr>
-            <tr><td style="background: #f9f9f9; padding: 16px; text-align: center; color: #888; font-size: 12px;">
-              © ${currentYear()} ${SITE_NAME}
-            </td></tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `From: ${name} <${email}>\nSubject: ${subject}\n\n${message}`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send contact email", { error });
-    }
-
-    return { success: !error, data };
-  } catch (error) {
-    serverLogger.error("Error sending contact email", { error });
-    return { success: false };
-  }
-}
-
-/**
- * Send admin notification email when a seller submits a new product for review.
- *
- * @param adminEmail   - Recipient admin email address
- * @param product      - The newly-created product data
- */
-export async function sendNewProductSubmittedEmail(
-  adminEmail: string,
-  product: {
-    id: string;
-    title: string;
-    sellerName: string;
-    sellerEmail: string;
-    category?: string;
+    return true;
   },
-) {
-  const reviewUrl = `${SITE_URL}/admin/products`;
+  {
+    message: "Products/auctions sections require a positive maxItems in config",
+  },
+);
 
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: adminEmail,
-      subject: `New Product Submitted — ${product.title}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>New Product Submitted</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 40px 0;">
-            <tr>
-              <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <!-- Header -->
-                  <tr>
-                    <td style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 40px; text-align: center;">
-                      <p style="font-size: 48px; margin: 0 0 12px;">📦</p>
-                      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">New Product Submitted</h1>
-                      <p style="color: #c7d2fe; margin: 8px 0 0; font-size: 14px;">Action required — review and publish</p>
-                    </td>
-                  </tr>
+/**
+ * Homepage section update validation
+ * Uses homepageSectionBaseSchema (no refinements) so .partial() works correctly.
+ */
+export const homepageSectionUpdateSchema = homepageSectionBaseSchema.partial();
 
-                  <!-- Body -->
-                  <tr>
-                    <td style="padding: 40px;">
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                        A new product has been submitted to <strong>${SITE_NAME}</strong> and is awaiting your review.
-                      </p>
+/**
+ * Homepage sections reorder validation
+ */
+export const homepageSectionsReorderSchema = z.object({
+  sectionIds: z.array(objectIdSchema).min(1),
+});
 
-                      <!-- Product details -->
-                      <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background: #f8f9fa; border-radius: 8px; margin: 0 0 24px;">
-                        <tr>
-                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; width: 40%;">Product ID</td>
-                          <td style="color: #111827; font-size: 14px; font-family: monospace;">${product.id}</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Title</td>
-                          <td style="color: #111827; font-size: 14px; font-weight: 600;">${product.title}</td>
-                        </tr>
-                        ${
-                          product.category
-                            ? `
-                        <tr>
-                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Category</td>
-                          <td style="color: #111827; font-size: 14px;">${product.category}</td>
-                        </tr>
-                        `
-                            : ""
-                        }
-                        <tr>
-                          <td style="color: #6b7280; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Seller</td>
-                          <td style="color: #111827; font-size: 14px;">${product.sellerName} (${product.sellerEmail})</td>
-                        </tr>
-                      </table>
+// ============================================
+// FAQ SCHEMAS
+// ============================================
 
-                      <!-- CTA -->
-                      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 24px 0;">
-                        <tr>
-                          <td align="center">
-                            <a href="${reviewUrl}" style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: 600;">
-                              Review in Admin Panel
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
+/**
+ * FAQ list query validation
+ */
+export const faqListQuerySchema = paginationQuerySchema.extend({
+  category: z.string().min(1).optional(),
+  featured: z.coerce.boolean().optional(),
+  priority: z.coerce.number().int().min(1).max(10).optional(),
+  tags: z.array(z.string()).or(z.string()).optional(),
+});
 
-                      <p style="color: #9ca3af; font-size: 13px; line-height: 1.6; margin: 0;">
-                        You can publish or reject this product from the
-                        <a href="${reviewUrl}" style="color: #6366f1; text-decoration: none;">${SITE_NAME} admin panel</a>.
-                      </p>
-                    </td>
-                  </tr>
+/**
+ * FAQ creation validation
+ * Variable syntax validation: verifies {{variableName}} placeholder count (<= 10). —  Done (Phase 23)
+ */
+/**
+ * FAQ base object schema (no refinements — safe to call .partial() on)
+ */
+const faqBaseSchema = z.object({
+  question: z.string().min(10).max(500),
+  answer: z.object({
+    text: z.string().min(20).max(5000),
+    format: z.enum(["plain", "markdown", "html"]).default("plain"),
+  }),
+  category: z.string().min(1).max(100),
+  showOnHomepage: z.boolean().default(false),
+  showInFooter: z.boolean().default(false),
+  isActive: z.boolean().default(true),
+  priority: z.number().int().min(1).max(10).default(5),
+  isPinned: z.boolean().default(false),
+  order: z.number().int().min(0).default(0),
+  tags: z.array(z.string().min(1).max(50)).max(10).optional(),
+  relatedFAQs: z.array(objectIdSchema).max(5).optional(),
+  useSiteSettings: z.boolean().default(true),
+  variables: z.record(z.string(), z.string()).optional(),
+  template: z.string().max(100).optional(),
+});
 
-                  <!-- Footer -->
-                  <tr>
-                    <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eeeeee;">
-                      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                        © ${currentYear()} ${SITE_NAME}. This is an automated notification — do not reply.
-                      </p>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `New Product Submitted\n\nProduct: ${product.title} (${product.id})\nSeller: ${product.sellerName} (${product.sellerEmail})\n\nReview at: ${reviewUrl}`,
-    });
+export const faqCreateSchema = faqBaseSchema.refine(
+  (data) => {
+    // Check for valid template variable syntax {{variableName}}
+    const text = data.answer.text;
+    const templateVarPattern = /\{\{[a-zA-Z_][a-zA-Z0-9_]*\}\}/g;
+    const matches = text.match(templateVarPattern) || [];
+    return matches.length <= 10; // Max 10 template variables
+  },
+  { message: "Too many template variables (max 10)" },
+);
 
-    if (error) {
-      serverLogger.error("Failed to send new product notification email", {
-        error,
-        productId: product.id,
-      });
-    }
+/**
+ * FAQ update validation
+ * Uses faqBaseSchema (no refinements) so .partial() works correctly.
+ */
+export const faqUpdateSchema = faqBaseSchema.partial();
 
-    return { success: !error, data };
-  } catch (error) {
-    serverLogger.error("Error sending new product notification email", {
-      error,
-      productId: product.id,
-    });
-    return { success: false };
+/**
+ * FAQ vote validation
+ */
+export const faqVoteSchema = z.object({
+  vote: z.enum(["helpful", "not-helpful"]),
+});
+
+// ============================================
+// BUSINESS RULE VALIDATION SCHEMAS
+// ============================================
+
+/**
+ * Order schema with business rule validation
+ */
+export const orderSchema = z
+  .object({
+    items: z
+      .array(
+        z.object({
+          productId: objectIdSchema,
+          quantity: z.number().int().min(1).max(100),
+          price: z.number().positive(),
+        }),
+      )
+      .min(1)
+      .max(50),
+    totalAmount: z.number().positive(),
+    shippingAddress: addressSchema,
+    billingAddress: addressSchema.optional(),
+  })
+  .refine(
+    (order) => {
+      // Minimum order value rule ($100)
+      const minOrderValue = 100;
+      return order.totalAmount >= minOrderValue;
+    },
+    { message: "Order must be at least $100" },
+  )
+  .refine(
+    (order) => {
+      // Maximum items per order
+      const maxItems = 50;
+      const totalItems = order.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
+      return totalItems <= maxItems;
+    },
+    { message: "Order cannot exceed 50 items" },
+  );
+
+/**
+ * Bid schema with business rule validation
+ */
+export const bidSchema = z
+  .object({
+    productId: objectIdSchema,
+    amount: z.number().positive(),
+    auctionId: objectIdSchema,
+  })
+  .refine(
+    (_bid) => {
+      // Bid amount should be reasonable (max 10x starting bid)
+      return true; // Validate against current bid in API route
+    },
+    { message: "Bid must meet minimum increment rules" },
+  );
+
+// ============================================
+// MEDIA UPLOAD SCHEMAS
+// ============================================
+
+/**
+ * Image crop data validation.
+ * aspectRatio format is validated (e.g. "16:9", "1:1").
+ * Aspect ratio enforcement: when aspectRatio is provided the width/height must match within 2% tolerance.
+ * Resolution enforcement: when minWidth/minHeight are provided the crop dimensions must meet the minimums.
+ */
+export const cropDataSchema = z
+  .object({
+    sourceUrl: mediaUrlSchema,
+    x: z.number().nonnegative(),
+    y: z.number().nonnegative(),
+    width: z.number().positive(),
+    height: z.number().positive(),
+    rotation: z.number().min(0).max(360).optional(),
+    aspectRatio: z
+      .string()
+      .regex(/^\d+:\d+$/)
+      .optional(), // e.g., "1:1", "16:9"
+    outputFolder: z.string().optional(),
+    outputFormat: z.enum(["jpeg", "png", "webp"]).optional(),
+    quality: z.number().min(1).max(100).optional(),
+    minWidth: z.number().int().positive().optional(), // Minimum required output width in pixels
+    minHeight: z.number().int().positive().optional(), // Minimum required output height in pixels
+  })
+  .refine(
+    (data) => {
+      if (!data.aspectRatio) return true;
+      const [wPart, hPart] = data.aspectRatio.split(":").map(Number);
+      if (!wPart || !hPart) return true;
+      const expectedRatio = wPart / hPart;
+      const actualRatio = data.width / data.height;
+      return Math.abs(actualRatio - expectedRatio) / expectedRatio < 0.02; // 2% tolerance
+    },
+    { message: "Crop dimensions do not match the declared aspect ratio" },
+  )
+  .refine((data) => !data.minWidth || data.width >= data.minWidth, {
+    message: "Crop width does not meet the minimum width requirement",
+  })
+  .refine((data) => !data.minHeight || data.height >= data.minHeight, {
+    message: "Crop height does not meet the minimum height requirement",
+  });
+
+/**
+ * Video trim data validation
+ */
+export const trimDataSchema = z
+  .object({
+    sourceUrl: mediaUrlSchema,
+    startTime: z.number().nonnegative(),
+    endTime: z.number().positive(),
+    outputFolder: z.string().optional(),
+    outputFormat: z.enum(["mp4", "webm"]).optional(),
+    quality: z.enum(["low", "medium", "high"]).optional(),
+  })
+  .refine((data) => data.endTime > data.startTime, {
+    message: "End time must be after start time",
+  });
+
+/**
+ * Video thumbnail selection validation
+ */
+export const thumbnailDataSchema = z.object({
+  timePosition: z.number().nonnegative(),
+});
+
+/**
+ * Media upload request validation (for form data)
+ */
+export const mediaUploadRequestSchema = z.object({
+  folder: z.string().optional(),
+  public: z.boolean().optional(),
+});
+
+/**
+ * Chunked upload request validation
+ */
+export const chunkedUploadSchema = z.object({
+  uploadId: z.string().min(1),
+  chunkIndex: z.number().int().nonnegative(),
+  totalChunks: z.number().int().positive(),
+  chunkSize: z.number().int().positive(),
+});
+
+/**
+ * Upload progress validation
+ */
+export const uploadProgressSchema = z.object({
+  uploadId: z.string().min(1),
+  chunkIndex: z.number().int().nonnegative(),
+  totalChunks: z.number().int().positive(),
+  percentComplete: z.number().min(0).max(100),
+  bytesUploaded: z.number().int().nonnegative(),
+  totalBytes: z.number().int().positive(),
+});
+
+// ============================================
+// AUTH / USER MANAGEMENT SCHEMAS
+// (migrated from lib/api/validation-schemas.ts)
+// ============================================
+
+/**
+ * User role enum schema
+ */
+export const userRoleSchema = z.enum(["user", "moderator", "admin"]);
+
+/**
+ * Update user role schema (admin endpoint)
+ */
+export const updateUserRoleSchema = z.object({
+  role: userRoleSchema,
+});
+
+/**
+ * Toggle user enabled/disabled schema
+ */
+export const toggleUserStatusSchema = z.object({
+  disabled: z.boolean(),
+});
+
+/**
+ * Change password schema — uses the strong passwordSchema defined above
+ */
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+/**
+ * Delete account confirmation schema
+ */
+export const deleteAccountSchema = z.object({
+  confirmation: z.literal("DELETE"),
+});
+
+/**
+ * User list filter schema
+ */
+export const userFilterSchema = z.object({
+  role: userRoleSchema.optional(),
+  disabled: z.boolean().optional(),
+  search: z.string().optional(),
+});
+
+// ============================================
+// AUTH & PROFILE SCHEMAS
+// ============================================
+
+/**
+ * Password reset schema — token (from email link) + new password
+ */
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: passwordSchema,
+});
+
+/**
+ * Send email verification schema
+ */
+export const sendVerificationSchema = z.object({
+  email: emailSchema,
+});
+
+/**
+ * Add phone number schema
+ */
+export const addPhoneSchema = z.object({
+  phoneNumber: phoneSchema,
+});
+
+/**
+ * Verify phone OTP schema — verificationId from Firebase + 6-digit code
+ */
+export const verifyPhoneSchema = z.object({
+  verificationId: z.string().min(1, "Verification ID is required"),
+  code: z
+    .string()
+    .length(6, "Verification code must be exactly 6 digits")
+    .regex(/^\d+$/, "Verification code must contain only digits"),
+});
+
+/**
+ * Change password schema — no confirmPassword (client confirms before calling API)
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: "New password must differ from current password",
+    path: ["newPassword"],
+  });
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Validate request body with Zod schema
+ * Returns typed success/failure — error logging is handled at the API route call site via serverLogger
+ * TODO (Future): Add i18n support for error messages
+ */
+export function validateRequestBody<T>(
+  schema: z.ZodSchema<T>,
+  body: unknown,
+): { success: true; data: T } | { success: false; errors: z.ZodError } {
+  const result = schema.safeParse(body);
+  if (result.success) {
+    return { success: true, data: result.data };
   }
+  return { success: false, errors: result.error };
 }
 
 /**
- * Send notification email when a new review is submitted on a product.
- * Fires to the product's seller and to the admin inbox.
+ * Format Zod errors for API response
+ * TODO (Future): Add i18n support — map field paths to localised error messages
  */
-export async function sendNewReviewNotificationEmail(params: {
-  sellerEmail: string;
-  adminEmail: string;
-  reviewerName: string;
-  productTitle: string;
-  productId: string;
-  rating: number;
-  comment: string;
-}) {
-  const {
-    sellerEmail,
-    adminEmail,
-    reviewerName,
-    productTitle,
-    productId,
-    rating,
-    comment,
-  } = params;
-
-  const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
-  const reviewUrl = `${SITE_URL}/admin/reviews`;
-  const recipients = [...new Set([sellerEmail, adminEmail])]; // deduplicate if same
-
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: recipients,
-      subject: `New review on "${productTitle}" — ${rating}/5 stars`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-        <body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:40px 0;">
-            <tr><td align="center">
-              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <tr>
-                  <td style="background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);padding:40px;text-align:center;">
-                    <p style="font-size:48px;margin:0 0 12px;">⭐</p>
-                    <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:600;">New Review Submitted</h1>
-                    <p style="color:#fef3c7;margin:8px 0 0;font-size:14px;">Pending moderation — review and approve</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:40px;">
-                    <p style="color:#333;font-size:16px;line-height:1.6;margin:0 0 20px;">
-                      <strong>${reviewerName}</strong> has left a new review on <strong>${productTitle}</strong>.
-                    </p>
-                    <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background:#f8f9fa;border-radius:8px;margin:0 0 24px;">
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;width:40%;">Product</td>
-                        <td style="color:#111827;font-size:14px;font-weight:600;">${productTitle}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Product ID</td>
-                        <td style="color:#111827;font-size:14px;font-family:monospace;">${productId}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Rating</td>
-                        <td style="color:#f59e0b;font-size:18px;">${stars} (${rating}/5)</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Reviewer</td>
-                        <td style="color:#111827;font-size:14px;">${reviewerName}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;vertical-align:top;">Comment</td>
-                        <td style="color:#111827;font-size:14px;line-height:1.6;">${comment.slice(0, 300)}${comment.length > 300 ? "…" : ""}</td>
-                      </tr>
-                    </table>
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
-                      <tr><td align="center">
-                        <a href="${reviewUrl}" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#ffffff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:600;">
-                          Review in Admin Panel
-                        </a>
-                      </td></tr>
-                    </table>
-                    <p style="color:#9ca3af;font-size:13px;line-height:1.6;margin:0;">This review is pending moderation and is not yet publicly visible.</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
-                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${currentYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
-                  </td>
-                </tr>
-              </table>
-            </td></tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `New review on "${productTitle}"\n\nRating: ${rating}/5\nReviewer: ${reviewerName}\n\nComment:\n${comment}\n\nReview at: ${reviewUrl}`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send review notification email", {
-        error,
-        productId,
-      });
+export function formatZodErrors(error: z.ZodError): Record<string, string[]> {
+  const formatted: Record<string, string[]> = {};
+  error.issues.forEach((err) => {
+    const path = err.path.join(".");
+    if (!formatted[path]) {
+      formatted[path] = [];
     }
-
-    return { success: !error, data };
-  } catch (error) {
-    serverLogger.error("Error sending review notification email", {
-      error,
-      productId,
-    });
-    return { success: false };
-  }
+    formatted[path].push(err.message);
+  });
+  return formatted;
 }
 
-/**
- * Send notification email to all admin addresses when site settings are changed.
- */
-export async function sendSiteSettingsChangedEmail(params: {
-  adminEmails: string[];
-  changedByEmail: string;
-  changedFields: string[];
-}) {
-  const { adminEmails, changedByEmail, changedFields } = params;
-
-  if (adminEmails.length === 0) return { success: false };
-
-  const settingsUrl = `${SITE_URL}/admin/site-settings`;
-
-  try {
-    const { data, error } = await sendConfiguredEmail({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: adminEmails,
-      subject: `Site settings updated by ${changedByEmail}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-        <body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background-color:#f5f5f5;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;padding:40px 0;">
-            <tr><td align="center">
-              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                <tr>
-                  <td style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);padding:40px;text-align:center;">
-                    <p style="font-size:48px;margin:0 0 12px;">⚙️</p>
-                    <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:600;">Site Settings Changed</h1>
-                    <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">${formatDateTime(nowMs())}</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:40px;">
-                    <p style="color:#333;font-size:16px;line-height:1.6;margin:0 0 20px;">
-                      <strong>${changedByEmail}</strong> has updated the following site settings:
-                    </p>
-                    <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background:#f8f9fa;border-radius:8px;margin:0 0 24px;">
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Changed Fields</td>
-                        <td style="color:#111827;font-size:14px;">${changedFields.map((f) => `<code style="background:#e5e7eb;padding:2px 6px;border-radius:3px;">${f}</code>`).join("&ensp;")}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Changed By</td>
-                        <td style="color:#111827;font-size:14px;">${changedByEmail}</td>
-                      </tr>
-                      <tr>
-                        <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Timestamp</td>
-                        <td style="color:#111827;font-size:14px;">${formatDateTime(nowMs())}</td>
-                      </tr>
-                    </table>
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
-                      <tr><td align="center">
-                        <a href="${settingsUrl}" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#ffffff;text-decoration:none;border-radius:6px;font-size:15px;font-weight:600;">
-                          View Settings
-                        </a>
-                      </td></tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
-                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${currentYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
-                  </td>
-                </tr>
-              </table>
-            </td></tr>
-          </table>
-        </body>
-        </html>
-      `,
-      text: `Site settings updated by ${changedByEmail}\n\nChanged fields: ${changedFields.join(", ")}\n\nView at: ${settingsUrl}`,
-    });
-
-    if (error) {
-      serverLogger.error("Failed to send settings change notification email", {
-        error,
-      });
-    }
-
-    return { success: !error, data };
-  } catch (error) {
-    serverLogger.error("Error sending settings change notification email", {
-      error,
-    });
-    return { success: false };
-  }
-}

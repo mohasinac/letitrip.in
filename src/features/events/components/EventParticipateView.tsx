@@ -253,3 +253,4 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     />
   );
 }
+

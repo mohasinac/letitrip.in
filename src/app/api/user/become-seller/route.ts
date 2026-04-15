@@ -8,9 +8,9 @@
 
 import { userRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { UserDocument } from "@/db/schema";
 
 export const POST = createApiHandler({
@@ -38,3 +38,4 @@ export const POST = createApiHandler({
     );
   },
 });
+

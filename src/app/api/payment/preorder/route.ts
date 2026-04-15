@@ -35,9 +35,9 @@ import {
 } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ValidationError, NotFoundError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact";
 
 const preorderDepositSchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -158,3 +158,4 @@ export const POST = createRouteHandler<
     return successResponse({ orderId: order.id });
   },
 });
+

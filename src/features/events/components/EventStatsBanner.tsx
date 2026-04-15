@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Grid, Text } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
@@ -53,10 +53,11 @@ export function EventStatsBanner({
         <Card key={label} className={spacing.cardPadding}>
           <Text className={`text-sm ${themed.textSecondary}`}>{label}</Text>
           <Text className={`text-2xl font-bold mt-1 ${color}`}>
-            {isLoading ? "—" : value}
+            {isLoading ? "�" : value}
           </Text>
         </Card>
       ))}
     </Grid>
   );
 }
+

@@ -30,3 +30,4 @@ export function useAdminPayouts(sieveParams: string) {
 
   return { ...query, updateMutation };
 }
+

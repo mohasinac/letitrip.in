@@ -1,66 +1,57 @@
+import "@/providers.config";
 /**
- * Admin Event Entry Review API Route
- * PATCH /api/admin/events/[id]/entries/[entryId] — Approve or flag an entry
+ * API Route: Admin Dashboard Statistics
+ * GET /api/admin/dashboard
  */
 
-import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { eventRepository, eventEntryRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import {
+  userRepository,
+  productRepository,
+  orderRepository,
+} from "@/repositories";
 
-const reviewEntrySchema = z.object({
-  reviewStatus: z.enum(["approved", "flagged"]),
-  reviewNote: z.string().optional(),
-});
-
-export const PATCH = createRouteHandler<
-  (typeof reviewEntrySchema)["_output"],
-  { id: string; entryId: string }
->({
+export const GET = createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  schema: reviewEntrySchema,
-  handler: async ({ body, user, params }) => {
-    const entryId = params!.entryId;
-    const eventId = params!.id;
+  handler: async () => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const [event, entry] = await Promise.all([
-      eventRepository.findById(eventId),
-      eventEntryRepository.findById(entryId),
+    // Parallel execution of all count queries for speed
+    const [
+      totalUsers,
+      activeUsers,
+      newUsers,
+      disabledUsers,
+      adminUsers,
+      totalProducts,
+      totalOrders,
+    ] = await Promise.all([
+      userRepository.count().catch(() => 0),
+      userRepository.countActive().catch(() => 0),
+      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
+      userRepository.countDisabled().catch(() => 0),
+      userRepository.countByRole("admin").catch(() => 0),
+      productRepository.count().catch(() => 0),
+      orderRepository.count().catch(() => 0),
     ]);
 
-    if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
-    if (!entry) throw new NotFoundError(ERROR_MESSAGES.VALIDATION.FAILED);
-
-    const updatedEntry = await eventEntryRepository.reviewEntry(
-      entryId,
-      body!.reviewStatus,
-      user!.uid,
-      body!.reviewNote,
-    );
-
-    // Atomically update event stats
-    if (body!.reviewStatus === "approved") {
-      await eventRepository.incrementApprovedEntries(eventId);
-    } else {
-      await eventRepository.incrementFlaggedEntries(eventId);
-    }
-
-    serverLogger.info("Admin event entry reviewed", {
-      entryId,
-      eventId,
-      reviewStatus: body!.reviewStatus,
-      reviewedBy: user!.uid,
+    return successResponse({
+      users: {
+        total: totalUsers,
+        active: activeUsers,
+        new: newUsers,
+        newThisMonth: newUsers,
+        disabled: disabledUsers,
+        admins: adminUsers,
+      },
+      products: {
+        total: totalProducts,
+      },
+      orders: {
+        total: totalOrders,
+      },
     });
-
-    const message =
-      body!.reviewStatus === "approved"
-        ? SUCCESS_MESSAGES.EVENT.ENTRY_APPROVED
-        : SUCCESS_MESSAGES.EVENT.ENTRY_FLAGGED;
-
-    return successResponse(updatedEntry, message);
   },
 });

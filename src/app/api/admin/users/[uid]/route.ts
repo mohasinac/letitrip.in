@@ -1,91 +1,75 @@
+import "@/providers.config";
 /**
- * API Route: Admin User by UID
- * PATCH /api/admin/users/:uid - Update user (role, disabled, etc.)
- * DELETE /api/admin/users/:uid - Delete user
+ * GET /api/admin/stores
+ *
+ * Admin endpoint â€” paginated list of all stores, filterable by status.
+ * Uses storeRepository (stores collection) as the source of truth.
  */
 
-import { z } from "zod";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";
-import { userRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { successResponse } from "@mohasinac/appkit/next";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { storeRepository } from "@/repositories";
+import type { StoreDocument } from "@/db/schema";
+import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
-type UidParams = { uid: string };
+export const GET = createRouteHandler({
+  auth: true,
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
 
-const updateUserSchema = z.object({
-  role: z.enum(["user", "seller", "moderator", "admin"]).optional(),
-  disabled: z.boolean().optional(),
-  displayName: z.string().min(1).max(100).optional(),
-  emailVerified: z.boolean().optional(),
-});
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 25, {
+      min: 1,
+      max: 100,
+    });
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
-/**
- * PATCH /api/admin/users/:uid
- */
-export const PATCH = createRouteHandler<
-  (typeof updateUserSchema)["_output"],
-  UidParams
->({
-  roles: ["admin"],
-  schema: updateUserSchema,
-  handler: async ({ request, body, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { uid } = params!;
-    if (!uid)
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
-
-    const existingUser = await userRepository.findById(uid);
-    if (!existingUser)
-      throw new NotFoundError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
-
-    const { role, disabled, displayName, emailVerified } = body!;
-
-    if (role !== undefined) {
-      await userRepository.updateRole(uid, role);
-      serverLogger.info("Admin updated user role", { uid, role });
+    const filtersArr: string[] = [];
+    const statusFilter = getStringParam(searchParams, "storeStatus");
+    if (statusFilter && statusFilter !== "all") {
+      filtersArr.push(`status==${statusFilter}`);
     }
-    if (disabled !== undefined) {
-      if (disabled) {
-        await userRepository.disable(uid);
-      } else {
-        await userRepository.enable(uid);
-      }
-      serverLogger.info("Admin toggled user disabled", { uid, disabled });
-    }
-    if (displayName !== undefined) {
-      await userRepository.updateProfile(uid, { displayName });
-    }
-    if (emailVerified === true) {
-      await userRepository.markEmailAsVerified(uid);
-    }
+    const extraFilters = getStringParam(searchParams, "filters");
+    if (extraFilters) filtersArr.push(extraFilters);
+    const q = getStringParam(searchParams, "q");
+    if (q) filtersArr.push(`storeName_=${q}`);
 
-    const updatedUser = await userRepository.findById(uid);
-    return successResponse(updatedUser, SUCCESS_MESSAGES.USER.PROFILE_UPDATED);
-  },
-});
+    const model: SieveModel = {
+      filters: filtersArr.join(",") || undefined,
+      sorts,
+      page,
+      pageSize,
+    };
 
-/**
- * DELETE /api/admin/users/:uid
- */
-export const DELETE = createRouteHandler<never, UidParams>({
-  roles: ["admin"],
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { uid } = params!;
-    if (!uid)
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
+    const result = await storeRepository.listAllStores(model);
 
-    const existingUser = await userRepository.findById(uid);
-    if (!existingUser)
-      throw new NotFoundError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
+    const stores = result.items.map((store: StoreDocument) => ({
+      id: store.id,
+      storeSlug: store.storeSlug,
+      ownerId: store.ownerId,
+      storeName: store.storeName,
+      storeDescription: store.storeDescription,
+      storeCategory: store.storeCategory,
+      storeLogoURL: store.storeLogoURL,
+      storeBannerURL: store.storeBannerURL,
+      status: store.status,
+      isPublic: store.isPublic,
+      isVacationMode: store.isVacationMode,
+      returnPolicy: store.returnPolicy,
+      shippingPolicy: store.shippingPolicy,
+      bio: store.bio,
+      location: store.location,
+      stats: store.stats ?? null,
+      createdAt: store.createdAt,
+      updatedAt: store.updatedAt,
+    }));
 
-    await userRepository.delete(uid);
-    serverLogger.info("Admin deleted user", { uid });
-    return successResponse(null, SUCCESS_MESSAGES.USER.ACCOUNT_DELETED);
+    return successResponse({ ...result, items: stores });
   },
 });

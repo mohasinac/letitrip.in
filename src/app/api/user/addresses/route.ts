@@ -13,7 +13,7 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { userAddressCreateSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const MAX_ADDRESSES_PER_USER = 10;
 
@@ -62,3 +62,4 @@ export const POST = createRouteHandler<
     return successResponse(address, SUCCESS_MESSAGES.ADDRESS.CREATED, 201);
   },
 });
+

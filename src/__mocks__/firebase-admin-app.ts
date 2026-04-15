@@ -8,3 +8,4 @@ export const getApps = jest.fn(() => []);
 export const getApp = jest.fn(() => ({}));
 export const cert = jest.fn((x: unknown) => x);
 export const deleteApp = jest.fn();
+

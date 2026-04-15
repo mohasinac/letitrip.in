@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -95,8 +95,9 @@ export function CartSummary({
         variant="muted"
         className="block text-center text-sm"
       >
-        ← {t("continueShopping")}
+        ? {t("continueShopping")}
       </TextLink>
     </Div>
   );
 }
+

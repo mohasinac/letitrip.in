@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -83,7 +83,7 @@ export function OrderDetailView() {
           onClick={() => router.push(ROUTES.USER.ORDERS)}
           className="w-fit"
         >
-          â† {tOrders("backToOrders")}
+          ← {tOrders("backToOrders")}
         </Button>
       )}
       renderHeader={() =>
@@ -113,7 +113,7 @@ export function OrderDetailView() {
                 className={`${THEME_CONSTANTS.flex.between} py-2 border-b last:border-0 border-zinc-100 dark:border-slate-800`}
               >
                 <Text size="sm">
-                  {item.productTitle} Ã— {item.quantity}
+                  {item.productTitle} × {item.quantity}
                 </Text>
                 <Text size="sm" weight="medium">
                   {formatCurrency(item.unitPrice * item.quantity)}
@@ -169,3 +169,4 @@ export function OrderDetailView() {
     />
   );
 }
+

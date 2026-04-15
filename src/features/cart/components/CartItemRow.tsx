@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Caption, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { MediaImage, TextLink } from "@/components";
@@ -49,7 +49,7 @@ export function CartItemRow({
             <div
               className={`${position.fill} ${flex.center} text-2xl text-zinc-400`}
             >
-              📦
+              ??
             </div>
           )}
         </div>
@@ -78,7 +78,7 @@ export function CartItemRow({
               className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-zinc-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
               aria-label={t("decreaseQty")}
             >
-              −
+              -
             </Button>
             <Span
               className={`w-8 text-center text-sm font-medium ${themed.textPrimary}`}
@@ -116,3 +116,4 @@ export function CartItemRow({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { RadioGroup } from "@mohasinac/appkit/ui";
 import { Textarea } from "@mohasinac/appkit/ui";
@@ -116,3 +116,4 @@ export function FeedbackEventSection({
     </div>
   );
 }
+

@@ -19,7 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
 // Vercel Hobby max is 60 s; Firestore read + write fits well within that.
@@ -150,3 +150,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

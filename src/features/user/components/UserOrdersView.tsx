@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -251,3 +251,4 @@ export function UserOrdersView() {
     </Suspense>
   );
 }
+

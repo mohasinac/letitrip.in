@@ -21,3 +21,4 @@ export const VARIABLE_PLACEHOLDERS = [
   { key: "{{websiteUrl}}", description: "Website URL" },
   { key: "{{companyAddress}}", description: "Company address" },
 ] as const;
+

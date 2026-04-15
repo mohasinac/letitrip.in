@@ -9,7 +9,7 @@ import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
 import { notificationRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotificationType, NotificationPriority } from "@/db/schema";
 
@@ -87,3 +87,4 @@ export const POST = createRouteHandler({
     return successResponse(notification, SUCCESS_MESSAGES.NOTIFICATION.SENT);
   },
 });
+

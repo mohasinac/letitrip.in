@@ -35,3 +35,4 @@ export function StoreFilters({ table }: StoreFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

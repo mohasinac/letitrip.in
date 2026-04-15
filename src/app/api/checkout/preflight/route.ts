@@ -19,7 +19,7 @@ import "@/providers.config";
 import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { unitOfWork } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
@@ -85,3 +85,4 @@ export const POST = createRouteHandler<(typeof schema)["_output"]>({
     return successResponse({ available, unavailable });
   },
 });
+

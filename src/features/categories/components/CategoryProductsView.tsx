@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { Star, Heart, Info } from "lucide-react";
@@ -428,3 +428,4 @@ export function CategoryProductsView(props: Props) {
     </Suspense>
   );
 }
+

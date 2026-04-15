@@ -48,3 +48,4 @@ export { EventLeaderboard } from "./components/EventLeaderboard";
 export { EventParticipateView } from "./components/EventParticipateView";
 export { EventsListView } from "./components/EventsListView";
 export { AdminEventsView } from "./components/AdminEventsView";
+

@@ -8,7 +8,7 @@
 import { UserRole } from "@/types/auth";
 import { ROUTES } from "./routes";
 import { UI_LABELS } from "./ui";
-import { hasRole as checkRoleHierarchy } from "@/helpers";
+import { hasRole as checkRoleHierarchy } from "@mohasinac/appkit/features/auth";
 
 /**
  * Role hierarchy (higher number = more permissions)
@@ -373,3 +373,4 @@ export function getRoutesByRole(role: UserRole): string[] {
     .filter((config) => config.allowedRoles.includes(role))
     .map((config) => config.path);
 }
+

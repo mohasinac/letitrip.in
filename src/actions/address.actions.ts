@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { addressRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -152,3 +152,4 @@ export async function getAddressByIdAction(
   const user = await requireAuth();
   return addressRepository.findById(user.uid, id);
 }
+

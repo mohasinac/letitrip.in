@@ -1,73 +1,97 @@
+import "@/providers.config";
 /**
- * PATCH /api/admin/stores/[uid]
+ * Admin Sessions API Route
+ * GET /api/admin/sessions
  *
- * Admin endpoint — approve or reject a seller's store.
- * Updates both the StoreDocument.status (stores collection) and
- * UserDocument.storeStatus (users collection) to keep them in sync.
- *
- * Body:
- *   action: "approve" | "reject"
+ * Fetch all active/expired sessions for admin dashboard.
+ * Supports filtering by userId and limiting results.
  */
 
-import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { successResponse } from "@mohasinac/appkit/next";
-import { NotFoundError } from "@mohasinac/appkit/errors";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { userRepository, storeRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { successResponse } from "@mohasinac/appkit/next";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { sessionRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
-const storeActionSchema = z.object({
-  action: z.enum(["approve", "reject"]),
-});
+export const GET = createRouteHandler({
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
+    const userId = getStringParam(searchParams, "userId");
+    const limit = getNumberParam(searchParams, "limit", 100, {
+      min: 1,
+      max: 1000,
+    });
 
-export const PATCH = createRouteHandler<
-  (typeof storeActionSchema)["_output"],
-  { uid: string }
->({
-  auth: true,
-  roles: ["admin"],
-  schema: storeActionSchema,
-  handler: async ({ body, params }) => {
-    const { uid } = params!;
+    const { sessions: rawSessions, stats } =
+      await sessionRepository.findAllForAdmin({
+        userId: userId || undefined,
+        limit,
+      });
 
-    const seller = await userRepository.findById(uid);
-    if (!seller || (seller.role !== "seller" && seller.role !== "admin")) {
-      throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
-    }
+    const userIds = new Set<string>();
+    const sessions = rawSessions.map((s) => {
+      userIds.add(s.userId);
+      return {
+        id: s.id,
+        userId: s.userId,
+        deviceInfo: s.deviceInfo,
+        location: s.location,
+        isActive: s.isActive,
+        revokedAt: s.revokedAt,
+        revokedBy: s.revokedBy,
+        createdAt:
+          s.createdAt instanceof Date
+            ? s.createdAt.toISOString()
+            : (s.createdAt as any)?.toDate?.().toISOString(),
+        lastActivity:
+          s.lastActivity instanceof Date
+            ? s.lastActivity.toISOString()
+            : (s.lastActivity as any)?.toDate?.().toISOString(),
+        expiresAt:
+          s.expiresAt instanceof Date
+            ? s.expiresAt.toISOString()
+            : (s.expiresAt as any)?.toDate?.().toISOString(),
+        user: null as any,
+      };
+    });
 
-    const { action } = body!;
-    const storeStatus: "approved" | "rejected" =
-      action === "approve" ? "approved" : "rejected";
-    const storeDocStatus: "active" | "rejected" =
-      action === "approve" ? "active" : "rejected";
-
-    const successMsg =
-      action === "approve"
-        ? SUCCESS_MESSAGES.ADMIN.STORE_APPROVED
-        : SUCCESS_MESSAGES.ADMIN.STORE_REJECTED;
-
-    // Update user approval flag
-    await userRepository.updateStoreApproval(uid, storeStatus);
-
-    // Update the actual StoreDocument status
-    if (seller.storeId) {
-      const storeSlug = seller.storeSlug;
-      if (storeSlug) {
-        await storeRepository.setStatus(storeSlug, storeDocStatus);
+    // Enrich sessions with Firebase Auth user details
+    const auth = getAdminAuth();
+    const userMap = new Map<string, any>();
+    for (const uid of Array.from(userIds)) {
+      try {
+        const userRecord = await auth.getUser(uid);
+        userMap.set(uid, {
+          uid: userRecord.uid,
+          email: userRecord.email || null,
+          displayName: userRecord.displayName || null,
+          role: userRecord.customClaims?.role || "user",
+        });
+      } catch (error) {
+        serverLogger.warn(`Failed to fetch user ${uid}`, { error });
+        userMap.set(uid, {
+          uid,
+          email: null,
+          displayName: "Unknown User",
+          role: "user",
+        });
       }
     }
 
-    serverLogger.info("Admin updated store approval", {
-      uid,
-      action,
-      storeStatus,
+    sessions.forEach((session) => {
+      session.user = userMap.get(session.userId) || null;
     });
 
-    const updated = await userRepository.findById(uid);
     return successResponse(
-      { uid: updated!.uid, storeStatus: updated!.storeStatus },
-      successMsg,
+      { sessions, stats, count: sessions.length },
+      SUCCESS_MESSAGES.SESSION.FETCHED,
     );
   },
 });

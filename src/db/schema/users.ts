@@ -26,7 +26,7 @@ export {
 } from "@mohasinac/appkit/features/auth";
 
 // Letitrip-specific: pii-aware query helpers (override appkit's index-based helpers)
-import { piiBlindIndex } from "@/lib/pii";
+import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { USER_FIELDS } from "@mohasinac/appkit/features/auth";
 import type { UserRole } from "@/types/auth";
 
@@ -44,4 +44,5 @@ export const userPiiQueryHelpers = {
   active: () => [USER_FIELDS.DISABLED, "==", false] as const,
   disabled: () => [USER_FIELDS.DISABLED, "==", true] as const,
 } as const;
+
 

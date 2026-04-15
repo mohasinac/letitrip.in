@@ -16,8 +16,8 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
 export const GET = createRouteHandler({
   roles: ["admin", "moderator"],
@@ -95,3 +95,4 @@ export const GET = createRouteHandler({
     );
   },
 });
+

@@ -8,3 +8,4 @@ export const EVENT_SORT_OPTIONS = [
   { value: "title", label: "Title A–Z" },
   { value: "-title", label: "Title Z–A" },
 ] as const;
+

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, Suspense } from "react";
 import { useTranslations } from "next-intl";
@@ -92,7 +92,7 @@ function RatingBar({
 }
 
 // ---------------------------------------------------------------------------
-// ReviewImages � thumbnail strip with per-review lightbox state
+// ReviewImages ? thumbnail strip with per-review lightbox state
 // ---------------------------------------------------------------------------
 function ReviewImages({ images }: { images: string[] }) {
   const t = useTranslations("products");
@@ -173,7 +173,7 @@ function StarPicker({
 }
 
 // ---------------------------------------------------------------------------
-// WriteReviewForm � integrated write-review form shown below the heading.
+// WriteReviewForm ? integrated write-review form shown below the heading.
 // Requires auth; 403 ? "purchase required", 400 ? "already reviewed".
 // ---------------------------------------------------------------------------
 interface WriteReviewFormProps {
@@ -306,7 +306,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         rows={4}
       />
 
-      {/* Images — max 5 per review */}
+      {/* Images � max 5 per review */}
       <MediaUploadList
         label={t("reviewFormImages")}
         value={reviewImages}
@@ -319,7 +319,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         onAbort={onAbort}
       />
 
-      {/* Video — max 1 per review (optional) */}
+      {/* Video � max 1 per review (optional) */}
       <MediaUploadField
         label={t("reviewFormVideo")}
         value={reviewVideoUrl}
@@ -555,3 +555,4 @@ export function ProductReviews(props: ProductReviewsProps) {
     </Suspense>
   );
 }
+

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Textarea } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
@@ -70,7 +70,7 @@ export function PollVotingSection({
           weight="medium"
           className="text-green-600 dark:text-green-400"
         >
-          ✓ {tEvents("alreadyVoted")}
+          ? {tEvents("alreadyVoted")}
         </Text>
         <div className="space-y-2">
           {pollConfig.options.map((opt) => {
@@ -151,3 +151,4 @@ export function PollVotingSection({
     </div>
   );
 }
+

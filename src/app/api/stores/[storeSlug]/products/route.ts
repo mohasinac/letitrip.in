@@ -1,69 +1,164 @@
 import "@/providers.config";
 /**
- * GET /api/stores/[storeSlug]/products
+ * Site Settings API Routes
  *
- * Local override of @mohasinac/feat-stores storeProductsGET.
- * The package handler requires status==active,isPublic==true on the store
- * lookup which rejects stores that are pending admin approval.
- * This handler looks up the store by slug directly (doc ID = storeSlug)
- * and returns its published non-auction products regardless of store status.
+ * Handles global site configuration (singleton document)
+ *
+ * TODO (Future) - Phase 2:
+ * - Implement settings caching (Redis/memory)
+ * - Add settings versioning/history
+ * - Implement settings validation rules
+ * - Add settings change notifications
+ * - Implement settings import/export
+ * - Add settings backup/restore
+ * - Implement feature flag management
  */
 
+import { createHash } from "crypto";
 import { NextResponse } from "next/server";
+import { siteSettingsRepository } from "@/repositories";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { successResponse } from "@mohasinac/appkit/next";
+import { getUserFromRequest } from "@/lib/firebase/auth-server";
+import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { storeRepository, productRepository } from "@/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/features/contact";
+import { SCHEMA_DEFAULTS } from "@/db/schema";
+import { createApiHandler } from "@mohasinac/appkit/http";
+import { createRouteHandler } from "@mohasinac/appkit/next";
+import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 
-type RouteContext = { params: Promise<{ storeSlug: string }> };
+/**
+ * GET /api/site-settings
+ *
+ * Get global site settings
+ *
+ * âœ… Fetches settings via siteSettingsRepository.getSingleton()
+ * âœ… Returns public fields only for non-admin users (strips emailSettings, legalPages)
+ * âœ… Cache-Control headers set (5 min public / no-cache admin)
+ * TODO (Future): Support ETag for conditional requests â€” âœ… Done
+ * TODO (Future): Integrate Redis for distributed caching
+ */
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
+    // Fetch site settings (singleton pattern)
+    const settings = await siteSettingsRepository.getSingleton();
 
-function numParam(url: URL, key: string, fallback: number): number {
-  const v = url.searchParams.get(key);
-  const n = v !== null ? Number(v) : NaN;
-  return Number.isFinite(n) ? n : fallback;
-}
+    // Never expose encrypted credential blobs to any client
+    const { credentials: _encrypted, ...settingsWithoutCreds } = settings;
 
-export async function GET(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  try {
-    const { storeSlug } = await context.params;
-    const url = new URL(request.url);
+    // Check if user is authenticated and is admin
+    const user = await getUserFromRequest(request);
+    const isAdmin = user?.role === "admin";
 
-    // Direct doc-ID lookup — no status/isPublic filter applied.
-    const store = await storeRepository.findBySlug(storeSlug);
-    if (!store) {
-      return NextResponse.json(
-        { success: false, error: "Store not found" },
-        { status: 404 },
-      );
+    // Filter sensitive fields for non-admin users
+    let responseData: any;
+
+    if (isAdmin) {
+      // Admin: include masked credential values so the UI can show "rzp_liâ€¦key4"
+      const credentialsMasked =
+        await siteSettingsRepository.getCredentialsMasked();
+      responseData = { ...settingsWithoutCreds, credentialsMasked };
+    } else {
+      // Public: strip admin-only fields, expose the Razorpay key ID for the checkout modal
+      const { emailSettings, legalPages, ...publicFields } =
+        settingsWithoutCreds;
+
+      // Resolve the public Razorpay key ID: DB wins over env var
+      const decrypted = await siteSettingsRepository.getDecryptedCredentials();
+      const razorpayKeyIdPublic =
+        decrypted.razorpayKeyId ||
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "";
+
+      responseData = {
+        ...publicFields,
+        contact: {
+          email: settings.contact.email,
+          phone: settings.contact.phone,
+          whatsappNumber: settings.contact.whatsappNumber,
+        },
+        razorpayKeyId: razorpayKeyIdPublic,
+      };
     }
 
-    const sort = url.searchParams.get("sorts") ?? "-createdAt";
-    const page = numParam(url, "page", 1);
-    const pageSize = numParam(url, "pageSize", 24);
+    const cacheControl = isAdmin
+      ? "private, no-cache"
+      : "public, max-age=300, s-maxage=600, stale-while-revalidate=120";
 
-    // Base filter: published, non-auction products owned by this seller.
-    let filters = `isAuction==false`;
-    const extra = url.searchParams.get("filters");
-    if (extra) filters += `,${extra}`;
+    // ETag: shallow hash of the serialised response â€” enables conditional GET (304 Not Modified)
+    const etag = `"${createHash("md5").update(JSON.stringify(responseData)).digest("hex")}"`;
+    const ifNoneMatch = request.headers.get("if-none-match");
+    if (ifNoneMatch === etag) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: { ETag: etag, "Cache-Control": cacheControl },
+      });
+    }
 
-    const result = await productRepository.list(
-      { filters, sorts: sort, page, pageSize },
-      { sellerId: store.ownerId, status: "published" },
+    const response = successResponse(responseData);
+    response.headers.set("Cache-Control", cacheControl);
+    response.headers.set("ETag", etag);
+    return response;
+  },
+});
+
+/**
+ * PATCH /api/site-settings
+ *
+ * Update site settings (admin only)
+ *
+ * Body: Partial<SiteSettingsDocument>
+ *
+ * âœ… Requires admin authentication via requireRoleFromRequest
+ * âœ… Validates body with siteSettingsUpdateSchema (Zod)
+ * âœ… Updates via siteSettingsRepository.updateSingleton()
+ * âœ… Writes audit log entry via serverLogger with changed fields and admin identity
+ * âœ… Returns updated settings
+ * TODO (Future): Invalidate distributed caches (Redis)
+ * TODO (Future): Send notification to all admins on settings change â€” âœ… Done
+ */
+export const PATCH = createRouteHandler<
+  (typeof siteSettingsUpdateSchema)["_output"]
+>({
+  auth: true,
+  roles: ["admin"],
+  schema: siteSettingsUpdateSchema,
+  handler: async ({ user, body }) => {
+    // Update settings in repository (singleton pattern)
+    const updatedSettings = await siteSettingsRepository.updateSingleton(body!);
+
+    // Invalidate the integration-keys in-process cache so Razorpay/Resend/etc.
+    // pick up rotated credentials on the very next request.
+    invalidateIntegrationKeysCache();
+
+    // Audit log â€” record which admin changed what fields
+    serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {
+      adminId: user!.uid,
+      adminEmail: user!.email,
+      changedFields: Object.keys(body!),
+      changes: body!,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Fire-and-forget: notify all admins about the settings change
+    const adminEmail =
+      process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
+    sendSiteSettingsChangedEmail({
+      adminEmails: [adminEmail],
+      changedByEmail: user!.email || adminEmail,
+      changedFields: Object.keys(body!),
+    }).catch((err) =>
+      serverLogger.error(
+        ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
+        { err },
+      ),
     );
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        items: result.items,
-        total: result.total,
-        page: result.page,
-        pageSize: result.pageSize,
-        totalPages: result.totalPages,
-        hasMore: result.hasMore,
-      },
-    });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+    return successResponse(
+      updatedSettings,
+      SUCCESS_MESSAGES.ADMIN.SETTINGS_SAVED,
+    );
+  },
+});

@@ -247,3 +247,4 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
     </div>
   );
 }
+

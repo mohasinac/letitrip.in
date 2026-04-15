@@ -11,3 +11,4 @@ export async function POST(...args: Parameters<typeof import("@mohasinac/appkit/
   const { POST } = await import("@mohasinac/appkit/features/categories/server");
   return POST(...args);
 }
+

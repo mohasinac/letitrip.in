@@ -16,7 +16,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
 import type { OrderStatus } from "@/db/schema";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const VALID_STATUSES: OrderStatus[] = [
   "pending",
@@ -61,3 +61,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

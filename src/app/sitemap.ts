@@ -12,7 +12,7 @@ import {
 } from "@/db/schema";
 import { CATEGORIES_COLLECTION } from "@/db/schema";
 import { STORE_COLLECTION, STORE_FIELDS } from "@/db/schema";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ROUTES } from "@/constants";
 
 const BASE_URL = SEO_CONFIG.siteUrl;
@@ -436,3 +436,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 }
 
 export const revalidate = 3600; // Re-generate at most once per hour
+

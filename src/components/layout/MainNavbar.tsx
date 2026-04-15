@@ -53,3 +53,4 @@ export default function MainNavbar({
 
   return <NavbarLayout items={items} activeHref={pathname} inline={inline} />;
 }
+

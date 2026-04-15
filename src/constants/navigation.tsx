@@ -96,3 +96,4 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
     icon: <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />,
   },
 ];
+

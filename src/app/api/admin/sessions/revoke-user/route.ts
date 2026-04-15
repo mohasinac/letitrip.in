@@ -11,9 +11,9 @@ import "@/providers.config";
 import { sessionRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
 const revokeUserSchema = z.object({
   userId: z.string().min(1, "userId is required"),
@@ -47,3 +47,4 @@ export const POST = createRouteHandler<(typeof revokeUserSchema)["_output"]>({
     );
   },
 });
+

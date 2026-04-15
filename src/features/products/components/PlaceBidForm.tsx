@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Input } from "@mohasinac/appkit/ui";
 import { useState } from "react";
@@ -171,3 +171,4 @@ export function PlaceBidForm({
     </form>
   );
 }
+

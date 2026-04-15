@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET  /api/admin/orders — List all orders with pagination & filtering
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -12,7 +12,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { orderRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**
  * GET /api/admin/orders
@@ -62,3 +62,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

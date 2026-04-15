@@ -85,3 +85,4 @@ export function useProducts(params?: string, options?: UseProductsOptions) {
     refetch: async () => data,
   };
 }
+

@@ -1,5 +1,5 @@
 import { initProviders } from "@/providers.config";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 function isMissingFirestoreIndexError(error: unknown): boolean {
 	const message = error instanceof Error ? error.message : String(error);
@@ -58,3 +58,4 @@ export async function GET(
 		throw error;
 	}
 }
+

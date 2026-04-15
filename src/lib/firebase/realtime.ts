@@ -59,3 +59,4 @@ export const chatRealtimeDb: Database = canInitializeRealtimeClient
  * Prefer importing from here instead of @/lib/firebase/config in client code.
  */
 export { realtimeDb } from "./config";
+

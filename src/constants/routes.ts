@@ -4,3 +4,4 @@ export {
   PROTECTED_ROUTES,
   AUTH_ROUTES,
 } from "@mohasinac/appkit/next";
+

@@ -20,8 +20,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
-import { serverLogger } from "@/lib/server-logger";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { AppError } from "@mohasinac/appkit/errors";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
@@ -82,3 +82,4 @@ export async function GET(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

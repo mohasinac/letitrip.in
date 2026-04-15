@@ -21,7 +21,7 @@ import { Sprout } from "lucide-react";
 import { AvatarDisplay, TextLink } from "@/components";
 import { routing, type Locale } from "@/i18n/routing";
 import { preventBodyScroll } from "@/utils";
-import { hasAnyRole } from "@/helpers";
+import { hasAnyRole } from "@mohasinac/appkit/features/auth";
 import { SidebarLayout } from "@mohasinac/appkit/features/layout";
 
 /**
@@ -961,3 +961,4 @@ export default function Sidebar({
     </SidebarLayout>
   );
 }
+

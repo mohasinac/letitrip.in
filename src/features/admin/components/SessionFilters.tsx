@@ -34,3 +34,4 @@ export function SessionFilters({ table }: SessionFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

@@ -1,10 +1,10 @@
-﻿/**
+/**
  * CarouselSlideForm Component
  * Path: src/components/admin/carousel/CarouselSlideForm.tsx
  *
  * Form for creating/editing carousel slides inside SideDrawer.
  * The grid layout section lets admins place up to 6 content cards in a
- * fixed 2-row × 3-column grid (Top/Bottom × Left/Center/Right).
+ * fixed 2-row � 3-column grid (Top/Bottom � Left/Center/Right).
  */
 
 "use client";
@@ -114,7 +114,7 @@ export function CarouselSlideForm({
           onChange={(url) =>
             update({ media: { type: "image", url, alt: slide.title || "" } })
           }
-          helpText="Recommended: 1920×600 px"
+          helpText="Recommended: 1920�600 px"
         />
       )}
       <FormField
@@ -321,7 +321,7 @@ export function CarouselSlideForm({
           </div>
         )}
       </div>
-      {/* -- 2×3 grid designer (max 2 cards) — hidden when overlay active */}
+      {/* -- 2�3 grid designer (max 2 cards) � hidden when overlay active */}
       {!slide.overlay && (
         <div className={`border-t ${themed.border} pt-4`}>
           <Heading level={3} className="mb-1.5">
@@ -437,7 +437,7 @@ export function CarouselSlideForm({
                           )}
                           <Text size="xs" variant="muted">
                             {t("cardBackground")}: {card.background.type}
-                            {card.isButtonOnly ? ` · ${t("isButtonOnly")}` : ""}
+                            {card.isButtonOnly ? ` � ${t("isButtonOnly")}` : ""}
                           </Text>
                         </div>
                       )}
@@ -725,3 +725,4 @@ function CardEditor({
     </div>
   );
 }
+

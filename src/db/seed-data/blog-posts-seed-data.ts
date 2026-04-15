@@ -246,3 +246,4 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     updatedAt: daysAgo(53),
   },
 ];
+

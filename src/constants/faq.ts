@@ -44,3 +44,5 @@ export const FAQ_CATEGORIES = {
 } as const;
 
 export type FAQCategoryKey = keyof typeof FAQ_CATEGORIES;
+
+

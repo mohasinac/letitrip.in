@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * useBidTableColumns
@@ -42,7 +42,7 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
               {bid.productTitle}
             </Text>
             <Caption className="font-mono">
-              {bid.productId.slice(0, 10)}…
+              {bid.productId.slice(0, 10)}�
             </Caption>
           </div>
         ),
@@ -74,7 +74,7 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
               {formatCurrency(bid.bidAmount)}
             </Span>
             {bid.isWinning && (
-              <Span className="ml-1 text-xs text-primary font-medium">★</Span>
+              <Span className="ml-1 text-xs text-primary font-medium">?</Span>
             )}
           </div>
         ),
@@ -122,3 +122,4 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
     ],
   };
 }
+

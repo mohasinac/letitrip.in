@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
-import { hasRole } from "@/helpers";
+import { hasRole } from "@mohasinac/appkit/features/auth";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 
 export interface PublicUserProfile {
@@ -138,3 +138,4 @@ export function usePublicProfile(userId: string) {
     reviewsLoading,
   };
 }
+

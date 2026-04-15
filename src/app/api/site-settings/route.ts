@@ -22,10 +22,10 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
-import { sendSiteSettingsChangedEmail } from "@/lib/email";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/features/contact";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 
@@ -162,3 +162,4 @@ export const PATCH = createRouteHandler<
     );
   },
 });
+

@@ -59,3 +59,4 @@ export const SITE_URL = getSiteUrl();
 
 // For NextAuth (server-side only)
 export const NEXTAUTH_URL = process.env.NEXTAUTH_URL || APP_URL;
+

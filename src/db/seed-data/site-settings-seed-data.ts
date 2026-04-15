@@ -240,3 +240,4 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
     newsletterEnabled: true,
   },
 };
+

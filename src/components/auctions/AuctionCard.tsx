@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, Gavel, ShoppingBag, Clock } from "lucide-react";
@@ -14,7 +14,7 @@ import { formatCurrency } from "@/utils";
 
 const { themed, flex, position } = THEME_CONSTANTS;
 
-/** Minimal structural type — satisfied by both AuctionItem (from packages) and ProductDocument (from repositories) */
+/** Minimal structural type � satisfied by both AuctionItem (from packages) and ProductDocument (from repositories) */
 export interface AuctionCardData {
   id: string;
   title: string;
@@ -36,7 +36,7 @@ export interface AuctionCardData {
 
 export interface AuctionCardProps {
   product: AuctionCardData;
-  /** Optional buyout price — if provided shows a Buyout button */
+  /** Optional buyout price � if provided shows a Buyout button */
   buyoutPrice?: number;
   className?: string;
   /** "grid"/"card"/"fluid" (default): vertical card. "list": horizontal card. */
@@ -72,7 +72,7 @@ export function AuctionCard({
   const tWishlist = useTranslations("wishlist");
   const router = useRouter();
 
-  // Map card/fluid → grid for BaseListingCard which only knows grid/list
+  // Map card/fluid ? grid for BaseListingCard which only knows grid/list
   const baseVariant: "grid" | "list" = variant === "list" ? "list" : "grid";
 
   const [hovered, setHovered] = useState(false);
@@ -162,7 +162,7 @@ export function AuctionCard({
       variant={baseVariant}
       className={className}
     >
-      {/* ── IMAGE SECTION ── */}
+      {/* -- IMAGE SECTION -- */}
       <BaseListingCard.Hero
         aspect="square"
         variant={baseVariant}
@@ -174,18 +174,18 @@ export function AuctionCard({
             src={currentSrc}
             alt={product.title}
             size="card"
-            fallback="🔨"
+            fallback="??"
             className={`transition-transform duration-500 ${hovered && allImages.length > 1 ? "scale-105" : "scale-100"}`}
           />
         </TextLink>
 
-        {/* Video play indicator — only on first image */}
+        {/* Video play indicator � only on first image */}
         {hasVideo && imgIdx === 0 && (
           <div className="absolute top-2 right-2">
             <Span
               className={`bg-black/50 text-white rounded-full w-8 h-8 ${flex.center} text-xs leading-none`}
             >
-              ▶
+              ?
             </Span>
           </div>
         )}
@@ -203,7 +203,7 @@ export function AuctionCard({
           </div>
         )}
 
-        {/* Featured star — top-left */}
+        {/* Featured star � top-left */}
         {product.featured && (
           <div className="absolute top-2 left-2 pointer-events-none z-10">
             <Star
@@ -213,7 +213,7 @@ export function AuctionCard({
           </div>
         )}
 
-        {/* Checkbox — top-right */}
+        {/* Checkbox � top-right */}
         {selectable && (
           <BaseListingCard.Checkbox
             selected={isSelected}
@@ -248,7 +248,7 @@ export function AuctionCard({
           )}
         </div>
 
-        {/* Type badge — bottom right */}
+        {/* Type badge � bottom right */}
         <div className="absolute bottom-2 right-2 z-10 pointer-events-none">
           <Span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-600/90 text-white">
             <Gavel className="w-3 h-3 flex-shrink-0" />
@@ -257,7 +257,7 @@ export function AuctionCard({
         </div>
       </BaseListingCard.Hero>
 
-      {/* ── INFO SECTION ── */}
+      {/* -- INFO SECTION -- */}
       <BaseListingCard.Info variant={baseVariant}>
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
@@ -285,7 +285,7 @@ export function AuctionCard({
           </Button>
         </div>
 
-        {/* Description — list variant only */}
+        {/* Description � list variant only */}
         {variant === "list" && (
           <Text size="xs" variant="secondary" className="line-clamp-2">
             {product.description}
@@ -379,3 +379,4 @@ export function AuctionCard({
     </BaseListingCard>
   );
 }
+

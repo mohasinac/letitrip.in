@@ -1,4 +1,4 @@
-﻿/**
+/**
  * OrderStatusForm
  * Path: src/components/admin/orders/OrderStatusForm.tsx
  *
@@ -74,7 +74,7 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
           Order: <Span className="font-mono">{order.id}</Span>
         </Text>
         <Text variant="secondary">
-          {order.productTitle} × {order.quantity}
+          {order.productTitle} � {order.quantity}
         </Text>
         <Text variant="secondary">
           Customer: {order.userName} ({order.userEmail})
@@ -138,3 +138,4 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
     </div>
   );
 }
+

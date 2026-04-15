@@ -16,3 +16,4 @@ import { routing } from "./routing";
 
 export const { Link, redirect, useRouter, usePathname, getPathname } =
   createNavigation(routing);
+

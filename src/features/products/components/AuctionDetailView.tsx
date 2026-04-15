@@ -637,3 +637,4 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
     </Div>
   );
 }
+

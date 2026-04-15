@@ -1,57 +1,57 @@
+import "@/providers.config";
 /**
- * Admin Event Status API Route
- * PATCH /api/admin/events/[id]/status — Change event status
- *
- * Allowed transitions:
- *   draft   -> active
- *   active  -> paused | ended
- *   paused  -> active | ended
+ * API Route: Admin Dashboard Statistics
+ * GET /api/admin/dashboard
  */
 
-import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { eventRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NotFoundError, ValidationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import {
+  userRepository,
+  productRepository,
+  orderRepository,
+} from "@/repositories";
 
-const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  draft: ["active"],
-  active: ["paused", "ended"],
-  paused: ["active", "ended"],
-  ended: [],
-};
-
-const changeStatusSchema = z.object({
-  status: z.enum(["draft", "active", "paused", "ended"]),
-});
-
-export const PATCH = createRouteHandler<
-  (typeof changeStatusSchema)["_output"],
-  { id: string }
->({
+export const GET = createRouteHandler({
   auth: true,
-  roles: ["admin"],
-  schema: changeStatusSchema,
-  handler: async ({ body, params }) => {
-    const id = params!.id;
+  roles: ["admin", "moderator"],
+  handler: async () => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const event = await eventRepository.findById(id);
-    if (!event) throw new NotFoundError(ERROR_MESSAGES.EVENT.NOT_FOUND);
+    // Parallel execution of all count queries for speed
+    const [
+      totalUsers,
+      activeUsers,
+      newUsers,
+      disabledUsers,
+      adminUsers,
+      totalProducts,
+      totalOrders,
+    ] = await Promise.all([
+      userRepository.count().catch(() => 0),
+      userRepository.countActive().catch(() => 0),
+      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
+      userRepository.countDisabled().catch(() => 0),
+      userRepository.countByRole("admin").catch(() => 0),
+      productRepository.count().catch(() => 0),
+      orderRepository.count().catch(() => 0),
+    ]);
 
-    const allowed = ALLOWED_TRANSITIONS[event.status] ?? [];
-    if (!allowed.includes(body!.status)) {
-      throw new ValidationError(ERROR_MESSAGES.EVENT.INVALID_STATUS_TRANSITION);
-    }
-
-    const updated = await eventRepository.changeStatus(id, body!.status);
-    serverLogger.info("Admin event status changed", {
-      eventId: id,
-      from: event.status,
-      to: body!.status,
+    return successResponse({
+      users: {
+        total: totalUsers,
+        active: activeUsers,
+        new: newUsers,
+        newThisMonth: newUsers,
+        disabled: disabledUsers,
+        admins: adminUsers,
+      },
+      products: {
+        total: totalProducts,
+      },
+      orders: {
+        total: totalOrders,
+      },
     });
-
-    return successResponse(updated, SUCCESS_MESSAGES.EVENT.STATUS_CHANGED);
   },
 });

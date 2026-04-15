@@ -31,14 +31,37 @@ export function initProviders(): Promise<void> {
       await import("@mohasinac/appkit/providers/db-firebase");
     const { tailwindAdapter } =
       await import("@mohasinac/appkit/style/tailwind");
+    const { siteSettingsRepository } = await import("@/repositories");
 
     registerProviders({
       db: firebaseDbProvider,
       auth: firebaseAuthProvider,
       session: firebaseSessionProvider,
       email: createResendProvider({
-        // API key is resolved from RESEND_API_KEY env var by default.
-        // For DB-stored key rotation, pass a key factory here.
+        apiKey: async () => {
+          try {
+            const creds = await siteSettingsRepository.getDecryptedCredentials();
+            return creds.resendApiKey || process.env.RESEND_API_KEY || "";
+          } catch {
+            return process.env.RESEND_API_KEY || "";
+          }
+        },
+        fromName: async () => {
+          try {
+            const settings = await siteSettingsRepository.getSingleton();
+            return settings?.emailSettings?.fromName || process.env.EMAIL_FROM_NAME || "App";
+          } catch {
+            return process.env.EMAIL_FROM_NAME || "App";
+          }
+        },
+        fromEmail: async () => {
+          try {
+            const settings = await siteSettingsRepository.getSingleton();
+            return settings?.emailSettings?.fromEmail || process.env.EMAIL_FROM || "";
+          } catch {
+            return process.env.EMAIL_FROM || "";
+          }
+        },
       }),
       storage: firebaseStorageProvider,
       style: tailwindAdapter,
@@ -70,3 +93,4 @@ export function withProviders<A extends unknown[], R>(
     return fn(...args) as R extends Promise<infer U> ? U : R;
   };
 }
+

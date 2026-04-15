@@ -38,3 +38,4 @@ export function EventJsonLd({ event, id }: Props) {
     />
   );
 }
+

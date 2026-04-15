@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 /**
  * ChatWindow
  *
- * Real-time buyer↔seller chat for a single room.
+ * Real-time buyer?seller chat for a single room.
  * Subscribes to RTDB /chat/{chatId}/messages via useChat().
  * Messages are sent through POST /api/chat/{chatId}/messages (server write).
  *
@@ -30,7 +30,7 @@ const { spacing, themed, card, flex, overflow } = THEME_CONSTANTS;
 interface Props {
   chatId: string;
   currentUserId: string;
-  /** Shown in the header — e.g. seller display name or buyer display name */
+  /** Shown in the header � e.g. seller display name or buyer display name */
   participantName?: string;
 }
 
@@ -162,3 +162,4 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
     </Card>
   );
 }
+

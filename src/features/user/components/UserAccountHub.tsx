@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   Package,
@@ -213,7 +213,7 @@ export function UserAccountHub() {
                       #{order.id.slice(0, 8).toUpperCase()}
                     </Span>
                     <Text size="xs" variant="secondary" as="span">
-                      {formatDate(order.orderDate)} ·{" "}
+                      {formatDate(order.orderDate)} �{" "}
                       {formatCurrency(order.totalPrice)}
                     </Text>
                   </div>
@@ -232,3 +232,4 @@ export function UserAccountHub() {
     />
   );
 }
+

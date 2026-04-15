@@ -10,7 +10,7 @@ import "@/providers.config";
 
 import { storeRepository, storeAddressRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
 
@@ -26,3 +26,4 @@ export const GET = createRouteHandler({
     return successResponse(addresses);
   },
 });
+

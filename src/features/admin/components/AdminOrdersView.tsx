@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminOrdersView
  *
  * Extracted from src/app/[locale]/admin/orders/[[...action]]/page.tsx
@@ -60,7 +60,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
   const dateFrom = table.get("dateFrom");
   const dateTo = table.get("dateTo");
 
-  // ── Pending filter state (values staged until Apply is clicked) ──────
+  // -- Pending filter state (values staged until Apply is clicked) ------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, [
       "status",
@@ -78,7 +78,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [formState, setFormState] = useState<OrderStatusFormState | null>(null);
 
-  // ── Data fetching ───────────────────────────────────────────────────
+  // -- Data fetching ---------------------------------------------------
   const sieveParams = table.buildSieveParams(
     buildSieveFilters(
       ["status==", statusFilter],
@@ -150,7 +150,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
     refetch,
   ]);
 
-  // ── Status tabs rendered in statusTabsSlot ──────────────────────────
+  // -- Status tabs rendered in statusTabsSlot --------------------------
   const STATUS_TABS = useMemo(
     () => [
       { key: "", label: t("filterAll") },
@@ -187,7 +187,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
         headerSlot={
           <AdminPageHeader
             title={t("title")}
-            subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
+            subtitle={`${t("subtitle")} � ${data?.meta.total ?? 0} total`}
           />
         }
         statusTabsSlot={statusTabsSlot}
@@ -279,3 +279,4 @@ export function AdminOrdersView(props: AdminOrdersViewProps) {
     </Suspense>
   );
 }
+

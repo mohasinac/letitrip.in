@@ -154,3 +154,4 @@ export default function Footer({ footerConfig }: FooterProps) {
     />
   );
 }
+

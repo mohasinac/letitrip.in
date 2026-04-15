@@ -12,7 +12,7 @@
  * seeding with PII encryption, Auth user creation, subcollection handling, etc).
  */
 
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ValidationError } from "@mohasinac/appkit/errors";
 
 export type SeedCollectionName =
@@ -84,3 +84,4 @@ export async function demoSeedAction(vars: {
   const result = await response.json();
   return result.data as SeedOperationResult;
 }
+

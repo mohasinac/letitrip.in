@@ -143,3 +143,4 @@ export function useUpdateSellerProduct(id: string, onSuccess?: () => void) {
     onSuccess,
   });
 }
+

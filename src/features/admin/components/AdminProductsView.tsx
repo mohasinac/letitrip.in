@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminProductsView
  *
  * Contains all product management state, mutations, drawer logic, and JSX.
@@ -71,7 +71,7 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
   const minPrice = table.get("minPrice");
   const maxPrice = table.get("maxPrice");
 
-  // ── Pending filter state (values staged until Apply is clicked) ──────
+  // -- Pending filter state (values staged until Apply is clicked) ------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, [
       "status",
@@ -82,14 +82,14 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
       "maxPrice",
     ]);
 
-  // ── Category options from API ────────────────────────────────────────
+  // -- Category options from API ----------------------------------------
   const { data: categoriesData } = useAdminCategories();
   const categoryOptions = (categoriesData?.categories ?? []).map((c) => ({
     value: c.id,
     label: c.name,
   }));
 
-  // ── Data fetching ───────────────────────────────────────────────────
+  // -- Data fetching ---------------------------------------------------
   const {
     data,
     isLoading,
@@ -377,7 +377,7 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
                   product={editingProduct}
                   onChange={(updated) => setEditingProduct(updated as Partial<AdminProduct>)}
                   isReadonly={isReadonly}
-                  currencyPrefix="₹"
+                  currencyPrefix="?"
                 />
               )}
             </SideDrawer>
@@ -435,3 +435,4 @@ export function AdminProductsView(props: AdminProductsViewProps) {
     </Suspense>
   );
 }
+

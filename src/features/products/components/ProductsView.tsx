@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useMemo, useState, Suspense } from "react";
 import { PackageSearch, Gavel, Info } from "lucide-react";
@@ -66,7 +66,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
   const pageParam = table.getNumber("page", 1);
   const viewMode = (table.get("view") || "card") as ViewMode;
 
-  // ── Staged filter state via usePendingTable ───────────────────────────
+  // -- Staged filter state via usePendingTable ---------------------------
   const {
     pendingTable,
     filterActiveCount: pendingFilterCount,
@@ -155,11 +155,11 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
               key: "price",
               label: t("filterPriceRange"),
               value: [
-                minPriceParam && `₹${minPriceParam}`,
-                maxPriceParam && `₹${maxPriceParam}`,
+                minPriceParam && `?${minPriceParam}`,
+                maxPriceParam && `?${maxPriceParam}`,
               ]
                 .filter(Boolean)
-                .join(" – "),
+                .join(" � "),
             },
           ]
         : []),
@@ -167,7 +167,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
     [categoryParam, minPriceParam, maxPriceParam, categoryNameMap, t],
   );
 
-  // ── Bulk cart handler ─────────────────────────────────────────────
+  // -- Bulk cart handler ---------------------------------------------
   const handleBulkAddToCart = useCallback(async () => {
     const selected = products.filter((p) => selectedIds.includes(p.id));
     const results = await Promise.allSettled(
@@ -200,7 +200,7 @@ function ProductsContent({ initialData }: ProductsViewProps = {}) {
     setSelectedIds([]);
   }, [selectedIds, products, showSuccess, showError, tActions]);
 
-  // ── Bulk wishlist handler ─────────────────────────────────────────
+  // -- Bulk wishlist handler -----------------------------------------
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
       selectedIds.map((id) => addToWishlistAction(id)),
@@ -422,3 +422,4 @@ export function ProductsView(props: ProductsViewProps) {
     </Suspense>
   );
 }
+

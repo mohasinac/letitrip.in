@@ -21,3 +21,4 @@ export interface AdminUser {
 }
 
 export type UserTab = "all" | "active" | "banned" | "admins";
+

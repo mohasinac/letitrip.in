@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import {
   getNumberParam,
   getSearchParams,
@@ -114,3 +114,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

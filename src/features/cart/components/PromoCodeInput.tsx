@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -20,9 +20,9 @@ interface CouponValidateResponse {
 }
 
 interface PromoCodeInputProps {
-  /** Order subtotal — sent to the API to calculate discount */
+  /** Order subtotal � sent to the API to calculate discount */
   subtotal?: number;
-  /** Cart items — used for seller/auction coupon scoping */
+  /** Cart items � used for seller/auction coupon scoping */
   cartItems?: Pick<
     CartItemDocument,
     "productId" | "sellerId" | "price" | "quantity" | "isPreOrder" | "isAuction"
@@ -169,7 +169,7 @@ export function PromoCodeInput({
           disabled={disabled || loading || !code.trim()}
           className="px-4 py-2 text-sm font-medium"
         >
-          {loading ? "…" : t("promoApply")}
+          {loading ? "�" : t("promoApply")}
         </Button>
       </div>
       {errorMsg && (
@@ -180,3 +180,4 @@ export function PromoCodeInput({
     </div>
   );
 }
+

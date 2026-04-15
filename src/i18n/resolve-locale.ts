@@ -8,3 +8,4 @@ import { routing } from "@/i18n/routing";
 export function resolveLocale(locale: string | undefined): string {
   return hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 }
+

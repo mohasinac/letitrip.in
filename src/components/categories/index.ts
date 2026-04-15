@@ -15,3 +15,4 @@ export { CategoryCard } from "./CategoryCard";
 // Selector with inline create — used by product forms
 export { CategorySelectorCreate } from "./CategorySelectorCreate";
 export type { CategorySelectorCreateProps } from "./CategorySelectorCreate";
+

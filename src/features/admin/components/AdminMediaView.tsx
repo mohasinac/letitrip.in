@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useToast } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
@@ -108,7 +108,7 @@ export function AdminMediaView() {
                     : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
                 }`}
               >
-                🖼️ {t("cropImage")}
+                ??? {t("cropImage")}
               </Button>
               <Button
                 onClick={() => setOperationType("trim")}
@@ -118,7 +118,7 @@ export function AdminMediaView() {
                     : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
                 }`}
               >
-                🎬 {t("trimVideo")}
+                ?? {t("trimVideo")}
               </Button>
             </div>
           </Card>
@@ -163,3 +163,4 @@ export function AdminMediaView() {
     />
   );
 }
+

@@ -2003,3 +2003,4 @@ export const UI_HELP_TEXT = {
     "Where should the buyer collect from, or where do you ship from?",
   COUPON_CODE: "Letters and numbers only, no spaces",
 } as const;
+

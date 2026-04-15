@@ -1,5 +1,5 @@
 import { productRepository, reviewRepository } from "@/repositories";
-import { maskName } from "@/lib/pii";
+import { maskName } from "@mohasinac/appkit/security";
 import type { ProductDocument } from "@/db/schema";
 import type { SellerReviewsData, SellerReviewItem } from "@/hooks";
 
@@ -74,3 +74,4 @@ export async function buildSellerReviews(
 
   return { reviews, averageRating, totalReviews, ratingDistribution };
 }
+

@@ -1,46 +1,49 @@
+import "@/providers.config";
 /**
- * Admin Session Management — Revoke Single Session
+ * Admin Session Management â€” Revoke All Sessions For a User
  *
- * DELETE /api/admin/sessions/[id]
+ * POST /api/admin/sessions/revoke-user
  *
- * Allows admins and moderators to revoke any session by ID.
+ * Revokes all active sessions belonging to a specific user.
+ * Requires admin or moderator role.
  */
 
 import { sessionRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import { successResponse } from "@mohasinac/appkit/next";
+import { SUCCESS_MESSAGES } from "@/constants";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { z } from "zod";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
-type IdParams = { id: string };
+const revokeUserSchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+});
 
 /**
- * DELETE /api/admin/sessions/[id] — Revoke a session (admin/moderator)
+ * POST /api/admin/sessions/revoke-user
+ *
+ * Body: { userId: string }
+ *
+ * Revokes all active sessions for the given user and returns the count.
  */
-export const DELETE = createRouteHandler<never, IdParams>({
+export const POST = createRouteHandler<(typeof revokeUserSchema)["_output"]>({
+  auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request, user, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id: sessionId } = params!;
-
-    const session = await sessionRepository.findById(sessionId);
-    if (!session) {
-      return errorResponse(ERROR_MESSAGES.SESSION.NOT_FOUND, 404);
-    }
-
-    await sessionRepository.revokeSession(sessionId, user!.uid);
-
-    serverLogger.info("Session revoked by admin", {
+  schema: revokeUserSchema,
+  handler: async ({ user, body }) => {
+    const { userId } = body!;
+    const revokedCount = await sessionRepository.revokeAllUserSessions(
+      userId,
+      user!.uid,
+    );
+    serverLogger.info("All user sessions revoked by admin", {
       adminId: user!.uid,
-      sessionId,
-      targetUserId: session.userId,
+      targetUserId: userId,
+      revokedCount,
     });
-
     return successResponse(
-      { sessionId },
-      SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
+      { userId, revokedCount },
+      SUCCESS_MESSAGES.ADMIN.SESSIONS_REVOKED,
     );
   },
 });

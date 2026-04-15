@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminFaqsView
  *
  * Contains all FAQ management state, mutations, handlers, and JSX.
@@ -72,7 +72,7 @@ function AdminFaqsContent({ action }: AdminFaqsViewProps) {
   const categoryFilter = table.get("category");
   const isActiveFilter = table.get("isActive");
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["category", "isActive"]);
 
@@ -395,7 +395,7 @@ function AdminFaqsContent({ action }: AdminFaqsViewProps) {
                     />
                   </div>
                   <Caption>
-                    ❤ {faq.stats?.helpful ?? 0} · 👁 {faq.stats?.views ?? 0}
+                    ? {faq.stats?.helpful ?? 0} � ?? {faq.stats?.views ?? 0}
                   </Caption>
                 </Card>
               )}
@@ -414,3 +414,4 @@ export function AdminFaqsView(props: AdminFaqsViewProps) {
     </Suspense>
   );
 }
+

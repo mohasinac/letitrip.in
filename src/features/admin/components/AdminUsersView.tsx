@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminUsersView
  *
  * Extracted from src/app/[locale]/admin/users/[[...action]]/page.tsx
@@ -50,7 +50,7 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
   const createdFrom = table.get("createdFrom");
   const createdTo = table.get("createdTo");
 
-  // ── Pending filter state (staged until Apply is clicked) ──────────────
+  // -- Pending filter state (staged until Apply is clicked) --------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, [
       "role",
@@ -339,10 +339,10 @@ function AdminUsersContent({ action }: AdminUsersViewProps) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <Text weight="medium" size="sm" className="truncate">
-                        {user.displayName ?? "—"}
+                        {user.displayName ?? "�"}
                       </Text>
                       <Caption className="truncate">
-                        {user.email ?? "—"}
+                        {user.email ?? "�"}
                       </Caption>
                     </div>
                   </Row>
@@ -369,3 +369,4 @@ export function AdminUsersView(props: AdminUsersViewProps) {
     </Suspense>
   );
 }
+

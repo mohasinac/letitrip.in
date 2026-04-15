@@ -30,3 +30,4 @@ export function useEvent({ id, enabled = true }: UseEventOptions) {
     refetch,
   };
 }
+

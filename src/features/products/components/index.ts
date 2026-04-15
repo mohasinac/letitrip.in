@@ -7,3 +7,4 @@ export { PreOrderDetailView } from "./PreOrderDetailView";
 export { ProductImageGallery } from "./ProductImageGallery";
 export { MakeOfferForm } from "./MakeOfferForm";
 export { ProductJsonLd } from "./ProductJsonLd";
+

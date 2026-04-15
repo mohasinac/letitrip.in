@@ -3,10 +3,10 @@ import "@/providers.config";
  * Admin Reviews API Route
  * GET /api/admin/reviews
  */
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { piiBlindIndex } from "@/lib/pii";
+import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { REVIEW_FIELDS } from "@/db/schema";
 import { reviewRepository } from "@/repositories";
 
@@ -51,3 +51,4 @@ export const GET = createApiHandler({
     });
   },
 });
+

@@ -3,7 +3,7 @@ import "@/providers.config";
  * Admin Bids API Route
  * GET /api/admin/bids
  */
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { bidRepository } from "@/repositories";
 
@@ -32,3 +32,4 @@ export const GET = createApiHandler({
     });
   },
 });
+

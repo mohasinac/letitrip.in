@@ -35,8 +35,8 @@ import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { serverLogger } from "@/lib/server-logger";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
@@ -74,3 +74,4 @@ export const POST = createRouteHandler<(typeof bodySchema)["_output"]>({
     });
   },
 });
+

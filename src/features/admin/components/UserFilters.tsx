@@ -67,3 +67,4 @@ export function UserFilters({ table }: UserFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

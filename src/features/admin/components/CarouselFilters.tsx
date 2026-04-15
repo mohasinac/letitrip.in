@@ -34,3 +34,4 @@ export function CarouselFilters({ table }: CarouselFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

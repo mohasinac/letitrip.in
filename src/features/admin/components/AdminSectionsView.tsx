@@ -295,3 +295,4 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     />
   );
 }
+

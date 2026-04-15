@@ -569,3 +569,4 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: daysAgo(4),
   },
 ];
+

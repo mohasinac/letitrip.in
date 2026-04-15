@@ -39,3 +39,4 @@ export const POST = createRouteHandler<(typeof trimDataSchema)["_output"]>({
     );
   },
 });
+

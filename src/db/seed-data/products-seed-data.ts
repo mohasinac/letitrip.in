@@ -1,15 +1,15 @@
-﻿/**
- * Products Seed Data — 101 Beyblade products, launchers, parts & merch
+/**
+ * Products Seed Data � 101 Beyblade products, launchers, parts & merch
  * All dates computed dynamically at module-load time (never stale).
  */
 import type { ProductDocument } from "@/db/schema";
 
-// ─── Dynamic date helpers ───────────────────────────────────────────────────
+// --- Dynamic date helpers ---------------------------------------------------
 const NOW = new Date();
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
 const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
 
-// ─── Seller shortcuts ───────────────────────────────────────────────────────
+// --- Seller shortcuts -------------------------------------------------------
 const FV = {
   sellerId: "user-techhub-electronics-electron",
   storeId: "store-figurevault-jp-by-figurevault",
@@ -29,7 +29,7 @@ const OS = {
   sellerEmail: "home@letitrip.in",
 } as const;
 
-// ─── Regular stockable products (24 — all referenced by orders/reviews/cart) ─
+// --- Regular stockable products (24 � all referenced by orders/reviews/cart) -
 const regularProducts: Partial<ProductDocument>[] = [
   {
     id: "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
@@ -141,7 +141,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     id: "product-macbook-pro-16-m3-max-laptops-computers-new-techhub-electronics-1",
     title: "Monkey D. Xcalibur Gear 5 Sun God 1/4 Scale Scene Figure",
     description:
-      "Takara Tomy Gear 5 Xcalibur Sun God Nika — 42 cm with cloud effect base.",
+      "Takara Tomy Gear 5 Xcalibur Sun God Nika � 42 cm with cloud effect base.",
     category: "category-laptops-computers-electronics",
     subcategory: "Beyblade Figures",
     brand: "Takara Tomy",
@@ -227,7 +227,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     tags: ["beyblade-burst", "phoenix-wing", "tee"],
     specifications: [{ name: "Material", value: "100% Cotton (280 GSM)" }],
     features: ["DTG printed art", "Pre-shrunk fabric"],
-    shippingInfo: "Free shipping above ₹999.",
+    shippingInfo: "Free shipping above ?999.",
     returnPolicy: "15-day returns.",
     isAuction: false,
     isPromoted: false,
@@ -256,7 +256,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     tags: ["beyblade-burst", "nezuko", "kimono", "cosplay"],
     specifications: [{ name: "Material", value: "Soft Fleece Blend" }],
     features: ["Hemp leaf pattern", "Embroidered cuffs"],
-    shippingInfo: "Free shipping above ₹999.",
+    shippingInfo: "Free shipping above ?999.",
     returnPolicy: "15-day returns.",
     isAuction: false,
     isPromoted: false,
@@ -327,7 +327,7 @@ const regularProducts: Partial<ProductDocument>[] = [
       { name: "Parts", value: "550+" },
     ],
     features: ["Internal skeleton frame", "LED unit included"],
-    shippingInfo: "Free shipping above ₹999.",
+    shippingInfo: "Free shipping above ?999.",
     returnPolicy: "7-day returns.",
     isAuction: false,
     isPromoted: false,
@@ -480,7 +480,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     tags: ["rezero", "rem", "ram", "nendoroid"],
     specifications: [{ name: "Height", value: "10 cm each" }],
     features: ["Interchangeable faces", "Window box packaging"],
-    shippingInfo: "Free shipping over ₹999.",
+    shippingInfo: "Free shipping over ?999.",
     returnPolicy: "10-day returns.",
     isAuction: false,
     isPromoted: true,
@@ -510,7 +510,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     tags: ["attack-on-titan", "odm-gear", "replica"],
     specifications: [
       { name: "Material", value: "Resin + Metal" },
-      { name: "Size", value: "45 × 30 cm" },
+      { name: "Size", value: "45 � 30 cm" },
     ],
     features: ["Wall-mount bracket", "Weathered finish"],
     shippingInfo: "Free shipping in 3-4 days.",
@@ -561,7 +561,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     id: "product-solid-wood-coffee-table-home-new-homeessentials-1",
     title: "Studio Ghibli Collector's Display Shelf Set (8 Figures)",
     description:
-      "8-figure display set: Totoro, Kiki, Howl, Calcifer, Nausicaä, No-Face, Chihiro, Haku with acrylic case.",
+      "8-figure display set: Totoro, Kiki, Howl, Calcifer, Nausica�, No-Face, Chihiro, Haku with acrylic case.",
     category: "category-home-kitchen",
     subcategory: "Collector Sets",
     brand: "SpinCore Arena",
@@ -786,7 +786,7 @@ const regularProducts: Partial<ProductDocument>[] = [
     id: "product-anker-usbc-charger-electronics-new-techhub-1",
     title: "Spirited Away No-Face Resin Miniature Twin Pack",
     description:
-      "Hand-painted No-Face mini figurines (9 cm) — standard and gold mask variants.",
+      "Hand-painted No-Face mini figurines (9 cm) � standard and gold mask variants.",
     category: "category-mobile-accessories-mobiles-accessories",
     subcategory: "Mini Figurines",
     brand: "FigureVault JP",
@@ -816,11 +816,11 @@ const regularProducts: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Out-of-stock products (5) ──────────────────────────────────────────────
+// --- Out-of-stock products (5) ----------------------------------------------
 const outOfStockProducts: Partial<ProductDocument>[] = [
   {
     id: "product-sony-wh-1000xm5-headphones-audio-new-techhub-electronics-1",
-    title: "Phoenix Wing Hinokami Kagura 1/7 Scale — SOLD OUT",
+    title: "Phoenix Wing Hinokami Kagura 1/7 Scale � SOLD OUT",
     description:
       "Alter Co. Dance of the Fire God Phoenix Wing with translucent flame resin.",
     category: "category-audio-electronics",
@@ -843,7 +843,7 @@ const outOfStockProducts: Partial<ProductDocument>[] = [
   },
   {
     id: "product-phoenix-wing-hollow-purple-oos-1",
-    title: "Phoenix Wing Hollow Purple 1/4 Scale — SOLD OUT",
+    title: "Phoenix Wing Hollow Purple 1/4 Scale � SOLD OUT",
     description:
       "Takara Tomy Phoenix Wing Hollow Purple technique. 38 cm with gravity-defying purple orb.",
     category: "category-audio-electronics",
@@ -866,7 +866,7 @@ const outOfStockProducts: Partial<ProductDocument>[] = [
   },
   {
     id: "product-aot-colossal-titan-oos-1",
-    title: "AoT Colossal Titan 1/6 Scale — SOLD OUT",
+    title: "AoT Colossal Titan 1/6 Scale � SOLD OUT",
     description:
       "Prime 1 Studio Colossal Titan with steam effect and wall breach diorama.",
     category: "category-home-kitchen",
@@ -889,7 +889,7 @@ const outOfStockProducts: Partial<ProductDocument>[] = [
   },
   {
     id: "product-cobalt-drake-finger-set-oos-1",
-    title: "Cobalt Drake Finger Box Set (20 pcs) — SOLD OUT",
+    title: "Cobalt Drake Finger Box Set (20 pcs) � SOLD OUT",
     description:
       "Complete Metal Cobalt Drake finger replica set in cursed wooden box.",
     category: "category-home-kitchen",
@@ -912,7 +912,7 @@ const outOfStockProducts: Partial<ProductDocument>[] = [
   },
   {
     id: "product-bakugo-explosion-oos-1",
-    title: "MHA Bakugo Explosion 1/4 Scale — SOLD OUT",
+    title: "MHA Bakugo Explosion 1/4 Scale � SOLD OUT",
     description:
       "Tsume Art Bakugo full explosion with LED effects. Sold out within hours.",
     category: "category-laptops-computers-electronics",
@@ -935,11 +935,11 @@ const outOfStockProducts: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Live auctions (13 — ending in the future) ─────────────────────────────
+// --- Live auctions (13 � ending in the future) -----------------------------
 const liveAuctions: Partial<ProductDocument>[] = [
   {
     id: "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    title: "Evangelion Unit-01 Original Production Cel — AUCTION",
+    title: "Evangelion Unit-01 Original Production Cel � AUCTION",
     description:
       "Authenticated 1995 NGE production cel (ep. 19) with certificate of authenticity.",
     category: "category-cameras-photography-electronics",
@@ -978,9 +978,9 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    title: "Beyblade Z Complete Son Family 7-Piece Set — AUCTION",
+    title: "Beyblade Z Complete Son Family 7-Piece Set � AUCTION",
     description:
-      "Ultra-rare first-run Son family set: Dran Sword, Hells Chain ×2, Goten, Bardock, Raditz, Broly.",
+      "Ultra-rare first-run Son family set: Dran Sword, Hells Chain �2, Goten, Bardock, Raditz, Broly.",
     category: "category-laptops-computers-electronics",
     subcategory: "Collector Sets",
     brand: "Bandai / Takara Tomy",
@@ -1013,7 +1013,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "product-vintage-leica-camera-auction-artisan-1",
-    title: "Neon Genesis Evangelion 1995 Signed Poster — AUCTION",
+    title: "Neon Genesis Evangelion 1995 Signed Poster � AUCTION",
     description:
       "Original Japanese limited-run theatrical poster signed by Hideaki Anno.",
     category: "category-cameras-photography-electronics",
@@ -1050,7 +1050,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-chainsaw-man-makima-figure-fashion-1",
-    title: "Chainsaw Man Makima 1/7 Kotobukiya ARTFX J — AUCTION",
+    title: "Chainsaw Man Makima 1/7 Kotobukiya ARTFX J � AUCTION",
     description:
       "Kotobukiya ARTFX J Makima with chain and bloodmoon backdrop. Limited run.",
     category: "category-audio-electronics",
@@ -1088,7 +1088,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-jjk-cobalt-drake-figure-homeessentials-1",
-    title: "Beyblade X Metal Cobalt Drake King of Curses 1/6 Scale — AUCTION",
+    title: "Beyblade X Metal Cobalt Drake King of Curses 1/6 Scale � AUCTION",
     description:
       "Takara Tomy Cobalt Drake 1/6 with cursed energy aura, tattooed skin, multiple arms.",
     category: "category-audio-electronics",
@@ -1125,7 +1125,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-fate-saber-alter-figure-techhub-1",
-    title: "Fate/Stay Night Saber Alter Wedding 1/7 — AUCTION",
+    title: "Fate/Stay Night Saber Alter Wedding 1/7 � AUCTION",
     description:
       "Alter Co. exclusive Saber Alter in white wedding dress. 2019 limited production, sealed.",
     category: "category-audio-electronics",
@@ -1163,7 +1163,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-pokemon-charizard-1st-ed-fashion-1",
-    title: "Pokémon 1st Edition Charizard Holo PSA 9 — AUCTION",
+    title: "Pok�mon 1st Edition Charizard Holo PSA 9 � AUCTION",
     description:
       "1999 Wizards of the Coast 1st Edition Base Set Charizard, PSA 9 NM-Mint slab.",
     category: "category-cameras-photography-electronics",
@@ -1200,7 +1200,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-spirited-away-cel-homeessentials-1",
-    title: "Spirited Away 2001 Production Cel — Studio Ghibli",
+    title: "Spirited Away 2001 Production Cel � Studio Ghibli",
     description:
       "Hand-painted original production cel of Chihiro & Haku river scene. Ghibli Museum cert.",
     category: "category-cameras-photography-electronics",
@@ -1236,7 +1236,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-gunpla-pg-wing-zero-techhub-1",
-    title: "PG Wing Zero Custom Full Build with LED — AUCTION",
+    title: "PG Wing Zero Custom Full Build with LED � AUCTION",
     description:
       "Hand-built, panel-lined and painted 1/60 PG Wing Zero with Wing of Light LED unit.",
     category: "category-mobiles-accessories-electronics",
@@ -1272,7 +1272,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-rezero-rem-wedding-figure-techhub-1",
-    title: "Re:Zero Rem Wedding Dress 1/7 GSC — AUCTION",
+    title: "Re:Zero Rem Wedding Dress 1/7 GSC � AUCTION",
     description:
       "Good Smile Rem Wedding 1/7 with lace veil and flower bouquet. 2021 JP release.",
     category: "category-audio-electronics",
@@ -1310,7 +1310,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-ps5-slim-gaming-console-techhub-1",
-    title: "Beyblade Z Battle of Gods Blu-ray Signed Box — AUCTION",
+    title: "Beyblade Z Battle of Gods Blu-ray Signed Box � AUCTION",
     description:
       "Sealed Blu-ray box signed by Masako Nozawa (Dran Sword VA). Includes acrylic display stand.",
     category: "category-cameras-photography-electronics",
@@ -1345,7 +1345,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-airpods-pro2-audio-techhub-1",
-    title: "Beyblade Shark Edge Flame Art Print (Signed by VA) — AUCTION",
+    title: "Beyblade Shark Edge Flame Art Print (Signed by VA) � AUCTION",
     description:
       "Limited art print of Shark Edge signed by voice actor Satoshi Hino.",
     category: "category-audio-electronics",
@@ -1378,7 +1378,7 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-swiss-titanium-watch-fashion-1",
-    title: "Beyblade 25th Anniversary Premium Card Collection — AUCTION",
+    title: "Beyblade 25th Anniversary Premium Card Collection � AUCTION",
     description:
       "Complete premium promo card set from OP 25th anniversary, holographic box.",
     category: "category-cameras-photography-electronics",
@@ -1411,11 +1411,11 @@ const liveAuctions: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Ended auctions (6 — ended in the past, status: "sold") ────────────────
+// --- Ended auctions (6 � ended in the past, status: "sold") ----------------
 const endedAuctions: Partial<ProductDocument>[] = [
   {
     id: "auction-one-piece-signed-artbook-techhub-1",
-    title: "Beyblade 25th Anniversary Artbook Signed by Oda — ENDED",
+    title: "Beyblade 25th Anniversary Artbook Signed by Oda � ENDED",
     description:
       "Color Walk collection signed by Eiichiro Oda with Den Den Mushi ink sketch.",
     category: "category-cameras-photography-electronics",
@@ -1448,7 +1448,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    title: "Beyblade Complete Bijuu (9 Tailed Beasts) Set — ENDED",
+    title: "Beyblade Complete Bijuu (9 Tailed Beasts) Set � ENDED",
     description:
       "Full set of all 9 Tailed Beasts by Takara Tomy. Factory sealed, gold serial numbers.",
     category: "category-laptops-computers-electronics",
@@ -1481,7 +1481,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-supreme-box-logo-tee-fashion-1",
-    title: "Beyblade Z Shenron LED Lamp Sculpture — ENDED",
+    title: "Beyblade Z Shenron LED Lamp Sculpture � ENDED",
     description:
       "Custom Shenron LED lamp with 7 beyblade base, 90 cm wingspan.",
     category: "category-home-kitchen",
@@ -1513,7 +1513,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-pioneer-hifi-system-homeessentials-1",
-    title: "Studio Ghibli Limited Cel — Princess Mononoke — ENDED",
+    title: "Studio Ghibli Limited Cel � Princess Mononoke � ENDED",
     description:
       "Production cel from Princess Mononoke featuring San & Moro. Auction ended.",
     category: "category-cameras-photography-electronics",
@@ -1545,7 +1545,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-vintage-denim-jacket-fashion-1",
-    title: "Beyblade X Original Signed Manuscript Page — ENDED",
+    title: "Beyblade X Original Signed Manuscript Page � ENDED",
     description:
       "Original manuscript page from MHA ch. 1 with Horikoshi autograph.",
     category: "category-cameras-photography-electronics",
@@ -1577,7 +1577,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
   {
     id: "auction-bose700-headphones-homeessentials-1",
-    title: "Beyblade X Phoenix Wing Unsigned Limited Print #50/100 — ENDED",
+    title: "Beyblade X Phoenix Wing Unsigned Limited Print #50/100 � ENDED",
     description: "Limited print run (50 of 100) Beyblade X Phoenix Wing art. Sold at auction.",
     category: "category-audio-electronics",
     subcategory: "Art Prints",
@@ -1608,7 +1608,7 @@ const endedAuctions: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Pre-orders: 5 open (delivery future) + 2 closed (delivery past) ────────
+// --- Pre-orders: 5 open (delivery future) + 2 closed (delivery past) --------
 const preOrders: Partial<ProductDocument>[] = [
   {
     id: "preorder-chainsaw-man-makima-gsc-1",
@@ -1771,7 +1771,7 @@ const preOrders: Partial<ProductDocument>[] = [
   // Closed pre-orders (delivery date passed)
   {
     id: "preorder-closed-phoenix-wing-domain-1",
-    title: "Beyblade X Phoenix Wing Domain Expansion 1/6 — CLOSED (Shipped)",
+    title: "Beyblade X Phoenix Wing Domain Expansion 1/6 � CLOSED (Shipped)",
     description:
       "Takara Tomy Phoenix Wing Infinite Void domain figure. All pre-orders fulfilled.",
     category: "category-audio-electronics",
@@ -1802,7 +1802,7 @@ const preOrders: Partial<ProductDocument>[] = [
   },
   {
     id: "preorder-closed-infinity-castle-1",
-    title: "Beyblade Infinity Castle Diorama — CLOSED (Shipped)",
+    title: "Beyblade Infinity Castle Diorama � CLOSED (Shipped)",
     description:
       "SpinCore modular Infinity Castle diorama with Cobalt Dragoon and Upper Moons. Fulfilled.",
     category: "category-home-kitchen",
@@ -1833,7 +1833,7 @@ const preOrders: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Draft products (3) ─────────────────────────────────────────────────────
+// --- Draft products (3) -----------------------------------------------------
 const draftProducts: Partial<ProductDocument>[] = [
   {
     id: "product-draft-beyblade-x-toshiro-1",
@@ -1883,7 +1883,7 @@ const draftProducts: Partial<ProductDocument>[] = [
   },
   {
     id: "product-draft-spy-family-bond-plush-1",
-    title: "Spy × Family Bond Forger Plush (35 cm) [DRAFT]",
+    title: "Spy � Family Bond Forger Plush (35 cm) [DRAFT]",
     description: "Bond plush in prophetic vision pose. Pending pricing review.",
     category: "category-home-kitchen",
     subcategory: "Beyblade Plush",
@@ -1905,11 +1905,11 @@ const draftProducts: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Discontinued (2) + Sold regular (2) ────────────────────────────────────
+// --- Discontinued (2) + Sold regular (2) ------------------------------------
 const discontinuedAndSold: Partial<ProductDocument>[] = [
   {
     id: "product-disc-beyblade-original-sage-1",
-    title: "Beyblade Original Run Sage 1/8 — DISCONTINUED",
+    title: "Beyblade Original Run Sage 1/8 � DISCONTINUED",
     description:
       "Hasbro first-generation Sage figure (2020). Production line discontinued.",
     category: "category-smartphones-mobiles-accessories",
@@ -1932,7 +1932,7 @@ const discontinuedAndSold: Partial<ProductDocument>[] = [
   },
   {
     id: "product-disc-eren-founding-titan-1",
-    title: "AoT Eren Founding Titan Statue — DISCONTINUED",
+    title: "AoT Eren Founding Titan Statue � DISCONTINUED",
     description: "Prime 1 Studio Eren Founding Titan. Production discontinued.",
     category: "category-home-kitchen",
     subcategory: "Premium Statues",
@@ -1954,7 +1954,7 @@ const discontinuedAndSold: Partial<ProductDocument>[] = [
   },
   {
     id: "product-sold-cell-perfect-form-1",
-    title: "DBZ Cell Perfect Form 1/4 — SOLD",
+    title: "DBZ Cell Perfect Form 1/4 � SOLD",
     description:
       "One-of-one custom Cell Perfect Form statue. Sold to private collector.",
     category: "category-smartphones-mobiles-accessories",
@@ -1977,9 +1977,9 @@ const discontinuedAndSold: Partial<ProductDocument>[] = [
   },
   {
     id: "product-sold-ace-memorial-1",
-    title: "Beyblade Ace Memorial Statue — SOLD",
+    title: "Beyblade Ace Memorial Statue � SOLD",
     description:
-      "SpinCore Ace memorial with flame fist. Limited 50 pieces — all sold.",
+      "SpinCore Ace memorial with flame fist. Limited 50 pieces � all sold.",
     category: "category-sports-outdoors",
     subcategory: "Beyblade Figures",
     brand: "SpinCore Arena",
@@ -2000,7 +2000,7 @@ const discontinuedAndSold: Partial<ProductDocument>[] = [
   },
 ];
 
-// ─── Generated extra products (30) to hit 102 total ────────────────────────
+// --- Generated extra products (30) to hit 102 total ------------------------
 interface QuickItem {
   id: string;
   title: string;
@@ -2108,7 +2108,7 @@ const quickItems: QuickItem[] = [
   },
   {
     id: "product-gen-83-yor-figure",
-    title: "Spy × Family Yor Thorn Princess 1/7",
+    title: "Spy � Family Yor Thorn Princess 1/7",
     cat: "category-audio-electronics",
     sub: "SPY Figures",
     brand: "Alter Co.",
@@ -2329,7 +2329,7 @@ const quickItems: QuickItem[] = [
   },
   {
     id: "product-gen-100-loid-figure",
-    title: "Spy × Family Loid Forger Twilight 1/7",
+    title: "Spy � Family Loid Forger Twilight 1/7",
     cat: "category-audio-electronics",
     sub: "SPY Figures",
     brand: "Alter Co.",
@@ -2394,7 +2394,7 @@ const quickItems: QuickItem[] = [
   },
   {
     id: "product-gen-105-anya-nendo",
-    title: "Spy × Family Anya Forger Nendoroid #1902",
+    title: "Spy � Family Anya Forger Nendoroid #1902",
     cat: "category-mobiles-accessories-electronics",
     sub: "Nendoroids",
     brand: "Good Smile Company",
@@ -2553,7 +2553,7 @@ const generatedProducts: Partial<ProductDocument>[] = quickItems.map(
   }),
 );
 
-// ─── Final export (101 products) ────────────────────────────────────────────
+// --- Final export (101 products) --------------------------------------------
 export const productsSeedData: Partial<ProductDocument>[] = [
   ...regularProducts,
   ...outOfStockProducts,
@@ -2564,3 +2564,4 @@ export const productsSeedData: Partial<ProductDocument>[] = [
   ...discontinuedAndSold,
   ...generatedProducts,
 ];
+

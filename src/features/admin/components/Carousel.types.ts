@@ -74,3 +74,4 @@ export interface CarouselSlide {
 }
 
 export type DrawerMode = "create" | "edit" | "delete" | null;
+

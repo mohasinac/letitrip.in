@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Checkbox } from "@mohasinac/appkit/ui";
 import { useState } from "react";
@@ -26,7 +26,7 @@ const { themed } = THEME_CONSTANTS;
 const COLLECTION_GROUPS: CollectionGroup[] = [
   {
     label: "Auth & Users",
-    emoji: "🔐",
+    emoji: "??",
     color: "text-violet-700 dark:text-violet-300",
     headerBg:
       "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800",
@@ -37,7 +37,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
   },
   {
     label: "Commerce",
-    emoji: "🛍️",
+    emoji: "???",
     color: "text-emerald-700 dark:text-emerald-300",
     headerBg:
       "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800",
@@ -57,7 +57,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
   },
   {
     label: "Content",
-    emoji: "📝",
+    emoji: "??",
     color: "text-sky-700 dark:text-sky-300",
     headerBg:
       "bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800",
@@ -74,7 +74,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
   },
   {
     label: "Configuration",
-    emoji: "⚙️",
+    emoji: "??",
     color: "text-amber-700 dark:text-amber-300",
     headerBg:
       "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800",
@@ -117,7 +117,7 @@ const COLLECTION_LABELS: Record<CollectionName, string> = {
   siteSettings: "Site Settings",
 };
 
-/** Expected item counts from the current seed files — used as pre-load reference. */
+/** Expected item counts from the current seed files � used as pre-load reference. */
 const SEED_ITEM_COUNTS: Record<CollectionName, number> = {
   users: 19,
   addresses: 22,
@@ -193,7 +193,7 @@ export function DemoSeedView() {
     return (
       <Div className={`min-h-screen ${flex.center} p-4`}>
         <Card className="max-w-md w-full p-10 text-center">
-          <Div className="text-5xl mb-4">🔒</Div>
+          <Div className="text-5xl mb-4">??</Div>
           <Heading
             level={1}
             className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2"
@@ -210,7 +210,7 @@ export function DemoSeedView() {
 
   return (
     <Div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} pb-16`}>
-      {/* ── Hero Header ── */}
+      {/* -- Hero Header -- */}
       <Div
         className={`${THEME_CONSTANTS.accentBanner.devHero} px-6 py-10 sm:py-14`}
       >
@@ -218,7 +218,7 @@ export function DemoSeedView() {
           <Row wrap className="flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <Div>
               <Row gap="sm" className="mb-2">
-                <Span className="text-4xl">🌱</Span>
+                <Span className="text-4xl">??</Span>
                 <Heading
                   level={1}
                   variant="none"
@@ -232,7 +232,7 @@ export function DemoSeedView() {
                 className={`${THEME_CONSTANTS.accentBanner.devHeroTextMuted} text-sm sm:text-base max-w-lg`}
               >
                 Load or remove deterministic seed documents from Firestore. All
-                operations are ID-scoped — safe alongside real data.
+                operations are ID-scoped � safe alongside real data.
               </Text>
             </Div>
             <Span className="self-start sm:self-auto px-3 py-1.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full uppercase tracking-wide shrink-0">
@@ -271,21 +271,21 @@ export function DemoSeedView() {
                 (sum, col) => sum + SEED_ITEM_COUNTS[col],
                 0,
               )}{" "}
-              docs · {totalCount} collections
+              docs � {totalCount} collections
             </Row>
           </Row>
         </Div>
       </Div>
 
       <Stack gap="lg" className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">
-        {/* ── Seed Status Banner ── */}
+        {/* -- Seed Status Banner -- */}
         <SeedStatusBanner
           statusMap={statusMap}
           statusLoading={statusLoading}
           collections={ALL_COLLECTIONS}
         />
 
-        {/* ── Collection Selector ── */}
+        {/* -- Collection Selector -- */}
         <Card className="p-6">
           <Row wrap className="flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <Div>
@@ -297,7 +297,7 @@ export function DemoSeedView() {
               </Heading>
               <Text size="sm" variant="secondary" className="mt-0.5">
                 {selCount === 0
-                  ? "None selected — actions below will target all collections"
+                  ? "None selected � actions below will target all collections"
                   : `${selCount} of ${totalCount} selected`}
               </Text>
             </Div>
@@ -426,7 +426,7 @@ export function DemoSeedView() {
                           {/* Count row */}
                           {statusLoading ? (
                             <Span className="text-[10px] text-zinc-400 pl-5">
-                              checking…
+                              checking�
                             </Span>
                           ) : seedCount !== null ? (
                             <Span
@@ -451,12 +451,12 @@ export function DemoSeedView() {
           </Stack>
         </Card>
 
-        {/* ── Actions ── */}
+        {/* -- Actions -- */}
         <Grid cols={2} gap="md">
           {/* Load card */}
           <Card className="p-5 border-2 border-emerald-200 dark:border-emerald-800">
             <Row gap="sm" className="mb-4">
-              <Span className="text-xl">📥</Span>
+              <Span className="text-xl">??</Span>
               <Heading
                 level={3}
                 className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
@@ -472,7 +472,7 @@ export function DemoSeedView() {
               >
                 {isLoading && lastAction === "load" ? (
                   <Row gap="sm" className="justify-center">
-                    <Spinner size="sm" variant="white" /> Loading…
+                    <Spinner size="sm" variant="white" /> Loading�
                   </Row>
                 ) : (
                   "Load All Collections"
@@ -501,7 +501,7 @@ export function DemoSeedView() {
           {/* Delete card */}
           <Card className="p-5 border-2 border-red-200 dark:border-red-800">
             <Row gap="sm" className="mb-4">
-              <Span className="text-xl">🗑️</Span>
+              <Span className="text-xl">???</Span>
               <Heading
                 level={3}
                 className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
@@ -527,7 +527,7 @@ export function DemoSeedView() {
               </Button>
             </Stack>
             <Caption className="mt-3">
-              Removes only documents matching seed IDs. Safe — won&apos;t touch
+              Removes only documents matching seed IDs. Safe � won&apos;t touch
               non-seed data.
             </Caption>
             <LoadDeleteStatus
@@ -538,10 +538,10 @@ export function DemoSeedView() {
           </Card>
         </Grid>
 
-        {/* ── Demo Credentials ── */}
+        {/* -- Demo Credentials -- */}
         <Card className="p-5">
           <Row gap="sm" className="mb-4">
-            <Span className="text-xl">🔑</Span>
+            <Span className="text-xl">??</Span>
             <Heading
               level={3}
               className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
@@ -564,7 +564,7 @@ export function DemoSeedView() {
                   "border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20",
                 badge:
                   "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
-                emoji: "👑",
+                emoji: "??",
               },
               {
                 role: "Moderator",
@@ -573,7 +573,7 @@ export function DemoSeedView() {
                   "border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20",
                 badge:
                   "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300",
-                emoji: "🛡️",
+                emoji: "???",
               },
               {
                 role: "Seller",
@@ -582,7 +582,7 @@ export function DemoSeedView() {
                   "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20",
                 badge:
                   "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
-                emoji: "🏪",
+                emoji: "??",
               },
             ].map(({ role, email, color, badge, emoji }) => (
               <Div
@@ -607,7 +607,7 @@ export function DemoSeedView() {
           </Grid>
         </Card>
 
-        {/* ── Info footer ── */}
+        {/* -- Info footer -- */}
         <Div
           className={`rounded-xl border ${themed.border} ${themed.bgSecondary} px-5 py-4`}
         >
@@ -618,7 +618,7 @@ export function DemoSeedView() {
             className={`text-sm ${themed.textSecondary} space-y-1 list-disc list-inside`}
           >
             <Li>
-              All operations target specific document IDs from seed files —
+              All operations target specific document IDs from seed files �
               never a whole collection
             </Li>
             <Li>
@@ -634,7 +634,7 @@ export function DemoSeedView() {
               <Span className="font-mono text-xs">
                 faq-{"{category}"}-{"{question-slug}"}
               </Span>
-              ) — not stored directly in the seed file
+              ) � not stored directly in the seed file
             </Li>
             <Li>
               Site Settings is a singleton stored at{" "}
@@ -645,8 +645,8 @@ export function DemoSeedView() {
               <Span className="font-mono text-xs">TempPass123!</Span>
             </Li>
             <Li>
-              19 users · 101 products (19 auctions) · 73 bids · 102 FAQs · 23
-              categories · 3 stores · 532 docs total
+              19 users � 101 products (19 auctions) � 73 bids � 102 FAQs � 23
+              categories � 3 stores � 532 docs total
             </Li>
           </Ul>
         </Div>
@@ -680,7 +680,7 @@ export function DemoSeedView() {
   );
 }
 
-// ── Top-level seed status banner ────────────────────────────────────────────
+// -- Top-level seed status banner --------------------------------------------
 interface SeedStatusBannerProps {
   statusMap: Record<string, { seedCount: number; existingCount: number }>;
   statusLoading: boolean;
@@ -738,13 +738,13 @@ function SeedStatusBanner({
       aria-live="polite"
       className={`rounded-2xl border-2 overflow-hidden ${themed.bgPrimary} ${borderCls}`}
     >
-      {/* ── Header ── */}
+      {/* -- Header -- */}
       <BlockHeader
         className={`${THEME_CONSTANTS.flex.between} gap-3 px-5 py-4 border-b ${themed.border} ${themed.bgSecondary}`}
       >
         <Row gap="sm" align="center">
           <Span className="text-xl" aria-hidden="true">
-            {isFullyLoaded ? "✅" : isFullyEmpty ? "📭" : "⏳"}
+            {isFullyLoaded ? "?" : isFullyEmpty ? "??" : "?"}
           </Span>
           <Heading
             level={2}
@@ -761,7 +761,7 @@ function SeedStatusBanner({
             className="text-xs text-zinc-500 dark:text-zinc-400"
           >
             <Spinner size="sm" />
-            <Span>Checking…</Span>
+            <Span>Checking�</Span>
           </Row>
         ) : (
           <Badge
@@ -779,7 +779,7 @@ function SeedStatusBanner({
         )}
       </BlockHeader>
 
-      {/* ── Body ── */}
+      {/* -- Body -- */}
       <Stack gap="sm" className="p-5">
         {/* Progress bar */}
         {statusLoading ? (
@@ -794,7 +794,7 @@ function SeedStatusBanner({
           />
         )}
 
-        {/* ── Stat grid ── */}
+        {/* -- Stat grid -- */}
         <Grid cols={4} gap="sm">
           <SeedStatTile
             label="Seeded"
@@ -846,7 +846,7 @@ function SeedStatusBanner({
                 {fullySeeded > 0 && (
                   <Span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                     {fullySeeded}
-                    <Span className="text-[10px] font-normal ml-0.5">✓</Span>
+                    <Span className="text-[10px] font-normal ml-0.5">?</Span>
                   </Span>
                 )}
                 {partialCount > 0 && (
@@ -858,13 +858,13 @@ function SeedStatusBanner({
                 {emptyCount > 0 && (
                   <Span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
                     {emptyCount}
-                    <Span className="text-[10px] font-normal ml-0.5">✗</Span>
+                    <Span className="text-[10px] font-normal ml-0.5">?</Span>
                   </Span>
                 )}
               </Row>
             )}
             <Caption className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-              full · partial · empty
+              full � partial � empty
             </Caption>
           </Div>
         </Grid>
@@ -873,7 +873,7 @@ function SeedStatusBanner({
   );
 }
 
-// ── Stat tile used inside the banner grid ─────────────────────────────────────
+// -- Stat tile used inside the banner grid -------------------------------------
 interface SeedStatTileProps {
   label: string;
   sub: string;
@@ -915,7 +915,7 @@ function SeedStatTile({
   );
 }
 
-// ── Inline status panel rendered below action buttons ───────────────────────
+// -- Inline status panel rendered below action buttons -----------------------
 interface LoadDeleteStatusProps {
   isLoading: boolean;
   result: {
@@ -937,7 +937,7 @@ function LoadDeleteStatus({
     return (
       <Row gap="sm" className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
         <Spinner size="sm" />
-        <Span>{action === "load" ? "Loading" : "Deleting"} seed data…</Span>
+        <Span>{action === "load" ? "Loading" : "Deleting"} seed data�</Span>
       </Row>
     );
   }
@@ -955,7 +955,7 @@ function LoadDeleteStatus({
       }`}
     >
       <Row gap="sm" align="start">
-        <Span className="shrink-0">{success ? "✅" : "❌"}</Span>
+        <Span className="shrink-0">{success ? "?" : "?"}</Span>
         <Div className="min-w-0">
           <Span className="font-medium block">{message}</Span>
           {details && (
@@ -1002,3 +1002,4 @@ function LoadDeleteStatus({
     </Div>
   );
 }
+

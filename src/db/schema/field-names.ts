@@ -521,3 +521,4 @@ export const SCHEMA_DEFAULTS = {
   DEFAULT_DISPLAY_NAME: "User",
   ADMIN_EMAIL: "admin@letitrip.in",
 } as const;
+

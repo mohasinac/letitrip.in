@@ -37,3 +37,4 @@ export const DELETE = createRouteHandler({
     return successResponse(null, SUCCESS_MESSAGES.ACCOUNT.DELETED);
   },
 });
+

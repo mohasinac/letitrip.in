@@ -12,9 +12,9 @@ import { z } from "zod";
 import { userRepository } from "@/repositories";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@/lib/api/api-handler";
+import { createApiHandler } from "@mohasinac/appkit/http";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { shiprocketVerifyPickupOTP } from "@/lib/shiprocket/client";
 
 const verifyOTPSchema = z.object({
@@ -85,3 +85,4 @@ export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
     );
   },
 });
+

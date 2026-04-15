@@ -14,7 +14,7 @@ import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-fi
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const TMP_PREFIX = "tmp/";
 
@@ -118,3 +118,4 @@ export const DELETE = createRouteHandler({
     }
   },
 });
+

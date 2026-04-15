@@ -10,8 +10,8 @@ import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { sendVerificationSchema } from "@/lib/validation/schemas";
-import { serverLogger } from "@/lib/server-logger";
-import { sendVerificationEmailWithLink } from "@/lib/email";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit/features/contact";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<
@@ -39,3 +39,4 @@ export const POST = createRouteHandler<
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT);
   },
 });
+

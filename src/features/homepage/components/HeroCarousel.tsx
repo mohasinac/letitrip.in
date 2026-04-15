@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "@/i18n/navigation";
 import { HeroCarousel as HeroCarouselBase } from "@mohasinac/appkit/features/homepage";
@@ -21,3 +21,4 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
     />
   );
 }
+

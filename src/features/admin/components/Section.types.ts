@@ -30,3 +30,4 @@ export const SECTION_TYPES = [
   { value: "blog-articles", label: "Blog Articles" },
   { value: "newsletter", label: "Newsletter" },
 ] as const;
+

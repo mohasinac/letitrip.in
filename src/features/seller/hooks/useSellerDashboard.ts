@@ -54,3 +54,4 @@ export function useSellerDashboard(userId: string | undefined) {
 
   return { productsData: data ?? null, isLoading, error };
 }
+

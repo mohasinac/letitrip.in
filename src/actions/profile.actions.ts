@@ -21,9 +21,9 @@ import {
 } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { maskPublicReview } from "@/lib/pii";
+import { maskPublicReview } from "@mohasinac/appkit/security";
 import type { UserDocument } from "@/db/schema";
-import { finalizeStagedMediaField } from "@/lib/media/finalize";
+import { finalizeStagedMediaField } from "@mohasinac/appkit/features/media";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -128,3 +128,4 @@ export async function getSellerProductsAction(sellerId: string) {
   const products = await productRepository.findBySeller(sellerId);
   return products.filter((p) => p.status === "published");
 }
+

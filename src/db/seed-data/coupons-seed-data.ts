@@ -526,3 +526,4 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
   },
 ];
+

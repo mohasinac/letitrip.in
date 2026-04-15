@@ -1229,3 +1229,4 @@ export const bidsSeedData: Partial<BidDocument>[] = [
 
   // No bids on pre-orders — tests "no bids yet" state in auction detail page
 ];
+

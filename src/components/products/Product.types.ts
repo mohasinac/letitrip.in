@@ -78,3 +78,4 @@ export const PRODUCT_STATUS_OPTIONS: { value: ProductStatus; label: string }[] =
     { value: "discontinued", label: "Discontinued" },
     { value: "sold", label: "Sold" },
   ];
+

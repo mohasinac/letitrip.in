@@ -29,7 +29,7 @@ import type {
   StoreDocument,
   BidDocument,
 } from "@/db/schema";
-import type { FirebaseSieveResult } from "@/lib/query";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 import { formatMonthYear } from "@/utils";
 
 // ─── Dashboard & Analytics ────────────────────────────────────────────────
@@ -265,3 +265,4 @@ export async function listAdminSessionsAction(params?: {
     limit: params?.limit ?? 100,
   });
 }
+

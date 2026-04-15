@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -51,7 +51,7 @@ export function CartItemList({
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <Span className="text-6xl mb-4 block">🛒</Span>
+        <Span className="text-6xl mb-4 block">??</Span>
         <Heading level={2} className="text-xl font-bold mb-2">
           {t("empty")}
         </Heading>
@@ -81,7 +81,7 @@ export function CartItemList({
           <div
             className={`flex items-center gap-2 px-4 py-2.5 border-b ${themed.border} ${themed.bgSecondary}`}
           >
-            <Span className="text-base">🏪</Span>
+            <Span className="text-base">??</Span>
             <Text size="sm" weight="semibold">
               {t("soldBy", { name: group.sellerName })}
             </Text>
@@ -108,3 +108,4 @@ export function CartItemList({
     </Stack>
   );
 }
+

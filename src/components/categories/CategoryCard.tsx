@@ -290,3 +290,4 @@ export function CategoryCard({
     </TextLink>
   );
 }
+

@@ -46,3 +46,4 @@ export async function getPromotionsAction(): Promise<PromotionsResult> {
     activeCoupons: validCoupons,
   };
 }
+

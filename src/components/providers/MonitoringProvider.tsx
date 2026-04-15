@@ -10,8 +10,8 @@ import { useEffect } from "react";
 import {
   setupGlobalErrorHandler,
   setupCacheMonitoring,
+  initializeClientLogger,
 } from "@mohasinac/appkit/monitoring";
-import { initializeClientLogger } from "@/helpers";
 
 import { logger } from "@mohasinac/appkit/core";
 
@@ -37,3 +37,4 @@ export function MonitoringProvider({
 
   return <>{children}</>;
 }
+

@@ -11,7 +11,7 @@ import { productRepository } from "@/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 
 const addSchema = z.object({
@@ -71,3 +71,4 @@ export const POST = createRouteHandler<(typeof addSchema)["_output"]>({
     return successResponse({ productId }, SUCCESS_MESSAGES.WISHLIST.ADDED, 201);
   },
 });
+

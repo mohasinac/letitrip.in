@@ -86,3 +86,4 @@ export function WishlistButton({
 }
 
 export default WishlistButton;
+

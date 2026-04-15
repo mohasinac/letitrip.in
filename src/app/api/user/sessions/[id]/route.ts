@@ -1,35 +1,100 @@
 /**
- * User Session Management API - Revoke My Session
- * DELETE /api/user/sessions/[id]
+ * GET /api/user/profile
+ * Fetch the currently authenticated user's profile
  *
- * Allows users to revoke their own sessions (e.g., logout from other devices).
+ * PATCH /api/user/profile
+ * Update the currently authenticated user's profile
+ *
+ * This endpoint uses Firebase Admin SDK (server-side) to fetch/update user data,
+ * maintaining the API-only architecture and avoiding client-side Firestore access.
  */
 
-import { AuthorizationError, NotFoundError } from "@mohasinac/appkit/errors";
-import { sessionRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import { z } from "zod";
+import { userRepository } from "@/repositories";
+import { successResponse } from "@mohasinac/appkit/next";
+import { createApiHandler } from "@mohasinac/appkit/http";
+import { SUCCESS_MESSAGES } from "@/constants";
 
-export const DELETE = createRouteHandler<never, { id: string }>({
+export const GET = createApiHandler({
   auth: true,
-  handler: async ({ user, params, request }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id: sessionId } = params!;
+  handler: async ({ user }) => {
+    return successResponse({
+      uid: user!.uid,
+      email: user!.email,
+      emailVerified: user!.emailVerified,
+      displayName: user!.displayName,
+      photoURL: user!.photoURL,
+      phoneNumber: user!.phoneNumber,
+      phoneVerified: user!.phoneVerified,
+      role: user!.role,
+      disabled: user!.disabled,
+      avatarMetadata: user!.avatarMetadata,
+      publicProfile: user!.publicProfile,
+      stats: user!.stats,
+      metadata: user!.metadata
+        ? {
+            lastSignInTime:
+              user!.metadata.lastSignInTime instanceof Date
+                ? user!.metadata.lastSignInTime.toISOString()
+                : ((user!.metadata.lastSignInTime as any)
+                    ?.toDate?.()
+                    ?.toISOString() ?? user!.metadata.lastSignInTime),
+            creationTime: user!.metadata.creationTime,
+            loginCount: user!.metadata.loginCount,
+          }
+        : undefined,
+      createdAt: user!.createdAt,
+      updatedAt: user!.updatedAt,
+    });
+  },
+});
 
-    const session = await sessionRepository.findById(sessionId);
-    if (!session) throw new NotFoundError(ERROR_MESSAGES.SESSION.NOT_FOUND);
+// â”€â”€â”€ Update Profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    if (session.userId !== user!.uid) {
-      throw new AuthorizationError(ERROR_MESSAGES.SESSION.CANNOT_REVOKE_OTHERS);
-    }
+const updateProfileSchema = z.object({
+  displayName: z.string().optional(),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().optional(),
+  photoURL: z.string().url().optional().or(z.literal("")),
+  avatarMetadata: z
+    .object({
+      url: z.string(),
+      position: z.object({
+        x: z.number(),
+        y: z.number(),
+      }),
+      zoom: z.number(),
+    })
+    .optional(),
+});
 
-    await sessionRepository.revokeSession(sessionId, user!.uid);
+export const PATCH = createApiHandler<(typeof updateProfileSchema)["_output"]>({
+  auth: true,
+  schema: updateProfileSchema,
+  handler: async ({ user, body }) => {
+    // Update profile (auto-resets verification flags when email/phone changes)
+    const updatedUser = await userRepository.updateProfileWithVerificationReset(
+      user!.uid,
+      body!,
+    );
+
     return successResponse(
-      { sessionId },
-      SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
+      {
+        user: updatedUser,
+        verificationReset: {
+          emailVerified: body!.email
+            ? body!.email !== user!.email
+              ? false
+              : updatedUser.emailVerified
+            : updatedUser.emailVerified,
+          phoneVerified: body!.phoneNumber
+            ? body!.phoneNumber !== user!.phoneNumber
+              ? false
+              : updatedUser.phoneVerified
+            : updatedUser.phoneVerified,
+        },
+      },
+      SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
     );
   },
 });

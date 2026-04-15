@@ -128,3 +128,4 @@ export const SITE_FEATURES: SiteFeature[] = [
  * NOTE: REMOVED — BlogArticlesSection now uses the real /api/blog endpoint.
  * See src/services/blog.service.ts#getFeatured.
  */
+

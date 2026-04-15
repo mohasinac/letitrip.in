@@ -29,8 +29,8 @@ import {
   unitOfWork,
   siteSettingsRepository,
   userRepository,
-  failedCheckoutRepository,
 } from "@/repositories";
+import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   ApiError,
@@ -38,8 +38,8 @@ import {
   NotFoundError,
 } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups } from "@/utils";
 import { resolveDate } from "@/utils";
@@ -49,7 +49,7 @@ import {
   consentOtpRef,
   consentOtpRateLimitRef,
   CONSENT_OTP_MAX_BYPASS_CREDITS,
-} from "@/lib/consent-otp";
+} from "@mohasinac/appkit/features/auth";
 import type { AddressDocument, ProductDocument } from "@/db/schema";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
@@ -450,3 +450,4 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
     );
   },
 });
+

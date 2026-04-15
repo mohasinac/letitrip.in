@@ -28,3 +28,4 @@ export const GET = createRouteHandler({
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
   },
 });
+

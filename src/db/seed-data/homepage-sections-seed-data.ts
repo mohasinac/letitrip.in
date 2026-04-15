@@ -375,3 +375,4 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     updatedAt: daysAgo(30),
   },
 ];
+

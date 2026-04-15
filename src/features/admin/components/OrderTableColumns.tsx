@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * useOrderTableColumns
@@ -141,3 +141,4 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
     ],
   };
 }
+

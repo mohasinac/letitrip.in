@@ -13,7 +13,7 @@ import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
@@ -29,3 +29,4 @@ export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
     return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   },
 });
+

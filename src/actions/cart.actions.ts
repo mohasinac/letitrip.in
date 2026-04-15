@@ -13,7 +13,7 @@
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { cartRepository, productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -199,3 +199,4 @@ export async function getCartAction(): Promise<CartDocument | null> {
   const user = await requireAuth();
   return cartRepository.findByUserId(user.uid);
 }
+

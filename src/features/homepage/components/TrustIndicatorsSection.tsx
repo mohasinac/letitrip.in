@@ -10,3 +10,4 @@ export function TrustIndicatorsSection() {
   }));
   return <AppkitTrustIndicatorsSection items={items} />;
 }
+

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback, useEffect, Suspense } from "react";
 import { usePendingTable } from "@mohasinac/appkit/react";
@@ -64,7 +64,7 @@ function AdminPayoutsContent() {
   const minAmount = table.get("minAmount");
   const maxAmount = table.get("maxAmount");
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, [
       "status",
@@ -75,7 +75,7 @@ function AdminPayoutsContent() {
 
   const { data, isLoading, error, refetch, updateMutation } = useAdminPayouts(
     (() => {
-      // sellerName is PII-encrypted — cannot use @=* Sieve filter; pass `q` separately
+      // sellerName is PII-encrypted � cannot use @=* Sieve filter; pass `q` separately
       const rawSieveParams = table.buildSieveParams(
         buildSieveFilters(
           ["status==", statusFilter],
@@ -291,3 +291,4 @@ export function AdminPayoutsView() {
     </Suspense>
   );
 }
+

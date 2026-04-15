@@ -1,72 +1,49 @@
-/**
- * Admin Newsletter Subscriber by ID API Route
- * PATCH  /api/admin/newsletter/[id] — Update subscriber (status, adminNote)
- * DELETE /api/admin/newsletter/[id] — Permanently delete subscriber record
- */
+import "@/providers.config";
 
-import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
-import { newsletterRepository } from "@/repositories";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { faqsRepository } from "@/repositories";
 
-const updateSubscriberSchema = z.object({
-  status: z
-    .enum([
-      NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.ACTIVE,
-      NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.UNSUBSCRIBED,
-    ])
-    .optional(),
-  adminNote: z.string().max(500).optional(),
-});
-
-/**
- * PATCH /api/admin/newsletter/[id]
- */
-export const PATCH = createRouteHandler<
-  (typeof updateSubscriberSchema)["_output"],
-  { id: string }
->({
+export const GET = createRouteHandler({
   auth: true,
-  roles: ["admin"],
-  schema: updateSubscriberSchema,
-  handler: async ({ body, params }) => {
-    const { id } = params!;
-
-    const existing = await newsletterRepository.findById(id);
-    if (!existing) throw new NotFoundError(ERROR_MESSAGES.NEWSLETTER.NOT_FOUND);
-
-    serverLogger.info("Updating newsletter subscriber", {
-      id,
-      status: body?.status,
+  roles: ["admin", "moderator"],
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
+    const category = getStringParam(searchParams, "category");
+    const search = getStringParam(searchParams, "q");
+    const isActive = getStringParam(searchParams, "isActive");
+    const sorts = getStringParam(searchParams, "sorts") || "-priority,order";
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
+      min: 1,
+      max: 200,
     });
 
-    const updated = await newsletterRepository.updateSubscriber(id, body!);
-    return successResponse(updated, SUCCESS_MESSAGES.NEWSLETTER.UPDATED);
-  },
-});
+    const filters = [getStringParam(searchParams, "filters")].filter(
+      Boolean,
+    ) as string[];
+    if (category) filters.push(`category==${category}`);
+    if (isActive === "true" || isActive === "false") {
+      filters.push(`isActive==${isActive}`);
+    }
 
-/**
- * DELETE /api/admin/newsletter/[id]
- */
-export const DELETE = createRouteHandler<never, { id: string }>({
-  auth: true,
-  roles: ["admin"],
-  handler: async ({ params }) => {
-    const { id } = params!;
-
-    const existing = await newsletterRepository.findById(id);
-    if (!existing) throw new NotFoundError(ERROR_MESSAGES.NEWSLETTER.NOT_FOUND);
-
-    serverLogger.info("Deleting newsletter subscriber", { id });
-
-    await newsletterRepository.deleteById(id);
-    return successResponse(
-      { deleted: true },
-      SUCCESS_MESSAGES.NEWSLETTER.DELETED,
+    const result = await faqsRepository.list(
+      {
+        filters: filters.length > 0 ? filters.join(",") : undefined,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      },
+      {
+        search,
+      },
     );
+
+    return successResponse(result);
   },
 });

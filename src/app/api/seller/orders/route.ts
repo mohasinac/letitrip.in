@@ -9,13 +9,13 @@ import "@/providers.config";
 
 import { orderRepository, productRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**
  * GET /api/seller/orders
@@ -83,3 +83,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

@@ -1,28 +1,30 @@
+import "@/providers.config";
 /**
- * Bids API — Single Resource
+ * Verify Email API Route
+ * GET /api/auth/verify-email?token=xxxxx
  *
- * GET /api/bids/[id] — Get a single bid by ID (public)
+ * Acknowledges email verification. Firebase handles the actual verification
+ * client-side; this endpoint confirms/logs the outcome.
  */
 
-import { bidRepository } from "@/repositories";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES } from "@/constants";
-import { NotFoundError } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@/constants";
+import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
+import { ValidationError } from "@mohasinac/appkit/errors";
+import { ERROR_MESSAGES } from "@/constants";
 
-/**
- * GET /api/bids/[id]
- *
- * Returns a single bid document by its ID.
- */
-export const GET = createRouteHandler<never, { id: string }>({
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const bid = await bidRepository.findById(id);
-    if (!bid) throw new NotFoundError(ERROR_MESSAGES.BID.NOT_FOUND);
-    return successResponse(bid);
+export const GET = createRouteHandler({
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
+    const token = getStringParam(searchParams, "token");
+
+    if (!token) {
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.TOKEN_REQUIRED);
+    }
+
+    // Firebase email verification is handled client-side via applyActionCode().
+    // This endpoint is called post-verification to confirm success.
+    return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
   },
 });

@@ -1,16 +1,16 @@
-﻿"use server";
+"use server";
 
 /**
- * Product Server Actions — Query
+ * Product Server Actions � Query
  *
  * Read-only actions for product data, replacing the former
- * productService → apiClient → API route chain (5 hops → 2 hops).
+ * productService ? apiClient ? API route chain (5 hops ? 2 hops).
  * Mutations (create/update/delete) are in admin.actions.ts.
  */
 
 import { productRepository } from "@/repositories";
 import type { ProductDocument } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 export interface ProductListParams {
   filters?: string;
@@ -188,3 +188,4 @@ export async function getSellerStorefrontProductsAction(
   const products = await productRepository.findBySeller(sellerId);
   return products.filter((p) => p.status === "published");
 }
+

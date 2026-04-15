@@ -4,7 +4,7 @@ import "@/providers.config";
  * GET /api/admin/newsletter — List subscribers with stats
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getNumberParam,
@@ -12,7 +12,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { newsletterRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 
 /**
@@ -86,3 +86,4 @@ export const GET = createRouteHandler({
     });
   },
 });
+

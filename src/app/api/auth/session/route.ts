@@ -16,7 +16,7 @@ import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@/repositories";
 import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**
  * Create session cookie with session tracking
@@ -163,3 +163,4 @@ export async function DELETE(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

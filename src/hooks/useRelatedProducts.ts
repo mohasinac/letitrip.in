@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
@@ -40,3 +40,4 @@ export function useRelatedProducts(
     staleTime: 5 * 60 * 1000,
   });
 }
+

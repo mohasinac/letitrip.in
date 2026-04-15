@@ -12,3 +12,4 @@ export function useContactSubmit() {
     mutationFn: (data) => sendContactAction(data),
   });
 }
+

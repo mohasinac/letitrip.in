@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormGroup } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
@@ -31,3 +31,4 @@ export function FeedbackConfigForm({
     </FormGroup>
   );
 }
+

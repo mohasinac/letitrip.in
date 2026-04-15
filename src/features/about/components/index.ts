@@ -7,3 +7,4 @@ export { HowReviewsWorkView } from "./HowReviewsWorkView";
 export { SecurityPrivacyView } from "./SecurityPrivacyView";
 export { ShippingPolicyView } from "./ShippingPolicyView";
 export { TrackOrderView } from "./TrackOrderView";
+

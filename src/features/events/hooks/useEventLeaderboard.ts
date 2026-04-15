@@ -32,3 +32,4 @@ export function useEventLeaderboard(eventId: string, enabled = true) {
     refetch,
   };
 }
+

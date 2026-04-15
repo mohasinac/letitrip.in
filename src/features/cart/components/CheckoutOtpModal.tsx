@@ -255,3 +255,4 @@ export function CheckoutOtpModal({
 function verificationSent(error: string | null): boolean {
   return error === "invalid_code" || error === "expired_code";
 }
+

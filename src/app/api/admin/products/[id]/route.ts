@@ -1,73 +1,132 @@
+import "@/providers.config";
 /**
- * Admin Product Detail API Route
- * GET    /api/admin/products/[id] — Get single product
- * PATCH  /api/admin/products/[id] — Update any field (admin)
- * DELETE /api/admin/products/[id] — Hard delete product (admin)
+ * Admin Payouts API
+ *
+ * GET /api/admin/payouts â€” List all payouts (filterable by status)
  */
 
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { productRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-
-type IdParams = { id: string };
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { successResponse } from "@mohasinac/appkit/next";
+import {
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { buildSieveFilters } from "@mohasinac/appkit/utils";
+import { payoutRepository } from "@/repositories";
+import { piiBlindIndex } from "@mohasinac/appkit/security";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { PAYOUT_FIELDS } from "@/db/schema";
 
 /**
- * GET /api/admin/products/[id]
+ * GET /api/admin/payouts
+ *
+ * Query params:
+ *  - filters  (string) â€” Sieve filters (e.g. status==pending)
+ *  - sorts    (string) â€” Sieve sorts (e.g. -createdAt)
+ *  - page     (number) â€” page number (default 1)
+ *  - pageSize (number) â€” results per page (default 50, max 200)
+ *
+ * summary stats are always computed from the full unfiltered dataset.
  */
-export const GET = createRouteHandler<never, IdParams>({
+export const GET = createRouteHandler({
+  auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const product = await productRepository.findById(id);
-    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-    return successResponse(product);
-  },
-});
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
 
-/**
- * PATCH /api/admin/products/[id] — Admin can update any field
- */
-export const PATCH = createRouteHandler<Record<string, unknown>, IdParams>({
-  roles: ["admin", "moderator"],
-  handler: async ({ request, body, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const product = await productRepository.findById(id);
-    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-
-    const updated = await productRepository.update(id, {
-      ...body,
-      updatedAt: new Date(),
+    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
+      min: 1,
+      max: 200,
     });
-    if (!updated)
-      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND_AFTER_UPDATE);
+    const filters = getStringParam(searchParams, "filters");
+    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const q = getStringParam(searchParams, "q")?.trim().toLowerCase() || "";
 
-    serverLogger.info("Admin updated product", { productId: id });
-    return successResponse(updated, SUCCESS_MESSAGES.PRODUCT.UPDATED);
-  },
-});
+    serverLogger.info("Admin payouts list requested", {
+      filters,
+      sorts,
+      page,
+      pageSize,
+      q: q ? "[redacted]" : "",
+    });
 
-/**
- * DELETE /api/admin/products/[id] — Hard delete (admin only)
- */
-export const DELETE = createRouteHandler<never, IdParams>({
-  roles: ["admin"],
-  handler: async ({ request, params }) => {
-    const rl = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rl.success) return errorResponse("Too many requests", 429);
-    const { id } = params!;
-    const product = await productRepository.findById(id);
-    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
+    // Summary counts always use the full unfiltered dataset (1-doc count queries)
+    const [
+      allResult,
+      pendingResult,
+      processingResult,
+      completedResult,
+      failedResult,
+    ] = await Promise.all([
+      payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      payoutRepository.list({
+        filters: "status==pending",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==processing",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==completed",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==failed",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+    ]);
 
-    await productRepository.delete(id);
-    serverLogger.info("Admin deleted product", { productId: id });
-    return successResponse(null, SUCCESS_MESSAGES.PRODUCT.DELETED);
+    const summary = {
+      total: allResult.total,
+      pending: pendingResult.total,
+      processing: processingResult.total,
+      completed: completedResult.total,
+      failed: failedResult.total,
+    };
+
+    const qFilter = q
+      ? q.includes("@")
+        ? `${PAYOUT_FIELDS.SELLER_EMAIL_INDEX}==${piiBlindIndex(q)}`
+        : `${PAYOUT_FIELDS.SELLER_NAME}==${q}`
+      : undefined;
+
+    const effectiveFilters =
+      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+
+    // Avoid forcing extra composite indices for exact blind-index lookups.
+    const effectiveSorts = q ? undefined : sorts;
+
+    const sieveResult = await payoutRepository.list({
+      filters: effectiveFilters,
+      sorts: effectiveSorts,
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+
+    return successResponse({
+      payouts: sieveResult.items,
+      summary: {
+        ...summary,
+        totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),
+      },
+      meta: {
+        total: sieveResult.total,
+        page: sieveResult.page,
+        pageSize: sieveResult.pageSize,
+        totalPages: sieveResult.totalPages,
+        hasMore: sieveResult.hasMore,
+      },
+    });
   },
 });

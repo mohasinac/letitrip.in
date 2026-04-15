@@ -54,3 +54,4 @@ export function HomepageSectionFilters({ table }: HomepageSectionFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

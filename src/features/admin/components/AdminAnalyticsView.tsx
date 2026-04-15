@@ -1,9 +1,9 @@
-﻿/**
- * AdminAnalyticsView — Thin Adapter
+/**
+ * AdminAnalyticsView � Thin Adapter
  *
- * Tier 2 — feature component.
+ * Tier 2 � feature component.
  * Passes letitrip analytics data + labels into appkit AdminAnalyticsView shell.
- * No chart rendering logic here — appkit owns the charts.
+ * No chart rendering logic here � appkit owns the charts.
  */
 
 "use client";
@@ -52,3 +52,4 @@ export function AdminAnalyticsView() {
     />
   );
 }
+

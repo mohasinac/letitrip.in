@@ -20,7 +20,7 @@ import {
   storeRepository,
   userRepository,
 } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -249,3 +249,4 @@ export async function sellerDeleteCouponAction(id: string): Promise<void> {
     couponId: id,
   });
 }
+

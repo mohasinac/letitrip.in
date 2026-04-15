@@ -22,3 +22,4 @@ export const GET = createRouteHandler({
     return successResponse({ sessions, activeCount, total: sessions.length });
   },
 });
+

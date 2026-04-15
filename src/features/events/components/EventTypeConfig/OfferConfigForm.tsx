@@ -45,3 +45,4 @@ export function OfferConfigForm({ value, onChange }: OfferConfigFormProps) {
     </FormGroup>
   );
 }
+

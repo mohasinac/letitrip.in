@@ -1,131 +1,152 @@
-﻿import type { Metadata } from "next";
-import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Grid, Heading, Text, Section } from "@mohasinac/appkit/ui";
-import { TextLink } from "@/components";
-import { resolveLocale } from "@/i18n/resolve-locale";
+/**
+ * POST /api/webhooks/shiprocket
+ *
+ * Receives Shiprocket shipment status update webhooks.
+ * Shiprocket sends a webhook whenever a shipment's status changes.
+ *
+ * Security: Shiprocket allows setting a secret key for webhook verification.
+ * When SHIPROCKET_WEBHOOK_SECRET is set in env, the X-Shiprocket-Signature
+ * header is validated via HMAC-SHA256.
+ *
+ * On receipt:
+ *   - Maps Shiprocket status to our internal order status
+ *   - Updates order.shiprocketStatus, shiprocketUpdatedAt, trackingUrl
+ *   - If status = "Delivered": sets order.status='delivered', deliveryDate=now,
+ *                               payoutStatus='eligible'
+ */
 
-export const revalidate = 3600;
+import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
+import { orderRepository } from "@/repositories";
+import { handleApiError } from "@mohasinac/appkit/errors";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
-const { themed, typography, page } = THEME_CONSTANTS;
+// Vercel Hobby max is 60 s; Firestore read + write fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ locale: string }> };
+// â”€â”€â”€ Shiprocket â†’ our internal order status mapping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale: rawLocale } = await params;
-  const locale = resolveLocale(rawLocale);
-  const t = await getTranslations({ locale, namespace: "help" });
-  return {
-    title: `${t("metaTitle")} – ${SITE_CONFIG.brand.name}`,
-    description: t("metaDescription"),
-  };
+const SHIPPED_STATUSES = new Set([
+  "Shipped",
+  "In Transit",
+  "Out For Delivery",
+  "Pickup Scheduled",
+  "Picked Up",
+]);
+
+const DELIVERED_STATUS = "Delivered";
+
+const CANCELLED_STATUSES = new Set([
+  "Cancelled",
+  "RTO Initiated",
+  "RTO Delivered",
+  "Lost",
+  "Damaged",
+]);
+
+// â”€â”€â”€ Signature verification helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+function verifyShiprocketSignature(body: string, signature: string): boolean {
+  const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true;
+  }
+  const expected = createHmac("sha256", secret).update(body).digest("hex");
+  // Length guard: hex-encoded SHA-256 is always 64 chars
+  if (signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(signature, "hex"),
+  );
 }
 
-export default async function HelpPage({ params }: Props) {
-  const { locale: rawLocale } = await params;
-  const locale = resolveLocale(rawLocale);
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "help" });
+// â”€â”€â”€ Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const TOPICS = [
-    { key: "orders", icon: "box", label: t("topicOrders"), q: "orders" },
-    { key: "payments", icon: "card", label: t("topicPayments"), q: "payment" },
-    { key: "account", icon: "user", label: t("topicAccount"), q: "account" },
-    { key: "selling", icon: "shop", label: t("topicSelling"), q: "sellers" },
-    {
-      key: "auctions",
-      icon: "trophy",
-      label: t("topicAuctions"),
-      q: "products",
-    },
-  ];
+export async function POST(request: NextRequest) {
+  let rawBody = "";
+  try {
+    rawBody = await request.text();
 
-  return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
-      <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
-      >
-        <div className={`${page.container.sm} text-center`}>
-          <Heading level={1} variant="none" className="mb-4 text-white">
-            {t("title")}
-          </Heading>
-          <Text variant="none" className="text-white/80 text-lg mb-8">
-            {t("subtitle")}
-          </Text>
-          <TextLink
-            href={ROUTES.PUBLIC.FAQS}
-            variant="inherit"
-            className="inline-flex items-center gap-2 bg-white text-primary-700 dark:text-secondary-700 font-medium px-6 py-3 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-100 transition-colors"
-          >
-            {t("searchPlaceholder")}
-          </TextLink>
-        </div>
-      </Section>
+    // Verify signature when configured
+    const signature = request.headers.get("X-Shiprocket-Signature") ?? "";
+    if (!verifyShiprocketSignature(rawBody, signature)) {
+      serverLogger.warn("Shiprocket webhook: invalid signature", { signature });
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
 
-      <div
-        className={`${page.container.lg} py-14 md:py-16 space-y-14 md:space-y-16`}
-      >
-        <Section>
-          <Heading
-            level={2}
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
-          >
-            {t("browseTitle")}
-          </Heading>
-          <Grid cols="categoryCards" className="md:gap-6">
-            {TOPICS.map(({ key, label, q }) => (
-              <TextLink
-                key={key}
-                href={`${ROUTES.PUBLIC.FAQS}?category=${q}`}
-                variant="inherit"
-                className={`${themed.bgSecondary} border ${themed.border} rounded-xl p-5 text-center hover:border-primary/40 hover:shadow-md transition-all group`}
-              >
-                <Text
-                  size="sm"
-                  weight="medium"
-                  className="group-hover:text-primary"
-                >
-                  {label}
-                </Text>
-              </TextLink>
-            ))}
-          </Grid>
-        </Section>
+    const payload = JSON.parse(rawBody) as ShiprocketWebhookPayload;
+    const { order_id: srOrderId, current_status: status, awb } = payload;
 
-        <Section
-          className={`${themed.bgSecondary} rounded-2xl p-8 border ${themed.border} text-center`}
-        >
-          <Heading level={2} className={`${typography.h3} mb-4`}>
-            {t("popularTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("faqDescription")}
-          </Text>
-          <TextLink
-            href={ROUTES.PUBLIC.FAQS}
-            variant="inherit"
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-3 rounded-full hover:bg-primary/90 transition-colors"
-          >
-            {t("faqsLink")}
-          </TextLink>
-        </Section>
+    if (!srOrderId || !status) {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
-        <Section className="text-center">
-          <Heading level={2} className={`${typography.h3} mb-4`}>
-            {t("contactPrompt")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("supportResponseTime")}
-          </Text>
-          <TextLink
-            href={ROUTES.PUBLIC.CONTACT}
-            variant="inherit"
-            className="inline-flex items-center gap-2 border-2 border-primary text-primary font-semibold px-8 py-3 rounded-full hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
-          >
-            {t("contactLink")}
-          </TextLink>
-        </Section>
-      </div>
-    </div>
-  );
+    // Build standard Shiprocket tracking URL if AWB is present
+    const trackingUrl = awb
+      ? `https://shiprocket.co/tracking/${awb}`
+      : undefined;
+
+    // Find matching order by shiprocketOrderId numeric field
+    const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);
+
+    if (!orders || orders.length === 0) {
+      serverLogger.warn("Shiprocket webhook: order not found", { srOrderId });
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
+    const order = orders[0];
+    const orderId = order.id!;
+
+    // Determine updates
+    const updates: Record<string, unknown> = {
+      shiprocketStatus: status,
+      shiprocketUpdatedAt: new Date(),
+    };
+    if (trackingUrl) updates.trackingUrl = trackingUrl;
+    if (awb) updates.shiprocketAWB = awb;
+
+    if (status === DELIVERED_STATUS) {
+      updates.status = "delivered";
+      updates.deliveryDate = new Date();
+      updates.payoutStatus = "eligible";
+      serverLogger.info("Shiprocket webhook: order delivered", {
+        orderId,
+        srOrderId,
+      });
+    } else if (SHIPPED_STATUSES.has(status)) {
+      if (order.status !== "delivered") {
+        updates.status = "shipped";
+      }
+    } else if (CANCELLED_STATUSES.has(status)) {
+      serverLogger.info("Shiprocket webhook: order cancelled/returned", {
+        orderId,
+        srOrderId,
+        status,
+      });
+      // Do not override status automatically on cancellation â€” admin handles manually
+    }
+
+    await orderRepository.update(
+      orderId,
+      updates as Partial<import("@/db/schema").OrderDocument>,
+    );
+
+    serverLogger.info("Shiprocket webhook processed", {
+      orderId,
+      srOrderId,
+      status,
+      awb,
+    });
+
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    serverLogger.error("Shiprocket webhook error", {
+      error,
+      rawBody: rawBody.slice(0, 500),
+    });
+    return handleApiError(error);
+  }
 }

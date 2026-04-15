@@ -6,3 +6,4 @@ export { MediaAvatar } from "@mohasinac/appkit/features/media";
 export type { MediaAvatarProps } from "@mohasinac/appkit/features/media";
 export { MediaLightbox } from "@mohasinac/appkit/features/media";
 export type { MediaLightboxProps, LightboxItem } from "@mohasinac/appkit/features/media";
+

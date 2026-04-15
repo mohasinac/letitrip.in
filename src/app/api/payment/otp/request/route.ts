@@ -14,7 +14,7 @@ import "@/providers.config";
 
 import { successResponse } from "@mohasinac/appkit/next";
 import { ApiError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { smsCounterRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
@@ -64,3 +64,4 @@ export const POST = createRouteHandler({
     return successResponse({ allowed: true, count });
   },
 });
+

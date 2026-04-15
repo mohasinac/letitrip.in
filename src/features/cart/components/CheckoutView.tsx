@@ -1,8 +1,8 @@
-﻿/**
+/**
  * CheckoutView
  *
  * Extracted from src/app/[locale]/checkout/page.tsx
- * Two-step checkout: address selection → order review → payment
+ * Two-step checkout: address selection ? order review ? payment
  * (COD, Razorpay online, or manual UPI via WhatsApp confirmation).
  *
  * Added flows:
@@ -44,7 +44,7 @@ import type { UnavailableItem } from "@/hooks";
 
 const { themed, page, spacing } = THEME_CONSTANTS;
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 interface PlaceOrderResponse {
   orderIds: string[];
@@ -61,7 +61,7 @@ interface CreateRazorpayOrderResponse {
   baseAmount?: number;
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// --- Skeleton -----------------------------------------------------------------
 
 function CheckoutSkeleton() {
   return (
@@ -89,7 +89,7 @@ function CheckoutSkeleton() {
   );
 }
 
-// ─── View ─────────────────────────────────────────────────────────────────────
+// --- View ---------------------------------------------------------------------
 
 export function CheckoutView() {
   const router = useRouter();
@@ -97,7 +97,7 @@ export function CheckoutView() {
   const { openRazorpay } = useRazorpay();
   const t = useTranslations("checkout");
 
-  // Site settings — read UPI VPA for manual UPI payment option
+  // Site settings � read UPI VPA for manual UPI payment option
   const { data: siteSettingsData } = useSiteSettings<{
     contact?: SiteSettingsDocument["contact"];
     payment?: SiteSettingsDocument["payment"];
@@ -113,7 +113,7 @@ export function CheckoutView() {
 
   const { user } = useAuth();
 
-  // ── Core checkout state ───────────────────────────────────────────────────
+  // -- Core checkout state ---------------------------------------------------
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
@@ -126,7 +126,7 @@ export function CheckoutView() {
   const [platformFee, setPlatformFee] = useState(0);
   const [addAddressOpen, setAddAddressOpen] = useState(false);
 
-  // ── Partial order state ───────────────────────────────────────────────────
+  // -- Partial order state ---------------------------------------------------
   const [excludedProductIds, setExcludedProductIds] = useState<string[]>([]);
   const [showPartialDialog, setShowPartialDialog] = useState(false);
   const [partialDialogState, setPartialDialogState] = useState<{
@@ -180,7 +180,7 @@ export function CheckoutView() {
     },
   });
 
-  // ── Inline add-address (avoids navigating away from checkout) ────────────
+  // -- Inline add-address (avoids navigating away from checkout) ------------
   const queryClient = useQueryClient();
   const { createAddress: createNewAddress, isSaving: isSavingAddress } =
     useAddressSelector({
@@ -198,7 +198,7 @@ export function CheckoutView() {
   const subtotal = cartData?.subtotal ?? 0;
   const itemCount = cartData?.itemCount ?? 0;
 
-  // ── Order execution ───────────────────────────────────────────────────────
+  // -- Order execution -------------------------------------------------------
 
   const executeOrder = useCallback(
     async (excluded: string[] = []) => {
@@ -279,7 +279,7 @@ export function CheckoutView() {
     setIsPlacingOrder(false);
   }, []);
 
-  // ── Early returns (after all hooks) ───────────────────────────────────────
+  // -- Early returns (after all hooks) ---------------------------------------
 
   if (addrLoading || cartLoading) return <CheckoutSkeleton />;
 
@@ -298,7 +298,7 @@ export function CheckoutView() {
   const selectedAddress =
     addresses.find((a) => a.id === selectedAddressId) ?? null;
 
-  // ── Navigation ────────────────────────────────────────────────────────────
+  // -- Navigation ------------------------------------------------------------
 
   const handleNext = () => {
     if (!selectedAddressId) {
@@ -317,7 +317,7 @@ export function CheckoutView() {
 
     setIsPlacingOrder(true);
 
-    // ── Preflight stock check ──────────────────────────────────────────────
+    // -- Preflight stock check ----------------------------------------------
     try {
       const preflight = await runPreflight(selectedAddressId);
       if (preflight.unavailable.length > 0) {
@@ -343,17 +343,17 @@ export function CheckoutView() {
         return;
       }
     } catch {
-      // Preflight is advisory — proceed to OTP if it fails
+      // Preflight is advisory � proceed to OTP if it fails
     }
 
     setShowVerifyModal(true);
   };
 
-  // ── Partial dialog actions ────────────────────────────────────────────────
+  // -- Partial dialog actions ------------------------------------------------
 
   const handlePartialContinue = () => {
     if (partialDialogState?.placedOrderId) {
-      // Post-placement info mode — navigate to success
+      // Post-placement info mode � navigate to success
       const id = partialDialogState.placedOrderId;
       setShowPartialDialog(false);
       if (paymentMethod === "upi_manual" && whatsappNumber) {
@@ -452,14 +452,14 @@ export function CheckoutView() {
                     onClick={() => router.push(ROUTES.USER.CART)}
                     className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
                   >
-                    ← {t("backToCart")}
+                    ? {t("backToCart")}
                   </Button>
                   <Button
                     onClick={handleNext}
                     disabled={!selectedAddressId}
                     className="px-6 py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                   >
-                    {t("stepReview")} →
+                    {t("stepReview")} ?
                   </Button>
                 </div>
               </div>
@@ -485,7 +485,7 @@ export function CheckoutView() {
                     onClick={() => setStep(1)}
                     className={`text-sm font-medium ${themed.textSecondary} hover:text-primary transition-colors`}
                   >
-                    ← {t("stepAddress")}
+                    ? {t("stepAddress")}
                   </Button>
                   <Button
                     onClick={handlePlaceOrder}
@@ -512,3 +512,4 @@ export function CheckoutView() {
     </Main>
   );
 }
+

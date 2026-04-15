@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -90,3 +90,4 @@ export function useEventEntriesTableColumns(
     ],
   };
 }
+

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CouponTableColumns
  * Path: src/components/admin/coupons/CouponTableColumns.tsx
  *
@@ -164,3 +164,4 @@ export function getCouponTableColumns(
     ],
   };
 }
+

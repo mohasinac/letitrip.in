@@ -249,3 +249,4 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
     </div>
   );
 }
+

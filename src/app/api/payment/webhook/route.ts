@@ -21,9 +21,9 @@ import { verifyWebhookSignature } from "@/lib/payment/razorpay";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
 
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
 export const maxDuration = 60;
@@ -141,3 +141,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

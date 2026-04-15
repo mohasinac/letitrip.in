@@ -301,3 +301,4 @@ export function EventsListView({
     </Suspense>
   );
 }
+

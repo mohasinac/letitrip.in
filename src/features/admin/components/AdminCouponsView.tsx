@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminCouponsView
  *
  * Extracted from src/app/[locale]/admin/coupons/[[...action]]/page.tsx
@@ -78,7 +78,7 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
   const typeFilter = table.get("type");
   const statusFilter = table.get("validityIsActive");
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["type", "validityIsActive"]);
 
@@ -222,7 +222,7 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
     <Stack gap="lg">
       <AdminPageHeader
         title={t("title")}
-        subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
+        subtitle={`${t("subtitle")} � ${data?.meta.total ?? 0} total`}
         actionLabel={t("create")}
         onAction={handleCreate}
       />
@@ -293,7 +293,7 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
                 {t("expiresLabel")}:{" "}
                 {coupon.validity?.endDate
                   ? formatDate(coupon.validity.endDate)
-                  : "—"}
+                  : "�"}
               </Caption>
             </Card>
           )}
@@ -345,3 +345,4 @@ export function AdminCouponsView(props: AdminCouponsViewProps) {
     </Suspense>
   );
 }
+

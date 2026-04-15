@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -60,7 +60,7 @@ function AdminBidsContent({ action }: Props) {
   const minAmount = table.get("minAmount");
   const maxAmount = table.get("maxAmount");
 
-  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  // -- Pending filter state (staged until Apply is clicked) -------------
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["status", "isWinning", "minAmount", "maxAmount"]);
 
@@ -109,7 +109,7 @@ function AdminBidsContent({ action }: Props) {
     <Stack gap="lg">
       <AdminPageHeader
         title={t("title")}
-        subtitle={`${t("subtitle")} — ${totalBids} total`}
+        subtitle={`${t("subtitle")} � ${totalBids} total`}
       />
 
       {/* Summary stat cards */}
@@ -202,7 +202,7 @@ function AdminBidsContent({ action }: Props) {
                       {selectedBid.status}
                       {selectedBid.isWinning && (
                         <Span variant="accent" className="ml-1">
-                          ★ {t("winning")}
+                          ? {t("winning")}
                         </Span>
                       )}
                     </Text>
@@ -277,3 +277,4 @@ export function AdminBidsView(props: Props) {
     </Suspense>
   );
 }
+

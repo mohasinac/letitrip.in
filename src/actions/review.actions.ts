@@ -14,7 +14,7 @@ import {
   productRepository,
   userRepository,
 } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -25,10 +25,10 @@ import {
   ValidationError,
 } from "@mohasinac/appkit/errors";
 import type { ReviewDocument } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
-import { maskPublicReview } from "@/lib/pii";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
+import { maskPublicReview } from "@mohasinac/appkit/security";
 import { mediaUrlSchema } from "@/lib/validation/schemas";
-import { finalizeStagedMediaArray, finalizeStagedMediaUrl } from "@/lib/media/finalize";
+import { finalizeStagedMediaArray, finalizeStagedMediaUrl } from "@mohasinac/appkit/features/media";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -354,3 +354,4 @@ export async function getReviewByIdAction(
 ): Promise<ReviewDocument | null> {
   return reviewRepository.findById(id);
 }
+

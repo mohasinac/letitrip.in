@@ -175,13 +175,32 @@ export type {
   GenerateEventImageFilenameInput,
   MediaFilenameContext,
 } from "@mohasinac/appkit/utils";
-// Guest Cart (localStorage storage for unauthenticated users)
-export * from "./guest-cart";
+// Guest Cart (localStorage storage for unauthenticated users) — delegated to appkit
+export {
+  type GuestCartItem,
+  type GuestCartStorage,
+  getGuestCartItems,
+  addToGuestCart,
+  removeFromGuestCart,
+  updateGuestCartQuantity,
+  clearGuestCart,
+  getGuestCartCount,
+  setGuestReturnTo,
+  getGuestReturnTo,
+  clearGuestReturnTo,
+} from "@mohasinac/appkit/features/cart";
 // Order Splitter (cart → order group segmentation) — delegated to appkit
 export {
   splitCartIntoOrderGroups,
   type OrderGroup,
   type OrderType,
 } from "@mohasinac/appkit/features/orders";
-// Business Day (10:00 AM IST day-boundary logic)
-export * from "./business-day";
+// Business Day (10:00 AM IST day-boundary logic) — migrated to appkit
+export {
+  BUSINESS_DAY_HOUR_IST,
+  getBusinessDayStart,
+  getBusinessDaysElapsed,
+  getBusinessDaysRemaining,
+  getBusinessDayEligibilityDate,
+} from "@mohasinac/appkit/utils";
+

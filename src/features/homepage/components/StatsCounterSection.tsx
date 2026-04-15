@@ -46,3 +46,4 @@ export function StatsCounterSection() {
 
   return <AppkitStatsCounterSection stats={stats} />;
 }
+

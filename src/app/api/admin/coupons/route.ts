@@ -5,10 +5,10 @@ import "@/providers.config";
  * POST /api/admin/coupons — Create a new coupon (admin, local)
  */
 
-import { createApiHandler as createRouteHandler } from "@/lib/api/api-handler";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { CouponCreateInput } from "@/db/schema";
 import { z } from "zod";
@@ -124,3 +124,4 @@ export const POST = createRouteHandler({
     return successResponse(created, SUCCESS_MESSAGES.COUPON.CREATED);
   },
 });
+

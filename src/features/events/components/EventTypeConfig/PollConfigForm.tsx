@@ -112,3 +112,4 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
     </FormGroup>
   );
 }
+

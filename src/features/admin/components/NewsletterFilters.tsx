@@ -47,3 +47,4 @@ export function NewsletterFilters({ table }: NewsletterFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

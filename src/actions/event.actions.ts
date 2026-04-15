@@ -12,7 +12,7 @@
 import { z } from "zod";
 import { requireRole, requireAuth } from "@/lib/firebase/auth-server";
 import { eventRepository, eventEntryRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -34,15 +34,15 @@ import type {
   EventStatus,
   EventEntryDocument,
 } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 import { resolveDate } from "@/utils";
 import { ERROR_MESSAGES } from "@/constants";
-import { maskPublicEventEntry } from "@/lib/pii";
+import { maskPublicEventEntry } from "@mohasinac/appkit/security";
 import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@/lib/media/finalize";
+} from "@mohasinac/appkit/features/media";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -575,3 +575,4 @@ export async function enterEventAction(
 
   return { entryId: entry.id };
 }
+

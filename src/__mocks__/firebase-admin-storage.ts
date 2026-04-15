@@ -13,3 +13,4 @@ export const getStorage = jest.fn(() => ({
     getFiles: jest.fn().mockResolvedValue([[]]),
   })),
 }));
+

@@ -18,7 +18,7 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 export interface RealtimeTokenResult {
   customToken: string;
@@ -58,3 +58,4 @@ export async function getRealtimeTokenAction(): Promise<RealtimeTokenResult> {
 
   return { customToken, expiresAt: Date.now() + 3_600_000 };
 }
+

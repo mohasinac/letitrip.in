@@ -12,3 +12,4 @@ export const getDatabase = jest.fn(() => ({
     push: jest.fn().mockResolvedValue({ key: "mock-push-key" }),
   })),
 }));
+

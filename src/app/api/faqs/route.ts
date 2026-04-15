@@ -225,3 +225,4 @@ export const POST = createRouteHandler<(typeof faqCreateSchema)["_output"]>({
     return successResponse(faq, SUCCESS_MESSAGES.FAQ.CREATED, 201);
   },
 });
+

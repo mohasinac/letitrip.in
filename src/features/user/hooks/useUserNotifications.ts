@@ -50,3 +50,4 @@ export function useUserNotifications(queryParams: string, enabled: boolean) {
     isMarkingAll: markAllRead.isPending,
   };
 }
+

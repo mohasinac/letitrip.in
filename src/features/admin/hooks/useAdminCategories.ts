@@ -47,3 +47,4 @@ export function useAdminCategories() {
 
   return { ...query, createMutation, updateMutation, deleteMutation };
 }
+

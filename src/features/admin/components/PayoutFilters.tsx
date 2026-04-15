@@ -60,3 +60,4 @@ export function PayoutFilters({ table }: PayoutFiltersProps) {
 
   return <FilterPanel config={config} table={table} />;
 }
+

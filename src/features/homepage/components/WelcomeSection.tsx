@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -10,7 +10,7 @@ import {
 } from "@mohasinac/appkit/features/homepage";
 import type { WelcomeSectionConfig } from "@/db/schema";
 
-// ─── Trust chip keys (order matters for display) ────────────────────────────
+// --- Trust chip keys (order matters for display) ----------------------------
 const TRUST_CHIP_KEYS = [
   "welcomeTrustDelivery",
   "welcomeTrustPayment",
@@ -19,13 +19,13 @@ const TRUST_CHIP_KEYS = [
 ] as const;
 
 const TRUST_CHIP_EMOJIS: Record<(typeof TRUST_CHIP_KEYS)[number], string> = {
-  welcomeTrustDelivery: "🚀",
-  welcomeTrustPayment: "🔒",
-  welcomeTrustRating: "⭐",
-  welcomeTrustReturns: "↩️",
+  welcomeTrustDelivery: "??",
+  welcomeTrustPayment: "??",
+  welcomeTrustRating: "?",
+  welcomeTrustReturns: "??",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// --- Component ---------------------------------------------------------------
 
 export function WelcomeSection() {
   const t = useTranslations("homepage");
@@ -60,3 +60,4 @@ export function WelcomeSection() {
     />
   );
 }
+

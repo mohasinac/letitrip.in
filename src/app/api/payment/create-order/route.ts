@@ -15,7 +15,7 @@ import { z } from "zod";
 import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
 import { siteSettingsRepository } from "@/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const createOrderSchema = z.object({
@@ -61,3 +61,4 @@ export const POST = createRouteHandler<(typeof createOrderSchema)["_output"]>({
     });
   },
 });
+

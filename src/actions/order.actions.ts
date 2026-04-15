@@ -17,7 +17,7 @@ import {
   NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import type { OrderDocument } from "@/db/schema";
 
@@ -96,3 +96,4 @@ export async function getOrderByIdAction(
   if (order.userId !== user.uid) throw new NotFoundError("Order not found");
   return order;
 }
+

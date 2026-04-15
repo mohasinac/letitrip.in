@@ -7,3 +7,4 @@
  * Re-exports the centralized GlobalError component from appkit.
  */
 export { GlobalError as default } from "@mohasinac/appkit/next";
+

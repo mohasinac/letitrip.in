@@ -30,7 +30,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { invalidateCache } from "@mohasinac/appkit/next";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /** Map of seed-script collection names → the API path prefixes they populate. */
 const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
@@ -112,3 +112,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+

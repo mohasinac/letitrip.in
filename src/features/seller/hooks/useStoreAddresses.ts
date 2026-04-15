@@ -78,3 +78,4 @@ export function useDeleteStoreAddress(options?: {
     onError: options?.onError,
   });
 }
+

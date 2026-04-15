@@ -5,11 +5,11 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { sendContactEmail } from "@/lib/email";
+import { sendContactEmail } from "@mohasinac/appkit/features/contact";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const contactSchema = z.object({
@@ -45,3 +45,4 @@ export const POST = createRouteHandler<(typeof contactSchema)["_output"]>({
     return successResponse({ sent: true }, SUCCESS_MESSAGES.CONTACT.SENT);
   },
 });
+

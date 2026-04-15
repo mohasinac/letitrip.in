@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BlogForm Component
  * Path: src/components/admin/blog/BlogForm.tsx
  *
@@ -168,3 +168,4 @@ export function BlogForm({
     />
   );
 }
+

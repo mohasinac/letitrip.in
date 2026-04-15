@@ -8,7 +8,7 @@ import "@/providers.config";
 
 import { successResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@/lib/server-logger";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
@@ -42,3 +42,4 @@ export const POST = createRouteHandler<(typeof validateSchema)["_output"]>({
     return successResponse(result);
   },
 });
+
