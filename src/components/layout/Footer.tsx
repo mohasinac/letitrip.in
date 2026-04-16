@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { SITE_CONFIG, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { SITE_CONFIG } from "@mohasinac/appkit/core";
 import { currentYear } from "@mohasinac/appkit/utils";
 
 

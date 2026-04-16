@@ -2,7 +2,8 @@
 
 import { BottomNavbar as AppkitBottomNavbar } from "@mohasinac/appkit/features/layout";
 import type { BottomNavbarProps } from "@mohasinac/appkit/features/layout";
-import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { SITE_CONFIG } from "@mohasinac/appkit/core";
 import { useAuth } from "@/contexts/SessionContext";
 
 /**

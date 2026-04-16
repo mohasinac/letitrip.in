@@ -87,7 +87,6 @@ export type { StoreAddressInput } from "./store-address.actions";
 
 // Bid mutations (auth required)
 export { placeBidAction } from "./bid.actions";
-export type { PlaceBidInput, PlaceBidResult } from "@mohasinac/appkit/features/auctions";
 
 // Coupon validation (auth required)
 export {
@@ -114,7 +113,6 @@ export type {
 
 // Seller application (auth required)
 export { becomeSellerAction } from "./seller.actions";
-export type { BecomeSellerResult } from "@mohasinac/appkit/features/seller";
 
 // Seller store/payout/product mutations (seller role required)
 export {

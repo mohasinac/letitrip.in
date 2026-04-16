@@ -34,8 +34,7 @@ export * from "./api-endpoints";
 export { THEME_CONSTANTS } from "./theme";
 export type { ThemeMode } from "./theme";
 
-// Site configuration
-export { SITE_CONFIG, FEATURE_FLAGS } from "./site";
+// Site configuration\n// (import directly: import { SITE_CONFIG, FEATURE_FLAGS } from "@mohasinac/appkit/core")
 
 // SEO configuration
 export {

@@ -2,7 +2,7 @@
 
 import { TitleBar as AppkitTitleBar } from "@mohasinac/appkit/features/layout";
 import type { TitleBarProps } from "@mohasinac/appkit/features/layout";
-import { SITE_CONFIG } from "@/constants/site";
+import { SITE_CONFIG } from "@mohasinac/appkit/core";
 import NotificationBell from "@/components/user/NotificationBell";
 import { useAuth } from "@/contexts/SessionContext";
 

@@ -11,6 +11,7 @@ const APPKIT_VALUES_SYMBOLS = new Set([
   "INFO_MESSAGES",
   "CONFIRMATION_MESSAGES",
 ]);
+const APPKIT_CORE_SYMBOLS = new Set(["SITE_CONFIG", "FEATURE_FLAGS"]);
 
 function walk(dir) {
   const results = [];
@@ -48,11 +49,12 @@ for (const filePath of files) {
 
     const errorsSymbols = symbols.filter((s) => APPKIT_ERRORS_SYMBOLS.has(s));
     const valuesSymbols = symbols.filter((s) => APPKIT_VALUES_SYMBOLS.has(s));
+    const coreSymbols = symbols.filter((s) => APPKIT_CORE_SYMBOLS.has(s));
     const localSymbols = symbols.filter(
-      (s) => !APPKIT_ERRORS_SYMBOLS.has(s) && !APPKIT_VALUES_SYMBOLS.has(s),
+      (s) => !APPKIT_ERRORS_SYMBOLS.has(s) && !APPKIT_VALUES_SYMBOLS.has(s) && !APPKIT_CORE_SYMBOLS.has(s),
     );
 
-    if (errorsSymbols.length === 0 && valuesSymbols.length === 0) continue;
+    if (errorsSymbols.length === 0 && valuesSymbols.length === 0 && coreSymbols.length === 0) continue;
 
     // Build replacement
     const newLines = [];
@@ -70,6 +72,11 @@ for (const filePath of files) {
     if (valuesSymbols.length > 0) {
       newLines.push(
         `import { ${valuesSymbols.join(", ")} } from "@mohasinac/appkit/values";`,
+      );
+    }
+    if (coreSymbols.length > 0) {
+      newLines.push(
+        `import { ${coreSymbols.join(", ")} } from "@mohasinac/appkit/core";`,
       );
     }
 

@@ -34,5 +34,4 @@ export {
   DashboardNavProvider,
   useDashboardNav,
 } from "@mohasinac/appkit/features/layout";
-export type { DashboardNavState } from "@mohasinac/appkit/features/layout";
 
