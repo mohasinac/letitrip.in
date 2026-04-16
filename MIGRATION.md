@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 33, Phase 10 entry gate cleared — all pre-Phase-10 ❌ blockers resolved; contact gap corrected; about/copilot 🔄 re-evaluated  
-**Last session ended at:** Phase 10 readiness audit — all ❌ items in Phase 10 audit table resolved; `useCopilotFeedback` tracked as Phase 10 copilot pre-work  
+**Last verified:** 2026-04-16 — Session 34, Phase 10 auth/about/blog/contact progressed — duplicate local wrappers removed; about reduced to legitimate local content  
+**Last session ended at:** Phase 10 — `src/features/contact/` removed as unused duplicate wrapper layer; contact action entrypoint remains local by design  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -19,7 +19,7 @@
 | 7 | Phase 7 | Actions → Appkit | 35 | ✅ 35/35 complete |
 | 8 | Phase 8 | Hooks | 16 | ✅ complete (15 ✅, 1 🔒) |
 | 9 | Phase 9 | Shared UI Components | 30 | ✅ complete — blocker-burn marketplace cards + admin UI primitives done; auth/products types remain local per design |
-| 10 | Phase 10 | Feature Modules | ~375 | ⬜ |
+| 10 | Phase 10 | Feature Modules | ~375 | 🔄 4/19 features complete |
 | 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ⬜ |
 
 **Total to migrate/delete: ~580 files**
@@ -279,7 +279,7 @@ This section verifies each phase against the original intent (generic + configur
 | Phase 7 — Actions to appkit | ✅ complete | 🔄 partial | Letitrip action files stay thin; appkit action APIs must carry business logic and accept consumer-configurable dependencies. |
 | Phase 8 — Hooks | ✅ complete | 🔄 partial | Keep shared hooks in appkit and reserve consumer hooks only for permanent local SDK drivers (for example Razorpay). |
 | Phase 9 — Shared UI Components | 🔄 in progress | 🔄 partial | Resolve blocked UI by adding appkit abstractions for route injection, navigation adapters, listing-card variants, and shared type ownership. |
-| Phase 10 — Feature Modules | ⬜ not started | ⬜ pending | Migrate feature stacks end-to-end to appkit with config-driven differences and no duplicated consumer implementations. |
+| Phase 10 — Feature Modules | 🔄 in progress | 🔄 partial | Migrate feature stacks end-to-end to appkit with config-driven differences and no duplicated consumer implementations. |
 
 Interpretation:
 - `file migration status` tracks moved/deleted progress.
@@ -944,10 +944,10 @@ Next phase: Phase 10 (Feature Modules). Entry condition met — letitrip.in `tsc
 
 | Feature | letitrip Files | Appkit Feature | Status |
 |---------|---------------|----------------|--------|
-| `src/features/auth/` | ~8 files | `src/features/auth/` | ⬜ |
-| `src/features/about/` | ~11 files | `src/features/about/` | ⬜ |
-| `src/features/blog/` | ~5 files | `src/features/blog/` | ⬜ |
-| `src/features/contact/` | ~4 files | `src/features/contact/` | ⬜ |
+| `src/features/auth/` | ~8 files | `src/features/auth/` | ✅ A — deleted unused local wrapper feature; appkit auth is canonical |
+| `src/features/about/` | ~11 files | `src/features/about/` | ✅ A/D — local `AboutView` wrapper deleted; remaining policy/how-it-works pages are permanent-local site content |
+| `src/features/blog/` | ~5 files | `src/features/blog/` | ✅ A — deleted unused local wrapper feature; appkit blog is canonical |
+| `src/features/contact/` | ~4 files | `src/features/contact/` | ✅ A — deleted unused local wrapper feature; appkit contact is canonical and `src/actions/contact.actions.ts` remains the thin local entrypoint |
 | `src/features/faq/` | ~4 files | `src/features/faq/` | ⬜ |
 | `src/features/search/` | ~4 files | `src/features/search/` | ⬜ |
 | `src/features/wishlist/` | ~4 files | `src/features/wishlist/` | ⬜ |
@@ -990,7 +990,14 @@ This verifies whether each appkit feature directory is scaffolded correctly and 
 | `src/features/seller/` | `appkit/src/features/seller/` | Full structure + permission-map | ✅ Ready |
 | `src/features/admin/` | `appkit/src/features/admin/` | Full structure + analytics/ + permission-map (no columns) | ✅ Ready |
 
-**Phase 10 architecture-fit verdict:** `⬜ Not started — entry gate cleared`.
+**Phase 10 architecture-fit verdict:** `🔄 In progress — auth completed; remaining features pending`.
+
+### Session 34 Notes
+
+- `src/features/auth/` → `✅ A`: letitrip auth feature contained only thin wrappers over `@mohasinac/appkit/features/auth`; no remaining local consumers were found, so the duplicate local feature folder was deleted.
+- `src/features/about/` → `✅ A/D`: deleted the duplicate local `AboutView` wrapper because appkit already owns it; retained the remaining policy/how-it-works pages as legitimate local site content per the tracker exception.
+- `src/features/blog/` → `✅ A`: local blog feature had no remaining consumers outside its own folder, so the duplicate wrapper layer was deleted and appkit remains the sole blog feature owner.
+- `src/features/contact/` → `✅ A`: local contact feature had no remaining consumers outside its own folder, so the duplicate wrapper layer was deleted; the thin server action entrypoint stays local in `src/actions/contact.actions.ts`.
 
 All Phase 10 scaffold readiness gaps resolved:
 - `contact/actions/` gap was a false positive — `sendContactEmail` is already in appkit; `src/actions/contact.actions.ts` is the correct thin wrapper and stays in letitrip.

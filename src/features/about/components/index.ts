@@ -1,4 +1,3 @@
-export { AboutView } from "./AboutView";
 export { FeesView } from "./FeesView";
 export { HowCheckoutWorksView } from "./HowCheckoutWorksView";
 export { HowOffersWorkView } from "./HowOffersWorkView";
