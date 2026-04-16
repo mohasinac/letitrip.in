@@ -61,6 +61,20 @@ Each batch must include:
 - Baseline defaults must match current letitrip behavior unless intentionally versioned and documented.
 - Consumer-provided values always override baseline defaults when present.
 
+13. Reuse-first composition:
+- Before building any new component, hook, utility, layout, or view, search appkit for a semantically equivalent piece first.
+- If one exists, compose or extend it (add a variant/prop/slot) — do not build a parallel implementation.
+- New files are only justified when the concept has no prior owner in appkit and is genuinely distinct.
+- When reviewing existing components, prefer extending them with typed props over wrapping them in another layer.
+- New letitrip files are limited to routes, server actions, project config, and runtime wiring only.
+
+14. Constants over hard-coded strings:
+- Never hard-code route paths, label strings, message copy, aria labels, status values, or other repeated string literals.
+- All route paths → import from `ROUTES` constants in appkit (`src/constants/routes.ts` or feature-scoped `routes.ts`).
+- All user-facing labels, button text, validation messages, empty-state copy, and notification strings → import from `MESSAGES`/`LABELS` constants.
+- Status/enum-like string values (e.g. `"published"`, `"pending"`, `"active"`) → typed enums or `as const` objects in the feature schema; never bare string literals in logic.
+- This applies everywhere: components, hooks, server actions, repositories, validators, seeds, and functions.
+
 ## Consolidated Gap Register (Current)
 
 ### Critical (P0)
@@ -100,12 +114,48 @@ Each batch must include:
 7. Style contract not fully implemented in appkit UI.
 - Missing sibling style files/imports across appkit/src/ui/components/** plus appkit/src/ui/DataTable.tsx and appkit/src/ui/rich-text/RichText.tsx
 
+### High (P1) — NEW (2026-04-17)
+10. Status string literals used instead of typed enum constants: ~40+ violations.
+- appkit/src/features/admin/actions/admin-read-actions.ts — `p.status === "published"`
+- appkit/src/features/events/api/[id]/route.ts — `event.status === "draft"` / `"paused"`
+- appkit/src/seo/json-ld.ts — `product.status === "published"`
+- appkit/src/features/reviews/actions/review-actions.ts — `product.status === "published"`
+- appkit/src/features/reviews/api/route.ts — `r.status === "approved"`
+- appkit/src/features/stores/actions/store-query-actions.ts — `p.status === "published"`
+- appkit/src/features/products/actions/product-actions.ts — `p.status === "published"`
+- appkit/src/features/promotions/actions/promotions-actions.ts — `p.status === "published"` (×2)
+- appkit/src/features/seller/actions/seller-actions.ts — `"pending"` / `"published"`
+- appkit/src/features/auth/hooks/useAuth.ts — `authEvent.status === "pending"`
+- appkit/src/features/auth/actions/profile-actions.ts — `p.status === "published"` (×2)
+- letitrip.in/functions/src/jobs/auctionSettlement.ts — `r.status === "rejected"`
+- letitrip.in/functions/src/triggers/onProductWrite.ts — `"published"` (×2)
+- letitrip.in/functions/src/triggers/onReviewWrite.ts — `"approved"` (×2)
+- letitrip.in/functions/src/jobs/payoutBatch.ts — `r.status === "rejected"`
+- letitrip.in/src/actions/admin.actions.ts — `newStatus === "approved"`
+- letitrip.in/src/app/api/admin/blog/route.ts — `body!.status === "published"`
+- letitrip.in/src/app/api/admin/coupons/[id]/route.ts — `body!.status === "published"`
+- letitrip.in/src/app/api/cart/route.ts — `"out_of_stock"`, `"discontinued"`, `"sold"`, `"draft"` (×4)
+- letitrip.in/src/app/api/auth/google/callback/route.ts — `"error"` / `"pending"` status checks
+- letitrip.in/src/actions/seller.actions.ts — `"shipped"`, `"delivered"`, `"confirmed"` (×3)
+Fix: all enum-like status values must use typed `as const` objects or enums from the feature schema.
+Blocked by: R1 (baseline resolver) for market defaults; schema ownership resolve for status enums.
+
+11. Hard-coded route path segments in component logic.
+- letitrip.in/src/components/layout/Sidebar.tsx — `pathname?.startsWith("/admin/")` / `"/seller/"` (multiple)
+- appkit/src/next/components/UnauthorizedView.tsx — default prop `loginHref = "/auth/login"`
+- appkit/src/next/components/NotFoundView.tsx — default prop `homeHref = "/"`
+Fix: path segments used in logic must be `ROUTES` constants; default props that form canonical paths must reference `ROUTES`.
+
+12. Reuse violation — duplicate TextLink component.
+- letitrip.in/src/components/typography/TextLink.tsx duplicates appkit/src/ui/components/TextLink.tsx.
+Fix: delete letitrip copy, replace all import sites with `@mohasinac/appkit/ui`.
+
 ### Medium (P2)
-8. Contact domain action symmetry gap.
+13. Contact domain action symmetry gap.
 - appkit/src/features/contact/email.ts
 - appkit/src/features/contact/index.ts
 
-9. Remaining re-export closure surfaces.
+14. Remaining re-export closure surfaces.
 - Example historical residual: letitrip.in/src/app/global-error.tsx
 
 ## Appkit Mistake Inventory (Baseline Default Violations)
@@ -238,6 +288,9 @@ R8. Final duplicate sweep and shim removal
 | R6 | Variant-first UI uplift | repeated class bundles across feature UI | not started | R5 | Medium | Variants over complex config |
 | R7 | Style contract completion | ui component style ownership | not started | R6 | Medium | Remove mixed centralized/local duplication |
 | R8 | Final dedupe + shim purge | all duplicate/shim surfaces | not started | R1-R7 | High | Enforce canonical imports and ownership |
+| R9 | Status enum constants | ~40 status string literals across appkit + letitrip | not started | R1 | High | Replace raw strings with typed enums/as-const in feature schemas |
+| R10 | ROUTES constant coverage | Sidebar pathname checks + appkit default-prop paths | not started | none | Medium | Extract path strings to ROUTES constants |
+| R11 | TextLink dedup | letitrip/src/components/typography/TextLink.tsx | not started | none | Low | Delete duplicate; rewire imports to appkit |
 
 ## Refactor Acceptance Rules (SOLID + Approved Patterns)
 
@@ -432,3 +485,179 @@ Output format required:
 6. Style contract complete for appkit UI files.
 7. Required validation gates pass and tracker state is current.
 8. Every optional consumer-injected value path has appkit-side fallback defaults matching letitrip baseline behavior.
+
+---
+
+## Migration-Style Live Tracker (Deep Scan Backed)
+
+Last deep scan: 2026-04-17
+Scan basis: workspace-wide static inventory using file and pattern search across `appkit/src`, `letitrip.in/src`, and `letitrip.in/functions/src`.
+
+### Status Icon Legend
+
+| Icon | Meaning | Gate expectation |
+|---|---|---|
+| ✅ | Done | Implemented + validated + tracker updated |
+| 🔄 | In progress | Active implementation, partial coverage only |
+| 🟡 | Ready next | Analysis complete, awaiting implementation slot |
+| ⛔ | Blocked | Dependency gate not green |
+| ❌ | Not started | No implementation begun |
+| 🔍 | Analysis only | Inventory/dependency mapping completed |
+
+### Deep Inventory Snapshot
+
+| Area | Evidence | Impact on plan |
+|---|---|---|
+| Appkit view surface | 92 `*View.tsx` files under `appkit/src/features/**` | High SSR-hardening blast radius (R5/R7) |
+| Appkit UI style sibling files | 45 `*.style.css` in `appkit/src/ui/components/**` | Style contract partially complete; mixed model remains (R7) |
+| Appkit seed surfaces | 20 `*-seed-data.ts` files | Market default removal must be parameterized, not file-by-file patching (Phase 2) |
+| Column modules | 22 feature column index modules | Strong candidate for shared render/formatter kit (R2/R3) |
+| letitrip action entrypoints | 35 files in `letitrip.in/src/actions` | Thin-wrapper audit scope is broad; prioritize P1 list first |
+| letitrip functions repositories | 15 files in `letitrip.in/functions/src/repositories` + 1 barrel | Local ownership still central in functions runtime (P1 #6) |
+| letitrip schema surfaces | 20 files in `letitrip.in/src/db/schema` | Compatibility barrels still heavily depended upon |
+| Duplicate schema barrels (appkit) | SHA256 hash match confirmed for `admin/checkout/homepage` schema `index.ts` files | Safe-first dedupe candidate (R8 precursor) |
+| Status literal hotspots | 66 matches found in appkit scan and 37 matches in letitrip+functions scans (pattern-capped views) | Confirms R9 is high risk and cross-repo |
+| Market literals hotspot | 200+ capped matches in appkit scan (`INR`, `en-IN`, `en-US`, `+91`) | Confirms R1/Phase 1 remains the critical blocker |
+| Client-boundary pressure | 200+ capped `"use client"` matches in appkit scan | Confirms P0 SSR-first drift concern |
+
+### Gap Workstream Board (Migration Doc Style)
+
+| Exec Order | Workstream | Scope | Dependency | Status | Progress | Risk |
+|---|---|---|---|---|---|---|
+| 1 | W0 - Baseline inventory lock | Evidence map + dependency map for top risk files | none | ✅ | 1/1 | Medium |
+| 2 | W1 - Baseline market resolver (R1) | tokens/formatters/providers/validators fallback unification | none | ❌ | 0/6 | High |
+| 3 | W2 - Seed parameterization | `appkit/src/seed/*` factories + data defaults | W1 | ❌ | 0/5 | High |
+| 4 | W3 - Schema and repository closure | letitrip schema compatibility + functions repo ownership | W1,W2 | ❌ | 0/7 | High |
+| 5 | W4 - Thin action wrapper enforcement | targeted P1 action wrappers | W3 | ❌ | 0/5 | High |
+| 6 | W5 - Render/column kit (R2/R3) | shared status/date/currency adapters + column factories | W1 | ❌ | 0/6 | Medium |
+| 7 | W6 - SSR/view/style hardening (R5/R7) | client-heavy views + style contract completion | W3,W5 | ❌ | 0/8 | High |
+| 8 | W7 - Constants + dedupe closure (R8-R11) | status enums, ROUTES, TextLink, shim purge | W1,W3 | ❌ | 0/9 | Medium |
+
+### Active Batch Tracker
+
+| Batch ID | Workstream | Scope | Dependency prereqs | Analysis | Implemented | Validated | Tracker updated | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| B00 | W0 | Deep inventory + evidence-backed tracker scaffolding | N/A | ✅ | ✅ | ✅ | ✅ | ✅ | Baseline scan completed and codified below |
+| B01 | W1 | Baseline resolver contract (`currency/locale/country/phone/timezone`) | ✅ | ✅ | ⬜ | ⬜ | ⬜ | 🟡 | First implementation batch after this tracker update |
+| B02 | W1 | Replace direct defaults in formatter/token/provider hotpaths | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | Blocked by B01 baseline API |
+| B03 | W2 | Seed factory override path + deterministic tests | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | Depends on baseline resolver injection |
+| B04 | W3 | letitrip schema barrel decoupling (`index.ts`, `field-names.ts`) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | High caller count; do after baseline path stabilization |
+| B05 | W3 | functions repository ownership migration path | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | 16 jobs/triggers import `../repositories` barrel |
+| B06 | W4 | Thin action wrapper pass for P1 action files | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | Unify auth/parse/call/return shape |
+| B07 | W7 | Status enum constants migration (R9 wave 1) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | Start with appkit actions/api + functions triggers |
+| B08 | W7 | ROUTES constants migration (R10) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | Sidebar + appkit next default hrefs |
+| B09 | W7 | TextLink dedupe and import rewires (R11) | ✅ | ✅ | ⬜ | ⬜ | ⬜ | 🟡 | 8 known import sites in letitrip |
+
+### Dependency Proof Checklist (Per Batch)
+
+- [x] Ownership gate (shared vs local-only) documented for baseline tracker setup
+- [x] Coupling map started with concrete usage counts for schemas/actions/functions repositories
+- [x] Runtime boundary evidence collected (`"use client"` pressure across appkit)
+- [x] Configurability risk map collected (market/default literal hotspots)
+- [x] Validation gate defined (typecheck + smoke + tracker update)
+- [ ] Rollback templates pre-authored for W1-W7 implementation batches
+
+### Workstream Checklists (Execution-Ready)
+
+#### W1 - Baseline Market Resolver (R1)
+
+- [ ] Create canonical baseline resolver contract in appkit (single source for currency/locale/country/phone/timezone).
+- [ ] Wire `appkit/src/tokens/index.ts` to resolver (remove direct market literals).
+- [ ] Wire `appkit/src/utils/number.formatter.ts` and `appkit/src/utils/date.formatter.ts` to resolver defaults.
+- [ ] Wire payment defaults in `appkit/src/features/payments/schemas/index.ts` and `appkit/src/providers/payment-razorpay/index.ts`.
+- [ ] Wire UI fallback paths (`WishlistPage`, cart columns, `PriceDisplay`) to baseline resolver.
+- [ ] Document baseline parity proof with letitrip defaults.
+Status: ❌ not started
+
+#### W2 - Seed Parameterization
+
+- [ ] Introduce market/context argument shape for seed factories.
+- [ ] Replace inlined `INR`/`+91` assumptions in seed payload generators with baseline-aware defaults.
+- [ ] Keep deterministic seed output for letitrip default profile.
+- [ ] Add alternate-market fixture snapshot for regression comparison.
+- [ ] Update seed entrypoints to pass baseline profile explicitly.
+Status: ❌ not started (blocked by W1)
+
+#### W3 - Repository and Schema Closure
+
+- [ ] Map callers of `letitrip.in/src/db/schema/index.ts` and `field-names.ts` by domain.
+- [ ] Move remaining shared schema/constants ownership to appkit canonical surfaces.
+- [ ] Reduce letitrip schema surfaces to strict local-only exceptions (if any).
+- [ ] Replace functions local repository ownership model with appkit-owned contract/provider path.
+- [ ] Rewire 16 functions jobs/triggers currently importing `../repositories`.
+- [ ] Remove compatibility barrels once all imports are canonical.
+- [ ] Validate with functions + app typecheck.
+Status: ❌ not started
+
+#### W4 - Thin Action Wrapper Enforcement
+
+- [ ] Audit `seller.actions.ts` for business logic leakage.
+- [ ] Audit `seller-coupon.actions.ts` for non-wrapper behavior.
+- [ ] Audit `admin.actions.ts` for status/business branching that belongs in appkit.
+- [ ] Audit `category.actions.ts` and `review.actions.ts` against auth/parse/call/return template.
+- [ ] Publish thin-wrapper conformance checklist and mark each file status.
+Status: ❌ not started
+
+#### W5 - Render/Column Kit (R2-R3)
+
+- [ ] Create shared render-format kit for status/date/currency display and parsing.
+- [ ] Migrate duplicated format/render code in 22 feature column modules to shared helpers.
+- [ ] Convert repeated status badge logic to typed status adapters.
+- [ ] Convert repeated date renderers to baseline-aware date formatting adapters.
+- [ ] Convert repeated price renderers to baseline-aware currency adapters.
+- [ ] Validate column behavior parity in admin/seller/account/store tables.
+Status: ❌ not started
+
+#### W6 - SSR/View/Style Hardening (R5-R7)
+
+- [ ] Classify 92 view files into server-safe, mixed, and client-required groups.
+- [ ] Remove unnecessary `"use client"` directives from view layers that can be server components.
+- [ ] Keep client-only behavior isolated to hooks/forms/interactive atoms.
+- [ ] Complete style sibling contract for UI outliers (`DataTable.tsx`, `rich-text/RichText.tsx`).
+- [ ] Standardize style ownership model (retire mixed central-vs-sibling duplication where possible).
+- [ ] Re-run SSR boundary audit for view files.
+- [ ] Validate no browser API leakage in server views.
+- [ ] Update tracker with final server/client split counts.
+Status: ❌ not started
+
+#### W7 - Constants + Dedupe Closure (R8-R11)
+
+- [ ] R9 wave 1: replace status literals in appkit action/api hotspots with typed schema constants.
+- [ ] R9 wave 2: replace status literals in letitrip functions jobs/triggers and API routes.
+- [ ] R10: replace route segment logic in sidebar and appkit next defaults with `ROUTES` constants.
+- [ ] R11: delete duplicate `letitrip.in/src/components/typography/TextLink.tsx`.
+- [ ] Rewire all 8 known TextLink import sites to `@mohasinac/appkit/ui`.
+- [ ] Verify no residual imports to deleted local TextLink path.
+- [ ] Remove remaining shim/re-export surfaces after rewires.
+- [ ] Validate route + auth fallback behavior after constant migration.
+- [ ] Run final closure scan for raw status literals and route literals.
+Status: ❌ not started
+
+### High-Confidence Dependency Chain (Updated)
+
+1. W0 tracker baseline (completed)
+2. W1 baseline resolver (must land first)
+3. W2 seed parameterization and W5 render-format kit (parallel after W1)
+4. W3 schema/repository closure (after W1, with W2 outputs available)
+5. W4 thin wrapper enforcement (after W3)
+6. W6 SSR/style hardening (after W3 + W5)
+7. W7 constants/dedupe closure and final verification
+
+### Validation Matrix (Per Batch)
+
+| Validation | Command intent | Required for |
+|---|---|---|
+| Typecheck (appkit) | Ensure shared package integrity after ownership/default changes | W1-W7 |
+| Typecheck (letitrip.in) | Ensure consumer wiring remains valid after rewires | W3-W7 |
+| Typecheck (functions) | Ensure trigger/job repository and enum rewires are safe | W3, W7 |
+| Smoke tests | Guard route/action regressions after wrapper/constants refactors | W4, W7 |
+| Tracker sync | Keep Gap.md status truthful after each batch | every batch |
+
+### Next Safest Batch Recommendation
+
+Recommended next implementation batch: `B01 (W1 baseline resolver contract)`
+
+Reason:
+- It unblocks R1-dependent items (`R2`, `R3`, `R9`) and phases 1-3.
+- It reduces repeated fallback drift before broader migration edits.
+- It converts currently scattered market defaults into one auditable surface.

@@ -11,7 +11,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { UserDocument } from "@/db/schema";
+import type { UserDocument } from "@/db/schema/users";
 
 export const POST = createApiHandler({
   auth: true,

@@ -5,7 +5,7 @@
  * These types MUST stay in sync with UserDocument in @/db/schema.
  */
 
-import type { AvatarMetadata } from "@/db/schema";
+import type { AvatarMetadata } from "@/db/schema/users";
 import { UserRole } from "@mohasinac/appkit/features/auth";
 export type { UserRole };
 

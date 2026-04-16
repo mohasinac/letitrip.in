@@ -37,7 +37,7 @@ import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
  */
 
 import { consentOtpRef } from "@mohasinac/appkit/features/auth";
-import type { AddressDocument } from "@/db/schema";
+import type { AddressDocument } from "@/db/schema/addresses";
 
 const verifySchema = z.object({
   razorpay_order_id: z.string().min(1),

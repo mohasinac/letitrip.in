@@ -1,0 +1,12 @@
+{
+  "firestore": {
+    "rules": "scripts/firebase/reset.firestore.rules",
+    "indexes": "scripts/firebase/reset.firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "scripts/firebase/reset.storage.rules"
+  },
+  "database": {
+    "rules": "scripts/firebase/reset.database.rules.json"
+  }
+}

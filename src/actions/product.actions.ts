@@ -20,7 +20,7 @@ import {
   getSellerStorefrontProducts,
   type ProductListActionParams,
 } from "@mohasinac/appkit/features/products";
-import type { ProductDocument } from "@/db/schema";
+import type { ProductDocument } from "@/db/schema/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export type { ProductListActionParams };

@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Seller Coupon Server Actions — thin entrypoint
+ * Seller Coupon Server Actions ï¿½ thin entrypoint
  */
 
 import { z } from "zod";
@@ -19,7 +19,7 @@ import {
   type SellerUpdateCouponInput,
 } from "@mohasinac/appkit/features/promotions";
 import { userRepository } from "@mohasinac/appkit/features/auth";
-import type { CouponDocument } from "@/db/schema";
+import type { CouponDocument } from "@/db/schema/coupons";
 
 const createSchema = z.object({
   code: z.string().min(1).max(20).toUpperCase().optional(),

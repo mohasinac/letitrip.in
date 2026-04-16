@@ -49,25 +49,22 @@ import {
 } from "@mohasinac/appkit/features/homepage/schemas";
 import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/features/admin/schemas";
 import { FAQS_COLLECTION } from "@mohasinac/appkit/features/faq/schemas";
-import {
-  USER_COLLECTION,
-  ORDER_COLLECTION,
-  REVIEW_COLLECTION,
-  BID_COLLECTION,
-  COUPONS_COLLECTION,
-  CATEGORIES_COLLECTION,
-  NOTIFICATIONS_COLLECTION,
-  PAYOUT_COLLECTION,
-  BLOG_POSTS_COLLECTION,
-  EVENTS_COLLECTION,
-  EVENT_ENTRIES_COLLECTION,
-  SESSION_COLLECTION,
-  CART_COLLECTION,
-  STORE_COLLECTION,
-  PRODUCT_COLLECTION,
-  ADDRESS_SUBCOLLECTION,
-  STORE_ADDRESS_SUBCOLLECTION,
-} from "@/db/schema";
+import { USER_COLLECTION } from "@/db/schema/users";
+import { ORDER_COLLECTION } from "@/db/schema/orders";
+import { REVIEW_COLLECTION } from "@/db/schema/reviews";
+import { BID_COLLECTION } from "@/db/schema/bids";
+import { COUPONS_COLLECTION } from "@/db/schema/coupons";
+import { CATEGORIES_COLLECTION } from "@/db/schema/categories";
+import { NOTIFICATIONS_COLLECTION } from "@/db/schema/notifications";
+import { PAYOUT_COLLECTION } from "@/db/schema/payouts";
+import { BLOG_POSTS_COLLECTION } from "@/db/schema/blog-posts";
+import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@/db/schema/events";
+import { SESSION_COLLECTION } from "@/db/schema/sessions";
+import { CART_COLLECTION } from "@/db/schema/cart";
+import { STORE_COLLECTION } from "@/db/schema/stores";
+import { PRODUCT_COLLECTION } from "@/db/schema/products";
+import { ADDRESS_SUBCOLLECTION } from "@/db/schema/addresses";
+import { STORE_ADDRESS_SUBCOLLECTION } from "@/db/schema/store-addresses";
 
 type CollectionName =
   | "users"

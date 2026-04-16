@@ -25,7 +25,7 @@ import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/features/contact";
-import { SCHEMA_DEFAULTS } from "@/db/schema";
+import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { invalidateIntegrationKeysCache } from "@mohasinac/appkit/core";

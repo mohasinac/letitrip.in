@@ -21,7 +21,7 @@ import {
   type PlaceBidInput,
   type PlaceBidResult,
 } from "@mohasinac/appkit/features/auctions";
-import type { BidDocument } from "@/db/schema";
+import type { BidDocument } from "@/db/schema/bids";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Validation schemas ────────────────────────────────────────────────────

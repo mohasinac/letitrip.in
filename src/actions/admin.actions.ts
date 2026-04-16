@@ -34,16 +34,10 @@ import {
   NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
-import type {
-  OrderDocument,
-  OrderAdminUpdateInput,
-  PayoutDocument,
-  PayoutUpdateInput,
-  UserDocument,
-  UserAdminUpdateInput,
-  ProductDocument,
-  ProductAdminUpdateInput,
-} from "@/db/schema";
+import type { OrderDocument, OrderAdminUpdateInput } from "@/db/schema/orders";
+import type { PayoutDocument, PayoutUpdateInput } from "@/db/schema/payouts";
+import type { UserDocument, UserAdminUpdateInput } from "@/db/schema/users";
+import type { ProductDocument, ProductAdminUpdateInput } from "@/db/schema/products";
 import {
   validateRequestBody,
   productCreateSchema,

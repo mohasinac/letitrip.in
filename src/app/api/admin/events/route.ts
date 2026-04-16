@@ -23,6 +23,7 @@ import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit/features/media";
+import type { SurveyConfig, FeedbackConfig } from "@/db/schema/events";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -191,12 +192,8 @@ export const POST = createRouteHandler({
       saleConfig: body.saleConfig,
       offerConfig: body.offerConfig,
       pollConfig: body.pollConfig,
-      surveyConfig: body.surveyConfig as
-        | import("@/db/schema").SurveyConfig
-        | undefined,
-      feedbackConfig: body.feedbackConfig as
-        | import("@/db/schema").FeedbackConfig
-        | undefined,
+      surveyConfig: body.surveyConfig as SurveyConfig | undefined,
+      feedbackConfig: body.feedbackConfig as FeedbackConfig | undefined,
       status: "draft",
       createdBy: user.uid,
     });

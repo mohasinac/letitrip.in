@@ -23,11 +23,7 @@ import {
   AuthorizationError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
-import type {
-  CouponDocument,
-  CouponCreateInput,
-  CouponUpdateInput,
-} from "@/db/schema";
+import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@/db/schema/coupons";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────

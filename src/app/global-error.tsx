@@ -4,7 +4,17 @@
  * Global Error Handler — Root layout error boundary
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/error#global-errorjs
  *
- * Re-exports the centralized GlobalError component from appkit.
+ * Route-level wrapper for the centralized appkit GlobalError component.
  */
-export { GlobalError as default } from "@mohasinac/appkit/next";
+import { GlobalError } from "@mohasinac/appkit/next";
+
+export default function AppGlobalError({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
+	return <GlobalError error={error} reset={reset} />;
+}
 

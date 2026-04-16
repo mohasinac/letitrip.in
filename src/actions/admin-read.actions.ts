@@ -22,15 +22,13 @@ import {
   listAdminStores,
   listAdminSessions,
 } from "@mohasinac/appkit/features/admin";
-import type {
-  OrderDocument,
-  PayoutDocument,
-  UserDocument,
-  ProductDocument,
-  BlogPostDocument,
-  StoreDocument,
-  BidDocument,
-} from "@/db/schema";
+import type { OrderDocument } from "@/db/schema/orders";
+import type { PayoutDocument } from "@/db/schema/payouts";
+import type { UserDocument } from "@/db/schema/users";
+import type { ProductDocument } from "@/db/schema/products";
+import type { BlogPostDocument } from "@/db/schema/blog-posts";
+import type { StoreDocument } from "@/db/schema/stores";
+import type { BidDocument } from "@/db/schema/bids";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 // ─── Dashboard & Analytics ────────────────────────────────────────────────

@@ -19,7 +19,8 @@ import type {
   StoreContentParams,
   StoreReviewsResult,
 } from "@mohasinac/appkit/features/stores";
-import type { StoreDocument } from "@/db/schema";
+import type { StoreDocument } from "@/db/schema/stores";
+import type { ProductDocument } from "@/db/schema/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export type { StoreListParams, StoreContentParams, StoreReviewsResult };
@@ -39,19 +40,15 @@ export async function getStoreBySlugAction(
 export async function getStoreProductsAction(
   storeSlug: string,
   params: StoreContentParams = {},
-): Promise<FirebaseSieveResult<import("@/db/schema").ProductDocument>> {
-  return getStoreProducts(storeSlug, params) as Promise<
-    FirebaseSieveResult<import("@/db/schema").ProductDocument>
-  >;
+): Promise<FirebaseSieveResult<ProductDocument>> {
+  return getStoreProducts(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
 }
 
 export async function getStoreAuctionsAction(
   storeSlug: string,
   params: StoreContentParams = {},
-): Promise<FirebaseSieveResult<import("@/db/schema").ProductDocument>> {
-  return getStoreAuctions(storeSlug, params) as Promise<
-    FirebaseSieveResult<import("@/db/schema").ProductDocument>
-  >;
+): Promise<FirebaseSieveResult<ProductDocument>> {
+  return getStoreAuctions(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
 }
 
 export async function getStoreReviewsAction(

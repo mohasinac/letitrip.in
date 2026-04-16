@@ -30,16 +30,16 @@ npm run dev
 npm run build
 npm run start
 npm run lint
-npm run type-check
 npm test
 npm run test:smoke
 npm run test:smoke:existing
 npm run index:generate
+npm run firebase:reset:dry
 ```
 
 ## Smoke Tests (Pages + APIs)
 
-Automated smoke coverage is provided by `scripts/smoke-pages-api.mjs`.
+Automated smoke coverage is provided by `scripts/qa/smoke-pages-api.mjs`.
 
 What it validates:
 - Page interactions: home CTA click, blog filter interaction, contact form submit, login submit feedback
@@ -59,6 +59,21 @@ Prerequisite (one-time after Playwright updates):
 
 ```bash
 npx playwright install chromium
+```
+
+## Firebase Full Reset
+
+Use this when you need to wipe the linked Firebase project completely (Firestore, RTDB, Storage, Auth users, Cloud Functions, and reset rules/indexes):
+
+```bash
+# Non-destructive preview
+npm run firebase:reset:dry
+
+# Requires explicit confirmation
+npm run firebase:reset -- --yes
+
+# Shortcut
+npm run firebase:reset:all
 ```
 
 ## Appkit Dependency

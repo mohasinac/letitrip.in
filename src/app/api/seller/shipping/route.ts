@@ -21,7 +21,7 @@ import {
   shiprocketAddPickupLocation,
   SHIPROCKET_TOKEN_TTL_MS,
 } from "@/lib/shiprocket/client";
-import type { SellerShippingConfig } from "@/db/schema";
+import type { SellerShippingConfig } from "@/db/schema/users";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 

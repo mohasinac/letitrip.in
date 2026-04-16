@@ -21,6 +21,7 @@ import { orderRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { ShiprocketWebhookPayload } from "@mohasinac/appkit/providers/shipping-shiprocket";
+import type { OrderDocument } from "@/db/schema/orders";
 
 // Vercel Hobby max is 60 s; Firestore read + write fits well within that.
 export const maxDuration = 60;
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
 
     await orderRepository.update(
       orderId,
-      updates as Partial<import("@/db/schema").OrderDocument>,
+      updates as Partial<OrderDocument>,
     );
 
     serverLogger.info("Shiprocket webhook processed", {

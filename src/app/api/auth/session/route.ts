@@ -16,7 +16,8 @@ import { UI_LABELS } from "@/constants";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
+import { parseUserAgent } from "@/db/schema/sessions";
+import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**

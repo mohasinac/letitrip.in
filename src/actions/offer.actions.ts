@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Offer Server Actions — thin entrypoint
+ * Offer Server Actions ï¿½ thin entrypoint
  *
  * Authenticates, rate-limits, validates, then delegates to
  * appkit offer domain functions. No business logic here.
@@ -27,7 +27,8 @@ import {
   type RespondToOfferInput,
   type BuyerCounterInput,
 } from "@mohasinac/appkit/features/seller";
-import type { CartDocument, OfferDocument } from "@/db/schema";
+import type { CartDocument } from "@/db/schema/cart";
+import type { OfferDocument } from "@/db/schema/offers";
 
 // --- Validation schemas ----------------------------------------------------
 

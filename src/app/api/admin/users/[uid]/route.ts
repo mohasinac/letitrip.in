@@ -14,7 +14,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { storeRepository } from "@mohasinac/appkit/repositories";
-import type { StoreDocument } from "@/db/schema";
+import type { StoreDocument } from "@/db/schema/stores";
 import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 
 export const GET = createRouteHandler({

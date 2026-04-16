@@ -32,11 +32,9 @@ import { OAuth2Client } from "google-auth-library";
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
-import {
-  parseUserAgent,
-  SCHEMA_DEFAULTS,
-  DEFAULT_USER_DATA,
-} from "@/db/schema";
+import { parseUserAgent } from "@/db/schema/sessions";
+import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
+import { DEFAULT_USER_DATA } from "@/db/schema/users";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";

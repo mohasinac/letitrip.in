@@ -30,7 +30,7 @@ import {
   AuthorizationError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
-import type { ReviewDocument } from "@/db/schema";
+import type { ReviewDocument } from "@/db/schema/reviews";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 import { mediaUrlSchema } from "@/lib/validation/schemas";
 

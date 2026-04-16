@@ -39,13 +39,15 @@ import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
  */
 
 import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
-import { PRODUCT_COLLECTION, CART_COLLECTION } from "@/db/schema";
+import { PRODUCT_COLLECTION } from "@/db/schema/products";
+import { CART_COLLECTION } from "@/db/schema/cart";
 import {
   consentOtpRef,
   consentOtpRateLimitRef,
   CONSENT_OTP_MAX_BYPASS_CREDITS,
 } from "@mohasinac/appkit/features/auth";
-import type { AddressDocument, ProductDocument } from "@/db/schema";
+import type { AddressDocument } from "@/db/schema/addresses";
+import type { ProductDocument } from "@/db/schema/products";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
 

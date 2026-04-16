@@ -17,7 +17,7 @@ import { formatMonthYear } from "@mohasinac/appkit/utils";
  *  - Top 5 products by total revenue
  */
 
-import type { OrderDocument } from "@/db/schema";
+import type { OrderDocument } from "@/db/schema/orders";
 
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;

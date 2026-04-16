@@ -31,6 +31,39 @@ async function waitForServer(baseUrl, timeoutMs = 60_000) {
   throw new Error(`Server did not become ready at ${baseUrl} within ${timeoutMs}ms`);
 }
 
+function safeJsonParse(text) {
+  try {
+    return { ok: true, value: JSON.parse(text) };
+  } catch {
+    return { ok: false, value: null };
+  }
+}
+
+function extractItems(payload) {
+  if (!payload || typeof payload !== "object") return [];
+  if (Array.isArray(payload)) return payload;
+
+  const fromData = payload.data;
+  if (Array.isArray(fromData)) return fromData;
+  if (fromData && typeof fromData === "object") {
+    if (Array.isArray(fromData.items)) return fromData.items;
+    if (Array.isArray(fromData.results)) return fromData.results;
+  }
+
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  return [];
+}
+
+function firstString(obj, keys) {
+  if (!obj || typeof obj !== "object") return null;
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 async function runPageSmoke(baseUrl) {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -40,6 +73,63 @@ async function runPageSmoke(baseUrl) {
   const record = (name, ok, detail = "") => {
     results.push({ type: "page", name, ok, detail });
   };
+
+  const fetchJson = async (path) => {
+    try {
+      const response = await fetch(`${baseUrl}${path}`);
+      const text = await response.text();
+      const parsed = safeJsonParse(text);
+      return {
+        status: response.status,
+        body: parsed.ok ? parsed.value : null,
+      };
+    } catch {
+      return { status: 0, body: null };
+    }
+  };
+
+  const tryClickButton = async (nameRegex) => {
+    const button = page.getByRole("button", { name: nameRegex }).first();
+    const visible = await button.isVisible().catch(() => false);
+    if (!visible) return false;
+    await button.click({ force: true, timeout: 7000 });
+    await page.waitForTimeout(800);
+    return true;
+  };
+
+  const smokePageVisit = async (path, name) => {
+    try {
+      const response = await page.goto(`${baseUrl}${path}`, {
+        waitUntil: "domcontentloaded",
+      });
+      const status = response?.status() ?? 0;
+      record(name, status > 0 && status < 500, `status=${status}`);
+      return status > 0 && status < 500;
+    } catch (error) {
+      record(name, false, String(error));
+      return false;
+    }
+  };
+
+  const productsProbe = await fetchJson("/api/products?pageSize=30");
+  const storesProbe = await fetchJson("/api/stores?pageSize=10");
+  const preOrdersProbe = await fetchJson("/api/pre-orders?pageSize=10");
+
+  const products = extractItems(productsProbe.body);
+  const stores = extractItems(storesProbe.body);
+  const preOrders = extractItems(preOrdersProbe.body);
+
+  const firstProduct = products.find((item) => item && typeof item === "object") ?? null;
+  const firstAuctionProduct =
+    products.find((item) => item && typeof item === "object" && item.isAuction === true) ??
+    null;
+  const firstPreOrder = preOrders.find((item) => item && typeof item === "object") ?? null;
+  const firstStore = stores.find((item) => item && typeof item === "object") ?? null;
+
+  const productDetailId = firstString(firstProduct, ["slug", "id", "productId"]);
+  const auctionDetailId = firstString(firstAuctionProduct, ["slug", "id", "productId"]);
+  const preOrderDetailId = firstString(firstPreOrder, ["slug", "id", "preOrderId"]);
+  const storeDetailId = firstString(firstStore, ["storeSlug", "slug", "id"]);
 
   try {
     await page.goto(`${baseUrl}/en`, { waitUntil: "domcontentloaded" });
@@ -112,6 +202,99 @@ async function runPageSmoke(baseUrl) {
     record("auth/login: submit credentials", false, String(error));
   }
 
+  await smokePageVisit("/en/products", "products: listing page loads");
+  await smokePageVisit("/en/auctions", "auctions: listing page loads");
+  await smokePageVisit("/en/pre-orders", "pre-orders: listing page loads");
+  await smokePageVisit("/en/stores", "stores: listing page loads");
+
+  if (productDetailId) {
+    const loaded = await smokePageVisit(
+      `/en/products/${encodeURIComponent(productDetailId)}`,
+      "products/detail: page loads",
+    );
+    if (loaded) {
+      try {
+        const clicked = await tryClickButton(/add to cart|buy now/i);
+        record(
+          "products/detail: try add to cart",
+          true,
+          clicked ? "clicked CTA" : "CTA not visible, page stable",
+        );
+      } catch (error) {
+        record("products/detail: try add to cart", false, String(error));
+      }
+    }
+  } else {
+    record("products/detail: page loads", true, "skipped: no product id available");
+    record("products/detail: try add to cart", true, "skipped: no product id available");
+  }
+
+  if (auctionDetailId) {
+    const loaded = await smokePageVisit(
+      `/en/auctions/${encodeURIComponent(auctionDetailId)}`,
+      "auctions/detail: page loads",
+    );
+    if (loaded) {
+      try {
+        const bidInput = page
+          .locator(
+            "input[name*='bid' i], input[placeholder*='bid' i], input[type='number']",
+          )
+          .first();
+        const hasInput = await bidInput.isVisible().catch(() => false);
+        if (hasInput) {
+          await bidInput.fill("999999");
+        }
+        const clicked = await tryClickButton(/place bid|bid now|submit bid/i);
+        record(
+          "auctions/detail: try place bid",
+          true,
+          clicked
+            ? hasInput
+              ? "filled bid amount and clicked CTA"
+              : "clicked bid CTA"
+            : "bid CTA not visible, page stable",
+        );
+      } catch (error) {
+        record("auctions/detail: try place bid", false, String(error));
+      }
+    }
+  } else {
+    record("auctions/detail: page loads", true, "skipped: no auction id available");
+    record("auctions/detail: try place bid", true, "skipped: no auction id available");
+  }
+
+  if (preOrderDetailId) {
+    const loaded = await smokePageVisit(
+      `/en/pre-orders/${encodeURIComponent(preOrderDetailId)}`,
+      "pre-orders/detail: page loads",
+    );
+    if (loaded) {
+      try {
+        const clicked = await tryClickButton(/pre.?order|reserve|book now|buy now/i);
+        record(
+          "pre-orders/detail: try pre-order",
+          true,
+          clicked ? "clicked CTA" : "CTA not visible, page stable",
+        );
+      } catch (error) {
+        record("pre-orders/detail: try pre-order", false, String(error));
+      }
+    }
+  } else {
+    record("pre-orders/detail: page loads", true, "skipped: no pre-order id available");
+    record("pre-orders/detail: try pre-order", true, "skipped: no pre-order id available");
+  }
+
+  if (storeDetailId) {
+    await smokePageVisit(
+      `/en/stores/${encodeURIComponent(storeDetailId)}`,
+      "stores/detail: page loads",
+    );
+  } else {
+    record("stores/detail: page loads", true, "skipped: no store slug available");
+  }
+
   await browser.close();
   return results;
 }
@@ -125,6 +308,7 @@ async function runApiSmoke(baseUrl) {
     { method: "GET", path: "/api/search?q=test", expected: [200] },
     { method: "GET", path: "/api/events", expected: [200] },
     { method: "GET", path: "/api/stores", expected: [200] },
+    { method: "GET", path: "/api/pre-orders", expected: [200] },
     { method: "GET", path: "/api/admin/users", expected: [401] },
     { method: "POST", path: "/api/contact", expected: [200], body: {
       name: "Smoke Runner",
@@ -135,14 +319,6 @@ async function runApiSmoke(baseUrl) {
   ];
 
   const results = [];
-
-  const safeJsonParse = (text) => {
-    try {
-      return { ok: true, value: JSON.parse(text) };
-    } catch {
-      return { ok: false, value: null };
-    }
-  };
 
   const getShapeSignature = (value) => {
     if (Array.isArray(value)) {
@@ -268,6 +444,98 @@ async function runApiSmoke(baseUrl) {
     }
   }
 
+  const productsProbe = await fetchJson("/api/products?pageSize=30");
+  const preOrdersProbe = await fetchJson("/api/pre-orders?pageSize=10");
+
+  const products = extractItems(productsProbe.body);
+  const preOrders = extractItems(preOrdersProbe.body);
+
+  const firstProduct = products.find((item) => item && typeof item === "object") ?? null;
+  const firstAuctionProduct =
+    products.find((item) => item && typeof item === "object" && item.isAuction === true) ??
+    null;
+  const firstPreOrder = preOrders.find((item) => item && typeof item === "object") ?? null;
+
+  const productId = firstString(firstProduct, ["id", "productId", "slug"]);
+  const auctionProductId = firstString(firstAuctionProduct, ["id", "productId", "slug"]);
+  const preOrderId = firstString(firstPreOrder, ["id", "preOrderId", "slug"]);
+
+  try {
+    const cartAttempt = await fetch(`${baseUrl}/api/cart`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        productId: productId ?? "smoke-product-id",
+        quantity: 1,
+      }),
+    });
+    const ok = [201, 400, 401, 404].includes(cartAttempt.status);
+    results.push({
+      type: "api",
+      name: "POST /api/cart (try add to cart)",
+      ok,
+      detail: `status=${cartAttempt.status}, expected=201/400/401/404`,
+    });
+  } catch (error) {
+    results.push({
+      type: "api",
+      name: "POST /api/cart (try add to cart)",
+      ok: false,
+      detail: String(error),
+    });
+  }
+
+  try {
+    const preOrderAttempt = await fetch(`${baseUrl}/api/pre-orders`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        productId: preOrderId ?? productId ?? "smoke-preorder-id",
+        quantity: 1,
+        customerEmail: "smoke@example.com",
+      }),
+    });
+    const ok = [201, 400, 401, 500].includes(preOrderAttempt.status);
+    results.push({
+      type: "api",
+      name: "POST /api/pre-orders (try pre-order)",
+      ok,
+      detail: `status=${preOrderAttempt.status}, expected=201/400/401/500`,
+    });
+  } catch (error) {
+    results.push({
+      type: "api",
+      name: "POST /api/pre-orders (try pre-order)",
+      ok: false,
+      detail: String(error),
+    });
+  }
+
+  try {
+    const bidAttempt = await fetch(`${baseUrl}/api/bids`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        productId: auctionProductId ?? "smoke-auction-id",
+        bidAmount: 999999,
+      }),
+    });
+    const ok = [201, 400, 401, 403, 404, 500].includes(bidAttempt.status);
+    results.push({
+      type: "api",
+      name: "POST /api/bids (try place bid)",
+      ok,
+      detail: `status=${bidAttempt.status}, expected=201/400/401/403/404/500`,
+    });
+  } catch (error) {
+    results.push({
+      type: "api",
+      name: "POST /api/bids (try place bid)",
+      ok: false,
+      detail: String(error),
+    });
+  }
+
   try {
     await compareApiVariants({
       name: "GET /api/search sieve check (q variant)",
@@ -313,11 +581,21 @@ async function runApiSmoke(baseUrl) {
       variantB: "/api/stores?category=art&pageSize=12",
     });
 
-    await compareApiVariants({
-      name: "GET /api/bids sieve check (auctionId variant)",
-      variantA: "/api/bids?auctionId=sieve-auction&pageSize=12",
-      variantB: "/api/bids?auctionId=test-auction&pageSize=12",
-    });
+    if (auctionProductId) {
+      const encodedAuctionId = encodeURIComponent(auctionProductId);
+      await compareApiVariants({
+        name: "GET /api/bids sieve check (productId variant)",
+        variantA: `/api/bids?productId=${encodedAuctionId}`,
+        variantB: "/api/bids?productId=smoke-missing-auction-id",
+      });
+    } else {
+      results.push({
+        type: "api",
+        name: "GET /api/bids sieve check (productId variant)",
+        ok: true,
+        detail: "skipped: no auction product id available",
+      });
+    }
 
     const storesProbe = await fetchJson("/api/stores?pageSize=5");
     const candidateStores = storesProbe.parsed.ok

@@ -16,7 +16,7 @@ import {
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { orderRepository, payoutRepository } from "@mohasinac/appkit/repositories";
-import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
+import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema/payouts";
 
 // ─── Helper ───────────────────────────────────────────────────────────────
 

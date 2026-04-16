@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Seller Server Actions — thin entrypoint
+ * Seller Server Actions ï¿½ thin entrypoint
  *
  * Auth + rate-limit + validation ? delegates to appkit seller domain functions.
  * Shiprocket-specific shipping (updateSellerShipping, verifyShiprocketPickupOtp,
@@ -62,14 +62,11 @@ import { resolveDate } from "@mohasinac/appkit/utils";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { orderRepository } from "@mohasinac/appkit/features/orders";
-import type {
-  StoreDocument,
-  SellerPayoutDetails,
-  OrderDocument,
-  CouponDocument,
-  ProductDocument,
-  SellerShippingConfig,
-} from "@/db/schema";
+import type { StoreDocument } from "@/db/schema/stores";
+import type { SellerPayoutDetails, SellerShippingConfig } from "@/db/schema/users";
+import type { OrderDocument } from "@/db/schema/orders";
+import type { CouponDocument } from "@/db/schema/coupons";
+import type { ProductDocument } from "@/db/schema/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 // --- Become Seller ------------------------------------------------------------
@@ -139,7 +136,7 @@ export async function updateStoreAction(
 
 const bankAccountInputSchema = z.object({
   accountHolderName: z.string().min(2).max(100),
-  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9–18 digits"),
+  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9ï¿½18 digits"),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
   bankName: z.string().min(2).max(100),
   accountType: z.enum(["savings", "current"]).default("savings"),
@@ -414,7 +411,7 @@ export async function shipOrderAction(
   return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
 }
 
-// --- Update Seller Shipping (shiprocket — stays in letitrip) ------------------
+// --- Update Seller Shipping (shiprocket ï¿½ stays in letitrip) ------------------
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),

@@ -11,7 +11,7 @@ import { couponsRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import type { CouponCreateInput } from "@/db/schema";
+import type { CouponCreateInput } from "@/db/schema/coupons";
 import { z } from "zod";
 
 const couponCreateSchema = z.object({

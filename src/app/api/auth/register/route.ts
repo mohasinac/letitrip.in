@@ -15,11 +15,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
-import {
-  DEFAULT_USER_DATA,
-  SCHEMA_DEFAULTS,
-  parseUserAgent,
-} from "@/db/schema";
+import { DEFAULT_USER_DATA } from "@/db/schema/users";
+import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
+import { parseUserAgent } from "@/db/schema/sessions";
 import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";

@@ -17,7 +17,7 @@ import { formatMonthYear } from "@mohasinac/appkit/utils";
  *  3. Aggregate totals, monthly breakdown (last 6 months), and top products
  */
 
-import type { OrderDocument } from "@/db/schema";
+import type { OrderDocument } from "@/db/schema/orders";
 
 /**
  * Fetch seller orders from past 6 months using Sieve date filtering (database-level).
