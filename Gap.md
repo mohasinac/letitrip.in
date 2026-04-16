@@ -150,6 +150,116 @@ Issue:
 Issue:
 - Indian-specific logic exists, but it is not mediated through a typed market baseline contract.
 
+## Appkit Code + Style Duplication Analysis (Huge Gap Pass)
+
+Audit date: 2026-04-17
+Scope: appkit only
+Focus: duplicates, overlap, baseline extraction potential, variant-first simplification
+
+### Snapshot findings
+
+1. Exact duplicate files exist (safe-first cleanup)
+- `appkit/src/features/admin/schemas/index.ts`
+- `appkit/src/features/checkout/schemas/index.ts`
+- `appkit/src/features/homepage/schemas/index.ts`
+Finding:
+- These are byte-identical schema barrel files and can be collapsed through a shared schema index helper pattern.
+
+2. Near-duplicate feature surfaces exist (`account` vs `user`)
+- Duplicate-named components exist in both feature trees:
+	- `ProfileView.tsx`, `MessagesView.tsx`, `OrderDetailView.tsx`, `UserOrdersView.tsx`, `UserOffersView.tsx`, `UserAddressesView.tsx`, `UserNotificationsView.tsx`, `UserSettingsView.tsx`, `BecomeSellerView.tsx`
+- Ownership pattern already favors `features/account` in appkit integration surfaces.
+Finding:
+- This is parallel concept ownership and must be merged into one canonical domain with variant/slot extension points.
+
+3. View layer size suggests repeated composition patterns
+- `*View.tsx` files in appkit: 96
+Finding:
+- Multiple role-based pages (admin/seller/account/store) likely repeat shell, header, table, filter, and card composition patterns that can be baseline templates with variants.
+
+4. Column modules are highly repeated and should share formatter/render adapters
+- Column modules discovered: 23
+Finding:
+- Currency, status, date, badge, and row-action renderers are repeated across domain column files and should move to shared column helper/render-kit modules.
+
+5. Style architecture is partially duplicated
+- Per-component style files: 45, plus centralized `appkit/src/ui/components/index.style.css`
+Finding:
+- Mixed styling ownership model (component-local and centralized) causes drift; variant-first primitives should replace repeated class bundles.
+
+6. Repeated market and locale literals are still spread across modules
+- Currency fallback patterns: repeated `INR` defaults across schemas/providers/components/hooks/columns.
+- Locale formatting paths include mixed defaults (`en-IN`, `en-US`) in view/formatter layers.
+Finding:
+- Baseline resolver and formatter contracts are not single-source; this increases behavioral drift and duplicated fallback logic.
+
+### Consolidation bias to apply
+
+1. Prefer variants over complex config objects when the difference is visual/layout semantics.
+2. Prefer typed adapters/contracts over ad-hoc callback soup when the difference is behavior or provider/runtime integration.
+3. One canonical owner per concept in appkit; all other copies become wrappers or are deleted.
+4. Keep consumer control strong: enable/disable features, replace providers, override labels/layout slots, and override behavior through typed extension points.
+
+### Priority refactor chain (dependency-aware)
+
+R1. Baseline market resolver (currency/locale/timezone/phone/country)
+- Blocker for formatter/provider/schema dedupe.
+
+R2. Shared formatter and rendering kit
+- Consolidate money/date/status renderers for columns/cards/views.
+
+R3. Column baseline kit
+- Replace repeated inline render lambdas with shared typed column factories.
+
+R4. Account/User domain merge
+- Canonicalize account domain; remove parallel user domain implementation or reduce to strict compatibility wrapper.
+
+R5. View-shell templates and role variants
+- Extract shared screen scaffolds (title/filter/list/detail/empty/loading/error) into generic view shells with variants.
+
+R6. UI variant uplift
+- Convert repeated className bundles into named variants on appkit primitives.
+
+R7. Style source-of-truth simplification
+- Complete sibling style contract and retire central style duplication where component-local styles exist.
+
+R8. Final duplicate sweep and shim removal
+- Delete redundant files and ensure all imports target canonical owners.
+
+## Dedupe Tracker (Code + Style)
+
+| Refactor ID | Area | Scope | Status | Dependency | Risk | Notes |
+|---|---|---|---|---|---|---|
+| R1 | Baseline resolver | tokens/formatters/providers/validators | not started | none | High | Required before fallback cleanup |
+| R2 | Render-format kit | utils + ui + feature render paths | not started | R1 | High | Prevents repeated money/date/status logic |
+| R3 | Column kit | 23 feature column modules | not started | R2 | Medium | Replace repeated render lambdas |
+| R4 | Account/User merge | features/account + features/user | not started | R1,R2 | High | Remove parallel concept ownership |
+| R5 | View-shell variants | 96 view files | not started | R2,R4 | High | Extract reusable view composition skeletons |
+| R6 | Variant-first UI uplift | repeated class bundles across feature UI | not started | R5 | Medium | Variants over complex config |
+| R7 | Style contract completion | ui component style ownership | not started | R6 | Medium | Remove mixed centralized/local duplication |
+| R8 | Final dedupe + shim purge | all duplicate/shim surfaces | not started | R1-R7 | High | Enforce canonical imports and ownership |
+
+## Refactor Acceptance Rules (SOLID + Approved Patterns)
+
+1. Single Responsibility:
+- New baseline utilities must do one job (formatting, resolving defaults, or rendering helpers), not mixed concerns.
+
+2. Open/Closed:
+- Extend by adding variants/adapters, not by cloning files.
+
+3. Liskov + Interface Segregation:
+- Consumer override APIs must be typed and minimal per concern.
+
+4. Dependency Inversion:
+- Feature logic depends on contracts/adapters/providers, never concrete SDK wiring in views.
+
+5. Variant-first policy:
+- If mostly presentation difference, use named variants or slots.
+- Do not create complex config schemas for purely visual variation.
+
+6. Consumer control policy:
+- Every major feature must support consumer enable/disable and override hooks via feature flags/config/providers.
+
 ## Dependency Chain (Analyze Before Execution)
 
 The migration dependency chain must be executed from foundation to leaves:
