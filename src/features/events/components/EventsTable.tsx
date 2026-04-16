@@ -1,11 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { formatDate, stripHtml } from "@/utils";
 import { Caption, Text, Badge, Button, Row } from "@mohasinac/appkit/ui";
 
 import { EventStatusBadge } from "./EventStatusBadge";
 import type { EventDocument } from "@/db/schema";
+
+import { useTranslations } from "next-intl";
+import { formatDate, stripHtml } from "@mohasinac/appkit/utils";
 
 export function useEventsTableColumns(
   onEdit: (event: EventDocument) => void,

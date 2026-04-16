@@ -1,6 +1,7 @@
 "use client";
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { UI_LABELS } from "@/constants/ui";
 import type { Review } from "./Review.types";
 import { Span, Button, Row } from "@mohasinac/appkit/ui";
 

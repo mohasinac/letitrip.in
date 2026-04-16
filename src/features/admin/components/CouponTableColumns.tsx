@@ -4,10 +4,12 @@
  *
  * Column definitions for the admin Coupons DataTable.
  */
-
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { UI_LABELS } from "@/constants/ui";
 import type { CouponDocument } from "@/db/schema";
-import { formatCurrency, isPast } from "@/utils";
+import { formatCurrency, isPast } from "@mohasinac/appkit/utils";
+
+
 import { Span, Text } from "@mohasinac/appkit/ui";
 import { RowActionMenu } from "@/components";
 

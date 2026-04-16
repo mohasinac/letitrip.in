@@ -8,7 +8,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import type { ThemeMode } from "@/constants";
+import type { ThemeMode } from "@/constants/theme";
 
 interface ThemeContextType {
   theme: ThemeMode;

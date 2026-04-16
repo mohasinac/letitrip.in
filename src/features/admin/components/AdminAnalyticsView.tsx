@@ -5,16 +5,16 @@
  * Passes letitrip analytics data + labels into appkit AdminAnalyticsView shell.
  * No chart rendering logic here � appkit owns the charts.
  */
-
-"use client";
-
-import { ROUTES } from "@/constants";
+import { ROUTES } from "@/constants/routes";
 import { useTranslations } from "next-intl";
 import { AdminAnalyticsView as AppkitAdminAnalyticsView } from "@mohasinac/appkit/features/admin";
 import type { AnalyticsTopProduct } from "@mohasinac/appkit/features/admin";
 import { AdminPageHeader, TextLink } from "@/components";
 import { useAdminAnalytics } from "@/features/admin/hooks";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
+"use client";
 
 export function AdminAnalyticsView() {
   const t = useTranslations("adminAnalytics");

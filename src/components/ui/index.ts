@@ -69,7 +69,8 @@ export {
 } from "@mohasinac/appkit/ui";
 export { ImageGallery } from "@mohasinac/appkit/ui";
 export type { GalleryImage } from "@mohasinac/appkit/ui";
-export { default as SideDrawer } from "./SideDrawer";
+export { SideDrawer } from "@mohasinac/appkit/ui";
+export type { SideDrawerProps, DrawerMode } from "@mohasinac/appkit/ui";
 export { FlowDiagram } from "@mohasinac/appkit/ui";
 export type { FlowStep, FlowDiagramProps } from "@mohasinac/appkit/ui";
 

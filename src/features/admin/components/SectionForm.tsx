@@ -7,8 +7,6 @@
  * falls back to a JSON textarea for all other section types.
  */
 
-"use client";
-
 import { FormGroup } from "@mohasinac/appkit/ui";
 import { Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/ui";
@@ -16,7 +14,10 @@ import { Checkbox } from "@mohasinac/appkit/ui";
 import { FormField } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
-import { proseMirrorToHtml } from "@/utils";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
+
+"use client";
+
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./Section.types";
 import { SECTION_TYPES } from "./Section.types";

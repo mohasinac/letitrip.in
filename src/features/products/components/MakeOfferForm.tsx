@@ -1,5 +1,4 @@
 "use client";
-
 import { FormGroup, Input } from "@mohasinac/appkit/ui";
 import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
@@ -9,7 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import { useMessage } from "@/hooks";
 import { makeOfferAction } from "@/actions";
 import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";

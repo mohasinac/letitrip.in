@@ -5,12 +5,13 @@
  * Create/edit form for admin coupon management.
  */
 
-"use client";
-
 import { Input, Select, Textarea } from "@mohasinac/appkit/ui";
 import { Toggle } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
-import { nowISO } from "@/utils";
+import { nowISO } from "@mohasinac/appkit/utils";
+
+"use client";
+
 import { Stack } from "@mohasinac/appkit/ui";
 import { FormGroup } from "@mohasinac/appkit/ui";
 import { RichTextEditor } from "./RichTextEditor";

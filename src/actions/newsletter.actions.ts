@@ -1,23 +1,25 @@
 "use server";
 
 /**
- * Newsletter Server Actions
+ * Newsletter Server Action — thin wrapper
  *
- * Subscribe an email to the newsletter, bypassing the
- * service → apiClient → API route chain.
+ * Business logic lives in @mohasinac/appkit/core (subscribeNewsletter).
+ * This wrapper adds ZOD validation, rate-limiting, and Next.js specifics.
  */
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import { newsletterRepository } from "@/repositories";
+import {
+  subscribeNewsletter,
+  NEWSLETTER_SUBSCRIBER_FIELDS,
+} from "@mohasinac/appkit/core";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
+import type { SupportedNewsletterSource } from "@mohasinac/appkit/core";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -45,7 +47,6 @@ export type SubscribeNewsletterInput = z.infer<typeof subscribeSchema>;
 export async function subscribeNewsletterAction(
   input: SubscribeNewsletterInput,
 ): Promise<{ subscribed: boolean }> {
-  type SupportedNewsletterSource = "footer" | "homepage" | "checkout" | "popup";
   const headersList = await headers();
   const ip =
     headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
@@ -83,24 +84,6 @@ export async function subscribeNewsletterAction(
             ? "popup"
             : undefined;
 
-  const existing = await newsletterRepository.findByEmail(email);
-  if (existing) {
-    if (existing.status === NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.ACTIVE) {
-      return { subscribed: true };
-    }
-    await newsletterRepository.resubscribe(existing.id);
-    serverLogger.info("Newsletter re-subscription");
-    return { subscribed: true };
-  }
-
-  await newsletterRepository.subscribe({
-    email,
-    source: normalizedSource,
-    ipAddress,
-  });
-  serverLogger.info("New newsletter subscription", {
-    source: normalizedSource,
-  });
-  return { subscribed: true };
+  return subscribeNewsletter({ email, source: normalizedSource, ipAddress });
 }
 

@@ -1,13 +1,4 @@
 "use client";
-
-/**
- * ChatList
- *
- * Lists all chat rooms the authenticated user participates in, ordered by
- * most recent message. Clicking a room navigates to that chat via the
- * ?chatId= query param on the messages page.
- */
-
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
@@ -17,7 +8,17 @@ import { ChatList as AppkitChatList } from "@mohasinac/appkit/features/account";
 import { Caption, Heading, Text, Button } from "@mohasinac/appkit/ui";
 import { Skeleton, EmptyState, ConfirmDeleteModal } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
+/**
+ * ChatList
+ *
+ * Lists all chat rooms the authenticated user participates in, ordered by
+ * most recent message. Clicking a room navigates to that chat via the
+ * ?chatId= query param on the messages page.
+ */
+
 import { useChatRooms, useDeleteChatRoom, useIsAdmin } from "@/hooks";
 import { useAuth } from "@/hooks";
 

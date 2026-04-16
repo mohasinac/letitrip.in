@@ -6,32 +6,19 @@
  * Manages the admin events list with filtering, pagination, and CRUD.
  * Uses the unified ListingLayout shell.
  */
-
-"use client";
-
 import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
-  Caption,
-  Text,
-  TablePagination,
-  Badge,
-  Button,
-  ListingLayout,
-  SortDropdown,
-  StatusBadge,
-  DataTable,
-} from "@mohasinac/appkit/ui";
+  Caption, Text, TablePagination, Badge, Button, ListingLayout, SortDropdown, StatusBadge, DataTable, } from "@mohasinac/appkit/ui";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import {
-  AdminPageHeader,
-  Card,
-  MediaImage,
-  Search,
-  ConfirmDeleteModal,
-} from "@/components";
+  AdminPageHeader, Card, MediaImage, Search, ConfirmDeleteModal, } from "@/components";
 import { EventFilters } from "@mohasinac/appkit/features/events";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;

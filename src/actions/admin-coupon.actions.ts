@@ -9,15 +9,18 @@
 
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
-import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import {
+  adminCreateCoupon as adminCreateCouponDomain,
+  adminUpdateCoupon as adminUpdateCouponDomain,
+  adminDeleteCoupon as adminDeleteCouponDomain,
+  listAdminCoupons as listAdminCouponsDomain,
+} from "@mohasinac/appkit/features/admin";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import {
   AuthorizationError,
-  NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
 import type {
@@ -96,9 +99,8 @@ export async function adminCreateCouponAction(
     );
 
   const data = parsed.data;
-  const coupon = await couponsRepository.create({
-    ...data,
-    createdBy: admin.uid,
+  return adminCreateCouponDomain(admin.uid, {
+    ...(data as unknown as CouponCreateInput),
     validity: {
       ...data.validity,
       startDate: new Date(data.validity.startDate),
@@ -106,15 +108,7 @@ export async function adminCreateCouponAction(
         ? new Date(data.validity.endDate)
         : undefined,
     },
-    stats: { totalUses: 0, totalRevenue: 0, totalDiscount: 0 },
-  } as CouponCreateInput);
-
-  serverLogger.info("adminCreateCouponAction", {
-    adminId: admin.uid,
-    couponId: coupon.id,
-    code: coupon.code,
   });
-  return coupon;
 }
 
 export async function adminUpdateCouponAction(
@@ -139,38 +133,21 @@ export async function adminUpdateCouponAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await couponsRepository.findById(id);
-  if (!existing) throw new NotFoundError("Coupon not found");
-
   const data = parsed.data;
-  // Build updateData — convert validity date strings to Date objects
-  const updateData: CouponUpdateInput = {
-    ...data,
+  return adminUpdateCouponDomain(admin.uid, id, {
+    ...(data as CouponUpdateInput),
     ...(data.validity
       ? {
           validity: {
             ...data.validity,
-            startDate: data.validity.startDate
-              ? new Date(data.validity.startDate)
-              : existing.validity.startDate,
+            startDate: new Date(data.validity.startDate),
             endDate: data.validity.endDate
               ? new Date(data.validity.endDate)
-              : existing.validity.endDate,
-          } as CouponUpdateInput["validity"],
+              : undefined,
+          },
         }
       : {}),
-  } as CouponUpdateInput;
-
-  const updated = await couponsRepository.update(
-    id,
-    updateData as CouponUpdateInput,
-  );
-
-  serverLogger.info("adminUpdateCouponAction", {
-    adminId: admin.uid,
-    couponId: id,
   });
-  return updated;
 }
 
 export async function adminDeleteCouponAction(id: string): Promise<void> {
@@ -186,15 +163,7 @@ export async function adminDeleteCouponAction(id: string): Promise<void> {
   const idParsed = couponIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
 
-  const existing = await couponsRepository.findById(id);
-  if (!existing) throw new NotFoundError("Coupon not found");
-
-  await couponsRepository.delete(id);
-
-  serverLogger.info("adminDeleteCouponAction", {
-    adminId: admin.uid,
-    couponId: id,
-  });
+  await adminDeleteCouponDomain(admin.uid, id);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
@@ -206,12 +175,6 @@ export async function listAdminCouponsAction(params?: {
   pageSize?: number;
 }): Promise<FirebaseSieveResult<CouponDocument>> {
   await requireRole(["admin"]);
-  const sieve: SieveModel = {
-    filters: params?.filters,
-    sorts: params?.sorts ?? "-createdAt",
-    page: params?.page ?? 1,
-    pageSize: params?.pageSize ?? 50,
-  };
-  return couponsRepository.list(sieve);
+  return listAdminCouponsDomain(params) as Promise<FirebaseSieveResult<CouponDocument>>;
 }
 

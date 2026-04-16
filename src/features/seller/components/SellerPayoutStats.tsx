@@ -1,11 +1,11 @@
 "use client";
-
 import { SellerPayoutStats as AppkitSellerPayoutStats } from "@mohasinac/appkit/features/seller";
 import { Grid, Text } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 

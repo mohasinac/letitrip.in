@@ -1,81 +1,25 @@
 "use server";
 
 /**
- * Search Server Action
+ * Search Server Action — thin wrapper
  *
- * Replaces the former searchService → apiClient → /api/search route chain
- * (5 hops → 2 hops). Uses Firestore Sieve search only.
+ * Business logic lives in @mohasinac/appkit/features/search.
+ * This wrapper adds Next.js server-action semantics.
  */
 
-import { productRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
+import { searchProducts } from "@mohasinac/appkit/features/search";
+import type { SearchQuery } from "@mohasinac/appkit/features/search";
+import type { SearchProductsResult } from "@mohasinac/appkit/features/search";
 
-export interface SearchParams {
-  q?: string;
-  category?: string;
-  subcategory?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  condition?: string;
-  isAuction?: boolean;
-  isPreOrder?: boolean;
-  inStock?: boolean;
-  minRating?: number;
-  sort?: string;
-  page?: number;
-  pageSize?: number;
-}
+export type { SearchQuery, SearchProductsResult };
 
-export interface SearchResult extends FirebaseSieveResult<
-  import("@/db/schema").ProductDocument
-> {
-  q: string;
-  backend: "in-memory";
-}
+// Backwards-compat alias
+export type SearchParams = SearchQuery;
+export type SearchResult = SearchProductsResult;
 
 export async function searchProductsAction(
-  params: SearchParams = {},
-): Promise<SearchResult> {
-  const {
-    q = "",
-    category,
-    subcategory,
-    minPrice = 0,
-    maxPrice = 0,
-    condition,
-    isAuction,
-    isPreOrder,
-    inStock,
-    minRating = 0,
-    sort = "-createdAt",
-    page = 1,
-    pageSize = 20,
-  } = params;
-
-  const filterParts: string[] = ["status==published"];
-  if (category) filterParts.push(`category==${category}`);
-  if (subcategory) filterParts.push(`subcategory==${subcategory}`);
-  if (minPrice > 0) filterParts.push(`price>=${minPrice}`);
-  if (maxPrice > 0 && maxPrice >= minPrice)
-    filterParts.push(`price<=${maxPrice}`);
-  if (condition) filterParts.push(`condition==${condition}`);
-  if (isAuction === true) filterParts.push("isAuction==true");
-  if (isPreOrder === true) filterParts.push("isPreOrder==true");
-  if (q.trim()) filterParts.push(`title_=${q.trim()}`);
-
-  const sieveResult = await productRepository.list({
-    filters: filterParts.join(","),
-    sorts: sort,
-    page,
-    pageSize,
-  });
-
-  serverLogger.info("searchProductsAction (Firestore-native)", {
-    q: q || "(empty)",
-    total: sieveResult.total,
-  });
-
-  return { ...sieveResult, q, backend: "in-memory" };
+  params: SearchQuery = {},
+): Promise<SearchProductsResult> {
+  return searchProducts(params);
 }
 

@@ -1,55 +1,53 @@
-"use server";
+﻿"use server";
 
 /**
- * Seller Server Actions
+ * Seller Server Actions — thin entrypoint
  *
- * Mutations for seller role application, store management, payouts, and
- * products — calls repositories directly, bypassing the service → apiClient
- * → API route chain.
+ * Auth + rate-limit + validation → delegates to appkit seller domain functions.
+ * Shiprocket-specific shipping (updateSellerShipping, verifyShiprocketPickupOtp,
+ * and the shiprocket branch of shipOrder) remain here because they depend on
+ * @/lib/shiprocket/client which is a permanent letitrip-only dependency.
  */
 
 import { z } from "zod";
 import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
 import {
-  userRepository,
-  storeRepository,
-  productRepository,
-  orderRepository,
-  payoutRepository,
-  couponsRepository,
-} from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import {
-  ApiError,
-  AuthorizationError,
-  NotFoundError,
-  ValidationError,
-} from "@mohasinac/appkit/errors";
-import {
-  generateStoreSlug,
-  DEFAULT_PLATFORM_FEE_RATE,
-  ORDER_FIELDS,
-} from "@/db/schema";
+  becomeSeller,
+  createStore,
+  updateStore,
+  updatePayoutSettings,
+  requestPayout,
+  bulkSellerOrder,
+  createSellerProduct,
+  getSellerStore,
+  getSellerShipping,
+  getSellerPayoutSettings,
+  listSellerOrders,
+  getSellerAnalytics,
+  listSellerPayouts,
+  listSellerCoupons,
+  listSellerMyProducts,
+  sellerUpdateProduct,
+  sellerDeleteProduct,
+  customShipOrder,
+  type BecomeSellerResult,
+  type CreateStoreInput,
+  type UpdateStoreInput,
+  type UpdatePayoutSettingsInput,
+  type RequestPayoutInput,
+  type BulkSellerOrderResult,
+} from "@mohasinac/appkit/features/seller";
+import { userRepository } from "@mohasinac/appkit/features/auth";
 import {
   productCreateSchema,
   mediaUrlSchema,
   productUpdateSchema,
 } from "@/lib/validation/schemas";
-import type {
-  UserDocument,
-  StoreDocument,
-  SellerPayoutDetails,
-  OrderDocument,
-  CouponDocument,
-  ProductDocument,
-  SellerShippingConfig,
-} from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
-import { resolveDate } from "@/utils";
 import {
   shiprocketAuthenticate,
   shiprocketAddPickupLocation,
@@ -60,92 +58,30 @@ import {
   isShiprocketTokenExpired,
   SHIPROCKET_TOKEN_TTL_MS,
 } from "@/lib/shiprocket/client";
-import {
-  finalizeStagedMediaUrl,
-  finalizeStagedMediaField,
-  finalizeStagedMediaArray,
-} from "@mohasinac/appkit/features/media";
+import { resolveDate } from "@mohasinac/appkit/utils";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { NotFoundError } from "@mohasinac/appkit/errors";
+import { orderRepository } from "@mohasinac/appkit/features/orders";
+import type {
+  StoreDocument,
+  SellerPayoutDetails,
+  OrderDocument,
+  CouponDocument,
+  ProductDocument,
+  SellerShippingConfig,
+} from "@/db/schema";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-async function finalizeProductMediaReferences<T extends Record<string, unknown>>(
-  data: T,
-): Promise<T> {
-  const finalized = { ...data } as T & {
-    mainImage?: string;
-    images?: string[];
-    video?: {
-      url?: string;
-      thumbnailUrl?: string;
-      duration?: number;
-      trimStart?: number;
-      trimEnd?: number;
-    };
-  };
+// ─── Become Seller ────────────────────────────────────────────────────────────
 
-  if (typeof finalized.mainImage === "string" && finalized.mainImage) {
-    finalized.mainImage = await finalizeStagedMediaUrl(finalized.mainImage);
-  }
-
-  if (Array.isArray(finalized.images) && finalized.images.length > 0) {
-    finalized.images = await finalizeStagedMediaArray(finalized.images);
-  }
-
-  if (finalized.video?.url) {
-    finalized.video = {
-      ...finalized.video,
-      url: await finalizeStagedMediaUrl(finalized.video.url),
-      thumbnailUrl: await finalizeStagedMediaField(finalized.video.thumbnailUrl),
-    };
-  }
-
-  return finalized as T;
-}
-
-export interface BecomeSellerActionResult {
-  storeStatus: "pending" | "approved" | "rejected";
-  alreadySeller?: boolean;
-}
-
-/**
- * Apply to become a seller.
- *
- * - Auth required (must be a regular user, not already a seller/admin)
- * - Sets role="seller", storeStatus="pending" on the user document
- * - Returns `alreadySeller: true` if the user is already a seller/admin
- * - Rate-limited by uid (STRICT: 5 req/60 s)
- */
-export async function becomeSellerAction(): Promise<BecomeSellerActionResult> {
+export async function becomeSellerAction(): Promise<BecomeSellerResult> {
   const user = await requireAuth();
-
-  const rl = await rateLimitByIdentifier(
-    `become-seller:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const profile = await userRepository.findById(user.uid);
-  if (profile?.role === "seller" || profile?.role === "admin") {
-    return {
-      alreadySeller: true,
-      storeStatus:
-        (profile.storeStatus as "pending" | "approved" | "rejected") ??
-        "pending",
-    };
-  }
-
-  await userRepository.update(user.uid, {
-    role: "seller",
-    storeStatus: "pending",
-  } as Partial<UserDocument>);
-
-  serverLogger.info("becomeSellerAction: application submitted", {
-    uid: user.uid,
-  });
-
-  return { storeStatus: "pending" };
+  const rl = await rateLimitByIdentifier(`become-seller:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  return becomeSeller(user.uid);
 }
 
-// ─── Create Store ─────────────────────────────────────────────────────────────
+// ─── Create Store ────────────────────────────────────────────────────────────
 
 const createStoreSchema = z.object({
   storeName: z.string().min(2).max(80),
@@ -153,76 +89,18 @@ const createStoreSchema = z.object({
   storeCategory: z.string().max(80).optional().or(z.literal("")),
 });
 
-/**
- * Create the seller's store for the first time.
- *
- * - Requires seller or admin role
- * - Generates a unique URL slug from store name + owner name
- * - Mirrors storeId + storeSlug onto UserDocument for indexed lookups
- * - Throws 409 if the seller already has a store
- */
 export async function createStoreAction(
   input: z.infer<typeof createStoreSchema>,
 ): Promise<{ store: StoreDocument }> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `create-store:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = createStoreSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const { storeName, storeDescription, storeCategory } = parsed.data;
-
-  const existing = await storeRepository.findByOwnerId(user.uid);
-  if (existing) throw new ApiError(409, "Store already exists for this seller");
-
-  const ownerName = user.name ?? "seller";
-  const baseSlug = `store-${generateStoreSlug(storeName, ownerName)}`.slice(
-    0,
-    80,
-  );
-
-  let storeSlug = baseSlug;
-  let attempt = 1;
-  while (await storeRepository.findBySlug(storeSlug)) {
-    attempt++;
-    const suffix = `-${attempt}`;
-    storeSlug = `${baseSlug.slice(0, 80 - suffix.length)}${suffix}`;
-  }
-
-  const store = await storeRepository.create({
-    storeSlug,
-    ownerId: user.uid,
-    storeName,
-    storeDescription: storeDescription || undefined,
-    storeCategory: storeCategory || undefined,
-    isPublic: false,
-    status: "pending",
-  });
-
-  await userRepository.update(user.uid, {
-    storeId: store.id,
-    storeSlug: store.storeSlug,
-    storeStatus: "pending",
-  } as Parameters<typeof userRepository.update>[1]);
-
-  serverLogger.info("createStoreAction: store created", {
-    uid: user.uid,
-    storeSlug: store.storeSlug,
-  });
-
-  return { store };
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+  return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
 }
 
-// ─── Update Store ─────────────────────────────────────────────────────────────
+// ─── Update Store ────────────────────────────────────────────────────────────
 
 const updateStoreSchema = z.object({
   storeName: z.string().min(2).max(80).optional(),
@@ -235,532 +113,122 @@ const updateStoreSchema = z.object({
   bio: z.string().max(300).optional().or(z.literal("")),
   website: z.string().url().optional().or(z.literal("")),
   location: z.string().max(100).optional().or(z.literal("")),
-  socialLinks: z
-    .object({
-      twitter: z.string().url().optional().or(z.literal("")),
-      instagram: z.string().url().optional().or(z.literal("")),
-      facebook: z.string().url().optional().or(z.literal("")),
-      linkedin: z.string().url().optional().or(z.literal("")),
-    })
-    .optional(),
+  socialLinks: z.object({
+    twitter: z.string().url().optional().or(z.literal("")),
+    instagram: z.string().url().optional().or(z.literal("")),
+    facebook: z.string().url().optional().or(z.literal("")),
+    linkedin: z.string().url().optional().or(z.literal("")),
+  }).optional(),
   isVacationMode: z.boolean().optional(),
   vacationMessage: z.string().max(300).optional().or(z.literal("")),
   isPublic: z.boolean().optional(),
 });
 
-/**
- * Update the authenticated seller's store profile.
- *
- * - Requires seller or admin role
- * - All fields optional — only provided fields are updated
- */
 export async function updateStoreAction(
   input: z.infer<typeof updateStoreSchema>,
 ): Promise<{ store: StoreDocument }> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `update-store:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updateStoreSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const store = await storeRepository.findByOwnerId(user.uid);
-  if (!store) throw new NotFoundError("Store not found. Create a store first.");
-
-  const {
-    storeName,
-    storeDescription,
-    storeCategory,
-    storeLogoURL,
-    storeBannerURL,
-    returnPolicy,
-    shippingPolicy,
-    bio,
-    website,
-    location,
-    socialLinks,
-    isVacationMode,
-    vacationMessage,
-    isPublic,
-  } = parsed.data;
-
-  // Finalize any staged tmp media URLs before persisting
-  const finalLogoURL = await finalizeStagedMediaField(storeLogoURL);
-  const finalBannerURL = await finalizeStagedMediaField(storeBannerURL);
-
-  const updated = await storeRepository.updateStore(store.storeSlug, {
-    ...(storeName !== undefined && { storeName }),
-    ...(storeDescription !== undefined && { storeDescription }),
-    ...(storeCategory !== undefined && { storeCategory }),
-    ...(finalLogoURL !== undefined && { storeLogoURL: finalLogoURL }),
-    ...(finalBannerURL !== undefined && { storeBannerURL: finalBannerURL }),
-    ...(returnPolicy !== undefined && { returnPolicy }),
-    ...(shippingPolicy !== undefined && { shippingPolicy }),
-    ...(bio !== undefined && { bio }),
-    ...(website !== undefined && { website }),
-    ...(location !== undefined && { location }),
-    ...(socialLinks !== undefined && {
-      socialLinks: { ...store.socialLinks, ...socialLinks },
-    }),
-    ...(isVacationMode !== undefined && { isVacationMode }),
-    ...(vacationMessage !== undefined && { vacationMessage }),
-    ...(isPublic !== undefined && { isPublic }),
-  });
-
-  return { store: updated };
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+  return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
 }
 
 // ─── Update Payout Settings ───────────────────────────────────────────────────
 
 const bankAccountInputSchema = z.object({
   accountHolderName: z.string().min(2).max(100),
-  accountNumber: z
-    .string()
-    .regex(/^\d{9,18}$/, "Account number must be 9–18 digits"),
-  ifscCode: z
-    .string()
-    .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code (e.g. HDFC0001234)"),
+  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9–18 digits"),
+  ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
   bankName: z.string().min(2).max(100),
   accountType: z.enum(["savings", "current"]).default("savings"),
 });
 
 const updatePayoutSettingsSchema = z.discriminatedUnion("method", [
-  z.object({
-    method: z.literal("upi"),
-    upiId: z
-      .string()
-      .regex(
-        /^[\w.\-_]{2,256}@[a-zA-Z]{2,64}$/,
-        "Please enter a valid UPI ID (e.g. name@upi)",
-      ),
-  }),
-  z.object({
-    method: z.literal("bank_transfer"),
-    bankAccount: bankAccountInputSchema,
-  }),
+  z.object({ method: z.literal("upi"), upiId: z.string().regex(/^[\w.\-_]{2,256}@[a-zA-Z]{2,64}$/, "Please enter a valid UPI ID") }),
+  z.object({ method: z.literal("bank_transfer"), bankAccount: bankAccountInputSchema }),
 ]);
 
-function maskAccountNumber(accountNumber: string): string {
-  if (accountNumber.length <= 4) return "****";
-  return "X".repeat(accountNumber.length - 4) + accountNumber.slice(-4);
-}
-
-type SafePayoutDetails = Omit<SellerPayoutDetails, "bankAccount"> & {
-  bankAccount?: Omit<
-    NonNullable<SellerPayoutDetails["bankAccount"]>,
-    "accountNumber"
-  >;
-};
-
-/**
- * Save or update UPI ID or bank account payout details.
- *
- * - Requires seller or admin role
- * - Stores full account number server-side; returns masked version to client
- */
 export async function updatePayoutSettingsAction(
   input: z.infer<typeof updatePayoutSettingsSchema>,
-): Promise<{ payoutDetails: SafePayoutDetails }> {
+): Promise<unknown> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `update-payout-settings:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updatePayoutSettingsSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const data = parsed.data;
-  let payoutDetails: SellerPayoutDetails;
-
-  if (data.method === "upi") {
-    payoutDetails = { method: "upi", upiId: data.upiId, isConfigured: true };
-  } else {
-    const { accountNumber, ...bankRest } = data.bankAccount;
-    payoutDetails = {
-      method: "bank_transfer",
-      bankAccount: {
-        ...bankRest,
-        accountNumber,
-        accountNumberMasked: maskAccountNumber(accountNumber),
-      },
-      isConfigured: true,
-    };
-  }
-
-  await userRepository.update(user.uid, { payoutDetails });
-
-  serverLogger.info("updatePayoutSettingsAction: payout details updated", {
-    uid: user.uid,
-    method: payoutDetails.method,
-  });
-
-  if (!payoutDetails.bankAccount) return { payoutDetails };
-  const { accountNumber: _removed, ...safeBank } = payoutDetails.bankAccount;
-  return { payoutDetails: { ...payoutDetails, bankAccount: safeBank } };
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+  return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
 }
 
 // ─── Request Payout ───────────────────────────────────────────────────────────
 
-const payoutRequestBankSchema = z.object({
-  accountHolderName: z.string().min(1),
-  accountNumberMasked: z.string().min(1),
-  ifscCode: z.string().min(1),
-  bankName: z.string().min(1),
-});
+const payoutRequestSchema = z.object({
+  paymentMethod: z.enum(["bank_transfer", "upi"]),
+  bankAccount: z.object({
+    accountHolderName: z.string().min(1),
+    accountNumberMasked: z.string().min(1),
+    ifscCode: z.string().min(1),
+    bankName: z.string().min(1),
+  }).optional(),
+  upiId: z.string().optional(),
+  notes: z.string().optional(),
+}).refine(
+  (d) => d.paymentMethod === "upi" ? !!d.upiId : !!d.bankAccount,
+  { message: "Missing payment details for selected method" },
+);
 
-const payoutRequestSchema = z
-  .object({
-    paymentMethod: z.enum(["bank_transfer", "upi"]),
-    bankAccount: payoutRequestBankSchema.optional(),
-    upiId: z.string().optional(),
-    notes: z.string().optional(),
-  })
-  .refine(
-    (data) =>
-      data.paymentMethod === "upi" ? !!data.upiId : !!data.bankAccount,
-    { message: "Missing payment details for selected method" },
-  );
-
-async function computeSellerEarnings(sellerId: string) {
-  const products = await productRepository.findBySeller(sellerId);
-  const productIds = products.slice(0, 50).map((p) => p.id);
-
-  let deliveredOrders: Awaited<
-    ReturnType<typeof orderRepository.findByProduct>
-  > = [];
-  if (productIds.length > 0) {
-    const batches = await Promise.all(
-      productIds.map((id) =>
-        orderRepository
-          .findByProduct(id)
-          .catch(() => [] as typeof deliveredOrders),
-      ),
-    );
-    deliveredOrders = batches.flat().filter((o) => o.status === "delivered");
-  }
-
-  const paidOutIds = await payoutRepository.getPaidOutOrderIds(sellerId);
-  const eligibleOrders = deliveredOrders.filter((o) => !paidOutIds.has(o.id));
-
-  const grossAmount = eligibleOrders.reduce(
-    (sum, o) => sum + (o.totalPrice ?? 0),
-    0,
-  );
-  const platformFee = parseFloat(
-    (grossAmount * DEFAULT_PLATFORM_FEE_RATE).toFixed(2),
-  );
-  const netAmount = parseFloat((grossAmount - platformFee).toFixed(2));
-
-  return {
-    eligibleOrders,
-    grossAmount,
-    platformFee,
-    netAmount,
-    productCount: products.length,
-  };
-}
-
-/**
- * Request a new payout for eligible delivered order earnings.
- *
- * - Requires seller or admin role
- * - Throws if a pending payout already exists or no earnings are available
- */
 export async function requestPayoutAction(
   input: z.infer<typeof payoutRequestSchema>,
 ): Promise<unknown> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `request-payout:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = payoutRequestSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const { paymentMethod, bankAccount, upiId, notes } = parsed.data;
-
-  const existing = await payoutRepository.findBySeller(user.uid);
-  const hasPending = existing.some(
-    (p) => p.status === "pending" || p.status === "processing",
-  );
-  if (hasPending)
-    throw new ValidationError("A payout is already pending or processing.");
-
-  const earnings = await computeSellerEarnings(user.uid);
-  if (earnings.netAmount <= 0 || earnings.eligibleOrders.length === 0)
-    throw new ValidationError("No eligible earnings available for payout.");
-
-  const sellerName = user.name ?? user.email ?? user.uid;
-  const sellerEmail = user.email ?? "";
-
-  const payout = await payoutRepository.create({
-    sellerId: user.uid,
-    sellerName,
-    sellerEmail,
-    amount: earnings.netAmount,
-    grossAmount: earnings.grossAmount,
-    platformFee: earnings.platformFee,
-    platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
-    currency: "INR",
-    paymentMethod,
-    ...(bankAccount && { bankAccount }),
-    ...(upiId && { upiId }),
-    ...(notes && { notes }),
-    orderIds: earnings.eligibleOrders.map((o) => o.id),
-  });
-
-  serverLogger.info("requestPayoutAction: payout requested", {
-    uid: user.uid,
-    payoutId: payout.id,
-    netAmount: earnings.netAmount,
-  });
-
-  return payout;
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+  return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
 }
 
-// ─── Bulk Seller Order Action ─────────────────────────────────────────────────
+// ─── Bulk Seller Order ────────────────────────────────────────────────────────
 
-const bulkSellerOrderSchema = z
-  .array(z.string().min(1))
-  .min(1, "At least one order ID is required");
-
-export interface BulkSellerOrderResult {
-  payoutId: string;
-  requested: string[];
-  skipped: string[];
-  eligibleCount: number;
-  skippedCount: number;
-  netAmount: number;
-  grossAmount: number;
-  platformFee: number;
-}
-
-/**
- * Request payout for a batch of custom-shipped delivered orders.
- *
- * - Requires seller or admin role
- * - Validates payout details are configured
- * - Skips ineligible orders; creates one payout document and marks all eligible
- */
 export async function bulkSellerOrderAction(
   orderIds: string[],
 ): Promise<BulkSellerOrderResult> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `bulk-order-action:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = bulkSellerOrderSchema.safeParse(orderIds);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "No orders selected",
-    );
-
-  // Fetch Firestore user document for payoutDetails (not in JWT claims)
-  const userDoc = await userRepository.findById(user.uid);
-  if (!userDoc) throw new AuthorizationError("User not found");
-
-  if (!userDoc.payoutDetails?.isConfigured) {
-    throw new ValidationError(
-      "Payout details are not set up. Please configure your payout method before requesting a payout.",
-    );
-  }
-
-  const orders = await Promise.all(
-    parsed.data.map((id) => orderRepository.findById(id)),
-  );
-
-  const requested: string[] = [];
-  const skipped: string[] = [];
-  const eligible: NonNullable<
-    Awaited<ReturnType<typeof orderRepository.findById>>
-  >[] = [];
-
-  for (let i = 0; i < orders.length; i++) {
-    const order = orders[i];
-    const id = parsed.data[i];
-
-    if (!order) {
-      skipped.push(id);
-      continue;
-    }
-    if (user.role !== "admin" && order.sellerId !== user.uid) {
-      skipped.push(id);
-      continue;
-    }
-    if (order.status !== "delivered") {
-      skipped.push(id);
-      continue;
-    }
-    if (order.shippingMethod !== "custom") {
-      skipped.push(id);
-      continue;
-    }
-    if (order.payoutStatus === "requested" || order.payoutStatus === "paid") {
-      skipped.push(id);
-      continue;
-    }
-    eligible.push(order as NonNullable<typeof order>);
-  }
-
-  if (eligible.length === 0)
-    throw new ValidationError("No eligible orders found.");
-
-  const PLATFORM_COMMISSION_RATE = 0.05;
-  const grossAmount = eligible.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0);
-  const platformFee =
-    Math.round(grossAmount * PLATFORM_COMMISSION_RATE * 100) / 100;
-  const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
-
-  const payoutDoc = await payoutRepository.create({
-    sellerId: user.uid,
-    sellerName: (userDoc.displayName ?? user.email ?? user.uid) as string,
-    sellerEmail: (user.email ?? "") as string,
-    orderIds: eligible.map((o) => o.id!),
-    amount: netAmount,
-    grossAmount,
-    platformFee,
-    platformFeeRate: PLATFORM_COMMISSION_RATE,
-    currency: "INR",
-    paymentMethod:
-      userDoc.payoutDetails.method === "upi"
-        ? ("upi" as const)
-        : ("bank_transfer" as const),
-    upiId:
-      userDoc.payoutDetails.method === "upi"
-        ? userDoc.payoutDetails.upiId
-        : undefined,
-    bankAccount:
-      userDoc.payoutDetails.method === "bank_transfer"
-        ? userDoc.payoutDetails.bankAccount
-        : undefined,
-    notes: `Payout request for ${eligible.length} custom-shipped delivered order(s)`,
-  });
-
-  const payoutId = payoutDoc.id;
-
-  await Promise.all(
-    eligible.map((o) =>
-      orderRepository.update(o.id!, { payoutStatus: "requested", payoutId }),
-    ),
-  );
-
-  eligible.forEach((o) => requested.push(o.id!));
-
-  serverLogger.info("bulkSellerOrderAction: bulk payout requested", {
-    uid: user.uid,
-    payoutId,
-    orderCount: eligible.length,
-    netAmount,
-  });
-
-  return {
-    payoutId,
-    requested,
-    skipped,
-    eligibleCount: eligible.length,
-    skippedCount: skipped.length,
-    netAmount,
-    grossAmount,
-    platformFee,
-  };
+  const rl = await rateLimitByIdentifier(`bulk-order-action:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!Array.isArray(orderIds) || orderIds.length === 0)
+    throw new ValidationError("At least one order ID is required");
+  const profile = await userRepository.findById(user.uid);
+  return bulkSellerOrder(user.uid, user.role ?? "seller", profile?.displayName ?? user.name ?? user.uid, user.email ?? "", orderIds);
 }
 
 // ─── Create Seller Product ────────────────────────────────────────────────────
 
-/**
- * Create a new product listing for the authenticated seller.
- *
- * - Requires seller or admin role
- * - Validates with productCreateSchema
- * - Injects sellerId, sellerName, sellerEmail, status: "draft"
- */
 export async function createSellerProductAction(input: unknown): Promise<void> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `create-seller-product:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = productCreateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  const finalizedMediaData = await finalizeProductMediaReferences(parsed.data);
-
-  await productRepository.create({
-    ...finalizedMediaData,
-    sellerId: user.uid,
-    sellerName: user.name ?? user.email ?? "Seller",
-    sellerEmail: user.email ?? "",
-    status: "draft",
-  } as any);
-
-  serverLogger.info("createSellerProductAction: product created", {
-    uid: user.uid,
-  });
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+  return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, unknown>);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function getSellerStoreAction(): Promise<StoreDocument | null> {
   const user = await requireAuth();
-  return storeRepository.findByOwnerId(user.uid);
+  return getSellerStore(user.uid) as any;
 }
 
 export async function getSellerShippingAction() {
   const user = await requireAuth();
-  const userData = await userRepository.findById(user.uid);
-  if (!userData) return null;
-  const config = userData.shippingConfig;
-  if (!config) return null;
-  // Strip sensitive token from response
-  if (config.method === "shiprocket" && config.shiprocketToken) {
-    const { shiprocketToken: _removed, ...safe } = config;
-    return safe;
-  }
-  return config;
+  return getSellerShipping(user.uid);
 }
 
 export async function getSellerPayoutSettingsAction() {
   const user = await requireAuth();
-  const userData = await userRepository.findById(user.uid);
-  if (!userData?.payoutDetails) return { method: "upi", isConfigured: false };
-  const details = userData.payoutDetails;
-  if (!details.bankAccount) return details;
-  const { accountNumber: _removed, ...safeBank } = details.bankAccount;
-  return { ...details, bankAccount: safeBank };
+  return getSellerPayoutSettings(user.uid);
 }
 
 export async function listSellerOrdersAction(params?: {
@@ -770,101 +238,22 @@ export async function listSellerOrdersAction(params?: {
   pageSize?: number;
 }): Promise<FirebaseSieveResult<OrderDocument>> {
   const user = await requireAuth();
-  const sellerProducts = await productRepository.findBySeller(user.uid);
-  const productIds = sellerProducts.map((p) => p.id);
-  if (productIds.length === 0) {
-    return {
-      items: [],
-      total: 0,
-      page: 1,
-      pageSize: params?.pageSize ?? 20,
-      totalPages: 0,
-      hasMore: false,
-    };
-  }
-  return orderRepository.listForSeller(productIds, {
-    filters: params?.filters,
-    sorts: params?.sorts ?? "-createdAt",
-    page: params?.page ?? 1,
-    pageSize: params?.pageSize ?? 20,
-  });
+  return listSellerOrders(user.uid, params) as any;
 }
 
 export async function getSellerAnalyticsAction() {
   const user = await requireAuth();
-  const sellerId = user.uid;
-  const products = await productRepository.findBySeller(sellerId);
-  const productIds = products.map((p) => p.id);
-  let allOrders: OrderDocument[] = [];
-  if (productIds.length > 0) {
-    const batches = await Promise.all(
-      productIds
-        .slice(0, 20)
-        .map((id) =>
-          orderRepository.findByProduct(id).catch(() => [] as OrderDocument[]),
-        ),
-    );
-    allOrders = batches.flat();
-  }
-  const totalOrders = allOrders.length;
-  const totalRevenue = allOrders.reduce((s, o) => s + (o.totalPrice ?? 0), 0);
-  const totalProducts = products.length;
-  const publishedProducts = products.filter(
-    (p) => p.status === "published",
-  ).length;
-  const now = new Date();
-  const monthMap = new Map<
-    string,
-    { month: string; orders: number; revenue: number }
-  >();
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    monthMap.set(key, {
-      month: d.toLocaleDateString("en", { month: "short", year: "numeric" }),
-      orders: 0,
-      revenue: 0,
-    });
-  }
-  for (const o of allOrders) {
-    const d = new Date(o.createdAt as any);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    if (monthMap.has(key)) {
-      const e = monthMap.get(key)!;
-      e.orders += 1;
-      e.revenue += o.totalPrice ?? 0;
-    }
-  }
-  return {
-    totalOrders,
-    totalRevenue,
-    totalProducts,
-    publishedProducts,
-    monthlyRevenue: Array.from(monthMap.values()),
-  };
+  return getSellerAnalytics(user.uid);
 }
 
-export async function listSellerPayoutsAction(params?: {
-  page?: number;
-  pageSize?: number;
-}) {
+export async function listSellerPayoutsAction(params?: { page?: number; pageSize?: number }) {
   const user = await requireAuth();
-  const payouts = await payoutRepository.findBySeller(user.uid);
-  const page = params?.page ?? 1;
-  const pageSize = params?.pageSize ?? 20;
-  const start = (page - 1) * pageSize;
-  return {
-    items: payouts.slice(start, start + pageSize),
-    total: payouts.length,
-    page,
-    pageSize,
-    hasMore: start + pageSize < payouts.length,
-  };
+  return listSellerPayouts(user.uid, params);
 }
 
 export async function listSellerCouponsAction(): Promise<CouponDocument[]> {
   const user = await requireAuth();
-  return couponsRepository.getSellerCoupons(user.uid);
+  return listSellerCoupons(user.uid) as any;
 }
 
 export async function listSellerMyProductsAction(params?: {
@@ -874,25 +263,7 @@ export async function listSellerMyProductsAction(params?: {
   pageSize?: number;
 }) {
   const user = await requireAuth();
-  const products = await productRepository.findBySeller(user.uid);
-  // Simple pagination since findBySeller returns all
-  const filters = params?.filters;
-  let filtered = products;
-  if (filters?.includes("status==")) {
-    const match = filters.match(/status==([\w]+)/);
-    if (match) filtered = products.filter((p) => p.status === match[1]);
-  }
-  const page = params?.page ?? 1;
-  const pageSize = params?.pageSize ?? 20;
-  const start = (page - 1) * pageSize;
-  return {
-    items: filtered.slice(start, start + pageSize),
-    total: filtered.length,
-    page,
-    pageSize,
-    totalPages: Math.ceil(filtered.length / pageSize),
-    hasMore: start + pageSize < filtered.length,
-  };
+  return listSellerMyProducts(user.uid, params);
 }
 
 export async function sellerUpdateProductAction(
@@ -901,47 +272,17 @@ export async function sellerUpdateProductAction(
 ): Promise<ProductDocument> {
   const user = await requireAuth();
   if (!id?.trim()) throw new ValidationError("id is required");
-
-  const existing = await productRepository.findById(id);
-  if (!existing) throw new NotFoundError("Product not found");
-  const profile = await userRepository.findById(user.uid);
-  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
-    throw new AuthorizationError("You do not own this product");
-
   const parsed = productUpdateSchema.partial().safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
-    );
-
-  const finalizedMediaData = await finalizeProductMediaReferences(parsed.data);
-
-  const updated = await productRepository.updateProduct(
-    id,
-    finalizedMediaData as any,
-  );
-  serverLogger.info("sellerUpdateProductAction", {
-    userId: user.uid,
-    productId: id,
-  });
-  return updated;
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid update data");
+  const profile = await userRepository.findById(user.uid);
+  return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, unknown>) as any;
 }
 
 export async function sellerDeleteProductAction(id: string): Promise<void> {
   const user = await requireAuth();
   if (!id?.trim()) throw new ValidationError("id is required");
-
-  const existing = await productRepository.findById(id);
-  if (!existing) throw new NotFoundError("Product not found");
   const profile = await userRepository.findById(user.uid);
-  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
-    throw new AuthorizationError("You do not own this product");
-
-  await productRepository.delete(id);
-  serverLogger.info("sellerDeleteProductAction", {
-    userId: user.uid,
-    productId: id,
-  });
+  return sellerDeleteProduct(user.uid, profile?.role ?? "user", id);
 }
 
 // ─── Ship Order ───────────────────────────────────────────────────────────────
@@ -962,134 +303,79 @@ const shiprocketShipSchema = z.object({
   courierId: z.number().optional(),
 });
 
-const shipOrderSchema = z.discriminatedUnion("method", [
-  customShipSchema,
-  shiprocketShipSchema,
-]);
+const shipOrderSchema = z.discriminatedUnion("method", [customShipSchema, shiprocketShipSchema]);
 
 export async function shipOrderAction(
   orderId: string,
   input: z.infer<typeof shipOrderSchema>,
-): Promise<{
-  orderId: string;
-  method: string;
-  awb?: string;
-  trackingUrl?: string;
-  pickupScheduledDate?: string;
-}> {
+): Promise<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `ship-order:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = shipOrderSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
+  const data = parsed.data;
+
+  if (data.method === "custom") {
+    return customShipOrder(user.uid, user.role ?? "seller", orderId, {
+      shippingCarrier: data.shippingCarrier,
+      trackingNumber: data.trackingNumber,
+      trackingUrl: data.trackingUrl,
+    });
+  }
+
+  // ── Shiprocket branch ──
   const userDoc = await userRepository.findById(user.uid);
   if (!userDoc) throw new AuthorizationError("User not found");
 
   const order = await orderRepository.findById(orderId);
   if (!order) throw new NotFoundError("Order not found");
-  if (user.role !== "admin" && order.sellerId !== user.uid)
+  if (user.role !== "admin" && (order as any).sellerId !== user.uid)
     throw new AuthorizationError("You do not own this order");
   if (order.status === "shipped" || order.status === "delivered")
     throw new ValidationError("Order is already shipped");
   if (order.status !== "confirmed")
     throw new ValidationError("Order must be confirmed before shipping");
 
-  const data = parsed.data;
-
-  if (data.method === "custom") {
-    await orderRepository.update(orderId, {
-      status: "shipped",
-      shippingMethod: "custom",
-      shippingCarrier: data.shippingCarrier,
-      trackingNumber: data.trackingNumber,
-      trackingUrl: data.trackingUrl,
-      shippingDate: new Date(),
-      [ORDER_FIELDS.PAYOUT_STATUS]: "eligible",
-    });
-    serverLogger.info("shipOrderAction (custom)", {
-      orderId,
-      uid: user.uid,
-      carrier: data.shippingCarrier,
-    });
-    return { orderId, method: "custom" };
-  }
-
-  // ── Shiprocket ──
-  const shippingConfig = userDoc.shippingConfig;
-  if (!shippingConfig?.isConfigured)
-    throw new ValidationError("Shipping is not configured");
-  if (shippingConfig.method !== "shiprocket")
-    throw new ValidationError("Shipping method mismatch");
-  if (!shippingConfig.pickupAddress?.isVerified)
-    throw new ValidationError("Pickup address not verified");
+  const shippingConfig = (userDoc as any).shippingConfig;
+  if (!shippingConfig?.isConfigured) throw new ValidationError("Shipping is not configured");
+  if (shippingConfig.method !== "shiprocket") throw new ValidationError("Shipping method mismatch");
+  if (!shippingConfig.pickupAddress?.isVerified) throw new ValidationError("Pickup address not verified");
   const token = shippingConfig.shiprocketToken;
   if (!token || isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry))
-    throw new ValidationError(
-      "Shiprocket token is missing or expired. Please reconnect.",
-    );
+    throw new ValidationError("Shiprocket token is missing or expired. Please reconnect.");
 
-  const rawAddr = order.shippingAddress ?? "";
+  const rawAddr = (order as any).shippingAddress ?? "";
   let parsedAddr: Record<string, string> = {};
-  try {
-    parsedAddr = JSON.parse(rawAddr);
-  } catch {
-    parsedAddr = { address: rawAddr };
-  }
+  try { parsedAddr = JSON.parse(rawAddr); } catch { parsedAddr = { address: rawAddr }; }
 
-  const addrName = parsedAddr["name"] ?? order.userName ?? "";
-  const addrLine = parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr;
-  const addrCity = parsedAddr["city"] ?? "";
-  const addrPincode = parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "";
-  const addrState = parsedAddr["state"] ?? "";
-  const addrEmail = parsedAddr["email"] ?? order.userEmail ?? "";
-  const addrPhone = parsedAddr["phone"] ?? "";
-
+  const orderDate = (resolveDate((order as any).createdAt) ?? new Date()).toISOString().slice(0, 19);
   const srOrderResponse = await shiprocketCreateOrder(token, {
     order_id: orderId,
-    order_date: (resolveDate(order.createdAt) ?? new Date())
-      .toISOString()
-      .slice(0, 19),
+    order_date: orderDate,
     pickup_location: shippingConfig.pickupAddress.locationName,
-    billing_customer_name: addrName,
+    billing_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
     billing_last_name: "",
-    billing_address: addrLine,
-    billing_city: addrCity,
-    billing_pincode: addrPincode,
-    billing_state: addrState,
+    billing_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
+    billing_city: parsedAddr["city"] ?? "",
+    billing_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
+    billing_state: parsedAddr["state"] ?? "",
     billing_country: "India",
-    billing_email: addrEmail,
-    billing_phone: addrPhone,
+    billing_email: parsedAddr["email"] ?? (order as any).userEmail ?? "",
+    billing_phone: parsedAddr["phone"] ?? "",
     shipping_is_billing: true,
-    shipping_customer_name: addrName,
+    shipping_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
     shipping_last_name: "",
-    shipping_address: addrLine,
-    shipping_city: addrCity,
-    shipping_pincode: addrPincode,
+    shipping_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
+    shipping_city: parsedAddr["city"] ?? "",
+    shipping_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
     shipping_country: "India",
-    shipping_state: addrState,
-    shipping_phone: addrPhone,
-    order_items: [
-      {
-        name: order.productTitle,
-        sku: order.productId,
-        units: order.quantity,
-        selling_price: order.unitPrice,
-      },
-    ],
-    payment_method: (order.paymentMethod === "cod" ? "COD" : "Prepaid") as
-      | "COD"
-      | "Prepaid",
-    sub_total: order.totalPrice,
+    shipping_state: parsedAddr["state"] ?? "",
+    shipping_phone: parsedAddr["phone"] ?? "",
+    order_items: [{ name: (order as any).productTitle, sku: (order as any).productId, units: (order as any).quantity, selling_price: (order as any).unitPrice }],
+    payment_method: ((order as any).paymentMethod === "cod" ? "COD" : "Prepaid") as "COD" | "Prepaid",
+    sub_total: (order as any).totalPrice,
     length: data.packageLength,
     breadth: data.packageBreadth,
     height: data.packageHeight,
@@ -1121,24 +407,14 @@ export async function shipOrderAction(
     shiprocketStatus: "Pickup Scheduled",
     shiprocketUpdatedAt: new Date(),
     shippingDate: new Date(),
-    [ORDER_FIELDS.PAYOUT_STATUS]: "eligible",
-  });
+    payoutStatus: "eligible",
+  } as any);
 
-  serverLogger.info("shipOrderAction (shiprocket)", {
-    orderId,
-    uid: user.uid,
-    awb,
-  });
-  return {
-    orderId,
-    method: "shiprocket",
-    awb,
-    trackingUrl,
-    pickupScheduledDate: pickupResponse.pickup_scheduled_date,
-  };
+  serverLogger.info("shipOrderAction (shiprocket)", { orderId, uid: user.uid, awb });
+  return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
 }
 
-// ─── Update Seller Shipping ───────────────────────────────────────────────────
+// ─── Update Seller Shipping (shiprocket — stays in letitrip) ──────────────────
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
@@ -1161,90 +437,46 @@ const updateShippingSchema = z.discriminatedUnion("method", [
   }),
   z.object({
     method: z.literal("shiprocket"),
-    shiprocketCredentials: z
-      .object({ email: z.string().email(), password: z.string().min(1) })
-      .optional(),
+    shiprocketCredentials: z.object({ email: z.string().email(), password: z.string().min(1) }).optional(),
     pickupAddress: pickupAddressSchema.optional(),
   }),
 ]);
 
 export async function updateSellerShippingAction(
   input: z.infer<typeof updateShippingSchema>,
-): Promise<{
-  shippingConfig: Omit<
-    SellerShippingConfig,
-    "shiprocketToken" | "shiprocketTokenExpiry"
-  > & { isTokenValid?: boolean };
-  otpPending: boolean;
-  pickupLocationId?: number;
-}> {
+): Promise<unknown> {
   const user = await requireRole(["seller", "admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `update-shipping:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
+  const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updateShippingSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
   const userDoc = await userRepository.findById(user.uid);
   if (!userDoc) throw new AuthorizationError("User not found");
 
   const data = parsed.data;
-  let config: SellerShippingConfig;
+  let config: any;
   let otpPending = false;
   let newPickupLocationId: number | undefined;
 
   if (data.method === "custom") {
-    config = {
-      method: "custom",
-      customShippingPrice: data.customShippingPrice,
-      customCarrierName: data.customCarrierName,
-      isConfigured: true,
-    };
+    config = { method: "custom", customShippingPrice: data.customShippingPrice, customCarrierName: data.customCarrierName, isConfigured: true };
   } else {
-    const existing = userDoc.shippingConfig;
+    const existing = (userDoc as any).shippingConfig;
     let token = existing?.shiprocketToken;
     let tokenExpiry = existing?.shiprocketTokenExpiry;
     const existingEmail = existing?.shiprocketEmail;
 
-    if (
-      data.shiprocketCredentials ||
-      !token ||
-      (tokenExpiry && new Date() >= new Date(tokenExpiry))
-    ) {
-      if (!data.shiprocketCredentials)
-        throw new ValidationError(
-          "Shiprocket credentials are required to reconnect",
-        );
-
-      const authResult = await shiprocketAuthenticate({
-        email: data.shiprocketCredentials.email,
-        password: data.shiprocketCredentials.password,
-      }).catch((err: Error) => {
-        throw new ValidationError(`Shiprocket auth failed: ${err.message}`);
-      });
-
+    if (data.shiprocketCredentials || !token || (tokenExpiry && new Date() >= new Date(tokenExpiry))) {
+      if (!data.shiprocketCredentials) throw new ValidationError("Shiprocket credentials are required to reconnect");
+      const authResult = await shiprocketAuthenticate({ email: data.shiprocketCredentials.email, password: data.shiprocketCredentials.password })
+        .catch((err: Error) => { throw new ValidationError(`Shiprocket auth failed: ${err.message}`); });
       token = authResult.token;
       tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
     }
 
-    const shiprocketEmail =
-      data.shiprocketCredentials?.email ?? existingEmail ?? "";
-    config = {
-      method: "shiprocket",
-      shiprocketEmail,
-      shiprocketToken: token,
-      shiprocketTokenExpiry: tokenExpiry,
-      pickupAddress: existing?.pickupAddress,
-      isConfigured: Boolean(existing?.pickupAddress?.isVerified),
-    };
+    const shiprocketEmail = data.shiprocketCredentials?.email ?? existingEmail ?? "";
+    config = { method: "shiprocket", shiprocketEmail, shiprocketToken: token, shiprocketTokenExpiry: tokenExpiry, pickupAddress: existing?.pickupAddress, isConfigured: Boolean(existing?.pickupAddress?.isVerified) };
 
     if (data.pickupAddress && token) {
       const pickupResult = await shiprocketAddPickupLocation(token, {
@@ -1258,111 +490,57 @@ export async function updateSellerShippingAction(
         state: data.pickupAddress.state,
         country: data.pickupAddress.country || "India",
         pin_code: data.pickupAddress.pincode,
-      }).catch((err: Error) => {
-        throw new ValidationError(
-          `Failed to add pickup address: ${err.message}`,
-        );
-      });
+      }).catch((err: Error) => { throw new ValidationError(`Failed to add pickup address: ${err.message}`); });
 
       newPickupLocationId = pickupResult.address?.pickup_location_id;
       otpPending = true;
-      config.pickupAddress = {
-        ...data.pickupAddress,
-        isVerified: false,
-        shiprocketAddressId: newPickupLocationId,
-      };
+      config.pickupAddress = { ...data.pickupAddress, isVerified: false, shiprocketAddressId: newPickupLocationId };
       config.isConfigured = false;
     }
   }
 
-  await userRepository.update(user.uid, { shippingConfig: config });
-  serverLogger.info("updateSellerShippingAction", {
-    uid: user.uid,
-    method: config.method,
-    otpPending,
-  });
+  await userRepository.update(user.uid, { shippingConfig: config } as any);
+  serverLogger.info("updateSellerShippingAction", { uid: user.uid, method: config.method, otpPending });
 
-  const {
-    shiprocketToken: _t,
-    shiprocketTokenExpiry: _e,
-    ...safeConfig
-  } = config as any;
-  return {
-    shippingConfig: {
-      ...safeConfig,
-      isTokenValid: Boolean(
-        (config as any).shiprocketToken &&
-        !isShiprocketTokenExpired((config as any).shiprocketTokenExpiry),
-      ),
-    },
-    otpPending,
-    pickupLocationId: newPickupLocationId,
-  };
+  const { shiprocketToken: _t, shiprocketTokenExpiry: _e, ...safeConfig } = config;
+  return { shippingConfig: { ...safeConfig, isTokenValid: Boolean(config.shiprocketToken && !isShiprocketTokenExpired(config.shiprocketTokenExpiry)) }, otpPending, pickupLocationId: newPickupLocationId };
 }
 
-// ─── Verify Shiprocket Pickup OTP ─────────────────────────────────────────────
+// ─── Verify Shiprocket Pickup OTP (stays in letitrip) ─────────────────────────
 
-export async function verifyShiprocketPickupOtpAction(input: {
-  otp: number;
-  pickupLocationId: number;
-}): Promise<{ message: string }> {
+export async function verifyShiprocketPickupOtpAction(
+  input: { otp: number; pickupLocationId: number },
+): Promise<{ message: string }> {
   const user = await requireRole(["seller", "admin"]);
+  const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
 
-  const rl = await rateLimitByIdentifier(
-    `verify-pickup-otp:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = z
-    .object({
-      otp: z.number().int().min(100000).max(999999),
-      pickupLocationId: z.number().int().positive(),
-    })
-    .safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
+  const parsed = z.object({ otp: z.number().int().min(100000).max(999999), pickupLocationId: z.number().int().positive() }).safeParse(input);
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
   const userDoc = await userRepository.findById(user.uid);
   if (!userDoc) throw new AuthorizationError("User not found");
 
-  const config = userDoc.shippingConfig;
-  if (!config || config.method !== "shiprocket")
-    throw new ValidationError("Shiprocket shipping is not configured");
-  if (!config.shiprocketToken)
-    throw new ValidationError("Shiprocket token is missing. Please reconnect.");
+  const config = (userDoc as any).shippingConfig;
+  if (!config || config.method !== "shiprocket") throw new ValidationError("Shiprocket shipping is not configured");
+  if (!config.shiprocketToken) throw new ValidationError("Shiprocket token is missing. Please reconnect.");
 
   const result = await shiprocketVerifyPickupOTP(config.shiprocketToken, {
     otp: parsed.data.otp,
     pickup_location_id: parsed.data.pickupLocationId,
-  }).catch((err: Error) => {
-    throw new ValidationError(`Pickup verification failed: ${err.message}`);
-  });
+  }).catch((err: Error) => { throw new ValidationError(`Pickup verification failed: ${err.message}`); });
 
-  if (!result.success)
-    throw new ValidationError(
-      result.message || "Pickup OTP verification failed",
-    );
+  if (!result.success) throw new ValidationError(result.message || "Pickup OTP verification failed");
 
   const updatedConfig = {
     ...config,
-    pickupAddress: config.pickupAddress
-      ? {
-          ...config.pickupAddress,
-          isVerified: true,
-          shiprocketAddressId: parsed.data.pickupLocationId,
-        }
-      : undefined,
+    pickupAddress: config.pickupAddress ? { ...config.pickupAddress, isVerified: true, shiprocketAddressId: parsed.data.pickupLocationId } : undefined,
     isConfigured: true,
   };
-  await userRepository.update(user.uid, { shippingConfig: updatedConfig });
-  serverLogger.info("verifyShiprocketPickupOtpAction", {
-    uid: user.uid,
-    pickupLocationId: parsed.data.pickupLocationId,
-  });
-  return { message: "Pickup address verified successfully" };
+
+  await userRepository.update(user.uid, { shippingConfig: updatedConfig } as any);
+  serverLogger.info("verifyShiprocketPickupOtpAction", { uid: user.uid });
+  return { message: result.message || "Pickup address verified successfully" };
 }
 
+export type { BecomeSellerResult, CreateStoreInput, UpdateStoreInput, UpdatePayoutSettingsInput, RequestPayoutInput, BulkSellerOrderResult };

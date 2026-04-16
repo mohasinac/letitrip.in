@@ -1,10 +1,11 @@
 "use client";
 // Thin adapter — layout lives in @mohasinac/appkit
-import { useTranslations } from "next-intl";
-import { useHomepageSections } from "@/hooks";
-import { proseMirrorToHtml } from "@/utils";
 import { WhatsAppCommunitySection as AppkitWhatsAppCommunitySection } from "@mohasinac/appkit/features/homepage";
 import type { WhatsAppCommunitySectionConfig } from "@/db/schema";
+import { useTranslations } from "next-intl";
+import { useHomepageSections } from "@/hooks";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
+
 
 export function WhatsAppCommunitySection() {
   const t = useTranslations("homepage");

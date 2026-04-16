@@ -1,11 +1,12 @@
 "use client";
-
 import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import {
   Accordion, AccordionItem, Caption, Li, Ol, Text, Button, Span, Row, Stack, Div, } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@/components";

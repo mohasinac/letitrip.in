@@ -1,4 +1,4 @@
-import { SITE_CONFIG } from "@/constants";
+import { SITE_CONFIG } from "@/constants/site";
 import type { ProductDocument } from "@/db/schema";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";

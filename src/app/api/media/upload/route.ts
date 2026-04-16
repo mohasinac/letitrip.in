@@ -1,10 +1,4 @@
 import "@/providers.config";
-/**
- * Media Upload API Route
- *
- * Upload files to Firebase Cloud Storage
- */
-
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -14,10 +8,14 @@ import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-fi
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import {
-  formatFileSize,
-  generateMediaFilename,
-  type MediaFilenameContext,
-} from "@/utils";
+  formatFileSize, generateMediaFilename } from "@mohasinac/appkit/utils";
+import type { MediaFilenameContext } from "@mohasinac/appkit/utils";
+
+/**
+ * Media Upload API Route
+ *
+ * Upload files to Firebase Cloud Storage
+ */
 
 const PRODUCT_IMAGE_MAX = 5;
 const PRODUCT_VIDEO_MAX = 1;

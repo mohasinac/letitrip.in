@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
 import { ROUTES, FAQ_CATEGORIES } from "@/constants";
-import type { FAQCategoryKey } from "@/constants";
+import type { FAQCategoryKey } from "@/constants/faq";
 import type { BannerSectionConfig } from "@/db/schema";
 import {
   AdvertisementBanner,

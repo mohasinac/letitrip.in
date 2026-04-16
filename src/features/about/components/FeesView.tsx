@@ -1,4 +1,5 @@
-import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { SITE_CONFIG } from "@/constants/site";
 import { Heading, Text, Section, Caption } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 

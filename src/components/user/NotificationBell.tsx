@@ -1,4 +1,14 @@
 "use client";
+import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import {
+  Heading, Li, Text, Ul, Spinner, Span, Button, } from "@mohasinac/appkit/ui";
+import { useClickOutside } from "@mohasinac/appkit/react";
+import { useNotifications, useMessage } from "@/hooks";
+import { NotificationDocument } from "@/db/schema";
+import { formatRelativeTime } from "@mohasinac/appkit/utils";
+
 
 /**
  * NotificationBell Component
@@ -14,22 +24,6 @@
  * ```
  */
 
-import { useState, useRef, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import {
-  Heading,
-  Li,
-  Text,
-  Ul,
-  Spinner,
-  Span,
-  Button,
-} from "@mohasinac/appkit/ui";
-import { useClickOutside } from "@mohasinac/appkit/react";
-import { useNotifications, useMessage } from "@/hooks";
-import { NotificationDocument } from "@/db/schema";
-import { formatRelativeTime } from "@/utils";
 import { TextLink } from "@/components";
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {

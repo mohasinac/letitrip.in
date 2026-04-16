@@ -1,11 +1,12 @@
 "use client";
-
-import React from "react";
 import { Caption, Grid, Heading, Text, Badge } from "@mohasinac/appkit/ui";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
+import React from "react";
 import type { OrderDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;

@@ -7,7 +7,7 @@ import "@/providers.config";
  * client-side; this endpoint confirms/logs the outcome.
  */
 
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";

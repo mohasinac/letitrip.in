@@ -1,11 +1,12 @@
 "use client";
-
 import { Input } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import { useMessage } from "@/hooks";
 import { usePlaceBid } from "@mohasinac/appkit/features/auctions";
 import type { BidResult } from "@mohasinac/appkit/features/auctions";

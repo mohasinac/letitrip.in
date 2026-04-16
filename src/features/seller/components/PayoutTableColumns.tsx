@@ -1,4 +1,8 @@
 "use client";
+import { Caption, Text, Badge } from "@mohasinac/appkit/ui";
+
+import { formatCurrency, formatDate, formatDateTime } from "@mohasinac/appkit/utils";
+
 
 /**
  * PAYOUT_TABLE_COLUMNS
@@ -9,9 +13,6 @@
  */
 
 import React from "react";
-import { Caption, Text, Badge } from "@mohasinac/appkit/ui";
-
-import { formatCurrency, formatDate, formatDateTime } from "@/utils";
 import { UI_LABELS } from "@/constants";
 
 export type PayoutStatus = "pending" | "processing" | "completed" | "failed";

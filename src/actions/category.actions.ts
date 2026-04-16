@@ -1,16 +1,12 @@
 "use server";
 
 /**
- * Category Server Actions
- *
- * Admin-only mutations for categories that call the repository directly,
- * bypassing the service → apiClient → API route chain.
+ * Category Server Actions — thin entrypoints.
+ * Business logic lives in @mohasinac/appkit/features/categories/actions.
  */
 
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
-import { categoriesRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -24,13 +20,24 @@ import {
   categoryCreateSchema,
   categoryUpdateSchema,
 } from "@/lib/validation/schemas";
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  listCategories,
+  listTopLevelCategories,
+  listBrandCategories,
+  getCategoryById,
+  getCategoryBySlug,
+  getCategoryChildren,
+  fetchCategoryTree,
+} from "@mohasinac/appkit/features/categories";
 import type {
   CategoryDocument,
-  CategoryCreateInput,
   CategoryUpdateInput,
   CategoryTreeNode,
 } from "@/db/schema/categories";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -52,12 +59,6 @@ export type CreateCategoryInput = {
   };
 };
 
-/**
- * Create a new category (admin only).
- *
- * Validates input with Zod, rate-limits by uid, then calls
- * `categoriesRepository.createWithHierarchy()` directly.
- */
 export async function createCategoryAction(
   input: CreateCategoryInput,
 ): Promise<CategoryDocument> {
@@ -78,44 +79,36 @@ export async function createCategoryAction(
   }
 
   const body = parsed.data;
-  const categoryData: CategoryCreateInput = {
-    ...body,
-    createdBy: admin.uid,
-    isActive: true,
-    isSearchable: true,
-    order: 0,
-    isFeatured: false,
-    featuredPriority: 0,
-    rootId: "",
-    parentIds: body.parentId ? [body.parentId] : [],
-    childrenIds: [],
-    tier: 0,
-    path: "",
-    slug: "",
-    seo: {
-      title: body.seo?.title || body.name,
-      description:
-        body.seo?.description ||
-        body.description ||
-        `Browse ${body.name} category`,
-      keywords: body.seo?.keywords || [],
-    },
-    display: body.display || { showInMenu: true, showInFooter: false },
-  };
-
-  const category = await categoriesRepository.createWithHierarchy(categoryData);
-
-  serverLogger.debug("createCategoryAction", {
-    adminId: admin.uid,
-    categoryId: category.id,
-  });
-
-  return category;
+  return createCategory(
+    {
+      ...body,
+      isActive: true,
+      isSearchable: true,
+      order: 0,
+      isFeatured: false,
+      featuredPriority: 0,
+      rootId: "",
+      parentIds: body.parentId ? [body.parentId] : [],
+      childrenIds: [] as string[],
+      tier: 0,
+      path: "",
+      slug: "",
+      seo: {
+        title: body.seo?.title || body.name,
+        description:
+          body.seo?.description ||
+          body.description ||
+          `Browse ${body.name} category`,
+        keywords: body.seo?.keywords || [],
+      },
+      display: body.display
+        ? { ...body.display, showInFooter: body.display.showInFooter ?? false }
+        : { showInMenu: true, showInFooter: false as boolean },
+    } as import("@mohasinac/appkit/features/categories").CategoryCreateInput,
+    admin.uid,
+  );
 }
 
-/**
- * Update a category (admin only).
- */
 export async function updateCategoryAction(
   id: string,
   input: Partial<CategoryUpdateInput>,
@@ -138,24 +131,12 @@ export async function updateCategoryAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await categoriesRepository.findById(id);
+  const existing = await getCategoryById(id);
   if (!existing) throw new NotFoundError("Category not found");
 
-  const updated = await categoriesRepository.update(
-    id,
-    parsed.data as CategoryUpdateInput,
-  );
-
-  serverLogger.info("updateCategoryAction", {
-    adminId: admin.uid,
-    categoryId: id,
-  });
-  return updated;
+  return updateCategory(id, parsed.data as CategoryUpdateInput);
 }
 
-/**
- * Delete a category (admin only).
- */
 export async function deleteCategoryAction(id: string): Promise<void> {
   const admin = await requireRole(["admin"]);
 
@@ -169,15 +150,10 @@ export async function deleteCategoryAction(id: string): Promise<void> {
   const idParsed = categoryIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
 
-  const existing = await categoriesRepository.findById(id);
+  const existing = await getCategoryById(id);
   if (!existing) throw new NotFoundError("Category not found");
 
-  await categoriesRepository.delete(id);
-
-  serverLogger.info("deleteCategoryAction", {
-    adminId: admin.uid,
-    categoryId: id,
-  });
+  return deleteCategory(id);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
@@ -188,53 +164,42 @@ export async function listCategoriesAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<CategoryDocument>> {
-  const sieve: SieveModel = {
-    filters: params?.filters,
-    sorts: params?.sorts ?? "order",
-    page: params?.page ?? 1,
-    pageSize: params?.pageSize ?? 50,
-  };
-  return categoriesRepository.list(sieve);
+  return listCategories(params);
 }
 
 export async function listTopLevelCategoriesAction(
   limit = 12,
 ): Promise<CategoryDocument[]> {
-  const all = await categoriesRepository.getCategoriesByTier(0);
-  return all
-    .filter((c) => c.isActive !== false)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    .slice(0, limit);
+  return listTopLevelCategories(limit);
 }
 
 export async function listBrandCategoriesAction(
   limit = 12,
 ): Promise<CategoryDocument[]> {
-  const brands = await categoriesRepository.getBrandCategories();
-  return brands.filter((c) => c.isActive !== false).slice(0, limit);
+  return listBrandCategories(limit);
 }
 
 export async function getCategoryByIdAction(
   id: string,
 ): Promise<CategoryDocument | null> {
-  return categoriesRepository.findById(id);
+  return getCategoryById(id);
 }
 
 export async function getCategoryBySlugAction(
   slug: string,
 ): Promise<CategoryDocument | null> {
-  return categoriesRepository.getCategoryBySlug(slug);
+  return getCategoryBySlug(slug);
 }
 
 export async function getCategoryChildrenAction(
   parentId: string,
 ): Promise<CategoryDocument[]> {
-  return categoriesRepository.getChildren(parentId);
+  return getCategoryChildren(parentId);
 }
 
 export async function buildCategoryTreeAction(
   rootId?: string,
 ): Promise<CategoryTreeNode[]> {
-  return categoriesRepository.buildTree(rootId);
+  return fetchCategoryTree(rootId);
 }
 

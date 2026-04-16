@@ -1,17 +1,14 @@
 "use client";
-
 import { Heading, Text, Spinner } from "@mohasinac/appkit/ui";
 import { SellerAnalyticsView as AppkitSellerAnalyticsView } from "@mohasinac/appkit/features/seller";
 import {
-  SellerAnalyticsStats,
-  SellerRevenueChart,
-  SellerTopProducts,
-} from "@mohasinac/appkit/features/seller";
+  SellerAnalyticsStats, SellerRevenueChart, SellerTopProducts, } from "@mohasinac/appkit/features/seller";
 
 import { useSellerAnalytics } from "../hooks/useSellerAnalytics";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
 
 const { flex, spacing } = THEME_CONSTANTS;
 

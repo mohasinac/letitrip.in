@@ -1,25 +1,17 @@
 "use client";
-
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
-  ERROR_MESSAGES,
-  ROUTES,
-  SUCCESS_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
+  ERROR_MESSAGES, ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS, } from "@/constants";
 import {
-  useAddToCart,
-  useAuth,
-  useBottomActions,
-  useMessage,
-  useWishlistToggle,
-} from "@/hooks";
+  useAddToCart, useAuth, useBottomActions, useMessage, useWishlistToggle, } from "@/hooks";
 import { Span, Text, Button } from "@mohasinac/appkit/ui";
 
 import { Gavel, Heart, ShoppingCart, Tag, Zap } from "lucide-react";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import { MakeOfferForm } from "./MakeOfferForm";
 
 const { themed, flex, position } = THEME_CONSTANTS;

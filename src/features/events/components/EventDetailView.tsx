@@ -1,17 +1,13 @@
 "use client";
 
+import type { EventItem } from "@mohasinac/appkit/features/events";
+import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
+
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import {
-  Heading,
-  Text,
-  Button,
-  Span,
-  Spinner,
-  Row,
-  RichText,
-} from "@mohasinac/appkit/ui";
+  Heading, Text, Button, Span, Spinner, Row, RichText, } from "@mohasinac/appkit/ui";
 import { Card, EmptyState, MediaImage } from "@/components";
 import { useMessage } from "@/hooks";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
@@ -22,9 +18,7 @@ import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
 import { FeedbackEventSection } from "./FeedbackEventSection";
 import { EventLeaderboard } from "./EventLeaderboard";
-import { formatDate } from "@/utils";
-import type { EventItem } from "@mohasinac/appkit/features/events";
-import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
+import { formatDate } from "@mohasinac/appkit/utils";
 
 const { typography, themed } = THEME_CONSTANTS;
 

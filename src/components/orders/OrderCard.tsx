@@ -1,5 +1,4 @@
 "use client";
-
 import { useCallback } from "react";
 import { Package } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -7,7 +6,9 @@ import { useRouter } from "@/i18n/navigation";
 import { Caption, Text, StatusBadge, Span, Button } from "@mohasinac/appkit/ui";
 import { Card, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
+
+
 import type { OrderDocument } from "@/db/schema";
 
 const { spacing, typography } = THEME_CONSTANTS;

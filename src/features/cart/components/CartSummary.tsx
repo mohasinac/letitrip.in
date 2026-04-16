@@ -1,8 +1,9 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import { Heading, Span, Button, Div, Row, Stack } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 

@@ -4,48 +4,28 @@
  * Full pre-order detail page. Shows product gallery, pre-order info,
  * and a reservation summary panel.
  */
-
-"use client";
-
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PreOrderDetailView as AppkitPreOrderDetailView } from "@mohasinac/appkit/features/products";
 import {
-  Heading,
-  Grid,
-  Li,
-  Text,
-  Ul,
-  Divider,
-  Span,
-  Button,
-  Badge,
-  Row,
-  Accordion,
-  AccordionItem,
-  Div,
-  Stack,
-} from "@mohasinac/appkit/ui";
+  Heading, Grid, Li, Text, Ul, Divider, Span, Button, Badge, Row, Accordion, AccordionItem, Div, Stack, } from "@mohasinac/appkit/ui";
 import {
-  Breadcrumbs,
-  BreadcrumbItem,
-  TextLink,
-} from "@/components";
+  Breadcrumbs, BreadcrumbItem, TextLink, } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import {
-  ROUTES,
-  THEME_CONSTANTS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-} from "@/constants";
+  ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES, } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
 import { useProductDetail } from "@mohasinac/appkit/features/products";
 import { usePreOrderPayment } from "../hooks/usePreOrders";
 import { listAddressesAction } from "@/actions";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { Address } from "@/hooks";
 

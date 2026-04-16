@@ -1,8 +1,8 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { ProductFeatureBadges as AppkitProductFeatureBadges } from "@mohasinac/appkit/features/products";
-import { formatNumber } from "@/utils";
+import { formatNumber } from "@mohasinac/appkit/utils";
+
 
 interface ProductFeatureBadgesProps {
   featured?: boolean;

@@ -1,10 +1,11 @@
 "use client";
-
 import { Caption, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { MediaImage, TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import type { CartItemDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;

@@ -5,26 +5,11 @@
  * Admin store approval management: approve/reject seller stores and grant/revoke listing rights.
  * Uses URL-driven Sieve pagination + DataTable.
  */
-
-"use client";
-
 import { useState, useCallback, Suspense } from "react";
 import {
-  Caption,
-  Text,
-  TablePagination,
-  Badge,
-  Button,
-  StatusBadge,
-  Row,
-  DataTable,
-} from "@mohasinac/appkit/ui";
+  Caption, Text, TablePagination, Badge, Button, StatusBadge, Row, DataTable, } from "@mohasinac/appkit/ui";
 import {
-  AdminPageHeader,
-  Card,
-  ConfirmDeleteModal,
-  Search,
-} from "@/components";
+  AdminPageHeader, Card, ConfirmDeleteModal, Search, } from "@/components";
 import { AdminStoresView as AdminStoresShell } from "@mohasinac/appkit/features/admin";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -34,7 +19,11 @@ import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { StoreFilters } from "./StoreFilters";
 import { useAdminStores } from "@/features/admin/hooks";
 import type { AdminStoreItem } from "@/features/admin/hooks";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import type { ReactNode } from "react";
 
 interface Column {

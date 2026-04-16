@@ -4,45 +4,25 @@
  * Wraps AppkitAuctionDetailView shell. All rendering logic lives in render slots.
  * Business logic (hooks, countdown, real-time bids, wishlist, bottom actions) stays local.
  */
-"use client";
-
-import {
-  Heading,
-  Grid,
-  Row,
-  Li,
-  Text,
-  Ul,
-  Divider,
-  Span,
-  Button,
-  Badge,
-  RichText,
-  Accordion,
-  AccordionItem,
-  Div,
-  Stack,
-} from "@mohasinac/appkit/ui";
+import { Heading, Grid, Row, Li, Text, Ul, Divider, Span, Button, Badge, RichText, Accordion, AccordionItem, Div, Stack, } from "@mohasinac/appkit/ui";
 import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 import { useCountdown } from "@mohasinac/appkit/react";
 import {
-  Breadcrumbs,
-  BreadcrumbItem,
-  TextLink,
-} from "@/components";
+  Breadcrumbs, BreadcrumbItem, TextLink, } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
 import { PlaceBidForm } from "./PlaceBidForm";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import { AuctionDetailView as AppkitAuctionDetailView } from "@mohasinac/appkit/features/products";
 import {
-  useAuctionDetail,
-  useRealtimeBids,
-} from "@mohasinac/appkit/features/auctions";
+  useAuctionDetail, useRealtimeBids, } from "@mohasinac/appkit/features/auctions";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useBottomActions, useWishlistToggle } from "@/hooks";
-import { formatCurrency, formatDate, resolveDate } from "@/utils";
+import { formatCurrency, formatDate, resolveDate } from "@mohasinac/appkit/utils";
+
+"use client";
+
 import { Heart } from "lucide-react";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;

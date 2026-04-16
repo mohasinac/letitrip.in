@@ -1,10 +1,10 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { Caption, Heading, Text, Divider } from "@mohasinac/appkit/ui";
 import { Card, SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
 
 const { flex } = THEME_CONSTANTS;
 

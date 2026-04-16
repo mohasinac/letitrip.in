@@ -5,21 +5,14 @@
  * Side drawer showing detailed user info with role change/ban/delete actions.
  * Uses RoleBadge, StatusBadge, SideDrawer, Button from @/components.
  */
+import { Caption, Grid, Heading, Label, Text, StatusBadge, Button, } from "@mohasinac/appkit/ui";
+import { SideDrawer, RoleBadge, AvatarDisplay } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+import { formatDateTime } from "@mohasinac/appkit/utils";
+
 
 "use client";
 
-import {
-  Caption,
-  Grid,
-  Heading,
-  Label,
-  Text,
-  StatusBadge,
-  Button,
-} from "@mohasinac/appkit/ui";
-import { SideDrawer, RoleBadge, AvatarDisplay } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
-import { formatDateTime } from "@/utils";
 import { useTranslations } from "next-intl";
 import type { AdminUser } from "./User.types";
 

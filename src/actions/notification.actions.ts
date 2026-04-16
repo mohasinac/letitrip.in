@@ -1,20 +1,28 @@
 "use server";
 
 /**
- * Notification Server Actions
+ * Notification Server Actions — thin wrapper
  *
- * Mark notifications as read — directly calls the repository, bypassing
- * the service → apiClient → API route chain.
+ * Business logic lives in @mohasinac/appkit/features/admin (notification actions).
+ * This wrapper adds auth, rate-limiting, and Next.js server-action semantics.
  */
 
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { notificationRepository } from "@/repositories";
+import {
+  markNotificationRead,
+  markAllNotificationsRead,
+  deleteNotification,
+  listNotifications,
+  getUnreadNotificationCount,
+} from "@mohasinac/appkit/features/admin";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
-import type { NotificationDocument } from "@/db/schema";
+import type { NotificationDocument } from "@mohasinac/appkit/features/admin";
+
+export type { NotificationDocument };
 
 /**
  * Mark a single notification as read.
@@ -33,7 +41,7 @@ export async function markNotificationReadAction(id: string): Promise<void> {
     throw new ValidationError("Notification id is required");
   }
 
-  await notificationRepository.markAsRead(id);
+  await markNotificationRead(id);
 }
 
 /**
@@ -49,7 +57,7 @@ export async function markAllNotificationsReadAction(): Promise<number> {
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  return notificationRepository.markAllAsRead(user.uid);
+  return markAllNotificationsRead(user.uid);
 }
 
 /**
@@ -69,7 +77,7 @@ export async function deleteNotificationAction(id: string): Promise<void> {
     throw new ValidationError("Notification id is required");
   }
 
-  await notificationRepository.delete(id);
+  await deleteNotification(id);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
@@ -78,15 +86,11 @@ export async function listNotificationsAction(
   limit = 20,
 ): Promise<{ notifications: NotificationDocument[]; unreadCount: number }> {
   const user = await requireAuth();
-  const [notifications, unreadCount] = await Promise.all([
-    notificationRepository.findByUser(user.uid, limit),
-    notificationRepository.getUnreadCount(user.uid),
-  ]);
-  return { notifications, unreadCount };
+  return listNotifications(user.uid, limit);
 }
 
 export async function getUnreadNotificationCountAction(): Promise<number> {
   const user = await requireAuth();
-  return notificationRepository.getUnreadCount(user.uid);
+  return getUnreadNotificationCount(user.uid);
 }
 

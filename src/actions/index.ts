@@ -97,8 +97,8 @@ export {
 export type {
   ValidateCouponInput,
   ValidateCouponForCartInput,
-  ValidateCouponResult,
-  ValidateCouponForCartResult,
+  CouponValidationResult,
+  CouponCartValidationResult,
 } from "./coupon.actions";
 
 // Seller coupon CRUD (seller role required)

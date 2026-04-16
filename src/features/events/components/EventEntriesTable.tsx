@@ -1,8 +1,9 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
 import { Text, Button, Badge } from "@mohasinac/appkit/ui";
 
 import type { EventEntryDocument, EntryReviewStatus } from "@/db/schema";

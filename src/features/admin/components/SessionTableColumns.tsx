@@ -1,4 +1,8 @@
 "use client";
+import { Text, Caption, Badge } from "@mohasinac/appkit/ui";
+
+import { formatRelativeTime, formatDate, isFuture } from "@mohasinac/appkit/utils";
+
 
 /**
  * SESSION_TABLE_COLUMNS
@@ -8,9 +12,6 @@
  * Consumed by AdminSessionsManager.tsx.
  */
 
-import { Text, Caption, Badge } from "@mohasinac/appkit/ui";
-
-import { formatRelativeTime, formatDate, isFuture } from "@/utils";
 import { UI_LABELS } from "@/constants";
 import type { SessionDocument } from "@/db/schema/sessions";
 

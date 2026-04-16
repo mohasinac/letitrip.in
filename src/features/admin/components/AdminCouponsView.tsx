@@ -5,51 +5,27 @@
  * Coupon management with URL-driven drawer CRUD, Sieve-powered search, and
  * pagination.
  */
-
-"use client";
-
-import {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  Suspense,
-} from "react";
+import { useState, useCallback, useEffect, useMemo, useRef, Suspense, } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import {
-  ROUTES,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
+  ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS, } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import {
-  Caption,
-  Text,
-  TablePagination,
-  Button,
-  StatusBadge,
-  Badge,
-  Stack,
-  DataTable,
-} from "@mohasinac/appkit/ui";
+  Caption, Text, TablePagination, Button, StatusBadge, Badge, Stack, DataTable, } from "@mohasinac/appkit/ui";
 import {
-  Card,
-  SideDrawer,
-  AdminPageHeader,
-  DrawerFormFooter,
-  ConfirmDeleteModal,
-  Search,
-} from "@/components";
+  Card, SideDrawer, AdminPageHeader, DrawerFormFooter, ConfirmDeleteModal, Search, } from "@/components";
 import { CouponFilters } from "./CouponFilters";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import {
   getCouponTableColumns,
   CouponForm,

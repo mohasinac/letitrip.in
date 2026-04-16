@@ -5,7 +5,8 @@
  * Column definitions for the admin FAQ DataTable.
  */
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { UI_LABELS } from "@/constants/ui";
 import type { FAQ } from "./Faq.types";
 import { Span } from "@mohasinac/appkit/ui";
 import { RowActionMenu } from "@/components";

@@ -1,14 +1,15 @@
 "use client";
-
 import { Suspense } from "react";
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, FAQ_CATEGORIES, SITE_CONFIG } from "@/constants";
-import type { FAQCategoryKey } from "@/constants";
+import type { FAQCategoryKey } from "@/constants/faq";
 import { useUrlTable } from "@/hooks";
 import { useMessage } from "@/hooks";
-import { formatNumber } from "@/utils";
+import { formatNumber } from "@mohasinac/appkit/utils";
+
+
 import {
   FAQPageContent as AppkitFAQPageContent,
   FAQAccordion,

@@ -1,7 +1,8 @@
-import { SITE_CONFIG } from "@/constants";
-import { resolveDate, stripHtml } from "@/utils";
 import type { EventDocument } from "@/db/schema";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
+
+import { SITE_CONFIG } from "@/constants";
+import { resolveDate, stripHtml } from "@mohasinac/appkit/utils";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
 

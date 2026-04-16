@@ -1,5 +1,4 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useWishlistToggle } from "@/hooks";
@@ -7,7 +6,8 @@ import { PreorderBadge } from "@mohasinac/appkit/features/pre-orders";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { Span, Text, Button } from "@mohasinac/appkit/ui";
 import { BaseListingCard, MediaImage, TextLink } from "@/components";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
 
 const { themed, flex, position } = THEME_CONSTANTS;
 

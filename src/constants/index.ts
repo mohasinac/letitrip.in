@@ -6,7 +6,9 @@
  *
  * @example
  * ```tsx
- * import { THEME_CONSTANTS, SITE_CONFIG, MAIN_NAV_ITEMS } from '@/constants';
+ * import { THEME_CONSTANTS } from "@/constants/theme";
+import { SITE_CONFIG } from "@/constants/site";
+import { MAIN_NAV_ITEMS } from "@/constants/navigation";
  * ```
  */
 

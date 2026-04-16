@@ -1,21 +1,27 @@
 "use server";
 
 /**
- * Address Server Actions
+ * Address Server Actions — thin entrypoint
  *
- * Create, update, delete, and set-default on user addresses — calls the
- * repository directly, bypassing the service → apiClient → API route chain.
+ * Authenticates, validates, rate-limits, then delegates to the appkit
+ * domain function.  No business logic here.
  */
 
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { addressRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+import {
+  createAddressForUser,
+  updateAddressForUser,
+  deleteAddressForUser,
+  setDefaultAddressForUser,
+  listAddressesForUser,
+  getAddressByIdForUser,
+} from "@mohasinac/appkit/features/account";
 import type { AddressDocument } from "@/db/schema";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
@@ -38,14 +44,10 @@ export type AddressInput = z.infer<typeof addressBodySchema>;
 
 // ─── Server Actions ────────────────────────────────────────────────────────
 
-/**
- * Create a new address for the authenticated user.
- */
 export async function createAddressAction(
   input: AddressInput,
 ): Promise<AddressDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `address:create:${user.uid}`,
     RateLimitPresets.API,
@@ -54,25 +56,19 @@ export async function createAddressAction(
     throw new AuthorizationError("Too many requests. Please slow down.");
 
   const parsed = addressBodySchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid address data",
     );
-  }
 
-  serverLogger.debug("createAddressAction", { uid: user.uid });
-  return addressRepository.create(user.uid, parsed.data);
+  return createAddressForUser(user.uid, parsed.data) as Promise<AddressDocument>;
 }
 
-/**
- * Update an existing address owned by the authenticated user.
- */
 export async function updateAddressAction(
   addressId: string,
   input: Partial<AddressInput>,
 ): Promise<AddressDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `address:update:${user.uid}`,
     RateLimitPresets.API,
@@ -80,27 +76,19 @@ export async function updateAddressAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (!addressId?.trim()) {
-    throw new ValidationError("addressId is required");
-  }
+  if (!addressId?.trim()) throw new ValidationError("addressId is required");
 
   const parsed = addressBodySchema.partial().safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid address data",
     );
-  }
 
-  serverLogger.debug("updateAddressAction", { uid: user.uid, addressId });
-  return addressRepository.update(user.uid, addressId, parsed.data);
+  return updateAddressForUser(user.uid, addressId, parsed.data) as Promise<AddressDocument>;
 }
 
-/**
- * Delete an address owned by the authenticated user.
- */
 export async function deleteAddressAction(addressId: string): Promise<void> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `address:delete:${user.uid}`,
     RateLimitPresets.API,
@@ -108,22 +96,15 @@ export async function deleteAddressAction(addressId: string): Promise<void> {
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (!addressId?.trim()) {
-    throw new ValidationError("addressId is required");
-  }
+  if (!addressId?.trim()) throw new ValidationError("addressId is required");
 
-  serverLogger.debug("deleteAddressAction", { uid: user.uid, addressId });
-  return addressRepository.delete(user.uid, addressId);
+  return deleteAddressForUser(user.uid, addressId);
 }
 
-/**
- * Set an address as the default for the authenticated user.
- */
 export async function setDefaultAddressAction(
   addressId: string,
 ): Promise<AddressDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `address:setDefault:${user.uid}`,
     RateLimitPresets.API,
@@ -131,25 +112,22 @@ export async function setDefaultAddressAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (!addressId?.trim()) {
-    throw new ValidationError("addressId is required");
-  }
+  if (!addressId?.trim()) throw new ValidationError("addressId is required");
 
-  serverLogger.debug("setDefaultAddressAction", { uid: user.uid, addressId });
-  return addressRepository.setDefault(user.uid, addressId);
+  return setDefaultAddressForUser(user.uid, addressId) as Promise<AddressDocument>;
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function listAddressesAction(): Promise<AddressDocument[]> {
   const user = await requireAuth();
-  return addressRepository.findByUser(user.uid);
+  return listAddressesForUser(user.uid) as Promise<AddressDocument[]>;
 }
 
 export async function getAddressByIdAction(
   id: string,
 ): Promise<AddressDocument | null> {
   const user = await requireAuth();
-  return addressRepository.findById(user.uid, id);
+  return getAddressByIdForUser(user.uid, id) as Promise<AddressDocument | null>;
 }
 

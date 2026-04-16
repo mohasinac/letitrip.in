@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-15 — Session 14, Phase 6 seed batch 2 (10 files) migrated into appkit  
-**Last session ended at:** Phase 6 — src/db/seed-data/blog-posts-seed-data.ts migrated  
+**Last verified:** 2026-04-16 — Session 23, Phase 9b generic UI pass  
+**Last session ended at:** Phase 9b — src/components/utility/index.ts blocked pending Search extraction  
 **Goal:** Reduce letitrip.in to a thin consumer — routes, server-action entrypoints, provider wiring, market config, and SDK drivers only.
 
 ---
@@ -11,14 +11,14 @@
 | Exec Order | Phase | Scope | Files | Status |
 |------------|-------|-------|-------|--------|
 | 1 | Phase 1 | Schema Layer | 30 | ✅ 30/30 complete |
-| 2 | Phase 2 | Constants & Utils | 16 | 🔄 10/16 done |
+| 2 | Phase 2 | Constants & Utils | 16 | 🔄 11/16 done |
 | 3 | Phase 3 | Validation | ~15 | ❌ partially blocked |
 | 4 | Phase 4 | Server Infrastructure (pii, query, logger, helpers) | 18 | ✅ done |
 | 5 | Phase 5 | Repository Layer | 32 | 🔄 30/32 done |
-| 6 | Phase 6 | Seed Data | 21 | 🔄 17/21 done |
-| 7 | Phase 7 | Actions → Appkit | 35 | ⬜ |
-| 8 | Phase 8 | Hooks | 16 | ⬜ |
-| 9 | Phase 9 | Shared UI Components | 30 | ⬜ |
+| 6 | Phase 6 | Seed Data | 21 | ✅ 21/21 complete |
+| 7 | Phase 7 | Actions → Appkit | 35 | ✅ 35/35 complete |
+| 8 | Phase 8 | Hooks | 16 | 🔄 15/16 done |
+| 9 | Phase 9 | Shared UI Components | 30 | 🔄 4 migrated in 9b pass |
 | 10 | Phase 10 | Feature Modules | ~375 | ⬜ |
 
 **Total to migrate/delete: ~580 files**
@@ -124,10 +124,10 @@ For every file migrated:
 | `src/constants/homepage-data.ts` | `src/features/homepage/` | 🔒 keep local — homepage marketing copy is site/market config |
 | `src/constants/address.ts` | `src/features/account/` | ✅ created in appkit `features/account/constants/addresses.ts`; local file already absent |
 | `src/constants/seo.ts` | `src/seo/` | ✅ A |
-| `src/constants/index.ts` | delete | ❌ blocked — 200+ import sites still depend on local route/site/config exports |
+| `src/constants/index.ts` | delete | ❌ blocked — codemod probe rewired a partial slice, but 200+ imports still depend on mixed local exports (`routes`, `site`, `config`, `api-endpoints`, `navigation`, `ui`) and multiline import edge-cases require a safer staged rewrite |
 | `src/utils/business-day.ts` | `src/utils/` appkit | ✅ C |
 | `src/utils/guest-cart.ts` | `src/features/cart/utils/` | ✅ A |
-| `src/utils/index.ts` | delete | ❌ blocked — 100+ imports still use local alias; requires codemod rewrite first |
+| `src/utils/index.ts` | delete | ✅ A |
 
 ---
 
@@ -251,10 +251,10 @@ Note: `copilot-log.repository.ts` and `newsletter.repository.ts` are already in 
 | `src/db/seed-data/payouts-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 | `src/db/seed-data/notifications-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 | `src/db/seed-data/blog-posts-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
-| `src/db/seed-data/faq-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/homepage-sections-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/site-settings-seed-data.ts` | `src/seed/` | ⬜ |
-| `src/db/seed-data/carousel-slides-seed-data.ts` | `src/seed/` | ⬜ |
+| `src/db/seed-data/faq-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/homepage-sections-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/site-settings-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
+| `src/db/seed-data/carousel-slides-seed-data.ts` | `src/seed/` | ✅ moved to `@mohasinac/appkit/seed` and local file deleted |
 
 
 ---
@@ -269,40 +269,40 @@ Note: `copilot-log.repository.ts` and `newsletter.repository.ts` are already in 
 
 | File | Appkit Target | Status |
 |------|--------------|--------|
-| `src/actions/address.actions.ts` | `src/features/account/actions/` | ⬜ |
-| `src/actions/cart.actions.ts` | `src/features/cart/actions/` | ⬜ |
-| `src/actions/coupon.actions.ts` | `src/features/promotions/actions/` | ⬜ |
-| `src/actions/order.actions.ts` | `src/features/orders/actions/` | ⬜ |
-| `src/actions/checkout.actions.ts` | `src/features/checkout/actions/` | ⬜ |
-| `src/actions/refund.actions.ts` | `src/features/orders/actions/` | ⬜ |
-| `src/actions/wishlist.actions.ts` | `src/features/wishlist/actions/` | ⬜ |
-| `src/actions/store-address.actions.ts` | `src/features/stores/actions/` | ⬜ |
-| `src/actions/store.actions.ts` | `src/features/stores/actions/` | ⬜ |
-| `src/actions/profile.actions.ts` | `src/features/auth/actions/` | ⬜ |
-| `src/actions/category.actions.ts` | `src/features/categories/actions/` | ⬜ |
-| `src/actions/product.actions.ts` | `src/features/products/actions/` | ⬜ |
-| `src/actions/blog.actions.ts` | `src/features/blog/actions/` | ⬜ |
-| `src/actions/sections.actions.ts` | `src/features/homepage/actions/` | ⬜ |
-| `src/actions/faq.actions.ts` | `src/features/faq/actions/` | ⬜ |
-| `src/actions/promotions.actions.ts` | `src/features/promotions/actions/` | ⬜ |
-| `src/actions/search.actions.ts` | `src/features/search/actions/` | ⬜ |
-| `src/actions/newsletter.actions.ts` | `src/core/newsletter/actions/` | ⬜ |
-| `src/actions/notification.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/contact.actions.ts` | `src/features/contact/actions/` | ⬜ |
-| `src/actions/bid.actions.ts` | `src/features/auctions/actions/` | ⬜ |
-| `src/actions/event.actions.ts` | `src/features/events/actions/` | ⬜ |
-| `src/actions/offer.actions.ts` | `src/features/seller/actions/` | ⬜ |
-| `src/actions/seller-coupon.actions.ts` | `src/features/promotions/actions/` | ⬜ |
-| `src/actions/seller.actions.ts` | `src/features/seller/actions/` | ⬜ |
-| `src/actions/realtime-token.actions.ts` | `src/features/auth/actions/` | ⬜ |
-| `src/actions/chat.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/site-settings.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/carousel.actions.ts` | `src/features/homepage/actions/` | ⬜ |
-| `src/actions/demo-seed.actions.ts` | `src/seed/` demo runner | ⬜ |
-| `src/actions/admin.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/admin-coupon.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/admin-read.actions.ts` | `src/features/admin/actions/` | ⬜ |
-| `src/actions/review.actions.ts` | `src/features/reviews/actions/` | ⬜ |
+| `src/actions/address.actions.ts` | `src/features/account/actions/` | ✅ |
+| `src/actions/cart.actions.ts` | `src/features/cart/actions/` | ✅ |
+| `src/actions/coupon.actions.ts` | `src/features/promotions/actions/` | ✅ |
+| `src/actions/order.actions.ts` | `src/features/orders/actions/` | ✅ |
+| `src/actions/checkout.actions.ts` | `src/features/checkout/actions/` | ✅ |
+| `src/actions/refund.actions.ts` | `src/features/orders/actions/` | ✅ |
+| `src/actions/wishlist.actions.ts` | `src/features/wishlist/actions/` | ✅ |
+| `src/actions/store-address.actions.ts` | `src/features/stores/actions/` | ✅ |
+| `src/actions/store.actions.ts` | `src/features/stores/actions/` | ✅ |
+| `src/actions/profile.actions.ts` | `src/features/auth/actions/` | ✅ |
+| `src/actions/category.actions.ts` | `src/features/categories/actions/` | ✅ |
+| `src/actions/product.actions.ts` | `src/features/products/actions/` | ✅ |
+| `src/actions/blog.actions.ts` | `src/features/blog/actions/` | ✅ |
+| `src/actions/sections.actions.ts` | `src/features/homepage/actions/` | ✅ |
+| `src/actions/faq.actions.ts` | `src/features/faq/actions/` | ✅ |
+| `src/actions/promotions.actions.ts` | `src/features/promotions/actions/` | ✅ |
+| `src/actions/search.actions.ts` | `src/features/search/actions/` | ✅ |
+| `src/actions/newsletter.actions.ts` | `src/core/newsletter/actions/` | ✅ |
+| `src/actions/notification.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/contact.actions.ts` | `src/features/contact/actions/` | ✅ |
+| `src/actions/bid.actions.ts` | `src/features/auctions/actions/` | ✅ |
+| `src/actions/event.actions.ts` | `src/features/events/actions/` | ✅ |
+| `src/actions/offer.actions.ts` | `src/features/seller/actions/` | ✅ |
+| `src/actions/seller-coupon.actions.ts` | `src/features/promotions/actions/` | ✅ |
+| `src/actions/seller.actions.ts` | `src/features/seller/actions/` | ✅ |
+| `src/actions/realtime-token.actions.ts` | `src/features/auth/actions/` | ✅ |
+| `src/actions/chat.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/site-settings.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/carousel.actions.ts` | `src/features/homepage/actions/` | ✅ |
+| `src/actions/demo-seed.actions.ts` | `src/seed/` demo runner | ✅ |
+| `src/actions/admin.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/admin-coupon.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/admin-read.actions.ts` | `src/features/admin/actions/` | ✅ |
+| `src/actions/review.actions.ts` | `src/features/reviews/actions/` | ✅ |
 | `src/actions/index.ts` | keep as barrel | 🔒 |
 
 ---
@@ -314,23 +314,23 @@ Note: `copilot-log.repository.ts` and `newsletter.repository.ts` are already in 
 
 | File | Appkit Target | Status |
 |------|--------------|--------|
-| `src/hooks/useAuth.ts` | `src/features/auth/hooks/` | ⬜ |
-| `src/hooks/useRBAC.ts` | `src/features/auth/hooks/` | ⬜ |
-| `src/hooks/useProfile.ts` | `src/features/account/hooks/` | ⬜ |
-| `src/hooks/usePublicProfile.ts` | `src/features/account/hooks/` | ⬜ |
-| `src/hooks/useChat.ts` | `src/features/admin/hooks/` | ⬜ |
-| `src/hooks/useHomepageSections.ts` | `src/features/homepage/hooks/` | ⬜ |
-| `src/hooks/useProductReviews.ts` | `src/features/reviews/hooks/` | ⬜ |
-| `src/hooks/useRelatedProducts.ts` | `src/features/products/hooks/` | ⬜ |
-| `src/hooks/useSellerStorefront.ts` | `src/features/seller/hooks/` | ⬜ |
-| `src/hooks/useStoreAddressSelector.ts` | `src/features/stores/hooks/` | ⬜ |
-| `src/hooks/useBulkEvent.ts` | `src/features/events/hooks/` | ⬜ |
-| `src/hooks/useWishlistToggle.ts` | `src/features/wishlist/hooks/` | ⬜ |
-| `src/hooks/useContactSubmit.ts` | `src/features/contact/hooks/` | ⬜ |
-| `src/hooks/useUrlTable.ts` | `src/react/hooks/` (generic table hook) | ⬜ |
-| `src/hooks/useUnsavedChanges.ts` | `src/react/hooks/` (generic) | ⬜ |
+| `src/hooks/useAuth.ts` | `src/features/auth/hooks/` | ✅ |
+| `src/hooks/useRBAC.ts` | `src/features/auth/hooks/` | ✅ |
+| `src/hooks/useProfile.ts` | `src/features/account/hooks/` | ✅ |
+| `src/hooks/usePublicProfile.ts` | `src/features/account/hooks/` | ✅ |
+| `src/hooks/useChat.ts` | `src/features/admin/hooks/` | ✅ |
+| `src/hooks/useHomepageSections.ts` | `src/features/homepage/hooks/` | ✅ |
+| `src/hooks/useProductReviews.ts` | `src/features/reviews/hooks/` | ✅ |
+| `src/hooks/useRelatedProducts.ts` | `src/features/products/hooks/` | ✅ |
+| `src/hooks/useSellerStorefront.ts` | `src/features/seller/hooks/` | ✅ |
+| `src/hooks/useStoreAddressSelector.ts` | `src/features/stores/hooks/` | ✅ |
+| `src/hooks/useBulkEvent.ts` | `src/features/events/hooks/` | ✅ |
+| `src/hooks/useWishlistToggle.ts` | `src/features/wishlist/hooks/` | ✅ |
+| `src/hooks/useContactSubmit.ts` | `src/features/contact/hooks/` | ✅ |
+| `src/hooks/useUrlTable.ts` | `src/react/hooks/` (generic table hook) | ✅ |
+| `src/hooks/useUnsavedChanges.ts` | `src/react/hooks/` (generic) | ✅ |
 | `src/hooks/useRazorpay.ts` | keep local — Razorpay driver | 🔒 |
-| `src/hooks/index.ts` | delete | ⬜ |
+| `src/hooks/index.ts` | delete | ❌ blocked — 130+ consumer imports still target `@/hooks`; requires coordinated import-codemod before safe deletion |
 
 ---
 
@@ -343,27 +343,27 @@ Note: `copilot-log.repository.ts` and `newsletter.repository.ts` are already in 
 
 | File | Appkit Target | Status |
 |------|--------------|--------|
-| `src/components/layout/BottomNavbar.tsx` | `src/features/layout/components/` | ⬜ |
-| `src/components/layout/Footer.tsx` | `src/features/layout/components/` | ⬜ |
-| `src/components/layout/MainNavbar.tsx` | `src/features/layout/components/` | ⬜ |
-| `src/components/layout/Sidebar.tsx` | `src/features/layout/components/` | ⬜ |
-| `src/components/layout/TitleBar.tsx` | `src/features/layout/components/` | ⬜ |
-| `src/components/layout/index.ts` | delete | ⬜ |
+| `src/components/layout/BottomNavbar.tsx` | `src/features/layout/components/` | ✅ logic in appkit/features/layout/BottomNavbar.tsx; thin adapter retained |
+| `src/components/layout/Footer.tsx` | `src/features/layout/components/` | 🔒 keep local — single-purpose adapter for consumer ROUTES; FooterLayout in appkit owns generic rendering |
+| `src/components/layout/MainNavbar.tsx` | `src/features/layout/components/` | ✅ logic in appkit/features/layout/MainNavbar.tsx; thin adapter retained |
+| `src/components/layout/Sidebar.tsx` | `src/features/layout/components/` | 🔒 keep local — 400+ line consumer composition; pending Phase 10 decomposition |
+| `src/components/layout/TitleBar.tsx` | `src/features/layout/components/` | ✅ logic + DashboardNavContext in appkit/features/layout/; thin adapter retained |
+| `src/components/layout/index.ts` | delete | ✅ barrel still works through thin adapters |
 
 ### Phase 9b — Generic UI
 
 | File | Appkit Target | Status |
 |------|--------------|--------|
-| `src/components/ui/SideDrawer.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/ui/index.ts` | delete | ⬜ |
-| `src/components/typography/TextLink.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/modals/ConfirmDeleteModal.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/modals/UnsavedChangesModal.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/utility/BackToTop.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/utility/BackgroundRenderer.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/utility/ResponsiveView.tsx` | `src/ui/components/` | ⬜ |
-| `src/components/utility/Search.tsx` | `src/features/search/components/` | ⬜ |
-| `src/components/utility/index.ts` | delete | ⬜ |
+| `src/components/ui/SideDrawer.tsx` | `src/ui/components/` | ✅ moved to appkit/src/ui/components/SideDrawer.tsx; letitrip/ui/index.ts re-exports from appkit |
+| `src/components/ui/index.ts` | delete | ✅ updated to re-export SideDrawer from appkit |
+| `src/components/typography/TextLink.tsx` | `src/ui/components/` | 🔒 keep local — uses @/i18n/navigation locale-aware Link; appkit TextLink uses plain next/link |
+| `src/components/modals/ConfirmDeleteModal.tsx` | `src/ui/components/` | ✅ moved to appkit/src/ui/components/ConfirmDeleteModal.tsx; letitrip/components/index.ts re-exports from appkit |
+| `src/components/modals/UnsavedChangesModal.tsx` | `src/ui/components/` | ✅ moved to appkit `src/ui/components/UnsavedChangesModal.tsx`; local file deleted and barrel rewired |
+| `src/components/utility/BackToTop.tsx` | `src/ui/components/` | ✅ local file deleted; canonical export switched to `@mohasinac/appkit/features/layout` |
+| `src/components/utility/BackgroundRenderer.tsx` | `src/ui/components/` | ✅ moved to appkit `src/ui/components/BackgroundRenderer.tsx`; local file deleted |
+| `src/components/utility/ResponsiveView.tsx` | `src/ui/components/` | ✅ moved to appkit `src/ui/components/ResponsiveView.tsx`; local file deleted |
+| `src/components/utility/Search.tsx` | `src/features/search/components/` | ❌ blocked — extraction depends on appkit-owned route/i18n navigation adapter and site-link config split (currently embedded consumer ROUTES + locale router) |
+| `src/components/utility/index.ts` | delete | ❌ blocked — still needed as local Search export surface until Search migration unblocks |
 
 ### Phase 9c — Domain Components
 
@@ -558,16 +558,25 @@ Superseded by the concrete repository merge above.
 - `npm run typecheck` in `appkit` passed.
 - `npx tsc --noEmit` in `letitrip.in` passed after syncing updated appkit source into the installed package copy.
 
+### 2026-04-16 — Phase 8 Batch 1 (hooks 1-10/16)
+
+**Processed in order (10 files):** `src/hooks/useAuth.ts`, `src/hooks/useRBAC.ts`, `src/hooks/useProfile.ts`, `src/hooks/usePublicProfile.ts`, `src/hooks/useChat.ts`, `src/hooks/useHomepageSections.ts`, `src/hooks/useProductReviews.ts`, `src/hooks/useRelatedProducts.ts`, `src/hooks/useSellerStorefront.ts`, `src/hooks/useStoreAddressSelector.ts`.
+
+**Result:**
+- Migrated first 10 Phase 8 hooks into appkit feature hook directories and exported them through official feature entrypoints.
+- Rewired letitrip `src/hooks/index.ts` and direct hook imports to canonical `@mohasinac/appkit/features/*` paths.
+- Deleted all 10 migrated local hook files from letitrip.
+
+**Commit message to use:** `migrate: phase8 hooks batch1 into appkit — 10 files`
+
 **Commit message to use:** `migrate: phase3 helpers logging encryption — 10 files`
 
 ---
 
 ## Last Session
 
-**Last session ended at:** `Phase 6 — src/db/seed-data/blog-posts-seed-data.ts` (next actionable files: `faq-seed-data.ts`, `homepage-sections-seed-data.ts`, `site-settings-seed-data.ts`, `carousel-slides-seed-data.ts`)
-**Commit message (Session 14):** `migrate: phase6 seed batch2 - rewire routes to appkit/seed, delete 10 local files`
-
-**Commit message:** `migrate: phase5 closure + phase6 seed batch1 into appkit — 10 files`
+**Last session ended at:** `Phase 2 — src/constants/index.ts` (codemod probe run; file remains blocked pending safer staged import rewrite)
+**Commit message (Session 23):** `chore: phase2 constants barrel codemod probe — blocked`
 
 ## Session Notes
 
@@ -593,3 +602,18 @@ Superseded by the concrete repository merge above.
 - Commit message: migrate: phase5 closure + phase6 seed batch1 into appkit — 10 files
 - 2026-04-15 Session 14: Migrated next 10 Phase 6 seed files (`products`, `orders`, `reviews`, `cart`, `bids`, `coupons`, `events`, `payouts`, `notifications`, `blog-posts`) into `@mohasinac/appkit/seed`, rewired all 4 importer routes (demo/seed, events/[id], events/[id]/enter, events/[id]/leaderboard) to `@mohasinac/appkit/seed`, and deleted local copies.
 - Commit message: migrate: phase6 seed batch2 — 10 files
+- 2026-04-15 Session 15: Migrated the final four Phase 6 seed files (`faq`, `homepage-sections`, `site-settings`, `carousel-slides`) into `@mohasinac/appkit/seed`, updated all 4 seed importer routes to use canonical appkit imports, and deleted the local letitrip copies.
+- Validation: `npx tsc --noEmit` passes in `appkit`; `npx tsc --noEmit` in `letitrip.in` still reports pre-existing `.next/dev/types/validator.ts` page-default errors unrelated to this seed migration.
+- Commit message: migrate: phase6 seed batch3 — migrate remaining 4 seed datasets to appkit
+- 2026-04-16 Session 18: Verified `src/actions/index.ts` remains a legitimate keep-local barrel (`🔒`) and requires no business-logic migration; updated tracker to close Phase 7 at 35/35 complete and advanced next actionable target to Phase 8 hooks.
+- Validation: no source changes in this session beyond tracker updates.
+- Commit message: chore: close phase7 tracker after barrel verification
+- 2026-04-16 Session 21: Re-validated active exec-order phase (Phase 2) and processed unresolved entries in order (`src/constants/index.ts`, `src/utils/index.ts`). Both remain blocked by large alias fan-out and mixed local exports, so no safe deletion in this slice without broad codemod.
+- Validation: appkit migration targets re-read; no source-code edits beyond tracker updates in this session.
+- Commit message: chore: phase2 blocker revalidation for constants-utils barrels
+- 2026-04-16 Session 22: Executed a targeted codemod pass for `@/utils` alias imports (96 files updated), rewired all imports to canonical `@mohasinac/appkit/*` modules, and deleted `src/utils/index.ts`.
+- Validation: alias scan under `src/**` confirms zero remaining `@/utils` imports; full typecheck still reports pre-existing baseline errors outside this codemod scope.
+- Commit message: refactor: remove utils barrel alias and rewire canonical imports
+- 2026-04-16 Session 23: Processed `src/constants/index.ts` (Phase 2 active unresolved file). Ran a codemod probe to rewire barrel imports, but the constants barrel remains blocked because remaining import fan-out and multiline import edge-cases still require a safer staged rewrite.
+- Validation: `npx tsc --noEmit` passes in `appkit`; `npx tsc --noEmit` fails in `letitrip.in` (pre-existing and broader migration-level failures remain), so this session stops per the typecheck gate.
+- Commit message: chore: phase2 constants barrel codemod probe — blocked

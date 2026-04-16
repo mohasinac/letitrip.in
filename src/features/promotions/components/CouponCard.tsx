@@ -1,5 +1,8 @@
 "use client";
 
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
+import type { CouponDocument, CouponType } from "@/db/schema";
+
 import { useState } from "react";
 import { Gift, Percent, Truck, Tag } from "lucide-react";
 import { useMessage } from "@/hooks";
@@ -7,9 +10,7 @@ import { Heading, Text, Span, Button, RichText } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
-import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
-import type { CouponDocument, CouponType } from "@/db/schema";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
 
 const { themed, flex } = THEME_CONSTANTS;
 

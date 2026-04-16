@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants/theme";
 import { StoreHeader as AppkitStoreHeader } from "@mohasinac/appkit/features/stores";
 import { Skeleton } from "@/components";
 import { useStoreBySlug } from "@mohasinac/appkit/features/stores";

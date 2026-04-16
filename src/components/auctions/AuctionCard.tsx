@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Heart, Gavel, ShoppingBag, Clock } from "lucide-react";
 import { Caption, Text, Button, Span, Row } from "@mohasinac/appkit/ui";
@@ -10,7 +9,8 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useWishlistToggle } from "@/hooks";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
 
 const { themed, flex, position } = THEME_CONSTANTS;
 

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Heading, Text, Button, Accordion, AccordionItem } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
@@ -8,7 +7,9 @@ import { Alert } from "@mohasinac/appkit/ui";
 import { FormField } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import type { PayoutSummary } from "./SellerPayoutStats";
 
 const { themed, spacing, typography, flex } = THEME_CONSTANTS;

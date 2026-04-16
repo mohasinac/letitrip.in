@@ -1,5 +1,8 @@
 "use client";
 
+import { EventParticipateView as AppkitEventParticipateView } from "@mohasinac/appkit/features/events";
+import type { SurveyFormField } from "@/db/schema";
+
 import { FormGroup, Input } from "@mohasinac/appkit/ui";
 import { RadioGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
@@ -14,9 +17,7 @@ import {
   Heading, Label, Text, Spinner, Span, Button, Alert, } from "@mohasinac/appkit/ui";
 import {
   Card, FormField } from "@/components";
-import { formatDate, stripHtml } from "@/utils";
-import { EventParticipateView as AppkitEventParticipateView } from "@mohasinac/appkit/features/events";
-import type { SurveyFormField } from "@/db/schema";
+import { formatDate, stripHtml } from "@mohasinac/appkit/utils";
 
 const { spacing } = THEME_CONSTANTS;
 

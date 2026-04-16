@@ -13,12 +13,17 @@
 import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import {
-  sessionRepository,
-  orderRepository,
-  payoutRepository,
-  userRepository,
-  productRepository,
-} from "@/repositories";
+  revokeSession as revokeSessionDomain,
+  revokeUserSessions as revokeUserSessionsDomain,
+  adminUpdateOrder as adminUpdateOrderDomain,
+  adminUpdatePayout as adminUpdatePayoutDomain,
+  adminUpdateUser as adminUpdateUserDomain,
+  adminDeleteUser as adminDeleteUserDomain,
+  adminUpdateStoreStatus as adminUpdateStoreStatusDomain,
+  adminUpdateProduct as adminUpdateProductDomain,
+  adminCreateProduct as adminCreateProductDomain,
+  adminDeleteProduct as adminDeleteProductDomain,
+} from "@mohasinac/appkit/features/admin";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
@@ -79,18 +84,7 @@ export async function revokeSessionAction(
   }
 
   const { sessionId } = parsed.data;
-  const session = await sessionRepository.findById(sessionId);
-  if (!session) throw new NotFoundError("Session not found");
-
-  await sessionRepository.revokeSession(sessionId, admin.uid);
-
-  serverLogger.info("revokeSessionAction", {
-    adminId: admin.uid,
-    sessionId,
-    targetUserId: session.userId,
-  });
-
-  return { success: true, message: "Session revoked" };
+  return revokeSessionDomain(admin.uid, sessionId);
 }
 
 /**
@@ -116,18 +110,7 @@ export async function revokeUserSessionsAction(
   }
 
   const { userId } = parsed.data;
-  const revokedCount = await sessionRepository.revokeAllUserSessions(
-    userId,
-    admin.uid,
-  );
-
-  serverLogger.info("revokeUserSessionsAction", {
-    adminId: admin.uid,
-    targetUserId: userId,
-    revokedCount,
-  });
-
-  return { success: true, message: "All user sessions revoked", revokedCount };
+  return revokeUserSessionsDomain(admin.uid, userId);
 }
 
 // ─── Order mutations ───────────────────────────────────────────────────────
@@ -160,19 +143,11 @@ export async function adminUpdateOrderAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await orderRepository.findById(id);
-  if (!existing) throw new NotFoundError("Order not found");
-
-  const updated = await orderRepository.update(
+  return adminUpdateOrderDomain(
+    admin.uid,
     id,
     parsed.data as OrderAdminUpdateInput,
   );
-
-  serverLogger.info("adminUpdateOrderAction", {
-    adminId: admin.uid,
-    orderId: id,
-  });
-  return updated;
 }
 
 // ─── Payout mutations ──────────────────────────────────────────────────────
@@ -204,26 +179,11 @@ export async function adminUpdatePayoutAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await payoutRepository.findById(id);
-  if (!existing) throw new NotFoundError("Payout not found");
-
-  const updateData: PayoutUpdateInput = {
-    ...(parsed.data.status !== undefined ? { status: parsed.data.status } : {}),
-    ...(parsed.data.adminNote !== undefined
-      ? { adminNote: parsed.data.adminNote }
-      : {}),
-    ...(parsed.data.processedAt
-      ? { processedAt: new Date(parsed.data.processedAt) }
-      : {}),
-  };
-
-  const updated = await payoutRepository.update(id, updateData);
-
-  serverLogger.info("adminUpdatePayoutAction", {
-    adminId: admin.uid,
-    payoutId: id,
-  });
-  return updated;
+  return adminUpdatePayoutDomain(
+    admin.uid,
+    id,
+    parsed.data as PayoutUpdateInput,
+  );
 }
 
 // ─── User mutations ───────────────────────────────────────────────────────
@@ -255,20 +215,7 @@ export async function adminUpdateUserAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await userRepository.findById(uid);
-  if (!existing) throw new NotFoundError("User not found");
-
-  const updated = await userRepository.update(
-    uid,
-    parsed.data as UserAdminUpdateInput,
-  );
-
-  serverLogger.info("adminUpdateUserAction", {
-    adminId: admin.uid,
-    targetUid: uid,
-    changes: Object.keys(parsed.data),
-  });
-  return updated;
+  return adminUpdateUserDomain(admin.uid, uid, parsed.data as UserAdminUpdateInput);
 }
 
 export async function adminDeleteUserAction(uid: string): Promise<void> {
@@ -285,15 +232,7 @@ export async function adminDeleteUserAction(uid: string): Promise<void> {
   if (uid === admin.uid)
     throw new ValidationError("Cannot delete your own account");
 
-  const existing = await userRepository.findById(uid);
-  if (!existing) throw new NotFoundError("User not found");
-
-  await userRepository.delete(uid);
-
-  serverLogger.info("adminDeleteUserAction", {
-    adminId: admin.uid,
-    deletedUid: uid,
-  });
+  await adminDeleteUserDomain(admin.uid, uid);
 }
 
 // ─── Store approval mutations ─────────────────────────────────────────────
@@ -324,19 +263,9 @@ export async function adminUpdateStoreStatusAction(
   const { uid, action } = parsed.data;
   const newStatus = action === "approve" ? "approved" : "rejected";
 
-  // Update user's storeStatus
-  const user = await userRepository.findById(uid);
-  if (!user) throw new NotFoundError("User not found");
-
-  await userRepository.updateStoreApproval(
+  await adminUpdateStoreStatusDomain(admin.uid, {
     uid,
-    newStatus as "approved" | "rejected",
-  );
-
-  serverLogger.info("adminUpdateStoreStatusAction", {
-    adminId: admin.uid,
-    targetUid: uid,
-    action,
+    action: newStatus === "approved" ? "approve" : "reject",
   });
 }
 
@@ -372,19 +301,11 @@ export async function adminUpdateProductAction(
       parsed.error.issues[0]?.message ?? "Invalid update data",
     );
 
-  const existing = await productRepository.findById(id);
-  if (!existing) throw new NotFoundError("Product not found");
-
-  const updated = await productRepository.updateProduct(
+  return adminUpdateProductDomain(
+    admin.uid,
     id,
     parsed.data as ProductAdminUpdateInput,
   );
-
-  serverLogger.info("adminUpdateProductAction", {
-    adminId: admin.uid,
-    productId: id,
-  });
-  return updated;
 }
 
 export async function adminCreateProductAction(
@@ -405,20 +326,13 @@ export async function adminCreateProductAction(
     throw new ValidationError("Invalid product data");
   }
 
-  const product = await productRepository.create({
+  return adminCreateProductDomain(admin, {
     ...validation.data,
     sellerId: (input as any).sellerId || admin.uid,
     sellerName:
       (input as any).sellerName || admin.displayName || admin.email || "Admin",
     sellerEmail: (input as any).sellerEmail || admin.email || "",
   } as any);
-
-  serverLogger.info("adminCreateProductAction", {
-    adminId: admin.uid,
-    productId: product.id,
-  });
-
-  return product;
 }
 
 export async function adminDeleteProductAction(id: string): Promise<void> {
@@ -433,14 +347,6 @@ export async function adminDeleteProductAction(id: string): Promise<void> {
 
   if (!id?.trim()) throw new ValidationError("id is required");
 
-  const existing = await productRepository.findById(id);
-  if (!existing) throw new NotFoundError("Product not found");
-
-  await productRepository.delete(id);
-
-  serverLogger.info("adminDeleteProductAction", {
-    adminId: admin.uid,
-    productId: id,
-  });
+  await adminDeleteProductDomain(admin.uid, id);
 }
 

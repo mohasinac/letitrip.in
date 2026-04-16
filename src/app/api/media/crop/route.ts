@@ -1,10 +1,4 @@
 import "@/providers.config";
-/**
- * Media Crop API Route
- *
- * Crop images using sharp library
- */
-
 import { randomBytes } from "crypto";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { cropDataSchema } from "@/lib/validation/schemas";
@@ -13,7 +7,14 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { generateCroppedImageFilename } from "@/utils";
+import { generateCroppedImageFilename } from "@mohasinac/appkit/utils";
+
+/**
+ * Media Crop API Route
+ *
+ * Crop images using sharp library
+ */
+
 import sharp from "sharp";
 import axios from "axios";
 

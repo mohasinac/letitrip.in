@@ -1,4 +1,9 @@
 import "@/providers.config";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { successResponse } from "@mohasinac/appkit/next";
+import { orderRepository, productRepository } from "@/repositories";
+import { formatMonthYear } from "@mohasinac/appkit/utils";
+
 /**
  * Admin Analytics API Route
  *
@@ -12,10 +17,6 @@ import "@/providers.config";
  *  - Top 5 products by total revenue
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
-import { successResponse } from "@mohasinac/appkit/next";
-import { orderRepository, productRepository } from "@/repositories";
-import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
 function normalizeDate(raw: Date | string | number): Date {

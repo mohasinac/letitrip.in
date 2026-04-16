@@ -5,15 +5,16 @@
  * Form for updating payout status and adding an admin note.
  * Shown inside a SideDrawer on the admin payouts page.
  */
-
-"use client";
-
 import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { Span, Text, Button, Stack, Row, Div } from "@mohasinac/appkit/ui";
 import { Select } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import type { PayoutDocument, PayoutStatus } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.PAYOUTS;

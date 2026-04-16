@@ -1,5 +1,4 @@
 "use client";
-
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -9,7 +8,9 @@ import { useCallback, useState, useRef, useEffect } from "react";
 import { Label, Button, Row } from "@mohasinac/appkit/ui";
 import { Input } from "@mohasinac/appkit/ui";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
-import type { MediaFilenameContext } from "@/utils";
+import type { MediaFilenameContext } from "@mohasinac/appkit/utils";
+
+
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 

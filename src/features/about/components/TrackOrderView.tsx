@@ -1,4 +1,5 @@
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants/routes";
+import { THEME_CONSTANTS } from "@/constants/theme";
 import { Heading, Text, Caption, Grid, Section } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";

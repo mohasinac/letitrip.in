@@ -1,22 +1,14 @@
 "use client";
-
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
-  StoreReviewsView as AppkitStoreReviewsView,
-  useStoreReviews,
-} from "@mohasinac/appkit/features/stores";
+  StoreReviewsView as AppkitStoreReviewsView, useStoreReviews, } from "@mohasinac/appkit/features/stores";
 import {
-  Caption,
-  Heading,
-  Stack,
-  Text,
-  Spinner,
-  Row,
-} from "@mohasinac/appkit/ui";
+  Caption, Heading, Stack, Text, Spinner, Row, } from "@mohasinac/appkit/ui";
 import { EmptyState } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
 
 const { spacing, themed, flex, overflow, page } = THEME_CONSTANTS;
 

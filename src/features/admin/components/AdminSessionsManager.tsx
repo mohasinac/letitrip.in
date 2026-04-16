@@ -4,14 +4,7 @@
  * Displays active user sessions with device info, location, and activity.
  * Allows admins to revoke sessions for security purposes.
  */
-
-"use client";
-
-import {
-  useAdminSessions,
-  useRevokeSession,
-  useRevokeUserSessions,
-} from "@/features/admin";
+import { useAdminSessions, useRevokeSession, useRevokeUserSessions, } from "@/features/admin";
 import { AdminSessionsManager as AdminSessionsShell } from "@mohasinac/appkit/features/admin";
 import { Grid, Heading, Text, Badge, Button, DataTable, Alert } from "@mohasinac/appkit/ui";
 import { Card, ConfirmDeleteModal } from "@/components";
@@ -19,7 +12,11 @@ import { useToast } from "@mohasinac/appkit/ui";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { formatRelativeTime, formatDate, nowMs, isFuture } from "@/utils";
+import { formatRelativeTime, formatDate, nowMs, isFuture } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import { useState } from "react";
 
 const { flex } = THEME_CONSTANTS;

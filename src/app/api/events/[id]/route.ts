@@ -38,11 +38,11 @@ import {
   payoutsSeedData,
   notificationsSeedData,
   blogPostsSeedData,
+  carouselSlidesSeedData,
+  homepageSectionsSeedData,
+  siteSettingsSeedData,
+  faqSeedData,
 } from "@mohasinac/appkit/seed";
-import { carouselSlidesSeedData } from "@/db/seed-data/carousel-slides-seed-data";
-import { homepageSectionsSeedData } from "@/db/seed-data/homepage-sections-seed-data";
-import { siteSettingsSeedData } from "@/db/seed-data/site-settings-seed-data";
-import { faqSeedData } from "@/db/seed-data/faq-seed-data";
 import {
   USER_COLLECTION,
   ORDER_COLLECTION,

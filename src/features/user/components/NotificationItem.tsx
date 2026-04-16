@@ -1,10 +1,11 @@
 "use client";
-
 import { Text, Button, Span, Badge, Row } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatRelativeTime } from "@/utils";
+import { formatRelativeTime } from "@mohasinac/appkit/utils";
+
+
 import type { NotificationDocument } from "@/db/schema";
 
 const { themed, flex } = THEME_CONSTANTS;

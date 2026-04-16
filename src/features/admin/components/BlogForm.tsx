@@ -5,8 +5,6 @@
  * Drawer form for creating/editing blog posts in admin panel.
  */
 
-"use client";
-
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { BlogPostForm as AppkitBlogPostForm } from "@mohasinac/appkit/features/blog";
@@ -14,7 +12,10 @@ import { RichTextEditor } from "./RichTextEditor";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { useMediaAbort } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { proseMirrorToHtml } from "@/utils";
+import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
+
+"use client";
+
 import type {
   BlogPostDocument,
   BlogPostCategory,

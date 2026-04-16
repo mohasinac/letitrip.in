@@ -4,9 +4,10 @@
  *
  * Column definitions for the admin Payouts DataTable.
  */
+import { UI_LABELS } from "@/constants/ui";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
 
-import { UI_LABELS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+
 import { Text, Caption, Button, Badge } from "@mohasinac/appkit/ui";
 
 import type { PayoutDocument } from "@/db/schema";

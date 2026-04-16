@@ -1,10 +1,11 @@
 "use client";
-
 import { useState, useRef, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { formatRelativeTime, formatNumber } from "@/utils";
+import { formatRelativeTime, formatNumber } from "@mohasinac/appkit/utils";
+
+
 import {
   Heading,
   Label,
@@ -28,7 +29,7 @@ import {
   MediaLightbox,
 } from "@/components";
 import { useProductReviews } from "@mohasinac/appkit/features/reviews";
-import { useCreateReview } from "@/hooks/useProductReviews";
+import { useCreateReview } from "@mohasinac/appkit/features/reviews";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { Alert } from "@mohasinac/appkit/ui";
 import {

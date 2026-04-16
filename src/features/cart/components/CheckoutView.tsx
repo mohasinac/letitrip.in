@@ -12,9 +12,6 @@
  *   call detects out-of-stock items.  The PartialOrderDialog lets the buyer
  *   skip unavailable items and continue with the rest.
  */
-
-"use client";
-
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
@@ -27,18 +24,16 @@ import { OrderSummaryPanel } from "./OrderSummaryPanel";
 import { CheckoutVerifyModal } from "./CheckoutVerifyModal";
 import { PartialOrderDialog } from "./PartialOrderDialog";
 import {
-  useCheckout,
-  useMessage,
-  useRazorpay,
-  useSiteSettings,
-  useAuth,
-  useAddressSelector,
-} from "@/hooks";
+  useCheckout, useMessage, useRazorpay, useSiteSettings, useAuth, useAddressSelector, } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Heading, Main } from "@mohasinac/appkit/ui";
 import { SideDrawer, AddressForm } from "@/components";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import type { SiteSettingsDocument } from "@/db/schema";
 import type { UnavailableItem } from "@/hooks";
 

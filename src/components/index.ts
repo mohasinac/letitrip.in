@@ -48,7 +48,9 @@ export type { TextLinkProps } from "./typography/TextLink";
 export { ErrorBoundary } from "@mohasinac/appkit/next";
 
 // ==================== MODALS ====================
-export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
+export { ConfirmDeleteModal } from "@mohasinac/appkit/ui";
+export type { ConfirmDeleteModalProps } from "@mohasinac/appkit/ui";
+export { UnsavedChangesModal } from "@mohasinac/appkit/ui";
 export {
   ImageCropModal,
   VideoThumbnailSelector,
@@ -59,7 +61,6 @@ export type {
   VideoThumbnailSelectorProps,
   VideoTrimModalProps,
 } from "./media-modals.client";
-export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================
 // Re-export from utility subdirectory

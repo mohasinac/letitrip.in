@@ -1,6 +1,7 @@
 "use client";
 
-import { ROUTES, SITE_CONFIG } from "@/constants";
+import { ROUTES } from "@/constants/routes";
+import { SITE_CONFIG } from "@/constants/site";
 import { ContactInfoSidebar as AppkitContactInfoSidebar } from "@mohasinac/appkit/features/contact";
 import { TextLink } from "@/components";
 import { Text } from "@mohasinac/appkit/ui";

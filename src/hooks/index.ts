@@ -17,16 +17,16 @@
 // useSwipe, useGesture, useClickOutside, useKeyPress, useMediaQuery, useBreakpoint,
 // useLongPress, usePullToRefresh, useCamera, useCountdown, usePendingFilters, usePendingTable
 
-export { useProfile } from "./useProfile";
+export { useProfile } from "@mohasinac/appkit/features/account";
 export { useProfileStats } from "@mohasinac/appkit/features/account";
-export { usePublicProfile } from "./usePublicProfile";
+export { usePublicProfile } from "@mohasinac/appkit/features/account";
 export type {
   PublicUserProfile,
   SellerReviewsData,
   SellerReviewItem,
   ProductsApiResponse,
-} from "./usePublicProfile";
-export { useSellerStorefront } from "./useSellerStorefront";
+} from "@mohasinac/appkit/features/account";
+export { useSellerStorefront } from "@mohasinac/appkit/features/seller";
 export { useMessage } from "@mohasinac/appkit/react";
 
 // Appkit hooks - import directly from @mohasinac/appkit/react
@@ -40,7 +40,7 @@ export {
   useForgotPassword,
   useResetPassword,
   useChangePassword,
-} from "./useAuth";
+} from "@mohasinac/appkit/features/auth";
 
 // Session hooks from SessionContext
 export { useSession, useAuth } from "@/contexts/SessionContext";
@@ -58,11 +58,11 @@ export {
 } from "@mohasinac/appkit/features/account";
 export type { Address, AddressFormData } from "@mohasinac/appkit/features/account";
 
-export { useUnsavedChanges, UNSAVED_CHANGES_EVENT } from "./useUnsavedChanges";
+export { useUnsavedChanges, UNSAVED_CHANGES_EVENT } from "@mohasinac/appkit/react";
 export type {
   UseUnsavedChangesOptions,
   UseUnsavedChangesReturn,
-} from "./useUnsavedChanges";
+} from "@mohasinac/appkit/react";
 
 export {
   useHasRole,
@@ -74,7 +74,7 @@ export {
   useIsOwner,
   useRequireAuth,
   useRequireRole,
-} from "./useRBAC";
+} from "@mohasinac/appkit/features/auth";
 
 // Appkit hooks - import directly from @mohasinac/appkit/react
 // useMediaQuery, useBreakpoint
@@ -115,11 +115,11 @@ export type { UseUrlTableOptions } from "./useUrlTable";
 export { useHomepageReviews } from "@mohasinac/appkit/features/homepage";
 export { useBrands } from "@mohasinac/appkit/features/products";
 export { useSiteSettings } from "@mohasinac/appkit/core";
-export { useHomepageSections } from "./useHomepageSections";
+export { useHomepageSections } from "@mohasinac/appkit/features/homepage";
 
 // Phase 37: Service layer — product hooks
 // useProductReviews, useCreateReview now import directly from @mohasinac/appkit/features/reviews
-export { useRelatedProducts } from "./useRelatedProducts";
+export { useRelatedProducts } from "@mohasinac/appkit/features/products";
 export { useAddToCart } from "@mohasinac/appkit/features/cart";
 
 // Phase 37: Service layer — shared UI hooks
@@ -150,7 +150,7 @@ export { useNewsletter } from "@mohasinac/appkit/features/homepage";
 export { useLogout } from "@mohasinac/appkit/features/auth";
 export { useCategories, useCreateCategory } from "@mohasinac/appkit/features/categories";
 export { useAddressSelector } from "@mohasinac/appkit/features/account";
-export { useStoreAddressSelector } from "./useStoreAddressSelector";
+export { useStoreAddressSelector } from "@mohasinac/appkit/features/stores";
 
 // Chat hooks
 export {
@@ -158,8 +158,8 @@ export {
   useChatRooms,
   useCreateChatRoom,
   useDeleteChatRoom,
-} from "./useChat";
-export type { ChatMessage, UseChatReturn } from "./useChat";
+} from "@mohasinac/appkit/features/admin";
+export type { ChatMessage, UseChatReturn } from "@mohasinac/appkit/features/admin";
 
 // Seller application
 export { useBecomeSeller } from "@mohasinac/appkit/features/seller";
@@ -178,6 +178,9 @@ export type {
   UseBulkActionOptions,
   UseBulkActionReturn,
 } from "@mohasinac/appkit/react";
-export { useBulkEvent } from "./useBulkEvent";
-export type { UseBulkEventReturn, BulkEventStatus } from "./useBulkEvent";
+export {
+  useBulkEvent,
+  type UseBulkEventReturn,
+  type BulkEventStatus,
+} from "@mohasinac/appkit/features/events";
 

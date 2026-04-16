@@ -5,43 +5,27 @@
  * Full CRUD UI for blog posts with URL-driven drawer, status filter tabs,
  * and unified ListingLayout shell.
  */
-
-"use client";
-
 import { useState, useCallback, useRef, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
 import { useAdminBlog } from "@/features/admin/hooks";
 import {
-  Caption,
-  Text,
-  Grid,
-  StatusBadge,
-  Badge,
-  Button,
-  SortDropdown,
-  Row,
-  DataTable,
-} from "@mohasinac/appkit/ui";
+  Caption, Text, Grid, StatusBadge, Badge, Button, SortDropdown, Row, DataTable, } from "@mohasinac/appkit/ui";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { useTranslations } from "next-intl";
 import {
-  AdminPageHeader,
-  Card,
-  ConfirmDeleteModal,
-  DrawerFormFooter,
-  MediaImage,
-  Search,
-  SideDrawer,
-} from "@/components";
+  AdminPageHeader, Card, ConfirmDeleteModal, DrawerFormFooter, MediaImage, Search, SideDrawer, } from "@/components";
 import { BlogFilters } from "@mohasinac/appkit/features/blog";
 import { AdminBlogView as AdminBlogShell } from "@mohasinac/appkit/features/admin";
 import type { BlogPostDocument } from "@/db/schema";
 import { BlogForm, useBlogTableColumns } from ".";
 import type { BlogFormData } from ".";
-import { formatDate } from "@/utils";
+import { formatDate } from "@mohasinac/appkit/utils";
+
+
+"use client";
 
 const { themed, typography, flex } = THEME_CONSTANTS;
 

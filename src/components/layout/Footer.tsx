@@ -1,10 +1,11 @@
 "use client";
-
 import { useState } from "react";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SITE_CONFIG, ROUTES } from "@/constants";
-import { currentYear } from "@/utils";
+import { currentYear } from "@mohasinac/appkit/utils";
+
+
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { SiteSettingsDocument } from "@/db/schema";
 import { FooterLayout } from "@mohasinac/appkit/features/layout";

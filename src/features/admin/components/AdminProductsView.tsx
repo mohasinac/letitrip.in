@@ -6,17 +6,7 @@
  *
  * Uses ListingLayout for a unified listing shell matching the standard wireframe.
  */
-
-"use client";
-
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  Suspense,
-} from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense, } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { useMessage, useUrlTable } from "@/hooks";
@@ -25,7 +15,11 @@ import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { flex, spacing } = THEME_CONSTANTS;
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
+"use client";
+
 import { useTranslations } from "next-intl";
 import {
   Caption,

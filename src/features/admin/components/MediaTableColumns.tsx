@@ -1,8 +1,9 @@
+import { UI_LABELS } from "@/constants/ui";
 import { ReactNode } from "react";
 import { Text, Button, Badge } from "@mohasinac/appkit/ui";
 
-import { formatDate } from "@/utils";
-import { UI_LABELS } from "@/constants";
+import { formatDate } from "@mohasinac/appkit/utils";
+
 
 export interface MediaOperation {
   id: string;

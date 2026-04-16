@@ -1,21 +1,27 @@
 "use server";
 
 /**
- * Coupon Server Actions
+ * Coupon Server Actions — thin entrypoint
  *
- * Validate promo codes — calls the coupons repository directly,
- * bypassing the service → apiClient → API route chain.
+ * Authenticates, validates, rate-limits, then delegates to appkit
+ * domain functions.  No business logic here.
  */
 
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { couponsRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+import {
+  validateCoupon,
+  validateCouponForCart,
+} from "@mohasinac/appkit/features/promotions";
+import type {
+  CouponValidationResult,
+  CouponCartValidationResult,
+} from "@mohasinac/appkit/features/promotions";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -43,35 +49,14 @@ export type ValidateCouponForCartInput = z.infer<
   typeof validateCouponForCartSchema
 >;
 
-export interface ValidateCouponResult {
-  valid: boolean;
-  discountAmount: number;
-  coupon?: unknown;
-  error?: string;
-}
-
-export interface ValidateCouponForCartResult {
-  valid: boolean;
-  discountAmount: number;
-  eligibleSubtotal?: number;
-  eligibleProductIds?: string[];
-  scope?: "admin" | "seller";
-  sellerId?: string;
-  coupon?: unknown;
-  error?: string;
-}
+export type { CouponValidationResult, CouponCartValidationResult };
 
 // ─── Server Actions ─────────────────────────────────────────────────────────
 
-/**
- * Validate a coupon code against a purchase amount.
- * Auth required — validates per-user usage limits.
- */
 export async function validateCouponAction(
   input: ValidateCouponInput,
-): Promise<ValidateCouponResult> {
+): Promise<CouponValidationResult> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `coupon:validate:${user.uid}`,
     RateLimitPresets.API,
@@ -80,38 +65,18 @@ export async function validateCouponAction(
     throw new AuthorizationError("Too many requests. Please slow down.");
 
   const parsed = validateCouponSchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid coupon input",
     );
-  }
 
-  const { code, orderTotal } = parsed.data;
-
-  serverLogger.debug("validateCouponAction", { uid: user.uid, code });
-
-  return couponsRepository.validateCoupon(
-    code,
-    user.uid,
-    orderTotal,
-  ) as Promise<ValidateCouponResult>;
+  return validateCoupon(user.uid, parsed.data.code, parsed.data.orderTotal);
 }
 
-/**
- * Validate a coupon code against all cart items.
- *
- * This action enforces:
- *  - Seller coupons only discount items from that seller
- *  - Auction coupons only discount auction items
- *  - Pre-order items are never discounted
- *
- * Returns eligible product IDs so the UI can show which items are discounted.
- */
 export async function validateCouponForCartAction(
   input: ValidateCouponForCartInput,
-): Promise<ValidateCouponForCartResult> {
+): Promise<CouponCartValidationResult> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `coupon:validate:${user.uid}`,
     RateLimitPresets.API,
@@ -120,35 +85,11 @@ export async function validateCouponForCartAction(
     throw new AuthorizationError("Too many requests. Please slow down.");
 
   const parsed = validateCouponForCartSchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid coupon input",
     );
-  }
 
-  const { code, cartItems } = parsed.data;
-
-  serverLogger.debug("validateCouponForCartAction", {
-    uid: user.uid,
-    code,
-    itemCount: cartItems.length,
-  });
-
-  const result = await couponsRepository.validateCouponForCart(
-    code,
-    user.uid,
-    cartItems,
-  );
-
-  return {
-    valid: result.valid,
-    discountAmount: result.discountAmount ?? 0,
-    eligibleSubtotal: result.eligibleSubtotal,
-    eligibleProductIds: result.eligibleProductIds,
-    scope: result.scope,
-    sellerId: result.sellerId,
-    coupon: result.coupon,
-    error: result.message,
-  };
+  return validateCouponForCart(user.uid, parsed.data.code, parsed.data.cartItems);
 }
 

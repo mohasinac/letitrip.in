@@ -4,9 +4,6 @@
  *
  * Form for updating order status shown inside SideDrawer on admin orders page.
  */
-
-"use client";
-
 import { Input, Select } from "@mohasinac/appkit/ui";
 import { Textarea } from "@mohasinac/appkit/ui";
 import { useState } from "react";
@@ -14,7 +11,10 @@ import { Span, Text } from "@mohasinac/appkit/ui";
 import { FormGroup } from "@mohasinac/appkit/ui";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
+"use client";
 
 const LABELS = UI_LABELS.ADMIN.ORDERS;
 

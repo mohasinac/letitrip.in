@@ -1,5 +1,4 @@
 "use client";
-
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -9,16 +8,11 @@ import { useOrderDetail } from "../hooks";
 import { cancelOrderAction } from "@/actions";
 import { Card, EmptyState } from "@/components";
 import {
-  Heading,
-  Row,
-  Text,
-  Spinner,
-  StatusBadge,
-  Button,
-} from "@mohasinac/appkit/ui";
+  Heading, Row, Text, Spinner, StatusBadge, Button, } from "@mohasinac/appkit/ui";
 import { OrderDetailView as AppkitOrderDetailView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
+
 
 const STATUS_MAP: Record<
   string,

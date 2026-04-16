@@ -1,48 +1,30 @@
 "use server";
 
 /**
- * Bid Server Actions
+ * Bid Server Actions — thin entrypoint
  *
- * Place auction bids — calls repositories directly, bypassing the
- * service → apiClient → API route chain.
- *
- * Business rules are identical to POST /api/bids but execute server-side
- * with no HTTP overhead.
+ * Authenticates, rate-limits, validates, then delegates to
+ * appkit bid domain functions. No business logic here.
  */
 
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import {
-  bidRepository,
-  productRepository,
-  unitOfWork,
-  userRepository,
-} from "@/repositories";
-// getAdminRealtimeDb is imported lazily inside the function body to prevent
-// firebase-admin from being traced into the browser bundle via the
-// next-flight-action loader (which processes server action files in a browser
-// compilation context to generate the React Server Components action manifest).
-// module.require() prevents webpack's static analysis from following the chain.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports
-const _getAdminRealtimeDb = () =>
-  ((module as any).require("@mohasinac/appkit/providers/db-firebase") as typeof import("@mohasinac/appkit/providers/db-firebase")).getAdminRealtimeDb;
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import {
-  AuthorizationError,
-  ValidationError,
-  NotFoundError,
-} from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+  placeBid,
+  listBidsByProduct,
+  getBidById,
+  type PlaceBidInput,
+  type PlaceBidResult,
+} from "@mohasinac/appkit/features/auctions";
 import type { BidDocument } from "@/db/schema";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
-import { resolveDate } from "@/utils";
-import { maskPublicBid } from "@mohasinac/appkit/security";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-// ─── Validation schema ─────────────────────────────────────────────────────
+// ─── Validation schemas ────────────────────────────────────────────────────
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),
@@ -50,20 +32,8 @@ const placeBidSchema = z.object({
   autoMaxBid: z.number().positive().optional(),
 });
 
-export type PlaceBidInput = z.infer<typeof placeBidSchema>;
+// ─── Server Actions ────────────────────────────────────────────────────────
 
-export interface PlaceBidResult {
-  bid: BidDocument;
-}
-
-// ─── Server Action ─────────────────────────────────────────────────────────
-
-/**
- * Place a bid on an auction product.
- *
- * Validates ownership, timing, and bid amount before
- * atomically recording the bid, updating the product, and writing to RTDB.
- */
 export async function placeBidAction(
   input: PlaceBidInput,
 ): Promise<PlaceBidResult> {
@@ -77,133 +47,24 @@ export async function placeBidAction(
     throw new AuthorizationError("Too many requests. Please slow down.");
 
   const parsed = placeBidSchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid bid data",
     );
-  }
 
-  const { productId, bidAmount, autoMaxBid } = parsed.data;
-
-  // ── Fetch and validate the product ───────────────────────────────────────
-  const product = await productRepository.findById(productId);
-  if (!product) {
-    throw new NotFoundError(ERROR_MESSAGES.BID.AUCTION_NOT_FOUND);
-  }
-
-  if (!product.isAuction) {
-    throw new ValidationError(ERROR_MESSAGES.BID.NOT_AN_AUCTION);
-  }
-
-  if (product.auctionEndDate) {
-    const endDate = resolveDate(product.auctionEndDate);
-    if (endDate && endDate.getTime() < Date.now()) {
-      throw new ValidationError(ERROR_MESSAGES.BID.AUCTION_ENDED);
-    }
-  }
-
-  if (product.sellerId === user.uid) {
-    throw new AuthorizationError(ERROR_MESSAGES.BID.OWN_AUCTION);
-  }
-
-  // ── Bid-amount validation ─────────────────────────────────────────────────
-  const minimumBid =
-    (product.currentBid ?? 0) > 0
-      ? product.currentBid!
-      : (product.startingBid ?? product.price);
-
-  if (bidAmount <= minimumBid) {
-    throw new ValidationError(ERROR_MESSAGES.BID.BID_TOO_LOW);
-  }
-
-  // Find the user's existing active bid for this product
-  const userPriorActiveBid = (
-    await bidRepository.findBy("productId", productId)
-  ).find((b) => b.userId === user.uid && b.status === "active");
-
-  // ── Create the bid ────────────────────────────────────────────────────────
-  const profile = await userRepository.findById(user.uid);
-  const bid = await bidRepository.create({
-    productId,
-    productTitle: product.title,
-    userId: user.uid,
-    userName: profile?.displayName ?? user.email ?? "Anonymous",
-    userEmail: profile?.email ?? user.email ?? "",
-    bidAmount,
-    currency: product.currency || "INR",
-    bidDate: new Date(),
-    ...(autoMaxBid ? { autoMaxBid } : {}),
-  });
-
-  // ── Atomically mark all previous bids outbid + update product ────────────
-  const allBids = await bidRepository.findBy("productId", productId);
-  await unitOfWork.runBatch((batch) => {
-    for (const b of allBids) {
-      unitOfWork.bids.updateInBatch(batch, b.id, {
-        isWinning: b.id === bid.id,
-        status: b.id === bid.id ? "active" : "outbid",
-      } as any);
-    }
-    unitOfWork.products.updateInBatch(batch, productId, {
-      currentBid: bidAmount,
-      bidCount: (product.bidCount ?? 0) + 1,
-    } as any);
-  });
-
-  // ── Write to Realtime DB for live bid streaming ───────────────────────────
-  try {
-    const rtdb = _getAdminRealtimeDb()();
-    await rtdb.ref(`/auction-bids/${productId}`).set({
-      currentBid: bidAmount,
-      bidCount: (product.bidCount ?? 0) + 1,
-      lastBid: {
-        amount: bidAmount,
-        bidderName: "Bidder",
-        timestamp: Date.now(),
-      },
-      updatedAt: Date.now(),
-    });
-  } catch (rtdbErr) {
-    // Non-fatal: RTDB write failure must not fail the bid placement
-    serverLogger.warn("placeBidAction: RTDB write failed", {
-      error: rtdbErr,
-      productId,
-    });
-  }
-
-  serverLogger.info("placeBidAction: bid placed", {
-    bidId: bid.id,
-    productId,
-    userId: user.uid,
-    bidAmount,
-  });
-
-  return { bid };
+  return placeBid(user.uid, user.email ?? "", parsed.data);
 }
-
-// ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function listBidsByProductAction(
   productId: string,
   params?: { page?: number; pageSize?: number },
 ): Promise<FirebaseSieveResult<Omit<BidDocument, "userEmail">>> {
-  const result = await bidRepository.list({
-    filters: `productId==${productId}`,
-    sorts: "-bidAmount",
-    page: params?.page ?? 1,
-    pageSize: params?.pageSize ?? 20,
-  });
-  return {
-    ...result,
-    items: result.items.map(({ userEmail: _strip, ...rest }) =>
-      maskPublicBid(rest),
-    ),
-  };
+  return listBidsByProduct(productId, params);
 }
 
 export async function getBidByIdAction(
   id: string,
 ): Promise<BidDocument | null> {
-  return bidRepository.findById(id);
+  return getBidById(id);
 }
 

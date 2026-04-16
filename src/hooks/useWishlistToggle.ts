@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
+import {
+  useWishlistToggle as useAppkitWishlistToggle,
+  type UseWishlistToggleReturn,
+} from "@mohasinac/appkit/features/wishlist";
 
 /**
  * useWishlistToggle
@@ -16,29 +19,13 @@ import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
  * @example
  * const { inWishlist, isLoading, toggle } = useWishlistToggle(productId, initialInWishlist);
  */
-export function useWishlistToggle(productId: string, initial = false) {
-  const [inWishlist, setInWishlist] = useState(initial);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const toggle = useCallback(async () => {
-    const prev = inWishlist;
-    setInWishlist(!inWishlist);
-    setIsLoading(true);
-    try {
-      if (prev) {
-        await removeFromWishlistAction(productId);
-      } else {
-        await addToWishlistAction(productId);
-      }
-    } catch (err) {
-      // Rollback optimistic state so the UI isn't stuck
-      setInWishlist(prev);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [productId, inWishlist]);
-
-  return { inWishlist, isLoading, toggle };
+export function useWishlistToggle(
+  productId: string,
+  initial = false,
+): UseWishlistToggleReturn {
+  return useAppkitWishlistToggle(productId, initial, {
+    addToWishlist: addToWishlistAction,
+    removeFromWishlist: removeFromWishlistAction,
+  });
 }
 

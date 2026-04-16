@@ -1,24 +1,27 @@
 "use server";
 
 /**
- * Cart Server Actions
+ * Cart Server Actions — thin entrypoint
  *
- * Mutations for the shopping cart that call the repository directly,
- * bypassing the service → apiClient → API route chain.
- *
- * Can be imported directly in components or feature hooks:
- *   import { addToCartAction } from "@/actions";
+ * Authenticates, validates, rate-limits, then delegates to appkit
+ * domain functions.  No business logic here.
  */
 
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { cartRepository, productRepository } from "@/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { ValidationError, AuthorizationError } from "@mohasinac/appkit/errors";
+import {
+  addItemToCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+  mergeGuestCart,
+  getCart,
+} from "@mohasinac/appkit/features/cart";
 import type { CartDocument } from "@/db/schema";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
@@ -58,15 +61,10 @@ const mergeGuestCartSchema = z.object({
 
 // ─── Server Actions ────────────────────────────────────────────────────────
 
-/**
- * Add an item to the authenticated user's cart.
- * Called by `useAddToCart` for authenticated sessions.
- */
 export async function addToCartAction(
   input: z.infer<typeof addToCartSchema>,
 ): Promise<CartDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `cart:add:${user.uid}`,
     RateLimitPresets.API,
@@ -75,28 +73,19 @@ export async function addToCartAction(
     throw new AuthorizationError("Too many requests. Please slow down.");
 
   const parsed = addToCartSchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid input",
     );
-  }
 
-  serverLogger.debug("addToCartAction", {
-    uid: user.uid,
-    productId: parsed.data.productId,
-  });
-  return cartRepository.addItem(user.uid, parsed.data);
+  return addItemToCart(user.uid, parsed.data) as Promise<CartDocument>;
 }
 
-/**
- * Update an item's quantity in the authenticated user's cart.
- */
 export async function updateCartItemAction(
   itemId: string,
   input: z.infer<typeof updateCartItemSchema>,
 ): Promise<CartDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `cart:update:${user.uid}`,
     RateLimitPresets.API,
@@ -104,28 +93,22 @@ export async function updateCartItemAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (!itemId || typeof itemId !== "string") {
+  if (!itemId || typeof itemId !== "string")
     throw new ValidationError("itemId is required");
-  }
 
   const parsed = updateCartItemSchema.safeParse(input);
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid input",
     );
-  }
 
-  return cartRepository.updateItem(user.uid, itemId, parsed.data);
+  return updateCartItem(user.uid, itemId, parsed.data) as Promise<CartDocument>;
 }
 
-/**
- * Remove an item from the authenticated user's cart.
- */
 export async function removeFromCartAction(
   itemId: string,
 ): Promise<CartDocument> {
   const user = await requireAuth();
-
   const rl = await rateLimitByIdentifier(
     `cart:remove:${user.uid}`,
     RateLimitPresets.API,
@@ -133,70 +116,34 @@ export async function removeFromCartAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (!itemId || typeof itemId !== "string") {
+  if (!itemId || typeof itemId !== "string")
     throw new ValidationError("itemId is required");
-  }
 
-  return cartRepository.removeItem(user.uid, itemId);
+  return removeCartItem(user.uid, itemId) as Promise<CartDocument>;
 }
 
-/**
- * Clear all items from the authenticated user's cart.
- */
 export async function clearCartAction(): Promise<CartDocument> {
   const user = await requireAuth();
-  return cartRepository.clearCart(user.uid);
+  return clearCart(user.uid) as Promise<CartDocument>;
 }
 
-/**
- * Merge guest (localStorage) cart items into the authenticated user's server cart.
- * Called by `useGuestCartMerge` immediately after login.
- * Skips products that are unavailable or out of stock.
- */
 export async function mergeGuestCartAction(
   items: Array<{ productId: string; quantity: number }>,
 ): Promise<void> {
   const user = await requireAuth();
-
   const parsed = mergeGuestCartSchema.safeParse({ items });
-  if (!parsed.success) {
+  if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid items",
     );
-  }
 
-  await cartRepository.getOrCreate(user.uid);
-
-  for (const item of parsed.data.items) {
-    const product = await productRepository.findById(item.productId);
-    if (!product || product.status !== "published") continue;
-    if (product.availableQuantity < 1) continue;
-
-    const safeQty = Math.min(item.quantity, product.availableQuantity);
-
-    await cartRepository.addItem(user.uid, {
-      productId: product.id,
-      productTitle: product.title,
-      productImage: product.images?.[0] ?? "",
-      price: product.price,
-      currency: product.currency ?? "INR",
-      quantity: safeQty,
-      sellerId: product.sellerId,
-      sellerName: product.sellerName ?? "",
-      isAuction: product.isAuction ?? false,
-    });
-  }
-
-  serverLogger.info("Guest cart merged via Server Action", {
-    uid: user.uid,
-    itemCount: parsed.data.items.length,
-  });
+  return mergeGuestCart(user.uid, parsed.data.items);
 }
 
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function getCartAction(): Promise<CartDocument | null> {
   const user = await requireAuth();
-  return cartRepository.findByUserId(user.uid);
+  return getCart(user.uid) as Promise<CartDocument | null>;
 }
 

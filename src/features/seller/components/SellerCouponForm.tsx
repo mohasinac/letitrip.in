@@ -2,7 +2,7 @@
 
 import { FormGroup, Select } from "@mohasinac/appkit/ui";
 import { Input } from "@mohasinac/appkit/ui";
-import { useForm, type Resolver, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
@@ -14,7 +14,8 @@ import { RichTextEditor } from "@/features/admin";
 import { useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { sellerCreateCouponAction } from "@/actions";
-import { nowISO } from "@/utils";
+import { nowISO } from "@mohasinac/appkit/utils";
+import type { Resolver } from "@mohasinac/appkit/utils";
 
 const { themed, spacing } = THEME_CONSTANTS;
 

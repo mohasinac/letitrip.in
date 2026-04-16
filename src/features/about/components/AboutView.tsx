@@ -1,6 +1,7 @@
 "use client";
 
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants/routes";
+import { THEME_CONSTANTS } from "@/constants/theme";
 import { useTranslations } from "next-intl";
 import { AboutView as AppkitAboutView } from "@mohasinac/appkit/features/about";
 import { TextLink } from "@/components";

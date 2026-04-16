@@ -10,9 +10,8 @@
  */
 
 export { default as Search } from "./Search";
-export { default as BackToTop } from "./BackToTop";
-export { default as BackgroundRenderer } from "./BackgroundRenderer";
+export { BackToTop } from "@mohasinac/appkit/features/layout";
+export { BackgroundRenderer, ResponsiveView } from "@mohasinac/appkit/ui";
 
 // Phase 3: Responsive utilities
-export { ResponsiveView } from "./ResponsiveView";
 

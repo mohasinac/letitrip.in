@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Breadcrumbs, BreadcrumbItem, TextLink } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
@@ -10,7 +9,9 @@ import { RelatedProducts } from "./RelatedProducts";
 import { PromoBannerStrip } from "./PromoBannerStrip";
 import { BuyMoreSaveMore } from "./BuyMoreSaveMore";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { capitalizeWords } from "@/utils";
+import { capitalizeWords } from "@mohasinac/appkit/utils";
+
+
 import { useTranslations } from "next-intl";
 import {
   ProductDetailView as AppkitProductDetailView,

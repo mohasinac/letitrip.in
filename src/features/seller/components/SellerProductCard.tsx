@@ -1,10 +1,11 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 import { Span, Text, Button, Row } from "@mohasinac/appkit/ui";
 import { BaseListingCard, MediaImage } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency } from "@mohasinac/appkit/utils";
+
+
 import type { AdminProduct } from "@/components";
 
 interface SellerProductCardProps {

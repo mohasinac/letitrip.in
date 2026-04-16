@@ -1,4 +1,10 @@
 import "@/providers.config";
+import { orderRepository, productRepository } from "@/repositories";
+import { successResponse } from "@mohasinac/appkit/next";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { formatMonthYear } from "@mohasinac/appkit/utils";
+
 /**
  * Seller Analytics API Route
  *
@@ -11,11 +17,6 @@ import "@/providers.config";
  *  3. Aggregate totals, monthly breakdown (last 6 months), and top products
  */
 
-import { orderRepository, productRepository } from "@/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
 /**

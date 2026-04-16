@@ -1,7 +1,9 @@
 "use client";
+import { UI_LABELS } from "@/constants/ui";
+import { THEME_CONSTANTS } from "@/constants/theme";
+import { formatCurrency, formatRelativeTime } from "@mohasinac/appkit/utils";
 
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatRelativeTime } from "@/utils";
+
 import type { PublicBid } from "@mohasinac/appkit/features/auctions";
 import { Heading, Li, Span, Text, Ul, Row } from "@mohasinac/appkit/ui";
 
