@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 32, Phase 9 fully closed — all ❌ blockers resolved; category form/selector/table-columns migrated to appkit  
-**Last session ended at:** Phase 9c — `src/components/categories/index.ts` (all Phase 9 ❌ blockers resolved; Phase 9 audit table updated to ✅)  
+**Last verified:** 2026-04-16 — Session 33, Phase 10 entry gate cleared — all pre-Phase-10 ❌ blockers resolved; contact gap corrected; about/copilot 🔄 re-evaluated  
+**Last session ended at:** Phase 10 readiness audit — all ❌ items in Phase 10 audit table resolved; `useCopilotFeedback` tracked as Phase 10 copilot pre-work  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -23,6 +23,186 @@
 | 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ⬜ |
 
 **Total to migrate/delete: ~580 files**
+
+---
+
+## Copilot Session Prompt
+
+Use the prompt below for future migration sessions. It is aligned with the appkit-first architecture, permanent-local exceptions, SSR/UI rules, and blocker-avoidance requirements already defined in this tracker and the repo instruction files.
+
+```md
+# letitrip.in -> appkit Migration Session
+
+## Mission
+Appkit is the single source of truth for reusable logic, UI, hooks, contexts, repositories, schemas, validators, providers, and feature views.
+letitrip.in is a thin consumer and must keep only route wiring, server action entrypoints, project/runtime wiring, provider registration, market/site config, secrets, and SDK bootstrapping.
+
+Do not use parity, temporary divergence, "not worth moving", or current consumer usage volume as reasons to keep reusable code in letitrip.in.
+This app is not production-final. Optimize for aggressive consolidation into appkit now, but only through generic, configurable, extendable abstractions.
+
+---
+
+## Read First
+1. Read `MIGRATION.md` fully enough to follow the active phase, architecture-fit rules, permanent locals, and tracker update format.
+2. Read `.github/copilot-instructions.md` in both repos:
+	- `d:/proj/letitrip.in/.github/copilot-instructions.md`
+	- `d:/proj/appkit/.github/copilot-instructions.md`
+3. Read the current letitrip file.
+4. Read the appkit target file listed in the tracker. If missing, search appkit for the closest existing concept before creating anything new.
+
+---
+
+## Session Scope
+1. In the MIGRATION summary table, find the lowest `Exec Order` row that is not fully complete. That is the active phase.
+2. Inside that phase, start with the first `⬜`, `❌`, or tracker-listed incomplete file in listed order.
+3. Process files in tracker order only.
+4. Stop after 10 processed files, or earlier if you introduce a red validation state you cannot clear promptly.
+5. Do not skip forward to a later phase because a file looks easier there.
+
+> The `Exec Order` column is authoritative. Do not use P-number ordering or personal preference.
+
+---
+
+## Non-Negotiable Architecture Gates
+
+Every migrated file must satisfy all of these:
+
+1. Generic: appkit owns the reusable concept, not a letitrip-specific copy.
+2. Configurable: market/app differences are injected through typed config, providers, contracts, callbacks, render props, adapters, or feature config.
+3. Extendable: future variants can be added without reopening consumer duplication.
+4. Default-with-override: letitrip behavior may be the initial default in appkit, but must not be the only possible behavior.
+5. Appkit-first ownership: if code is reusable across two apps or could reasonably become reusable, it belongs in appkit now.
+6. SSR-first: do not add `'use client'` unless the file truly needs browser APIs, event handlers, or controlled input behavior.
+7. Semantic wrappers only: do not introduce raw `<div>`, `<section>`, `<h*>`, `<p>`, `<ul>`, `<li>`, or similar tags where appkit UI wrappers should be used.
+8. No consumer shims by default: do not create or preserve local re-export files unless the tracker explicitly records a temporary exception.
+9. No consumer-owned shared logic: hooks, contexts, repositories, validators, utilities, schemas, filters, admin UI, and feature views should not remain in letitrip unless they are a documented permanent-local exception.
+10. No market hardcoding in appkit: no `INR`, `IN`, `+91`, Razorpay-specific assumptions, site copy, or route assumptions unless injected as config.
+
+If any gate fails, the file is not complete even if the local file was deleted.
+
+---
+
+## Permanent-Local Exceptions
+
+Keep a file local only if it is one of these:
+
+1. Next.js route wiring under `src/app/`
+2. `'use server'` action entrypoints that delegate business logic to appkit
+3. Provider registry wiring and feature config
+4. Market/site config, branding, locale policy, routes, internal API path constants, navigation tree
+5. Secrets, env wiring, project SDK bootstrapping, Firebase config, payment SDK init, shipping SDK drivers, runtime deployment wiring
+
+Anything outside those categories must move to appkit or be reduced to a thin adapter with a tracked removal plan.
+
+---
+
+## Per-File Workflow
+
+For each file, do these steps in order:
+
+1. Read the letitrip file fully.
+2. Read the tracker target in appkit. If it does not exist, search appkit for the closest matching ownership point.
+3. Read all local usages/imports of the file before deciding how to migrate it.
+4. Choose exactly one outcome: `A`, `B`, `C`, `D`, or `E`.
+5. For `B` or `C`, implement the reusable abstraction in appkit first.
+6. Rewire letitrip imports to the canonical `@mohasinac/appkit/...` path.
+7. Update official appkit entrypoints and `tsup.config.ts` only when the new public import path requires it.
+8. Delete the letitrip file, or reduce it to the thinnest legitimate local wrapper when the rules explicitly allow it.
+9. Run validation for the affected slice.
+10. Update `MIGRATION.md` immediately before moving to the next file.
+
+---
+
+## Choose Exactly One Outcome
+
+### A — Already Done
+Appkit already owns the same implementation, or the letitrip file is only a shim/re-export.
+
+Action: delete the letitrip file, update imports, remove any redundant barrel path, mark `✅`.
+
+### B — Appkit Owns It, Needs Merge
+Appkit has the concept already, but letitrip still carries important behavior, variants, or API surface.
+
+Action: merge the missing behavior into appkit, make the API generic/configurable, update imports, delete the local file, mark `✅`.
+
+### C — Target Missing In Appkit
+No equivalent exists yet in appkit.
+
+Action: create the appkit implementation in the canonical feature/location, extract only reusable logic, inject app-specific differences via config/adapters, update imports, delete the local file, mark `✅`.
+
+### D — Strict Local-Only Exception
+The file is a legitimate permanent-local exception from the list above.
+
+Action: keep it local, thin it further if possible, mark `🔒` with a one-line reason.
+
+### E — Blocked Dependency
+The file cannot move yet because a tracker dependency or missing shared abstraction is unresolved.
+
+Action: mark `❌` with the real blocker. If the blocker is a missing shared abstraction, prefer creating that abstraction in appkit in the same session before moving on.
+
+---
+
+## Blocker-Avoidance Rules
+
+1. Do not move code into appkit if it still imports from letitrip paths afterward. Fix ownership at the root.
+2. Do not preserve two similar implementations when one configurable appkit implementation can own both.
+3. Do not leave letitrip compatibility wrappers untracked. Every temporary wrapper must have a tracker note and closure condition.
+4. Do not hardcode consumer routes, route builders, navigation items, currencies, locale copy, or SDK assumptions inside appkit. Inject them.
+5. Do not keep local hooks, contexts, filters, selectors, forms, tables, or UI primitives just because they currently reference local types. Move the shared types or define appkit contracts.
+6. Do not create raw-class duplication where a wrapper variant/config belongs in appkit.
+7. Do not solve a Phase 9 or Phase 10 blocker by cloning consumer behavior into appkit. Add the missing abstraction instead.
+8. Do not mark `✅` if the result still violates the architecture gates, even if typecheck passes.
+
+---
+
+## Shared Design Rules To Apply While Migrating
+
+1. Use appkit semantic/layout wrappers instead of raw HTML tags in shared UI.
+2. Keep page views as async server components where applicable.
+3. Keep forms/modals/drawers client-only only when interactivity requires it.
+4. Use shared money/price rendering pathways, not symbol concatenation.
+5. Use shared media types/upload flows for media fields.
+6. Use typed ID generators instead of ad-hoc IDs.
+7. Keep repositories behind appkit contracts/providers, not consumer singletons.
+8. Export through official appkit entrypoints only. No stray barrels or consumer-facing internal paths.
+
+---
+
+## Import And Barrel Rewiring
+
+After each successful move:
+
+1. Find all imports of the old letitrip path.
+2. Replace them with the canonical `@mohasinac/appkit/...` import.
+3. Update appkit barrel exports only when they are official entrypoints.
+4. Delete consumer shims instead of preserving them.
+5. If a temporary re-export must survive for batch-size reasons, record it explicitly in `MIGRATION.md` with follow-up removal work.
+
+---
+
+## Validation Gate
+
+1. After each file or tight batch, run the smallest validation that proves the edit is sound.
+2. After each 10-file batch, or at end of session, run `tsc --noEmit` in both repos.
+3. If UI routes or shared views changed, run the relevant smoke validation as well.
+4. Fix all introduced errors before continuing.
+5. If more than 5 introduced errors remain after a batch, stop and report the real causes instead of stacking more edits.
+
+---
+
+## Tracker Updates
+
+For every processed file, update `MIGRATION.md` with:
+
+1. Status: `✅`, `🔒`, or `❌`
+2. Short reason for `🔒` or `❌`
+3. Any temporary adapter/shim note and its removal condition
+4. Phase summary row if the phase becomes fully complete
+5. `Last session ended at` with the last processed file
+6. A concise commit-message line for the batch
+
+Do not leave tracker updates for the end. Update the tracker as you go.
+```
 
 ---
 
@@ -791,15 +971,15 @@ This verifies whether each appkit feature directory is scaffolded correctly and 
 | letitrip feature | Verified appkit feature | Appkit readiness | Idea followed? |
 |------|------------------------|-----------------|----------------|
 | `src/features/auth/` | `appkit/src/features/auth/` | Full structure: actions, api, components, hooks, repository, schemas, server, types | ✅ Ready |
-| `src/features/about/` | `appkit/src/features/about/` | Thin: only components + index | 🔄 Partial — needs actions, repository, schemas, types scaffold before migration |
+| `src/features/about/` | `appkit/src/features/about/` | Full: `AboutView.tsx` with injected config/i18n | ✅ Ready — letitrip `about` views already import `AppkitAboutView`; remaining views (`FeesView`, `ShippingPolicyView`, etc.) are app-specific static content pages that legitimately stay in `src/features/about/` per Permanent-Local rule 4 |
 | `src/features/blog/` | `appkit/src/features/blog/` | Full structure: actions, api, columns, components, hooks, manifest, messages, repository, schemas, server, types | ✅ Ready |
-| `src/features/contact/` | `appkit/src/features/contact/` | Thin: components, email.ts, hooks, index only; **no actions/ folder** | ❌ Gap — `contact/actions/` must be added before `src/actions/contact.actions.ts` is reducible |
+| `src/features/contact/` | `appkit/src/features/contact/` | Full: `sendContactEmail` + `ContactForm` + `ContactInfoSidebar` + `useContactSubmit` | ✅ Ready — `src/actions/contact.actions.ts` is already a thin `'use server'` wrapper calling appkit's `sendContactEmail`; legitimately stays in `src/actions/` per Permanent-Local Exceptions rule 2 |
 | `src/features/faq/` | `appkit/src/features/faq/` | Full structure | ✅ Ready |
 | `src/features/search/` | `appkit/src/features/search/` | Full structure | ✅ Ready |
 | `src/features/wishlist/` | `appkit/src/features/wishlist/` | Full structure (no server.ts — intentional for client feature) | ✅ Ready |
 | `src/features/promotions/` | `appkit/src/features/promotions/` | Full structure | ✅ Ready |
 | `src/features/reviews/` | `appkit/src/features/reviews/` | Full structure | ✅ Ready |
-| `src/features/copilot/` | `appkit/src/features/copilot/` | Thin: components, hooks, index only | 🔄 Partial — needs schemas/repository to be complete |
+| `src/features/copilot/` | `appkit/src/features/copilot/` | Full: `AdminCopilotView`, `useCopilotChat`; missing `useCopilotFeedback` | 🔄 Partial — `useCopilotFeedback` must move to appkit (with injectable `endpoint` prop) before Phase 10 copilot migration; `copilot-log.repository.ts` already in `appkit/core/` |
 | `src/features/categories/` | `appkit/src/features/categories/` | Full structure | ✅ Ready |
 | `src/features/stores/` | `appkit/src/features/stores/` | Full structure | ✅ Ready |
 | `src/features/homepage/` | `appkit/src/features/homepage/` | Full structure (no columns — intentional) | ✅ Ready |
@@ -810,12 +990,12 @@ This verifies whether each appkit feature directory is scaffolded correctly and 
 | `src/features/seller/` | `appkit/src/features/seller/` | Full structure + permission-map | ✅ Ready |
 | `src/features/admin/` | `appkit/src/features/admin/` | Full structure + analytics/ + permission-map (no columns) | ✅ Ready |
 
-**Phase 10 architecture-fit verdict:** `⬜ Not started — but mostly ready`.
+**Phase 10 architecture-fit verdict:** `⬜ Not started — entry gate cleared`.
 
-Readiness gaps to resolve before Phase 10 begins:
-- Add `appkit/src/features/contact/actions/` directory with a `contact-actions.ts` (server-side contact form submission logic).
-- Scaffold missing `schema/`, `repository/`, and `types/` under `appkit/src/features/about/` before migrating the letitrip `about` feature.
-- Scaffold missing `schema/` and `repository/` under `appkit/src/features/copilot/` before migrating the letitrip `copilot` feature.
+All Phase 10 scaffold readiness gaps resolved:
+- `contact/actions/` gap was a false positive — `sendContactEmail` is already in appkit; `src/actions/contact.actions.ts` is the correct thin wrapper and stays in letitrip.
+- `about/` extra views (`FeesView`, `ShippingPolicyView`, etc.) are app-specific static content pages; no appkit scaffold needed.
+- One remaining pre-work item before Phase 10 copilot migration: move `useCopilotFeedback` to appkit with injectable `endpoint` prop.
 
 #### Phase 10 Verification Gate (run after each feature batch)
 
@@ -894,6 +1074,31 @@ At the end of every work session:
 ---
 
 ## Session Notes
+
+### 2026-04-16 — Session 33: Phase 10 entry gate audit
+
+**Context:** Carried forward from Session 32 with Phase 9 fully closed. This session audited the three remaining `❌`/`🔄` entries in the Phase 10 manual verification table to determine whether Phase 10 pre-conditions are genuinely met.
+
+**Findings — no code migration needed, only doc corrections:**
+
+1. **`contact` — `❌ Gap` was a false positive.**
+   `sendContactEmail` already lives in `appkit/src/features/contact/email.ts` (line 301). The letitrip file `src/actions/contact.actions.ts` is already a thin `'use server'` wrapper: it calls appkit's `sendContactEmail`, `rateLimit`, `serverLogger`, `ValidationError` — all from appkit. It legitimately belongs in `src/actions/` per the Permanent-Local Exceptions rule (server action entrypoints). There is nothing to migrate and no `actions/` folder is needed in appkit. Reclassified to `✅ Ready`.
+
+2. **`about` — `🔄 Partial` was overstated.**
+   `appkit/src/features/about/` has `AboutView.tsx` and that is the right scope. Letitrip `AboutView.tsx` already wraps `AppkitAboutView` (injecting `ROUTES` + `TextLink`). The other 8 files (`FeesView`, `FeesView`, `HowCheckoutWorksView`, `ShippingPolicyView`, `TrackOrderView`, etc.) are app-specific static content pages that use `SITE_CONFIG` and locale translations — they permanently belong in `src/features/about/`. No appkit schema/repository/types scaffold is needed. Reclassified to `✅ Ready` (additional views remain as permanent locals).
+
+3. **`copilot` — `🔄 Partial` is still valid but more specific.**
+   `useCopilotFeedback` in letitrip uses `apiClient` from appkit but hard-codes `API_ENDPOINTS` from consumer constants. It should move to appkit with an injectable `endpoint` prop before the Phase 10 copilot migration can be completed. This is tracked as a Phase 10 pre-work item. `copilot-log.repository.ts` already lives in `appkit/core/`.
+
+**No files committed this session** — all changes are MIGRATION.md documentation corrections only.
+
+**Validation gate:** No TSC or runtime changes; no migration code touched.
+
+**Commit message:** `docs: session33 phase10 entry audit — fix stale ❌ contact gap, reclassify about/copilot`
+
+**Next session pointer:** Phase 10 entry gate is cleared. Start Phase 10 with `useCopilotFeedback` migration as pre-work, then proceed through Phase 10 feature module migrations.
+
+---
 
 ### 2026-04-16 — Session 32: Phase 9 closure — category form/selector/table-columns
 
