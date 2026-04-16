@@ -1,21 +1,21 @@
 /**
  * Category Components Index
- * CategoryCard and CategorySelectorCreate moved back to Tier-1 (src/components).
+ * All category components now live in appkit — this barrel re-exports from canonical sources.
  */
 
-// Shared category form/types (used by admin + CategorySelectorCreate)
-export { CategoryForm } from "./CategoryForm";
-export { getCategoryTableColumns } from "./CategoryTableColumns";
 export {
-	flattenCategories,
-	type Category,
-	type CategoryDrawerMode,
+  CategoryForm,
+  CategorySelectorCreate,
+  getCategoryTableColumns,
+  flattenCategories,
+  CategoryCard,
+  type Category,
+  type CategoryDrawerMode,
+  type CategoryFormProps,
+  type CategoryFormLabels,
+  type CategorySelectorCreateProps,
+  type CategorySelectorCreateLabels,
+  type CategoryTableColumnsLabels,
 } from "@mohasinac/appkit/features/categories";
 
-// Presentational card — used by homepage and categories feature
-export { CategoryCard } from "@mohasinac/appkit/features/categories";
-
-// Selector with inline create — used by product forms
-export { CategorySelectorCreate } from "./CategorySelectorCreate";
-export type { CategorySelectorCreateProps } from "./CategorySelectorCreate";
 

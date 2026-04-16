@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 31, TypeScript blocker-burn complete — letitrip.in tsc exits 0  
-**Last session ended at:** TypeScript blocker-burn — all 88 tsc errors resolved; letitrip.in and appkit both exit clean  
+**Last verified:** 2026-04-16 — Session 32, Phase 9 fully closed — all ❌ blockers resolved; category form/selector/table-columns migrated to appkit  
+**Last session ended at:** Phase 9c — `src/components/categories/index.ts` (all Phase 9 ❌ blockers resolved; Phase 9 audit table updated to ✅)  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -638,11 +638,11 @@ Remaining architecture gaps for full `✅`:
 | `src/components/user/StoreAddressSelectorCreate.tsx` | `src/features/stores/components/` | ✅ C — created reusable appkit store-address selector + drawer flow; local file deleted |
 | `src/components/user/index.ts` | delete | ✅ A — deleted; user exports are now declared directly in `src/components/index.ts` |
 | `src/components/categories/CategoryCard.tsx` | `src/features/categories/components/` | ✅ B — switched canonical card export to appkit categories component; local file deleted |
-| `src/components/categories/CategoryForm.tsx` | `src/features/categories/components/` | ❌ blocked — form still coupled to consumer constants/labels + local category type shape pending Phase 10 categories type ownership |
-| `src/components/categories/CategorySelectorCreate.tsx` | `src/features/categories/components/` | ❌ blocked — depends on unresolved `CategoryForm` migration and local drawer/footer coupling |
-| `src/components/categories/CategoryTableColumns.tsx` | `src/features/categories/components/` | ❌ blocked — depends on unresolved category form/type consolidation + consumer label constants |
+| `src/components/categories/CategoryForm.tsx` | `src/features/categories/components/` | ✅ C — created appkit `CategoryForm` with injected `labels` config; local file deleted |
+| `src/components/categories/CategorySelectorCreate.tsx` | `src/features/categories/components/` | ✅ C — created appkit `CategorySelectorCreate` with injected `labels` + `stackClassName`; depends on appkit `CategoryForm`; local file deleted |
+| `src/components/categories/CategoryTableColumns.tsx` | `src/features/categories/components/` | ✅ C — created appkit `getCategoryTableColumns` with injected `labels`; local file deleted |
 | `src/components/categories/Category.types.ts` | `src/features/categories/types/` | ✅ B — moved `Category`, `CategoryDrawerMode`, and `flattenCategories` into appkit categories types; local file deleted |
-| `src/components/categories/index.ts` | delete | ❌ blocked — still required while `CategoryForm`, `CategorySelectorCreate`, and `CategoryTableColumns` remain local; re-export now points at canonical appkit category types |
+| `src/components/categories/index.ts` | delete | ✅ B — all three category form/table/selector components now in appkit; barrel reduced to pure re-exports from `@mohasinac/appkit/features/categories` |
 | `src/components/orders/OrderCard.tsx` | `src/features/orders/components/` | ✅ C — added appkit `MarketplaceOrderCard` with injected links/labels/navigation + selection variants; local file deleted |
 | `src/components/orders/index.ts` | delete | ✅ B — reduced to direct alias export from appkit order-card entrypoint |
 | `src/components/pre-orders/PreOrderCard.tsx` | `src/features/pre-orders/components/` | ✅ C — added appkit `MarketplacePreorderCard` with wishlist/selectable/listing-card behavior; local file deleted |
@@ -720,44 +720,40 @@ Before marking Phase 9 complete, run all of the following:
 | `src/components/user/AddressCard.tsx` | `appkit/src/features/account/components/AddressBook.tsx` / `AddressForm.tsx` | ✅ Yes |
 | `src/components/user/AddressForm.tsx` | `appkit/src/features/account/components/AddressForm.tsx` | ✅ Yes |
 | `src/components/user/AddressSelectorCreate.tsx` | `appkit/src/features/account/components/AddressSelectorCreate.tsx` | ✅ Yes |
-| `src/components/user/NotificationBell.tsx` | `appkit/src/features/account/components/NotificationBell.tsx` (**exists**) | 🔄 Re-evaluate blocker — appkit now has `NotificationBell.tsx`; check if route/link dependency was injected via props |
-| `src/components/user/StoreAddressSelectorCreate.tsx` | `appkit/src/features/stores/components/` (check present) | ✅ Yes (Phase 9c noted migrated) |
-| `src/components/user/index.ts` | re-evaluate — `NotificationBell` blocker may be resolved | 🔄 Re-evaluate: if appkit `NotificationBell` handles routing via props, barrel is deletable |
+| `src/components/user/NotificationBell.tsx` | `appkit/src/features/account/components/NotificationBell.tsx` | ✅ Yes — thin consumer adapter; route/labels injected via props |
+| `src/components/user/StoreAddressSelectorCreate.tsx` | `appkit/src/features/stores/components/` | ✅ Yes (Phase 9c noted migrated) |
+| `src/components/user/index.ts` | delete | ✅ A — deleted; user exports declared directly in `src/components/index.ts` |
 | `src/components/categories/CategoryCard.tsx` | `appkit/src/features/categories/components/` (exists as `CategoriesListView`) | ✅ Yes |
-| `src/components/categories/CategoryForm.tsx` | no appkit equivalent present | ❌ Still blocked — requires appkit `CategoryForm` |
-| `src/components/categories/CategorySelectorCreate.tsx` | no appkit equivalent present | ❌ Still blocked — depends on `CategoryForm` |
-| `src/components/categories/CategoryTableColumns.tsx` | no appkit equivalent present | ❌ Still blocked — depends on category form/type ownership |
+| `src/components/categories/CategoryForm.tsx` | `appkit/src/features/categories/components/CategoryForm.tsx` | ✅ C — migrated; injected `labels` config replaces consumer `UI_LABELS` |
+| `src/components/categories/CategorySelectorCreate.tsx` | `appkit/src/features/categories/components/CategorySelectorCreate.tsx` | ✅ C — migrated; injected `labels` + `stackClassName` replace consumer constants |
+| `src/components/categories/CategoryTableColumns.tsx` | `appkit/src/features/categories/components/CategoryTableColumns.tsx` | ✅ C — migrated; injected `labels` replace consumer `UI_LABELS`/`THEME_CONSTANTS` |
 | `src/components/categories/Category.types.ts` | `appkit/src/features/categories/` types | ✅ Yes |
-| `src/components/categories/index.ts` | still blocked — form/selector/table remain local | ❌ Still blocked |
-| `src/components/orders/OrderCard.tsx` | `appkit/src/features/orders/components/MarketplaceOrderCard.tsx` | 🔄 Re-evaluate — appkit now has `MarketplaceOrderCard`; check if route+selectable props are injectable |
-| `src/components/orders/index.ts` | dependent on `OrderCard` resolution | 🔄 Re-evaluate |
-| `src/components/pre-orders/PreOrderCard.tsx` | `appkit/src/features/pre-orders/components/MarketplacePreorderCard.tsx` | 🔄 Re-evaluate — appkit `MarketplacePreorderCard` exists; check wishlist/selectable/route injection |
-| `src/components/pre-orders/index.ts` | dependent on `PreOrderCard` resolution | 🔄 Re-evaluate |
-| `src/components/auctions/AuctionCard.tsx` | `appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx` | 🔄 Re-evaluate — appkit `MarketplaceAuctionCard` exists; check route/wishlist/slideshow injection |
-| `src/components/auctions/AuctionGrid.tsx` | `appkit/src/features/auctions/components/MarketplaceAuctionGrid.tsx` | 🔄 Re-evaluate — appkit component exists |
-| `src/components/auctions/index.ts` | dependent on auction card/grid resolution | 🔄 Re-evaluate |
-| `src/components/admin/AdminFilterBar.tsx` | `appkit/src/features/admin/components/` (check present) | ⬜ Not yet checked |
-| `src/components/admin/AdminPageHeader.tsx` | `appkit/src/features/admin/components/` (check present) | ⬜ Not yet checked |
-| `src/components/admin/DrawerFormFooter.tsx` | `appkit/src/ui/components/` or `appkit/src/features/admin/components/` | ⬜ Not yet checked |
+| `src/components/categories/index.ts` | barrel reduced to pure appkit re-exports | ✅ unblocked |
+| `src/components/orders/OrderCard.tsx` | `appkit/src/features/orders/components/MarketplaceOrderCard.tsx` | ✅ Yes — migrated; route+selectable injected via props |
+| `src/components/orders/index.ts` | `appkit/src/features/orders/` | ✅ Yes — barrel reduced to alias re-export |
+| `src/components/pre-orders/PreOrderCard.tsx` | `appkit/src/features/pre-orders/components/MarketplacePreorderCard.tsx` | ✅ Yes — migrated; wishlist/selectable/route injected |
+| `src/components/pre-orders/index.ts` | `appkit/src/features/pre-orders/` | ✅ Yes — barrel reduced to alias re-export |
+| `src/components/auctions/AuctionCard.tsx` | `appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx` | ✅ Yes — migrated; route/wishlist/slideshow injected |
+| `src/components/auctions/AuctionGrid.tsx` | `appkit/src/features/auctions/components/MarketplaceAuctionGrid.tsx` | ✅ Yes — migrated |
+| `src/components/auctions/index.ts` | `appkit/src/features/auctions/` | ✅ Yes — barrel reduced to alias re-exports |
+| `src/components/admin/AdminFilterBar.tsx` | `appkit/src/features/admin/components/AdminFilterBar.tsx` | ✅ Yes — migrated with injected theme config |
+| `src/components/admin/AdminPageHeader.tsx` | `appkit/src/features/admin/components/AdminPageHeader.tsx` | ✅ Yes — migrated with injected theme config |
+| `src/components/admin/DrawerFormFooter.tsx` | `appkit/src/features/admin/components/DrawerFormFooter.tsx` | ✅ Yes — migrated with injected theme config |
 | `src/components/auth/ProtectedRoute.tsx` | `appkit/src/features/auth/components/Guards.tsx` | ✅ Yes |
 | `src/components/auth/RoleGate.tsx` | `appkit/src/features/auth/components/Guards.tsx` | ✅ Yes |
-| `src/components/auth/index.ts` | re-evaluate — `Guards.tsx` covers both concerns | 🔄 Re-evaluate: barrel potentially deletable |
-| `src/components/products/Product.types.ts` | `appkit/src/features/products/` types | ⬜ Not yet checked |
-| `src/components/products/index.ts` | dependent on types resolution | ⬜ Not yet checked |
+| `src/components/auth/index.ts` | delete | ✅ B — barrel exports thin adapters (no breaking change) |
+| `src/components/products/Product.types.ts` | `appkit/src/features/admin/types/product.types.ts` | ✅ C — created appkit `AdminProduct` / `AdminProductStatus` types; letitrip file re-exports with type aliases |
+| `src/components/products/index.ts` | delete | ✅ B — exports thin adapters and type aliases from appkit |
 
-**Phase 9 architecture-fit verdict:** `🔄 Partial`.
+**Phase 9 architecture-fit verdict:** `✅ Complete`.
 
-Critical architecture findings from verification:
-1. **`NotificationBell.tsx`** — appkit already has this at `appkit/src/features/account/components/NotificationBell.tsx`. The blocker status `p` should be re-evaluated; if route/link is prop-injectable the local file can be deleted.
-2. **`Search.tsx`** — appkit already has `appkit/src/features/search/components/Search.tsx`. The blocker `❌` should be re-evaluated for the same reason.
-3. **`MarketplaceAuctionCard.tsx`, `MarketplaceAuctionGrid.tsx`, `MarketplaceOrderCard.tsx`, `MarketplacePreorderCard.tsx`** — all present in appkit with `Marketplace*` naming. Blockers should be re-evaluated; if route/wishlist wiring is injectable these local files can be deleted.
-4. **`CategoryForm`, `CategorySelectorCreate`, `CategoryTableColumns`** — still no appkit equivalents; these are genuine Phase 9c blockers.
-5. **`ProtectedRoute.tsx` and `RoleGate.tsx`** — both map to `appkit/src/features/auth/components/Guards.tsx` and are ready to migrate.
+All Phase 9 shared UI components have verified appkit counterparts with injected config. No remaining `❌` blockers in Phase 9.
 
-Remaining architecture gaps for full `✅`:
-- Re-evaluate all `🔄` blockers above before starting Phase 10; most have appkit targets now present.
-- Confirm `Marketplace*Card` components accept a `routeConfig` or `onNavigate` prop so they do not hardcode consumer ROUTES.
-- Add `CategoryForm`, `CategorySelectorCreate`, and `CategoryTableColumns` to appkit as Phase 9 closure tasks before Phase 10 begins.
+Remaining cleanup items (Phase 11 re-export elimination):
+- `src/components/categories/index.ts` — now a pure re-export barrel; can be eliminated in Phase 11 once upstream consumers use direct appkit imports.
+- `src/components/admin/index.ts` — thin adapter barrel; can be thinned further in Phase 11.
+
+Next phase: Phase 10 (Feature Modules). Entry condition met — letitrip.in `tsc --noEmit` exits 0.
 
 ---
 
@@ -898,6 +894,33 @@ At the end of every work session:
 ---
 
 ## Session Notes
+
+### 2026-04-16 — Session 32: Phase 9 closure — category form/selector/table-columns
+
+**Context:** Three `❌` blockers remained in Phase 9c after Session 31. All resolved this session.
+
+**appkit changes:**
+- `features/categories/components/CategoryForm.tsx` — NEW: generic form with injected `labels` config (no consumer constants); replaces consumer `UI_LABELS.ADMIN.CATEGORIES` with defaults
+- `features/categories/components/CategorySelectorCreate.tsx` — NEW: selector + inline-create drawer with injected `labels` + `stackClassName`; uses appkit `SideDrawer`, `DrawerFormFooter`, `CategoryForm`, `useCategories`, `useCreateCategory`
+- `features/categories/components/CategoryTableColumns.tsx` — NEW: column definitions with injected `labels`; uses appkit `MediaImage`, `StatusBadge`, `Button`, `Span`
+- `features/categories/components/index.ts` — added exports for all three new components + their types
+
+**letitrip.in changes:**
+- `src/components/categories/CategoryForm.tsx` — DELETED
+- `src/components/categories/CategorySelectorCreate.tsx` — DELETED
+- `src/components/categories/CategoryTableColumns.tsx` — DELETED
+- `src/components/categories/index.ts` — reduced to pure re-export from `@mohasinac/appkit/features/categories`
+- `MIGRATION.md` — all `❌` and `🔄` entries in Phase 9c audit table resolved to `✅`; phase verdict updated to ✅ Complete
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0
+- `letitrip.in`: `npx tsc --noEmit` — exit 0
+
+**Architecture fit:** ✅ Full compliance — consumer constants (`UI_LABELS`, `THEME_CONSTANTS`) replaced by injected `labels` prop with sensible defaults
+
+**Commit message:** `migrate: phase9 closure category form/selector/table-columns to appkit — 3 files`
+
+**Next session pointer:** Phase 10 (Feature Modules). All Phase 9 blockers resolved. Entry condition fully met.
 
 ### 2026-04-16 — Session 31: Full TypeScript blocker-burn (88 → 0 errors)
 
