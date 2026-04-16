@@ -31,7 +31,9 @@ import {
 import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { addToWishlistAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 

@@ -11,7 +11,8 @@ import { useSearchParams } from "next/navigation";
 import { LoginForm as AppkitLoginForm } from "@mohasinac/appkit/features/auth";
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useLogin, useGoogleLogin } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useLogin, useGoogleLogin } from "@mohasinac/appkit/features/auth";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 import { TextLink } from "@/components";
 
@@ -29,12 +30,12 @@ export function LoginForm() {
 
   const { mutate: login, isPending: loginLoading } = useLogin({
     onSuccess: () => router.push(callbackUrl),
-    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
+    onError: (err) => setError((err as Error).message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
   });
 
   const { mutate: googleLogin, isLoading: googleLoading } = useGoogleLogin({
     onSuccess: () => router.push(callbackUrl),
-    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
+    onError: (err) => setError((err as Error).message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
   });
 
   useEffect(() => {

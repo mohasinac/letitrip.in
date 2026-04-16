@@ -5,10 +5,13 @@ import { useFeaturedAuctions } from "@mohasinac/appkit/features/homepage";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { AuctionCard } from "@/components";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 export function FeaturedAuctionsSection() {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
+  const tAuctions = useTranslations("auctions");
+  const tWishlist = useTranslations("wishlist");
   const { data, isLoading } = useFeaturedAuctions();
 
   const auctions = data ?? [];
@@ -25,7 +28,31 @@ export function FeaturedAuctionsSection() {
       viewMoreHref={ROUTES.PUBLIC.AUCTIONS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={auctions}
-      renderItem={(auction) => <AuctionCard product={auction} />}
+      renderItem={(auction) => (
+        <AuctionCard
+          product={auction}
+          wishlistActions={{
+            addToWishlist: addToWishlistAction,
+            removeFromWishlist: removeFromWishlistAction,
+          }}
+          labels={{
+            selectItem: tAuctions("selectItem"),
+            deselectItem: tAuctions("deselectItem"),
+            liveBadge: tAuctions("liveBadge"),
+            endingSoon: tAuctions("endingSoon"),
+            ended: tAuctions("ended"),
+            sold: tAuctions("sold"),
+            typeBadge: tAuctions("typeBadge"),
+            currentBid: tAuctions("currentBid"),
+            startingBid: tAuctions("startingBid"),
+            totalBids: (count) => tAuctions("totalBids", { count }),
+            placeBid: tAuctions("placeBid"),
+            buyout: tAuctions("buyout"),
+            addToWishlist: tWishlist("addToWishlist"),
+            removeFromWishlist: tWishlist("removeFromWishlist"),
+          }}
+        />
+      )}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll

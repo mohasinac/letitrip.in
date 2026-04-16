@@ -17,7 +17,10 @@ import {
   ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES, } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useWishlistToggle } from "@/hooks/useWishlistToggle";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useRazorpay } from "@/hooks/useRazorpay";
 import { useProductDetail } from "@mohasinac/appkit/features/products";
 import { usePreOrderPayment } from "../hooks/usePreOrders";
 import { listAddressesAction } from "@/actions";
@@ -27,7 +30,7 @@ import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
 "use client";
 
 import type { ProductItem } from "@mohasinac/appkit/features/products";
-import type { Address } from "@/hooks";
+import type { Address } from "@mohasinac/appkit/features/account";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
 

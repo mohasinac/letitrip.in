@@ -8,11 +8,13 @@ import { Heading, Li, Nav, Text, Ul, Button, Span, Div, Row, Stack } from "@moha
 import { useSwipe } from "@mohasinac/appkit/react";
 import {
   LocaleSwitcher as AppkitLocaleSwitcher, } from "@mohasinac/appkit/features/layout";
-import { useAuth, useLogout, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useLogout } from "@mohasinac/appkit/features/auth";
+import { useMessage } from "@mohasinac/appkit/react";
 import { Sprout } from "lucide-react";
 import { AvatarDisplay, TextLink } from "@/components";
-import { routing } from "@mohasinac/appkit/utils";
-import type { LocaleSwitcherOption, Locale } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
+import type { Locale } from "@/i18n/routing";
 import { preventBodyScroll } from "@mohasinac/appkit/utils";
 
 
@@ -66,7 +68,7 @@ export default function Sidebar({
   const logoutMutation = useLogout();
   const { showSuccess, showError } = useMessage();
 
-  const localeOptions: LocaleSwitcherOption[] = routing.locales.map((loc) => ({
+  const localeOptions: { value: string; label: string }[] = routing.locales.map((loc) => ({
     value: loc,
     label: tLocale(loc as Locale),
   }));

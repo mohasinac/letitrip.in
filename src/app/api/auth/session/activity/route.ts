@@ -6,7 +6,7 @@
 import { NextRequest } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";

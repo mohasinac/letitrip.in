@@ -23,7 +23,8 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useMessage } from "@mohasinac/appkit/react";
 import {
   useEvents,
   useEventsTableColumns,

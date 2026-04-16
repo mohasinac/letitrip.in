@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useHomepageSections } from "@/hooks";
+import { useHomepageSections } from "@mohasinac/appkit/features/homepage";
 import { ROUTES } from "@/constants";
 import {
   WelcomeSection as AppkitWelcomeSection,

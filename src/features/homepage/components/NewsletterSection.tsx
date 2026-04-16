@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { subscribeNewsletterAction } from "@/actions";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { ROUTES } from "@/constants";
 import { Input } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";

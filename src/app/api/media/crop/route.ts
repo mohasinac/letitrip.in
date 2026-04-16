@@ -1,7 +1,7 @@
 import "@/providers.config";
 import { randomBytes } from "crypto";
 import { SUCCESS_MESSAGES } from "@/constants";
-import { cropDataSchema } from "@/lib/validation/schemas";
+import { cropDataSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";

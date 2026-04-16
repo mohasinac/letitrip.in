@@ -1,7 +1,7 @@
-import { productRepository, reviewRepository } from "@/repositories";
+import { productRepository, reviewRepository } from "@mohasinac/appkit/repositories";
 import { maskName } from "@mohasinac/appkit/security";
 import type { ProductDocument } from "@/db/schema";
-import type { SellerReviewsData, SellerReviewItem } from "@/hooks";
+import type { SellerReviewsData, SellerReviewItem } from "@mohasinac/appkit/features/account";
 
 export async function buildSellerReviews(
   userId: string,

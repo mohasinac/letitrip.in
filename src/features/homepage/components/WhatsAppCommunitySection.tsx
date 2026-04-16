@@ -3,7 +3,7 @@
 import { WhatsAppCommunitySection as AppkitWhatsAppCommunitySection } from "@mohasinac/appkit/features/homepage";
 import type { WhatsAppCommunitySectionConfig } from "@/db/schema";
 import { useTranslations } from "next-intl";
-import { useHomepageSections } from "@/hooks";
+import { useHomepageSections } from "@mohasinac/appkit/features/homepage";
 import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 
 

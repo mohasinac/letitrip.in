@@ -8,7 +8,7 @@ import {
   AdminPageHeader, AdminFilterBar } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import {
   useEvent,
   useEventEntries,

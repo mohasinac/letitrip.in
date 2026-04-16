@@ -10,11 +10,11 @@
 
 import { useToast } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
-import {
-  useAuth, useAddress, useUpdateAddress, useDeleteAddress, } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useAddress, useUpdateAddress, useDeleteAddress } from "@mohasinac/appkit/features/account";
 import { Card, AddressForm, ConfirmDeleteModal } from "@/components";
 import { Heading, Row, Button, Spinner } from "@mohasinac/appkit/ui";
-import type { AddressFormData } from "@/hooks";
+import type { AddressFormData } from "@mohasinac/appkit/features/account";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import {
@@ -132,7 +132,7 @@ export function UserEditAddressView() {
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isLoading={saving}
-            submitLabel={tActions("update")}
+            labels={{ save: tActions("update")}}
           />
         </Card>
       </div>

@@ -5,7 +5,7 @@ import "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { bidRepository } from "@/repositories";
+import { bidRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createApiHandler({
   roles: ["admin", "moderator"],

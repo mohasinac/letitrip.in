@@ -5,7 +5,7 @@ import type { CouponDocument, CouponType } from "@/db/schema";
 
 import { useState } from "react";
 import { Gift, Percent, Truck, Tag } from "lucide-react";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { Heading, Text, Span, Button, RichText } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";
 import { useTranslations } from "next-intl";

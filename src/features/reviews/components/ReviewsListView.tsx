@@ -20,7 +20,8 @@ import {
 import { REVIEW_SORT_OPTIONS, ReviewFilters } from "@mohasinac/appkit/features/reviews";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, useBrands } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useBrands } from "@mohasinac/appkit/features/products";
 import { ReviewCard } from "@mohasinac/appkit/features/reviews";
 import type { ReviewDocument } from "@/db/schema";
 import { useReviews, type ReviewsApiResult } from "../hooks/useReviews";

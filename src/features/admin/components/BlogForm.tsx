@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { BlogPostForm as AppkitBlogPostForm } from "@mohasinac/appkit/features/blog";
 import { RichTextEditor } from "./RichTextEditor";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
-import { useMediaAbort } from "@/hooks";
+import { useMediaAbort } from "@mohasinac/appkit/features/media";
 import { THEME_CONSTANTS } from "@/constants";
 import { proseMirrorToHtml } from "@mohasinac/appkit/utils";
 

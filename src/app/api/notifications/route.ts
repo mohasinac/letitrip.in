@@ -8,7 +8,7 @@ import "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
-import { notificationRepository } from "@/repositories";
+import { notificationRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotificationType, NotificationPriority } from "@/db/schema";

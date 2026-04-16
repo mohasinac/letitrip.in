@@ -6,7 +6,7 @@ import "@/providers.config";
 
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
-import { notificationRepository } from "@/repositories";
+import { notificationRepository } from "@mohasinac/appkit/repositories";
 
 /**
  * GET /api/notifications/unread-count

@@ -28,7 +28,7 @@ import {
   userRepository,
   orderRepository,
   payoutRepository,
-} from "@/repositories";
+} from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

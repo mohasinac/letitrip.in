@@ -16,7 +16,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { ApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { smsCounterRepository } from "@/repositories";
+import { smsCounterRepository } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES } from "@/constants";
 
 /** Return today's date string (YYYY-MM-DD) in IST (UTC+5:30). */

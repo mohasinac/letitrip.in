@@ -13,7 +13,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { payoutRepository } from "@/repositories";
+import { payoutRepository } from "@mohasinac/appkit/repositories";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { PAYOUT_FIELDS } from "@/db/schema";

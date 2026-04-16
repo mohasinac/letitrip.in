@@ -9,7 +9,7 @@ import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import {
   Heading, Text, Button, Span, Spinner, Row, RichText, } from "@mohasinac/appkit/ui";
 import { Card, EmptyState, MediaImage } from "@/components";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { EventDetailView as AppkitEventDetailView } from "@mohasinac/appkit/features/events";
 import { getMediaUrl } from "@mohasinac/appkit/utils";
 import { proseMirrorToHtml } from "@mohasinac/appkit/utils";

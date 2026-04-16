@@ -13,7 +13,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { storeRepository } from "@/repositories";
+import { storeRepository } from "@mohasinac/appkit/repositories";
 import type { StoreDocument } from "@/db/schema";
 import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 

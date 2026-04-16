@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { nowMs } from "@mohasinac/appkit/utils";
 
 
-import { useMediaCrop, useMediaTrim } from "@/hooks";
+import { useMediaCrop, useMediaTrim } from "@mohasinac/appkit/features/media";
 import { useTranslations } from "next-intl";
 import { Heading, Text, Button, Stack, DataTable } from "@mohasinac/appkit/ui";
 import { AdminMediaView as AppkitAdminMediaView } from "@mohasinac/appkit/features/admin";

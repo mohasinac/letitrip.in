@@ -7,7 +7,7 @@ import "@/providers.config";
 
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { couponsRepository } from "@/repositories";
+import { couponsRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { CouponCreateInput } from "@/db/schema";

@@ -8,7 +8,7 @@ import "@/providers.config";
  * Requires admin or moderator role.
  */
 
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

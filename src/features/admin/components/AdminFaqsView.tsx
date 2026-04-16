@@ -17,7 +17,8 @@ import {
 } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategory } from "@/db/schema";
 
@@ -290,7 +291,7 @@ function AdminFaqsContent({ action }: AdminFaqsViewProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={tActions("delete")}
+        labels={{ submit: tActions("delete")}}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />

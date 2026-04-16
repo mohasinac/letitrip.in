@@ -35,8 +35,11 @@ import {
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
-import { addToWishlistAction } from "@/actions";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useBrands } from "@mohasinac/appkit/features/products";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
@@ -47,6 +50,7 @@ function AuctionsContent({
 }) {
   const t = useTranslations("auctions");
   const tActions = useTranslations("actions");
+  const tWishlist = useTranslations("wishlist");
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -302,6 +306,26 @@ function AuctionsContent({
                 variant={viewMode}
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
+                wishlistActions={{
+                  addToWishlist: addToWishlistAction,
+                  removeFromWishlist: removeFromWishlistAction,
+                }}
+                labels={{
+                  selectItem: t("selectItem"),
+                  deselectItem: t("deselectItem"),
+                  liveBadge: t("liveBadge"),
+                  endingSoon: t("endingSoon"),
+                  ended: t("ended"),
+                  sold: t("sold"),
+                  typeBadge: t("typeBadge"),
+                  currentBid: t("currentBid"),
+                  startingBid: t("startingBid"),
+                  totalBids: (count) => t("totalBids", { count }),
+                  placeBid: t("placeBid"),
+                  buyout: t("buyout"),
+                  addToWishlist: tWishlist("addToWishlist"),
+                  removeFromWishlist: tWishlist("removeFromWishlist"),
+                }}
                 onSelect={(id, sel) =>
                   setSelectedIds((prev) =>
                     sel ? [...prev, id] : prev.filter((x) => x !== id),

@@ -1,40 +1,35 @@
-/**
- * Role-Based Access Control Component
- *
- * Conditionally renders content based on user role.
- * Useful for showing/hiding UI elements based on permissions.
- */
-
 "use client";
 
-import { useAuth } from "@/hooks";
-import { UserRole } from "@/types/auth";
+import { useAuth } from "@/contexts/SessionContext";
+import {
+  RoleGate as AppkitRoleGate,
+  type RoleGateProps as AppkitRoleGateProps,
+} from "@mohasinac/appkit/features/auth";
 
-interface RoleGateProps {
-  children: React.ReactNode;
-  allowedRoles: UserRole | UserRole[];
-  fallback?: React.ReactNode;
-}
+/**
+ * RoleGate — Thin letitrip adapter
+ *
+ * Wraps appkit RoleGate and injects user from session context.
+ */
+
+export type RoleGateProps = Omit<AppkitRoleGateProps, "user">;
 
 export function RoleGate({
   children,
   allowedRoles,
-  fallback = null,
+  fallback,
 }: RoleGateProps) {
   const { user } = useAuth();
 
-  if (!user) {
-    return <>{fallback}</>;
-  }
-
-  const userRole = user.role as UserRole;
-  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
-
-  if (!roles.includes(userRole)) {
-    return <>{fallback}</>;
-  }
-
-  return <>{children}</>;
+  return (
+    <AppkitRoleGate
+      user={user}
+      allowedRoles={allowedRoles}
+      fallback={fallback}
+    >
+      {children}
+    </AppkitRoleGate>
+  );
 }
 
 /**

@@ -38,7 +38,10 @@ import {
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import type { AdminProduct } from "@/components";
 import { Store } from "lucide-react";
-import { useAuth, useMessage, useUrlTable, useCategories } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useCategories } from "@mohasinac/appkit/features/categories";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerProducts } from "../hooks";

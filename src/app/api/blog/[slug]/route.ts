@@ -8,7 +8,7 @@
 import { z } from "zod";
 import { createApiHandler } from "@mohasinac/appkit/http";
 
-import { bidRepository, productRepository, unitOfWork } from "@/repositories";
+import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit/repositories";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { maskPublicBid } from "@mohasinac/appkit/security";

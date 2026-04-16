@@ -4,7 +4,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useMutation } from "@tanstack/react-query";
 import {
   useUserOffers, useAcceptCounter, useWithdrawOffer, } from "../hooks/useUserOffers";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { checkoutOfferAction } from "@/actions";
 import { UserOffersView as AppkitUserOffersView } from "@mohasinac/appkit/features/account";
 import { EmptyState } from "@/components";

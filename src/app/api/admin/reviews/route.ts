@@ -8,7 +8,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { REVIEW_FIELDS } from "@/db/schema";
-import { reviewRepository } from "@/repositories";
+import { reviewRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createApiHandler({
   roles: ["admin", "moderator"],

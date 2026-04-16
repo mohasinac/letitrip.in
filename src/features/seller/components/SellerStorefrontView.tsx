@@ -8,10 +8,10 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatMonthYear, formatCurrency, formatNumber } from "@mohasinac/appkit/utils";
 
 
-import type { PublicUserProfile } from "@/hooks";
+import type { PublicUserProfile } from "@mohasinac/appkit/features/account";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { ImageCropData } from "@/components";
-import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
+import type { SellerReviewsData, ProductsApiResponse } from "@mohasinac/appkit/features/account";
 
 const { flex, page } = THEME_CONSTANTS;
 

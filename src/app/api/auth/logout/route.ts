@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";

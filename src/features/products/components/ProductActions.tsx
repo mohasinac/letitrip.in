@@ -4,8 +4,11 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
   ERROR_MESSAGES, ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS, } from "@/constants";
-import {
-  useAddToCart, useAuth, useBottomActions, useMessage, useWishlistToggle, } from "@/hooks";
+import { useAddToCart } from "@mohasinac/appkit/features/cart";
+import { useAuth } from "@/contexts/SessionContext";
+import { useBottomActions } from "@mohasinac/appkit/features/layout";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useWishlistToggle } from "@/hooks/useWishlistToggle";
 import { Span, Text, Button } from "@mohasinac/appkit/ui";
 
 import { Gavel, Heart, ShoppingCart, Tag, Zap } from "lucide-react";

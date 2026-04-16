@@ -32,7 +32,7 @@ import {
   orderRepository,
   productRepository,
   addressRepository,
-} from "@/repositories";
+} from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ValidationError, NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

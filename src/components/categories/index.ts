@@ -6,11 +6,14 @@
 // Shared category form/types (used by admin + CategorySelectorCreate)
 export { CategoryForm } from "./CategoryForm";
 export { getCategoryTableColumns } from "./CategoryTableColumns";
-export { flattenCategories } from "./Category.types";
-export type { Category, CategoryDrawerMode } from "./Category.types";
+export {
+	flattenCategories,
+	type Category,
+	type CategoryDrawerMode,
+} from "@mohasinac/appkit/features/categories";
 
 // Presentational card — used by homepage and categories feature
-export { CategoryCard } from "./CategoryCard";
+export { CategoryCard } from "@mohasinac/appkit/features/categories";
 
 // Selector with inline create — used by product forms
 export { CategorySelectorCreate } from "./CategorySelectorCreate";

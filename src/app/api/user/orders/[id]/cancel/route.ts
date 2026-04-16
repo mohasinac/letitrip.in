@@ -7,7 +7,7 @@ import "@/providers.config";
 
 import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { offerRepository } from "@/repositories";
+import { offerRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createRouteHandler({
   auth: true,

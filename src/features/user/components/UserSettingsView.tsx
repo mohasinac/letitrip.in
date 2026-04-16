@@ -5,7 +5,8 @@ import { Spinner } from "@mohasinac/appkit/ui";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useChangePassword, useResendVerification } from "@mohasinac/appkit/features/auth";
 import { updateProfileAction } from "@/actions";
 import { Alert } from "@mohasinac/appkit/ui";
 import { UserSettingsView as AppkitUserSettingsView } from "@mohasinac/appkit/features/account";
@@ -48,7 +49,7 @@ export function UserSettingsView() {
       onError: (error) =>
         setMessage({
           type: "error",
-          text: error.message || ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
+          text: (error as Error).message || ERROR_MESSAGES.PASSWORD.CHANGE_FAILED,
         }),
     });
 
@@ -59,7 +60,7 @@ export function UserSettingsView() {
       onError: (error) =>
         setMessage({
           type: "error",
-          text: error.message || ERROR_MESSAGES.EMAIL.SEND_FAILED,
+          text: (error as Error).message || ERROR_MESSAGES.EMAIL.SEND_FAILED,
         }),
     });
 

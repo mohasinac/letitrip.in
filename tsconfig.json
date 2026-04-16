@@ -27,13 +27,13 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "src/sw.ts",
     "functions",
+    "scripts",
     "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx",

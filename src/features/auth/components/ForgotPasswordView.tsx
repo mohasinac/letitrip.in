@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { ForgotPasswordView as AppkitForgotPasswordView } from "@mohasinac/appkit/features/auth";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useForgotPassword } from "@/hooks";
+import { useForgotPassword } from "@mohasinac/appkit/features/auth";
 import { TextLink } from "@/components";
 
 export function ForgotPasswordView() {
@@ -16,8 +16,7 @@ export function ForgotPasswordView() {
 
   const { mutate: forgotPassword, isPending: isLoading } = useForgotPassword({
     onSuccess: () => setSuccess(t("forgotPassword.checkEmail")),
-    onError: (err) =>
-      setError(err.message || t("forgotPassword.failedSendEmail")),
+    onError: (err) => setError((err as Error).message || t("forgotPassword.failedSendEmail")),
   });
 
   return (

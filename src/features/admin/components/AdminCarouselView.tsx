@@ -194,7 +194,7 @@ export function AdminCarouselView({ action }: Props) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={tActions("delete")}
+        labels={{ submit: tActions("delete")}}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />

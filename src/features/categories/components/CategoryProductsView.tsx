@@ -33,7 +33,9 @@ import {
 import { RangeFilter } from "@mohasinac/appkit/features/filters";
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 import { useCategoryDetail } from "@mohasinac/appkit/features/categories";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";

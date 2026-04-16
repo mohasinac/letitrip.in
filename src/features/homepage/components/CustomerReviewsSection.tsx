@@ -2,7 +2,7 @@
 // Thin adapter — layout lives in @mohasinac/appkit
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/constants";
-import { useHomepageReviews } from "@/hooks";
+import { useHomepageReviews } from "@mohasinac/appkit/features/homepage";
 import type { ReviewDocument } from "@/db/schema";
 import { CustomerReviewsSection as AppkitCustomerReviewsSection } from "@mohasinac/appkit/features/homepage";
 import { ReviewCard, type Review } from "@mohasinac/appkit/features/reviews";

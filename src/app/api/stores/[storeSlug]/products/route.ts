@@ -16,7 +16,7 @@ import "@/providers.config";
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@/repositories";
+import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
@@ -49,7 +49,7 @@ export const GET = createApiHandler({
     const { credentials: _encrypted, ...settingsWithoutCreds } = settings;
 
     // Check if user is authenticated and is admin
-    const user = await getUserFromRequest(request);
+    const user = await getUserFromRequest(request as any);
     const isAdmin = user?.role === "admin";
 
     // Filter sensitive fields for non-admin users

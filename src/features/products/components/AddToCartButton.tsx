@@ -3,7 +3,8 @@
 import { Button } from "@mohasinac/appkit/ui";
 import { useTranslations } from "next-intl";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { useAddToCart, useMessage } from "@/hooks";
+import { useAddToCart } from "@mohasinac/appkit/features/cart";
+import { useMessage } from "@mohasinac/appkit/react";
 
 interface AddToCartButtonProps {
   productId: string;

@@ -6,7 +6,7 @@
  * Mutations use Server Action: updatePayoutSettingsAction.
  */
 
-import { userRepository } from "@/repositories";
+import { userRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import type { SellerPayoutDetails } from "@/db/schema";

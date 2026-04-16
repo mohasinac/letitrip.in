@@ -120,7 +120,7 @@ export async function requireRole(
   // Custom claims may not contain role — fetch from Firestore as source of truth
   let userRole = (user.role as string | undefined) || undefined;
   if (!userRole) {
-    const { userRepository } = await import("@/repositories");
+    const { userRepository } = await import("@mohasinac/appkit/repositories");
     const profile = await userRepository.findById(user.uid);
     userRole = profile?.role || "user";
   }
@@ -184,7 +184,7 @@ export const getServerSessionUser = cache(
 
       // Lazy-import the repository to avoid bloating every module that imports
       // auth-server.ts (repository pulls in the full Admin SDK chain).
-      const { userRepository } = await import("@/repositories");
+      const { userRepository } = await import("@mohasinac/appkit/repositories");
       const profile = await userRepository.findById(decoded.uid);
       if (!profile) return null;
 
@@ -250,16 +250,23 @@ export const getServerSessionUser = cache(
  * Returns null if unauthenticated or session is invalid.
  */
 export async function getUserFromRequest(
-  request: NextRequest,
+  request: Request,
 ): Promise<UserDocument | null> {
   try {
-    const sessionCookie = request.cookies.get("__session")?.value;
+    let sessionCookie: string | undefined;
+    if ("cookies" in request && typeof (request as NextRequest).cookies?.get === "function") {
+      sessionCookie = (request as NextRequest).cookies.get("__session")?.value;
+    } else {
+      const cookieHeader = request.headers.get("cookie") ?? "";
+      const match = cookieHeader.match(/(?:^|;\s*)__session=([^;]*)/);
+      sessionCookie = match?.[1];
+    }
     if (!sessionCookie) return null;
 
     const decodedToken = await verifySessionCookie(sessionCookie);
     if (!decodedToken) return null;
 
-    const { userRepository } = await import("@/repositories");
+    const { userRepository } = await import("@mohasinac/appkit/repositories");
     return await userRepository.findById(decodedToken.uid);
   } catch {
     return null;
@@ -271,7 +278,7 @@ export async function getUserFromRequest(
  * Throws AuthenticationError if unauthenticated or account is disabled.
  */
 export async function requireAuthFromRequest(
-  request: NextRequest,
+  request: Request,
 ): Promise<UserDocument> {
   const user = await getUserFromRequest(request);
   if (!user) {

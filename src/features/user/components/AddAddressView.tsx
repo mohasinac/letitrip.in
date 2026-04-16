@@ -2,10 +2,10 @@
 
 import { useToast } from "@mohasinac/appkit/ui";
 import { useRouter } from "@/i18n/navigation";
-import { useCreateAddress } from "@/hooks";
+import { useCreateAddress } from "@mohasinac/appkit/features/account";
 import { Heading } from "@mohasinac/appkit/ui";
 import { Card, AddressForm } from "@/components";
-import type { AddressFormData } from "@/hooks";
+import type { AddressFormData } from "@mohasinac/appkit/features/account";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -51,7 +51,7 @@ export function AddAddressView() {
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isLoading={saving}
-            submitLabel={tActions("create")}
+            labels={{ save: tActions("create")}}
           />
         </Card>
       </div>

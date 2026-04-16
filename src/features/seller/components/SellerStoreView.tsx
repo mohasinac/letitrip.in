@@ -23,7 +23,7 @@ import { SellerStoreView as AppkitSellerStoreView } from "@mohasinac/appkit/feat
 import {
   Card, FormField } from "@/components";
 import { RichTextEditor } from "@/features/admin";
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";

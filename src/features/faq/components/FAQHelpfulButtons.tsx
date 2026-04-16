@@ -3,7 +3,8 @@
 import { useTranslations } from "next-intl";
 import { ERROR_MESSAGES } from "@/constants";
 import { logger } from "@mohasinac/appkit/core";
-import { useFaqVote, useMessage } from "@/hooks";
+import { useFaqVote } from "@mohasinac/appkit/features/faq";
+import { useMessage } from "@mohasinac/appkit/react";
 import { FAQHelpfulButtons as AppkitFAQHelpfulButtons } from "@mohasinac/appkit/features/faq";
 
 interface FAQHelpfulButtonsProps {

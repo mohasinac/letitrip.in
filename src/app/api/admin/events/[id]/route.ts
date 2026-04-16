@@ -10,7 +10,7 @@ import {
   userRepository,
   productRepository,
   orderRepository,
-} from "@/repositories";
+} from "@mohasinac/appkit/repositories";
 
 export const GET = createRouteHandler({
   auth: true,

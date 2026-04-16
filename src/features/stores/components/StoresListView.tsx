@@ -20,7 +20,8 @@ import { InteractiveStoreCard } from "@/components/stores";
 import type { ViewMode } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useStores } from "../hooks";
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { addToWishlistAction } from "@/actions";
 import type { StoreListItem } from "../types";
 

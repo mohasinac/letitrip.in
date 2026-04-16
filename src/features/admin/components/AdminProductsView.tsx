@@ -9,7 +9,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo, Suspense, } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -288,7 +289,7 @@ function AdminProductsContent({ action }: AdminProductsViewProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={tActions("delete")}
+        labels={{ submit: tActions("delete")}}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />

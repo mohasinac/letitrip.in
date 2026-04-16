@@ -11,7 +11,9 @@
 "use client";
 
 import { useCallback } from "react";
-import { useAuth, useMessage, useWishlistToggle } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useWishlistToggle } from "@/hooks/useWishlistToggle";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";

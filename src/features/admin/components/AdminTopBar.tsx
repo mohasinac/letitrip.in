@@ -5,7 +5,7 @@ import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { AvatarDisplay, NotificationBell, AutoBreadcrumbs } from "@/components";
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { RoleBadge } from "@/components";
 
 interface AdminTopBarProps {

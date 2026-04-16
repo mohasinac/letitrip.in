@@ -7,7 +7,7 @@ import "@/providers.config";
  */
 
 import { successResponse } from "@mohasinac/appkit/next";
-import { couponsRepository } from "@/repositories";
+import { couponsRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";

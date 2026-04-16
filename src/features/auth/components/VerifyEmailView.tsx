@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { VerifyEmailView as AppkitVerifyEmailView } from "@mohasinac/appkit/features/auth";
 import { ROUTES } from "@/constants";
-import { useVerifyEmail } from "@/hooks";
+import { useVerifyEmail } from "@mohasinac/appkit/features/auth";
 
 function VerifyEmailContent() {
   const router = useRouter();
@@ -22,7 +22,7 @@ function VerifyEmailContent() {
   const { mutate: verifyEmail } = useVerifyEmail({
     onSuccess: () => setStatus("success"),
     onError: (err) => {
-      setError(err.message || t("verifyEmail.checkFailed"));
+      setError((err as Error).message || t("verifyEmail.checkFailed"));
       setStatus("error");
     },
   });

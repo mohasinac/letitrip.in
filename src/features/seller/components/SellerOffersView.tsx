@@ -13,7 +13,7 @@ import {
   EmptyState, SideDrawer } from "@/components";
 import type { DataTableColumn } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
 
 

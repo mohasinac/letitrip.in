@@ -8,7 +8,7 @@ import "@/providers.config";
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { chatRepository } from "@/repositories";
+import { chatRepository } from "@mohasinac/appkit/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler({

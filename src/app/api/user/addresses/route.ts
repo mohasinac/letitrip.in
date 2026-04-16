@@ -8,7 +8,7 @@ import "@/providers.config";
  * Max addresses per user: 10
  */
 
-import { addressRepository } from "@/repositories";
+import { addressRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { userAddressCreateSchema } from "@/lib/validation/schemas";

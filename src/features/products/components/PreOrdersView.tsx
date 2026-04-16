@@ -29,9 +29,12 @@ import {
 import type { ActiveFilter } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useBrands } from "@mohasinac/appkit/features/products";
 import { usePreOrders, type PreOrdersListResult } from "../hooks";
-import { addToWishlistAction } from "@/actions";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
@@ -42,6 +45,7 @@ function PreOrdersContent({
 }) {
   const t = useTranslations("preOrders");
   const tActions = useTranslations("actions");
+  const tWishlist = useTranslations("wishlist");
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -349,6 +353,16 @@ function PreOrdersContent({
                 variant={viewMode}
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
+                wishlistActions={{
+                  addToWishlist: addToWishlistAction,
+                  removeFromWishlist: removeFromWishlistAction,
+                }}
+                labels={{
+                  preOrderBadge: t("preOrderBadge"),
+                  reserveNow: t("reserveNow"),
+                  addToWishlist: tWishlist("addToWishlist"),
+                  removeFromWishlist: tWishlist("removeFromWishlist"),
+                }}
                 onSelect={(id, sel) =>
                   setSelectedIds((prev) =>
                     sel ? [...prev, id] : prev.filter((x) => x !== id),

@@ -13,7 +13,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { blogRepository } from "@/repositories";
+import { blogRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {

@@ -5,7 +5,7 @@ import {
   categoriesRepository,
   reviewRepository,
   productRepository,
-} from "@/repositories";
+} from "@mohasinac/appkit/repositories";
 import { HeroCarousel } from "./HeroCarousel";
 import { WelcomeSection } from "./WelcomeSection";
 import { TrustFeaturesSection } from "./TrustFeaturesSection";

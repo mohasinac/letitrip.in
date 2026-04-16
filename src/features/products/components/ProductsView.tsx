@@ -29,13 +29,11 @@ import type { ActiveFilter, ViewMode } from "@mohasinac/appkit/ui";
 import { TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import {
-  useUrlTable,
-  useAuth,
-  useMessage,
-  useCategories,
-  useBrands,
-} from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useCategories } from "@mohasinac/appkit/features/categories";
+import { useBrands } from "@mohasinac/appkit/features/products";
 import { useProducts } from "../hooks";
 import { addToWishlistAction, addToCartAction } from "@/actions";
 

@@ -7,7 +7,7 @@ import {
   Heading, Span, Text, StatusBadge, Spinner, Row, } from "@mohasinac/appkit/ui";
 import { UserAccountHubView } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { useUserOrders } from "../hooks";
 import { formatCurrency, formatDate } from "@mohasinac/appkit/utils";
 

@@ -13,7 +13,8 @@ import { useRouter } from "@/i18n/navigation";
 import { ProductForm } from "@mohasinac/appkit/features/products";
 import { Card, AdminPageHeader } from "@/components";
 import type { AdminProduct } from "@/components";
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import {
   ROUTES,
   THEME_CONSTANTS,

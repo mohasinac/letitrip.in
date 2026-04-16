@@ -1,5 +1,5 @@
 import "@/providers.config";
-import { orderRepository, productRepository } from "@/repositories";
+import { orderRepository, productRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

@@ -5,7 +5,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { newsletterRepository } from "@/repositories";
+import { newsletterRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";

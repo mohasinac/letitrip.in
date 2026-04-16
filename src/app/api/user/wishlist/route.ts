@@ -6,8 +6,8 @@ import "@/providers.config";
  * POST /api/user/wishlist — Add a product to the wishlist
  */
 
-import { wishlistRepository } from "@/repositories";
-import { productRepository } from "@/repositories";
+import { wishlistRepository } from "@mohasinac/appkit/repositories";
+import { productRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

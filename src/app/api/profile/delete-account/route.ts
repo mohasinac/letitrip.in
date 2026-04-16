@@ -7,13 +7,13 @@ import "@/providers.config";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { deleteAccountSchema } from "@/lib/validation/schemas";
+import { deleteAccountSchema } from "@mohasinac/appkit/validation";
 import {
   userRepository,
   tokenRepository,
   productRepository,
   orderRepository,
-} from "@/repositories";
+} from "@mohasinac/appkit/repositories";
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 

@@ -31,13 +31,14 @@ export function initProviders(): Promise<void> {
       await import("@mohasinac/appkit/providers/db-firebase");
     const { tailwindAdapter } =
       await import("@mohasinac/appkit/style/tailwind");
-    const { siteSettingsRepository } = await import("@/repositories");
+    const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories");
 
     registerProviders({
       db: firebaseDbProvider,
       auth: firebaseAuthProvider,
       session: firebaseSessionProvider,
-      email: createResendProvider({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      email: (createResendProvider as any)({
         apiKey: async () => {
           try {
             const creds = await siteSettingsRepository.getDecryptedCredentials();

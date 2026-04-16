@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { Heading, Text, Button } from "@mohasinac/appkit/ui";
 import { SideDrawer } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import type { UnavailableItem } from "@/hooks";
+import type { UnavailableItem } from "@mohasinac/appkit/features/checkout";
 
 const { spacing, flex, themed } = THEME_CONSTANTS;
 

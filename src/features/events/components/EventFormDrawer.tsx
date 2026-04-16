@@ -1,7 +1,7 @@
 "use client";
 
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
-import { useMediaAbort } from "@/hooks";
+import { useMediaAbort } from "@mohasinac/appkit/features/media";
 
 import { FormGroup, Input } from "@mohasinac/appkit/ui";
 import { Select } from "@mohasinac/appkit/ui";
@@ -21,7 +21,7 @@ import type { MediaField } from "@mohasinac/appkit/utils";
 
 const { themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEventMutations";
 import { EVENT_TYPE_VALUES } from "../constants/EVENT_TYPE_OPTIONS";
 import { SaleConfigForm } from "./EventTypeConfig/SaleConfigForm";

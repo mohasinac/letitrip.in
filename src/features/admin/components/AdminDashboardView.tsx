@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Heading, Button } from "@mohasinac/appkit/ui";
 import { Card, AdminPageHeader } from "@/components";
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { useAdminStats } from "@/features/admin";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";

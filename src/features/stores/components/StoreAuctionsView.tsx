@@ -16,11 +16,13 @@ import {
   StoreAuctionsView as AppkitStoreAuctionsView,
   useStoreAuctions,
 } from "@mohasinac/appkit/features/stores";
-import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { AuctionGrid, EmptyState, Search } from "@/components";
 import type { ViewMode } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { addToWishlistAction } from "@/actions";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -41,6 +43,8 @@ interface StoreAuctionsViewProps {
 function StoreAuctionsContent({ storeSlug }: StoreAuctionsViewProps) {
   const t = useTranslations("storePage");
   const tActions = useTranslations("actions");
+  const tAuctions = useTranslations("auctions");
+  const tWishlist = useTranslations("wishlist");
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -166,6 +170,26 @@ function StoreAuctionsContent({ storeSlug }: StoreAuctionsViewProps) {
               selectable={!!user}
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
+              wishlistActions={{
+                addToWishlist: addToWishlistAction,
+                removeFromWishlist: removeFromWishlistAction,
+              }}
+              cardLabels={{
+                selectItem: tAuctions("selectItem"),
+                deselectItem: tAuctions("deselectItem"),
+                liveBadge: tAuctions("liveBadge"),
+                endingSoon: tAuctions("endingSoon"),
+                ended: tAuctions("ended"),
+                sold: tAuctions("sold"),
+                typeBadge: tAuctions("typeBadge"),
+                currentBid: tAuctions("currentBid"),
+                startingBid: tAuctions("startingBid"),
+                totalBids: (count) => tAuctions("totalBids", { count }),
+                placeBid: tAuctions("placeBid"),
+                buyout: tAuctions("buyout"),
+                addToWishlist: tWishlist("addToWishlist"),
+                removeFromWishlist: tWishlist("removeFromWishlist"),
+              }}
             />
           )}
           {totalPages > 1 && (

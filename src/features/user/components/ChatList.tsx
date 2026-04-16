@@ -19,8 +19,9 @@ import { formatDate } from "@mohasinac/appkit/utils";
  * ?chatId= query param on the messages page.
  */
 
-import { useChatRooms, useDeleteChatRoom, useIsAdmin } from "@/hooks";
-import { useAuth } from "@/hooks";
+import { useChatRooms, useDeleteChatRoom } from "@mohasinac/appkit/features/admin";
+import { useIsAdmin } from "@mohasinac/appkit/features/auth";
+import { useAuth } from "@/contexts/SessionContext";
 
 const { spacing, themed, flex } = THEME_CONSTANTS;
 

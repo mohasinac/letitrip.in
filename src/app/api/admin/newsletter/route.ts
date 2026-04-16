@@ -11,7 +11,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { newsletterRepository } from "@/repositories";
+import { newsletterRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 

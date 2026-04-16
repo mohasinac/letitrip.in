@@ -6,11 +6,11 @@
  */
 
 import { StatusBadge, Span, Button } from "@mohasinac/appkit/ui";
+import type { Category } from "@mohasinac/appkit/features/categories";
 import { MediaImage } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
-import type { Category } from "./Category.types";
 
 export function getCategoryTableColumns(
   onEdit: (cat: Category) => void,

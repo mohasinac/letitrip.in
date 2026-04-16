@@ -1,7 +1,7 @@
 import "@/providers.config";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { orderRepository, productRepository } from "@/repositories";
+import { orderRepository, productRepository } from "@mohasinac/appkit/repositories";
 import { formatMonthYear } from "@mohasinac/appkit/utils";
 
 /**

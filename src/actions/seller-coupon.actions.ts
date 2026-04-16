@@ -32,7 +32,6 @@ const createSchema = z.object({
 });
 
 const updateSchema = z.object({
-  couponId: z.string().min(1),
   discountValue: z.number().positive().optional(),
   minOrderAmount: z.number().nonnegative().optional(),
   maxUsageCount: z.number().int().positive().optional(),
@@ -53,12 +52,37 @@ export async function sellerCreateCouponAction(
   const parsed = createSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid coupon data");
-  const profile = await userRepository.findById(user.uid);
-  const role = profile?.role ?? "user";
-  return sellerCreateCoupon(user.uid, role, parsed.data as SellerCreateCouponInput);
+
+  const createInput: SellerCreateCouponInput = {
+    sellerCode: parsed.data.code ?? "SAVE",
+    name: parsed.data.code ?? "Seller Coupon",
+    description: parsed.data.description ?? "Seller coupon",
+    type: parsed.data.discountType === "flat" ? "fixed" : "percentage",
+    applicableToAuctions: false,
+    discount: {
+      value: parsed.data.discountValue,
+      minPurchase: parsed.data.minOrderAmount,
+    },
+    usage: {
+      totalLimit: parsed.data.maxUsageCount,
+      currentUsage: 0,
+    },
+    validity: {
+      startDate: new Date().toISOString(),
+      endDate: parsed.data.expiresAt,
+      isActive: true,
+    },
+    restrictions: {
+      firstTimeUserOnly: false,
+      combineWithSellerCoupons: false,
+    },
+  };
+
+  return sellerCreateCoupon(user.uid, createInput);
 }
 
 export async function sellerUpdateCouponAction(
+  couponId: string,
   input: SellerUpdateCouponInput,
 ): Promise<CouponDocument> {
   const user = await requireAuth();
@@ -67,7 +91,26 @@ export async function sellerUpdateCouponAction(
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
   const profile = await userRepository.findById(user.uid);
   const role = profile?.role ?? "user";
-  return sellerUpdateCoupon(user.uid, role, parsed.data as SellerUpdateCouponInput);
+
+  const updateInput: SellerUpdateCouponInput = {
+    description: parsed.data.description,
+    discount: parsed.data.discountValue
+      ? { value: parsed.data.discountValue, minPurchase: parsed.data.minOrderAmount }
+      : undefined,
+    usage: parsed.data.maxUsageCount
+      ? { totalLimit: parsed.data.maxUsageCount, currentUsage: 0 }
+      : undefined,
+    validity:
+      parsed.data.expiresAt || typeof parsed.data.isActive === "boolean"
+        ? {
+            startDate: new Date().toISOString(),
+            endDate: parsed.data.expiresAt,
+            isActive: parsed.data.isActive ?? true,
+          }
+        : undefined,
+  };
+
+  return sellerUpdateCoupon(user.uid, role, couponId, updateInput);
 }
 
 export async function sellerDeleteCouponAction(couponId: string): Promise<void> {

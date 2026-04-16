@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { productRepository } from "@/repositories";
+import { productRepository } from "@mohasinac/appkit/repositories";
 import { withProviders } from "@/providers.config";
 import { POST as _POST } from "@mohasinac/appkit/features/products/server";
 

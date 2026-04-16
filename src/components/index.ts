@@ -63,8 +63,9 @@ export type {
 } from "./media-modals.client";
 
 // ==================== UTILITY COMPONENTS ====================
-// Re-export from utility subdirectory
-export * from "./utility";
+export { Search } from "./utility/Search";
+export { BackToTop } from "@mohasinac/appkit/features/layout";
+export { BackgroundRenderer, ResponsiveView } from "@mohasinac/appkit/ui";
 
 // ==================== MEDIA PRIMITIVES ====================
 // Rule 28: all image + video rendering goes through these Tier 1 components.
@@ -93,7 +94,17 @@ export { DashboardStatsCard, RowActionMenu } from "@mohasinac/appkit/ui";
 export type { DashboardStatsCardProps, RowAction } from "@mohasinac/appkit/ui";
 
 // ==================== USER COMPONENTS ====================
-export * from "./user";
+export {
+  AddressCard,
+  AddressForm,
+  AddressSelectorCreate,
+  type AddressSelectorCreateProps,
+} from "@mohasinac/appkit/features/account";
+export {
+  StoreAddressSelectorCreate,
+  type StoreAddressSelectorCreateProps,
+} from "@mohasinac/appkit/features/stores";
+export { default as NotificationBell } from "./user/NotificationBell";
 
 // ==================== AUTH COMPONENTS ====================
 // Re-export from auth subdirectory

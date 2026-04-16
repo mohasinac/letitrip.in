@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { usePendingTable } from "@mohasinac/appkit/react";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminReviews } from "@/features/admin/hooks";
 

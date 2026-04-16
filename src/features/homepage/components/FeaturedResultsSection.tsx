@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { siteSettingsRepository } from "@/repositories";
+import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { FeaturedResultsSection as AppkitFeaturedResultsSection } from "@mohasinac/appkit/features/homepage";
 
 /**

@@ -11,7 +11,7 @@
 import { useState, useCallback } from "react";
 import { MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import {
   Heading,
   Row,
@@ -30,7 +30,7 @@ import {
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { StoreAddressDocument } from "@/db/schema";
-import type { AddressFormData } from "@/hooks";
+import type { AddressFormData, AddressCardAddress } from "@mohasinac/appkit/features/account";
 import {
   useStoreAddresses,
   useCreateStoreAddress,
@@ -148,7 +148,7 @@ export function SellerAddressesView() {
               {addresses!.map((addr) => (
                 <AddressCard
                   key={addr.id}
-                  address={addr}
+                  address={addr as unknown as AddressCardAddress}
                   onEdit={() => setEditingAddress(addr)}
                   onDelete={() => setDeleteId(addr.id)}
                 />
@@ -169,7 +169,7 @@ export function SellerAddressesView() {
           onSubmit={handleCreate}
           onCancel={() => setDrawerOpen(false)}
           isLoading={isCreating}
-          submitLabel={tActions("save")}
+          labels={{ save: tActions("save")}}
         />
       </SideDrawer>
 
@@ -197,7 +197,7 @@ export function SellerAddressesView() {
             onSubmit={handleUpdate}
             onCancel={() => setEditingAddress(null)}
             isLoading={isUpdating}
-            submitLabel={tActions("save")}
+            labels={{ save: tActions("save")}}
           />
         )}
       </SideDrawer>

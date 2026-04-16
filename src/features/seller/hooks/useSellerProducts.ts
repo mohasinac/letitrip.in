@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
 import {

@@ -3,8 +3,8 @@
 import { TitleBar as AppkitTitleBar } from "@mohasinac/appkit/features/layout";
 import type { TitleBarProps } from "@mohasinac/appkit/features/layout";
 import { SITE_CONFIG } from "@/constants/site";
-import { NotificationBell } from "@/components/user/NotificationBell";
-import { useAuth } from "@/hooks";
+import NotificationBell from "@/components/user/NotificationBell";
+import { useAuth } from "@/contexts/SessionContext";
 
 type LocalTitleBarProps = Omit<
   TitleBarProps,

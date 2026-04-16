@@ -15,9 +15,11 @@ import { ImageUpload } from "@mohasinac/appkit/features/media";
 import { Checkbox } from "@mohasinac/appkit/ui";
 import { FormField, MediaImage } from "@/components";
 import { useMediaUpload } from "@mohasinac/appkit/features/media";
+import {
+  flattenCategories,
+  type Category,
+} from "@mohasinac/appkit/features/categories";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import type { Category } from "./Category.types";
-import { flattenCategories } from "./Category.types";
 
 const { spacing, typography } = THEME_CONSTANTS;
 const LABELS = UI_LABELS.ADMIN.CATEGORIES;

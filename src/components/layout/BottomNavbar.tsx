@@ -3,7 +3,7 @@
 import { BottomNavbar as AppkitBottomNavbar } from "@mohasinac/appkit/features/layout";
 import type { BottomNavbarProps } from "@mohasinac/appkit/features/layout";
 import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 
 /**
  * BottomNavbar - thin consumer adapter.
@@ -27,10 +27,10 @@ export default function BottomNavbar({
       inactiveClassName={bottomNav.inactive}
       iconClassName={bottomNav.icon}
       labelClassName={bottomNav.text}
-      getRoleBadgeClass={(role) =>
-        (badge.roleText as Record<string, string>)[role] ??
-        badge.roleText.user
-      }
+      getRoleBadgeClass={(role) => {
+        const roleText = (badge as Record<string, unknown>)?.roleText as Record<string, string> | undefined;
+        return roleText?.[role] ?? roleText?.["user"] ?? "";
+      }}
     />
   );
 }

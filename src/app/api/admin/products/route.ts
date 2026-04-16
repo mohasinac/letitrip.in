@@ -8,7 +8,7 @@ import "@/providers.config";
 import { NextRequest } from "next/server";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { productRepository } from "@/repositories";
+import { productRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -59,7 +59,7 @@ export const GET = createApiHandler({
 export const POST = createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
-  handler: async ({ request, user }: { request: NextRequest; user?: any }) => {
+    handler: async ({ request, user }) => {
     const body = await request.json();
     const validation = validateRequestBody(productCreateSchema, body);
 

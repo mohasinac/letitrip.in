@@ -18,7 +18,7 @@ import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository, userRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@mohasinac/appkit/next";
 import {

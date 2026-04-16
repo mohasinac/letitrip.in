@@ -11,7 +11,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { orderRepository } from "@/repositories";
+import { orderRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ContactForm as AppkitContactForm } from "@mohasinac/appkit/features/contact";
 import { ERROR_MESSAGES } from "@/constants";
-import { useContactSubmit } from "@/hooks";
+import { useContactSubmit } from "@/hooks/useContactSubmit";
 
 export function ContactForm() {
   const t = useTranslations("contact");

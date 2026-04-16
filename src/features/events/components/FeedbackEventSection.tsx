@@ -9,7 +9,7 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { useFeedbackSubmit } from "../hooks/useFeedbackSubmit";
 import type { FeedbackConfig, SurveyFormField } from "@/db/schema";
 

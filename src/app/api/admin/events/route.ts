@@ -13,7 +13,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { eventRepository } from "@/repositories";
+import { eventRepository } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { SieveModel } from "@mohasinac/appkit/providers/db-firebase";

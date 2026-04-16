@@ -5,7 +5,7 @@ import { EventLeaderboard as AppkitEventLeaderboard } from "@mohasinac/appkit/fe
 import { THEME_CONSTANTS } from "@/constants";
 import { Span, Text, Spinner } from "@mohasinac/appkit/ui";
 
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { useTranslations } from "next-intl";
 import type { EventEntryDocument } from "@/db/schema";
 

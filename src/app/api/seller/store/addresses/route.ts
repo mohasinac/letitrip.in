@@ -8,7 +8,7 @@ import "@/providers.config";
  * Mutations (create/update/delete) use Server Actions.
  */
 
-import { storeRepository, storeAddressRepository } from "@/repositories";
+import { storeRepository, storeAddressRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { NotFoundError } from "@mohasinac/appkit/errors";

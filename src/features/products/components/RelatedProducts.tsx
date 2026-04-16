@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useRelatedProducts } from "@/hooks";
+import { useRelatedProducts } from "@mohasinac/appkit/features/products";
 import { Heading, Section, HorizontalScroller } from "@mohasinac/appkit/ui";
 import {
   ProductCard,

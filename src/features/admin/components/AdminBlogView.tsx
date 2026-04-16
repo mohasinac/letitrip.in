@@ -8,7 +8,8 @@
 import { useState, useCallback, useRef, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { useAdminBlog } from "@/features/admin/hooks";
 import {
   Caption, Text, Grid, StatusBadge, Badge, Button, SortDropdown, Row, DataTable, } from "@mohasinac/appkit/ui";

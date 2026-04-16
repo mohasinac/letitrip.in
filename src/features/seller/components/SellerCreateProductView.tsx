@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { SellerCreateProductView as AppkitSellerCreateProductView } from "@mohasinac/appkit/features/seller";
 import { ProductForm } from "@mohasinac/appkit/features/products";
 import { AdminPageHeader, type AdminProduct } from "@/components";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { useCreateSellerProduct } from "../hooks/useSellerProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 

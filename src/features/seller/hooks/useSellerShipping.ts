@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
 import { API_ENDPOINTS } from "@/constants";
@@ -61,7 +62,7 @@ export function useSellerShipping() {
     Error,
     UpdateShippingPayload
   >({
-    mutationFn: (payload) => updateSellerShippingAction(payload),
+    mutationFn: (payload) => updateSellerShippingAction(payload) as Promise<SellerShippingData>,
     onSuccess: () => {
       showSuccess(t("updateSuccess"));
       refetch();

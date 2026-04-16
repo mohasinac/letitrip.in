@@ -1,7 +1,8 @@
 "use client";
 import { useState, useCallback, useEffect, Suspense } from "react";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -227,7 +228,7 @@ function AdminPayoutsContent() {
                   onCancel={handleCloseDrawer}
                   onSubmit={handleSave}
                   isLoading={updateMutation.isPending}
-                  submitLabel={t("updatePayout")}
+                  labels={{ submit: t("updatePayout")}}
                 />
               ) : undefined
             }

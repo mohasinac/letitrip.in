@@ -9,7 +9,7 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@/repositories";
+import { userRepository } from "@mohasinac/appkit/repositories";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";

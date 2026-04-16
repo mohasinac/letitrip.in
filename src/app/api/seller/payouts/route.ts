@@ -15,7 +15,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { orderRepository, payoutRepository } from "@/repositories";
+import { orderRepository, payoutRepository } from "@mohasinac/appkit/repositories";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 
 // ─── Helper ───────────────────────────────────────────────────────────────

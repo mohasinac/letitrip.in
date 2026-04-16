@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, FAQ_CATEGORIES, SITE_CONFIG } from "@/constants";
 import type { FAQCategoryKey } from "@/constants/faq";
-import { useUrlTable } from "@/hooks";
-import { useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useMessage } from "@mohasinac/appkit/react";
 import { formatNumber } from "@mohasinac/appkit/utils";
 
 

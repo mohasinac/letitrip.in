@@ -8,7 +8,8 @@ import { RadioGroup } from "@mohasinac/appkit/ui";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import { useEventEnter } from "../hooks/useEventMutations";
 import { useEvent as usePublicEvent } from "@mohasinac/appkit/features/events";
 import {

@@ -31,13 +31,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository, userRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import {
   parseUserAgent,
   SCHEMA_DEFAULTS,
   DEFAULT_USER_DATA,
 } from "@/db/schema";
-import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase";
+import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { UserRole } from "@/types/auth";

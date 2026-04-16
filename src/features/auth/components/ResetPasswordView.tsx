@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { ResetPasswordView as AppkitResetPasswordView } from "@mohasinac/appkit/features/auth";
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useResetPassword } from "@/hooks";
+import { useResetPassword } from "@mohasinac/appkit/features/auth";
 import { TextLink } from "@/components";
 
 function ResetPasswordContent() {
@@ -24,8 +24,7 @@ function ResetPasswordContent() {
 
   const { mutate: resetPassword, isPending: isLoading } = useResetPassword({
     onSuccess: () => setSuccess(t("resetPassword.successMessage")),
-    onError: (err) =>
-      setError(err.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR),
+    onError: (err) => setError((err as Error).message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR),
   });
 
   return (

@@ -7,7 +7,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { faqsRepository } from "@/repositories";
+import { faqsRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createRouteHandler({
   auth: true,

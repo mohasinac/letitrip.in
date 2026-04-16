@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@mohasinac/appkit/http";
 import { hasAnyRole } from "@mohasinac/appkit/features/auth";

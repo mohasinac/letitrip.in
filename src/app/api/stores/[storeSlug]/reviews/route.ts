@@ -16,7 +16,7 @@ import "@/providers.config";
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@/repositories";
+import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";

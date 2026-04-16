@@ -1,7 +1,7 @@
 import "@/providers.config";
 import { z } from "zod";
 import {
-  unitOfWork, siteSettingsRepository, userRepository, } from "@/repositories";
+  unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit/repositories";
 import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout";
 import { successResponse } from "@mohasinac/appkit/next";
 import {

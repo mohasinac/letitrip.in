@@ -12,7 +12,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { userRepository } from "@/repositories";
+import { userRepository } from "@mohasinac/appkit/repositories";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { USER_FIELDS } from "@/db/schema";

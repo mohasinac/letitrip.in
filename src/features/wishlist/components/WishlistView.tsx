@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import {
   WishlistView as AppkitWishlistView,
   type WishlistTab,

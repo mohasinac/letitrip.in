@@ -12,8 +12,8 @@ import "@/providers.config";
 import { z } from "zod";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
-import { cartRepository } from "@/repositories";
-import { productRepository } from "@/repositories";
+import { cartRepository } from "@mohasinac/appkit/repositories";
+import { productRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

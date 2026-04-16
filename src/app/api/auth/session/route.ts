@@ -14,7 +14,7 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Ensure user profile exists in Firestore (important for OAuth users)
     // This will create a profile if one doesn't exist
-    const { userRepository } = await import("@/repositories");
+    const { userRepository } = await import("@mohasinac/appkit/repositories");
     const { getAuth } = await import("firebase-admin/auth");
     const { getAdminApp } = await import("@mohasinac/appkit/providers/db-firebase");
     const { DEFAULT_USER_DATA } = await import("@/db/schema/users");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGuestCartMerge } from "@/hooks";
+import { useGuestCartMerge } from "@mohasinac/appkit/features/cart";
 import { useAuth } from "@/contexts";
 import { useRouter } from "@/i18n/navigation";
 

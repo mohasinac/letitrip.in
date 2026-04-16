@@ -11,7 +11,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@mohasinac/appkit/utils";
 
 
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { makeOfferAction } from "@/actions";
 import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
 import { Card } from "@/components";

@@ -5,17 +5,13 @@ import { Spinner, Button, Grid } from "@mohasinac/appkit/ui";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import {
-  useAuth,
-  useAddresses,
-  useDeleteAddress,
-  useSetDefaultAddress,
-  useMessage,
-} from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useAddresses, useDeleteAddress, useSetDefaultAddress } from "@mohasinac/appkit/features/account";
+import { useMessage } from "@mohasinac/appkit/react";
 import { AddressCard, ConfirmDeleteModal, EmptyState } from "@/components";
 import { UserAddressesView as AppkitUserAddressesView } from "@mohasinac/appkit/features/account";
 import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
-import type { Address } from "@/hooks";
+import type { Address, AddressCardAddress } from "@mohasinac/appkit/features/account";
 
 export function UserAddressesView() {
   const { user, loading: authLoading } = useAuth();
@@ -76,7 +72,7 @@ export function UserAddressesView() {
             {addresses?.map((address: Address) => (
               <AddressCard
                 key={address.id}
-                address={address}
+                address={address as unknown as AddressCardAddress}
                 onDelete={() => setDeleteId(address.id)}
                 onSetDefault={() => setDefault({ addressId: address.id })}
                 onEdit={() =>

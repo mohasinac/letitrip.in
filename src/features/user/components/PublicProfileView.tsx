@@ -1,7 +1,7 @@
-import type { PublicUserProfile } from "@/hooks";
+import type { PublicUserProfile } from "@mohasinac/appkit/features/account";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import type { ImageCropData } from "@/components";
-import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
+import type { SellerReviewsData, ProductsApiResponse } from "@mohasinac/appkit/features/account";
 import { AvatarDisplay, Card, EmptyState, MediaImage, TextLink, } from "@/components";
 import { Heading, Text, Span, Badge, Row, Grid, Div, Stack } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";

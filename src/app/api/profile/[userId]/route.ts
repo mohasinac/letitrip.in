@@ -10,9 +10,9 @@ import "@/providers.config";
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";
-import { verifyPhoneSchema } from "@/lib/validation/schemas";
+import { verifyPhoneSchema } from "@mohasinac/appkit/validation";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { userRepository } from "@/repositories";
+import { userRepository } from "@mohasinac/appkit/repositories";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({

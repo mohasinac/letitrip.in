@@ -17,7 +17,8 @@ import { Drawer } from "@mohasinac/appkit/ui";
 import { Span, Text, Nav, Aside, Row } from "@mohasinac/appkit/ui";
 import { MediaAvatar } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useAuth, useNotifications } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useNotifications } from "@mohasinac/appkit/features/account";
 
 interface UserSidebarProps {
   mobileOpen: boolean;

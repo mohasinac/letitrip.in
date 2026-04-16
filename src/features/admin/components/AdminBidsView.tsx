@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminBids } from "@/features/admin/hooks";
 import {

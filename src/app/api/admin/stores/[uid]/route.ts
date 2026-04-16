@@ -15,7 +15,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 

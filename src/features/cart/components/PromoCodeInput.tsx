@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";
 import { Input } from "@mohasinac/appkit/ui";
-import { useCouponValidate } from "@/hooks";
+import { useCouponValidate } from "@mohasinac/appkit/features/promotions";
 import { formatCurrency } from "@mohasinac/appkit/utils";
 
 

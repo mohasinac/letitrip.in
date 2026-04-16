@@ -23,8 +23,12 @@ import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
 import { CheckoutVerifyModal } from "./CheckoutVerifyModal";
 import { PartialOrderDialog } from "./PartialOrderDialog";
-import {
-  useCheckout, useMessage, useRazorpay, useSiteSettings, useAuth, useAddressSelector, } from "@/hooks";
+import { useCheckoutApi as useCheckout } from "@mohasinac/appkit/features/checkout";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useRazorpay } from "@/hooks/useRazorpay";
+import { useSiteSettings } from "@mohasinac/appkit/core";
+import { useAuth } from "@/contexts/SessionContext";
+import { useAddressSelector } from "@mohasinac/appkit/features/account";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Heading, Main } from "@mohasinac/appkit/ui";
@@ -35,7 +39,7 @@ import { formatCurrency } from "@mohasinac/appkit/utils";
 "use client";
 
 import type { SiteSettingsDocument } from "@/db/schema";
-import type { UnavailableItem } from "@/hooks";
+import type { UnavailableItem } from "@mohasinac/appkit/features/checkout";
 
 const { themed, page, spacing } = THEME_CONSTANTS;
 

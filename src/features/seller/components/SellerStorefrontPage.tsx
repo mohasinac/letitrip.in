@@ -4,9 +4,9 @@ import { Text, Alert } from "@mohasinac/appkit/ui";
 import { Card, TextLink } from "@/components";
 import { SellerStorefrontView } from "./SellerStorefrontView";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useSellerStorefront } from "@/hooks";
+import { useSellerStorefront } from "@mohasinac/appkit/features/seller";
 import { useTranslations } from "next-intl";
-import type { PublicUserProfile } from "@/hooks";
+import type { PublicUserProfile } from "@mohasinac/appkit/features/account";
 
 interface SellerStorefrontPageProps {
   sellerId: string;

@@ -14,7 +14,7 @@ import "@/providers.config";
 import { errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { trimDataSchema } from "@/lib/validation/schemas";
+import { trimDataSchema } from "@mohasinac/appkit/validation";
 
 /**
  * POST /api/media/trim

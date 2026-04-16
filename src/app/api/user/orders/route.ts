@@ -11,7 +11,7 @@ import "@/providers.config";
  * server-side when a checkout session is completed (future payment integration).
  */
 
-import { orderRepository } from "@/repositories";
+import { orderRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";

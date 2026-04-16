@@ -18,7 +18,9 @@ import {
   useAuctionDetail, useRealtimeBids, } from "@mohasinac/appkit/features/auctions";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useBottomActions, useWishlistToggle } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useBottomActions } from "@mohasinac/appkit/features/layout";
+import { useWishlistToggle } from "@/hooks/useWishlistToggle";
 import { formatCurrency, formatDate, resolveDate } from "@mohasinac/appkit/utils";
 
 "use client";

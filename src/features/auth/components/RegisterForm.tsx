@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation";
 import { RegisterForm as AppkitRegisterForm } from "@mohasinac/appkit/features/auth";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useRegister, useGoogleLogin } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useRegister, useGoogleLogin } from "@mohasinac/appkit/features/auth";
 import { PasswordStrengthIndicator, TextLink } from "@/components";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
@@ -29,8 +30,7 @@ export function RegisterForm() {
       setSuccess(SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS);
       setTimeout(() => router.push(callbackUrl), 1000);
     },
-    onError: (err) =>
-      setError(err.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR),
+    onError: (err) => setError((err as Error).message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR),
   });
 
   const { mutate: googleRegister, isLoading: googleLoading } = useGoogleLogin({

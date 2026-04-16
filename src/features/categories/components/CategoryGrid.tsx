@@ -48,12 +48,12 @@ export function CategoryGrid({
         <CategoryCard
           key={category.id}
           category={category}
-          selectable={selectable}
-          selected={selectedIds.includes(category.id)}
-          onSelect={(id, sel) =>
+          onClick={selectable ? (cat) =>
             onSelectionChange?.(
-              sel ? [...selectedIds, id] : selectedIds.filter((x) => x !== id),
-            )
+              selectedIds.includes(cat.id)
+                ? selectedIds.filter((x) => x !== cat.id)
+                : [...selectedIds, cat.id]
+            ) : undefined
           }
         />
       ))}

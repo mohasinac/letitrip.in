@@ -203,7 +203,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={tActions("delete")}
+        labels={{ submit: tActions("delete")}}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />

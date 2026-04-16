@@ -22,7 +22,7 @@ import {
 } from "@/db/schema";
 import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository, userRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";

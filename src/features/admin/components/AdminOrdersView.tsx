@@ -13,7 +13,8 @@
 import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useMessage } from "@mohasinac/appkit/react";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminOrders } from "@/features/admin/hooks";
 import {
@@ -236,7 +237,7 @@ function AdminOrdersContent({ action }: AdminOrdersViewProps) {
                   onCancel={handleCloseDrawer}
                   onSubmit={handleSave}
                   isLoading={updateMutation.isPending}
-                  submitLabel={t("updateOrder")}
+                  labels={{ submit: t("updateOrder")}}
                 />
               ) : undefined
             }

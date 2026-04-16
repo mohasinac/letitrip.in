@@ -7,7 +7,7 @@ import "@/providers.config";
  * Strategy: fetch seller's products → get product IDs → filter all orders
  */
 
-import { orderRepository, productRepository } from "@/repositories";
+import { orderRepository, productRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import {

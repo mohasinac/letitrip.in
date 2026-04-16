@@ -15,7 +15,7 @@ import "@/providers.config";
  * - Implement FAQ A/B testing
  */
 
-import { faqsRepository, siteSettingsRepository } from "@/repositories";
+import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   getBooleanParam,

@@ -12,7 +12,7 @@ import "@/providers.config";
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { successResponse } from "@mohasinac/appkit/next";
-import { resetPasswordSchema } from "@/lib/validation/schemas";
+import { resetPasswordSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 

@@ -7,7 +7,7 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@mohasinac/appkit/utils";
 
 
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { usePlaceBid } from "@mohasinac/appkit/features/auctions";
 import type { BidResult } from "@mohasinac/appkit/features/auctions";
 import { Label, Text, Span, Button, Row } from "@mohasinac/appkit/ui";

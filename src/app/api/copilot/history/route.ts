@@ -8,7 +8,7 @@ import "@/providers.config";
 
 import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { copilotLogRepository } from "@/repositories";
+import { copilotLogRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES } from "@/constants";
 import { AppError } from "@mohasinac/appkit/errors";

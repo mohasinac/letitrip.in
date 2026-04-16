@@ -21,10 +21,10 @@ import {
 } from "@mohasinac/appkit/ui";
 import { Alert } from "@mohasinac/appkit/ui";
 import { Card, SideDrawer, AddressForm } from "@/components";
-import { useMessage } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { StoreAddressDocument } from "@/db/schema";
-import type { AddressFormData } from "@/hooks";
+import type { AddressFormData } from "@mohasinac/appkit/features/account";
 import {
   useStoreAddresses,
   useCreateStoreAddress,
@@ -206,7 +206,7 @@ export function StoreAddressesSection() {
           onSubmit={handleCreate}
           onCancel={() => setDrawerOpen(false)}
           isLoading={isCreating}
-          submitLabel={tActions("save")}
+          labels={{ save: tActions("save")}}
         />
       </SideDrawer>
 
@@ -234,7 +234,7 @@ export function StoreAddressesSection() {
             onSubmit={handleUpdate}
             onCancel={() => setEditingAddress(null)}
             isLoading={isUpdating}
-            submitLabel={tActions("save")}
+            labels={{ save: tActions("save")}}
           />
         )}
       </SideDrawer>

@@ -6,7 +6,8 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing, themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useMessage, useAuth } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useAuth } from "@/contexts/SessionContext";
 import { Label, Text, Span, Button } from "@mohasinac/appkit/ui";
 import { Checkbox } from "@mohasinac/appkit/ui";
 import { usePollVote } from "../hooks/usePollVote";

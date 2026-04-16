@@ -23,7 +23,8 @@
 import { Select } from "@mohasinac/appkit/ui";
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { useCategories, useCreateCategory, useMessage } from "@/hooks";
+import { useCategories, useCreateCategory } from "@mohasinac/appkit/features/categories";
+import { useMessage } from "@mohasinac/appkit/react";
 import { Label, Button } from "@mohasinac/appkit/ui";
 import {
   SideDrawer, CategoryForm, DrawerFormFooter, flattenCategories } from "@/components";

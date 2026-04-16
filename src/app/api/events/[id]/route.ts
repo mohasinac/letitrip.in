@@ -311,7 +311,7 @@ export async function GET(_request: NextRequest) {
             }
           } else if (colName === "faqs") {
             // FAQs use generated IDs â€” build them the same way the POST handler does
-            const { generateFAQId } = await import("@/utils");
+            const { generateFAQId } = await import("@mohasinac/appkit/utils");
             const refs = (seedData as any[]).map((faq: any) => {
               const id = generateFAQId({
                 category: faq.category,
@@ -606,7 +606,7 @@ export async function POST(request: NextRequest) {
               let { id, ...data } = docData as any;
 
               if (!id && collectionName === "faqs") {
-                const { generateFAQId } = await import("@/utils");
+                const { generateFAQId } = await import("@mohasinac/appkit/utils");
                 id = generateFAQId({
                   category: (docData as any).category,
                   question: (docData as any).question,
@@ -809,7 +809,7 @@ export async function POST(request: NextRequest) {
 
                 // Special handling for FAQs - generate ID if missing
                 if (!id && collectionName === "faqs") {
-                  const { generateFAQId } = await import("@/utils");
+                  const { generateFAQId } = await import("@mohasinac/appkit/utils");
                   id = generateFAQId({
                     category: (docData as any).category,
                     question: (docData as any).question,

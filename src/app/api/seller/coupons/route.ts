@@ -5,7 +5,7 @@ import "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import { couponsRepository } from "@/repositories";
+import { couponsRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createApiHandler({
   roles: ["seller", "admin", "moderator"],

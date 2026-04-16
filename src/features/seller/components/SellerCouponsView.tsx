@@ -7,7 +7,8 @@ import {
   Caption, Grid, Heading, Text, Spinner, Span, Badge, Button, } from "@mohasinac/appkit/ui";
 import { SellerCouponsView as AppkitSellerCouponsView } from "@mohasinac/appkit/features/seller";
 import { EmptyState, Card } from "@/components";
-import { useAuth, useMessage } from "@/hooks";
+import { useAuth } from "@/contexts/SessionContext";
+import { useMessage } from "@mohasinac/appkit/react";
 import {
   ROUTES, THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES, } from "@/constants";
 import { formatCurrency, formatDate, resolveDate } from "@mohasinac/appkit/utils";

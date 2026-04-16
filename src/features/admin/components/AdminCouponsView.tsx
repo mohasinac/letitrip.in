@@ -8,7 +8,8 @@
 import { useState, useCallback, useEffect, useMemo, useRef, Suspense, } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage } from "@mohasinac/appkit/react";
+import { useUrlTable } from "@/hooks/useUrlTable";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import {
@@ -287,9 +288,9 @@ function AdminCouponsContent({ action }: AdminCouponsViewProps) {
             onSubmit={handleSave}
             isLoading={isSaving}
             isSubmitDisabled={!isDirty && drawerMode === "edit"}
-            submitLabel={
+            labels={{ submit: 
               drawerMode === "create" ? t("create") : tActions("save")
-            }
+            }}
           />
         }
       >

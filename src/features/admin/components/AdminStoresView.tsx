@@ -14,7 +14,8 @@ import { AdminStoresView as AdminStoresShell } from "@mohasinac/appkit/features/
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { usePendingTable } from "@mohasinac/appkit/react";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks/useUrlTable";
+import { useMessage } from "@mohasinac/appkit/react";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { StoreFilters } from "./StoreFilters";
 import { useAdminStores } from "@/features/admin/hooks";

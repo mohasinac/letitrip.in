@@ -6,10 +6,13 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { ProductItem } from "@mohasinac/appkit/features/products";
 import { PreOrderCard } from "@/components";
 import { SectionCarousel } from "@mohasinac/appkit/features/homepage";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 export function FeaturedPreOrdersSection() {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
+  const tPreOrders = useTranslations("preOrders");
+  const tWishlist = useTranslations("wishlist");
   const { data, isLoading } = useFeaturedPreOrders();
 
   const preOrders: ProductItem[] = data ?? [];
@@ -26,7 +29,21 @@ export function FeaturedPreOrdersSection() {
       viewMoreHref={ROUTES.PUBLIC.PRE_ORDERS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={preOrders}
-      renderItem={(preOrder) => <PreOrderCard product={preOrder} />}
+      renderItem={(preOrder) => (
+        <PreOrderCard
+          product={preOrder}
+          wishlistActions={{
+            addToWishlist: addToWishlistAction,
+            removeFromWishlist: removeFromWishlistAction,
+          }}
+          labels={{
+            preOrderBadge: tPreOrders("preOrderBadge"),
+            reserveNow: tPreOrders("reserveNow"),
+            addToWishlist: tWishlist("addToWishlist"),
+            removeFromWishlist: tWishlist("removeFromWishlist"),
+          }}
+        />
+      )}
       perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll
