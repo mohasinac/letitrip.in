@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   adminCreateCoupon as adminCreateCouponDomain,
   adminUpdateCoupon as adminUpdateCouponDomain,
@@ -83,7 +83,7 @@ export type AdminUpdateCouponInput = z.infer<typeof updateCouponSchema>;
 export async function adminCreateCouponAction(
   input: AdminCreateCouponInput,
 ): Promise<CouponDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `coupon:create:${admin.uid}`,
@@ -115,7 +115,7 @@ export async function adminUpdateCouponAction(
   id: string,
   input: AdminUpdateCouponInput,
 ): Promise<CouponDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `coupon:update:${admin.uid}`,
@@ -151,7 +151,7 @@ export async function adminUpdateCouponAction(
 }
 
 export async function adminDeleteCouponAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `coupon:delete:${admin.uid}`,
@@ -174,7 +174,7 @@ export async function listAdminCouponsAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<CouponDocument>> {
-  await requireRole(["admin"]);
+  await requireRoleUser(["admin"]);
   return listAdminCouponsDomain(params) as Promise<FirebaseSieveResult<CouponDocument>>;
 }
 

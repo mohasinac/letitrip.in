@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -47,7 +47,7 @@ export type AddressInput = z.infer<typeof addressBodySchema>;
 export async function createAddressAction(
   input: AddressInput,
 ): Promise<AddressDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `address:create:${user.uid}`,
     RateLimitPresets.API,
@@ -68,7 +68,7 @@ export async function updateAddressAction(
   addressId: string,
   input: Partial<AddressInput>,
 ): Promise<AddressDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `address:update:${user.uid}`,
     RateLimitPresets.API,
@@ -88,7 +88,7 @@ export async function updateAddressAction(
 }
 
 export async function deleteAddressAction(addressId: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `address:delete:${user.uid}`,
     RateLimitPresets.API,
@@ -104,7 +104,7 @@ export async function deleteAddressAction(addressId: string): Promise<void> {
 export async function setDefaultAddressAction(
   addressId: string,
 ): Promise<AddressDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `address:setDefault:${user.uid}`,
     RateLimitPresets.API,
@@ -120,14 +120,14 @@ export async function setDefaultAddressAction(
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function listAddressesAction(): Promise<AddressDocument[]> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listAddressesForUser(user.uid) as Promise<AddressDocument[]>;
 }
 
 export async function getAddressByIdAction(
   id: string,
 ): Promise<AddressDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getAddressByIdForUser(user.uid, id) as Promise<AddressDocument | null>;
 }
 

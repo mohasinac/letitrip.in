@@ -1,14 +1,14 @@
-﻿"use server";
+"use server";
 
 /**
- * Offer Server Actions — thin entrypoint
+ * Offer Server Actions � thin entrypoint
  *
  * Authenticates, rate-limits, validates, then delegates to
  * appkit offer domain functions. No business logic here.
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -29,7 +29,7 @@ import {
 } from "@mohasinac/appkit/features/seller";
 import type { CartDocument, OfferDocument } from "@/db/schema";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 const makeOfferSchema = z.object({
   productId: z.string().min(1),
@@ -58,12 +58,12 @@ const buyerCounterSchema = z.object({
   buyerNote: z.string().max(300).optional(),
 });
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function makeOfferAction(
   input: MakeOfferInput,
 ): Promise<OfferDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:make:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = makeOfferSchema.safeParse(input);
@@ -75,7 +75,7 @@ export async function makeOfferAction(
 export async function respondToOfferAction(
   input: RespondToOfferInput,
 ): Promise<OfferDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:respond:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = respondToOfferSchema.safeParse(input);
@@ -87,7 +87,7 @@ export async function respondToOfferAction(
 export async function acceptCounterOfferAction(
   input: z.infer<typeof acceptCounterSchema>,
 ): Promise<OfferDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const parsed = acceptCounterSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError("Invalid input");
   return acceptCounterOffer(user.uid, parsed.data.offerId);
@@ -96,7 +96,7 @@ export async function acceptCounterOfferAction(
 export async function counterOfferByBuyerAction(
   input: BuyerCounterInput,
 ): Promise<OfferDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:buyer-counter:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = buyerCounterSchema.safeParse(input);
@@ -108,26 +108,26 @@ export async function counterOfferByBuyerAction(
 export async function withdrawOfferAction(
   input: z.infer<typeof withdrawOfferSchema>,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const parsed = withdrawOfferSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError("Invalid input");
   return withdrawOffer(user.uid, parsed.data.offerId);
 }
 
 export async function listBuyerOffersAction(): Promise<OfferDocument[]> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listBuyerOffers(user.uid);
 }
 
 export async function listSellerOffersAction(): Promise<OfferDocument[]> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listSellerOffers(user.uid);
 }
 
 export async function checkoutOfferAction(
   offerId: string,
 ): Promise<CartDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:checkout:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   return checkoutOffer(user.uid, offerId);

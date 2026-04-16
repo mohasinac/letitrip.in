@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -64,7 +64,7 @@ const mergeGuestCartSchema = z.object({
 export async function addToCartAction(
   input: z.infer<typeof addToCartSchema>,
 ): Promise<CartDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `cart:add:${user.uid}`,
     RateLimitPresets.API,
@@ -85,7 +85,7 @@ export async function updateCartItemAction(
   itemId: string,
   input: z.infer<typeof updateCartItemSchema>,
 ): Promise<CartDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `cart:update:${user.uid}`,
     RateLimitPresets.API,
@@ -108,7 +108,7 @@ export async function updateCartItemAction(
 export async function removeFromCartAction(
   itemId: string,
 ): Promise<CartDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `cart:remove:${user.uid}`,
     RateLimitPresets.API,
@@ -123,14 +123,14 @@ export async function removeFromCartAction(
 }
 
 export async function clearCartAction(): Promise<CartDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return clearCart(user.uid) as Promise<CartDocument>;
 }
 
 export async function mergeGuestCartAction(
   items: Array<{ productId: string; quantity: number }>,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const parsed = mergeGuestCartSchema.safeParse({ items });
   if (!parsed.success)
     throw new ValidationError(
@@ -143,7 +143,7 @@ export async function mergeGuestCartAction(
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function getCartAction(): Promise<CartDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getCart(user.uid) as Promise<CartDocument | null>;
 }
 

@@ -17,7 +17,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { parseUserAgent } from "@/db/schema";
-import { createSessionCookie } from "@/lib/firebase/auth-server";
+import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@mohasinac/appkit/next";
@@ -186,4 +186,5 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
 

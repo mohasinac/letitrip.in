@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   createReview as createReviewDomain,
   updateReview as updateReviewDomain,
@@ -69,7 +69,7 @@ const updateReviewSchema = z.object({
 export async function createReviewAction(
   input: z.infer<typeof createReviewSchema>,
 ): Promise<ReviewDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `reviews:create:${user.uid}`,
@@ -95,7 +95,7 @@ export async function updateReviewAction(
   reviewId: string,
   input: z.infer<typeof updateReviewSchema>,
 ): Promise<ReviewDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `reviews:update:${user.uid}`,
@@ -122,7 +122,7 @@ export async function updateReviewAction(
  * Delete a review. Only the review owner can delete.
  */
 export async function deleteReviewAction(reviewId: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   if (!reviewId || typeof reviewId !== "string") {
     throw new ValidationError("reviewId is required");
@@ -149,7 +149,7 @@ export async function adminUpdateReviewAction(
   reviewId: string,
   input: z.infer<typeof adminUpdateReviewSchema>,
 ): Promise<ReviewDocument | null> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `admin:reviews:update:${admin.uid}`,
@@ -176,7 +176,7 @@ export async function adminUpdateReviewAction(
  * Delete any review (admin/moderator only). No ownership check.
  */
 export async function adminDeleteReviewAction(reviewId: string): Promise<void> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   if (!reviewId || typeof reviewId !== "string") {
     throw new ValidationError("reviewId is required");
@@ -192,7 +192,7 @@ export async function voteReviewHelpfulAction(
   reviewId: string,
   helpful: boolean,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `reviews:vote:${user.uid}`,
@@ -224,7 +224,7 @@ export async function listAdminReviewsAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<ReviewDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   const sieve: SieveModel = {
     filters: params?.filters,
     sorts: params?.sorts ?? "-createdAt",

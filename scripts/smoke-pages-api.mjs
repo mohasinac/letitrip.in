@@ -176,6 +176,74 @@ async function runApiSmoke(baseUrl) {
     return out;
   };
 
+  const fetchJson = async (path, method = "GET", body) => {
+    const response = await fetch(`${baseUrl}${path}`, {
+      method,
+      headers: method === "POST" ? { "content-type": "application/json" } : undefined,
+      body: method === "POST" ? JSON.stringify(body) : undefined,
+    });
+
+    const text = await response.text();
+    const parsed = safeJsonParse(text);
+
+    return {
+      status: response.status,
+      parsed,
+      body: parsed.ok ? parsed.value : text,
+    };
+  };
+
+  const compareApiVariants = async ({
+    name,
+    variantA,
+    variantB,
+    expectedStatus = 200,
+    allowIdenticalWhenEmpty = true,
+  }) => {
+    try {
+      const a = await fetchJson(variantA);
+      const b = await fetchJson(variantB);
+
+      const shapeA = a.parsed.ok ? getShapeSignature(a.body) : "non-json";
+      const shapeB = b.parsed.ok ? getShapeSignature(b.body) : "non-json";
+      const sameShape = shapeA === shapeB;
+
+      const countA = a.parsed.ok ? getResultCount(a.body) : 0;
+      const countB = b.parsed.ok ? getResultCount(b.body) : 0;
+
+      const canonicalA = JSON.stringify(canonicalize(a.body));
+      const canonicalB = JSON.stringify(canonicalize(b.body));
+      const identical = canonicalA === canonicalB;
+
+      const statusesOk = a.status === expectedStatus && b.status === expectedStatus;
+      const suspiciousIdentical =
+        identical && (!allowIdenticalWhenEmpty || countA > 0 || countB > 0);
+
+      results.push({
+        type: "api",
+        name,
+        ok: statusesOk && sameShape && !suspiciousIdentical,
+        detail: [
+          `a=${variantA}`,
+          `b=${variantB}`,
+          `a_status=${a.status}`,
+          `b_status=${b.status}`,
+          `same_shape=${sameShape}`,
+          `a_count=${countA}`,
+          `b_count=${countB}`,
+          `identical=${identical}`,
+        ].join(", "),
+      });
+    } catch (error) {
+      results.push({
+        type: "api",
+        name,
+        ok: false,
+        detail: String(error),
+      });
+    }
+  };
+
   for (const ep of endpoints) {
     try {
       const response = await fetch(`${baseUrl}${ep.path}`, {
@@ -201,54 +269,97 @@ async function runApiSmoke(baseUrl) {
   }
 
   try {
-    const fetchSearch = async (query) => {
-      const response = await fetch(`${baseUrl}/api/search?q=${encodeURIComponent(query)}`, {
-        method: "GET",
-      });
-      const text = await response.text();
-      const parsed = safeJsonParse(text);
-      return {
-        query,
-        status: response.status,
-        parsed,
-        body: parsed.ok ? parsed.value : text,
-      };
-    };
-
-    const sieve = await fetchSearch("sieve");
-    const test = await fetchSearch("test");
-
-    const shapeSieve = sieve.parsed.ok ? getShapeSignature(sieve.body) : "non-json";
-    const shapeTest = test.parsed.ok ? getShapeSignature(test.body) : "non-json";
-    const sameShape = shapeSieve === shapeTest;
-
-    const sieveCount = sieve.parsed.ok ? getResultCount(sieve.body) : 0;
-    const testCount = test.parsed.ok ? getResultCount(test.body) : 0;
-
-    const canonicalSieve = JSON.stringify(canonicalize(sieve.body));
-    const canonicalTest = JSON.stringify(canonicalize(test.body));
-    const responsesIdentical = canonicalSieve === canonicalTest;
-
-    const statusesOk = sieve.status === 200 && test.status === 200;
-    const suspiciousIdentical = responsesIdentical && (sieveCount > 0 || testCount > 0);
-
-    results.push({
-      type: "api",
-      name: "GET /api/search comparison (sieve vs test)",
-      ok: statusesOk && sameShape && !suspiciousIdentical,
-      detail: [
-        `sieve_status=${sieve.status}`,
-        `test_status=${test.status}`,
-        `same_shape=${sameShape}`,
-        `sieve_count=${sieveCount}`,
-        `test_count=${testCount}`,
-        `identical=${responsesIdentical}`,
-      ].join(", "),
+    await compareApiVariants({
+      name: "GET /api/search sieve check (q variant)",
+      variantA: "/api/search?q=sieve&pageSize=12",
+      variantB: "/api/search?q=test&pageSize=12",
     });
+
+    await compareApiVariants({
+      name: "GET /api/products sieve check (auction flag)",
+      variantA: "/api/products?pageSize=12&isAuction=true&sorts=-createdAt",
+      variantB: "/api/products?pageSize=12&isAuction=false&sorts=-createdAt",
+      allowIdenticalWhenEmpty: false,
+    });
+
+    await compareApiVariants({
+      name: "GET /api/products sieve check (price range)",
+      variantA: "/api/products?pageSize=12&minPrice=1&sorts=-createdAt",
+      variantB: "/api/products?pageSize=12&maxPrice=5000&sorts=-createdAt",
+      allowIdenticalWhenEmpty: false,
+    });
+
+    await compareApiVariants({
+      name: "GET /api/categories sieve check (tier split)",
+      variantA: "/api/categories?flat=true&tier=0&pageSize=120",
+      variantB: "/api/categories?flat=true&tier=1&pageSize=120",
+    });
+
+    await compareApiVariants({
+      name: "GET /api/categories sieve check (brand flag)",
+      variantA: "/api/categories?flat=true&isBrand=true&pageSize=120",
+      variantB: "/api/categories?flat=true&featured=true&pageSize=120",
+    });
+
+    await compareApiVariants({
+      name: "GET /api/stores sieve check (name query)",
+      variantA: "/api/stores?q=sieve&pageSize=12",
+      variantB: "/api/stores?q=test&pageSize=12",
+    });
+
+    await compareApiVariants({
+      name: "GET /api/stores sieve check (category filter)",
+      variantA: "/api/stores?category=collectibles&pageSize=12",
+      variantB: "/api/stores?category=art&pageSize=12",
+    });
+
+    await compareApiVariants({
+      name: "GET /api/bids sieve check (auctionId variant)",
+      variantA: "/api/bids?auctionId=sieve-auction&pageSize=12",
+      variantB: "/api/bids?auctionId=test-auction&pageSize=12",
+    });
+
+    const storesProbe = await fetchJson("/api/stores?pageSize=5");
+    const candidateStores = storesProbe.parsed.ok
+      ? storesProbe.body?.data?.items ?? storesProbe.body?.items ?? []
+      : [];
+    const firstStoreSlug = Array.isArray(candidateStores)
+      ? candidateStores.find((store) => typeof store?.storeSlug === "string")?.storeSlug
+      : null;
+
+    if (firstStoreSlug) {
+      const slug = encodeURIComponent(firstStoreSlug);
+
+      await compareApiVariants({
+        name: "GET /api/stores/[slug]/products sieve check",
+        variantA: `/api/stores/${slug}/products?pageSize=12&filters=price>=1`,
+        variantB: `/api/stores/${slug}/products?pageSize=12&filters=price<=5000`,
+      });
+
+      await compareApiVariants({
+        name: "GET /api/stores/[slug]/auctions sieve check",
+        variantA: `/api/stores/${slug}/auctions?pageSize=12&filters=price>=1`,
+        variantB: `/api/stores/${slug}/auctions?pageSize=12&filters=price<=5000`,
+      });
+    } else {
+      results.push({
+        type: "api",
+        name: "GET /api/stores/[slug]/products sieve check",
+        ok: true,
+        detail: "skipped: no public store slug available from /api/stores",
+      });
+
+      results.push({
+        type: "api",
+        name: "GET /api/stores/[slug]/auctions sieve check",
+        ok: true,
+        detail: "skipped: no public store slug available from /api/stores",
+      });
+    }
   } catch (error) {
     results.push({
       type: "api",
-      name: "GET /api/search comparison (sieve vs test)",
+      name: "Sieve-oriented API comparison suite",
       ok: false,
       detail: String(error),
     });

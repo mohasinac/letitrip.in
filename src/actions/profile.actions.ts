@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -50,7 +50,7 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export async function updateProfileAction(
   input: UpdateProfileInput,
 ): Promise<UserDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `profile:update:${user.uid}`,
     RateLimitPresets.API,
@@ -72,12 +72,12 @@ export async function updateProfileAction(
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function getMyProfileAction(): Promise<UserDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getUserProfile(user.uid) as Promise<UserDocument | null>;
 }
 
 export async function listMySessionsAction() {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getUserSessions(user.uid);
 }
 

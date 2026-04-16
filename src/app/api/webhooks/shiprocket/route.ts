@@ -20,7 +20,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
+import type { ShiprocketWebhookPayload } from "@mohasinac/appkit/providers/shipping-shiprocket";
 
 // Vercel Hobby max is 60 s; Firestore read + write fits well within that.
 export const maxDuration = 60;

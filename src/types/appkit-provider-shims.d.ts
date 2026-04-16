@@ -110,25 +110,6 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
   };
 }
 
-declare module "@mohasinac/appkit/providers/auth-firebase" {
-  import type {
-    IAuthProvider,
-    ISessionProvider,
-  } from "@mohasinac/appkit/contracts";
-
-  export const firebaseAuthProvider: IAuthProvider;
-  export const firebaseSessionProvider: ISessionProvider;
-  export function createSessionCookieFromToken(
-    idToken: string,
-    expiresInMs?: number,
-  ): Promise<string>;
-  export function verifyIdToken(token: string): Promise<unknown>;
-  export function verifySessionCookie(cookie: string): Promise<unknown>;
-  export function createMiddlewareAuthChain(...args: unknown[]): unknown;
-  export function requireAuth(...args: unknown[]): Promise<unknown>;
-  export function requireRole(...args: unknown[]): Promise<unknown>;
-}
-
 declare module "@mohasinac/feat-products" {
   export type ProductItem = import("@mohasinac/appkit/features/products").ProductItem;
 

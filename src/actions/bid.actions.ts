@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -37,7 +37,7 @@ const placeBidSchema = z.object({
 export async function placeBidAction(
   input: PlaceBidInput,
 ): Promise<PlaceBidResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `bid:place:${user.uid}`,

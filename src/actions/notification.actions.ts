@@ -7,7 +7,7 @@
  * This wrapper adds auth, rate-limiting, and Next.js server-action semantics.
  */
 
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   markNotificationRead,
   markAllNotificationsRead,
@@ -28,7 +28,7 @@ export type { NotificationDocument };
  * Mark a single notification as read.
  */
 export async function markNotificationReadAction(id: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `notifications:markRead:${user.uid}`,
@@ -48,7 +48,7 @@ export async function markNotificationReadAction(id: string): Promise<void> {
  * Mark all notifications as read for the authenticated user.
  */
 export async function markAllNotificationsReadAction(): Promise<number> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `notifications:markAllRead:${user.uid}`,
@@ -64,7 +64,7 @@ export async function markAllNotificationsReadAction(): Promise<number> {
  * Delete a single notification.
  */
 export async function deleteNotificationAction(id: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `notifications:delete:${user.uid}`,
@@ -85,12 +85,12 @@ export async function deleteNotificationAction(id: string): Promise<void> {
 export async function listNotificationsAction(
   limit = 20,
 ): Promise<{ notifications: NotificationDocument[]; unreadCount: number }> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listNotifications(user.uid, limit);
 }
 
 export async function getUnreadNotificationCountAction(): Promise<number> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getUnreadNotificationCount(user.uid);
 }
 

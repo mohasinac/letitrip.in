@@ -1,16 +1,16 @@
-﻿"use server";
+"use server";
 
 /**
- * Seller Server Actions — thin entrypoint
+ * Seller Server Actions � thin entrypoint
  *
- * Auth + rate-limit + validation → delegates to appkit seller domain functions.
+ * Auth + rate-limit + validation ? delegates to appkit seller domain functions.
  * Shiprocket-specific shipping (updateSellerShipping, verifyShiprocketPickupOtp,
  * and the shiprocket branch of shipOrder) remain here because they depend on
  * @/lib/shiprocket/client which is a permanent letitrip-only dependency.
  */
 
 import { z } from "zod";
-import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -57,7 +57,7 @@ import {
   shiprocketGeneratePickup,
   isShiprocketTokenExpired,
   SHIPROCKET_TOKEN_TTL_MS,
-} from "@/lib/shiprocket/client";
+} from "@mohasinac/appkit/providers/shipping-shiprocket";
 import { resolveDate } from "@mohasinac/appkit/utils";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NotFoundError } from "@mohasinac/appkit/errors";
@@ -72,16 +72,16 @@ import type {
 } from "@/db/schema";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-// ─── Become Seller ────────────────────────────────────────────────────────────
+// --- Become Seller ------------------------------------------------------------
 
 export async function becomeSellerAction(): Promise<BecomeSellerResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`become-seller:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   return becomeSeller(user.uid);
 }
 
-// ─── Create Store ────────────────────────────────────────────────────────────
+// --- Create Store ------------------------------------------------------------
 
 const createStoreSchema = z.object({
   storeName: z.string().min(2).max(80),
@@ -92,7 +92,7 @@ const createStoreSchema = z.object({
 export async function createStoreAction(
   input: z.infer<typeof createStoreSchema>,
 ): Promise<{ store: StoreDocument }> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = createStoreSchema.safeParse(input);
@@ -100,7 +100,7 @@ export async function createStoreAction(
   return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
 }
 
-// ─── Update Store ────────────────────────────────────────────────────────────
+// --- Update Store ------------------------------------------------------------
 
 const updateStoreSchema = z.object({
   storeName: z.string().min(2).max(80).optional(),
@@ -127,7 +127,7 @@ const updateStoreSchema = z.object({
 export async function updateStoreAction(
   input: z.infer<typeof updateStoreSchema>,
 ): Promise<{ store: StoreDocument }> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updateStoreSchema.safeParse(input);
@@ -135,11 +135,11 @@ export async function updateStoreAction(
   return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
 }
 
-// ─── Update Payout Settings ───────────────────────────────────────────────────
+// --- Update Payout Settings ---------------------------------------------------
 
 const bankAccountInputSchema = z.object({
   accountHolderName: z.string().min(2).max(100),
-  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9–18 digits"),
+  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9�18 digits"),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
   bankName: z.string().min(2).max(100),
   accountType: z.enum(["savings", "current"]).default("savings"),
@@ -153,7 +153,7 @@ const updatePayoutSettingsSchema = z.discriminatedUnion("method", [
 export async function updatePayoutSettingsAction(
   input: z.infer<typeof updatePayoutSettingsSchema>,
 ): Promise<unknown> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updatePayoutSettingsSchema.safeParse(input);
@@ -161,7 +161,7 @@ export async function updatePayoutSettingsAction(
   return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
 }
 
-// ─── Request Payout ───────────────────────────────────────────────────────────
+// --- Request Payout -----------------------------------------------------------
 
 const payoutRequestSchema = z.object({
   paymentMethod: z.enum(["bank_transfer", "upi"]),
@@ -181,7 +181,7 @@ const payoutRequestSchema = z.object({
 export async function requestPayoutAction(
   input: z.infer<typeof payoutRequestSchema>,
 ): Promise<unknown> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = payoutRequestSchema.safeParse(input);
@@ -189,12 +189,12 @@ export async function requestPayoutAction(
   return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
 }
 
-// ─── Bulk Seller Order ────────────────────────────────────────────────────────
+// --- Bulk Seller Order --------------------------------------------------------
 
 export async function bulkSellerOrderAction(
   orderIds: string[],
 ): Promise<BulkSellerOrderResult> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`bulk-order-action:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   if (!Array.isArray(orderIds) || orderIds.length === 0)
@@ -203,10 +203,10 @@ export async function bulkSellerOrderAction(
   return bulkSellerOrder(user.uid, user.role ?? "seller", profile?.displayName ?? user.name ?? user.uid, user.email ?? "", orderIds);
 }
 
-// ─── Create Seller Product ────────────────────────────────────────────────────
+// --- Create Seller Product ----------------------------------------------------
 
 export async function createSellerProductAction(input: unknown): Promise<void> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = productCreateSchema.safeParse(input);
@@ -214,20 +214,20 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
   return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, unknown>);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function getSellerStoreAction(): Promise<StoreDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getSellerStore(user.uid) as any;
 }
 
 export async function getSellerShippingAction() {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getSellerShipping(user.uid);
 }
 
 export async function getSellerPayoutSettingsAction() {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getSellerPayoutSettings(user.uid);
 }
 
@@ -237,22 +237,22 @@ export async function listSellerOrdersAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<OrderDocument>> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listSellerOrders(user.uid, params) as any;
 }
 
 export async function getSellerAnalyticsAction() {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getSellerAnalytics(user.uid);
 }
 
 export async function listSellerPayoutsAction(params?: { page?: number; pageSize?: number }) {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listSellerPayouts(user.uid, params);
 }
 
 export async function listSellerCouponsAction(): Promise<CouponDocument[]> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listSellerCoupons(user.uid) as any;
 }
 
@@ -262,7 +262,7 @@ export async function listSellerMyProductsAction(params?: {
   page?: number;
   pageSize?: number;
 }) {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listSellerMyProducts(user.uid, params);
 }
 
@@ -270,7 +270,7 @@ export async function sellerUpdateProductAction(
   id: string,
   input: unknown,
 ): Promise<ProductDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   if (!id?.trim()) throw new ValidationError("id is required");
   const parsed = productUpdateSchema.partial().safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid update data");
@@ -279,13 +279,13 @@ export async function sellerUpdateProductAction(
 }
 
 export async function sellerDeleteProductAction(id: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   if (!id?.trim()) throw new ValidationError("id is required");
   const profile = await userRepository.findById(user.uid);
   return sellerDeleteProduct(user.uid, profile?.role ?? "user", id);
 }
 
-// ─── Ship Order ───────────────────────────────────────────────────────────────
+// --- Ship Order ---------------------------------------------------------------
 
 const customShipSchema = z.object({
   method: z.literal("custom"),
@@ -309,7 +309,7 @@ export async function shipOrderAction(
   orderId: string,
   input: z.infer<typeof shipOrderSchema>,
 ): Promise<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = shipOrderSchema.safeParse(input);
@@ -325,7 +325,7 @@ export async function shipOrderAction(
     });
   }
 
-  // ── Shiprocket branch ──
+  // -- Shiprocket branch --
   const userDoc = await userRepository.findById(user.uid);
   if (!userDoc) throw new AuthorizationError("User not found");
 
@@ -414,7 +414,7 @@ export async function shipOrderAction(
   return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
 }
 
-// ─── Update Seller Shipping (shiprocket — stays in letitrip) ──────────────────
+// --- Update Seller Shipping (shiprocket � stays in letitrip) ------------------
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
@@ -445,7 +445,7 @@ const updateShippingSchema = z.discriminatedUnion("method", [
 export async function updateSellerShippingAction(
   input: z.infer<typeof updateShippingSchema>,
 ): Promise<unknown> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updateShippingSchema.safeParse(input);
@@ -506,12 +506,12 @@ export async function updateSellerShippingAction(
   return { shippingConfig: { ...safeConfig, isTokenValid: Boolean(config.shiprocketToken && !isShiprocketTokenExpired(config.shiprocketTokenExpiry)) }, otpPending, pickupLocationId: newPickupLocationId };
 }
 
-// ─── Verify Shiprocket Pickup OTP (stays in letitrip) ─────────────────────────
+// --- Verify Shiprocket Pickup OTP (stays in letitrip) -------------------------
 
 export async function verifyShiprocketPickupOtpAction(
   input: { otp: number; pickupLocationId: number },
 ): Promise<{ message: string }> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
 

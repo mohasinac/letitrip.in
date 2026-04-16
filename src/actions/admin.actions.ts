@@ -11,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   revokeSession as revokeSessionDomain,
   revokeUserSessions as revokeUserSessionsDomain,
@@ -67,7 +67,7 @@ const revokeUserSessionsSchema = z.object({
 export async function revokeSessionAction(
   input: z.infer<typeof revokeSessionSchema>,
 ): Promise<{ success: true; message: string }> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `revoke-session:${admin.uid}`,
@@ -93,7 +93,7 @@ export async function revokeSessionAction(
 export async function revokeUserSessionsAction(
   input: z.infer<typeof revokeUserSessionsSchema>,
 ): Promise<{ success: true; message: string; revokedCount: number }> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `revoke-user-sessions:${admin.uid}`,
@@ -126,7 +126,7 @@ export async function adminUpdateOrderAction(
   id: string,
   input: z.infer<typeof orderUpdateSchema>,
 ): Promise<OrderDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `order:update:${admin.uid}`,
@@ -162,7 +162,7 @@ export async function adminUpdatePayoutAction(
   id: string,
   input: z.infer<typeof payoutUpdateSchema>,
 ): Promise<PayoutDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `payout:update:${admin.uid}`,
@@ -198,7 +198,7 @@ export async function adminUpdateUserAction(
   uid: string,
   input: z.infer<typeof userUpdateSchema>,
 ): Promise<UserDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `user:update:${admin.uid}`,
@@ -219,7 +219,7 @@ export async function adminUpdateUserAction(
 }
 
 export async function adminDeleteUserAction(uid: string): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `user:delete:${admin.uid}`,
@@ -245,7 +245,7 @@ const storeStatusSchema = z.object({
 export async function adminUpdateStoreStatusAction(
   input: z.infer<typeof storeStatusSchema>,
 ): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `store:status:${admin.uid}`,
@@ -284,7 +284,7 @@ export async function adminUpdateProductAction(
   id: string,
   input: z.infer<typeof productAdminUpdateSchema>,
 ): Promise<ProductDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `product:update:${admin.uid}`,
@@ -311,7 +311,7 @@ export async function adminUpdateProductAction(
 export async function adminCreateProductAction(
   input: unknown,
 ): Promise<ProductDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `product:create:${admin.uid}`,
@@ -330,13 +330,13 @@ export async function adminCreateProductAction(
     ...validation.data,
     sellerId: (input as any).sellerId || admin.uid,
     sellerName:
-      (input as any).sellerName || admin.displayName || admin.email || "Admin",
+      (input as any).sellerName || admin.name || admin.email || "Admin",
     sellerEmail: (input as any).sellerEmail || admin.email || "",
   } as any);
 }
 
 export async function adminDeleteProductAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `product:delete:${admin.uid}`,

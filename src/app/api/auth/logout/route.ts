@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
-import { verifySessionCookie } from "@/lib/firebase/auth-server";
+import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
@@ -67,4 +67,5 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
 

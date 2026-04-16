@@ -24,10 +24,10 @@ import "@/providers.config";
 
 import { z } from "zod";
 import {
-  verifyPaymentSignature,
+  verifyPaymentSignatureWithKeys,
   fetchRazorpayOrder,
   paiseToRupees,
-} from "@/lib/payment/razorpay";
+} from "@mohasinac/appkit/providers/payment-razorpay";
 import {
   orderRepository,
   productRepository,
@@ -64,7 +64,7 @@ export const POST = createRouteHandler<
     } = body!;
 
     // 1. Verify Razorpay signature
-    const isValid = verifyPaymentSignature({
+    const isValid = await verifyPaymentSignatureWithKeys({
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,

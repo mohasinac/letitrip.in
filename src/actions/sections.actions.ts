@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Homepage Sections Server Actions -- thin entrypoints.
@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -39,7 +39,7 @@ const sectionIdSchema = z.object({ id: z.string().min(1, "id is required") });
 export async function createHomepageSectionAction(
   input: CreateHomepageSectionInput,
 ): Promise<HomepageSectionDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `sections:create:${admin.uid}`,
@@ -61,7 +61,7 @@ export async function updateHomepageSectionAction(
   id: string,
   input: UpdateHomepageSectionInput,
 ): Promise<HomepageSectionDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `sections:update:${admin.uid}`,
@@ -86,7 +86,7 @@ export async function updateHomepageSectionAction(
 }
 
 export async function deleteHomepageSectionAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `sections:delete:${admin.uid}`,
@@ -107,7 +107,7 @@ export async function deleteHomepageSectionAction(id: string): Promise<void> {
 export async function reorderHomepageSectionsAction(
   sectionIds: string[],
 ): Promise<HomepageSectionDocument[]> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `sections:reorder:${admin.uid}`,

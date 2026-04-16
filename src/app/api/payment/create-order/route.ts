@@ -12,7 +12,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
+import { createRazorpayOrder, rupeesToPaise } from "@mohasinac/appkit/providers/payment-razorpay";
 import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

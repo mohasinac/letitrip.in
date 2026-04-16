@@ -1,11 +1,11 @@
-﻿"use server";
+"use server";
 
 /**
  * FAQ Server Actions -- thin entrypoints.
  * Business logic lives in @mohasinac/appkit/features/faq/actions.
  */
 
-import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -43,7 +43,7 @@ export type AdminUpdateFaqInput = FaqUpdateInput;
 export async function voteFaqAction(
   input: VoteFaqActionInput,
 ): Promise<VoteFaqActionResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `faq:vote:${user.uid}`,
@@ -63,7 +63,7 @@ export async function voteFaqAction(
 export async function adminCreateFaqAction(
   input: AdminCreateFaqInput,
 ): Promise<FAQDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `faq:create:${admin.uid}`,
@@ -85,7 +85,7 @@ export async function adminUpdateFaqAction(
   id: string,
   input: AdminUpdateFaqInput,
 ): Promise<FAQDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `faq:update:${admin.uid}`,
@@ -109,7 +109,7 @@ export async function adminUpdateFaqAction(
 }
 
 export async function adminDeleteFaqAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `faq:delete:${admin.uid}`,

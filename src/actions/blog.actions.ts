@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Blog Server Actions -- thin entrypoints.
@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -40,7 +40,7 @@ const blogIdSchema = z.object({ id: z.string().min(1, "id is required") });
 export async function createBlogPostAction(
   input: CreateBlogPostInput,
 ): Promise<BlogPostDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `blog:create:${admin.uid}`,
@@ -57,9 +57,9 @@ export async function createBlogPostAction(
 
   return createBlogPost(parsed.data, {
     uid: admin.uid,
-    name: admin.name,
-    email: admin.email,
-    picture: admin.picture,
+    name: admin.name ?? undefined,
+    email: admin.email ?? undefined,
+    picture: admin.picture ?? undefined,
   });
 }
 
@@ -67,7 +67,7 @@ export async function updateBlogPostAction(
   id: string,
   input: UpdateBlogPostInput,
 ): Promise<BlogPostDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `blog:update:${admin.uid}`,
@@ -92,7 +92,7 @@ export async function updateBlogPostAction(
 }
 
 export async function deleteBlogPostAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
 
   const rl = await rateLimitByIdentifier(
     `blog:delete:${admin.uid}`,

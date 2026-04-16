@@ -17,7 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/payment/razorpay";
+import { verifyWebhookSignature } from "@mohasinac/appkit/providers/payment-razorpay";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";

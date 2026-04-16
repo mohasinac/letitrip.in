@@ -7,7 +7,7 @@
  * domain functions.  No business logic here.
  */
 
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -30,7 +30,7 @@ export async function cancelOrderAction(
   id: string,
   reason = "Cancelled by user",
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `order:cancel:${user.uid}`,
     RateLimitPresets.STRICT,
@@ -47,14 +47,14 @@ export async function cancelOrderAction(
 // ─── Read Actions ─────────────────────────────────────────────────────────────
 
 export async function listOrdersAction(): Promise<OrderDocument[]> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return listOrdersForUser(user.uid) as Promise<OrderDocument[]>;
 }
 
 export async function getOrderByIdAction(
   id: string,
 ): Promise<OrderDocument | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getOrderByIdForUser(user.uid, id) as Promise<OrderDocument>;
 }
 

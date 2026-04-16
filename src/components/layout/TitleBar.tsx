@@ -3,7 +3,8 @@
 import { TitleBar as AppkitTitleBar } from "@mohasinac/appkit/features/layout";
 import type { TitleBarProps } from "@mohasinac/appkit/features/layout";
 import { SITE_CONFIG } from "@mohasinac/appkit/core";
-import NotificationBell from "@/components/user/NotificationBell";
+import { NotificationBell } from "@mohasinac/appkit/features/account";
+import { UI_LABELS, ROUTES } from "@/constants";
 import { useAuth } from "@/contexts/SessionContext";
 
 type LocalTitleBarProps = Omit<
@@ -26,7 +27,23 @@ export default function TitleBar(props: LocalTitleBarProps) {
       profileHref={SITE_CONFIG.account.profile}
       promotionsHref={SITE_CONFIG.nav.promotions}
       user={user}
-      notificationSlot={<NotificationBell />}
+      notificationSlot={
+        <NotificationBell
+          viewAllHref={ROUTES.USER.NOTIFICATIONS}
+          labels={{
+            title: UI_LABELS.NOTIFICATIONS.TITLE,
+            unread: UI_LABELS.NOTIFICATIONS.UNREAD,
+            markAllRead: UI_LABELS.NOTIFICATIONS.MARK_ALL_READ,
+            empty: UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS,
+            emptyDesc: UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS_DESC,
+            viewAll: UI_LABELS.NOTIFICATIONS.VIEW_ALL,
+            markRead: UI_LABELS.NOTIFICATIONS.MARK_READ,
+            viewAction: "View",
+            loading: UI_LABELS.NOTIFICATIONS.LOADING,
+            error: UI_LABELS.NOTIFICATIONS.ERROR,
+          }}
+        />
+      }
       {...props}
     />
   );

@@ -1,7 +1,7 @@
 import "@/providers.config";
 import { z } from "zod";
 import {
-  verifyPaymentSignature, fetchRazorpayOrder, paiseToRupees, } from "@/lib/payment/razorpay";
+  verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit/providers/payment-razorpay";
 import {
   unitOfWork, siteSettingsRepository, offerRepository, userRepository, } from "@mohasinac/appkit/repositories";
 import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout";
@@ -87,7 +87,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
     };
 
     // 3. Verify Razorpay signature
-    const isValid = verifyPaymentSignature({
+    const isValid = await verifyPaymentSignatureWithKeys({
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,

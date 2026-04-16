@@ -7,7 +7,7 @@
  * domain functions.  No business logic or OTP logic here.
  */
 
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
 } from "@mohasinac/appkit/security";
@@ -40,7 +40,7 @@ const verifySchema = z.object({
 export async function sendConsentOtpAction(
   addressId: string,
 ): Promise<{ maskedEmail: string }> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const parsed = sendSchema.safeParse({ addressId });
   if (!parsed.success) throw new ValidationError("Invalid input");
@@ -58,7 +58,7 @@ export async function verifyConsentOtpAction(
   addressId: string,
   code: string,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(
     `consent:otp:verify:${user.uid}`,
@@ -76,13 +76,13 @@ export async function verifyConsentOtpAction(
 export async function grantCheckoutConsentViaSmsAction(
   addressId: string,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
 
   const parsed = sendSchema.safeParse({ addressId });
   if (!parsed.success) throw new ValidationError("Invalid input");
 
   const profile = await userRepository.findById(user.uid);
-  const userPhone = profile?.phoneNumber ?? user.phone_number;
+  const userPhone = profile?.phoneNumber ?? user.phoneNumber ?? undefined;
 
   return grantCheckoutConsentViaSms(user.uid, userPhone, parsed.data.addressId);
 }

@@ -7,7 +7,7 @@
  * domain functions.  No business logic here.
  */
 
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -23,7 +23,7 @@ import type { EnrichedWishlistItem } from "@mohasinac/appkit/features/wishlist";
 export type { EnrichedWishlistItem };
 
 export async function addToWishlistAction(productId: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `wishlist:add:${user.uid}`,
     RateLimitPresets.API,
@@ -36,7 +36,7 @@ export async function addToWishlistAction(productId: string): Promise<void> {
 export async function removeFromWishlistAction(
   productId: string,
 ): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `wishlist:remove:${user.uid}`,
     RateLimitPresets.API,
@@ -50,7 +50,7 @@ export async function getWishlistAction(): Promise<{
   items: EnrichedWishlistItem[];
   meta: { total: number };
 }> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return getWishlistForUser(user.uid);
 }
 

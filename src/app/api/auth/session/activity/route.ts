@@ -7,7 +7,7 @@ import { NextRequest } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { verifySessionCookie } from "@/lib/firebase/auth-server";
+import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
@@ -46,4 +46,5 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
 

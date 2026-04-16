@@ -9,7 +9,7 @@
  * Split from admin.actions.ts for maintainability.
  */
 
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   getAdminDashboardStats,
   getAdminAnalytics,
@@ -36,12 +36,12 @@ import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebas
 // ─── Dashboard & Analytics ────────────────────────────────────────────────
 
 export async function getAdminDashboardStatsAction() {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return getAdminDashboardStats();
 }
 
 export async function getAdminAnalyticsAction() {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return getAdminAnalytics();
 }
 
@@ -53,7 +53,7 @@ export async function listAdminOrdersAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<OrderDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminOrders(params) as Promise<FirebaseSieveResult<OrderDocument>>;
 }
 
@@ -63,7 +63,7 @@ export async function listAdminUsersAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<UserDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminUsers(params) as Promise<FirebaseSieveResult<UserDocument>>;
 }
 
@@ -73,7 +73,7 @@ export async function listAdminBidsAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<BidDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminBids(params) as Promise<FirebaseSieveResult<BidDocument>>;
 }
 
@@ -83,7 +83,7 @@ export async function listAdminBlogAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<BlogPostDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminBlog(params) as Promise<FirebaseSieveResult<BlogPostDocument>>;
 }
 
@@ -93,7 +93,7 @@ export async function listAdminPayoutsAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<PayoutDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminPayouts(params) as Promise<FirebaseSieveResult<PayoutDocument>>;
 }
 
@@ -103,7 +103,7 @@ export async function listAdminProductsAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<ProductDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminProducts(params) as Promise<FirebaseSieveResult<ProductDocument>>;
 }
 
@@ -113,7 +113,7 @@ export async function listAdminStoresAction(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<FirebaseSieveResult<StoreDocument>> {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminStores(params) as Promise<FirebaseSieveResult<StoreDocument>>;
 }
 
@@ -121,7 +121,7 @@ export async function listAdminSessionsAction(params?: {
   userId?: string;
   limit?: number;
 }) {
-  await requireRole(["admin", "moderator"]);
+  await requireRoleUser(["admin", "moderator"]);
   return listAdminSessions(params);
 }
 

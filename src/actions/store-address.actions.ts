@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -45,7 +45,7 @@ export type StoreAddressInput = z.infer<typeof storeAddressBodySchema>;
 export async function listStoreAddressesAction(): Promise<
   StoreAddressDocument[]
 > {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(
     `store-address:list:${user.uid}`,
     RateLimitPresets.API,
@@ -58,7 +58,7 @@ export async function listStoreAddressesAction(): Promise<
 export async function createStoreAddressAction(
   input: StoreAddressInput,
 ): Promise<StoreAddressDocument> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(
     `store-address:create:${user.uid}`,
     RateLimitPresets.API,
@@ -79,7 +79,7 @@ export async function updateStoreAddressAction(
   addressId: string,
   input: Partial<StoreAddressInput>,
 ): Promise<StoreAddressDocument> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(
     `store-address:update:${user.uid}`,
     RateLimitPresets.API,
@@ -101,7 +101,7 @@ export async function updateStoreAddressAction(
 export async function deleteStoreAddressAction(
   addressId: string,
 ): Promise<void> {
-  const user = await requireRole(["seller", "admin"]);
+  const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(
     `store-address:delete:${user.uid}`,
     RateLimitPresets.API,

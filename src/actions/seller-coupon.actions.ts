@@ -1,11 +1,11 @@
-﻿"use server";
+"use server";
 
 /**
- * Seller Coupon Server Actions — thin entrypoint
+ * Seller Coupon Server Actions � thin entrypoint
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -43,7 +43,7 @@ const updateSchema = z.object({
 export async function sellerCreateCouponAction(
   input: SellerCreateCouponInput,
 ): Promise<CouponDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `coupon:create:${user.uid}`,
     RateLimitPresets.STRICT,
@@ -85,7 +85,7 @@ export async function sellerUpdateCouponAction(
   couponId: string,
   input: SellerUpdateCouponInput,
 ): Promise<CouponDocument> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const parsed = updateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -114,7 +114,7 @@ export async function sellerUpdateCouponAction(
 }
 
 export async function sellerDeleteCouponAction(couponId: string): Promise<void> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const profile = await userRepository.findById(user.uid);
   const role = profile?.role ?? "user";
   return sellerDeleteCoupon(user.uid, role, couponId);

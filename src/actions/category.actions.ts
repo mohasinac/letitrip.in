@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { requireRole } from "@/lib/firebase/auth-server";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -62,7 +62,7 @@ export type CreateCategoryInput = {
 export async function createCategoryAction(
   input: CreateCategoryInput,
 ): Promise<CategoryDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `category:create:${admin.uid}`,
@@ -113,7 +113,7 @@ export async function updateCategoryAction(
   id: string,
   input: Partial<CategoryUpdateInput>,
 ): Promise<CategoryDocument> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `category:update:${admin.uid}`,
@@ -138,7 +138,7 @@ export async function updateCategoryAction(
 }
 
 export async function deleteCategoryAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin"]);
+  const admin = await requireRoleUser(["admin"]);
 
   const rl = await rateLimitByIdentifier(
     `category:delete:${admin.uid}`,

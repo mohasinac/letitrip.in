@@ -1,6 +1,6 @@
-﻿"use server";
+"use server";
 import { z } from "zod";
-import { requireRole, requireAuth } from "@/lib/firebase/auth-server";
+import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
@@ -8,7 +8,7 @@ import { resolveDate } from "@mohasinac/appkit/utils";
 
 
 /**
- * Event Server Actions — thin entrypoint
+ * Event Server Actions � thin entrypoint
  *
  * Authenticates, rate-limits, validates, then delegates to
  * appkit event domain functions. No business logic here.
@@ -36,7 +36,7 @@ import type { EventDocument, EventEntryDocument } from "@/db/schema";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 import { maskPublicEventEntry } from "@mohasinac/appkit/security";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────
+// --- Schemas --------------------------------------------------------------
 
 const eventIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -105,12 +105,12 @@ const enterEventSchema = z.object({
   formResponses: z.record(z.string(), z.unknown()).optional(),
 });
 
-// ─── Admin Actions ─────────────────────────────────────────────────────────
+// --- Admin Actions ---------------------------------------------------------
 
 export async function createEventAction(
   input: CreateEventInput,
 ): Promise<EventDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:create:${admin.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = createEventSchema.safeParse(input);
@@ -123,7 +123,7 @@ export async function updateEventAction(
   id: string,
   input: UpdateEventInput,
 ): Promise<EventDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:update:${admin.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const idParsed = eventIdSchema.safeParse({ id });
@@ -135,7 +135,7 @@ export async function updateEventAction(
 }
 
 export async function deleteEventAction(id: string): Promise<void> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:delete:${admin.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const idParsed = eventIdSchema.safeParse({ id });
@@ -146,7 +146,7 @@ export async function deleteEventAction(id: string): Promise<void> {
 export async function changeEventStatusAction(
   input: z.infer<typeof changeStatusSchema>,
 ): Promise<EventDocument> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:status:${admin.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = changeStatusSchema.safeParse(input);
@@ -158,7 +158,7 @@ export async function changeEventStatusAction(
 export async function adminUpdateEventEntryAction(
   input: z.infer<typeof updateEntrySchema>,
 ): Promise<void> {
-  const admin = await requireRole(["admin", "moderator"]);
+  const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:entry:${admin.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = updateEntrySchema.safeParse(input);
@@ -173,7 +173,7 @@ export async function adminUpdateEventEntryAction(
   );
 }
 
-// ─── Read Actions ──────────────────────────────────────────────────────────
+// --- Read Actions ----------------------------------------------------------
 
 export async function listPublicEventsAction(
   params?: string | { filters?: string; sorts?: string; page?: number; pageSize?: number },
@@ -219,7 +219,7 @@ export async function adminGetEventStatsAction(eventId: string) {
   return adminGetEventStats(eventId);
 }
 
-// ─── Public Entry Action ───────────────────────────────────────────────────
+// --- Public Entry Action ---------------------------------------------------
 
 export async function enterEventAction(
   eventId: string,
@@ -227,7 +227,8 @@ export async function enterEventAction(
 ): Promise<{ entryId: string }> {
   let user: { uid: string; displayName?: string; email?: string } | undefined;
   try {
-    user = await requireAuth();
+    const auth = await requireAuthUser();
+    user = { uid: auth.uid, displayName: auth.name ?? undefined, email: auth.email ?? undefined };
   } catch {
     // unauthenticated allowed for some event types
   }
@@ -239,6 +240,6 @@ export async function enterEventAction(
   return enterEvent(eventId, parsed.data as EnterEventInput, user);
 }
 
-// ─── Re-export types ───────────────────────────────────────────────────────
+// --- Re-export types -------------------------------------------------------
 
 export type { CreateEventInput, UpdateEventInput, EnterEventInput };

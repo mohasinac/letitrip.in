@@ -30,7 +30,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { createSessionCookie } from "@/lib/firebase/auth-server";
+import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import {
   parseUserAgent,
@@ -346,4 +346,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
 

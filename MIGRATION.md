@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-17 — Session 45, Phase 11 re-export elimination batch 1 — removed components shim/barrel set and rewired direct imports; tsc passes in both repos  
-**Last session ended at:** Phase 11 — `src/components/index.ts` deleted  
+**Last verified:** 2026-04-17 — Session 46, Phase 11 re-export elimination batch 2 — deleted component subdirectory shims/adapters with no consumers; restored deleted permanent locals (shiprocket/firebase/razorpay); tsc passes in both repos  
+**Last session ended at:** Phase 11 batch 2 — `src/components/` subdirectory cleanup complete  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -1081,6 +1081,44 @@ At the end of every work session:
 ---
 
 ## Session Notes
+
+### 2026-04-17 — Session 46: Phase 11 re-export elimination batch 2 (component subdirectory cleanup)
+
+**Context:** Continuing Phase 11 from batch 1. This batch eliminated all remaining component subdirectory shims, thin adapters with no consumers, and pure appkit re-export barrels. Also restored deleted permanent-local files that caused pre-existing tsc errors.
+
+**Processed files (Outcome A — deleted, no consumers):**
+- `src/components/admin/AdminFilterBar.tsx` — thin adapter, no consumers → deleted
+- `src/components/admin/AdminPageHeader.tsx` — thin adapter, no consumers → deleted
+- `src/components/admin/DrawerFormFooter.tsx` — thin adapter, no consumers → deleted
+- `src/components/admin/index.ts` — barrel, no consumers → deleted + directory removed
+- `src/components/auctions/index.ts` — pure appkit re-export, no consumers → deleted + directory removed
+- `src/components/auth/ProtectedRoute.tsx` — thin adapter, no consumers → deleted
+- `src/components/auth/RoleGate.tsx` — thin adapter, no consumers → deleted
+- `src/components/auth/index.ts` — barrel, no consumers → deleted + directory removed
+- `src/components/categories/index.ts` — pure appkit re-export, no consumers → deleted + directory removed
+- `src/components/orders/index.ts` — pure appkit re-export, no consumers → deleted + directory removed
+- `src/components/products/Product.types.ts` — pure appkit re-export, no consumers → deleted
+- `src/components/products/index.ts` — pure appkit re-export, no consumers → deleted + directory removed
+- `src/components/user/NotificationBell.tsx` — thin adapter, no consumers → deleted + directory removed
+- `src/components/utility/Search.tsx` — thin adapter, no consumers → deleted + directory removed
+- 9 additional empty component directories removed (feedback, filters, forms, homepage, media, modals, pre-orders, providers, semantic, stores, ui)
+
+**Import rewires:**
+- `src/components/layout/TitleBar.tsx` — updated `NotificationBell` import from deleted local adapter to `@mohasinac/appkit/features/account`; labels and `viewAllHref` now injected directly from consumer constants (`UI_LABELS`, `ROUTES.USER.NOTIFICATIONS`)
+
+**Pre-existing issue resolved:**
+- `src/lib/shiprocket/client.ts`, `src/lib/shiprocket/types.ts`, `src/lib/firebase/client-config.ts`, `src/lib/integration-keys.ts`, `src/lib/payment/razorpay.ts` were deleted from the working tree (not committed) in a prior session — these are Permanent Local files. Restored via `git checkout --`.
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0
+- `letitrip.in`: `npx tsc --noEmit` — exit 0
+
+**Phase 11 status:** `🔄 In progress`
+- Remaining: `src/db/schema/index.ts` compatibility barrel; `src/contexts/index.ts` appkit re-export lines; any further `@/components` alias consumer paths; layout component barrel cleanup.
+
+**Commit message:** `migrate: phase11 re-export elimination batch2 — delete component subdirectory shims, restore deleted permanent locals`
+
+**Next session pointer:** Continue Phase 11 with `src/db/schema/index.ts` barrel elimination and `src/contexts/index.ts` appkit re-export removal.
 
 ### 2026-04-17 — Session 45: Phase 11 re-export elimination batch 1 (components shims)
 

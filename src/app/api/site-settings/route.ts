@@ -28,7 +28,7 @@ import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/features/contact
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
+import { invalidateIntegrationKeysCache } from "@mohasinac/appkit/core";
 
 /**
  * GET /api/site-settings
@@ -163,4 +163,5 @@ export const PATCH = createRouteHandler<
     );
   },
 });
+
 

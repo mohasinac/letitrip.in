@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -56,7 +56,7 @@ export type { CouponValidationResult, CouponCartValidationResult };
 export async function validateCouponAction(
   input: ValidateCouponInput,
 ): Promise<CouponValidationResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `coupon:validate:${user.uid}`,
     RateLimitPresets.API,
@@ -76,7 +76,7 @@ export async function validateCouponAction(
 export async function validateCouponForCartAction(
   input: ValidateCouponForCartInput,
 ): Promise<CouponCartValidationResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `coupon:validate:${user.uid}`,
     RateLimitPresets.API,

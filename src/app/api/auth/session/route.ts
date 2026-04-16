@@ -9,7 +9,7 @@ import {
   createSessionCookie,
   verifyIdToken,
   verifySessionCookie,
-} from "@/lib/firebase/auth-server";
+} from "@mohasinac/appkit/providers/auth-firebase";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { UI_LABELS } from "@/constants";
@@ -164,4 +164,5 @@ export async function DELETE(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
 

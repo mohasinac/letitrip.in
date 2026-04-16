@@ -1,11 +1,11 @@
-﻿"use server";
+"use server";
 
 /**
- * Chat Server Actions — thin entrypoint
+ * Chat Server Actions � thin entrypoint
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import {
@@ -24,14 +24,14 @@ const createRoomSchema = z.object({
 });
 
 export async function getChatRoomsAction(): Promise<ChatRoomsResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`chat:list:${user.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   return getChatRooms(user.uid, FEATURE_FLAGS.CHAT_ENABLED);
 }
 
 export async function createOrGetChatRoomAction(input: { orderId: string; sellerId: string }): Promise<CreateRoomResult> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`chat:create:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = createRoomSchema.safeParse(input);
@@ -40,14 +40,14 @@ export async function createOrGetChatRoomAction(input: { orderId: string; seller
 }
 
 export async function sendChatMessageAction(chatId: string, message: string): Promise<{ messageId: string; timestamp: number }> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`chat:send:${user.uid}`, RateLimitPresets.API);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   return sendChatMessage(user.uid, chatId, message);
 }
 
 export async function deleteChatRoomAction(chatId: string): Promise<{ deleted: boolean }> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`chat:delete:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   return deleteChatRoom(user.uid, chatId);

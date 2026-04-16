@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -36,7 +36,7 @@ export type { PartialRefundResult };
 export async function adminPartialRefundAction(
   input: PartialRefundInput,
 ): Promise<PartialRefundResult> {
-  const user = await requireRole("admin");
+  const user = await requireRoleUser("admin");
   const rl = await rateLimitByIdentifier(
     `refund:admin:${user.uid}`,
     RateLimitPresets.STRICT,
@@ -62,7 +62,7 @@ export async function adminPartialRefundAction(
 export async function previewCancellationRefundAction(
   orderId: string,
 ): Promise<PartialRefundResult | null> {
-  const user = await requireAuth();
+  const user = await requireAuthUser();
   return previewCancellationRefund(user.uid, orderId);
 }
 
