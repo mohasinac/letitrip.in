@@ -13,7 +13,7 @@ import {
 } from "@mohasinac/appkit/next";
 import { newsletterRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core";
 
 /**
  * GET /api/admin/newsletter

@@ -21,20 +21,11 @@ export * from "./stores";
 export * from "./store-addresses";
 
 // Platform configuration schemas
-export * from "./site-settings";
-export * from "./carousel-slides";
-export * from "./homepage-sections";
 export * from "./categories";
 export * from "./coupons";
-export * from "./faqs";
 export * from "./blog-posts";
 export * from "./notifications";
 export * from "./payouts";
 export * from "./events";
-export * from "./chat";
-export * from "./newsletter-subscribers";
-export * from "./sms-counters";
-export * from "./failed-checkouts";
 export * from "./offers";
-export * from "./copilot-logs";
 

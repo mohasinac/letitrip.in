@@ -29,7 +29,7 @@ import {
   type CreateHomepageSectionInput,
   type UpdateHomepageSectionInput,
 } from "@mohasinac/appkit/features/homepage";
-import type { HomepageSectionDocument } from "@/db/schema";
+import type { HomepageSectionDocument } from "@mohasinac/appkit/features/homepage/schemas";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export type { CreateHomepageSectionInput, UpdateHomepageSectionInput };

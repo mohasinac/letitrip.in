@@ -31,7 +31,7 @@ import {
   type FaqUpdateInput,
 } from "@mohasinac/appkit/features/faq";
 import { ERROR_MESSAGES } from "@/constants";
-import type { FAQDocument } from "@/db/schema";
+import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export type { VoteFaqActionInput, VoteFaqActionResult, FaqCreateInput, FaqUpdateInput };

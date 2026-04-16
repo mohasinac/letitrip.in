@@ -6,8 +6,8 @@ import { SITE_CONFIG, ROUTES } from "@/constants";
 import { currentYear } from "@mohasinac/appkit/utils";
 
 
-import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
-import type { SiteSettingsDocument } from "@/db/schema";
+import { DEFAULT_TRUST_BAR_ITEMS } from "@mohasinac/appkit/features/admin/schemas";
+import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/schemas";
 import { FooterLayout } from "@mohasinac/appkit/features/layout";
 import type { FooterSocialLink, FooterLinkGroup } from "@mohasinac/appkit/features/layout";
 import { THEME_CONSTANTS } from "@/constants";

@@ -141,7 +141,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         failedCheckoutRepository
           .logPayment(
             user!.uid,
-            reason as import("@/db/schema").FailedPaymentReason,
+            reason as import("@mohasinac/appkit/features/checkout/schemas").FailedPaymentReason,
             "Consent OTP missing or expired at payment verify time",
             {
               razorpayOrderId: razorpay_order_id,

@@ -249,7 +249,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
       failedCheckoutRepository
         .logCheckout(
           uid,
-          reason as import("@/db/schema").FailedCheckoutReason,
+          reason as import("@mohasinac/appkit/features/checkout/schemas").FailedCheckoutReason,
           err instanceof Error ? err.message : String(err),
           { addressId, paymentMethod },
         )

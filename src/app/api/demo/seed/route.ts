@@ -44,15 +44,17 @@ import {
   faqSeedData,
 } from "@mohasinac/appkit/seed";
 import {
+  CAROUSEL_SLIDES_COLLECTION,
+  HOMEPAGE_SECTIONS_COLLECTION,
+} from "@mohasinac/appkit/features/homepage/schemas";
+import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/features/admin/schemas";
+import { FAQS_COLLECTION } from "@mohasinac/appkit/features/faq/schemas";
+import {
   USER_COLLECTION,
   ORDER_COLLECTION,
   REVIEW_COLLECTION,
   BID_COLLECTION,
   COUPONS_COLLECTION,
-  CAROUSEL_SLIDES_COLLECTION,
-  HOMEPAGE_SECTIONS_COLLECTION,
-  SITE_SETTINGS_COLLECTION,
-  FAQS_COLLECTION,
   CATEGORIES_COLLECTION,
   NOTIFICATIONS_COLLECTION,
   PAYOUT_COLLECTION,

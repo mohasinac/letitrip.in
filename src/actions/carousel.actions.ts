@@ -19,7 +19,7 @@ import {
   type CarouselSlideInput,
   type CarouselSlideUpdateInput,
 } from "@mohasinac/appkit/features/homepage";
-import type { CarouselSlideDocument } from "@/db/schema";
+import type { CarouselSlideDocument } from "@mohasinac/appkit/features/homepage/schemas";
 
 const createSlideSchema = z.object({
   title: z.string().min(1),

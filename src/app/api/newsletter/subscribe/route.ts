@@ -10,7 +10,7 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const subscribeSchema = z.object({
