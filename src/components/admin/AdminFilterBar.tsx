@@ -4,7 +4,7 @@ import {
   AdminFilterBar as AppkitAdminFilterBar,
   type AdminFilterBarProps as AppkitAdminFilterBarProps,
 } from "@mohasinac/appkit/features/admin";
-import { Card } from "@/components";
+import { Card } from "@mohasinac/appkit/ui";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 

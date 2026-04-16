@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { NotificationBell as AppkitNotificationBell } from "@mohasinac/appkit/features/account";
 import { useMessage } from "@mohasinac/appkit/react";
 import { ROUTES } from "@/constants";
-import { TextLink } from "@/components";
+import { TextLink } from "@/components/typography/TextLink";
 
 export function NotificationBell() {
   const { showSuccess, showError } = useMessage();

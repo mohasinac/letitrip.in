@@ -4,7 +4,7 @@ import {
   AdminPageHeader as AppkitAdminPageHeader,
   type AdminPageHeaderProps as AppkitAdminPageHeaderProps,
 } from "@mohasinac/appkit/features/admin";
-import { TextLink } from "@/components";
+import { TextLink } from "@/components/typography/TextLink";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**

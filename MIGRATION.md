@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 44, Phase 10 admin — local admin wrapper feature deleted; appkit admin remains canonical; tsc passes in both repos  
-**Last session ended at:** Phase 10 — `src/features/admin/` deleted  
+**Last verified:** 2026-04-17 — Session 45, Phase 11 re-export elimination batch 1 — removed components shim/barrel set and rewired direct imports; tsc passes in both repos  
+**Last session ended at:** Phase 11 — `src/components/index.ts` deleted  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -20,7 +20,7 @@
 | 8 | Phase 8 | Hooks | 16 | ✅ complete (15 ✅, 1 🔒) |
 | 9 | Phase 9 | Shared UI Components | 30 | ✅ complete — blocker-burn marketplace cards + admin UI primitives done; auth/products types remain local per design |
 | 10 | Phase 10 | Feature Modules | ~375 | ✅ 19/19 complete |
-| 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ⬜ |
+| 11 | Phase 11 | Re-export Elimination (final gate) | TBD | 🔄 in progress — batch 1 complete (8 shim/barrel files deleted) |
 
 **Total to migrate/delete: ~580 files**
 
@@ -844,14 +844,14 @@ Remaining architecture gaps for full `✅`:
 
 | File | Decision | Status |
 |------|----------|--------|
-| `src/components/providers/MonitoringProvider.tsx` | `src/features/admin/components/` or `src/next/` | ⬜ |
-| `src/components/providers/QueryProvider.tsx` | `src/react/` | ⬜ |
-| `src/components/providers/index.ts` | delete | ⬜ |
-| `src/components/media-modals.client.ts` | `src/features/media/components/` | ⬜ |
-| `src/components/filters/index.ts` | delete (already empty) | ⬜ |
-| `src/components/media/index.ts` | delete (already empty) | ⬜ |
-| `src/components/stores/index.ts` | delete | ⬜ |
-| `src/components/index.ts` | delete | ⬜ |
+| `src/components/providers/MonitoringProvider.tsx` | delete (unused local provider shim) | ✅ A |
+| `src/components/providers/QueryProvider.tsx` | delete (unused local provider shim) | ✅ A |
+| `src/components/providers/index.ts` | delete | ✅ A |
+| `src/components/media-modals.client.ts` | delete (thin media re-export shim) | ✅ A |
+| `src/components/filters/index.ts` | delete (re-export-only shim) | ✅ A |
+| `src/components/media/index.ts` | delete (re-export-only shim) | ✅ A |
+| `src/components/stores/index.ts` | delete (re-export-only shim) | ✅ A |
+| `src/components/index.ts` | delete (consumer compatibility barrel) | ✅ A |
 
 #### Phase 9d Verification Gate
 
@@ -1081,6 +1081,36 @@ At the end of every work session:
 ---
 
 ## Session Notes
+
+### 2026-04-17 — Session 45: Phase 11 re-export elimination batch 1 (components shims)
+
+**Context:** Active phase moved to Phase 11 after Phase 10 completion. This batch started from the first unresolved component shim/barrel group listed under Phase 9d and processed 8 files (within the 10-file session cap).
+
+**Processed files (Outcome A):**
+- `src/components/providers/MonitoringProvider.tsx` — deleted unused local provider shim
+- `src/components/providers/QueryProvider.tsx` — deleted unused local provider shim
+- `src/components/providers/index.ts` — deleted
+- `src/components/media-modals.client.ts` — deleted re-export shim
+- `src/components/filters/index.ts` — deleted re-export shim
+- `src/components/media/index.ts` — deleted re-export shim
+- `src/components/stores/index.ts` — deleted re-export shim
+- `src/components/index.ts` — deleted consumer compatibility barrel
+
+**Import rewires completed in this batch:**
+- Replaced remaining `@/components` barrel imports in `src/features/about/components/*`, `src/components/layout/Sidebar.tsx`, `src/components/user/NotificationBell.tsx`, `src/components/admin/AdminFilterBar.tsx`, and `src/components/admin/AdminPageHeader.tsx` with direct appkit imports or local adapter imports (`@/components/typography/TextLink`).
+- Removed stale root export `export * from "./components"` from `src/index.ts` after deleting `src/components/index.ts`.
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0
+- `letitrip.in`: `npx tsc --noEmit` — exit 0
+
+**Phase 11 status:** `🔄 In progress`
+- This batch closes the Phase 9d shim/barrel backlog.
+- Remaining Phase 11 work is the broader re-export elimination pass across other directories (`src/db/schema/*` shims, selected component barrels like `ui/index.ts` and `layout/index.ts`, and root re-export surfaces such as `src/index.ts` / `src/constants/index.ts`) with direct-import rewiring.
+
+**Commit message:** `migrate: phase11 re-export elimination batch1 — delete components shims and direct-import rewires`
+
+**Next session pointer:** Continue Phase 11 scan-order cleanup from remaining re-export files after the deleted component barrel group.
 
 ### 2026-04-16 — Session 33: Phase 10 entry gate audit
 
@@ -1654,8 +1684,8 @@ Superseded by the concrete repository merge above.
 
 ## Last Session
 
-**Last session ended at:** `Phase 10 — src/features/admin/` deleted
-**Commit message (Session 44):** `migrate: phase10 admin wrapper deletion — 102 files`
+**Last session ended at:** `Phase 11 — src/components/index.ts` deleted
+**Commit message (Session 45):** `migrate: phase11 re-export elimination batch1 — delete components shims and direct-import rewires`
 
 - 2026-04-16 Session 25: Processed `src/lib/validation/schemas.ts` using split outcome B. Moved shared cross-domain validators and helper utilities (`validateRequestBody`, `formatZodErrors`, auth/profile password/phone schemas, and media crop/trim schemas) into `@mohasinac/appkit/validation`, rewired letitrip import sites that only consume shared validators to canonical appkit imports, and left domain-specific validators (product/category/faq/site-settings/user-address) local for their Phase 10 feature migrations.
 - Commit message: migrate: phase3 validation split — move shared schemas/helpers to appkit
