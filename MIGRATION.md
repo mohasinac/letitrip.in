@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 42, Phase 10 user — local user wrapper feature deleted; appkit account remains canonical; tsc passes in both repos  
-**Last session ended at:** Phase 10 — `src/features/user/` deleted  
+**Last verified:** 2026-04-16 — Session 43, Phase 10 seller — local seller wrapper feature deleted; appkit seller remains canonical; tsc passes in both repos  
+**Last session ended at:** Phase 10 — `src/features/seller/` deleted  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -19,7 +19,7 @@
 | 7 | Phase 7 | Actions → Appkit | 35 | ✅ 35/35 complete |
 | 8 | Phase 8 | Hooks | 16 | ✅ complete (15 ✅, 1 🔒) |
 | 9 | Phase 9 | Shared UI Components | 30 | ✅ complete — blocker-burn marketplace cards + admin UI primitives done; auth/products types remain local per design |
-| 10 | Phase 10 | Feature Modules | ~375 | 🔄 17/19 features complete |
+| 10 | Phase 10 | Feature Modules | ~375 | 🔄 18/19 features complete |
 | 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ⬜ |
 
 **Total to migrate/delete: ~580 files**
@@ -961,7 +961,7 @@ Next phase: Phase 10 (Feature Modules). Entry condition met — letitrip.in `tsc
 | `src/features/cart/` | ~26 files | `src/features/cart/` | ✅ A — deleted unused local wrapper feature; appkit cart is canonical |
 | `src/features/events/` | ~37 files | `src/features/events/` | ✅ A — deleted unused local wrapper feature; appkit events is canonical |
 | `src/features/user/` | ~36 files | `src/features/account/` | ✅ A — deleted unused local wrapper feature; appkit account is canonical |
-| `src/features/seller/` | ~48 files | `src/features/seller/` | ⬜ |
+| `src/features/seller/` | ~48 files | `src/features/seller/` | ✅ A — deleted unused local wrapper feature; appkit seller is canonical |
 | `src/features/admin/` | ~102 files | `src/features/admin/` | ⬜ |
 
 ### Phase 10 Manual Verification (Session 29, one-by-one)
@@ -1383,7 +1383,24 @@ All letitrip files now reduced to thin adapters or direct re-exports. No "keep l
 
 **Commit message:** `migrate: phase10 stores wrapper deletion — 12 files`
 
-**Next session pointer:** Phase 10 — next `⬜` is `src/features/seller/`.
+**Next session pointer:** Phase 10 — next `⬜` is `src/features/admin/`.
+
+### 2026-04-16 — Session 43: Phase 10 seller
+
+**Context:** Next `⬜` entry in Phase 10 Feature Modules tracker.
+
+**Findings:** The local seller feature folder (`src/features/seller/`) had no external import consumers for local feature paths outside its own folder, while reusable ownership already exists in `@mohasinac/appkit/features/seller` (components, hooks, actions, repository, schemas, server). Outcome **A**.
+
+**Actions:**
+- `src/features/seller/` → `✅ A`: deleted local folder files (`index.ts`, `components/*`, `hooks/*`, `types/*`, `utils/*`, `constants/*`); appkit seller feature remains canonical.
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0, zero errors.
+- `letitrip.in`: `npx tsc --noEmit` — exit 0, zero errors.
+
+**Commit message:** `migrate: phase10 seller wrapper deletion — 48 files`
+
+**Next session pointer:** Phase 10 — next `⬜` is `src/features/admin/`.
 
 ### 2026-04-16 — Session 42: Phase 10 user
 
@@ -1620,8 +1637,8 @@ Superseded by the concrete repository merge above.
 
 ## Last Session
 
-**Last session ended at:** `Phase 10 — src/features/user/` deleted
-**Commit message (Session 42):** `migrate: phase10 user wrapper deletion — 36 files`
+**Last session ended at:** `Phase 10 — src/features/seller/` deleted
+**Commit message (Session 43):** `migrate: phase10 seller wrapper deletion — 48 files`
 
 - 2026-04-16 Session 25: Processed `src/lib/validation/schemas.ts` using split outcome B. Moved shared cross-domain validators and helper utilities (`validateRequestBody`, `formatZodErrors`, auth/profile password/phone schemas, and media crop/trim schemas) into `@mohasinac/appkit/validation`, rewired letitrip import sites that only consume shared validators to canonical appkit imports, and left domain-specific validators (product/category/faq/site-settings/user-address) local for their Phase 10 feature migrations.
 - Commit message: migrate: phase3 validation split — move shared schemas/helpers to appkit
