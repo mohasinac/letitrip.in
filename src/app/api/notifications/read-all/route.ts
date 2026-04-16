@@ -8,7 +8,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
 import { notificationRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 
 /**
  * PATCH /api/notifications/read-all

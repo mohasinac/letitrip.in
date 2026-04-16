@@ -15,7 +15,7 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 // ─── Validation schema ────────────────────────────────────────────────────────

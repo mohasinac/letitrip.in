@@ -12,7 +12,8 @@ import { addressRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { userAddressCreateSchema } from "@/lib/validation/schemas";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const MAX_ADDRESSES_PER_USER = 10;

@@ -33,7 +33,7 @@ import "@/providers.config";
 
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";

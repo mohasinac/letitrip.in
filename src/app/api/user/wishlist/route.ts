@@ -10,7 +10,8 @@ import { wishlistRepository } from "@mohasinac/appkit/repositories";
 import { productRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 

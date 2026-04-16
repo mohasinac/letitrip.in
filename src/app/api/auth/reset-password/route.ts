@@ -10,7 +10,7 @@ import "@/providers.config";
  */
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
 import { resetPasswordSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

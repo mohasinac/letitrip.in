@@ -15,15 +15,6 @@ import { MAIN_NAV_ITEMS } from "@/constants/navigation";
 // Messages constants
 // Messages split into multiple files to avoid Turbopack chunk-generation bug
 // (EcmascriptModuleContent::new_merged error in Next.js 16 Turbopack).
-// ERROR_MESSAGES now comes from appkit (Phase 2 migration)
-export { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-// SUCCESS/INFO/CONFIRMATION messages now come from appkit (Phase 2 migration)
-export {
-  SUCCESS_MESSAGES,
-  INFO_MESSAGES,
-  CONFIRMATION_MESSAGES,
-} from "@mohasinac/appkit/values";
-
 // UI constants (labels, placeholders, help text)
 export * from "./ui";
 

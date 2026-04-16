@@ -20,7 +20,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payment/razorpay";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";

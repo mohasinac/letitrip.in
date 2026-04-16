@@ -18,7 +18,7 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit/security";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import type { SupportedNewsletterSource } from "@mohasinac/appkit/core";
 
 // ─── Validation schema ────────────────────────────────────────────────────────

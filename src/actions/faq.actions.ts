@@ -30,7 +30,7 @@ import {
   type FaqCreateInput,
   type FaqUpdateInput,
 } from "@mohasinac/appkit/features/faq";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 

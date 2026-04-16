@@ -12,7 +12,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 
 export const GET = createRouteHandler({
   handler: async ({ request }) => {

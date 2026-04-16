@@ -12,12 +12,6 @@
  * - Prevents typos in query builders and serializers
  */
 
-// Migrated to @mohasinac/appkit — imported here to keep @/db/schema barrel working
-export { USER_FIELDS } from "@mohasinac/appkit/features/auth";
-export { TOKEN_FIELDS } from "@mohasinac/appkit/features/auth";
-export { SESSION_FIELDS } from "@mohasinac/appkit/features/auth";
-export { CATEGORY_FIELDS } from "@mohasinac/appkit/features/categories";
-
 // ============================================================================
 // PRODUCT FIELDS
 // ============================================================================

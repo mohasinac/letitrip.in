@@ -13,7 +13,7 @@ import { z } from "zod";
 import { userRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 
 export const GET = createApiHandler({
   auth: true,

@@ -13,7 +13,8 @@ import { userRepository } from "@mohasinac/appkit/repositories";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   shiprocketAuthenticate,

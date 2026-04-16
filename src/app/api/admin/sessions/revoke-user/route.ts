@@ -10,7 +10,7 @@ import "@/providers.config";
 
 import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { z } from "zod";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";

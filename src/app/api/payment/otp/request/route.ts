@@ -17,7 +17,7 @@ import { ApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { smsCounterRepository } from "@mohasinac/appkit/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 
 /** Return today's date string (YYYY-MM-DD) in IST (UTC+5:30). */
 function getTodayIST(): string {

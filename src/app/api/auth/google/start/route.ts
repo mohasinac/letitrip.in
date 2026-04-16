@@ -24,7 +24,7 @@ import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { AppError } from "@mohasinac/appkit/errors";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

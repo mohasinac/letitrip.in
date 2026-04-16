@@ -4,14 +4,15 @@ import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import {
   PRODUCT_COLLECTION,
   PRODUCT_FIELDS,
-  CATEGORY_FIELDS,
   EVENTS_COLLECTION,
   EVENT_FIELDS,
   BLOG_POSTS_COLLECTION,
   BLOG_POST_FIELDS,
+  CATEGORIES_COLLECTION,
+  STORE_COLLECTION,
+  STORE_FIELDS,
 } from "@/db/schema";
-import { CATEGORIES_COLLECTION } from "@/db/schema";
-import { STORE_COLLECTION, STORE_FIELDS } from "@/db/schema";
+import { CATEGORY_FIELDS } from "@mohasinac/appkit/features/categories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ROUTES } from "@/constants";
 

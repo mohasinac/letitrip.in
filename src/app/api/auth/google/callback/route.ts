@@ -39,7 +39,8 @@ import {
 } from "@/db/schema";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import type { UserRole } from "@/types/auth";
 
 const UUID_REGEX =

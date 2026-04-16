@@ -26,7 +26,9 @@ import {
   AuthenticationError,
   AppError,
 } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
+import { UI_LABELS } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

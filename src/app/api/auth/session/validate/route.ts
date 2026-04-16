@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 
 export async function GET(request: NextRequest) {

@@ -8,7 +8,8 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 

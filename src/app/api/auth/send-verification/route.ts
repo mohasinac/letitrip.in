@@ -7,7 +7,8 @@ import "@/providers.config";
  */
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { sendVerificationSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

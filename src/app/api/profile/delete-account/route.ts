@@ -15,7 +15,7 @@ import {
   orderRepository,
 } from "@mohasinac/appkit/repositories";
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 
 export const DELETE = createRouteHandler({
   auth: true,

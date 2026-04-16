@@ -29,7 +29,8 @@ import React, {
 } from "react";
 import { logger } from "@mohasinac/appkit/core";
 import { apiClient } from "@mohasinac/appkit/http";
-import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
+import { API_ENDPOINTS } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { useQueryClient } from "@tanstack/react-query";
 
 // Re-export for consumers that currently import SessionUser from here.

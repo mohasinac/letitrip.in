@@ -15,7 +15,8 @@ import {
 } from "@mohasinac/appkit/next";
 import { blogRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,

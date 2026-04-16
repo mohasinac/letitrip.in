@@ -12,7 +12,7 @@ import { storeRepository, storeAddressRepository } from "@mohasinac/appkit/repos
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { NotFoundError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 
 export const GET = createRouteHandler({
   auth: true,

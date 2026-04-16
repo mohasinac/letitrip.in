@@ -2,8 +2,9 @@
 import { useRef, useEffect, useState } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  THEME_CONSTANTS, ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES, MAIN_NAV_ITEMS, } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, MAIN_NAV_ITEMS } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { Heading, Li, Nav, Text, Ul, Button, Span, Div, Row, Stack } from "@mohasinac/appkit/ui";
 import { useSwipe } from "@mohasinac/appkit/react";
 import {

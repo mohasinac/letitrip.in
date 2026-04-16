@@ -12,7 +12,7 @@ import {
   AuthenticationError,
   AuthorizationError,
 } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import type { SessionUser, UserRole } from "@/types/auth";
 import type { NextRequest } from "next/server";

@@ -12,7 +12,8 @@ import {
 } from "@/lib/firebase/auth-server";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
+import { UI_LABELS } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { parseUserAgent, SCHEMA_DEFAULTS } from "@/db/schema";

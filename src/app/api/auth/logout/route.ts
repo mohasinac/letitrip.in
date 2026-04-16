@@ -15,7 +15,8 @@ import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
 import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 

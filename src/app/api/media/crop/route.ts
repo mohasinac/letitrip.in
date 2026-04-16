@@ -1,6 +1,6 @@
 import "@/providers.config";
 import { randomBytes } from "crypto";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { cropDataSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";

@@ -9,7 +9,8 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { couponsRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import type { CouponCreateInput } from "@/db/schema";
 import { z } from "zod";
 

@@ -43,7 +43,8 @@ import {
 } from "firebase/auth";
 import { auth } from "./config";
 import { AuthenticationError, ApiError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
+import { API_ENDPOINTS } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { logger } from "@mohasinac/appkit/core";
 import { apiClient } from "@mohasinac/appkit/http";
 

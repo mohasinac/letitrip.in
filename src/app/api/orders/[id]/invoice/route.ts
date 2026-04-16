@@ -10,7 +10,8 @@ import { createRouteHandler } from "@mohasinac/appkit/next";
 import { successResponse } from "@mohasinac/appkit/next";
 import { notificationRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { NotificationType, NotificationPriority } from "@/db/schema";
 
 const createNotificationSchema = z.object({

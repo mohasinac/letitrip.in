@@ -8,7 +8,7 @@ import "@/providers.config";
  */
 
 import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
 import { changePasswordSchema } from "@mohasinac/appkit/validation";
 import { createRouteHandler } from "@mohasinac/appkit/next";

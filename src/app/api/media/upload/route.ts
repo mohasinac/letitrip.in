@@ -1,7 +1,8 @@
 import "@/providers.config";
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";

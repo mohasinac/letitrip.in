@@ -15,7 +15,7 @@ import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { userRepository } from "@mohasinac/appkit/repositories";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { USER_FIELDS } from "@/db/schema";
+import { USER_FIELDS } from "@mohasinac/appkit/features/auth";
 
 /**
  * GET /api/admin/users

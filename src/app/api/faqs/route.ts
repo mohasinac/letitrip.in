@@ -26,7 +26,7 @@ import {
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { slugifyQuestion } from "@mohasinac/appkit/features/faq/schemas";
 import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
 import { errorResponse } from "@mohasinac/appkit/next";
