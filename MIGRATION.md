@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-16 — Session 34, Phase 10 auth/about/blog/contact progressed — duplicate local wrappers removed; about reduced to legitimate local content  
-**Last session ended at:** Phase 10 — `src/features/contact/` removed as unused duplicate wrapper layer; contact action entrypoint remains local by design  
+**Last verified:** 2026-04-16 — Session 36, Phase 10 categories — local categories wrapper feature deleted; appkit categories remains canonical; tsc passes in both repos  
+**Last session ended at:** Phase 10 — `src/features/categories/` deleted  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -19,7 +19,7 @@
 | 7 | Phase 7 | Actions → Appkit | 35 | ✅ 35/35 complete |
 | 8 | Phase 8 | Hooks | 16 | ✅ complete (15 ✅, 1 🔒) |
 | 9 | Phase 9 | Shared UI Components | 30 | ✅ complete — blocker-burn marketplace cards + admin UI primitives done; auth/products types remain local per design |
-| 10 | Phase 10 | Feature Modules | ~375 | 🔄 4/19 features complete |
+| 10 | Phase 10 | Feature Modules | ~375 | 🔄 11/19 features complete |
 | 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ⬜ |
 
 **Total to migrate/delete: ~580 files**
@@ -948,13 +948,13 @@ Next phase: Phase 10 (Feature Modules). Entry condition met — letitrip.in `tsc
 | `src/features/about/` | ~11 files | `src/features/about/` | ✅ A/D — local `AboutView` wrapper deleted; remaining policy/how-it-works pages are permanent-local site content |
 | `src/features/blog/` | ~5 files | `src/features/blog/` | ✅ A — deleted unused local wrapper feature; appkit blog is canonical |
 | `src/features/contact/` | ~4 files | `src/features/contact/` | ✅ A — deleted unused local wrapper feature; appkit contact is canonical and `src/actions/contact.actions.ts` remains the thin local entrypoint |
-| `src/features/faq/` | ~4 files | `src/features/faq/` | ⬜ |
-| `src/features/search/` | ~4 files | `src/features/search/` | ⬜ |
-| `src/features/wishlist/` | ~4 files | `src/features/wishlist/` | ⬜ |
-| `src/features/promotions/` | ~5 files | `src/features/promotions/` | ⬜ |
-| `src/features/reviews/` | ~5 files | `src/features/reviews/` | ⬜ |
-| `src/features/copilot/` | ~5 files | `src/features/copilot/` | ⬜ |
-| `src/features/categories/` | ~7 files | `src/features/categories/` | ⬜ |
+| `src/features/faq/` | ~4 files | `src/features/faq/` | ✅ A — deleted unused local wrapper feature; appkit faq is canonical |
+| `src/features/search/` | ~4 files | `src/features/search/` | ✅ A — deleted unused local wrapper feature; appkit search is canonical |
+| `src/features/wishlist/` | ~4 files | `src/features/wishlist/` | ✅ A — deleted unused local wrapper feature; appkit wishlist is canonical |
+| `src/features/promotions/` | ~5 files | `src/features/promotions/` | ✅ A — deleted unused local wrapper feature; appkit promotions is canonical |
+| `src/features/reviews/` | ~5 files | `src/features/reviews/` | ✅ A — deleted unused local wrapper feature; appkit reviews is canonical |
+| `src/features/copilot/` | ~5 files | `src/features/copilot/` | ✅ A/C — `useCopilotFeedback` added to appkit with injectable `feedbackEndpoint`; local wrapper folder deleted |
+| `src/features/categories/` | ~7 files | `src/features/categories/` | ✅ A — deleted unused local wrapper feature; appkit categories is canonical |
 | `src/features/stores/` | ~12 files | `src/features/stores/` | ⬜ |
 | `src/features/homepage/` | ~28 files | `src/features/homepage/` | ⬜ |
 | `src/features/products/` | ~24 files | `src/features/products/` | ⬜ |
@@ -1326,6 +1326,47 @@ All letitrip files now reduced to thin adapters or direct re-exports. No "keep l
 - Stop condition reached: validation failed with well over 5 errors, so no further files were processed.
 
 **Last session pointer:** `Phase 9c — src/components/auctions/index.ts`; next ordered pending file is `src/components/admin/AdminFilterBar.tsx`.
+
+**Commit message:** `migrate: phase9 marketplace listing cards to appkit — 5 files`
+
+### 2026-04-16 — Session 35: Phase 10 faq/search/wishlist/promotions/reviews/copilot
+
+**Context:** First six `⬜` entries in Phase 10 Feature Modules tracker.
+
+**Findings:** All six local feature folders (`faq`, `search`, `wishlist`, `promotions`, `reviews`, `copilot`) contained only thin consumer adapters wrapping appkit components/hooks with no external consumers outside their own folder, and all corresponding app route directories were empty (no actual page files). Outcome **A** for all six.
+
+**Actions:**
+- `src/features/faq/` → `✅ A`: local folder deleted; appkit `faq` feature is canonical.
+- `src/features/search/` → `✅ A`: local folder deleted; appkit `search` feature is canonical.
+- `src/features/wishlist/` → `✅ A`: local folder deleted; appkit `wishlist` feature is canonical.
+- `src/features/promotions/` → `✅ A`: local folder deleted; appkit `promotions` feature is canonical.
+- `src/features/reviews/` → `✅ A`: local folder deleted; appkit `reviews` feature is canonical.
+- `src/features/copilot/` → `✅ A/C`: added `useCopilotFeedback` to `appkit/src/features/copilot/hooks/useCopilotFeedback.ts` with injectable `feedbackEndpoint: (logId: string) => string` parameter; exported from appkit copilot `index.ts`; local folder deleted.
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0, zero errors.
+- `letitrip.in`: `npx tsc --noEmit` — exit 0, zero errors.
+
+**Commit message:** `migrate: phase10 faq/search/wishlist/promotions/reviews/copilot — 6 features deleted, useCopilotFeedback added to appkit`
+
+**Next session pointer:** Phase 10 — next `⬜` is `src/features/categories/`.
+
+### 2026-04-16 — Session 36: Phase 10 categories
+
+**Context:** Next `⬜` entry in Phase 10 Feature Modules tracker.
+
+**Findings:** The local categories feature folder (`src/features/categories/`) contained only consumer wrappers and a local category-products hook. No external imports were found for the local feature path; reusable behavior already exists in appkit categories hooks/components. Outcome **A**.
+
+**Actions:**
+- `src/features/categories/` → `✅ A`: deleted local folder files (`index.ts`, components, hooks); appkit `categories` feature remains canonical.
+
+**Validation gate:**
+- `appkit`: `npx tsc --noEmit` — exit 0, zero errors.
+- `letitrip.in`: `npx tsc --noEmit` — exit 0, zero errors.
+
+**Commit message:** `migrate: phase10 categories wrapper deletion — 7 files`
+
+**Next session pointer:** Phase 10 — next `⬜` is `src/features/stores/`.
 
 **Commit message:** `migrate: phase9c cards blockers batch2 — 9 files`
 
