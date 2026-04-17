@@ -847,6 +847,12 @@ Copy/paste prompt:
 """
 Use Gap.md as the single source of truth. Operate in analysis-first mode with measure-twice discipline.
 
+CRITICAL RULE — Letitrip-Deferred Policy:
+All phases (1–8) target appkit only. Do NOT modify any letitrip.in files during these phases.
+letitrip.in is used exclusively as a **reference** for default design, behavior, and baseline expectations.
+All consumer-side changes (import rewires, schema retirements, action refactors, shim deletions) are deferred to the Post-Phase Consumer Rewrite pass that starts only after all appkit phases are complete and validated.
+When deriving baseline defaults, read letitrip code to understand current behavior — but make all edits in appkit.
+
 Task:
 1) Select the next not-started phase/batch from the Active Batch Tracker. Prioritize B10 (server-only guards) → B11 (barrel split) → B01 (baseline resolver) unless a dependency is unmet.
 2) Produce a dependency map first (callers, callees, runtime boundaries, market assumptions) using exact file paths from Gap.md.
@@ -857,14 +863,14 @@ Task:
    - Runtime boundary gate: every file classified as server-only / client-only / universal
    - Baseline fallback gate: appkit-side defaults match letitrip behavior when consumer value is missing
    - Server/client guard gate: `import "server-only"` present on files using `crypto`, `firebase-admin`, `fs`, or non-`NEXT_PUBLIC_` env vars; `import "client-only"` on files using `window`/`localStorage`/`document`
-4) Only then implement migration in appkit-first direction.
+4) Only then implement migration in appkit-first direction. **All edits go to appkit only** — letitrip is read-only reference.
 5) When splitting barrels: move server-only exports (repositories, crypto helpers, admin DB access) to `server.ts`; keep types, schemas, hooks, components, constants in `index.ts`. Reference the exact export symbols listed in Gap.md W8 checklist.
 6) When adding `import "server-only"`: reference the exact file list in Gap.md Phase 0.5. Do not add to files that only use `NEXT_PUBLIC_*` env vars or `process.env.NODE_ENV`.
-7) When replacing market literals: reference the exact file + symbol list in Gap.md W1 checklist. Wire to `appkit/src/core/baseline-resolver.ts`.
+7) When replacing market literals: reference the exact file + symbol list in Gap.md W1 checklist. Wire to `appkit/src/core/baseline-resolver.ts`. Derive baseline values by reading letitrip code — do not edit letitrip.
 8) When replacing status string literals: reference the exact file + line list in Gap.md W7 R9 checklist. Replace with typed enums/as-const from feature schemas.
-9) Keep letitrip thin (route/action entrypoints/config/runtime wiring only).
-10) Remove duplicate/shim surfaces and rewire to canonical direct imports.
-11) Run validation checks: `tsc --noEmit` for appkit, letitrip.in, and letitrip.in/functions. Report exact outcomes.
+9) Do NOT edit letitrip files. Consumer rewires happen in the Post-Phase Consumer Rewrite.
+10) Remove duplicate/shim surfaces within appkit and rewire to canonical direct imports.
+11) Run validation checks: `tsc --noEmit` for appkit only during phases 1–8. letitrip typecheck deferred to Post-Phase Consumer Rewrite.
 12) Update Gap.md: mark batch status, check off completed items in workstream checklists, update Active Batch Tracker row.
 
 Output format required:
