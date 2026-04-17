@@ -17,9 +17,9 @@ import {
   sendCheckoutConsentOtp,
   verifyCheckoutConsentOtp,
   grantCheckoutConsentViaSms,
-  userRepository,
-} from "@mohasinac/appkit/features/checkout";
-import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/features/checkout/server";
+import { userRepository } from "@mohasinac/appkit/features/auth/server";
+import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/features/auth/server";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 

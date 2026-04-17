@@ -26,7 +26,7 @@ import {
   type MakeOfferInput,
   type RespondToOfferInput,
   type BuyerCounterInput,
-} from "@mohasinac/appkit/features/seller";
+} from "@mohasinac/appkit/features/seller/server";
 import type { CartDocument } from "@/db/schema/cart";
 import type { OfferDocument } from "@/db/schema/offers";
 

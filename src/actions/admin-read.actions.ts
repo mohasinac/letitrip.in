@@ -21,7 +21,7 @@ import {
   listAdminProducts,
   listAdminStores,
   listAdminSessions,
-} from "@mohasinac/appkit/features/admin";
+} from "@mohasinac/appkit/features/admin/server";
 import type { OrderDocument } from "@/db/schema/orders";
 import type { PayoutDocument } from "@/db/schema/payouts";
 import type { UserDocument } from "@/db/schema/users";

@@ -1,13 +1,13 @@
 "use server";
 
 /**
- * Site Settings Server Actions — thin entrypoint
+ * Site Settings Server Actions ï¿½ thin entrypoint
  */
 
 import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
-import { getSiteSettings, updateSiteSettings } from "@mohasinac/appkit/features/admin";
+import { getSiteSettings, updateSiteSettings } from "@mohasinac/appkit/features/admin/server";
 
 export async function getSiteSettingsAction(): Promise<unknown> {
   return getSiteSettings();

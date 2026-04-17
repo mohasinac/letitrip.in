@@ -21,7 +21,7 @@ import {
   setDefaultAddressForUser,
   listAddressesForUser,
   getAddressByIdForUser,
-} from "@mohasinac/appkit/features/account";
+} from "@mohasinac/appkit/features/account/server";
 import type { AddressDocument } from "@/db/schema/addresses";
 
 // ─── Validation schemas ────────────────────────────────────────────────────

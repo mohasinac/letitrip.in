@@ -20,7 +20,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { sendPasswordResetEmailWithLink } from "@mohasinac/appkit/features/contact";
+import { sendPasswordResetEmailWithLink } from "@mohasinac/appkit/features/contact/server";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 const forgotPasswordSchema = z.object({

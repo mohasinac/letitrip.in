@@ -17,10 +17,11 @@ import {
   addToWishlist,
   removeFromWishlist,
   getWishlistForUser,
-} from "@mohasinac/appkit/features/wishlist";
-import type { EnrichedWishlistItem } from "@mohasinac/appkit/features/wishlist";
+} from "@mohasinac/appkit/features/wishlist/server";
+import type { UserWishlistItem } from "@mohasinac/appkit/features/wishlist";
 
-export type { EnrichedWishlistItem };
+export type { UserWishlistItem };
+export type EnrichedWishlistItem = UserWishlistItem;
 
 export async function addToWishlistAction(productId: string): Promise<void> {
   const user = await requireAuthUser();
@@ -47,7 +48,7 @@ export async function removeFromWishlistAction(
 }
 
 export async function getWishlistAction(): Promise<{
-  items: EnrichedWishlistItem[];
+  items: UserWishlistItem[];
   meta: { total: number };
 }> {
   const user = await requireAuthUser();

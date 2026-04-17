@@ -5,7 +5,7 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { sendContactEmail } from "@mohasinac/appkit/features/contact";
+import { sendContactEmail } from "@mohasinac/appkit/features/contact/server";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";

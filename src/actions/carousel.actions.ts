@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Carousel Server Actions — thin entrypoint (admin only)
+ * Carousel Server Actions ï¿½ thin entrypoint (admin only)
  */
 
 import { z } from "zod";
@@ -16,8 +16,10 @@ import {
   listActiveCarouselSlides,
   listAllCarouselSlides,
   getCarouselSlideById,
-  type CarouselSlideInput,
-  type CarouselSlideUpdateInput,
+} from "@mohasinac/appkit/features/homepage/server";
+import type {
+  CarouselSlideInput,
+  CarouselSlideUpdateInput,
 } from "@mohasinac/appkit/features/homepage";
 import type { CarouselSlideDocument } from "@mohasinac/appkit/features/homepage/schemas";
 

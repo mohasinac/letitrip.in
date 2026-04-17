@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Chat Server Actions — thin entrypoint
+ * Chat Server Actions ï¿½ thin entrypoint
  */
 
 import { z } from "zod";
@@ -13,8 +13,10 @@ import {
   createOrGetChatRoom,
   sendChatMessage,
   deleteChatRoom,
-  type ChatRoomsResult,
-  type CreateRoomResult,
+} from "@mohasinac/appkit/features/admin/server";
+import type {
+  ChatRoomsResult,
+  CreateRoomResult,
 } from "@mohasinac/appkit/features/admin";
 import { FEATURE_FLAGS } from "@mohasinac/appkit/core";
 

@@ -1,13 +1,13 @@
 "use server";
 
 /**
- * Realtime Token Server Action — thin entrypoint
+ * Realtime Token Server Action ï¿½ thin entrypoint
  */
 
 import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
 import { AuthorizationError } from "@mohasinac/appkit/errors";
-import { issueRealtimeToken, type RealtimeTokenResult } from "@mohasinac/appkit/features/auth";
+import { issueRealtimeToken, type RealtimeTokenResult } from "@mohasinac/appkit/features/auth/server";
 
 export async function getRealtimeTokenAction(): Promise<RealtimeTokenResult> {
   const user = await requireAuthUser();

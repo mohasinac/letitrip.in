@@ -4,14 +4,14 @@ import {
   verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit/providers/payment-razorpay";
 import {
   unitOfWork, siteSettingsRepository, offerRepository, userRepository, } from "@mohasinac/appkit/repositories";
-import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout";
+import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout/server";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact/server";
 import { getAdminRealtimeDb, getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/appkit/next";
@@ -36,7 +36,7 @@ import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
  *   notes                — Optional order notes
  */
 
-import { consentOtpRef } from "@mohasinac/appkit/features/auth";
+import { consentOtpRef } from "@mohasinac/appkit/features/auth/server";
 import type { AddressDocument } from "@/db/schema/addresses";
 
 const verifySchema = z.object({

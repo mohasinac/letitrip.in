@@ -18,8 +18,10 @@ import {
   placeBid,
   listBidsByProduct,
   getBidById,
-  type PlaceBidInput,
-  type PlaceBidResult,
+} from "@mohasinac/appkit/features/auctions/server";
+import type {
+  PlaceBidInput,
+  PlaceBidResult,
 } from "@mohasinac/appkit/features/auctions";
 import type { BidDocument } from "@/db/schema/bids";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";

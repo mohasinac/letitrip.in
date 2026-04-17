@@ -17,7 +17,7 @@ import {
   cancelOrderForUser,
   listOrdersForUser,
   getOrderByIdForUser,
-} from "@mohasinac/appkit/features/orders";
+} from "@mohasinac/appkit/features/orders/server";
 import { z } from "zod";
 import type { OrderDocument } from "@/db/schema/orders";
 

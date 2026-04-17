@@ -28,7 +28,7 @@ import {
   updateSectionSchema,
   type CreateHomepageSectionInput,
   type UpdateHomepageSectionInput,
-} from "@mohasinac/appkit/features/homepage";
+} from "@mohasinac/appkit/features/homepage/server";
 import type { HomepageSectionDocument } from "@mohasinac/appkit/features/homepage/schemas";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 

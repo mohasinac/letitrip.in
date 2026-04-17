@@ -2,14 +2,14 @@ import "@/providers.config";
 import { z } from "zod";
 import {
   unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit/repositories";
-import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout";
+import { failedCheckoutRepository } from "@mohasinac/appkit/features/checkout/server";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
   ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact/server";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
 
@@ -45,7 +45,7 @@ import {
   consentOtpRef,
   consentOtpRateLimitRef,
   CONSENT_OTP_MAX_BYPASS_CREDITS,
-} from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/features/auth/server";
 import type { AddressDocument } from "@/db/schema/addresses";
 import type { ProductDocument } from "@/db/schema/products";
 

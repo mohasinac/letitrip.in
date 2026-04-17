@@ -23,7 +23,7 @@ import {
   adminUpdateProduct as adminUpdateProductDomain,
   adminCreateProduct as adminCreateProductDomain,
   adminDeleteProduct as adminDeleteProductDomain,
-} from "@mohasinac/appkit/features/admin";
+} from "@mohasinac/appkit/features/admin/server";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import {
   rateLimitByIdentifier,

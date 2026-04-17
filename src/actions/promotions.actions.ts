@@ -7,8 +7,7 @@
  * This wrapper adds Next.js server-action semantics.
  */
 
-import { getPromotions } from "@mohasinac/appkit/features/promotions";
-import type { PromotionsResult } from "@mohasinac/appkit/features/promotions";
+import { getPromotions, type PromotionsResult } from "@mohasinac/appkit/features/promotions/server";
 
 export type { PromotionsResult };
 

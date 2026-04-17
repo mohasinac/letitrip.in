@@ -22,7 +22,7 @@ import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@mohasinac/appkit/features/media";
+} from "@mohasinac/appkit/features/media/server";
 import type { SurveyConfig, FeedbackConfig } from "@/db/schema/events";
 
 const mediaFieldSchema = z.object({

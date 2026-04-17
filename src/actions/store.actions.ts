@@ -13,12 +13,10 @@ import {
   getStoreProducts,
   getStoreAuctions,
   getStoreReviews,
-} from "@mohasinac/appkit/features/stores";
-import type {
-  StoreListParams,
-  StoreContentParams,
-  StoreReviewsResult,
-} from "@mohasinac/appkit/features/stores";
+  type StoreListParams,
+  type StoreContentParams,
+  type StoreReviewsResult,
+} from "@mohasinac/appkit/features/stores/server";
 import type { StoreDocument } from "@/db/schema/stores";
 import type { ProductDocument } from "@/db/schema/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";

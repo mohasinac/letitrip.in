@@ -12,7 +12,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { sendVerificationSchema } from "@mohasinac/appkit/validation";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit/features/contact";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit/features/contact/server";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
 export const POST = createRouteHandler<

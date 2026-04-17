@@ -37,7 +37,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { ValidationError, NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact/server";
 
 const preorderDepositSchema = z.object({
   razorpay_order_id: z.string().min(1),

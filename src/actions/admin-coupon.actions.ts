@@ -14,7 +14,7 @@ import {
   adminUpdateCoupon as adminUpdateCouponDomain,
   adminDeleteCoupon as adminDeleteCouponDomain,
   listAdminCoupons as listAdminCouponsDomain,
-} from "@mohasinac/appkit/features/admin";
+} from "@mohasinac/appkit/features/admin/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

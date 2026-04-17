@@ -21,7 +21,7 @@ import {
   getPublicUserProfile,
   getSellerReviews,
   getSellerProducts,
-} from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/features/auth/server";
 import type { UserDocument } from "@/db/schema/users";
 
 // ─── Validation schema ────────────────────────────────────────────────────────

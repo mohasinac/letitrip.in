@@ -14,7 +14,7 @@ import {
   deleteNotification,
   listNotifications,
   getUnreadNotificationCount,
-} from "@mohasinac/appkit/features/admin";
+} from "@mohasinac/appkit/features/admin/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

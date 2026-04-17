@@ -17,7 +17,7 @@ import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import {
   validateCoupon,
   validateCouponForCart,
-} from "@mohasinac/appkit/features/promotions";
+} from "@mohasinac/appkit/features/promotions/server";
 import type {
   CouponValidationResult,
   CouponCartValidationResult,

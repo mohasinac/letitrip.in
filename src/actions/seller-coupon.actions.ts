@@ -17,8 +17,8 @@ import {
   sellerDeleteCoupon,
   type SellerCreateCouponInput,
   type SellerUpdateCouponInput,
-} from "@mohasinac/appkit/features/promotions";
-import { userRepository } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/features/promotions/server";
+import { userRepository } from "@mohasinac/appkit/features/auth/server";
 import type { CouponDocument } from "@/db/schema/coupons";
 
 const createSchema = z.object({

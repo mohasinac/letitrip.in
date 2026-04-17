@@ -9,7 +9,7 @@
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import { sendContactEmail } from "@mohasinac/appkit/features/contact";
+import { sendContactEmail } from "@mohasinac/appkit/features/contact/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

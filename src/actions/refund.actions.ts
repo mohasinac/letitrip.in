@@ -17,8 +17,8 @@ import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
 import {
   issuePartialRefund,
   previewCancellationRefund,
-} from "@mohasinac/appkit/features/orders";
-import type { PartialRefundResult } from "@mohasinac/appkit/features/orders";
+  type PartialRefundResult,
+} from "@mohasinac/appkit/features/orders/server";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 

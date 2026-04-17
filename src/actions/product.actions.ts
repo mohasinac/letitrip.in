@@ -18,17 +18,17 @@ import {
   listPreOrders,
   getRelatedProducts,
   getSellerStorefrontProducts,
-  type ProductListActionParams,
-} from "@mohasinac/appkit/features/products";
+  type ProductListParams,
+} from "@mohasinac/appkit/features/products/server";
 import type { ProductDocument } from "@/db/schema/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-export type { ProductListActionParams };
-export type ProductListParams = ProductListActionParams;
+export type { ProductListParams };
+export type ProductListActionParams = ProductListParams;
 export type ProductListResult = FirebaseSieveResult<ProductDocument>;
 
 export async function listProductsAction(
-  params: ProductListActionParams = {},
+  params: ProductListParams = {},
 ): Promise<ProductListResult> {
   return listProducts(params);
 }
@@ -64,7 +64,7 @@ export async function getLatestAuctionsAction(
 }
 
 export async function listAuctionsAction(
-  params: ProductListActionParams = {},
+  params: ProductListParams = {},
 ): Promise<ProductListResult> {
   return listAuctions(params);
 }
@@ -82,7 +82,7 @@ export async function getLatestPreOrdersAction(
 }
 
 export async function listPreOrdersAction(
-  params: ProductListActionParams = {},
+  params: ProductListParams = {},
 ): Promise<ProductListResult> {
   return listPreOrders(params);
 }

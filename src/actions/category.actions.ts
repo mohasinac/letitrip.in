@@ -31,7 +31,7 @@ import {
   getCategoryBySlug,
   getCategoryChildren,
   fetchCategoryTree,
-} from "@mohasinac/appkit/features/categories";
+} from "@mohasinac/appkit/features/categories/server";
 import type {
   CategoryDocument,
   CategoryUpdateInput,

@@ -21,7 +21,7 @@ import {
   clearCart,
   mergeGuestCart,
   getCart,
-} from "@mohasinac/appkit/features/cart";
+} from "@mohasinac/appkit/features/cart/server";
 import type { CartDocument } from "@/db/schema/cart";
 
 // ─── Validation schemas ────────────────────────────────────────────────────

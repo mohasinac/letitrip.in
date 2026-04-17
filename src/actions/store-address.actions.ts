@@ -19,7 +19,7 @@ import {
   createStoreAddressForSeller,
   updateStoreAddressForSeller,
   deleteStoreAddressForSeller,
-} from "@mohasinac/appkit/features/stores";
+} from "@mohasinac/appkit/features/stores/server";
 import type { StoreAddressDocument } from "@/db/schema/store-addresses";
 
 // ─── Validation ────────────────────────────────────────────────────────────

@@ -30,7 +30,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit/features/contact";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit/features/contact/server";
 
 const registerSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

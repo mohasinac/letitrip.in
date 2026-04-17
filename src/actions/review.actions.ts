@@ -21,7 +21,7 @@ import {
   listReviewsBySeller as listReviewsBySellerDomain,
   getHomepageReviews as getHomepageReviewsDomain,
   getReviewById as getReviewByIdDomain,
-} from "@mohasinac/appkit/features/reviews";
+} from "@mohasinac/appkit/features/reviews/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

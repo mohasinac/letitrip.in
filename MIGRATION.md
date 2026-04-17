@@ -1,7 +1,7 @@
 # letitrip.in → appkit Migration Tracker
 
-**Last verified:** 2026-04-17 — Session 47, Phase 11 final closure — eliminated `src/db/schema/index.ts` compatibility barrel, removed appkit re-exports from `src/contexts/index.ts`, converted `src/app/global-error.tsx` to local wrapper, tsc passes in both repos  
-**Last session ended at:** Phase 11 closure — tracker finalized ✅  
+**Last verified:** 2026-04-17 — Session 48, B11 barrel split — appkit barrel split complete (13 new server.ts, 15 updated, 28 index.ts cleaned, 17 features actions→server.ts, internal rewires done). 16/28 letitrip action file imports rewired. Remaining letitrip rewires deferred to Phase 12 end-state rewrite.  
+**Last session ended at:** B11 appkit barrel split complete; letitrip consumer rewires partially done, remainder deferred to Phase 12  
 **Goal:** Reduce letitrip.in to a thin consumer by making appkit the generic, configurable, and extendable source of truth (not copy-move parity), with consumer code limited to route wiring, server-action entrypoints, provider wiring, market config, and SDK drivers.
 
 ---
@@ -21,8 +21,9 @@
 | 9 | Phase 9 | Shared UI Components | 30 | ✅ complete — blocker-burn marketplace cards + admin UI primitives done; auth/products types remain local per design |
 | 10 | Phase 10 | Feature Modules | ~375 | ✅ 19/19 complete |
 | 11 | Phase 11 | Re-export Elimination (final gate) | TBD | ✅ complete |
+| 12 | Phase 12 | Letitrip End-State Rewrite | ~50 | ⬜ not started |
 
-**Total to migrate/delete: ~580 files**
+**Total to migrate/delete: ~580 files + ~50 end-state rewrites**
 
 ---
 
@@ -281,6 +282,7 @@ This section verifies each phase against the original intent (generic + configur
 | Phase 9 — Shared UI Components | ✅ complete | ✅ complete | Closed with appkit-owned abstractions and injected config adapters. |
 | Phase 10 — Feature Modules | ✅ complete | ✅ complete | All 19 feature folders reduced to appkit canonical ownership or documented local exceptions. |
 | Phase 11 — Re-export Elimination | ✅ complete | ✅ complete | Consumer shim/re-export surfaces removed; direct canonical imports enforced. |
+| Phase 12 — Letitrip End-State Rewrite | ⬜ not started | ⬜ not started | Complete consumer rewire pass after all appkit architecture is stable. |
 
 Interpretation:
 - `file migration status` tracks moved/deleted progress.
@@ -1049,6 +1051,55 @@ Run after all scan commands return zero matches:
 6. Confirm no remaining `@/components`, `@/hooks`, or `@/repositories` alias imports that resolve to appkit-owned modules.
 7. Update Phase 11 status to `✅` and Phase-by-Phase architecture-fit table to `✅`.
 8. Final commit message: `migrate: phase11 re-export elimination — done`.
+
+---
+
+## Phase 12 — Letitrip End-State Rewrite
+
+**Purpose:** Complete consumer-side rewire pass after all appkit architecture work (Gap.md W1-W7) is stable. This phase runs as a single comprehensive rewrite of letitrip, not incremental file-by-file migration.
+
+**Prerequisite:** All appkit workstreams (W1 baseline resolver, W2 seed, W3 schema/repo closure, W5 column kit, W6 SSR hardening, W7 constants/dedupe) are complete per Gap.md.
+
+**Scope:**
+
+### 12a — Barrel import rewires (remaining from B11/B12)
+12 letitrip action files need split imports (mixed functions + types → separate `/server` + barrel imports):
+- ⬜ `src/actions/bid.actions.ts` — split `features/auctions` import
+- ⬜ `src/actions/blog.actions.ts` — split `features/blog` import
+- ⬜ `src/actions/carousel.actions.ts` — split `features/homepage` import
+- ⬜ `src/actions/chat.actions.ts` — split `features/admin` import
+- ⬜ `src/actions/event.actions.ts` — split `features/events` import
+- ⬜ `src/actions/faq.actions.ts` — split `features/faq` import
+- ⬜ `src/actions/notification.actions.ts` — split `features/admin` import
+- ⬜ `src/actions/offer.actions.ts` — split `features/seller` import
+- ⬜ `src/actions/product.actions.ts` — split `features/products` import
+- ⬜ `src/actions/sections.actions.ts` — split `features/homepage` import
+- ⬜ `src/actions/seller-coupon.actions.ts` — split `features/promotions` import
+- ⬜ `src/actions/seller.actions.ts` — split `features/seller` import
+
+### 12b — API route barrel rewires
+- ⬜ All `src/app/api/` route files still importing domain actions from feature barrels → `/server`
+
+### 12c — Functions repository migration (from W3)
+- ⬜ All 15 `functions/src/repositories/` files → import from `@mohasinac/appkit/features/*/server`
+- ⬜ Delete `functions/src/repositories/index.ts` barrel
+
+### 12d — Schema compatibility barrel retirement (from W3)
+- ⬜ All 19 `src/db/schema/` files → direct appkit imports or deletion
+
+### 12e — Status enum + ROUTES constants rewires (from W7)
+- ⬜ All status string literals in letitrip actions/routes/functions → typed enums
+- ⬜ Sidebar + route path hard-codes → ROUTES constants
+
+### 12f — TextLink dedupe + remaining shims (from W7)
+- ⬜ Delete `src/components/typography/TextLink.tsx`, rewire 8 imports to appkit
+
+### 12g — Final validation
+- ⬜ `tsc --noEmit` appkit, letitrip.in, functions — zero new errors
+- ⬜ Smoke tests pass
+- ⬜ All trackers updated
+
+Status: ⬜ not started — blocked by appkit workstreams W1-W7 in Gap.md
 
 ---
 

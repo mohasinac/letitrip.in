@@ -31,7 +31,7 @@ import {
   type CreateEventInput,
   type UpdateEventInput,
   type EnterEventInput,
-} from "@mohasinac/appkit/features/events";
+} from "@mohasinac/appkit/features/events/server";
 import type { EventDocument, EventEntryDocument } from "@/db/schema/events";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 import { maskPublicEventEntry } from "@mohasinac/appkit/security";

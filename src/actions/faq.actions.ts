@@ -25,24 +25,26 @@ import {
   getFaqById,
   faqCreateSchema,
   faqUpdateSchema,
-  type VoteFaqActionInput,
-  type VoteFaqActionResult,
-  type FaqCreateInput,
-  type FaqUpdateInput,
-} from "@mohasinac/appkit/features/faq";
+  type VoteFaqInput,
+  type VoteFaqResult,
+  type FAQCreateInput,
+  type FAQUpdateInput,
+} from "@mohasinac/appkit/features/faq/server";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-export type { VoteFaqActionInput, VoteFaqActionResult, FaqCreateInput, FaqUpdateInput };
-export type VoteFaqInput = VoteFaqActionInput;
-export type VoteFaqResult = VoteFaqActionResult;
-export type AdminCreateFaqInput = FaqCreateInput;
-export type AdminUpdateFaqInput = FaqUpdateInput;
+export type { VoteFaqInput, VoteFaqResult, FAQCreateInput, FAQUpdateInput };
+export type VoteFaqActionInput = VoteFaqInput;
+export type VoteFaqActionResult = VoteFaqResult;
+export type FaqCreateInput = FAQCreateInput;
+export type FaqUpdateInput = FAQUpdateInput;
+export type AdminCreateFaqInput = FAQCreateInput;
+export type AdminUpdateFaqInput = FAQUpdateInput;
 
 export async function voteFaqAction(
-  input: VoteFaqActionInput,
-): Promise<VoteFaqActionResult> {
+  input: VoteFaqInput,
+): Promise<VoteFaqResult> {
   const user = await requireAuthUser();
 
   const rl = await rateLimitByIdentifier(

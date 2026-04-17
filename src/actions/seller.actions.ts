@@ -41,8 +41,8 @@ import {
   type UpdatePayoutSettingsInput,
   type RequestPayoutInput,
   type BulkSellerOrderResult,
-} from "@mohasinac/appkit/features/seller";
-import { userRepository } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/features/seller/server";
+import { userRepository } from "@mohasinac/appkit/features/auth/server";
 import {
   productCreateSchema,
   mediaUrlSchema,
@@ -61,7 +61,7 @@ import {
 import { resolveDate } from "@mohasinac/appkit/utils";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NotFoundError } from "@mohasinac/appkit/errors";
-import { orderRepository } from "@mohasinac/appkit/features/orders";
+import { orderRepository } from "@mohasinac/appkit/features/orders/server";
 import type { StoreDocument } from "@/db/schema/stores";
 import type { SellerPayoutDetails, SellerShippingConfig } from "@/db/schema/users";
 import type { OrderDocument } from "@/db/schema/orders";

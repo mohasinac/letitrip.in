@@ -20,7 +20,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@mohasinac/appkit/features/media";
+} from "@mohasinac/appkit/features/media/server";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
