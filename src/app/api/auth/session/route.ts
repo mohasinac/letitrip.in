@@ -12,12 +12,11 @@ import {
 } from "@mohasinac/appkit/providers/auth-firebase";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { UI_LABELS } from "@/constants";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
 import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { parseUserAgent } from "@/db/schema/sessions";
-import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
+import { parseUserAgent } from "@mohasinac/appkit/features/auth";
+import { SCHEMA_DEFAULTS } from "@/constants/field-names";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 /**
@@ -29,7 +28,7 @@ export async function POST(request: NextRequest) {
     const { idToken } = await request.json();
 
     if (!idToken) {
-      throw new ValidationError(UI_LABELS.AUTH.ID_TOKEN_REQUIRED);
+      throw new ValidationError("ID token required");
     }
 
     // Verify the ID token and get user info
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
     const { userRepository } = await import("@mohasinac/appkit/repositories");
     const { getAuth } = await import("firebase-admin/auth");
     const { getAdminApp } = await import("@mohasinac/appkit/providers/db-firebase");
-    const { DEFAULT_USER_DATA } = await import("@/db/schema/users");
+    const { DEFAULT_USER_DATA } = await import("@mohasinac/appkit/features/auth");
 
     const auth = getAuth(getAdminApp());
 

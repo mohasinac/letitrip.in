@@ -60,7 +60,7 @@ async function settleAuction(product: AuctionProductRow): Promise<void> {
   // Update product status
   productRepository.updateStatus(batch, product.id, "sold");
 
-  // Winner notification
+  productRepository.updateStatus(batch, product.id, "sold");
   notificationRepository.createInBatch(batch, {
     userId: winnerEntry.data.userId,
     type: "bid_won",

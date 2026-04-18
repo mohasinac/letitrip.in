@@ -6,10 +6,10 @@
  * should be imported directly from appkit.
  *
  * This file only exports:
- *   - getUserFromRequest  — returns UserDocument (binds userRepository)
- *   - requireAuthFromRequest — same with auth guard
- *   - requireRoleFromRequest — same with role guard
- *   - getServerSessionUser   — returns letitrip SessionUser (RSC helper)
+ *   - getUserFromRequest  ï¿½ returns UserDocument (binds userRepository)
+ *   - requireAuthFromRequest ï¿½ same with auth guard
+ *   - requireRoleFromRequest ï¿½ same with role guard
+ *   - getServerSessionUser   ï¿½ returns letitrip SessionUser (RSC helper)
  */
 import { cookies } from "next/headers";
 import { cache } from "react";
@@ -21,8 +21,9 @@ import {
   verifySessionCookie,
 } from "@mohasinac/appkit/providers/auth-firebase";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { SessionUser, UserRole } from "@/types/auth";
-import type { UserDocument } from "@/db/schema/users";
+import type { UserRole } from "@mohasinac/appkit/features/auth";
+import type { SessionUser } from "@mohasinac/appkit/react";
+import type { UserDocument } from "@mohasinac/appkit/features/auth";
 
 async function findUserById(uid: string): Promise<UserDocument | null> {
   const { userRepository } = await import("@mohasinac/appkit/repositories");
@@ -34,7 +35,7 @@ export function getUserFromRequest(request: Request): Promise<UserDocument | nul
   return _getUserFromRequest(request, findUserById);
 }
 
-/** Require authentication — returns UserDocument or throws 401. */
+/** Require authentication ï¿½ returns UserDocument or throws 401. */
 export function requireAuthFromRequest(request: Request): Promise<UserDocument> {
   return _requireAuthFromRequest(
     request,
@@ -43,7 +44,7 @@ export function requireAuthFromRequest(request: Request): Promise<UserDocument> 
   );
 }
 
-/** Require a role — returns UserDocument or throws 401/403. */
+/** Require a role ï¿½ returns UserDocument or throws 401/403. */
 export function requireRoleFromRequest(
   request: Request | NextRequest,
   roles: UserRole | UserRole[],

@@ -20,8 +20,10 @@ import {
 } from "@mohasinac/appkit/features/promotions/server";
 import type {
   CouponValidationResult,
-  CouponCartValidationResult,
 } from "@mohasinac/appkit/features/promotions";
+import type {
+  CouponCartValidationResult,
+} from "@mohasinac/appkit/features/promotions/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

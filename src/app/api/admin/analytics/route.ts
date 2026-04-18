@@ -17,7 +17,8 @@ import { formatMonthYear } from "@mohasinac/appkit/utils";
  *  - Top 5 products by total revenue
  */
 
-import type { OrderDocument } from "@/db/schema/orders";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
@@ -113,11 +114,11 @@ export const GET = createRouteHandler({
       productRepository.list({ page: "1", pageSize: "1" }),
       productRepository.list(
         {
-          filters: "status==published",
+          filters: `status==${ProductStatusValues.PUBLISHED}`,
           page: "1",
           pageSize: "1",
         },
-        { status: "published" },
+        { status: ProductStatusValues.PUBLISHED },
       ),
     ]);
 

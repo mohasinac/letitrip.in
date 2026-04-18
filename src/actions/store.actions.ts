@@ -13,18 +13,18 @@ import {
   getStoreProducts,
   getStoreAuctions,
   getStoreReviews,
-  type StoreListParams,
+  type StoreQueryListParams,
   type StoreContentParams,
   type StoreReviewsResult,
 } from "@mohasinac/appkit/features/stores/server";
-import type { StoreDocument } from "@/db/schema/stores";
-import type { ProductDocument } from "@/db/schema/products";
+import type { StoreDocument } from "@mohasinac/appkit/features/stores";
+import type { ProductDocument } from "@mohasinac/appkit/features/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-export type { StoreListParams, StoreContentParams, StoreReviewsResult };
+export type { StoreQueryListParams, StoreContentParams, StoreReviewsResult };
 
 export async function listStoresAction(
-  params: StoreListParams = {},
+  params: StoreQueryListParams = {},
 ): Promise<FirebaseSieveResult<StoreDocument>> {
   return listStores(params) as Promise<FirebaseSieveResult<StoreDocument>>;
 }

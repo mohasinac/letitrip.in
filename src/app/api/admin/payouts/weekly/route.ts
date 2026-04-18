@@ -33,7 +33,7 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { OrderDocument } from "@/db/schema/orders";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %

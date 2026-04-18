@@ -17,7 +17,8 @@ import { formatMonthYear } from "@mohasinac/appkit/utils";
  *  3. Aggregate totals, monthly breakdown (last 6 months), and top products
  */
 
-import type { OrderDocument } from "@/db/schema/orders";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 
 /**
  * Fetch seller orders from past 6 months using Sieve date filtering (database-level).
@@ -79,11 +80,11 @@ export const GET = createRouteHandler({
         ),
         productRepository.list(
           {
-            filters: "status==published",
+            filters: `status==${ProductStatusValues.PUBLISHED}`,
             page: "1",
             pageSize: "1",
           },
-          { sellerId, status: "published" },
+          { sellerId, status: ProductStatusValues.PUBLISHED },
         ),
       ]);
 

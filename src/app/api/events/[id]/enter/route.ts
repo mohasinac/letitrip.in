@@ -1,4 +1,4 @@
-import "@/providers.config";
+﻿import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
@@ -49,22 +49,22 @@ import {
 } from "@mohasinac/appkit/features/homepage/schemas";
 import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/features/admin/schemas";
 import { FAQS_COLLECTION } from "@mohasinac/appkit/features/faq/schemas";
-import { USER_COLLECTION } from "@/db/schema/users";
-import { ORDER_COLLECTION } from "@/db/schema/orders";
-import { REVIEW_COLLECTION } from "@/db/schema/reviews";
-import { BID_COLLECTION } from "@/db/schema/bids";
-import { COUPONS_COLLECTION } from "@/db/schema/coupons";
-import { CATEGORIES_COLLECTION } from "@/db/schema/categories";
-import { NOTIFICATIONS_COLLECTION } from "@/db/schema/notifications";
-import { PAYOUT_COLLECTION } from "@/db/schema/payouts";
-import { BLOG_POSTS_COLLECTION } from "@/db/schema/blog-posts";
-import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@/db/schema/events";
-import { SESSION_COLLECTION } from "@/db/schema/sessions";
-import { CART_COLLECTION } from "@/db/schema/cart";
-import { STORE_COLLECTION } from "@/db/schema/stores";
-import { PRODUCT_COLLECTION } from "@/db/schema/products";
-import { ADDRESS_SUBCOLLECTION } from "@/db/schema/addresses";
-import { STORE_ADDRESS_SUBCOLLECTION } from "@/db/schema/store-addresses";
+import { USER_COLLECTION } from "@mohasinac/appkit/features/auth";
+import { ORDER_COLLECTION } from "@mohasinac/appkit/features/orders";
+import { REVIEW_COLLECTION } from "@mohasinac/appkit/features/reviews";
+import { BID_COLLECTION } from "@mohasinac/appkit/features/auctions";
+import { COUPONS_COLLECTION } from "@mohasinac/appkit/features/promotions";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/features/categories";
+import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit/features/admin";
+import { PAYOUT_COLLECTION } from "@mohasinac/appkit/features/payments";
+import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit/features/blog";
+import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit/features/events";
+import { SESSION_COLLECTION } from "@mohasinac/appkit/features/auth";
+import { CART_COLLECTION } from "@mohasinac/appkit/features/cart";
+import { STORE_COLLECTION } from "@mohasinac/appkit/features/stores";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit/features/products";
+import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/features/account";
+import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/features/stores";
 
 type CollectionName =
   | "users"

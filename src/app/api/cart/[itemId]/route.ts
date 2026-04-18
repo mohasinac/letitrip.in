@@ -14,6 +14,7 @@ import { handleApiError } from "@mohasinac/appkit/errors";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next";
 import { cartRepository } from "@mohasinac/appkit/repositories";
 import { productRepository } from "@mohasinac/appkit/repositories";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 
@@ -40,7 +41,7 @@ export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
 
     for (const item of items) {
       const product = await productRepository.findById(item.productId);
-      if (!product || product.status !== "published") continue;
+      if (!product || product.status !== ProductStatusValues.PUBLISHED) continue;
       if (product.availableQuantity < 1) continue;
 
       const safeQty = Math.min(item.quantity, product.availableQuantity);

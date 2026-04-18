@@ -20,8 +20,8 @@ import {
   shiprocketAuthenticate,
   shiprocketAddPickupLocation,
   SHIPROCKET_TOKEN_TTL_MS,
-} from "@/lib/shiprocket/client";
-import type { SellerShippingConfig } from "@/db/schema/users";
+} from "@mohasinac/appkit/providers/shipping-shiprocket";
+import type { SellerShippingConfig } from "@mohasinac/appkit/features/auth";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 

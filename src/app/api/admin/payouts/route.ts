@@ -16,7 +16,7 @@ import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { payoutRepository } from "@mohasinac/appkit/repositories";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { PAYOUT_FIELDS } from "@/db/schema/payouts";
+import { PAYOUT_FIELDS } from "@mohasinac/appkit/features/payments";
 
 /**
  * GET /api/admin/payouts

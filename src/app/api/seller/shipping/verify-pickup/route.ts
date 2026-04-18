@@ -16,7 +16,7 @@ import { createApiHandler } from "@mohasinac/appkit/http";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { shiprocketVerifyPickupOTP } from "@/lib/shiprocket/client";
+import { shiprocketVerifyPickupOTP } from "@mohasinac/appkit/providers/shipping-shiprocket";
 
 const verifyOTPSchema = z.object({
   otp: z.number().int().min(100000).max(999999),

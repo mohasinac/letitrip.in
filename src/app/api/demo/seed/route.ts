@@ -1,4 +1,4 @@
-﻿import "@/providers.config";
+import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
@@ -49,22 +49,22 @@ import {
 } from "@mohasinac/appkit/features/homepage/schemas";
 import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/features/admin/schemas";
 import { FAQS_COLLECTION } from "@mohasinac/appkit/features/faq/schemas";
-import { USER_COLLECTION } from "@/db/schema/users";
-import { ORDER_COLLECTION } from "@/db/schema/orders";
-import { REVIEW_COLLECTION } from "@/db/schema/reviews";
-import { BID_COLLECTION } from "@/db/schema/bids";
-import { COUPONS_COLLECTION } from "@/db/schema/coupons";
-import { CATEGORIES_COLLECTION } from "@/db/schema/categories";
-import { NOTIFICATIONS_COLLECTION } from "@/db/schema/notifications";
-import { PAYOUT_COLLECTION } from "@/db/schema/payouts";
-import { BLOG_POSTS_COLLECTION } from "@/db/schema/blog-posts";
-import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@/db/schema/events";
-import { SESSION_COLLECTION } from "@/db/schema/sessions";
-import { CART_COLLECTION } from "@/db/schema/cart";
-import { STORE_COLLECTION } from "@/db/schema/stores";
-import { PRODUCT_COLLECTION } from "@/db/schema/products";
-import { ADDRESS_SUBCOLLECTION } from "@/db/schema/addresses";
-import { STORE_ADDRESS_SUBCOLLECTION } from "@/db/schema/store-addresses";
+import { USER_COLLECTION } from "@mohasinac/appkit/features/auth";
+import { ORDER_COLLECTION } from "@mohasinac/appkit/features/orders";
+import { REVIEW_COLLECTION } from "@mohasinac/appkit/features/reviews";
+import { BID_COLLECTION } from "@mohasinac/appkit/features/auctions";
+import { COUPONS_COLLECTION } from "@mohasinac/appkit/features/promotions";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/features/categories";
+import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit/features/admin";
+import { PAYOUT_COLLECTION } from "@mohasinac/appkit/features/payments";
+import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit/features/blog";
+import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit/features/events";
+import { SESSION_COLLECTION } from "@mohasinac/appkit/features/auth";
+import { CART_COLLECTION } from "@mohasinac/appkit/features/cart";
+import { STORE_COLLECTION } from "@mohasinac/appkit/features/stores";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit/features/products";
+import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/features/account";
+import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/features/stores";
 
 type CollectionName =
   | "users"
@@ -309,7 +309,7 @@ export async function GET(_request: NextRequest) {
               ).length;
             }
           } else if (colName === "faqs") {
-            // FAQs use generated IDs â€” build them the same way the POST handler does
+            // FAQs use generated IDs — build them the same way the POST handler does
               const { generateFAQId } = await import("@mohasinac/appkit/utils");
             const refs = (seedData as any[]).map((faq: any) => {
               const id = generateFAQId({
@@ -420,7 +420,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -438,7 +438,7 @@ export async function POST(request: NextRequest) {
                   disabled,
                 } = userData as any;
 
-                // Check if Firestore document already exists â€” skip if so
+                // Check if Firestore document already exists — skip if so
                 const docRef = db.collection(firestoreCollection).doc(uid);
                 const docSnapshot = await docRef.get();
                 if (docSnapshot.exists) {
@@ -488,7 +488,7 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
-                // Write new Firestore document â€” encrypt PII fields
+                // Write new Firestore document — encrypt PII fields
                 let docData = stripUndefined({ ...userData });
                 // Add blind indices from plaintext BEFORE encrypting
                 docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
@@ -593,7 +593,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else {
-            // Regular collections â€” bulk-check existence then batch write (500 per batch)
+            // Regular collections — bulk-check existence then batch write (500 per batch)
             type WriteItem = {
               docRef: FirebaseFirestore.DocumentReference;
               data: Record<string, any>;
@@ -683,7 +683,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 

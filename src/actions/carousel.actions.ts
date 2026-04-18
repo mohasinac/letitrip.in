@@ -20,7 +20,7 @@ import {
 import type {
   CarouselSlideInput,
   CarouselSlideUpdateInput,
-} from "@mohasinac/appkit/features/homepage";
+} from "@mohasinac/appkit/features/homepage/server";
 import type { CarouselSlideDocument } from "@mohasinac/appkit/features/homepage/schemas";
 
 const createSlideSchema = z.object({

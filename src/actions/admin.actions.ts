@@ -37,10 +37,10 @@ import {
 import { payoutStatusSchema } from "@mohasinac/appkit/features/payments";
 import { userRoleSchema } from "@mohasinac/appkit/features/auth";
 import { storeStatusSchema } from "@mohasinac/appkit/features/stores";
-import type { OrderDocument, OrderAdminUpdateInput } from "@/db/schema/orders";
-import type { PayoutDocument, PayoutUpdateInput } from "@/db/schema/payouts";
-import type { UserDocument, UserAdminUpdateInput } from "@/db/schema/users";
-import type { ProductDocument, ProductAdminUpdateInput } from "@/db/schema/products";
+import type { OrderDocument, OrderAdminUpdateInput } from "@mohasinac/appkit/features/orders";
+import type { PayoutDocument, PayoutUpdateInput } from "@mohasinac/appkit/features/payments";
+import type { UserDocument, UserAdminUpdateInput } from "@mohasinac/appkit/features/auth";
+import type { ProductDocument, ProductAdminUpdateInput } from "@mohasinac/appkit/features/products";
 import {
   validateRequestBody,
   productCreateSchema,

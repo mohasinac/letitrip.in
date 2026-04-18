@@ -8,6 +8,7 @@ import { productRepository, couponsRepository } from "@mohasinac/appkit/reposito
 import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 
 /**
  * GET /api/promotions
@@ -27,21 +28,21 @@ export const GET = createRouteHandler({
       await Promise.all([
         productRepository.list(
           {
-            filters: "status==published,isPromoted==true",
+            filters: `status==${ProductStatusValues.PUBLISHED},isPromoted==true`,
             sorts: "-createdAt",
             page: "1",
             pageSize: "12",
           },
-          { status: "published" },
+          { status: ProductStatusValues.PUBLISHED },
         ),
         productRepository.list(
           {
-            filters: "status==published,featured==true",
+            filters: `status==${ProductStatusValues.PUBLISHED},featured==true`,
             sorts: "-createdAt",
             page: "1",
             pageSize: "8",
           },
-          { status: "published" },
+          { status: ProductStatusValues.PUBLISHED },
         ),
         couponsRepository.list({
           filters: `validity.isActive==true,validity.endDate>=${nowIso},validity.startDate<=${nowIso}`,

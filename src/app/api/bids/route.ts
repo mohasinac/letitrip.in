@@ -10,6 +10,7 @@ import { createApiHandler } from "@mohasinac/appkit/http";
 
 import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit/repositories";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
+import { BidStatusValues } from "@mohasinac/appkit/features/auctions";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { maskPublicBid } from "@mohasinac/appkit/security";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
@@ -101,7 +102,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
     const userPriorActiveBid = await bidRepository.findOneByProductAndUser(
       productId,
       user!.uid,
-      "active",
+      BidStatusValues.ACTIVE,
     );
 
     // Create the bid
@@ -124,7 +125,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       for (const b of allBids) {
         unitOfWork.bids.updateInBatch(batch, b.id, {
           isWinning: b.id === bid.id,
-          status: b.id === bid.id ? "active" : "outbid",
+          status: b.id === bid.id ? BidStatusValues.ACTIVE : BidStatusValues.OUTBID,
         } as any);
       }
       unitOfWork.products.updateInBatch(batch, productId, {

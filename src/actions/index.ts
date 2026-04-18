@@ -61,7 +61,7 @@ export type { SubscribeNewsletterInput } from "./newsletter.actions";
 
 // FAQ voting (auth required)
 export { voteFaqAction } from "./faq.actions";
-export type { VoteFaqInput, VoteFaqResult } from "./faq.actions";
+export type { VoteFaqActionInput, VoteFaqActionResult } from "./faq.actions";
 
 // Profile update (auth required)
 export { updateProfileAction } from "./profile.actions";
@@ -226,7 +226,7 @@ export {
 // ─── Read Actions (2-hop: Hook → Action → Repository) ────────────────────────
 
 // Product reads (public)
-export type { ProductListParams, ProductListResult } from "./product.actions";
+export type { ProductListActionParams, ProductListResult } from "./product.actions";
 export {
   listProductsAction,
   getProductByIdAction,

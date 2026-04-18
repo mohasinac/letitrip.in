@@ -27,8 +27,8 @@ import {
   type RespondToOfferInput,
   type BuyerCounterInput,
 } from "@mohasinac/appkit/features/seller/server";
-import type { CartDocument } from "@/db/schema/cart";
-import type { OfferDocument } from "@/db/schema/offers";
+import type { CartDocument } from "@mohasinac/appkit/features/cart";
+import type { OfferDocument } from "@mohasinac/appkit/features/seller";
 
 // --- Validation schemas ----------------------------------------------------
 

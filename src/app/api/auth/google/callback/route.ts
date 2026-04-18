@@ -32,14 +32,14 @@ import { OAuth2Client } from "google-auth-library";
 import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
 import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
-import { parseUserAgent } from "@/db/schema/sessions";
-import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
-import { DEFAULT_USER_DATA } from "@/db/schema/users";
+import { parseUserAgent } from "@mohasinac/appkit/features/auth";
+import { SCHEMA_DEFAULTS } from "@/constants/field-names";
+import { DEFAULT_USER_DATA } from "@mohasinac/appkit/features/auth";
 import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import type { UserRole } from "@/types/auth";
+import type { UserRole } from "@mohasinac/appkit/features/auth";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

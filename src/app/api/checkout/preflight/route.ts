@@ -23,7 +23,7 @@ import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { unitOfWork } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import type { CartItemDocument } from "@/db/schema/cart";
+import type { CartItemDocument } from "@mohasinac/appkit/features/cart";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 

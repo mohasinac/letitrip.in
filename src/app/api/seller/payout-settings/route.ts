@@ -9,7 +9,7 @@
 import { userRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
-import type { SellerPayoutDetails } from "@/db/schema/users";
+import type { SellerPayoutDetails } from "@mohasinac/appkit/features/auth";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 

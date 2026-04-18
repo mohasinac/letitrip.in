@@ -12,23 +12,11 @@ import { MAIN_NAV_ITEMS } from "@/constants/navigation";
  * ```
  */
 
-// Messages constants
-// Messages split into multiple files to avoid Turbopack chunk-generation bug
-// (EcmascriptModuleContent::new_merged error in Next.js 16 Turbopack).
-// UI constants (labels, placeholders, help text)
-export * from "./ui";
-
 // Routes constants
 export * from "./routes";
 
-// RBAC (Role-Based Access Control)
-export * from "./rbac";
-
 // Configuration constants
 export * from "./config";
-
-// API Endpoints constants
-export * from "./api-endpoints";
 
 // Theme constants
 export { THEME_CONSTANTS } from "./theme";

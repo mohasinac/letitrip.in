@@ -1,4 +1,4 @@
-import "@/providers.config";
+﻿import "@/providers.config";
 /**
  * Notifications API Route
  * GET  /api/notifications         â€” List user's notifications (paginated)
@@ -12,7 +12,7 @@ import { notificationRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { NotificationType, NotificationPriority } from "@/db/schema/notifications";
+import { NotificationType, NotificationPriority } from "@mohasinac/appkit/features/admin";
 
 const createNotificationSchema = z.object({
   userId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),

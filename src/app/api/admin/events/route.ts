@@ -23,7 +23,7 @@ import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit/features/media/server";
-import type { SurveyConfig, FeedbackConfig } from "@/db/schema/events";
+import type { SurveyConfig, FeedbackConfig } from "@mohasinac/appkit/features/events";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),

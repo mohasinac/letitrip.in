@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
-import { PRODUCT_COLLECTION } from "@/db/schema/products";
-import { PRODUCT_FIELDS } from "@/db/schema/field-names";
-import { EVENTS_COLLECTION, EVENT_FIELDS } from "@/db/schema/events";
-import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@/db/schema/blog-posts";
-import { CATEGORIES_COLLECTION } from "@/db/schema/categories";
-import { STORE_COLLECTION, STORE_FIELDS } from "@/db/schema/stores";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit/features/products";
+import { PRODUCT_FIELDS } from "@/constants/field-names";
+import { EVENTS_COLLECTION, EVENT_FIELDS } from "@mohasinac/appkit/features/events";
+import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit/features/blog";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/features/categories";
+import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit/features/stores";
 import { CATEGORY_FIELDS } from "@mohasinac/appkit/features/categories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ROUTES } from "@/constants";

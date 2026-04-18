@@ -21,6 +21,7 @@ import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit/features/media/server";
+import { BlogPostStatusValues } from "@mohasinac/appkit/features/blog";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -92,13 +93,13 @@ export const GET = createRouteHandler({
       sieveResult,
     ] = await Promise.all([
       blogRepository.listAll({
-        filters: "status==published",
+        filters: `status==${BlogPostStatusValues.PUBLISHED}`,
         sorts: "createdAt",
         page: "1",
         pageSize: "1",
       }),
       blogRepository.listAll({
-        filters: "status==draft",
+        filters: `status==${BlogPostStatusValues.DRAFT}`,
         sorts: "createdAt",
         page: "1",
         pageSize: "1",
@@ -163,7 +164,7 @@ export const POST = createRouteHandler({
       additionalImages,
       publishedAt: publishedAt
         ? new Date(publishedAt)
-        : body!.status === "published"
+        : body!.status === BlogPostStatusValues.PUBLISHED
           ? new Date()
           : undefined,
       authorId: body!.authorId || user?.uid || "",

@@ -15,7 +15,7 @@
 
 import { AppError } from "@mohasinac/appkit/errors";
 import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
-import { shiprocketAuthenticate } from "./client";
+import { shiprocketAuthenticate } from "@mohasinac/appkit/providers/shipping-shiprocket";
 
 // ─── In-memory token cache (single-process; good enough for serverless) ────────
 

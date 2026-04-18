@@ -36,7 +36,7 @@ import type {
   CategoryDocument,
   CategoryUpdateInput,
   CategoryTreeNode,
-} from "@/db/schema/categories";
+} from "@mohasinac/appkit/features/categories";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });

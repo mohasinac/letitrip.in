@@ -7,7 +7,7 @@ import { createApiHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { piiBlindIndex } from "@mohasinac/appkit/security";
-import { REVIEW_FIELDS } from "@/db/schema/field-names";
+import { REVIEW_FIELDS } from "@/constants/field-names";
 import { reviewRepository } from "@mohasinac/appkit/repositories";
 
 export const GET = createApiHandler({

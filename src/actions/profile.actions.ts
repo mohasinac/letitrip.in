@@ -22,7 +22,7 @@ import {
   getSellerReviews,
   getSellerProducts,
 } from "@mohasinac/appkit/features/auth/server";
-import type { UserDocument } from "@/db/schema/users";
+import type { UserDocument } from "@mohasinac/appkit/features/auth";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 

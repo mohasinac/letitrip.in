@@ -62,11 +62,12 @@ import { resolveDate } from "@mohasinac/appkit/utils";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { NotFoundError } from "@mohasinac/appkit/errors";
 import { orderRepository } from "@mohasinac/appkit/features/orders/server";
-import type { StoreDocument } from "@/db/schema/stores";
-import type { SellerPayoutDetails, SellerShippingConfig } from "@/db/schema/users";
-import type { OrderDocument } from "@/db/schema/orders";
-import type { CouponDocument } from "@/db/schema/coupons";
-import type { ProductDocument } from "@/db/schema/products";
+import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit/features/orders";
+import type { StoreDocument } from "@mohasinac/appkit/features/stores";
+import type { SellerPayoutDetails, SellerShippingConfig } from "@mohasinac/appkit/features/auth";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders";
+import type { CouponDocument } from "@mohasinac/appkit/features/promotions";
+import type { ProductDocument } from "@mohasinac/appkit/features/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 // --- Become Seller ------------------------------------------------------------
@@ -330,9 +331,9 @@ export async function shipOrderAction(
   if (!order) throw new NotFoundError("Order not found");
   if (user.role !== "admin" && (order as any).sellerId !== user.uid)
     throw new AuthorizationError("You do not own this order");
-  if (order.status === "shipped" || order.status === "delivered")
+  if (order.status === OrderStatusValues.SHIPPED || order.status === OrderStatusValues.DELIVERED)
     throw new ValidationError("Order is already shipped");
-  if (order.status !== "confirmed")
+  if (order.status !== OrderStatusValues.CONFIRMED)
     throw new ValidationError("Order must be confirmed before shipping");
 
   const shippingConfig = (userDoc as any).shippingConfig;
@@ -395,8 +396,8 @@ export async function shipOrderAction(
 
   const trackingUrl = `https://shiprocket.co/tracking/${awb}`;
   await orderRepository.update(orderId, {
-    status: "shipped",
-    shippingMethod: "shiprocket",
+    status: OrderStatusValues.SHIPPED,
+    shippingMethod: ShippingMethodValues.SHIPROCKET,
     trackingUrl,
     shiprocketOrderId: srOrderResponse.order_id,
     shiprocketShipmentId: srOrderResponse.shipment_id,

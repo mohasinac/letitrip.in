@@ -19,7 +19,7 @@ import {
   getOrderByIdForUser,
 } from "@mohasinac/appkit/features/orders/server";
 import { z } from "zod";
-import type { OrderDocument } from "@/db/schema/orders";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders";
 
 const cancelSchema = z.object({
   id: z.string().min(1),

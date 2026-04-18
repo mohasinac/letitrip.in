@@ -20,7 +20,16 @@ let initPromise: Promise<void> | null = null;
 export function initProviders(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
-    const { registerProviders } = await import("@mohasinac/appkit/contracts");
+    // ── Market defaults (must run before any formatter/provider reads baseline)
+    const { configureMarketDefaults } = await import("@mohasinac/appkit/core");
+    configureMarketDefaults({
+      currency: "INR",
+      locale: "en-IN",
+      country: "IN",
+      phonePrefix: "+91",
+      timezone: "Asia/Kolkata",
+      currencySymbol: "₹",
+    });
     const { firebaseAuthProvider, firebaseSessionProvider } =
       await import("@mohasinac/appkit/providers/auth-firebase");
     const { createResendProvider } =
@@ -32,6 +41,7 @@ export function initProviders(): Promise<void> {
     const { tailwindAdapter } =
       await import("@mohasinac/appkit/style/tailwind");
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories");
+    const { registerProviders } = await import("@mohasinac/appkit/contracts");
 
     registerProviders({
       db: firebaseDbProvider,

@@ -15,16 +15,17 @@ import { orderRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
-import type { OrderStatus } from "@/db/schema/orders";
+import type { OrderStatus } from "@mohasinac/appkit/features/orders";
+import { OrderStatusValues } from "@mohasinac/appkit/features/orders";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 
 const VALID_STATUSES: OrderStatus[] = [
-  "pending",
-  "confirmed",
-  "shipped",
-  "delivered",
-  "cancelled",
-  "returned",
+  OrderStatusValues.PENDING,
+  OrderStatusValues.CONFIRMED,
+  OrderStatusValues.SHIPPED,
+  OrderStatusValues.DELIVERED,
+  OrderStatusValues.CANCELLED,
+  OrderStatusValues.RETURNED,
 ];
 
 /**

@@ -15,16 +15,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase";
-import { DEFAULT_USER_DATA } from "@/db/schema/users";
-import { SCHEMA_DEFAULTS } from "@/db/schema/field-names";
-import { parseUserAgent } from "@/db/schema/sessions";
-import type { UserRole } from "@/types/auth";
+import { DEFAULT_USER_DATA } from "@mohasinac/appkit/features/auth";
+import { SCHEMA_DEFAULTS } from "@/constants/field-names";
+import { parseUserAgent } from "@mohasinac/appkit/features/auth";
+import type { UserRole } from "@mohasinac/appkit/features/auth";
 import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
 import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { errorResponse } from "@mohasinac/appkit/next";
 import { ValidationError } from "@mohasinac/appkit/errors";
-import { UI_LABELS } from "@/constants";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
@@ -54,7 +53,7 @@ export async function POST(request: NextRequest) {
       RateLimitPresets.AUTH,
     );
     if (!rateLimitResult.success) {
-      return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
+      return errorResponse(ERROR_MESSAGES.GENERIC.RATE_LIMIT_EXCEEDED, 429);
     }
 
     const body = await request.json();

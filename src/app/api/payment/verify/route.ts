@@ -37,7 +37,7 @@ import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
  */
 
 import { consentOtpRef } from "@mohasinac/appkit/features/auth/server";
-import type { AddressDocument } from "@/db/schema/addresses";
+import type { AddressDocument } from "@mohasinac/appkit/features/account";
 
 const verifySchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -99,8 +99,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
       );
       failedCheckoutRepository
         .logPayment(user!.uid, "signature_mismatch", "HMAC signature invalid", {
-          razorpayOrderId: razorpay_order_id,
-          razorpayPaymentId: razorpay_payment_id,
+          gatewayOrderId: razorpay_order_id,
+          gatewayPaymentId: razorpay_payment_id,
           addressId,
         })
         .catch(() => {});
@@ -145,8 +145,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
             reason as import("@mohasinac/appkit/features/checkout/schemas").FailedPaymentReason,
             "Consent OTP missing or expired at payment verify time",
             {
-              razorpayOrderId: razorpay_order_id,
-              razorpayPaymentId: razorpay_payment_id,
+              gatewayOrderId: razorpay_order_id,
+              gatewayPaymentId: razorpay_payment_id,
               addressId,
             },
           )
@@ -174,8 +174,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
             "product_unavailable",
             `Product ${item.productId} not published`,
             {
-              razorpayOrderId: razorpay_order_id,
-              razorpayPaymentId: razorpay_payment_id,
+              gatewayOrderId: razorpay_order_id,
+              gatewayPaymentId: razorpay_payment_id,
               addressId,
             },
           )
@@ -189,8 +189,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
             "stock_insufficient",
             `Product ${item.productId} has ${product.availableQuantity} left, requested ${item.quantity}`,
             {
-              razorpayOrderId: razorpay_order_id,
-              razorpayPaymentId: razorpay_payment_id,
+              gatewayOrderId: razorpay_order_id,
+              gatewayPaymentId: razorpay_payment_id,
               addressId,
             },
           )
@@ -223,8 +223,8 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
             "amount_mismatch",
             `Paid ₹${paidAmountRs}, expected ≥ ₹${expectedPaymentAmountRs}`,
             {
-              razorpayOrderId: razorpay_order_id,
-              razorpayPaymentId: razorpay_payment_id,
+              gatewayOrderId: razorpay_order_id,
+              gatewayPaymentId: razorpay_payment_id,
               amountRs: paidAmountRs,
               addressId,
             },

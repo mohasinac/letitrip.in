@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Product Server Actions -- thin entrypoints.
@@ -18,17 +18,16 @@ import {
   listPreOrders,
   getRelatedProducts,
   getSellerStorefrontProducts,
-  type ProductListParams,
+  type ProductListActionParams,
 } from "@mohasinac/appkit/features/products/server";
-import type { ProductDocument } from "@/db/schema/products";
+import type { ProductDocument } from "@mohasinac/appkit/features/products";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
-export type { ProductListParams };
-export type ProductListActionParams = ProductListParams;
+export type { ProductListActionParams };
 export type ProductListResult = FirebaseSieveResult<ProductDocument>;
 
 export async function listProductsAction(
-  params: ProductListParams = {},
+  params: ProductListActionParams = {},
 ): Promise<ProductListResult> {
   return listProducts(params);
 }
@@ -64,7 +63,7 @@ export async function getLatestAuctionsAction(
 }
 
 export async function listAuctionsAction(
-  params: ProductListParams = {},
+  params: ProductListActionParams = {},
 ): Promise<ProductListResult> {
   return listAuctions(params);
 }
@@ -82,7 +81,7 @@ export async function getLatestPreOrdersAction(
 }
 
 export async function listPreOrdersAction(
-  params: ProductListParams = {},
+  params: ProductListActionParams = {},
 ): Promise<ProductListResult> {
   return listPreOrders(params);
 }

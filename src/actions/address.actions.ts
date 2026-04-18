@@ -22,7 +22,7 @@ import {
   listAddressesForUser,
   getAddressByIdForUser,
 } from "@mohasinac/appkit/features/account/server";
-import type { AddressDocument } from "@/db/schema/addresses";
+import type { AddressDocument } from "@mohasinac/appkit/features/account";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

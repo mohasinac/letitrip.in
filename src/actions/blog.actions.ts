@@ -31,8 +31,8 @@ import {
   updateBlogPostSchema,
   type CreateBlogPostInput,
   type UpdateBlogPostInput,
-} from "@mohasinac/appkit/features/blog";
-import type { BlogPostDocument } from "@/db/schema/blog-posts";
+} from "@mohasinac/appkit/features/blog/server";
+import type { BlogPostDocument } from "@mohasinac/appkit/features/blog";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
 
 export type { CreateBlogPostInput, UpdateBlogPostInput };

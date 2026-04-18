@@ -16,7 +16,8 @@ import {
 } from "@mohasinac/appkit/next";
 import { buildSieveFilters } from "@mohasinac/appkit/utils";
 import { orderRepository, payoutRepository } from "@mohasinac/appkit/repositories";
-import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema/payouts";
+import { DEFAULT_PLATFORM_FEE_RATE } from "@mohasinac/appkit/features/payments";
+import { PayoutStatusValues } from "@mohasinac/appkit/features/payments";
 
 // ─── Helper ───────────────────────────────────────────────────────────────
 
@@ -77,9 +78,9 @@ export const GET = createRouteHandler({
         page: String(page),
         pageSize: String(pageSize),
       }),
-      payoutRepository.findBySellerAndStatus(uid, "completed"),
-      payoutRepository.findBySellerAndStatus(uid, "pending"),
-      payoutRepository.findBySellerAndStatus(uid, "processing"),
+      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.COMPLETED),
+      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PENDING),
+      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PROCESSING),
       computeSellerEarnings(uid),
     ]);
 

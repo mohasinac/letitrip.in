@@ -11,7 +11,8 @@ import { successResponse } from "@mohasinac/appkit/next";
 import { createApiHandler } from "@mohasinac/appkit/http";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { UserDocument } from "@/db/schema/users";
+import type { UserDocument } from "@mohasinac/appkit/features/auth";
+import { StoreStatusValues } from "@mohasinac/appkit/features/stores";
 
 export const POST = createApiHandler({
   auth: true,
@@ -20,20 +21,20 @@ export const POST = createApiHandler({
     if (user!.role === "seller" || user!.role === "admin") {
       return successResponse({
         alreadySeller: true,
-        storeStatus: user!.storeStatus ?? "pending",
+        storeStatus: user!.storeStatus ?? StoreStatusValues.PENDING,
       });
     }
 
     // Upgrade to seller role with pending status
     await userRepository.update(user!.uid, {
       role: "seller",
-      storeStatus: "pending",
+      storeStatus: StoreStatusValues.PENDING,
     } as Partial<UserDocument>);
 
     serverLogger.info("Seller application submitted", { uid: user!.uid });
 
     return successResponse(
-      { storeStatus: "pending" },
+      { storeStatus: StoreStatusValues.PENDING },
       SUCCESS_MESSAGES.USER.SELLER_APPLICATION_SUBMITTED,
     );
   },

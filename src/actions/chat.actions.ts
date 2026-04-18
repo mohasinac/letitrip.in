@@ -17,7 +17,7 @@ import {
 import type {
   ChatRoomsResult,
   CreateRoomResult,
-} from "@mohasinac/appkit/features/admin";
+} from "@mohasinac/appkit/features/admin/server";
 import { FEATURE_FLAGS } from "@mohasinac/appkit/core";
 
 const createRoomSchema = z.object({

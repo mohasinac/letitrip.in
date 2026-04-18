@@ -22,7 +22,7 @@ import {
   mergeGuestCart,
   getCart,
 } from "@mohasinac/appkit/features/cart/server";
-import type { CartDocument } from "@/db/schema/cart";
+import type { CartDocument } from "@mohasinac/appkit/features/cart";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

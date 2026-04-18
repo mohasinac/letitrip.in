@@ -19,7 +19,7 @@ import {
   type SellerUpdateCouponInput,
 } from "@mohasinac/appkit/features/promotions/server";
 import { userRepository } from "@mohasinac/appkit/features/auth/server";
-import type { CouponDocument } from "@/db/schema/coupons";
+import type { CouponDocument } from "@mohasinac/appkit/features/promotions";
 
 const createSchema = z.object({
   code: z.string().min(1).max(20).toUpperCase().optional(),
