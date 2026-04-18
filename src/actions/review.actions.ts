@@ -34,6 +34,7 @@ import {
 import type { ReviewDocument } from "@/db/schema/reviews";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
 import { mediaUrlSchema } from "@/lib/validation/schemas";
+import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -170,7 +171,7 @@ export async function adminUpdateReviewAction(
     );
   }
 
-  return adminUpdateReviewDomain(admin.uid, reviewId, parsed.data) as Promise<ReviewDocument | null>;
+  return adminUpdateReviewDomain(admin.uid, reviewId, parsed.data as UpdateReviewActionInput) as Promise<ReviewDocument | null>;
 }
 
 /**
