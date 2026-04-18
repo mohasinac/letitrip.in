@@ -2,7 +2,7 @@ import { ROUTES } from "@/constants/routes";
 import { THEME_CONSTANTS } from "@/constants/theme";
 import { Heading, Text, Section, FlowDiagram } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
-import { TextLink } from "@/components/typography/TextLink";
+import { TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import {
   Shield,

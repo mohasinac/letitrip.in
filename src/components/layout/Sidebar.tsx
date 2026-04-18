@@ -14,7 +14,7 @@ import { useLogout } from "@mohasinac/appkit/features/auth";
 import { useMessage } from "@mohasinac/appkit/react";
 import { AvatarDisplay } from "@mohasinac/appkit/ui";
 import { Sprout } from "lucide-react";
-import { TextLink } from "@/components/typography/TextLink";
+import { TextLink } from "@mohasinac/appkit/ui";
 import { routing } from "@/i18n/routing";
 import type { Locale } from "@/i18n/routing";
 import { preventBodyScroll } from "@mohasinac/appkit/utils";

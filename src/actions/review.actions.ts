@@ -22,6 +22,7 @@ import {
   getHomepageReviews as getHomepageReviewsDomain,
   getReviewById as getReviewByIdDomain,
 } from "@mohasinac/appkit/features/reviews/server";
+import { reviewStatusSchema } from "@mohasinac/appkit/features/reviews";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -137,7 +138,7 @@ const adminUpdateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5).optional(),
   title: z.string().min(1).max(200).optional(),
   comment: z.string().min(10).max(2000).optional(),
-  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  status: reviewStatusSchema.optional(),
   images: z.array(mediaUrlSchema).max(5).optional(),
   videoUrl: mediaUrlSchema.optional().nullable(),
 });

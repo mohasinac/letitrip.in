@@ -34,6 +34,9 @@ import {
   NotFoundError,
   ValidationError,
 } from "@mohasinac/appkit/errors";
+import { payoutStatusSchema } from "@mohasinac/appkit/features/payments";
+import { userRoleSchema } from "@mohasinac/appkit/features/auth";
+import { storeStatusSchema } from "@mohasinac/appkit/features/stores";
 import type { OrderDocument, OrderAdminUpdateInput } from "@/db/schema/orders";
 import type { PayoutDocument, PayoutUpdateInput } from "@/db/schema/payouts";
 import type { UserDocument, UserAdminUpdateInput } from "@/db/schema/users";
@@ -147,7 +150,7 @@ export async function adminUpdateOrderAction(
 // ─── Payout mutations ──────────────────────────────────────────────────────
 
 const payoutUpdateSchema = z.object({
-  status: z.enum(["pending", "processing", "completed", "failed"]).optional(),
+  status: payoutStatusSchema.optional(),
   adminNote: z.string().optional(),
   processedAt: z.string().optional(), // ISO date string
 });
@@ -183,9 +186,9 @@ export async function adminUpdatePayoutAction(
 // ─── User mutations ───────────────────────────────────────────────────────
 
 const userUpdateSchema = z.object({
-  role: z.enum(["user", "seller", "admin", "moderator"]).optional(),
+  role: userRoleSchema.optional(),
   disabled: z.boolean().optional(),
-  storeStatus: z.enum(["pending", "approved", "rejected"]).optional(),
+  storeStatus: storeStatusSchema.optional(),
 });
 
 export async function adminUpdateUserAction(
@@ -231,13 +234,13 @@ export async function adminDeleteUserAction(uid: string): Promise<void> {
 
 // ─── Store approval mutations ─────────────────────────────────────────────
 
-const storeStatusSchema = z.object({
+const storeApprovalSchema = z.object({
   uid: z.string().min(1),
   action: z.enum(["approve", "reject"]),
 });
 
 export async function adminUpdateStoreStatusAction(
-  input: z.infer<typeof storeStatusSchema>,
+  input: z.infer<typeof storeApprovalSchema>,
 ): Promise<void> {
   const admin = await requireRoleUser(["admin"]);
 
@@ -248,19 +251,15 @@ export async function adminUpdateStoreStatusAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  const parsed = storeStatusSchema.safeParse(input);
+  const parsed = storeApprovalSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
       parsed.error.issues[0]?.message ?? "Invalid input",
     );
 
   const { uid, action } = parsed.data;
-  const newStatus = action === "approve" ? "approved" : "rejected";
 
-  await adminUpdateStoreStatusDomain(admin.uid, {
-    uid,
-    action: newStatus === "approved" ? "approve" : "reject",
-  });
+  await adminUpdateStoreStatusDomain(admin.uid, { uid, action });
 }
 
 // ─── Product mutations (admin override) ──────────────────────────────────
