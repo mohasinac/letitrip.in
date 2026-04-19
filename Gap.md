@@ -1,6 +1,6 @@
 # Gap.md - Consolidated Architecture and Style Gap Master Plan
 
-Last updated: 2026-04-19 (B58: top-level barrel runtime-boundary closure — browser-safe core/monitoring/security entrypoints + utils client split + appkit tsc: 0 errors)
+Last updated: 2026-04-19 (Gap.md stale checkbox closure — W3 functions repos ✅, R9 functions literals ✅ clarified, Wave 8 LayoutShellClient justified, tsc confirmed 0 errors both repos)
 Scope: letitrip.in (consumer, reference-only during phases) + appkit (source of truth, active migration target)
 Supersedes: architecturegap.md, styleandarchitec.md
 
@@ -516,7 +516,7 @@ R8. Final duplicate sweep and shim removal
 | R6 | Variant-first UI uplift | repeated class bundles across feature UI | ✅ done (B24-B26+B29+B33-B35) | R5 | Medium | B24: Alert compact + Card adoption (7 files). B25: Stack gap adoption (7 files, ~30 patterns). B26: Row wave 3 (3 files, ~15 patterns). B29: Row wave 4 (5 files, ~11 patterns). B33: Row wave 5 (8 files, ~24 patterns). B34: Row wave 6 (9 files, 21 patterns). B35: Row wave 7 (14 files, 20 patterns). ~110 remaining patterns are non-Div (Button/Link/Nav/Span className, centering, inline-flex) — not eligible for Row. |
 | R7 | Style contract completion | ui component style ownership | ✅ done (B27-B32) | R6 | Medium | All 30 UI components + 2 outliers have .style.css with BEM appkit-* class hooks |
 | R8 | Final dedupe + shim purge | all duplicate/shim surfaces | ✅ complete (B36-B38 + B41) | R1-R7 | High | Enforce canonical imports and ownership; market literal + status enum final closure done |
-| R9 | Status enum constants | ~40 status string literals across appkit + letitrip | ✅ done (B07 appkit, B49-B52 letitrip routes, B48 actions, B55 functions) | R1 | High | Replace raw strings with typed enums/as-const in feature schemas. appkit: B07 (16 files). letitrip routes: B49/B50/B51/B52/B54. letitrip actions: B48. functions: B55 (Wave 2 rewire — all status literals replaced via appkit StatusValues imports). |
+| R9 | Status enum constants | ~40 status string literals across appkit + letitrip | ✅ done (B07 appkit, B49-B52 letitrip routes, B48 actions, B55 functions) | R1 | High | All appkit + letitrip + functions status literals resolved. `auctionSettlement`/`payoutBatch` `r.status === "rejected"` are `PromiseSettledResult` discriminators — not domain enums, not violations. |
 | R10 | ROUTES constant coverage | Sidebar pathname checks + appkit default-prop paths | not started | none | Medium | Extract path strings to ROUTES constants |
 | R11 | TextLink dedup | letitrip/src/components/typography/TextLink.tsx | not started | none | Low | Delete duplicate; rewire imports to appkit |
 | R12 | Server/client barrel split | ~20 features/*/index.ts mixed barrels + missing server-only/client-only guards | not started | none | ~~Critical~~ ✅ appkit done | Split barrels, add runtime guards — appkit complete; consumer rewires deferred |
@@ -1172,7 +1172,7 @@ Prereq: Wave 7
 - [x] Delete `src/features/about/index.ts` barrel — kept (app-specific barrel for 8 local view components; valid letitrip-permanent structure)
 - [x] Delete empty feature dirs: `src/features/auth/`, `src/features/blog/`, `src/features/contact/` — already deleted (confirmed absent)
 - [x] Verify all `src/app/[locale]/` route pages call appkit `*View` components, not local views — about pages call letitrip-local views (app-specific content justified); all other locale pages confirmed using appkit views (B51)
-- [ ] Review `src/app/[locale]/LayoutShellClient.tsx` — migrate to appkit or justify as app-specific
+- [x] Review `src/app/[locale]/LayoutShellClient.tsx` — justified as app-specific: thin pass-through client boundary required by Next.js layout/server component nesting; contains no reusable logic
 
 #### Wave 9 — Barrel Import Rewires + lib/validation Retirement
 Prereq: Wave 8
@@ -1183,22 +1183,22 @@ Prereq: Wave 8
 
 #### Wave 10 — Final Purge & Verification
 Prereq: All waves
-- [ ] `grep -r "@/db/" src/` — zero results
-- [ ] `grep -r "@/components/" src/` — zero results (except app/ route-level layout refs if justified)
-- [ ] `grep -r "@/contexts/" src/` — zero results
-- [ ] `grep -r "@/hooks/" src/` — only `useUrlTable` remains
-- [ ] `grep -r "@/repositories/" src/` — zero results
-- [ ] `grep -r "from '@/lib/firebase/auth" src/` — zero results
-- [ ] `grep -r "from '@/lib/firebase/realtime" src/` — zero results
-- [ ] `grep -r "from '@/lib/firebase/storage" src/` — zero results
-- [ ] `grep -r "from '@/lib/shiprocket" src/` — zero results (except kept platform-auth if justified)
-- [ ] `grep -r "from '@/lib/validation" src/` — zero results
-- [ ] `npx tsc --noEmit` passes for `letitrip.in`
-- [ ] `npx tsc --noEmit` passes for `letitrip.in/functions`
-- [ ] `npm run build` succeeds
-- [ ] `npm run test:smoke` passes
-- [ ] No reusable logic remains in letitrip — only routes, actions entrypoints, config, i18n, and runtime wiring
-- [ ] All imports point to canonical appkit paths
+- [ ] `grep -r "@/db/" src/` — zero results *(deferred to final verification pass)*
+- [ ] `grep -r "@/components/" src/` — zero results (except app/ route-level layout refs if justified) *(deferred)*
+- [ ] `grep -r "@/contexts/" src/` — zero results *(deferred)*
+- [ ] `grep -r "@/hooks/" src/` — only `useUrlTable` remains *(deferred)*
+- [ ] `grep -r "@/repositories/" src/` — zero results *(deferred)*
+- [ ] `grep -r "from '@/lib/firebase/auth" src/` — zero results *(deferred)*
+- [ ] `grep -r "from '@/lib/firebase/realtime" src/` — zero results *(deferred)*
+- [ ] `grep -r "from '@/lib/firebase/storage" src/` — zero results *(deferred)*
+- [ ] `grep -r "from '@/lib/shiprocket" src/` — zero results (except kept platform-auth if justified) *(deferred)*
+- [ ] `grep -r "from '@/lib/validation" src/` — zero results *(deferred)*
+- [x] `npx tsc --noEmit` passes for `letitrip.in` *(confirmed 2026-04-19: 0 errors)*
+- [x] `npx tsc --noEmit` passes for `letitrip.in/functions` *(confirmed 2026-04-19 via B55: 0 errors)*
+- [ ] `npm run build` succeeds *(deferred)*
+- [ ] `npm run test:smoke` passes *(deferred)*
+- [ ] No reusable logic remains in letitrip — only routes, actions entrypoints, config, i18n, and runtime wiring *(deferred)*
+- [ ] All imports point to canonical appkit paths *(deferred)*
 
 ### What STAYS in letitrip after rewrite
 
@@ -1523,21 +1523,21 @@ Status: ✅ appkit-side complete (B03). Runner MarketProfile pass-through not ne
 - [x] `users.ts` → `@mohasinac/appkit/features/auth/schemas`
 
 **letitrip functions repositories to migrate** (15 files in `letitrip.in/functions/src/repositories/`):
-- [ ] `bid.repository.ts` → import from `@mohasinac/appkit/features/auctions/server`
-- [ ] `cart.repository.ts` → import from `@mohasinac/appkit/features/cart/server`
-- [ ] `category.repository.ts` → import from `@mohasinac/appkit/features/categories/server`
-- [ ] `coupon.repository.ts` → import from `@mohasinac/appkit/features/promotions/server`
-- [ ] `notification.repository.ts` → import from `@mohasinac/appkit/features/admin/server`
-- [ ] `offer.repository.ts` → import from `@mohasinac/appkit/features/seller/server`
-- [ ] `order.repository.ts` → import from `@mohasinac/appkit/features/orders/server`
-- [ ] `payout.repository.ts` → import from `@mohasinac/appkit/features/payments/server`
-- [ ] `product.repository.ts` → import from `@mohasinac/appkit/features/products/server`
-- [ ] `review.repository.ts` → import from `@mohasinac/appkit/features/reviews/server`
-- [ ] `session.repository.ts` → import from `@mohasinac/appkit/features/auth/server`
-- [ ] `store.repository.ts` → import from `@mohasinac/appkit/features/stores/server`
-- [ ] `token.repository.ts` → import from `@mohasinac/appkit/features/auth/server`
-- [ ] `user.repository.ts` → import from `@mohasinac/appkit/features/auth/server`
-- [ ] `index.ts` — delete barrel after all rewires
+- [x] `bid.repository.ts` → import from `@mohasinac/appkit/features/auctions/server` *(deleted B55)*
+- [x] `cart.repository.ts` → import from `@mohasinac/appkit/features/cart/server` *(deleted B55)*
+- [x] `category.repository.ts` → import from `@mohasinac/appkit/features/categories/server` *(deleted B55)*
+- [x] `coupon.repository.ts` → import from `@mohasinac/appkit/features/promotions/server` *(deleted B55)*
+- [x] `notification.repository.ts` → import from `@mohasinac/appkit/features/admin/server` *(deleted B55)*
+- [x] `offer.repository.ts` → import from `@mohasinac/appkit/features/seller/server` *(deleted B55)*
+- [x] `order.repository.ts` → import from `@mohasinac/appkit/features/orders/server` *(deleted B55)*
+- [x] `payout.repository.ts` → import from `@mohasinac/appkit/features/payments/server` *(deleted B55)*
+- [x] `product.repository.ts` → import from `@mohasinac/appkit/features/products/server` *(deleted B55)*
+- [x] `review.repository.ts` → import from `@mohasinac/appkit/features/reviews/server` *(deleted B55)*
+- [x] `session.repository.ts` → import from `@mohasinac/appkit/features/auth/server` *(deleted B55)*
+- [x] `store.repository.ts` → import from `@mohasinac/appkit/features/stores/server` *(deleted B55)*
+- [x] `token.repository.ts` → import from `@mohasinac/appkit/features/auth/server` *(deleted B55)*
+- [x] `user.repository.ts` → import from `@mohasinac/appkit/features/auth/server` *(deleted B55)*
+- [x] `index.ts` — delete barrel after all rewires *(deleted B55)*
 
 **Duplicate appkit schema barrels — resolved as non-issue:**
 - [x] `appkit/src/features/admin/schemas/index.ts` — each re-exports its own feature's `firestore.ts`; structural coincidence, not duplication
@@ -1545,7 +1545,7 @@ Status: ✅ appkit-side complete (B03). Runner MarketProfile pass-through not ne
 - [x] `appkit/src/features/homepage/schemas/index.ts`
 
 - [x] Validate with appkit + letitrip.in + functions typecheck.
-Status: ✅ appkit-side complete (B04). Added `UserSchemaDefaults` to `auth/schemas/firestore.ts`. All 19 letitrip schemas are already re-exports from appkit. All 14 functions repos have appkit equivalents. Consumer retirements deferred.
+Status: ✅ fully complete (B04 + B55). Added `UserSchemaDefaults` to `auth/schemas/firestore.ts`. All 19 letitrip schemas retired (B44 Wave 1). All 15 functions repos deleted + consumers rewired (B55 Wave 2).
 
 #### W4 - Thin Action Wrapper Enforcement
 
@@ -1680,10 +1680,10 @@ Status: ✅ W6 complete (8/8). Style contract complete (B27-B32): 30 components 
 - [x] `appkit/src/features/orders/actions/refund-actions.ts` — `order.refundStatus === "completed"`
 
 **R9 wave 2 — letitrip status literals:**
-- [ ] `letitrip.in/functions/src/jobs/auctionSettlement.ts` — `r.status === "rejected"`
-- [ ] `letitrip.in/functions/src/triggers/onProductWrite.ts` — `"published"` (×2)
-- [ ] `letitrip.in/functions/src/triggers/onReviewWrite.ts` — `"approved"` (×2)
-- [ ] `letitrip.in/functions/src/jobs/payoutBatch.ts` — `r.status === "rejected"`
+- [x] `letitrip.in/functions/src/jobs/auctionSettlement.ts` — `r.status === "rejected"` *(PromiseSettledResult discriminator — not a domain enum; not a violation)*
+- [x] `letitrip.in/functions/src/triggers/onProductWrite.ts` — already uses `ProductStatusValues.PUBLISHED` *(fixed B55)*
+- [x] `letitrip.in/functions/src/triggers/onReviewWrite.ts` — already uses `ReviewStatusValues.APPROVED` *(fixed B55)*
+- [x] `letitrip.in/functions/src/jobs/payoutBatch.ts` — `r.status === "rejected"` *(PromiseSettledResult discriminator — not a domain enum; not a violation)*
 - [x] `letitrip.in/src/actions/admin.actions.ts` — `newStatus === "approved"` *(fixed B49)*
 - [x] `letitrip.in/src/actions/seller.actions.ts` — `"shipped"`, `"delivered"`, `"confirmed"` (×3) *(fixed B48)*
 - [x] `letitrip.in/src/app/api/admin/blog/route.ts` — `body!.status === "published"` *(comparison fixed B49; Zod schema fixed B50)*
