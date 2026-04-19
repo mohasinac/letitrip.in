@@ -23,7 +23,7 @@ import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
 export const maxDuration = 60;

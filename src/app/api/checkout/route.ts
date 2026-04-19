@@ -47,7 +47,10 @@ import {
   CONSENT_OTP_MAX_BYPASS_CREDITS,
 } from "@mohasinac/appkit/features/auth/server";
 import type { AddressDocument } from "@mohasinac/appkit/features/account";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 import type { ProductDocument } from "@mohasinac/appkit/features/products";
+import { OrderStatusValues, PaymentStatusValues } from "@mohasinac/appkit/features/orders";
+import { getDefaultCurrency } from "@mohasinac/appkit/core";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
 
@@ -194,7 +197,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
 
             if (
               !productData ||
-              productData.status !== "published" ||
+              productData.status !== ProductStatusValues.PUBLISHED ||
               productData.availableQuantity < item.quantity
             ) {
               unavailableItems.push({
@@ -357,14 +360,14 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
         quantity: totalQuantity,
         unitPrice: firstItem.price,
         totalPrice: orderTotal,
-        currency: firstItem.currency ?? "INR",
+        currency: firstItem.currency ?? getDefaultCurrency(),
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
         orderType,
         offerId: firstItem.offerId ?? undefined,
-        status: "pending",
-        paymentStatus: "pending",
+        status: OrderStatusValues.PENDING,
+        paymentStatus: PaymentStatusValues.PENDING,
         paymentMethod,
         shippingAddress,
         notes,
@@ -387,7 +390,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
               : firstItem.productTitle,
           quantity: totalQuantity,
           totalPrice: orderTotal,
-          currency: firstItem.currency ?? "INR",
+          currency: firstItem.currency ?? getDefaultCurrency(),
           shippingAddress,
           paymentMethod,
           items: orderItems,

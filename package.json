@@ -10,13 +10,16 @@
     "test": "jest",
     "test:smoke": "node scripts/qa/smoke-pages-api.mjs",
     "test:smoke:existing": "cross-env SMOKE_USE_EXISTING_SERVER=1 node scripts/qa/smoke-pages-api.mjs",
+    "pre-commit": "npm run lint",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "index:generate": "node scripts/tooling/get-index.js",
-    "firebase:reset": "node scripts/firebase/reset-project.mjs",
-    "firebase:reset:all": "node scripts/firebase/reset-project.mjs --yes",
-    "firebase:deploy:indexes": "firebase deploy --only firestore:indexes",
-    "firebase:deploy:rules": "firebase deploy --only firestore:rules,storage:rules,database:rules"
+    "index:generate": "node ../appkit/scripts/get-index.js",
+    "firebase:generate": "node ../appkit/scripts/firebase-merge.mjs",
+    "firebase:deploy": "node ../appkit/scripts/firebase-merge.mjs --deploy",
+    "firebase:deploy:rules": "node ../appkit/scripts/firebase-merge.mjs --deploy --only firestore:rules,storage,database",
+    "firebase:deploy:indexes": "node ../appkit/scripts/firebase-merge.mjs --deploy --only firestore:indexes",
+    "firebase:reset": "node ../appkit/scripts/firebase-reset.mjs",
+    "firebase:reset:all": "node ../appkit/scripts/firebase-reset.mjs --yes"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.11.1",

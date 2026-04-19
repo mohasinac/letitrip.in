@@ -1,57 +1,36 @@
 import "@/providers.config";
 /**
- * API Route: Admin Dashboard Statistics
- * GET /api/admin/dashboard
+ * Admin Event Status API Route
+ * PATCH /api/admin/events/:id/status — Update event status
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  userRepository,
-  productRepository,
-  orderRepository,
-} from "@mohasinac/appkit/repositories";
+import { eventRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
+type RouteContext = { params: Promise<{ id: string }> };
 
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async () => {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-    // Parallel execution of all count queries for speed
-    const [
-      totalUsers,
-      activeUsers,
-      newUsers,
-      disabledUsers,
-      adminUsers,
-      totalProducts,
-      totalOrders,
-    ] = await Promise.all([
-      userRepository.count().catch(() => 0),
-      userRepository.countActive().catch(() => 0),
-      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
-      userRepository.countDisabled().catch(() => 0),
-      userRepository.countByRole("admin").catch(() => 0),
-      productRepository.count().catch(() => 0),
-      orderRepository.count().catch(() => 0),
-    ]);
-
-    return successResponse({
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        new: newUsers,
-        newThisMonth: newUsers,
-        disabled: disabledUsers,
-        admins: adminUsers,
-      },
-      products: {
-        total: totalProducts,
-      },
-      orders: {
-        total: totalOrders,
-      },
-    });
-  },
+const updateStatusSchema = z.object({
+  status: z.enum(["draft", "published", "active", "ended", "cancelled", "paused"]),
 });
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = updateStatusSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
+
+  serverLogger.info("Admin updating event status", { id, status: parsed.data.status });
+
+  await eventRepository.changeStatus(id, parsed.data.status as any);
+  return Response.json(successResponse({ id, status: parsed.data.status }, SUCCESS_MESSAGES.EVENT.UPDATED));
+}

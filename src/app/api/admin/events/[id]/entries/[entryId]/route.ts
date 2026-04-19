@@ -1,57 +1,39 @@
 import "@/providers.config";
 /**
- * API Route: Admin Dashboard Statistics
- * GET /api/admin/dashboard
+ * Admin Event Entry [entryId] API Route
+ * PATCH /api/admin/events/:id/entries/:entryId — Review an entry (approve/reject/flag)
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  userRepository,
-  productRepository,
-  orderRepository,
-} from "@mohasinac/appkit/repositories";
+import { eventEntryRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async () => {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+type RouteContext = { params: Promise<{ id: string; entryId: string }> };
 
-    // Parallel execution of all count queries for speed
-    const [
-      totalUsers,
-      activeUsers,
-      newUsers,
-      disabledUsers,
-      adminUsers,
-      totalProducts,
-      totalOrders,
-    ] = await Promise.all([
-      userRepository.count().catch(() => 0),
-      userRepository.countActive().catch(() => 0),
-      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
-      userRepository.countDisabled().catch(() => 0),
-      userRepository.countByRole("admin").catch(() => 0),
-      productRepository.count().catch(() => 0),
-      orderRepository.count().catch(() => 0),
-    ]);
-
-    return successResponse({
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        new: newUsers,
-        newThisMonth: newUsers,
-        disabled: disabledUsers,
-        admins: adminUsers,
-      },
-      products: {
-        total: totalProducts,
-      },
-      orders: {
-        total: totalOrders,
-      },
-    });
-  },
+const reviewEntrySchema = z.object({
+  status: z.enum(["approved", "rejected", "flagged"]),
+  reviewNote: z.string().optional(),
+  points: z.number().optional(),
 });
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id: eventId, entryId } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = reviewEntrySchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
+
+  serverLogger.info("Admin reviewing event entry", { eventId, entryId, status: parsed.data.status });
+
+  await eventEntryRepository.reviewEntry(entryId, parsed.data.status as any, "admin", parsed.data.reviewNote);
+  return Response.json(successResponse({ entryId, ...parsed.data }, SUCCESS_MESSAGES.EVENT.UPDATED));
+}

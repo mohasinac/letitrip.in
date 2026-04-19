@@ -1,3 +1,5 @@
+import { SecurityPrivacyView } from "@/features/about";
+
 export default function Page() {
-  return null;
+  return <SecurityPrivacyView />;
 }

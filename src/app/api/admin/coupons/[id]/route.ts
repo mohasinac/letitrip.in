@@ -1,181 +1,123 @@
 import "@/providers.config";
 /**
- * Admin Blog API Route
- * GET  /api/admin/blog â€” List all blog posts
- * POST /api/admin/blog â€” Create a new blog post
+ * Admin Coupons [id] API Route
+ * GET    /api/admin/coupons/:id — Get a coupon by ID
+ * PATCH  /api/admin/coupons/:id — Activate/deactivate or update a coupon
+ * DELETE /api/admin/coupons/:id — Delete a coupon
  */
 
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit/next";
-import { blogRepository } from "@mohasinac/appkit/repositories";
+import { couponsRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import {
-  finalizeStagedMediaObject,
-  finalizeStagedMediaObjectArray,
-} from "@mohasinac/appkit/features/media/server";
 
-const mediaFieldSchema = z.object({
-  url: z.string().url(),
-  type: z.enum(["image", "video", "file"]),
-  alt: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
+type RouteContext = { params: Promise<{ id: string }> };
+
+const updateCouponSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  discount: z
+    .object({
+      value: z.number().min(0),
+      maxDiscount: z.number().optional(),
+      minPurchase: z.number().optional(),
+    })
+    .optional(),
+  usage: z
+    .object({
+      totalLimit: z.number().optional(),
+      perUserLimit: z.number().optional(),
+    })
+    .optional(),
+  validity: z
+    .object({
+      startDate: z.string().transform((v) => new Date(v)).optional(),
+      endDate: z
+        .string()
+        .optional()
+        .transform((v) => (v ? new Date(v) : undefined)),
+      isActive: z.boolean().optional(),
+    })
+    .optional(),
+  restrictions: z
+    .object({
+      applicableProducts: z.array(z.string()).optional(),
+      applicableCategories: z.array(z.string()).optional(),
+      applicableSellers: z.array(z.string()).optional(),
+      excludeProducts: z.array(z.string()).optional(),
+      excludeCategories: z.array(z.string()).optional(),
+      firstTimeUserOnly: z.boolean().optional(),
+      combineWithSellerCoupons: z.boolean().optional(),
+    })
+    .optional(),
+  action: z.enum(["activate", "deactivate"]).optional(),
 });
 
-const createBlogPostSchema = z.object({
-  title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  slug: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  excerpt: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  content: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  category: z.enum(["news", "tips", "guides", "updates", "community"]),
-  tags: z.array(z.string()).default([]),
-  isFeatured: z.boolean().default(false),
-  status: z.enum(["draft", "published", "archived"]).default("draft"),
-  coverImage: mediaFieldSchema.nullable().optional(),
-  contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),
-  additionalImages: z.array(mediaFieldSchema).max(5).optional().default([]),
-  authorId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  authorName: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  authorAvatar: z.string().optional(),
-  readTimeMinutes: z.number().int().min(1).default(5),
-  publishedAt: z.string().optional(),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
-});
-
-/**
- * GET /api/admin/blog
- *
- * Query params:
- *  - filters  (string) â€” Sieve filters (e.g. status==published, isFeatured==true)
- *  - sorts    (string) â€” Sieve sorts (e.g. -publishedAt)
- *  - page     (number) â€” page number (default 1)
- *  - pageSize (number) â€” results per page (default 50, max 200)
- *
- * meta.total / published / drafts / featured are always computed from the
- * full unfiltered dataset so stat cards remain accurate regardless of filter.
- */
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
-      min: 1,
-      max: 200,
-    });
-    const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-
-    serverLogger.info("Admin blog posts list requested", {
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
-
-    // Compute summary counts + paginated results in parallel (Rule 8 â€” no findAll())
-    const [
-      publishedResult,
-      draftsResult,
-      featuredResult,
-      allResult,
-      sieveResult,
-    ] = await Promise.all([
-      blogRepository.listAll({
-        filters: "status==published",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      blogRepository.listAll({
-        filters: "status==draft",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      blogRepository.listAll({
-        filters: "isFeatured==true",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      blogRepository.listAll({ sorts: "createdAt", page: "1", pageSize: "1" }),
-      blogRepository.listAll({
-        filters,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      }),
-    ]);
-
-    const published = publishedResult.total;
-    const drafts = draftsResult.total;
-    const featured = featuredResult.total;
-
-    return successResponse({
-      posts: sieveResult.items,
-      meta: {
-        total: allResult.total, // Always full count for stat cards
-        published,
-        drafts,
-        featured,
-        filteredTotal: sieveResult.total,
-        page: sieveResult.page,
-        pageSize: sieveResult.pageSize,
-        totalPages: sieveResult.totalPages,
-        hasMore: sieveResult.hasMore,
-      },
-    });
-  },
-});
-
-/**
- * POST /api/admin/blog â€” Create a new blog post
- */
-export const POST = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  schema: createBlogPostSchema,
-  handler: async ({ body, user }) => {
-    const { publishedAt, ...rest } = body!;
-    const coverImage = await finalizeStagedMediaObject(rest.coverImage);
-    const contentImages = await finalizeStagedMediaObjectArray(
-      rest.contentImages,
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const coupon = await couponsRepository.getCouponByCode(id).catch(() => null);
+  if (!coupon) {
+    return Response.json(
+      { success: false, error: ERROR_MESSAGES.COUPON.NOT_FOUND },
+      { status: 404 },
     );
-    const additionalImages = await finalizeStagedMediaObjectArray(
-      rest.additionalImages,
+  }
+  return Response.json({ success: true, data: coupon });
+}
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = updateCouponSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
     );
+  }
 
-    const postData = {
-      ...rest,
-      coverImage,
-      contentImages,
-      additionalImages,
-      publishedAt: publishedAt
-        ? new Date(publishedAt)
-        : body!.status === "published"
-          ? new Date()
-          : undefined,
-      authorId: body!.authorId || user?.uid || "",
-    };
+  serverLogger.info("Updating coupon", { id, action: parsed.data.action });
 
-    serverLogger.info("Creating blog post", {
-      title: postData.title,
-      authorId: postData.authorId,
-    });
+  const { action, ...updateData } = parsed.data;
 
-    const post = await blogRepository.create(postData);
+  if (action === "deactivate") {
+    await couponsRepository.deactivateCoupon(id);
+    return Response.json(successResponse(null, SUCCESS_MESSAGES.COUPON.DEACTIVATED));
+  }
+  if (action === "activate") {
+    await couponsRepository.reactivateCoupon(id);
+    return Response.json(successResponse(null, SUCCESS_MESSAGES.COUPON.REACTIVATED));
+  }
 
-    return successResponse(post, SUCCESS_MESSAGES.BLOG.CREATED);
-  },
-});
+  // Generic PATCH — update fields via list + find pattern
+  const updated = await couponsRepository.list({ filters: `id==${id}`, page: 1, pageSize: 1 });
+  const coupon = updated.items[0];
+  if (!coupon) {
+    return Response.json({ success: false, error: ERROR_MESSAGES.COUPON.NOT_FOUND }, { status: 404 });
+  }
+  // Apply update via deactivate/reactivate as toggle, or use validity.isActive
+  if (updateData.validity?.isActive === false) {
+    await couponsRepository.deactivateCoupon(id);
+  } else if (updateData.validity?.isActive === true) {
+    await couponsRepository.reactivateCoupon(id);
+  }
+  return Response.json(successResponse({ ...coupon, ...updateData }, SUCCESS_MESSAGES.COUPON.UPDATED));
+}
+
+export async function DELETE(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  serverLogger.info("Deleting coupon", { id });
+  await couponsRepository.deactivateCoupon(id);
+  return Response.json(successResponse(null, SUCCESS_MESSAGES.COUPON.DELETED));
+}

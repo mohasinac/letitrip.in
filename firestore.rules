@@ -1,3 +1,7 @@
+// AUTO-GENERATED - do not edit manually.
+// Source: @mohasinac/appkit/firebase/base/firestore.rules
+// Regenerate: npm run firebase:generate
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -12,10 +16,10 @@ service cloud.firestore {
     // automatically bypasses these security rules.
     //
     // Frontend code MUST NOT import:
-    //   - @/lib/firebase/config     (client SDK)
-    //   - firebase/firestore        (client Firestore SDK)
-    //   - firebase/auth             (client Auth SDK)
-    //   - firebase/storage          (client Storage SDK)
+    //   - client SDK initialiser
+    //   - firebase/firestore (client Firestore SDK)
+    //   - firebase/auth     (client Auth SDK)
+    //   - firebase/storage  (client Storage SDK)
     //
     // These rules act as a full safety net — any accidental
     // client SDK call will be rejected at the Firebase layer.

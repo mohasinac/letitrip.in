@@ -27,8 +27,9 @@ import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/appkit/next";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/react";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;
@@ -40,7 +41,7 @@ export const POST = createRouteHandler({
     const eventId = randomUUID();
     const db = getAdminRealtimeDb();
     await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).set({
-      status: "pending",
+      status: RTDBPayloadStatus.PENDING,
       createdAt: Date.now(),
     });
     const syntheticUid = `auth_event_${eventId}`;

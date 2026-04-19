@@ -17,10 +17,11 @@ import { siteSettingsRepository } from "@mohasinac/appkit/repositories";
 import { successResponse } from "@mohasinac/appkit/next";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
+import { getDefaultCurrency } from "@mohasinac/appkit/core";
 
 const createOrderSchema = z.object({
   amount: z.number().positive("Amount must be positive"),
-  currency: z.string().default("INR"),
+  currency: z.string().default(getDefaultCurrency()),
   receipt: z.string().optional(),
 });
 

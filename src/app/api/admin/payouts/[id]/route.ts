@@ -1,181 +1,61 @@
-﻿import "@/providers.config";
+import "@/providers.config";
 /**
- * POST /api/admin/payouts/weekly
- *
- * Admin-manual trigger â€” processes weekly payouts for Shiprocket orders.
- * The scheduled version of this logic runs automatically every Saturday
- * at 05:00 UTC via the `weeklyPayoutEligibility` Firebase Function.
- * Use this endpoint for on-demand admin-initiated runs only.
- *
- * Logic:
- *   1. Find all orders where:
- *        status       === 'delivered'
- *        shippingMethod === 'shiprocket'
- *        payoutStatus === 'eligible'
- *   2. Group by sellerId
- *   3. For each seller:
- *        - Load seller payout details
- *        - Compute net amount (gross - 5% platform fee)
- *        - Create a PayoutDocument (status='pending')
- *        - Update all included orders: payoutStatus='requested', payoutId=<new>
- *   4. Return a summary object
- *
- * This endpoint is intentionally idempotent â€” orders with payoutStatus
- * already set to 'requested' or 'paid' are silently skipped.
+ * Admin Payouts [id] API Route
+ * GET   /api/admin/payouts/:id — Get a single payout
+ * PATCH /api/admin/payouts/:id — Update payout status
  */
 
-import {
-  userRepository,
-  orderRepository,
-  payoutRepository,
-} from "@mohasinac/appkit/repositories";
+import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
+import { payoutRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { OrderDocument } from "@mohasinac/appkit/features/orders";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+type RouteContext = { params: Promise<{ id: string }> };
 
-const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
-
-// â”€â”€â”€ Route â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-export const POST = createRouteHandler({
-  auth: true,
-  roles: ["admin"],
-  handler: async () => {
-    const eligibleOrders = await orderRepository.listAll({
-      filters:
-        "payoutStatus==eligible,shippingMethod==shiprocket,status==delivered",
-      sorts: "-createdAt",
-      page: "1",
-      pageSize: "5000",
-    });
-    const shiprocketDelivered = eligibleOrders.items as (OrderDocument & {
-      id: string;
-    })[];
-
-    if (shiprocketDelivered.length === 0) {
-      return successResponse({
-        payoutsCreated: 0,
-        ordersProcessed: 0,
-        sellers: [],
-        message: "No eligible orders to process.",
-      });
-    }
-
-    // â”€â”€ 2. Group by sellerId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    const bySeller = shiprocketDelivered.reduce<
-      Map<string, typeof shiprocketDelivered>
-    >((map, order) => {
-      const id = order.sellerId!;
-      if (!map.has(id)) map.set(id, []);
-      map.get(id)!.push(order);
-      return map;
-    }, new Map());
-
-    const payoutSummaries: {
-      sellerId: string;
-      payoutId: string;
-      orderCount: number;
-      netAmount: number;
-      grossAmount: number;
-      platformFee: number;
-    }[] = [];
-
-    // â”€â”€ 3. Create one payout per seller â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    for (const [sellerId, orders] of bySeller.entries()) {
-      const seller = await userRepository.findById(sellerId);
-      if (!seller) {
-        serverLogger.warn("Weekly payout: seller not found, skipping", {
-          sellerId,
-          orderIds: orders.map((o) => o.id),
-        });
-        continue;
-      }
-
-      const grossAmount = orders.reduce((s, o) => s + (o.totalPrice ?? 0), 0);
-      const platformFee =
-        Math.round(grossAmount * PLATFORM_COMMISSION_RATE * 100) / 100;
-      const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
-
-      const payoutData = {
-        sellerId,
-        sellerName: (seller.displayName ?? seller.email ?? sellerId) as string,
-        sellerEmail: (seller.email ?? "") as string,
-        orderIds: orders.map((o) => o.id!),
-        amount: netAmount,
-        grossAmount,
-        platformFee,
-        platformFeeRate: PLATFORM_COMMISSION_RATE,
-        currency: "INR",
-        status: "pending" as const,
-        paymentMethod:
-          seller.payoutDetails?.method === "upi"
-            ? ("upi" as const)
-            : ("bank_transfer" as const),
-        upiId:
-          seller.payoutDetails?.method === "upi"
-            ? seller.payoutDetails.upiId
-            : undefined,
-        bankAccount:
-          seller.payoutDetails?.method === "bank_transfer" &&
-          seller.payoutDetails.bankAccount
-            ? {
-                accountHolderName:
-                  seller.payoutDetails.bankAccount.accountHolderName,
-                accountNumberMasked:
-                  seller.payoutDetails.bankAccount.accountNumberMasked,
-                ifscCode: seller.payoutDetails.bankAccount.ifscCode,
-                bankName: seller.payoutDetails.bankAccount.bankName,
-              }
-            : undefined,
-        notes: `Automated weekly payout â€” ${orders.length} Shiprocket delivered order(s)`,
-        requestedAt: new Date(),
-      };
-
-      const payoutDoc = await payoutRepository.create(payoutData);
-      const payoutId = payoutDoc.id!;
-
-      // Update all included orders
-      await Promise.all(
-        orders.map((o) =>
-          orderRepository.update(o.id!, {
-            payoutStatus: "requested",
-            payoutId,
-          }),
-        ),
-      );
-
-      payoutSummaries.push({
-        sellerId,
-        payoutId,
-        orderCount: orders.length,
-        netAmount,
-        grossAmount,
-        platformFee,
-      });
-
-      serverLogger.info("Weekly payout created", {
-        sellerId,
-        payoutId,
-        orderCount: orders.length,
-        netAmount,
-      });
-    }
-
-    serverLogger.info("Weekly payout batch complete", {
-      payoutsCreated: payoutSummaries.length,
-      ordersProcessed: shiprocketDelivered.length,
-    });
-
-    return successResponse(
-      {
-        payoutsCreated: payoutSummaries.length,
-        ordersProcessed: shiprocketDelivered.length,
-        sellers: payoutSummaries,
-      },
-      SUCCESS_MESSAGES.PAYOUT.WEEKLY_PROCESSED,
-    );
-  },
+const updatePayoutSchema = z.object({
+  status: z.enum(["pending", "processing", "paid", "failed", "cancelled"]),
+  transactionId: z.string().optional(),
+  notes: z.string().optional(),
 });
+
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const payouts = await payoutRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
+  const payout = payouts.items[0];
+  if (!payout) {
+    return Response.json(
+      { success: false, error: ERROR_MESSAGES.PAYOUT.NOT_FOUND },
+      { status: 404 },
+    );
+  }
+  return Response.json({ success: true, data: payout });
+}
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = updatePayoutSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
+
+  const { status, transactionId, notes } = parsed.data;
+
+  serverLogger.info("Admin updating payout status", { id, status });
+
+  await payoutRepository.updateStatus(id, status as any, {
+    ...(notes && { adminNote: notes }),
+  } as any);
+
+  return Response.json(successResponse({ id, status }, SUCCESS_MESSAGES.PAYOUT.UPDATED));
+}

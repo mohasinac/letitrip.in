@@ -1,7 +1,5 @@
 {
-  "buildCommand": "npm run build",
   "installCommand": "npm ci --legacy-peer-deps",
-  "framework": "nextjs",
   "regions": ["bom1"],
   "git": {
     "deploymentEnabled": {

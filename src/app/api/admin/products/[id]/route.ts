@@ -1,132 +1,72 @@
-﻿import "@/providers.config";
+import "@/providers.config";
 /**
- * Admin Payouts API
- *
- * GET /api/admin/payouts â€” List all payouts (filterable by status)
+ * Admin Products [id] API Route
+ * GET    /api/admin/products/:id — Get a single product
+ * PATCH  /api/admin/products/:id — Update a product
+ * DELETE /api/admin/products/:id — Delete a product (soft via status)
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit/next";
-import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { payoutRepository } from "@mohasinac/appkit/repositories";
-import { piiBlindIndex } from "@mohasinac/appkit/security";
+import { productRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { PAYOUT_FIELDS } from "@mohasinac/appkit/features/payments";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
+type RouteContext = { params: Promise<{ id: string }> };
 
-/**
- * GET /api/admin/payouts
- *
- * Query params:
- *  - filters  (string) â€” Sieve filters (e.g. status==pending)
- *  - sorts    (string) â€” Sieve sorts (e.g. -createdAt)
- *  - page     (number) â€” page number (default 1)
- *  - pageSize (number) â€” results per page (default 50, max 200)
- *
- * summary stats are always computed from the full unfiltered dataset.
- */
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
+const updateProductSchema = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().optional(),
+  price: z.number().min(0).optional(),
+  originalPrice: z.number().min(0).optional(),
+  status: z.string().optional(),
+  availableQuantity: z.number().int().min(0).optional(),
+  isFeatured: z.boolean().optional(),
+  isPromoted: z.boolean().optional(),
+  category: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+}).passthrough();
 
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
-      min: 1,
-      max: 200,
-    });
-    const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-    const q = getStringParam(searchParams, "q")?.trim().toLowerCase() || "";
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const product = await productRepository.findByIdOrSlug(id).catch(() => null);
+  if (!product) {
+    return Response.json(
+      { success: false, error: ERROR_MESSAGES.PRODUCT.NOT_FOUND },
+      { status: 404 },
+    );
+  }
+  return Response.json({ success: true, data: product });
+}
 
-    serverLogger.info("Admin payouts list requested", {
-      filters,
-      sorts,
-      page,
-      pageSize,
-      q: q ? "[redacted]" : "",
-    });
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = updateProductSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
 
-    // Summary counts always use the full unfiltered dataset (1-doc count queries)
-    const [
-      allResult,
-      pendingResult,
-      processingResult,
-      completedResult,
-      failedResult,
-    ] = await Promise.all([
-      payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
-      payoutRepository.list({
-        filters: "status==pending",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      payoutRepository.list({
-        filters: "status==processing",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      payoutRepository.list({
-        filters: "status==completed",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-      payoutRepository.list({
-        filters: "status==failed",
-        sorts: "createdAt",
-        page: "1",
-        pageSize: "1",
-      }),
-    ]);
+  serverLogger.info("Admin updating product", { id });
+  const updated = await productRepository.updateProduct(id, parsed.data as any);
+  return Response.json(successResponse(updated, SUCCESS_MESSAGES.PRODUCT.UPDATED));
+}
 
-    const summary = {
-      total: allResult.total,
-      pending: pendingResult.total,
-      processing: processingResult.total,
-      completed: completedResult.total,
-      failed: failedResult.total,
-    };
-
-    const qFilter = q
-      ? q.includes("@")
-        ? `${PAYOUT_FIELDS.SELLER_EMAIL_INDEX}==${piiBlindIndex(q)}`
-        : `${PAYOUT_FIELDS.SELLER_NAME}==${q}`
-      : undefined;
-
-    const effectiveFilters =
-      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
-
-    // Avoid forcing extra composite indices for exact blind-index lookups.
-    const effectiveSorts = q ? undefined : sorts;
-
-    const sieveResult = await payoutRepository.list({
-      filters: effectiveFilters,
-      sorts: effectiveSorts,
-      page: String(page),
-      pageSize: String(pageSize),
-    });
-
-    return successResponse({
-      payouts: sieveResult.items,
-      summary: {
-        ...summary,
-        totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),
-      },
-      meta: {
-        total: sieveResult.total,
-        page: sieveResult.page,
-        pageSize: sieveResult.pageSize,
-        totalPages: sieveResult.totalPages,
-        hasMore: sieveResult.hasMore,
-      },
-    });
-  },
-});
+export async function DELETE(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  serverLogger.info("Admin deleting product", { id });
+  await productRepository.update(id, { status: "deleted" } as any);
+  return Response.json(successResponse(null, SUCCESS_MESSAGES.PRODUCT.DELETED));
+}

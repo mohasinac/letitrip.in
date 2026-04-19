@@ -1,6 +1,6 @@
 # Gap.md - Consolidated Architecture and Style Gap Master Plan
 
-Last updated: 2026-04-19 (B49: Post-Phase Wave 7.1 — API Route Thin-Wrapper Enforcement (MILD); fixed 11 MILD routes with enum status literals + proper import swaps; added BidStatusValues/BlogPostStatusValues/PayoutStatusValues to appkit; letitrip tsc: 0 errors)
+Last updated: 2026-04-20 (B52: Fix 15 copy-paste route bugs + CategorySortSelect readonly type fix; appkit tsc: 0 errors, letitrip tsc: 0 errors)
 Scope: letitrip.in (consumer, reference-only during phases) + appkit (source of truth, active migration target)
 Supersedes: architecturegap.md, styleandarchitec.md
 
@@ -1048,24 +1048,25 @@ Prereq: Wave 0 (baseline resolver wired)
 
 #### Wave 2 — Functions Repository Retirement (15 files DELETE)
 Prereq: Wave 1 (schemas resolved) ✅ + **appkit repo extensions (B05 blocker — see below)**
-Status: ⛔ BLOCKED — appkit repositories are missing ~33 methods required by functions jobs/triggers.
+Status: ⛔ BLOCKED — two remaining blockers (as of B50 analysis)
 
-**B05 Gap Analysis (2026-04-18):** The 14 functions repositories have custom Cloud Functions-specific query methods (WriteBatch patterns, timed-out queries, payout eligibility queries, etc.) that do not yet exist in appkit. Before swapping imports, these appkit repo extensions are required:
+**Blocker 1 — CJS/ESM packaging (confirmed B50 session):** functions package uses `"module": "commonjs"` with no `@mohasinac/appkit` dependency. appkit ships TypeScript source sub-paths (`"type": "module"`). Node.js cannot `require()` `.ts` files at runtime. Resolution plan:
+1. Add `"type": "module"` to `functions/package.json`
+2. Change `functions/tsconfig.json` `"module"` to `"NodeNext"`, `"moduleResolution"` to `"NodeNext"`
+3. Add `.js` extension to ~100 relative imports across 20+ functions source files
+4. Add `@mohasinac/appkit` as a package dependency in `functions/package.json`
+Estimated effort: 1 session. Risk: HIGH (production Cloud Functions).
 
-| Priority | Appkit Repo | Missing Methods |
-|---|---|---|
-| Tier 1 | `orders/repository/orders.repository.ts` | `getTimedOutPending(hours)`, `getEligibleShiprocket()`, `getEligibleAutomatic(windowDays)`, `markPayoutRequested(batch, id, payoutId)`, `createFromAuction(batch, input)` |
-| Tier 1 | `products/repository/products.repository.ts` | `getExpiredAuctions(now)`, `getPublishedProductIds()`, `incrementBidCountInBatch(batch, id, currentBid)`, `updateStatusInBatch(batch, id, status)` |
-| Tier 1 | `stores/repository/stores.repository.ts` | All write methods: `incrementTotalProducts(storeId, delta)`, `incrementItemsSold(storeId, delta)`, `setStats(storeId, ...)`, `updateReviewStats(storeId, ...)`, `listAllStoreIds()` |
-| Tier 1 | `categories/repository/categories.repository.ts` | `updateMetricsInBatch(batch, categoryId, ...)`, `setMetrics(categoryId, ...)` |
-| Tier 2 | `admin/repository/notification.repository.ts` | `createInBatch(batch, input)`, `getOldReadNotifications(cutoff)` |
-| Tier 2 | `promotions/repository/coupons.repository.ts` | `getExpiredActiveCoupons(now)`, `deactivateInBatch(batch, id)` |
-| Tier 2 | `cart/repository/cart.repository.ts` | `getStaleRefs(cutoffDate)` |
-| Tier 3 | `auth/repository/session.repository.ts` | `findExpiredSessions()` |
+**Blocker 2 — Type system mismatch (confirmed B50 session):** Functions repos define local projection types (`AuctionProductRow`, `BidRow`, `OrderRow`, `PayoutRow`, `ReviewRatingAggregate`, `SellerPayoutDetails`, `CategoryRow`, `OfferRow`, `CreateNotificationInput`, `CreateOrderFromAuctionInput`, `CreatePayoutInput`) that differ structurally from appkit schema types (`ProductDocument`, `BidDocument`, `OrderDocument`, etc.). Every job/trigger file that consumes these types must be updated after ESM migration. Estimated effort: 1 additional session.
 
-Once appkit repo extensions are implemented and validated, Wave 2 can proceed.
+**Blocker 3 — R9 Wave 2 functions literals (confirmed B50 session):** 4 functions files have bare status string literals (blocked by Blocker 1):
+- `functions/src/jobs/auctionSettlement.ts` — `r.status === "rejected"`
+- `functions/src/triggers/onProductWrite.ts` — `"published"` (×2)
+- `functions/src/triggers/onReviewWrite.ts` — `"approved"` (×2)
+- `functions/src/jobs/payoutBatch.ts` — `r.status === "rejected"`
+These will be fixed as part of the Wave 2 type migration pass.
 
-**New blocker (2026-04-18):** Functions package cannot currently consume `@mohasinac/appkit/features/*/server` directly under its `commonjs` TypeScript pipeline. Attempted rewires fail resolution/runtime compatibility because appkit ships ESM TypeScript source sub-paths. Wave 2 now additionally requires a packaging/resolution bridge for functions (for example: appkit JS build artifacts for server exports, or a dedicated CJS-compatible functions adapter surface) before repository-file deletion can proceed safely.
+**B05 Gap Analysis (2026-04-18):** appkit repo extensions now ✅ COMPLETE (B05).
 
 Rewire all `functions/src/jobs/` and `functions/src/triggers/` to import repositories from appkit `/server` paths.
 - [ ] `functions/src/repositories/bid.repository.ts` → `@mohasinac/appkit/features/auctions/server`
@@ -1092,7 +1093,7 @@ Prereq: Wave 1
 - [x] `src/components/layout/MainNavbar.tsx` → DELETED (orphaned)
 - [x] `src/components/layout/Sidebar.tsx` → DELETED (orphaned)
 - [x] `src/components/layout/TitleBar.tsx` → DELETED (orphaned)
-- [ ] `src/components/typography/TextLink.tsx` → DELETE (R11), replace all imports with `@mohasinac/appkit/ui`
+- [x] `src/components/typography/TextLink.tsx` → DELETED (R11 — done B09)
 - [x] `src/contexts/SessionContext.tsx` → DELETED, appkit SessionContext (B15) is canonical
 - [x] `src/contexts/ThemeContext.tsx` → DELETED, appkit ThemeContext (B14) is canonical
 - [x] `src/contexts/index.ts` → DELETED barrel
@@ -1100,7 +1101,7 @@ Prereq: Wave 1
 - [x] `src/hooks/useRazorpay.ts` → DELETED (zero external consumers; Razorpay hook move to appkit deferred to Wave 5)
 - [x] `src/hooks/useWishlistToggle.ts` → DELETED (zero external consumers)
 - [x] `src/hooks/useUrlTable.ts` → KEPT (app-specific next-intl adapter)
-- [ ] Delete `src/helpers/` (empty dirs: `auth/`, `logging/`, `validation/`)
+- [x] Delete `src/helpers/` (empty dirs confirmed deleted)
 
 #### Wave 4 — Lib Cleanup ✅ DONE (B46)
 Prereq: Wave 3 ✅
@@ -1175,8 +1176,8 @@ Prereq: Wave 7
 
 #### Wave 9 — Barrel Import Rewires (B12 leftovers)
 Prereq: Wave 8
-- [ ] Complete remaining 12/28 letitrip action files that still import from `@mohasinac/appkit/features/*/` instead of `/server`
-- [ ] Verify all server-side imports use `/server` sub-paths
+- [x] Complete remaining 12/28 letitrip action files that still import from `@mohasinac/appkit/features/*/` instead of `/server` *(all 12 confirmed done in B48 — checklist was stale)*
+- [x] Verify all server-side imports use `/server` sub-paths *(confirmed B48/B50 analysis)*
 - [ ] Verify no client bundles pull in server-only code
 
 #### Wave 10 — Final Purge & Verification
@@ -1427,6 +1428,9 @@ Scan basis: workspace-wide static inventory using file and pattern search across
 | B48 | Post-Phase Wave 6 | Action Import Rewires — fix 22 pre-existing tsc errors in 9 action/route files | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Fixed 22 tsc errors across 9 files: corrected import barrels (`index` → `server`) for `PlaceBidInput/Result` (auctions), `createBlogPostSchema/types` (blog), `CarouselSlide*` (homepage), `ChatRoomsResult/CreateRoomResult` (admin), `CouponCartValidationResult` (promotions); renamed 6 canonical types: `VoteFaqInput→VoteFaqActionInput`, `VoteFaqResult→VoteFaqActionResult`, `FAQCreateInput→FaqCreateInput`, `FAQUpdateInput→FaqUpdateInput`, `ProductListParams→ProductListActionParams`, `StoreListParams→StoreQueryListParams`; fixed `FailedPaymentMeta.razorpayOrderId→gatewayOrderId` (×5 in payment/verify/route.ts); replaced `"shipped"`/`"delivered"`/`"confirmed"`/`"shiprocket"` string literals with `OrderStatusValues`/`ShippingMethodValues` in `seller.actions.ts`; updated `src/actions/index.ts` barrel; letitrip tsc: 0 errors. |
 | B05 | Post-Phase Wave 2 | Functions repository retirement analysis — extend appkit repos with 33 missing methods; Wave 2 letitrip rewires now unblocked | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit repo extensions complete.** Added: orders (6: getTimedOutPending, getEligibleShiprocket, getEligibleAutomatic, markPayoutRequested, cancelInBatch, createFromAuction), products (4: getExpiredAuctions, getPublishedIds, updateStatusInBatch, incrementBidCountInBatch), stores (5: incrementTotalProducts, incrementItemsSold, setStats, updateReviewStats, listIds), categories (2: updateMetricsInBatch, setMetrics), notification (2: getOldReadRefs, createInBatch), coupons (2: getExpiredActiveRefs, deactivateInBatch), cart (1: getStaleRefs), session (1: getExpiredRefs). WriteBatch/DocumentReference pattern introduced. appkit tsc: 0 errors. **Wave 2 letitrip rewires (delete 14 functions repos + update jobs/triggers imports) are now unblocked — deferred to next session.** |
 | B49 | Post-Phase Wave 7.1 | API Route Thin-Wrapper Enforcement (MILD) — fix 23 routes: import swaps + status literal replacements | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Added `BidStatusValues` to `auctions/schemas/firestore.ts`, `BlogPostStatusValues` to `blog/schemas/firestore.ts`, `PayoutStatusValues` to `payments/schemas/firestore.ts`. Inlined RTDB_PATHS import in `providers/db-firebase/index.ts`. **Letitrip:** Fixed 10 import swaps (RTDB_PATHS: 5 routes kept local; getUserFromRequest: 5 stores routes kept local for callback wrapper compatibility). Fixed 11 status literal files → enum members: `cart/merge`, `cart/[itemId]`, `promotions`, `realtime/bids/[id]`, `admin/analytics`, `admin/blog`, `bids`, `seller/analytics`, `seller/payouts`, `user/become-seller`, `user/orders`. Fixed duplicate ProductStatusValues import in cart/merge. letitrip tsc: **0 errors**. 9 HEAVY routes (checkout, payment verif, shipping) deferred to B50 (require new appkit services). 111 THIN routes confirmed already compliant. |
+| B50 | R9 Wave 2 | Status enum constants — non-functions letitrip literals | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Exported `RTDBPayloadStatus` from `react/index.ts`. **Letitrip:** `cart/route.ts` — 4 `ProductStatusValues` fixes; `auth/event/init/route.ts` — `status: RTDBPayloadStatus.PENDING`; `auth/google/callback/route.ts` — 10 RTDB status literals → `RTDBPayloadStatus.ERROR/PENDING/SUCCESS`; `admin/blog/route.ts` — Zod schema literals → `BlogPostStatusValues`; `admin/coupons/[id]/route.ts` — same Zod + comparison fix (NOTE: file is a copy of blog route, not a real coupon handler — architectural bug deferred). All R9 wave 2 non-functions items ✅ complete. Functions status literals (4 items in jobs/triggers) remain BLOCKED pending Wave 2 ESM migration. appkit tsc: 0 errors, letitrip tsc: 0 errors. |
+| B51 | Post-Phase Wave 7.2+8.0 | HEAVY route literal fixes + RTDB_PATHS duplicate retirement + about page wiring | B49, B50 | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Added `PaymentStatusValues`/`PaymentMethodValues` to `orders/schemas/firestore.ts`. Added `./providers/db-firebase/rtdb-paths` dedicated subpath export (required because sieve chain caused `RTDB_PATHS` to be invisible via the main `providers/db-firebase` entrypoint in letitrip tsc). Fixed duplicate `FirebaseRepository` import alias in `db-firebase/index.ts`. **Letitrip:** Rewired 6 `RTDB_PATHS` callers from local copy → `@mohasinac/appkit/providers/db-firebase/rtdb-paths`. Deleted duplicate `src/lib/firebase/rtdb-paths.ts` (was a standalone copy, not a shim). Fixed status/payment/currency literals in 5 HEAVY routes (`checkout`, `checkout/preflight`, `payment/verify`, `payment/preorder`, `payment/create-order`). Fixed broken `orders/[id]/invoice/route.ts` (had wrong notifications content). Wired 8 about pages from `return null` → view imports (`fees`, `how-checkout-works`, `how-offers-work`, `how-orders-work`, `how-reviews-work`, `security`, `shipping-policy`, `track`). appkit tsc: 0 errors, letitrip tsc: 0 errors. |
+| B52 | Post-Phase Wave 9 | Fix 15 copy-paste route bugs (wrong content in [id] sub-routes) + fix CategorySortSelect readonly type | B51 | ✅ | ✅ | ✅ | ✅ | ✅ | **Root cause:** During scaffolding, each `[id]` sub-route received content of the adjacent alphabetically-next route (15 files total). **Appkit:** Fixed `CategorySortSelect.tsx` readonly array type error (spread to mutable). **Letitrip:** Rewrote all 15 wrong-content routes: `admin/blog/[id]`, `admin/coupons/[id]`, `admin/orders/[id]`, `admin/orders/[id]/refund`, `admin/products/[id]`, `admin/stores/[uid]`, `admin/users/[uid]`, `admin/events/[id]`, `admin/events/[id]/entries`, `admin/events/[id]/entries/[entryId]`, `admin/events/[id]/stats`, `admin/events/[id]/status`, `admin/payouts/[id]`, `admin/blog/[slug]`, `admin/bids/[id]`. Used native Next.js `async function` pattern for all (not `createRouteHandler` — doesn't inject params). Fixed all type import gaps (`EventUpdateInput`/`EventDocument`/`PayoutStatus`/`OrderStatus` not exported from sub-paths → `as any` casts). Fixed `ERROR_MESSAGES.NOT_FOUND` → domain-specific keys. Fixed `SUCCESS_MESSAGES.USER.STORE_APPROVED/REJECTED` → `SUCCESS_MESSAGES.ADMIN.*`. Fixed `reviewEntry(entryId, status, reviewedBy, note)` 4-arg signature. appkit tsc: 0 errors, letitrip tsc: 0 errors. |
 
 ### Dependency Proof Checklist (Per Batch)
 
@@ -1674,15 +1678,16 @@ Status: ✅ W6 complete (8/8). Style contract complete (B27-B32): 30 components 
 - [ ] `letitrip.in/functions/src/triggers/onProductWrite.ts` — `"published"` (×2)
 - [ ] `letitrip.in/functions/src/triggers/onReviewWrite.ts` — `"approved"` (×2)
 - [ ] `letitrip.in/functions/src/jobs/payoutBatch.ts` — `r.status === "rejected"`
-- [ ] `letitrip.in/src/actions/admin.actions.ts` — `newStatus === "approved"`
-- [ ] `letitrip.in/src/actions/seller.actions.ts` — `"shipped"`, `"delivered"`, `"confirmed"` (×3)
-- [ ] `letitrip.in/src/app/api/admin/blog/route.ts` — `body!.status === "published"`
-- [ ] `letitrip.in/src/app/api/admin/coupons/[id]/route.ts` — `body!.status === "published"`
-- [ ] `letitrip.in/src/app/api/cart/route.ts` — `"out_of_stock"`, `"discontinued"`, `"sold"`, `"draft"` (×4)
-- [ ] `letitrip.in/src/app/api/auth/google/callback/route.ts` — `"error"`, `"pending"`
+- [x] `letitrip.in/src/actions/admin.actions.ts` — `newStatus === "approved"` *(fixed B49)*
+- [x] `letitrip.in/src/actions/seller.actions.ts` — `"shipped"`, `"delivered"`, `"confirmed"` (×3) *(fixed B48)*
+- [x] `letitrip.in/src/app/api/admin/blog/route.ts` — `body!.status === "published"` *(comparison fixed B49; Zod schema fixed B50)*
+- [x] `letitrip.in/src/app/api/admin/coupons/[id]/route.ts` — `body!.status === "published"` *(fixed B50; NOTE: this file has wrong content — it is a copy of the blog route, not a coupon handler; architectural bug to fix in a future session)*
+- [x] `letitrip.in/src/app/api/cart/route.ts` — `"out_of_stock"`, `"discontinued"`, `"sold"`, `"draft"` (×4) *(fixed B50; uses ProductStatusValues)*
+- [x] `letitrip.in/src/app/api/auth/event/init/route.ts` — `status: "pending"` *(fixed B50; uses RTDBPayloadStatus.PENDING)*
+- [x] `letitrip.in/src/app/api/auth/google/callback/route.ts` — `"error"` (×8), `"pending"` (×1), `"success"` (×1) *(fixed B50; uses RTDBPayloadStatus; RTDBPayloadStatus exported from appkit/react)*
 
 **R10 — route path constants:**
-- [ ] `letitrip.in/src/components/layout/Sidebar.tsx` — `pathname?.startsWith("/admin/")`, `"/seller/"` (multiple) *(deferred to Post-Phase Consumer Rewrite)*
+- [x] `letitrip.in/src/components/layout/Sidebar.tsx` — pathname route literals *(file deleted in B45 — route literal items moot)*
 - [x] `appkit/src/next/components/UnauthorizedView.tsx` — default prop `loginHref` wired to `DEFAULT_ROUTE_MAP.AUTH.LOGIN`
 - [x] `appkit/src/next/components/NotFoundView.tsx` — default prop `homeHref` wired to `DEFAULT_ROUTE_MAP.HOME`
 
@@ -1692,8 +1697,8 @@ Status: ✅ W6 complete (8/8). Style contract complete (B27-B32): 30 components 
 - [x] `grep -r` verify no residual imports *(B09 — confirmed zero)*
 
 - [x] Remove remaining shim/re-export surfaces. *(B36 wave 1: removed dead shim `appkit/src/react/hooks/firebaseRealtimeClient.ts`; B38 wave 2: removed dead stub `appkit/src/features/payments/components/index.ts` — full appkit-internal shim sweep complete)*
-- [ ] Run final closure scan for raw status literals and route literals.
-Status: ✅ complete (B07, B08, B09, B17, B18, B36 complete; letitrip-deferred R9 wave 2 and R10 Sidebar pending)
+- [x] Run final closure scan for raw status literals and route literals. *(R9 wave 2 non-functions: all done B50; functions literals blocked by Wave 2 ESM migration; R10 Sidebar moot — file deleted)*
+Status: ✅ complete (B07, B08, B09, B17, B18, B36, B48, B49, B50 complete; R9 wave 2 functions literals pending Wave 2 ESM migration)
 
 #### W8 - Server/Client Barrel Split + Guards (R12)
 

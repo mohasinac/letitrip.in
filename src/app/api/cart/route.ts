@@ -16,6 +16,7 @@ import { cartRepository } from "@mohasinac/appkit/repositories";
 import { productRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({
@@ -48,10 +49,10 @@ export const POST = createRouteHandler<(typeof addToCartSchema)["_output"]>({
     }
 
     if (
-      product.status === "out_of_stock" ||
-      product.status === "discontinued" ||
-      product.status === "sold" ||
-      product.status === "draft"
+      product.status === ProductStatusValues.OUT_OF_STOCK ||
+      product.status === ProductStatusValues.DISCONTINUED ||
+      product.status === ProductStatusValues.SOLD ||
+      product.status === ProductStatusValues.DRAFT
     ) {
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.OUT_OF_STOCK);
     }

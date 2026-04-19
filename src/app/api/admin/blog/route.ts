@@ -38,7 +38,7 @@ const createBlogPostSchema = z.object({
   category: z.enum(["news", "tips", "guides", "updates", "community"]),
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
-  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  status: z.enum([BlogPostStatusValues.DRAFT, BlogPostStatusValues.PUBLISHED, BlogPostStatusValues.ARCHIVED]).default(BlogPostStatusValues.DRAFT),
   coverImage: mediaFieldSchema.nullable().optional(),
   contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),
   additionalImages: z.array(mediaFieldSchema).max(5).optional().default([]),

@@ -1,30 +1,25 @@
 import "@/providers.config";
 /**
- * Verify Email API Route
- * GET /api/auth/verify-email?token=xxxxx
- *
- * Acknowledges email verification. Firebase handles the actual verification
- * client-side; this endpoint confirms/logs the outcome.
+ * Bids [id] API Route
+ * GET /api/bids/:id — Get bids for a product (id = productId)
  */
 
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
-import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { bidRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 
-export const GET = createRouteHandler({
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-    const token = getStringParam(searchParams, "token");
+type RouteContext = { params: Promise<{ id: string }> };
 
-    if (!token) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.TOKEN_REQUIRED);
-    }
+export async function GET(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const url = new URL(request.url);
+  const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 20));
 
-    // Firebase email verification is handled client-side via applyActionCode().
-    // This endpoint is called post-verification to confirm success.
-    return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
-  },
-});
+  serverLogger.info("Bid list by product requested", { productId: id });
+
+  // id is productId
+  const bids = await bidRepository.findByProduct(id);
+  return Response.json({ success: true, data: (bids ?? []).slice(0, limit) });
+}

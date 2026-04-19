@@ -1,98 +1,74 @@
 import "@/providers.config";
 /**
- * Admin Sessions API Route
- * GET /api/admin/sessions
- *
- * Fetch all active/expired sessions for admin dashboard.
- * Supports filtering by userId and limiting results.
+ * Admin Stores [uid] API Route
+ * GET   /api/admin/stores/:uid — Get a store by owner UID
+ * PATCH /api/admin/stores/:uid — Update store status (approve/reject/suspend)
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
+import { z } from "zod";
+import { successResponse } from "@mohasinac/appkit/next";
+import { storeRepository, userRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { successResponse } from "@mohasinac/appkit/next";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit/next";
-import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
-export const GET = createRouteHandler({
-  roles: ["admin", "moderator"],
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-    const userId = getStringParam(searchParams, "userId");
-    const limit = getNumberParam(searchParams, "limit", 100, {
-      min: 1,
-      max: 1000,
-    });
+type RouteContext = { params: Promise<{ uid: string }> };
 
-    const { sessions: rawSessions, stats } =
-      await sessionRepository.findAllForAdmin({
-        userId: userId || undefined,
-        limit,
-      });
-
-    const userIds = new Set<string>();
-    const sessions = rawSessions.map((s) => {
-      userIds.add(s.userId);
-      return {
-        id: s.id,
-        userId: s.userId,
-        deviceInfo: s.deviceInfo,
-        location: s.location,
-        isActive: s.isActive,
-        revokedAt: s.revokedAt,
-        revokedBy: s.revokedBy,
-        createdAt:
-          s.createdAt instanceof Date
-            ? s.createdAt.toISOString()
-            : (s.createdAt as any)?.toDate?.().toISOString(),
-        lastActivity:
-          s.lastActivity instanceof Date
-            ? s.lastActivity.toISOString()
-            : (s.lastActivity as any)?.toDate?.().toISOString(),
-        expiresAt:
-          s.expiresAt instanceof Date
-            ? s.expiresAt.toISOString()
-            : (s.expiresAt as any)?.toDate?.().toISOString(),
-        user: null as any,
-      };
-    });
-
-    // Enrich sessions with Firebase Auth user details
-    const auth = getAdminAuth();
-    const userMap = new Map<string, any>();
-    for (const uid of Array.from(userIds)) {
-      try {
-        const userRecord = await auth.getUser(uid);
-        userMap.set(uid, {
-          uid: userRecord.uid,
-          email: userRecord.email || null,
-          displayName: userRecord.displayName || null,
-          role: userRecord.customClaims?.role || "user",
-        });
-      } catch (error) {
-        serverLogger.warn(`Failed to fetch user ${uid}`, { error });
-        userMap.set(uid, {
-          uid,
-          email: null,
-          displayName: "Unknown User",
-          role: "user",
-        });
-      }
-    }
-
-    sessions.forEach((session) => {
-      session.user = userMap.get(session.userId) || null;
-    });
-
-    return successResponse(
-      { sessions, stats, count: sessions.length },
-      SUCCESS_MESSAGES.SESSION.FETCHED,
-    );
-  },
+const updateStoreSchema = z.object({
+  storeStatus: z.enum(["active", "pending", "suspended", "rejected"]).optional(),
+  adminNotes: z.string().optional(),
+  isFeatured: z.boolean().optional(),
 });
+
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { uid } = await context.params;
+  const users = await userRepository.findByRole("seller" as any).catch(() => []);
+  const user = users.find((u: any) => u.id === uid) ?? null;
+  if (!user) {
+    return Response.json(
+      { success: false, error: ERROR_MESSAGES.USER.NOT_FOUND },
+      { status: 404 },
+    );
+  }
+  const store = user.storeSlug
+    ? await storeRepository.findBySlug(user.storeSlug).catch(() => null)
+    : null;
+  return Response.json({ success: true, data: { user, store } });
+}
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { uid } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = updateStoreSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
+
+  serverLogger.info("Admin updating store status", { uid, ...parsed.data });
+
+  const { storeStatus, adminNotes, isFeatured } = parsed.data;
+
+  const updateFields: Record<string, unknown> = {};
+  if (storeStatus) updateFields.storeStatus = storeStatus;
+  if (adminNotes !== undefined) updateFields.adminNotes = adminNotes;
+  if (isFeatured !== undefined) updateFields.isFeatured = isFeatured;
+
+  await userRepository.update(uid, updateFields as any);
+
+  const message = storeStatus === "active"
+    ? SUCCESS_MESSAGES.ADMIN.STORE_APPROVED
+    : storeStatus === "rejected"
+    ? SUCCESS_MESSAGES.ADMIN.STORE_REJECTED
+    : SUCCESS_MESSAGES.USER.STORE_UPDATED;
+
+  return Response.json(successResponse({ uid, storeStatus }, message));
+}

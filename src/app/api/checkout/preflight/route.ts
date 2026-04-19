@@ -23,6 +23,7 @@ import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { unitOfWork } from "@mohasinac/appkit/repositories";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
 import type { CartItemDocument } from "@mohasinac/appkit/features/cart";
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ export const POST = createRouteHandler<(typeof schema)["_output"]>({
         const product = await unitOfWork.products.findById(item.productId);
         if (
           !product ||
-          product.status !== "published" ||
+          product.status !== ProductStatusValues.PUBLISHED ||
           product.availableQuantity < item.quantity
         ) {
           unavailable.push({

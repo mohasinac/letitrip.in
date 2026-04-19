@@ -38,6 +38,8 @@ import { ValidationError, NotFoundError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact/server";
+import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit/features/orders";
+import { getDefaultCurrency } from "@mohasinac/appkit/core";
 
 const preorderDepositSchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -118,11 +120,11 @@ export const POST = createRouteHandler<
       quantity: 1,
       unitPrice: product.price,
       totalPrice: product.price,
-      currency: product.currency ?? "INR",
-      status: "confirmed",
-      paymentStatus: "paid",
+      currency: product.currency ?? getDefaultCurrency(),
+      status: OrderStatusValues.CONFIRMED,
+      paymentStatus: PaymentStatusValues.PAID,
       paymentId: razorpay_payment_id,
-      paymentMethod: "razorpay",
+      paymentMethod: PaymentMethodValues.RAZORPAY,
       shippingAddress,
       depositAmount: depositPaidAmount,
       codRemainingAmount: product.price - depositPaidAmount,
@@ -144,9 +146,9 @@ export const POST = createRouteHandler<
       productTitle: product.title,
       quantity: 1,
       totalPrice: depositPaidAmount,
-      currency: product.currency ?? "INR",
+      currency: product.currency ?? getDefaultCurrency(),
       shippingAddress,
-      paymentMethod: "Razorpay (Pre-order deposit)",
+      paymentMethod: PaymentMethodValues.RAZORPAY,
     }).catch((err) =>
       serverLogger.warn("Pre-order confirmation email failed", { err }),
     );

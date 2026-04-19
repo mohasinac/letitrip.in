@@ -1,3 +1,7 @@
+// AUTO-GENERATED - do not edit manually.
+// Source: @mohasinac/appkit/firebase/base/storage.rules
+// Regenerate: npm run firebase:generate
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {

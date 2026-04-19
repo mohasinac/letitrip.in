@@ -1,57 +1,45 @@
 import "@/providers.config";
 /**
- * API Route: Admin Dashboard Statistics
- * GET /api/admin/dashboard
+ * Admin Event Stats API Route
+ * GET /api/admin/events/:id/stats — Get statistics for an event
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  userRepository,
-  productRepository,
-  orderRepository,
-} from "@mohasinac/appkit/repositories";
+import { eventRepository, eventEntryRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async () => {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+type RouteContext = { params: Promise<{ id: string }> };
 
-    // Parallel execution of all count queries for speed
-    const [
-      totalUsers,
-      activeUsers,
-      newUsers,
-      disabledUsers,
-      adminUsers,
-      totalProducts,
-      totalOrders,
-    ] = await Promise.all([
-      userRepository.count().catch(() => 0),
-      userRepository.countActive().catch(() => 0),
-      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
-      userRepository.countDisabled().catch(() => 0),
-      userRepository.countByRole("admin").catch(() => 0),
-      productRepository.count().catch(() => 0),
-      orderRepository.count().catch(() => 0),
-    ]);
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id: eventId } = await context.params;
 
-    return successResponse({
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        new: newUsers,
-        newThisMonth: newUsers,
-        disabled: disabledUsers,
-        admins: adminUsers,
-      },
-      products: {
-        total: totalProducts,
-      },
-      orders: {
-        total: totalOrders,
-      },
-    });
-  },
-});
+  serverLogger.info("Admin fetching event stats", { eventId });
+
+  const events = await eventRepository.list({ filters: `id==${eventId}`, page: "1", pageSize: "1" });
+  const event = events.items[0];
+  if (!event) {
+    return Response.json(
+      { success: false, error: ERROR_MESSAGES.GENERIC.NOT_FOUND },
+      { status: 404 },
+    );
+  }
+
+  const [totalEntries, approvedEntries, flaggedEntries] = await Promise.all([
+    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1 }),
+    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==approved" }),
+    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==flagged" }),
+  ]);
+
+  return Response.json(successResponse({
+    event,
+    stats: {
+      totalEntries: totalEntries.total ?? 0,
+      approvedEntries: approvedEntries.total ?? 0,
+      flaggedEntries: flaggedEntries.total ?? 0,
+    },
+  }));
+}

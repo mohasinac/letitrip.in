@@ -1,0 +1,15 @@
+{
+  "_comment": "Consumer-specific Firebase extensions merged on top of @mohasinac/appkit base configs by firebase-merge.mjs. Run `npm run firebase:generate` after editing.",
+
+  "indexes": [
+  ],
+
+  "fieldOverrides": [],
+
+  "database": {
+  },
+
+  "firestoreRules": "",
+
+  "storageRules": ""
+}

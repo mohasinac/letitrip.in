@@ -35,11 +35,12 @@ import { sessionRepository, userRepository } from "@mohasinac/appkit/repositorie
 import { parseUserAgent } from "@mohasinac/appkit/features/auth";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
 import { DEFAULT_USER_DATA } from "@mohasinac/appkit/features/auth";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import type { UserRole } from "@mohasinac/appkit/features/auth";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/react";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -90,7 +91,7 @@ async function writeOutcomeAndClose(
   }
 
   const closeUrl = new URL(
-    `/auth/close${outcome.status === "error" ? `?error=${encodeURIComponent(outcome.error ?? "auth_failed")}` : ""}`,
+    `/auth/close${outcome.status === RTDBPayloadStatus.ERROR ? `?error=${encodeURIComponent(outcome.error ?? "auth_failed")}` : ""}`,
     origin,
   );
   return NextResponse.redirect(closeUrl.toString());
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
     // Verify the event node still exists + is pending (replays are rejected)
     const db = getAdminRealtimeDb();
     const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
-    if (!snap.exists() || snap.val()?.status !== "pending") {
+    if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
       serverLogger.warn("Google callback: event not found or not pending", {
         eventId,
       });
@@ -135,7 +136,7 @@ export async function GET(request: NextRequest) {
       });
       return writeOutcomeAndClose(
         eventId,
-        { status: "error", error: ERROR_MESSAGES.AUTH.SIGN_IN_CANCELLED },
+        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.SIGN_IN_CANCELLED },
         origin,
       );
     }
@@ -149,7 +150,7 @@ export async function GET(request: NextRequest) {
       serverLogger.error("Google OAuth env vars not configured");
       return writeOutcomeAndClose(
         eventId,
-        { status: "error", error: "Authentication service is not configured." },
+        { status: RTDBPayloadStatus.ERROR, error: "Authentication service is not configured." },
         origin,
       );
     }
@@ -173,7 +174,7 @@ export async function GET(request: NextRequest) {
       return writeOutcomeAndClose(
         eventId,
         {
-          status: "error",
+          status: RTDBPayloadStatus.ERROR,
           error: ERROR_MESSAGES.AUTH.OAUTH_CODE_EXCHANGE_FAILED,
         },
         origin,
@@ -184,7 +185,7 @@ export async function GET(request: NextRequest) {
     if (!payload?.email) {
       return writeOutcomeAndClose(
         eventId,
-        { status: "error", error: ERROR_MESSAGES.AUTH.OAUTH_USER_INFO_FAILED },
+        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.OAUTH_USER_INFO_FAILED },
         origin,
       );
     }
@@ -255,7 +256,7 @@ export async function GET(request: NextRequest) {
       return writeOutcomeAndClose(
         eventId,
         {
-          status: "error",
+          status: RTDBPayloadStatus.ERROR,
           error: "Authentication service configuration error.",
         },
         origin,
@@ -276,7 +277,7 @@ export async function GET(request: NextRequest) {
     if (!signInData.idToken) {
       return writeOutcomeAndClose(
         eventId,
-        { status: "error", error: ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED },
+        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED },
         origin,
       );
     }
@@ -294,7 +295,7 @@ export async function GET(request: NextRequest) {
     // the client knows whether this was a first-time sign-up or a returning login)
     await writeOutcomeAndClose(
       eventId,
-      { status: "success", isNewUser, uid: firebaseUid, role: userRole },
+      { status: RTDBPayloadStatus.SUCCESS, isNewUser, uid: firebaseUid, role: userRole },
       origin,
     );
 
@@ -332,7 +333,7 @@ export async function GET(request: NextRequest) {
       try {
         const db = getAdminRealtimeDb();
         await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${state}`).update({
-          status: "error",
+          status: RTDBPayloadStatus.ERROR,
           error: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
         });
       } catch {

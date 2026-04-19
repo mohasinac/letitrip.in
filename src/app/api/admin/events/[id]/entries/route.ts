@@ -1,57 +1,32 @@
 import "@/providers.config";
 /**
- * API Route: Admin Dashboard Statistics
- * GET /api/admin/dashboard
+ * Admin Event Entries API Route
+ * GET /api/admin/events/:id/entries — List entries for an event
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 import { successResponse } from "@mohasinac/appkit/next";
 import {
-  userRepository,
-  productRepository,
-  orderRepository,
-} from "@mohasinac/appkit/repositories";
+  getNumberParam,
+  getSearchParams,
+  getStringParam,
+} from "@mohasinac/appkit/next";
+import { eventEntryRepository } from "@mohasinac/appkit/repositories";
+import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
 
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async () => {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+type RouteContext = { params: Promise<{ id: string }> };
 
-    // Parallel execution of all count queries for speed
-    const [
-      totalUsers,
-      activeUsers,
-      newUsers,
-      disabledUsers,
-      adminUsers,
-      totalProducts,
-      totalOrders,
-    ] = await Promise.all([
-      userRepository.count().catch(() => 0),
-      userRepository.countActive().catch(() => 0),
-      userRepository.countNewSince(thirtyDaysAgo).catch(() => 0),
-      userRepository.countDisabled().catch(() => 0),
-      userRepository.countByRole("admin").catch(() => 0),
-      productRepository.count().catch(() => 0),
-      orderRepository.count().catch(() => 0),
-    ]);
+export async function GET(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id: eventId } = await context.params;
+  const searchParams = getSearchParams(request);
+  const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+  const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 200 });
 
-    return successResponse({
-      users: {
-        total: totalUsers,
-        active: activeUsers,
-        new: newUsers,
-        newThisMonth: newUsers,
-        disabled: disabledUsers,
-        admins: adminUsers,
-      },
-      products: {
-        total: totalProducts,
-      },
-      orders: {
-        total: totalOrders,
-      },
-    });
-  },
-});
+  serverLogger.info("Admin listing event entries", { eventId, page, pageSize });
+
+  const result = await eventEntryRepository.listForEvent(eventId, { page, pageSize });
+  return Response.json(successResponse(result));
+}

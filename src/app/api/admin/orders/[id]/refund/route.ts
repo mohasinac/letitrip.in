@@ -1,88 +1,42 @@
 import "@/providers.config";
 /**
- * Admin Newsletter API Route
- * GET /api/admin/newsletter â€” List subscribers with stats
+ * Admin Orders Refund API Route
+ * POST /api/admin/orders/:id/refund — Process a refund for an order
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit/next";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit/next";
-import { newsletterRepository } from "@mohasinac/appkit/repositories";
+import { orderRepository } from "@mohasinac/appkit/repositories";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 
-/**
- * GET /api/admin/newsletter
- *
- * Query params:
- *  - filters  (string) â€” Sieve filters (e.g. status==active)
- *  - sorts    (string) â€” Sieve sorts (e.g. -createdAt)
- *  - page     (number) â€” page number (default 1)
- *  - pageSize (number) â€” results per page (default 50, max 200)
- *
- * meta.total / active / unsubscribed are always computed from the
- * full unfiltered dataset so stat cards remain accurate.
- */
-export const GET = createRouteHandler({
-  auth: true,
-  roles: ["admin"],
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
+type RouteContext = { params: Promise<{ id: string }> };
 
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
-      min: 1,
-      max: 200,
-    });
-    const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-
-    serverLogger.info("Admin newsletter subscribers list requested", {
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
-
-    // Compute summary counts + paginated results in parallel
-    const [totalResult, activeResult, unsubscribedResult, sieveResult] =
-      await Promise.all([
-        newsletterRepository.list({
-          sorts: "createdAt",
-          page: "1",
-          pageSize: "1",
-        }),
-        newsletterRepository.list({
-          filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.ACTIVE}`,
-          sorts: "createdAt",
-          page: "1",
-          pageSize: "1",
-        }),
-        newsletterRepository.list({
-          filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.UNSUBSCRIBED}`,
-          sorts: "createdAt",
-          page: "1",
-          pageSize: "1",
-        }),
-        newsletterRepository.list({
-          filters,
-          sorts,
-          page: String(page),
-          pageSize: String(pageSize),
-        }),
-      ]);
-
-    return successResponse({
-      ...sieveResult,
-      meta: {
-        total: totalResult.total,
-        active: activeResult.total,
-        unsubscribed: unsubscribedResult.total,
-      },
-    });
-  },
+const refundSchema = z.object({
+  amount: z.number().min(0),
+  reason: z.string().min(1),
 });
+
+export async function POST(
+  request: Request,
+  context: RouteContext,
+): Promise<Response> {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+  const parsed = refundSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: parsed.error.format() },
+      { status: 400 },
+    );
+  }
+
+  const { amount, reason } = parsed.data;
+
+  serverLogger.info("Admin processing order refund", { id, amount, reason });
+
+  await orderRepository.cancelOrder(id, reason, amount);
+
+  return Response.json(successResponse({ id, amount, reason }, SUCCESS_MESSAGES.ORDER.CANCELLED));
+}

@@ -13,9 +13,12 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { sendOrderConfirmationEmail } from "@mohasinac/appkit/features/contact/server";
 import { getAdminRealtimeDb, getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
-import { RTDB_PATHS } from "@/lib/firebase/rtdb-paths";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/utils";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
+import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit/features/orders";
+import { getDefaultCurrency } from "@mohasinac/appkit/core";
 
 /**
  * Payment - Verify Razorpay Payment
@@ -167,7 +170,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
     );
 
     for (const { item, product } of productChecks) {
-      if (!product || product.status !== "published") {
+      if (!product || product.status !== ProductStatusValues.PUBLISHED) {
         failedCheckoutRepository
           .logPayment(
             user!.uid,
@@ -314,15 +317,15 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         quantity: totalQuantity,
         unitPrice: group[0].product!.price,
         totalPrice: orderTotal,
-        currency: firstItem.currency ?? "INR",
+        currency: firstItem.currency ?? getDefaultCurrency(),
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
         orderType,
         offerId: firstItem.offerId ?? undefined,
-        status: "confirmed",
-        paymentStatus: "paid",
-        paymentMethod: "online",
+        status: OrderStatusValues.CONFIRMED,
+        paymentStatus: PaymentStatusValues.PAID,
+        paymentMethod: PaymentMethodValues.ONLINE,
         paymentId: razorpay_payment_id,
         shippingAddress,
         notes,
@@ -344,9 +347,9 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
               : firstItem.productTitle,
           quantity: totalQuantity,
           totalPrice: orderTotal,
-          currency: firstItem.currency ?? "INR",
+          currency: firstItem.currency ?? getDefaultCurrency(),
           shippingAddress,
-          paymentMethod: "online",
+          paymentMethod: PaymentMethodValues.ONLINE,
           items: orderItems,
         });
       }
