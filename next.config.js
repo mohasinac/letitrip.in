@@ -15,6 +15,8 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "api.dicebear.com" },
+      // Local network access (dev)
+      { protocol: "http", hostname: "192.168.1.*" },
     ],
   },
 };
