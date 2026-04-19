@@ -43,11 +43,11 @@ import {
   type BulkSellerOrderResult,
 } from "@mohasinac/appkit/features/seller/server";
 import { userRepository } from "@mohasinac/appkit/features/auth/server";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import {
   productCreateSchema,
-  mediaUrlSchema,
   productUpdateSchema,
-} from "@/lib/validation/schemas";
+} from "@/validation/request-schemas";
 import {
   shiprocketAuthenticate,
   shiprocketAddPickupLocation,

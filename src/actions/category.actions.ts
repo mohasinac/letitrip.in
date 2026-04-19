@@ -19,7 +19,7 @@ import {
 import {
   categoryCreateSchema,
   categoryUpdateSchema,
-} from "@/lib/validation/schemas";
+} from "@/validation/request-schemas";
 import {
   createCategory,
   updateCategory,

@@ -1,6 +1,6 @@
 # Gap.md - Consolidated Architecture and Style Gap Master Plan
 
-Last updated: 2026-04-19 (B55: Wave 8 — about views deep-barrel-import fixes + empty feature dir audit; appkit tsc: 0 errors, letitrip tsc: 0 errors)
+Last updated: 2026-04-19 (B58: top-level barrel runtime-boundary closure — browser-safe core/monitoring/security entrypoints + utils client split + appkit tsc: 0 errors)
 Scope: letitrip.in (consumer, reference-only during phases) + appkit (source of truth, active migration target)
 Supersedes: architecturegap.md, styleandarchitec.md
 
@@ -512,7 +512,7 @@ R8. Final duplicate sweep and shim removal
 | R2 | Render-format kit | utils + ui + feature render paths | ✅ done (B19) | R1 | High | Shared renderers created in `ui/columns/column-renderers.ts`; all 21 column modules migrated |
 | R3 | Column kit | 23 feature column modules | ✅ done (B19) | R2 | Medium | `buildColumns` generic utility replaces 21 copy-pasted factories; render lambdas replaced with shared renderers |
 | R4 | Account/User merge | features/account + features/user | ✅ done (B20) | R1,R2 | High | Deleted orphaned `features/user/` (13 files, 0 code consumers); `features/account/` is canonical owner |
-| R5 | View-shell variants | 96 view files | ✅ done (B21+B22) | R2,R4 | High | `ListingViewShell` + `SlottedListingView` created in `ui/components/`; 10 admin ListingLayout delegates → `ListingViewShell`; 5 admin manual-slot views → `SlottedListingView`; 6 seller listing views → `SlottedListingView`; 1 account view (`UserOrdersView`) → `SlottedListingView`; 3 public product views (`ProductsView`, `AuctionsView`, `PreOrdersView`) → `SlottedListingView`. Added `renderSort`, `manageSort`, `inlineToolbar` to `SlottedListingView`. B22: Created `DetailViewShell` (grid-3/grid-2/stacked/narrow) + `StackedViewShell` (title+sections). ~58 total views migrated. ~20 left as-is (unique patterns). | `isEmpty` logic + `CategoriesListView` (client-side filter) + `CategoryProductsView` (breadcrumbs/children) + `StoresListView`/`EventsListView` (`LayoutSlots<T>`) left as-is. |
+| R5 | View-shell variants | 96 view files | ✅ done (B21+B22+B57) | R2,R4 | High | B21: `ListingViewShell` + `SlottedListingView` created; 25 views migrated. B22: `DetailViewShell` + `StackedViewShell` created; ~33 additional views migrated. B57: Added `ViewPortal` type + `portal` prop to all 4 shells; annotated all 59 portal views (admin/seller/user/public); eliminated raw HTML in 3 error views. ~20 views left as-is (unique patterns). |
 | R6 | Variant-first UI uplift | repeated class bundles across feature UI | ✅ done (B24-B26+B29+B33-B35) | R5 | Medium | B24: Alert compact + Card adoption (7 files). B25: Stack gap adoption (7 files, ~30 patterns). B26: Row wave 3 (3 files, ~15 patterns). B29: Row wave 4 (5 files, ~11 patterns). B33: Row wave 5 (8 files, ~24 patterns). B34: Row wave 6 (9 files, 21 patterns). B35: Row wave 7 (14 files, 20 patterns). ~110 remaining patterns are non-Div (Button/Link/Nav/Span className, centering, inline-flex) — not eligible for Row. |
 | R7 | Style contract completion | ui component style ownership | ✅ done (B27-B32) | R6 | Medium | All 30 UI components + 2 outliers have .style.css with BEM appkit-* class hooks |
 | R8 | Final dedupe + shim purge | all duplicate/shim surfaces | ✅ complete (B36-B38 + B41) | R1-R7 | High | Enforce canonical imports and ownership; market literal + status enum final closure done |
@@ -576,7 +576,7 @@ Depends on: none
 Deliverables: Deep inventory snapshot codified in Live Tracker below.
 
 ## Phase 0.5 - Server/client barrel split + runtime guards
-Status: ✅ appkit-side complete (B10 + B11). Consumer rewires partial — deferred to letitrip end-state rewrite.
+Status: ✅ appkit-side complete (B10 + B11 + B58). Consumer rewires partial — deferred to letitrip end-state rewrite.
 Depends on: none
 Target files — add `import "server-only"`:
 - `appkit/src/features/auth/consent-otp.ts` — uses `crypto.createHmac`, `crypto.randomInt`, `getAdminDb()`
@@ -1156,15 +1156,15 @@ Each action file: update all `@/db/schema/*` imports → appkit feature types. U
 #### Wave 7 — API Route Thin-Wrapper Enforcement (~35 route dirs)
 Prereq: Wave 6
 Each API route: auth → validate → delegate to appkit service/repository → return response. No inline business logic.
-- [ ] Audit and rewire `src/app/api/admin/` routes (blog, coupons, categories, analytics, etc.)
-- [ ] Audit and rewire `src/app/api/auth/` routes (google callback, session, etc.)
-- [ ] Audit and rewire `src/app/api/bids/`, `blog/`, `cart/`, `categories/` routes
-- [ ] Audit and rewire `src/app/api/checkout/`, `contact/`, `coupons/` routes
-- [ ] Audit and rewire `src/app/api/events/`, `faqs/`, `orders/`, `products/` routes
-- [ ] Audit and rewire `src/app/api/payment/`, `reviews/`, `search/`, `seller/` routes
-- [ ] Audit and rewire `src/app/api/stores/`, `user/`, `webhooks/`, `notifications/` routes
-- [ ] Audit and rewire remaining: `cache/`, `carousel/`, `chat/`, `copilot/`, `demo/`, `homepage-sections/`, `logs/`, `media/`, `newsletter/`, `pre-orders/`, `profile/`, `promotions/`, `realtime/`, `site-settings/`
-- [ ] Replace all hard-coded status string literals in routes with appkit enums (R9)
+- [x] Audit and rewire `src/app/api/admin/` routes — B49 (blog, analytics, bids, payouts), B52 ([id] sub-routes: blog/[id], coupons/[id], orders/[id], orders/[id]/refund, products/[id], stores/[uid], users/[uid], events/[id] tree, payouts/[id], blog/[slug], bids/[id])
+- [x] Audit and rewire `src/app/api/auth/` routes — B49 (event/init), B50 (google callback, session status literals), B51 (session getUserFromRequest)
+- [x] Audit and rewire `src/app/api/bids/`, `blog/`, `cart/`, `categories/` routes — B49 (bids, cart/merge, cart/[itemId]), B51 (checkout, checkout/preflight)
+- [x] Audit and rewire `src/app/api/checkout/`, `contact/`, `coupons/` routes — B51 (checkout, checkout/preflight), B50 (admin/coupons/[id])
+- [x] Audit and rewire `src/app/api/events/`, `faqs/`, `orders/`, `products/` routes — B52 (events/[id] tree), B49 (promotions), B51 (orders/[id]/invoice), B49 (admin/products)
+- [x] Audit and rewire `src/app/api/payment/`, `reviews/`, `search/`, `seller/` routes — B51 (payment/verify, payment/preorder, payment/create-order), B49 (seller/analytics, seller/payouts)
+- [x] Audit and rewire `src/app/api/stores/`, `user/`, `webhooks/`, `notifications/` routes — B49 (user/become-seller, user/orders), B54 (stores/[storeSlug] sub-routes)
+- [x] Audit and rewire remaining routes — B49 (realtime/bids/[id]), B53 (categories filter/sort), B56 (faqs, homepage-sections/[id] copy-paste fix, site-settings, user/addresses, admin/products @/lib/validation rewires)
+- [x] Replace all hard-coded status string literals in routes with appkit enums (R9) — B49/B50/B51/B52 complete. Functions literals BLOCKED by Wave 2 ESM migration.
 
 #### Wave 8 — Feature Views Migration
 Prereq: Wave 7
@@ -1174,11 +1174,12 @@ Prereq: Wave 7
 - [x] Verify all `src/app/[locale]/` route pages call appkit `*View` components, not local views — about pages call letitrip-local views (app-specific content justified); all other locale pages confirmed using appkit views (B51)
 - [ ] Review `src/app/[locale]/LayoutShellClient.tsx` — migrate to appkit or justify as app-specific
 
-#### Wave 9 — Barrel Import Rewires (B12 leftovers)
+#### Wave 9 — Barrel Import Rewires + lib/validation Retirement
 Prereq: Wave 8
 - [x] Complete remaining 12/28 letitrip action files that still import from `@mohasinac/appkit/features/*/` instead of `/server` *(all 12 confirmed done in B48 — checklist was stale)*
 - [x] Verify all server-side imports use `/server` sub-paths *(confirmed B48/B50 analysis)*
-- [ ] Verify no client bundles pull in server-only code
+- [x] Retire `src/lib/validation/schemas.ts` — 9 callers rewired: `validateRequestBody`/`formatZodErrors`/`mediaUrlSchema` → `@mohasinac/appkit/validation`; `faqCreateSchema` → appkit faq/server; letitrip-specific schemas (`productCreate/Update`, `categoryCreate/Update`, `siteSettingsUpdate`, `userAddressCreate`) → `src/validation/request-schemas.ts` (B56)
+- [ ] Verify no client bundles pull in server-only code (`npm run build` — deferred to Wave 10)
 
 #### Wave 10 — Final Purge & Verification
 Prereq: All waves
@@ -1432,7 +1433,10 @@ Scan basis: workspace-wide static inventory using file and pattern search across
 | B51 | Post-Phase Wave 7.2+8.0 | HEAVY route literal fixes + RTDB_PATHS duplicate retirement + about page wiring | B49, B50 | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Added `PaymentStatusValues`/`PaymentMethodValues` to `orders/schemas/firestore.ts`. Added `./providers/db-firebase/rtdb-paths` dedicated subpath export (required because sieve chain caused `RTDB_PATHS` to be invisible via the main `providers/db-firebase` entrypoint in letitrip tsc). Fixed duplicate `FirebaseRepository` import alias in `db-firebase/index.ts`. **Letitrip:** Rewired 6 `RTDB_PATHS` callers from local copy → `@mohasinac/appkit/providers/db-firebase/rtdb-paths`. Deleted duplicate `src/lib/firebase/rtdb-paths.ts` (was a standalone copy, not a shim). Fixed status/payment/currency literals in 5 HEAVY routes (`checkout`, `checkout/preflight`, `payment/verify`, `payment/preorder`, `payment/create-order`). Fixed broken `orders/[id]/invoice/route.ts` (had wrong notifications content). Wired 8 about pages from `return null` → view imports (`fees`, `how-checkout-works`, `how-offers-work`, `how-orders-work`, `how-reviews-work`, `security`, `shipping-policy`, `track`). appkit tsc: 0 errors, letitrip tsc: 0 errors. |
 | B52 | Post-Phase Wave 9 | Fix 15 copy-paste route bugs (wrong content in [id] sub-routes) + fix CategorySortSelect readonly type | B51 | ✅ | ✅ | ✅ | ✅ | ✅ | **Root cause:** During scaffolding, each `[id]` sub-route received content of the adjacent alphabetically-next route (15 files total). **Appkit:** Fixed `CategorySortSelect.tsx` readonly array type error (spread to mutable). **Letitrip:** Rewrote all 15 wrong-content routes: `admin/blog/[id]`, `admin/coupons/[id]`, `admin/orders/[id]`, `admin/orders/[id]/refund`, `admin/products/[id]`, `admin/stores/[uid]`, `admin/users/[uid]`, `admin/events/[id]`, `admin/events/[id]/entries`, `admin/events/[id]/entries/[entryId]`, `admin/events/[id]/stats`, `admin/events/[id]/status`, `admin/payouts/[id]`, `admin/blog/[slug]`, `admin/bids/[id]`. Used native Next.js `async function` pattern for all (not `createRouteHandler` — doesn't inject params). Fixed all type import gaps (`EventUpdateInput`/`EventDocument`/`PayoutStatus`/`OrderStatus` not exported from sub-paths → `as any` casts). Fixed `ERROR_MESSAGES.NOT_FOUND` → domain-specific keys. Fixed `SUCCESS_MESSAGES.USER.STORE_APPROVED/REJECTED` → `SUCCESS_MESSAGES.ADMIN.*`. Fixed `reviewEntry(entryId, status, reviewedBy, note)` 4-arg signature. appkit tsc: 0 errors, letitrip tsc: 0 errors. |
 | B53 | Post-Phase / appkit | Filter components + status schema values + RTDB_PATHS sub-path + firebase config files | — | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Added `CategoryFilters.tsx` + `CategorySortSelect.tsx` (admin/seller/public variants). Expanded `BlogFilters`, `EventFilters`, `OrderFilters`, `ProductFilters`, `ReviewFilters` with variant-aware sort/filter options + helper functions. Updated `CategoriesListView` + `CategoryProductsView` to use new filter components. Added `PaymentStatusValues` + `PaymentMethodValues` as-const to `orders/schemas/firestore.ts`. Exported `RTDBPayloadStatus` from `react/index.ts`. Fixed `db-firebase/index.ts` duplicate import alias. Added `./providers/db-firebase/rtdb-paths` sub-path to `package.json` exports. Added `firebase/base` + `firebase/reset` config directories + `firebase-merge.mjs`, `firebase-reset.mjs`, `add-missing-indexes.mjs` scripts. appkit tsc: 0 errors. |
-| B55 | Post-Phase Wave 8 | About views deep-barrel-import fixes + empty feature dir audit + Gap.md checkbox closure | B54 | ✅ | ✅ | ✅ | ✅ | ✅ | **Letitrip:** Fixed `lir/no-deep-barrel-import` warnings in all 8 `src/features/about/components/*.tsx` files: replaced `import { ROUTES } from "@/constants/routes"` + `import { THEME_CONSTANTS } from "@/constants/theme"` → `import { ROUTES, THEME_CONSTANTS } from "@/constants"` (barrel). Removed unused `SITE_CONFIG` import from `FeesView.tsx`. Removed 4 unused icon imports from `HowCheckoutWorksView.tsx` (ShoppingCart, MapPin, CreditCard, CheckCircle). Empty feature dirs (auth/, blog/, contact/) already absent — confirmed. Wave 8 checklist items closed. W6 P1 audit item checked. R9 dedupe tracker updated to ✅. **Appkit:** Committed `ViewPortal` type addition to Layout.tsx + `portal` prop for SlottedListingView/StackedViewShell (B55-prep commit). letitrip tsc: 0 errors. |
+| B55 | Post-Phase Wave 8 | About views deep-barrel-import fixes + empty feature dir audit + Gap.md checkbox closure | B54 | ✅ | ✅ | ✅ | ✅ | ✅ | **Letitrip:** Fixed `lir/no-deep-barrel-import` warnings in all 8 `src/features/about/components/*.tsx` files: replaced `import { ROUTES } from "@/constants/routes"` + `import { THEME_CONSTANTS } from "@/constants/theme"` → `import { ROUTES, THEME_CONSTANTS } from "@/constants"` (barrel). Removed unused `SITE_CONFIG` import from `FeesView.tsx`. Removed 4 unused icon imports from `HowCheckoutWorksView.tsx` (ShoppingCart, MapPin, CreditCard, CheckCircle). Empty feature dirs (auth/, blog/, contact/) already absent — confirmed. Wave 8 checklist items closed. W6 P1 audit item checked. R9 dedupe tracker updated to ✅. **Appkit (B55-prep):** Committed `ViewPortal` type addition to Layout.tsx + `portal` prop on all 4 shells (`SlottedListingView`, `ListingViewShell`, `StackedViewShell`, `DetailViewShell`) — commit `b89d1eb`. letitrip tsc: 0 errors. |
+| B56 | Post-Phase Wave 7/9 | Retire `@/lib/validation/schemas.ts` (9 callers rewired); fix `homepage-sections/[id]/route.ts` copy-paste bug; create `src/validation/request-schemas.ts` (letitrip-specific Zod v4 schemas + v4-compat shims for validateRequestBody/mediaUrlSchema); Gap.md stale W3/Wave7/Wave9 checkboxes closed | B55 | ✅ | ✅ | ✅ | ✅ | ✅ | **Letitrip:** Created `src/validation/request-schemas.ts` with letitrip-specific product/category/address/site-settings Zod v4 schemas + local v4-compat shims (`validateRequestBody`, `formatZodErrors`, `mediaUrlSchema`, `urlSchema`, `dateStringSchema`, `objectIdSchema`) — required because appkit is on Zod v3 while letitrip.in is on Zod v4. Rewired 9 callers: `admin.actions.ts`, `seller.actions.ts`, `review.actions.ts`, `category.actions.ts`, `admin/products/route.ts` → local request-schemas; `faqs/route.ts` → appkit faq/server (v3-compatible pure import); `site-settings/route.ts`, `user/addresses/route.ts`, `category.actions.ts` → local request-schemas. Fixed `homepage-sections/[id]/route.ts` (was entire faqs/route.ts copy-pasted) → thin delegate to appkit `homepageSectionItemGET/PATCH/DELETE`. Deleted `src/lib/validation/schemas.ts` + empty dir. letitrip tsc: 0 errors. |
+| B57 | R5 / View-shell | Portal variant refactor — ViewPortal type + portal prop on all view shells + 59 portal views annotated + error view raw HTML elimination | B55 | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit:** Added `ViewPortal = "admin" \| "seller" \| "user" \| "public"` type to `Layout.tsx`; exported from `ui/index.ts`. Added `portal?: ViewPortal` prop to all 4 view shells: `SlottedListingView` (`effectiveManageSearch` / `effectiveManageSelection` derived from portal), `ListingViewShell` (`effectiveIsDashboard` derived from portal), `StackedViewShell` + `DetailViewShell` (prop accepted, reserved for future behavioral use). Annotated all 59 portal views: 23 admin → `portal="admin"`, 18 seller → `portal="seller"` (SellersListView → `portal="public"`), 9 user-account → `portal="user"`, 9 public → `portal="public"`. Eliminated raw HTML in 3 error views: `ErrorView` / `NotFoundView` / `UnauthorizedView` — replaced `<div>`/`<h1>`/`<p>`/`<a>`/`<button>` + inline `style={}` with `Div`, `Heading`, `Text`, `TextLink`, `Button`, `Row` wrappers + Tailwind classes. Commits: `b89d1eb` (4 shells + Layout.tsx + ui/index.ts) + `b3cdfba` (59 view files + 3 error views). appkit tsc: 0 errors. |
+| B58 | W8 / runtime-boundary follow-up | Top-level barrel closure — browser-safe `core`/`monitoring`/`security` exports + `utils` client split | B10, B11, B12, B57 | ✅ | ✅ | ✅ | ✅ | ✅ | **Appkit only:** Added browser-safe entrypoints `src/core/browser.ts`, `src/monitoring/browser.ts`, `src/security/browser.ts`; added package exports for `./core`, `./monitoring`, `./security`, and `./utils/client`; moved `event-manager` exports out of universal `utils/index.ts` into `utils/client.ts`; rewired appkit client/universal imports off mixed `core` and `monitoring` barrels (`UnsavedChangesModal`, `useAuthEvent`, `useChat`, `usePaymentEvent`, `analytics`, `client-logger`, `ErrorBoundary`, `cache-middleware`, `GlobalError`, `ErrorView`); narrowed `server-logger.ts` to `pii-redact` direct import. Root cause fixed for Pages Router leakage from appkit top-level barrels. appkit tsc: 0 errors. |
 
 ### Dependency Proof Checklist (Per Batch)
 
@@ -1497,26 +1501,26 @@ Status: ✅ appkit-side complete (B03). Runner MarketProfile pass-through not ne
 
 #### W3 - Repository and Schema Closure
 
-**letitrip schema files to retire** (19 files in `letitrip.in/src/db/schema/`):
-- [ ] `addresses.ts` → map to `@mohasinac/appkit/features/account/schemas`
-- [ ] `bids.ts` → map to `@mohasinac/appkit/features/auctions/schemas`
-- [ ] `blog-posts.ts` → map to `@mohasinac/appkit/features/blog/schemas`
-- [ ] `cart.ts` → map to `@mohasinac/appkit/features/cart/schemas`
-- [ ] `categories.ts` → map to `@mohasinac/appkit/features/categories/schemas`
-- [ ] `coupons.ts` → map to `@mohasinac/appkit/features/promotions/schemas`
-- [ ] `events.ts` → map to `@mohasinac/appkit/features/events/schemas`
-- [ ] `field-names.ts` → distribute constants to each feature's `schemas/index.ts`
-- [ ] `notifications.ts` → map to `@mohasinac/appkit/features/admin/schemas`
-- [ ] `offers.ts` → map to `@mohasinac/appkit/features/seller/schemas`
-- [ ] `orders.ts` → map to `@mohasinac/appkit/features/orders/schemas`
-- [ ] `payouts.ts` → map to `@mohasinac/appkit/features/payments/schemas`
-- [ ] `products.ts` → map to `@mohasinac/appkit/features/products/schemas`
-- [ ] `reviews.ts` → map to `@mohasinac/appkit/features/reviews/schemas`
-- [ ] `sessions.ts` → map to `@mohasinac/appkit/features/auth/schemas`
-- [ ] `store-addresses.ts` → map to `@mohasinac/appkit/features/stores/schemas`
-- [ ] `stores.ts` → map to `@mohasinac/appkit/features/stores/schemas`
-- [ ] `tokens.ts` → map to `@mohasinac/appkit/features/auth/schemas`
-- [ ] `users.ts` → map to `@mohasinac/appkit/features/auth/schemas`
+**letitrip schema files to retire** (19 files in `letitrip.in/src/db/schema/`) — ✅ ALL DONE (B44 Wave 1):
+- [x] `addresses.ts` → `@mohasinac/appkit/features/account/schemas`
+- [x] `bids.ts` → `@mohasinac/appkit/features/auctions/schemas`
+- [x] `blog-posts.ts` → `@mohasinac/appkit/features/blog/schemas`
+- [x] `cart.ts` → `@mohasinac/appkit/features/cart/schemas`
+- [x] `categories.ts` → `@mohasinac/appkit/features/categories/schemas`
+- [x] `coupons.ts` → `@mohasinac/appkit/features/promotions/schemas`
+- [x] `events.ts` → `@mohasinac/appkit/features/events/schemas`
+- [x] `field-names.ts` → `src/constants/field-names.ts` (app-specific constants, B44)
+- [x] `notifications.ts` → `@mohasinac/appkit/features/admin/schemas`
+- [x] `offers.ts` → `@mohasinac/appkit/features/seller/schemas`
+- [x] `orders.ts` → `@mohasinac/appkit/features/orders/schemas`
+- [x] `payouts.ts` → `@mohasinac/appkit/features/payments/schemas`
+- [x] `products.ts` → `@mohasinac/appkit/features/products/schemas`
+- [x] `reviews.ts` → `@mohasinac/appkit/features/reviews/schemas`
+- [x] `sessions.ts` → `@mohasinac/appkit/features/auth/schemas`
+- [x] `store-addresses.ts` → `@mohasinac/appkit/features/stores/schemas`
+- [x] `stores.ts` → `@mohasinac/appkit/features/stores/schemas`
+- [x] `tokens.ts` → `@mohasinac/appkit/features/auth/schemas`
+- [x] `users.ts` → `@mohasinac/appkit/features/auth/schemas`
 
 **letitrip functions repositories to migrate** (15 files in `letitrip.in/functions/src/repositories/`):
 - [ ] `bid.repository.ts` → import from `@mohasinac/appkit/features/auctions/server`
@@ -1759,6 +1763,15 @@ Internal appkit rewires completed:
 
 **B12 — Consumer rewire + package.json exports:** ✅ appkit-side complete; consumer rewires deferred to Post-Phase Consumer Rewrite (Wave 9)
 - [x] Verify `./features/*/server` export path in `appkit/package.json` resolves for all 29 features with server code.
+
+**B58 — Close top-level non-feature barrel leakage into client/pages bundles:** ✅ ALL DONE
+- [x] `appkit/src/core/browser.ts` — browser-safe `@mohasinac/appkit/core` surface for logger/cache/event/site-config/baseline exports.
+- [x] `appkit/src/monitoring/browser.ts` — browser-safe `@mohasinac/appkit/monitoring` surface excluding `server-logger.ts`.
+- [x] `appkit/src/security/browser.ts` — browser-safe `@mohasinac/appkit/security` surface excluding rate-limit/crypto/settings-encryption exports.
+- [x] `appkit/src/utils/index.ts` — removed `event-manager.ts` re-exports so the main utils barrel is universal-safe.
+- [x] `appkit/src/utils/client.ts` — added explicit client-only event-manager entrypoint.
+- [x] `appkit/package.json` — added browser/default conditional exports for `./core`, `./monitoring`, `./security`, plus `./utils/client`.
+- [x] Rewired appkit client/universal imports away from mixed relative barrels (`core`, `monitoring`) to direct safe modules.
 
 **Completed letitrip rewires (16/28 action files + API routes):**
 - [x] `seller.actions.ts` — `userRepository` → `auth/server`, `orderRepository` → `orders/server`

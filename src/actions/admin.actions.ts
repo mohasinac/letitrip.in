@@ -44,7 +44,7 @@ import type { ProductDocument, ProductAdminUpdateInput } from "@mohasinac/appkit
 import {
   validateRequestBody,
   productCreateSchema,
-} from "@/lib/validation/schemas";
+} from "@/validation/request-schemas";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 

@@ -21,7 +21,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { successResponse } from "@mohasinac/appkit/next";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
-import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
+import { siteSettingsUpdateSchema } from "@/validation/request-schemas";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
 import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/features/contact/server";

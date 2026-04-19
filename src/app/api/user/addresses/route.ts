@@ -11,7 +11,7 @@ import "@/providers.config";
 import { addressRepository } from "@mohasinac/appkit/repositories";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
-import { userAddressCreateSchema } from "@/lib/validation/schemas";
+import { userAddressCreateSchema } from "@/validation/request-schemas";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
 import { serverLogger } from "@mohasinac/appkit/monitoring";

@@ -23,7 +23,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next";
-import { faqCreateSchema } from "@/lib/validation/schemas";
+import { faqCreateSchema } from "@mohasinac/appkit/features/faq/server";
 import { invalidateCache } from "@mohasinac/appkit/next";
 import { createRouteHandler } from "@mohasinac/appkit/next";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";

@@ -16,7 +16,7 @@ import {
   validateRequestBody,
   formatZodErrors,
   productCreateSchema,
-} from "@/lib/validation/schemas";
+} from "@/validation/request-schemas";
 
 /**
  * GET /api/admin/products

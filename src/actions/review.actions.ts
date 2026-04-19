@@ -33,7 +33,7 @@ import {
 } from "@mohasinac/appkit/errors";
 import type { ReviewDocument } from "@mohasinac/appkit/features/reviews";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
-import { mediaUrlSchema } from "@/lib/validation/schemas";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
