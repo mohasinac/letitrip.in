@@ -10,10 +10,6 @@ module.exports = {
     // @mohasinac packages are often consumed as source in dev.
     // Scan all package source files so shared utility classes are not purged.
     "./node_modules/@mohasinac/*/src/**/*.{js,ts,jsx,tsx,mdx}",
-    // Local workspace fallback when appkit is consumed from sibling repo source.
-    "../appkit/src/**/*.{js,ts,jsx,tsx,mdx}",
-    // Explicit appkit source fallback (kept for clarity).
-    "./node_modules/@mohasinac/appkit/src/**/*.{js,ts,jsx,tsx,mdx}",
     // Keep dist scan for environments where packages are built prepublish.
     "./node_modules/@mohasinac/*/dist/**/*.{js,mjs,cjs}",
   ],
