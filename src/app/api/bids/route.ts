@@ -6,19 +6,19 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit/http";
+import { createApiHandler } from "@mohasinac/appkit/server";
 
-import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit/repositories";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { BidStatusValues } from "@mohasinac/appkit/features/auctions";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { maskPublicBid } from "@mohasinac/appkit/security";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
-import { NotFoundError } from "@mohasinac/appkit/errors";
-import { resolveDate } from "@mohasinac/appkit/utils";
+import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit/server";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/server";
+import { BidStatusValues } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { maskPublicBid } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit/server";
+import { NotFoundError } from "@mohasinac/appkit/server";
+import { resolveDate } from "@mohasinac/appkit/server";
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),
@@ -110,8 +110,11 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       productId,
       productTitle: product.title,
       userId: user!.uid,
-      userName: user!.displayName ?? user!.email ?? "Anonymous",
-      userEmail: user!.email ?? "",
+      userName:
+        (typeof user!.displayName === "string" && user!.displayName.trim()) ||
+        (typeof user!.email === "string" && user!.email.trim()) ||
+        "Anonymous",
+      userEmail: typeof user!.email === "string" ? user!.email : "",
       bidAmount,
       currency: product.currency || "INR",
       bidDate: new Date(),

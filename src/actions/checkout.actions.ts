@@ -7,19 +7,19 @@
  * domain functions.  No business logic or OTP logic here.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import {
   sendCheckoutConsentOtp,
   verifyCheckoutConsentOtp,
   grantCheckoutConsentViaSms,
-} from "@mohasinac/appkit/features/checkout/server";
-import { userRepository } from "@mohasinac/appkit/features/auth/server";
-import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/features/auth/server";
+} from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit/server";
+import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/server";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 

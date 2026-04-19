@@ -10,10 +10,10 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@mohasinac/appkit/http";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
+import { userRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
 
 export const GET = createApiHandler({
   auth: true,
@@ -34,13 +34,13 @@ export const GET = createApiHandler({
       metadata: user!.metadata
         ? {
             lastSignInTime:
-              user!.metadata.lastSignInTime instanceof Date
-                ? user!.metadata.lastSignInTime.toISOString()
-                : ((user!.metadata.lastSignInTime as any)
+              (user!.metadata as any).lastSignInTime instanceof Date
+                ? (user!.metadata as any).lastSignInTime.toISOString()
+                : ((user!.metadata as any).lastSignInTime as any)
                     ?.toDate?.()
-                    ?.toISOString() ?? user!.metadata.lastSignInTime),
-            creationTime: user!.metadata.creationTime,
-            loginCount: user!.metadata.loginCount,
+                    ?.toISOString() ?? (user!.metadata as any).lastSignInTime,
+            creationTime: (user!.metadata as any).creationTime,
+            loginCount: (user!.metadata as any).loginCount,
           }
         : undefined,
       createdAt: user!.createdAt,

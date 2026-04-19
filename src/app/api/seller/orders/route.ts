@@ -7,15 +7,15 @@ import "@/providers.config";
  * Strategy: fetch seller's products → get product IDs → filter all orders
  */
 
-import { orderRepository, productRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { orderRepository, productRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/next";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+} from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 
 /**
  * GET /api/seller/orders

@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
 import { SEO_CONFIG } from "@/constants";
-import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
-import { PRODUCT_COLLECTION } from "@mohasinac/appkit/features/products";
+import { getAdminDb } from "@mohasinac/appkit/server";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit/server";
 import { PRODUCT_FIELDS } from "@/constants/field-names";
-import { EVENTS_COLLECTION, EVENT_FIELDS } from "@mohasinac/appkit/features/events";
-import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit/features/blog";
-import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/features/categories";
-import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit/features/stores";
-import { CATEGORY_FIELDS } from "@mohasinac/appkit/features/categories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { EVENTS_COLLECTION, EVENT_FIELDS } from "@mohasinac/appkit/server";
+import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit/server";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/server";
+import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit/server";
+import { CATEGORY_FIELDS } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 import { ROUTES } from "@/constants";
 
 const BASE_URL = SEO_CONFIG.siteUrl;

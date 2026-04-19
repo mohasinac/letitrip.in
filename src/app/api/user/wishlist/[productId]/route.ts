@@ -7,9 +7,9 @@ import "@/providers.config";
  * Allows users to view and manage their own sessions.
  */
 
-import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
+import { sessionRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
 
 /**
  * Get current user's sessions

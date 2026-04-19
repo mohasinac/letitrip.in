@@ -9,15 +9,17 @@ import {
   createSessionCookie,
   verifyIdToken,
   verifySessionCookie,
-} from "@mohasinac/appkit/providers/auth-firebase";
-import { handleApiError } from "@mohasinac/appkit/errors";
-import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
-import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { parseUserAgent } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/server";
+import { handleApiError } from "@mohasinac/appkit/server";
+import { ValidationError } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
+import { parseUserAgent } from "@mohasinac/appkit/server";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { getAuth } from "firebase-admin/auth";
+import { getAdminApp } from "@mohasinac/appkit/server";
 
 /**
  * Create session cookie with session tracking
@@ -39,11 +41,6 @@ export async function POST(request: NextRequest) {
 
     // Ensure user profile exists in Firestore (important for OAuth users)
     // This will create a profile if one doesn't exist
-    const { userRepository } = await import("@mohasinac/appkit/repositories");
-    const { getAuth } = await import("firebase-admin/auth");
-    const { getAdminApp } = await import("@mohasinac/appkit/providers/db-firebase");
-    const { DEFAULT_USER_DATA } = await import("@mohasinac/appkit/features/auth");
-
     const auth = getAuth(getAdminApp());
 
     // Check if user profile exists
@@ -58,7 +55,6 @@ export async function POST(request: NextRequest) {
           : SCHEMA_DEFAULTS.USER_ROLE;
 
       await userRepository.createWithId(decodedToken.uid, {
-        ...DEFAULT_USER_DATA,
         uid: decodedToken.uid,
         email: authUser.email,
         displayName:

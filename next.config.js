@@ -3,10 +3,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@mohasinac/appkit"],
-  experimental: {
-    externalDir: true,
-  },
+  serverExternalPackages: ["@upstash/ratelimit", "@upstash/redis"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },

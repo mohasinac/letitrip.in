@@ -8,13 +8,13 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit/http";
-import { copilotLogRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { AppError } from "@mohasinac/appkit/errors";
+import { createApiHandler } from "@mohasinac/appkit/server";
+import { copilotLogRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { AppError } from "@mohasinac/appkit/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ---------------------------------------------------------------------------
@@ -107,7 +107,10 @@ export const POST = createApiHandler<(typeof chatSchema)["_output"]>({
       copilotLogRepository
         .create({
           userId: user!.uid,
-          userName: user!.displayName ?? user!.email ?? user!.uid,
+          userName:
+            (typeof user!.displayName === "string" && user!.displayName.trim()) ||
+            (typeof user!.email === "string" && user!.email.trim()) ||
+            user!.uid,
           conversationId,
           prompt,
           response: responseText,

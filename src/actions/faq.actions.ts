@@ -5,16 +5,16 @@
  * Business logic lives in @mohasinac/appkit/features/faq/actions.
  */
 
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
+} from "@mohasinac/appkit/server";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
 import {
   voteFaq,
   createFaq,
@@ -29,10 +29,10 @@ import {
   type VoteFaqActionResult,
   type FaqCreateInput,
   type FaqUpdateInput,
-} from "@mohasinac/appkit/features/faq/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import type { FAQDocument } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
 
 export type { VoteFaqActionInput, VoteFaqActionResult, FaqCreateInput, FaqUpdateInput };
 export type AdminCreateFaqInput = FaqCreateInput;

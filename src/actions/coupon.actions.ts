@@ -8,22 +8,22 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   validateCoupon,
   validateCouponForCart,
-} from "@mohasinac/appkit/features/promotions/server";
+} from "@mohasinac/appkit/server";
 import type {
   CouponValidationResult,
-} from "@mohasinac/appkit/features/promotions";
+} from "@mohasinac/appkit/server";
 import type {
   CouponCartValidationResult,
-} from "@mohasinac/appkit/features/promotions/server";
+} from "@mohasinac/appkit/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

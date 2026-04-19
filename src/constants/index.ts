@@ -22,7 +22,7 @@ export * from "./config";
 export { THEME_CONSTANTS } from "./theme";
 export type { ThemeMode } from "./theme";
 
-// Site configuration\n// (import directly: import { SITE_CONFIG, FEATURE_FLAGS } from "@mohasinac/appkit/core")
+// Site configuration\n// (import directly: import { SITE_CONFIG, FEATURE_FLAGS } from "@mohasinac/appkit")
 
 // SEO configuration
 export {

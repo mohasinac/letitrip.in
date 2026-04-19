@@ -16,10 +16,10 @@ import {
   type StoreQueryListParams,
   type StoreContentParams,
   type StoreReviewsResult,
-} from "@mohasinac/appkit/features/stores/server";
-import type { StoreDocument } from "@mohasinac/appkit/features/stores";
-import type { ProductDocument } from "@mohasinac/appkit/features/products";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import type { StoreDocument } from "@mohasinac/appkit/server";
+import type { ProductDocument } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
 
 export type { StoreQueryListParams, StoreContentParams, StoreReviewsResult };
 

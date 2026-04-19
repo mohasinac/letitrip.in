@@ -8,23 +8,23 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   placeBid,
   listBidsByProduct,
   getBidById,
-} from "@mohasinac/appkit/features/auctions/server";
+} from "@mohasinac/appkit/server";
 import type {
   PlaceBidInput,
   PlaceBidResult,
-} from "@mohasinac/appkit/features/auctions/server";
-import type { BidDocument } from "@mohasinac/appkit/features/auctions";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import type { BidDocument } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

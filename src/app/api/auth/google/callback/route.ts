@@ -29,18 +29,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
-import { parseUserAgent } from "@mohasinac/appkit/features/auth";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/server";
+import { createSessionCookie } from "@mohasinac/appkit/server";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
+import { parseUserAgent } from "@mohasinac/appkit/server";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { DEFAULT_USER_DATA } from "@mohasinac/appkit/features/auth";
-import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import type { UserRole } from "@mohasinac/appkit/features/auth";
-import { RTDBPayloadStatus } from "@mohasinac/appkit/react";
+import { DEFAULT_USER_DATA } from "@mohasinac/appkit/server";
+import { RTDB_PATHS } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import type { UserRole } from "@mohasinac/appkit/server";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/server";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

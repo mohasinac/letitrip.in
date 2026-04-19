@@ -2,7 +2,7 @@ import "./globals.css";
 import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
-import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit/seo";
+import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],

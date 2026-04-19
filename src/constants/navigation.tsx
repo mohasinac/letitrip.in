@@ -23,7 +23,7 @@ import {
   BookOpen,
   Star,
 } from "lucide-react";
-import { SITE_CONFIG } from "@mohasinac/appkit/core";
+import { SITE_CONFIG } from "@mohasinac/appkit";
 
 /**
  * Navigation Item Shape

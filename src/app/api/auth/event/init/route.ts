@@ -23,13 +23,13 @@ import "@/providers.config";
  */
 
 import { randomUUID } from "crypto";
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { RTDBPayloadStatus } from "@mohasinac/appkit/react";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { RTDB_PATHS } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/server";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;

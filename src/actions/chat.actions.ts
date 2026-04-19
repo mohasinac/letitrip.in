@@ -5,20 +5,20 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+import { requireAuthUser } from "@mohasinac/appkit/server";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   getChatRooms,
   createOrGetChatRoom,
   sendChatMessage,
   deleteChatRoom,
-} from "@mohasinac/appkit/features/admin/server";
+} from "@mohasinac/appkit/server";
 import type {
   ChatRoomsResult,
   CreateRoomResult,
-} from "@mohasinac/appkit/features/admin/server";
-import { FEATURE_FLAGS } from "@mohasinac/appkit/core";
+} from "@mohasinac/appkit/server";
+import { FEATURE_FLAGS } from "@mohasinac/appkit/server";
 
 const createRoomSchema = z.object({
   orderId: z.string().min(1),

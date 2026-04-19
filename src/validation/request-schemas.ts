@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { getDefaultCurrency } from "@mohasinac/appkit/core";
+import { getDefaultCurrency } from "@mohasinac/appkit";
 
 // ============================================
 // SHARED PRIMITIVE SCHEMAS (Zod v4)

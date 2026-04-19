@@ -18,7 +18,7 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import {
   sessionRepository,
   tokenRepository,
-} from "@mohasinac/appkit/features/auth/server";
+} from "@mohasinac/appkit/server";
 import { logInfo, logError } from "../utils/logger";
 import { batchDelete } from "../utils/batchHelper";
 import { SCHEDULES, REGION } from "../config/constants";

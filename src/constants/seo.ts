@@ -8,7 +8,7 @@ import {
   generateBlogMetadata,
   generateAuctionMetadata,
   generateSearchMetadata,
-} from "@mohasinac/appkit/seo";
+} from "@mohasinac/appkit";
 
 type PageSeoEntry = { title: string; description: string; keywords: string[] };
 
@@ -86,5 +86,5 @@ export type {
   CategorySeoInput,
   BlogSeoInput,
   AuctionSeoInput,
-} from "@mohasinac/appkit/seo";
+} from "@mohasinac/appkit";
 

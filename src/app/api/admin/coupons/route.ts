@@ -5,13 +5,13 @@ import "@/providers.config";
  * POST /api/admin/coupons — Create a new coupon (admin, local)
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { couponsRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import type { CouponCreateInput } from "@mohasinac/appkit/features/promotions";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { couponsRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import type { CouponCreateInput } from "@mohasinac/appkit/server";
 import { z } from "zod";
 
 const couponCreateSchema = z.object({

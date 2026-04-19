@@ -8,12 +8,12 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   updateUserProfile,
   getUserProfile,
@@ -21,8 +21,8 @@ import {
   getPublicUserProfile,
   getSellerReviews,
   getSellerProducts,
-} from "@mohasinac/appkit/features/auth/server";
-import type { UserDocument } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/server";
+import type { UserDocument } from "@mohasinac/appkit/server";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 

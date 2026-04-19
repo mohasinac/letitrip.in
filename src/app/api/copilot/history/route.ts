@@ -7,12 +7,12 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { copilotLogRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { AppError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { copilotLogRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { AppError } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 
 export const GET = createRouteHandler({
   auth: true,

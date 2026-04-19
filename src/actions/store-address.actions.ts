@@ -8,19 +8,19 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireRoleUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   listStoreAddressesForSeller,
   createStoreAddressForSeller,
   updateStoreAddressForSeller,
   deleteStoreAddressForSeller,
-} from "@mohasinac/appkit/features/stores/server";
-import type { StoreAddressDocument } from "@mohasinac/appkit/features/stores";
+} from "@mohasinac/appkit/server";
+import type { StoreAddressDocument } from "@mohasinac/appkit/server";
 
 // ─── Validation ────────────────────────────────────────────────────────────
 

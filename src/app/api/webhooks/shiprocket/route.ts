@@ -17,11 +17,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
-import { orderRepository } from "@mohasinac/appkit/repositories";
-import { handleApiError } from "@mohasinac/appkit/errors";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { ShiprocketWebhookPayload } from "@mohasinac/appkit/providers/shipping-shiprocket";
-import type { OrderDocument } from "@mohasinac/appkit/features/orders";
+import { orderRepository } from "@mohasinac/appkit/server";
+import { handleApiError } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import type { ShiprocketWebhookPayload } from "@mohasinac/appkit/server";
+import type { OrderDocument } from "@mohasinac/appkit/server";
 
 // Vercel Hobby max is 60 s; Firestore read + write fits well within that.
 export const maxDuration = 60;

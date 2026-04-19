@@ -9,14 +9,15 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit/repositories";
-import { ValidationError } from "@mohasinac/appkit/errors";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@mohasinac/appkit/http";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { shiprocketVerifyPickupOTP } from "@mohasinac/appkit/providers/shipping-shiprocket";
+import { userRepository } from "@mohasinac/appkit/server";
+import { ValidationError } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { shiprocketVerifyPickupOTP } from "@mohasinac/appkit/server";
+import type { SellerShippingConfig } from "@mohasinac/appkit/server";
 
 const verifyOTPSchema = z.object({
   otp: z.number().int().min(100000).max(999999),
@@ -28,8 +29,8 @@ export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   roles: ["seller", "admin"],
   schema: verifyOTPSchema,
   handler: async ({ user, body }) => {
-    const { otp, pickupLocationId } = body!;
-    const config = user!.shippingConfig;
+    const { otp, pickupLocationId } = body || {};
+    const config = user!.shippingConfig as SellerShippingConfig | undefined;
 
     if (!config || config.method !== "shiprocket") {
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.NOT_CONFIGURED);
@@ -46,8 +47,8 @@ export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
     });
 
     const result = await shiprocketVerifyPickupOTP(config.shiprocketToken, {
-      otp,
-      pickup_location_id: pickupLocationId,
+      otp: Number(otp),
+      pickup_location_id: pickupLocationId!,
     }).catch((err: Error) => {
       throw new ValidationError(
         `${ERROR_MESSAGES.SHIPPING.PICKUP_VERIFICATION_FAILED}: ${err.message}`,
@@ -86,4 +87,7 @@ export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
     );
   },
 });
+
+
+
 

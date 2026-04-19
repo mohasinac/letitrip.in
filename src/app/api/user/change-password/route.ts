@@ -7,11 +7,11 @@ import "@/providers.config";
  * Client MUST reauthenticate with currentPassword via Firebase SDK before calling.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { successResponse } from "@mohasinac/appkit/next";
-import { changePasswordSchema } from "@mohasinac/appkit/validation";
-import { createRouteHandler } from "@mohasinac/appkit/next";
+import { getAdminAuth } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { changePasswordSchema } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
 
 export const POST = createRouteHandler<
   (typeof changePasswordSchema)["_output"]

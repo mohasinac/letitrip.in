@@ -7,8 +7,8 @@
  * ghost orders from blocking stock.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
-import { orderRepository } from "@mohasinac/appkit/features/orders/server";
+import { notificationRepository } from "@mohasinac/appkit/server";
+import { orderRepository } from "@mohasinac/appkit/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION, ORDER_TIMEOUT_HOURS } from "../config/constants";

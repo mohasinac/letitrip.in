@@ -5,10 +5,10 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit/next";
-import { eventRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
+import { successResponse } from "@mohasinac/appkit/server";
+import { eventRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
 type RouteContext = { params: Promise<{ id: string }> };
 
 const updateStatusSchema = z.object({

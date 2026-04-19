@@ -4,18 +4,18 @@ import "@/providers.config";
  * DELETE /api/profile/delete-account
  */
 
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
-import { deleteAccountSchema } from "@mohasinac/appkit/validation";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
+import { deleteAccountSchema } from "@mohasinac/appkit/server";
 import {
   userRepository,
   tokenRepository,
   productRepository,
   orderRepository,
-} from "@mohasinac/appkit/repositories";
-import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
+} from "@mohasinac/appkit/server";
+import { getAdminAuth } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
 
 export const DELETE = createRouteHandler({
   auth: true,

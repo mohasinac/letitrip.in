@@ -8,12 +8,12 @@ import "@/providers.config";
  * Requires admin or moderator role.
  */
 
-import { sessionRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { sessionRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
 
 const revokeUserSchema = z.object({
   userId: z.string().min(1, "userId is required"),

@@ -8,12 +8,12 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   makeOffer,
   respondToOffer,
@@ -26,9 +26,9 @@ import {
   type MakeOfferInput,
   type RespondToOfferInput,
   type BuyerCounterInput,
-} from "@mohasinac/appkit/features/seller/server";
-import type { CartDocument } from "@mohasinac/appkit/features/cart";
-import type { OfferDocument } from "@mohasinac/appkit/features/seller";
+} from "@mohasinac/appkit/server";
+import type { CartDocument } from "@mohasinac/appkit/server";
+import type { OfferDocument } from "@mohasinac/appkit/server";
 
 // --- Validation schemas ----------------------------------------------------
 

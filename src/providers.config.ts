@@ -21,7 +21,7 @@ export function initProviders(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
     // ── Market defaults (must run before any formatter/provider reads baseline)
-    const { configureMarketDefaults } = await import("@mohasinac/appkit/core");
+    const { configureMarketDefaults } = await import("@mohasinac/appkit/server");
     configureMarketDefaults({
       currency: "INR",
       locale: "en-IN",
@@ -31,17 +31,17 @@ export function initProviders(): Promise<void> {
       currencySymbol: "₹",
     });
     const { firebaseAuthProvider, firebaseSessionProvider } =
-      await import("@mohasinac/appkit/providers/auth-firebase");
+      await import("@mohasinac/appkit/server");
     const { createResendProvider } =
-      await import("@mohasinac/appkit/providers/email-resend");
+      await import("@mohasinac/appkit/server");
     const { firebaseStorageProvider } =
-      await import("@mohasinac/appkit/providers/storage-firebase");
+      await import("@mohasinac/appkit/server");
     const { firebaseDbProvider } =
-      await import("@mohasinac/appkit/providers/db-firebase");
+      await import("@mohasinac/appkit/server");
     const { tailwindAdapter } =
-      await import("@mohasinac/appkit/style/tailwind");
-    const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories");
-    const { registerProviders } = await import("@mohasinac/appkit/contracts");
+      await import("@mohasinac/appkit/server");
+    const { siteSettingsRepository } = await import("@mohasinac/appkit/server");
+    const { registerProviders } = await import("@mohasinac/appkit/server");
 
     registerProviders({
       db: firebaseDbProvider,
@@ -93,7 +93,7 @@ export function initProviders(): Promise<void> {
  *
  * Usage:
  *   import { withProviders } from "@/providers.config";
- *   import { GET as _GET } from "@mohasinac/appkit/features/events";
+ *   import { GET as _GET } from "@mohasinac/appkit/server";
  *   export const GET = withProviders(_GET);
  */
 export function withProviders<A extends unknown[], R>(

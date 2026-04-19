@@ -6,13 +6,12 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { successResponse } from "@mohasinac/appkit/next";
-import { notificationRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { NotificationType, NotificationPriority } from "@mohasinac/appkit/features/admin";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { notificationRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
 
 const createNotificationSchema = z.object({
   userId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -32,13 +31,8 @@ const createNotificationSchema = z.object({
     "promotion",
     "system",
     "welcome",
-  ] as [NotificationType, ...NotificationType[]]),
-  priority: z
-    .enum(["low", "normal", "high"] as [
-      NotificationPriority,
-      ...NotificationPriority[],
-    ])
-    .default("normal"),
+  ] as const),
+  priority: z.enum(["low", "normal", "high"] as const).default("normal"),
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   message: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   imageUrl: z.string().optional(),

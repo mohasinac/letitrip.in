@@ -12,7 +12,7 @@
  *
  * @see @mohasinac/tokens THEME_CONSTANTS for the canonical base definition.
  */
-import { THEME_CONSTANTS as _base } from "@mohasinac/appkit/tokens";
+import { THEME_CONSTANTS as _base } from "@mohasinac/appkit";
 
 export const THEME_CONSTANTS = {
   // ── Base sections — sourced from @mohasinac/tokens ──────────────────────

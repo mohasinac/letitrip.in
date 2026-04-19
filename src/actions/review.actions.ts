@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/server";
 import {
   createReview as createReviewDomain,
   updateReview as updateReviewDomain,
@@ -21,20 +21,20 @@ import {
   listReviewsBySeller as listReviewsBySellerDomain,
   getHomepageReviews as getHomepageReviewsDomain,
   getReviewById as getReviewByIdDomain,
-} from "@mohasinac/appkit/features/reviews/server";
-import { reviewStatusSchema } from "@mohasinac/appkit/features/reviews";
+} from "@mohasinac/appkit/server";
+import { reviewStatusSchema } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
+} from "@mohasinac/appkit/server";
 import {
   AuthorizationError,
   ValidationError,
-} from "@mohasinac/appkit/errors";
-import type { ReviewDocument } from "@mohasinac/appkit/features/reviews";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import type { ReviewDocument } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
 import { mediaUrlSchema } from "@/validation/request-schemas";
-import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/server";
+import type { UpdateReviewActionInput } from "@mohasinac/appkit/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -227,11 +227,11 @@ export async function listAdminReviewsAction(params?: {
   pageSize?: number;
 }): Promise<FirebaseSieveResult<ReviewDocument>> {
   await requireRoleUser(["admin", "moderator"]);
-  const sieve: SieveModel = {
+  const sieve = {
     filters: params?.filters,
     sorts: params?.sorts ?? "-createdAt",
-    page: params?.page ?? 1,
-    pageSize: params?.pageSize ?? 50,
+    page: Number(params?.page ?? 1),
+    pageSize: Number(params?.pageSize ?? 50),
   };
   return listAdminReviewsDomain(sieve) as Promise<FirebaseSieveResult<ReviewDocument>>;
 }

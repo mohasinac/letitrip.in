@@ -9,7 +9,7 @@
  * Split from admin.actions.ts for maintainability.
  */
 
-import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireRoleUser } from "@mohasinac/appkit/server";
 import {
   getAdminDashboardStats,
   getAdminAnalytics,
@@ -21,15 +21,15 @@ import {
   listAdminProducts,
   listAdminStores,
   listAdminSessions,
-} from "@mohasinac/appkit/features/admin/server";
-import type { OrderDocument } from "@mohasinac/appkit/features/orders";
-import type { PayoutDocument } from "@mohasinac/appkit/features/payments";
-import type { UserDocument } from "@mohasinac/appkit/features/auth";
-import type { ProductDocument } from "@mohasinac/appkit/features/products";
-import type { BlogPostDocument } from "@mohasinac/appkit/features/blog";
-import type { StoreDocument } from "@mohasinac/appkit/features/stores";
-import type { BidDocument } from "@mohasinac/appkit/features/auctions";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import type { OrderDocument } from "@mohasinac/appkit/server";
+import type { PayoutDocument } from "@mohasinac/appkit/server";
+import type { UserDocument } from "@mohasinac/appkit/server";
+import type { ProductDocument } from "@mohasinac/appkit/server";
+import type { BlogPostDocument } from "@mohasinac/appkit/server";
+import type { StoreDocument } from "@mohasinac/appkit/server";
+import type { BidDocument } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
 
 // ─── Dashboard & Analytics ────────────────────────────────────────────────
 

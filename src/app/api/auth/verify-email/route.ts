@@ -7,12 +7,12 @@ import "@/providers.config";
  * client-side; this endpoint confirms/logs the outcome.
  */
 
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit/next";
-import { ValidationError } from "@mohasinac/appkit/errors";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit/server";
+import { ValidationError } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
 
 export const GET = createRouteHandler({
   handler: async ({ request }) => {

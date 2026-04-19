@@ -4,10 +4,10 @@
  * Site Settings Server Actions � thin entrypoint
  */
 
-import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
-import { getSiteSettings, updateSiteSettings } from "@mohasinac/appkit/features/admin/server";
+import { requireRoleUser } from "@mohasinac/appkit/server";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+import { getSiteSettings, updateSiteSettings } from "@mohasinac/appkit/server";
 
 export async function getSiteSettingsAction(): Promise<unknown> {
   return getSiteSettings();

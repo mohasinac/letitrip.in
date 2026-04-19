@@ -4,16 +4,16 @@ import "@/providers.config";
  * GET /api/admin/newsletter — List subscribers with stats
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
-import { successResponse } from "@mohasinac/appkit/next";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/next";
-import { newsletterRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core";
+} from "@mohasinac/appkit/server";
+import { newsletterRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/server";
 
 /**
  * GET /api/admin/newsletter

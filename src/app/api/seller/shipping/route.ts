@@ -9,19 +9,19 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit/repositories";
-import { ValidationError } from "@mohasinac/appkit/errors";
-import { successResponse } from "@mohasinac/appkit/next";
-import { createApiHandler } from "@mohasinac/appkit/http";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { userRepository } from "@mohasinac/appkit/server";
+import { ValidationError } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 import {
   shiprocketAuthenticate,
   shiprocketAddPickupLocation,
   SHIPROCKET_TOKEN_TTL_MS,
-} from "@mohasinac/appkit/providers/shipping-shiprocket";
-import type { SellerShippingConfig } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/server";
+import type { SellerShippingConfig } from "@mohasinac/appkit/server";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ export const GET = createApiHandler({
   roles: ["seller", "admin"],
   handler: async ({ user }) => {
     return successResponse({
-      shippingConfig: sanitiseConfig(user!.shippingConfig),
+      shippingConfig: sanitiseConfig(user!.shippingConfig as SellerShippingConfig | undefined),
     });
   },
 });
@@ -118,7 +118,7 @@ export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
         };
       } else {
         // ── Shiprocket method ──────────────────────────────────────────────────
-        const existing = user!.shippingConfig;
+        const existing = user!.shippingConfig as SellerShippingConfig | undefined;
         let token = existing?.shiprocketToken;
         let tokenExpiry = existing?.shiprocketTokenExpiry;
         const existingEmail = existing?.shiprocketEmail;

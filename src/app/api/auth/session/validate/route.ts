@@ -4,11 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError } from "@mohasinac/appkit/errors";
-import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/repositories";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/next";
+import { handleApiError } from "@mohasinac/appkit/server";
+import { verifySessionCookie } from "@mohasinac/appkit/server";
+import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
 
 export async function GET(request: NextRequest) {
   try {

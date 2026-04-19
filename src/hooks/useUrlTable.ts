@@ -12,7 +12,7 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import {
   useUrlTable as useAppkitUrlTable,
   type UseUrlTableOptions,
-} from "@mohasinac/appkit/react";
+} from "@mohasinac/appkit";
 
 export type { UseUrlTableOptions };
 

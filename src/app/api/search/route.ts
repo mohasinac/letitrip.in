@@ -1,4 +1,4 @@
 import { withProviders } from "@/providers.config";
-import { GET as _GET } from "@mohasinac/appkit/features/search/server";
+import { GET as _GET } from "@mohasinac/appkit/server";
 export const GET = withProviders(_GET);
 

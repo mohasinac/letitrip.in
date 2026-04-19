@@ -1,6 +1,6 @@
 # Gap.md - Consolidated Architecture and Style Gap Master Plan
 
-Last updated: 2026-04-19 (Gap.md stale checkbox closure — W3 functions repos ✅, R9 functions literals ✅ clarified, Wave 8 LayoutShellClient justified, tsc confirmed 0 errors both repos)
+Last updated: 2026-04-19 (letitrip `npm run build` ✅ GREEN — appkit unified barrel (index.ts 3089 exports, client.ts 803 exports) via generate-index.mjs + generate-client.mjs; StatusBadge local types renamed to BadgeOrderStatus/BadgePaymentStatus/BadgeReviewStatus/BadgeTicketStatus to unblock domain OrderStatus; ui/index.ts aliases removed; global-error.tsx import fixed to @mohasinac/appkit/client; metadata RouteUser cast fixes in 3 API routes; 99/99 static pages generated)
 Scope: letitrip.in (consumer, reference-only during phases) + appkit (source of truth, active migration target)
 Supersedes: architecturegap.md, styleandarchitec.md
 

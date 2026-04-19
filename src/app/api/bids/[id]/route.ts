@@ -4,8 +4,8 @@ import "@/providers.config";
  * GET /api/bids/:id — Get bids for a product (id = productId)
  */
 
-import { bidRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { bidRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

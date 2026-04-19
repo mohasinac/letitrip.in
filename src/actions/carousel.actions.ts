@@ -5,9 +5,9 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/errors";
+import { requireRoleUser } from "@mohasinac/appkit/server";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/server";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
 import {
   createCarouselSlide,
   updateCarouselSlide,
@@ -16,12 +16,12 @@ import {
   listActiveCarouselSlides,
   listAllCarouselSlides,
   getCarouselSlideById,
-} from "@mohasinac/appkit/features/homepage/server";
+} from "@mohasinac/appkit/server";
 import type {
   CarouselSlideInput,
   CarouselSlideUpdateInput,
-} from "@mohasinac/appkit/features/homepage/server";
-import type { CarouselSlideDocument } from "@mohasinac/appkit/features/homepage/schemas";
+} from "@mohasinac/appkit/server";
+import type { CarouselSlideDocument } from "@mohasinac/appkit/server";
 
 const createSlideSchema = z.object({
   title: z.string().min(1),

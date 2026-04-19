@@ -8,23 +8,23 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireRoleUser } from "@mohasinac/appkit/server";
 import {
   adminCreateCoupon as adminCreateCouponDomain,
   adminUpdateCoupon as adminUpdateCouponDomain,
   adminDeleteCoupon as adminDeleteCouponDomain,
   listAdminCoupons as listAdminCouponsDomain,
-} from "@mohasinac/appkit/features/admin/server";
+} from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
+} from "@mohasinac/appkit/server";
 import {
   AuthorizationError,
   ValidationError,
-} from "@mohasinac/appkit/errors";
-import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit/features/promotions";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/providers/db-firebase";
+} from "@mohasinac/appkit/server";
+import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit/server";
+import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit/server";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 

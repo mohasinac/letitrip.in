@@ -15,21 +15,21 @@ import "@/providers.config";
  * - Implement FAQ A/B testing
  */
 
-import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit/repositories";
-import { successResponse } from "@mohasinac/appkit/next";
+import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
 import {
   getBooleanParam,
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/next";
-import { faqCreateSchema } from "@mohasinac/appkit/features/faq/server";
-import { invalidateCache } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { slugifyQuestion } from "@mohasinac/appkit/features/faq/schemas";
-import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas";
-import { errorResponse } from "@mohasinac/appkit/next";
+} from "@mohasinac/appkit/server";
+import { faqCreateSchema } from "@mohasinac/appkit/server";
+import { invalidateCache } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { slugifyQuestion } from "@mohasinac/appkit/server";
+import type { FAQDocument } from "@mohasinac/appkit/server";
+import { errorResponse } from "@mohasinac/appkit/server";
 
 /**
  * GET /api/faqs

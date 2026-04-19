@@ -8,12 +8,12 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase";
+import { requireAuthUser } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/security";
-import { ValidationError, AuthorizationError } from "@mohasinac/appkit/errors";
+} from "@mohasinac/appkit/server";
+import { ValidationError, AuthorizationError } from "@mohasinac/appkit/server";
 import {
   addItemToCart,
   updateCartItem,
@@ -21,8 +21,8 @@ import {
   clearCart,
   mergeGuestCart,
   getCart,
-} from "@mohasinac/appkit/features/cart/server";
-import type { CartDocument } from "@mohasinac/appkit/features/cart";
+} from "@mohasinac/appkit/server";
+import type { CartDocument } from "@mohasinac/appkit/server";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

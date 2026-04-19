@@ -6,13 +6,13 @@ import "@/providers.config";
  * POST /api/user/wishlist — Add a product to the wishlist
  */
 
-import { wishlistRepository } from "@mohasinac/appkit/repositories";
-import { productRepository } from "@mohasinac/appkit/repositories";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
+import { wishlistRepository } from "@mohasinac/appkit/server";
+import { productRepository } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
 import { z } from "zod";
 
 const addSchema = z.object({

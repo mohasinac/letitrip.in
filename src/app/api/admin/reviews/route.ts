@@ -3,12 +3,12 @@ import "@/providers.config";
  * Admin Reviews API Route
  * GET /api/admin/reviews
  */
-import { createApiHandler } from "@mohasinac/appkit/http";
-import { successResponse } from "@mohasinac/appkit/next";
-import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { piiBlindIndex } from "@mohasinac/appkit/security";
+import { createApiHandler } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
+import { buildSieveFilters } from "@mohasinac/appkit/server";
+import { piiBlindIndex } from "@mohasinac/appkit/server";
 import { REVIEW_FIELDS } from "@/constants/field-names";
-import { reviewRepository } from "@mohasinac/appkit/repositories";
+import { reviewRepository } from "@mohasinac/appkit/server";
 
 export const GET = createApiHandler({
   roles: ["admin", "moderator"],

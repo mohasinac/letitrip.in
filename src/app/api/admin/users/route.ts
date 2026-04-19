@@ -4,18 +4,18 @@ import "@/providers.config";
  * GET /api/admin/users - List users with search, role filter, disabled filter
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
-import { successResponse } from "@mohasinac/appkit/next";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit/server";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/next";
-import { buildSieveFilters } from "@mohasinac/appkit/utils";
-import { userRepository } from "@mohasinac/appkit/repositories";
-import { piiBlindIndex } from "@mohasinac/appkit/security";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { USER_FIELDS } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/server";
+import { buildSieveFilters } from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit/server";
+import { piiBlindIndex } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { USER_FIELDS } from "@mohasinac/appkit/server";
 
 /**
  * GET /api/admin/users
@@ -79,11 +79,11 @@ export const GET = createRouteHandler({
           : ((u.createdAt as any)?.toDate?.()?.toISOString() ??
             String(u.createdAt)),
       lastLoginAt:
-        u.metadata?.lastSignInTime instanceof Date
-          ? u.metadata.lastSignInTime.toISOString()
-          : ((u.metadata?.lastSignInTime as any)?.toDate?.()?.toISOString() ??
-            u.metadata?.lastSignInTime),
-      metadata: u.metadata ? { loginCount: u.metadata.loginCount } : undefined,
+        (u.metadata as any)?.lastSignInTime instanceof Date
+          ? (u.metadata as any).lastSignInTime.toISOString()
+          : ((u.metadata as any)?.lastSignInTime as any)?.toDate?.()?.toISOString() ??
+            (u.metadata as any)?.lastSignInTime,
+      metadata: u.metadata ? { loginCount: (u.metadata as any).loginCount } : undefined,
     });
 
     const sieveResult = await userRepository.list({

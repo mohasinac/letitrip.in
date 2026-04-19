@@ -9,7 +9,7 @@
  * mergeFeatureMessages() in i18n/request.ts reads this to merge i18n fragments.
  */
 
-import type { FeaturesConfig } from "@mohasinac/appkit/contracts";
+import type { FeaturesConfig } from "@mohasinac/appkit";
 
 export default {
   // ── Shell (always on) ────────────────────────────────────────────────────

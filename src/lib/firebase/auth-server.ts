@@ -19,14 +19,14 @@ import {
   requireAuthFromRequest as _requireAuthFromRequest,
   requireRoleFromRequest as _requireRoleFromRequest,
   verifySessionCookie,
-} from "@mohasinac/appkit/providers/auth-firebase";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import type { UserRole } from "@mohasinac/appkit/features/auth";
-import type { SessionUser } from "@mohasinac/appkit/react";
-import type { UserDocument } from "@mohasinac/appkit/features/auth";
+} from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import type { UserRole } from "@mohasinac/appkit/server";
+import type { SessionUser } from "@mohasinac/appkit/server";
+import type { UserDocument } from "@mohasinac/appkit/server";
 
 async function findUserById(uid: string): Promise<UserDocument | null> {
-  const { userRepository } = await import("@mohasinac/appkit/repositories");
   return userRepository.findById(uid) as Promise<UserDocument | null>;
 }
 
@@ -74,7 +74,6 @@ export const getServerSessionUser = cache(
       const decoded = await verifySessionCookie(sessionCookie);
       if (!decoded) return null;
 
-      const { userRepository } = await import("@mohasinac/appkit/repositories");
       const profile = await userRepository.findById(decoded.uid);
       if (!profile) return null;
 

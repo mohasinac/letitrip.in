@@ -7,7 +7,7 @@
  * never manually clear their notification history.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
+import { notificationRepository } from "@mohasinac/appkit/server";
 import { logInfo, logError } from "../utils/logger";
 import { batchDelete } from "../utils/batchHelper";
 import { SCHEDULES, REGION, NOTIFICATION_TTL_DAYS } from "../config/constants";

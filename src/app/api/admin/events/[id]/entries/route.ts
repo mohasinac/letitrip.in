@@ -4,15 +4,15 @@ import "@/providers.config";
  * GET /api/admin/events/:id/entries — List entries for an event
  */
 
-import { successResponse } from "@mohasinac/appkit/next";
+import { successResponse } from "@mohasinac/appkit/server";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/next";
-import { eventEntryRepository } from "@mohasinac/appkit/repositories";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/http";
+} from "@mohasinac/appkit/server";
+import { eventEntryRepository } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

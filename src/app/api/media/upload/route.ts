@@ -1,16 +1,16 @@
 import "@/providers.config";
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/errors";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values";
-import { successResponse, errorResponse } from "@mohasinac/appkit/next";
-import { serverLogger } from "@mohasinac/appkit/monitoring";
-import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase";
-import { createRouteHandler } from "@mohasinac/appkit/next";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse, errorResponse } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit/server";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit/server";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
 import {
-  formatFileSize, generateMediaFilename } from "@mohasinac/appkit/utils";
-import type { MediaFilenameContext } from "@mohasinac/appkit/utils";
+  formatFileSize, generateMediaFilename } from "@mohasinac/appkit/server";
+import type { MediaFilenameContext } from "@mohasinac/appkit/server";
 
 /**
  * Media Upload API Route
