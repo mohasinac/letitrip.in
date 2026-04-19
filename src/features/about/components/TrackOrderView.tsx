@@ -1,5 +1,4 @@
-import { ROUTES } from "@/constants/routes";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Caption, Grid, Section } from "@mohasinac/appkit/ui";
 import { TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
@@ -93,6 +92,7 @@ export async function TrackOrderView() {
           <Heading level={2} className="text-center mb-10">
             {t("howItWorksTitle")}
           </Heading>
+          {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}
           <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
               <div

@@ -1,5 +1,4 @@
-import { ROUTES } from "@/constants/routes";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Section, FlowDiagram } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { TextLink } from "@mohasinac/appkit/ui";

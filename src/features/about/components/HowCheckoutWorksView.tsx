@@ -1,17 +1,9 @@
-import { ROUTES } from "@/constants/routes";
-import { THEME_CONSTANTS } from "@/constants/theme";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Section, Stack, FlowDiagram } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
-import {
-  ShoppingCart,
-  MapPin,
-  CreditCard,
-  CheckCircle,
-  Smartphone,
-  Banknote,
-} from "lucide-react";
+import { Smartphone, Banknote } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
