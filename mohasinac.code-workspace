@@ -4,5 +4,12 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"github.copilot.editor.enableAutoCompletions": false,
+		"github.copilot.nextEditSuggestions.enabled": false,
+		"github.copilot.renameSuggestions.triggerAutomatically": false,
+		"github.copilot.inlineSuggest.enable": false,
+		"github.copilot.chat.followUps": "never",
+		"github.copilot.chat.temporalContext.enabled": false
+	}
 }

@@ -31,20 +31,7 @@ import { invalidateCache } from "@mohasinac/appkit/next";
 import { handleApiError } from "@mohasinac/appkit/errors";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit/errors";
 import { serverLogger } from "@mohasinac/appkit/monitoring";
-
-/** Map of seed-script collection names → the API path prefixes they populate. */
-const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
-  categories: ["/api/categories"],
-  products: ["/api/products"],
-  carouselSlides: ["/api/carousel"],
-  homepageSections: ["/api/homepage-sections"],
-  siteSettings: ["/api/site-settings"],
-  faqs: ["/api/faqs"],
-  reviews: ["/api/reviews"],
-  blogPosts: ["/api/admin/blog", "/api/blog"],
-  events: ["/api/admin/events", "/api/events"],
-  coupons: ["/api/admin/coupons"],
-};
+import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit/constants";
 
 export async function POST(request: NextRequest) {
   try {
