@@ -13,10 +13,10 @@
  *   razorpay.account_number="ACCOUNT_NO"
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { payoutRepository } from "@mohasinac/appkit/features/payments/server";
 import { type DocumentReference } from "firebase-admin/firestore";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
-import { payoutRepository, type PayoutRow } from "../repositories";
 import {
   ConfigurationError,
   ValidationError,
@@ -26,6 +26,8 @@ import { FN_ERROR_MESSAGES } from "../constants/messages";
 
 const JOB = "payoutBatch";
 const MAX_FAILURES = 3;
+
+type PayoutRow = Awaited<ReturnType<typeof payoutRepository.getPending>>[number]["data"];
 
 async function dispatchPayout(entry: {
   ref: DocumentReference;
@@ -121,7 +123,8 @@ async function dispatchPayout(entry: {
       razorpayStatus: result.status,
     });
   } catch (error) {
-    const failureCount = (payout.failureCount ?? 0) + 1;
+    const failureCount =
+      ((payout as PayoutRow & { failureCount?: number }).failureCount ?? 0) + 1;
     const isFinal = failureCount >= MAX_FAILURES;
     const reason = error instanceof Error ? error.message : String(error);
 

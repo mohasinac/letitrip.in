@@ -9,10 +9,10 @@
  *      (confirmed, shipped, delivered).
  */
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
 import { getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
-import { notificationRepository } from "../repositories";
 import { IntegrationError } from "../lib/errors";
 import { decryptPii } from "../lib/pii";
 import {

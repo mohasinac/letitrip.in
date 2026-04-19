@@ -14,10 +14,12 @@
  *   - On hard delete of a published product: decrement counters.
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { categoriesRepository as categoryRepository } from "@mohasinac/appkit/features/categories/server";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
+import { storeRepository } from "@mohasinac/appkit/features/stores/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
-import { categoryRepository, storeRepository } from "../repositories";
 
 const TRIGGER = "onProductWrite";
 
@@ -27,7 +29,7 @@ const TRIGGER = "onProductWrite";
  */
 async function getParentIds(categoryId: string): Promise<string[]> {
   if (!categoryId) return [];
-  return categoryRepository.getParentIds(categoryId);
+  return (await categoryRepository.findById(categoryId))?.parentIds ?? [];
 }
 
 export const onProductWrite = onDocumentWritten(
@@ -61,8 +63,8 @@ export const onProductWrite = onDocumentWritten(
     const isAuction = (afterData?.isAuction as boolean) ?? false;
     const beforeIsAuction = (beforeData?.isAuction as boolean) ?? false;
 
-    const wasPublished = beforeStatus === "published";
-    const isPublished = afterStatus === "published";
+    const wasPublished = beforeStatus === ProductStatusValues.PUBLISHED;
+    const isPublished = afterStatus === ProductStatusValues.PUBLISHED;
     const isDelete = !afterData;
 
     // ── Category & store counter logic ────────────────────────────────────

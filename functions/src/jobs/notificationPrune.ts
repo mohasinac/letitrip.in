@@ -7,10 +7,10 @@
  * never manually clear their notification history.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
 import { logInfo, logError } from "../utils/logger";
 import { batchDelete } from "../utils/batchHelper";
 import { SCHEDULES, REGION, NOTIFICATION_TTL_DAYS } from "../config/constants";
-import { notificationRepository } from "../repositories";
 
 const JOB = "notificationPrune";
 
@@ -30,7 +30,9 @@ export const notificationPrune = onSchedule(
     );
 
     try {
-      const refs = await notificationRepository.getOldReadRefs();
+      const refs = await notificationRepository.getOldReadRefs(
+        NOTIFICATION_TTL_DAYS,
+      );
 
       if (refs.length === 0) {
         logInfo(JOB, "No stale read notifications found");

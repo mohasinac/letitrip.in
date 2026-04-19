@@ -11,19 +11,21 @@
  *   5. Writes `bid_won` / `bid_lost` notifications via notificationRepository
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
+import { bidRepository } from "@mohasinac/appkit/features/auctions/server";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
+import { orderRepository } from "@mohasinac/appkit/features/orders/server";
+import { productRepository } from "@mohasinac/appkit/features/products/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
-import {
-  productRepository,
-  bidRepository,
-  orderRepository,
-  notificationRepository,
-  type AuctionProductRow,
-} from "../repositories";
 import { AUCTION_MESSAGES } from "../constants/messages";
 
 const JOB = "auctionSettlement";
+
+type AuctionProductRow = Awaited<
+  ReturnType<typeof productRepository.getExpiredAuctions>
+>[number]["data"];
 
 async function settleAuction(product: AuctionProductRow): Promise<void> {
   const activeBids = await bidRepository.getActiveByProduct(product.id);
@@ -31,7 +33,11 @@ async function settleAuction(product: AuctionProductRow): Promise<void> {
   const batch = db.batch();
 
   if (activeBids.length === 0) {
-    productRepository.updateStatus(batch, product.id, "unsold");
+    productRepository.updateStatusInBatch(
+      batch,
+      product.id,
+      ProductStatusValues.OUT_OF_STOCK,
+    );
     await batch.commit();
     logInfo(JOB, AUCTION_MESSAGES.NO_BIDS_LOG(product.id));
     return;
@@ -52,15 +58,18 @@ async function settleAuction(product: AuctionProductRow): Promise<void> {
     userId: winnerEntry.data.userId,
     userName: winnerEntry.data.userName,
     userEmail: winnerEntry.data.userEmail,
+    sellerId: product.sellerId,
     amount: winnerEntry.data.bidAmount,
     currency: winnerEntry.data.currency,
     auctionProductId: product.id,
   });
 
   // Update product status
-  productRepository.updateStatus(batch, product.id, "sold");
-
-  productRepository.updateStatus(batch, product.id, "sold");
+  productRepository.updateStatusInBatch(
+    batch,
+    product.id,
+    ProductStatusValues.SOLD,
+  );
   notificationRepository.createInBatch(batch, {
     userId: winnerEntry.data.userId,
     type: "bid_won",

@@ -13,16 +13,20 @@
  *     trigger quota errors and force costly retries.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { productRepository } from "@mohasinac/appkit/features/products/server";
+import { reviewRepository } from "@mohasinac/appkit/features/reviews/server";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
-import { productRepository, reviewRepository } from "../repositories";
 
 const JOB = "productStatsSync";
 
 async function syncProductStats(productId: string): Promise<void> {
   const { count, avgRating } =
     await reviewRepository.getApprovedRatingAggregate(productId);
-  await productRepository.updateStats(productId, avgRating, count);
+  await productRepository.update(productId, {
+    avgRating,
+    reviewCount: count,
+  });
 }
 
 export const productStatsSync = onSchedule(

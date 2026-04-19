@@ -8,16 +8,18 @@
   },
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "tsup src/index.ts --format cjs --target node20 --platform node --out-dir lib --clean --sourcemap",
+    "build:watch": "tsup src/index.ts --format cjs --target node20 --platform node --out-dir lib --watch --sourcemap",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "dependencies": {
+    "@mohasinac/appkit": "file:../../appkit",
     "algoliasearch": "^5.49.0",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^6.3.2"
@@ -26,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.4.0"
   }
 }

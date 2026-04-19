@@ -7,10 +7,11 @@
  * ghost orders from blocking stock.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
+import { orderRepository } from "@mohasinac/appkit/features/orders/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION, ORDER_TIMEOUT_HOURS } from "../config/constants";
-import { orderRepository, notificationRepository } from "../repositories";
 import { ORDER_MESSAGES } from "../constants/messages";
 
 const JOB = "pendingOrderTimeout";
@@ -27,7 +28,9 @@ export const pendingOrderTimeout = onSchedule(
     logInfo(JOB, `Scanning for orders unpaid > ${ORDER_TIMEOUT_HOURS}h`);
 
     try {
-      const timedOut = await orderRepository.getTimedOutPending();
+      const timedOut = await orderRepository.getTimedOutPending(
+        ORDER_TIMEOUT_HOURS,
+      );
 
       if (timedOut.length === 0) {
         logInfo(JOB, "No timed-out pending orders found");

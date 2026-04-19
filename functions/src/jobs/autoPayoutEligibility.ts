@@ -22,14 +22,14 @@
  */
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { getDefaultCurrency } from "@mohasinac/appkit/core";
+import { userRepository } from "@mohasinac/appkit/features/auth/server";
+import { orderRepository } from "@mohasinac/appkit/features/orders/server";
+import { payoutRepository } from "@mohasinac/appkit/features/payments/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logWarn, logError } from "../utils/logger";
 import { SCHEDULES, REGION, BATCH_LIMIT } from "../config/constants";
-import {
-  orderRepository,
-  payoutRepository,
-  userRepository,
-} from "../repositories";
+import { getBusinessDayCutoff } from "../utils/businessDay";
 
 const JOB = "autoPayoutEligibility";
 
@@ -58,8 +58,9 @@ export const autoPayoutEligibility = onSchedule(
     });
 
     try {
+      const cutoff = getBusinessDayCutoff(AUTO_PAYOUT_WINDOW_DAYS);
       const eligible = await orderRepository.getEligibleAutomatic(
-        AUTO_PAYOUT_WINDOW_DAYS,
+        cutoff,
       );
 
       if (eligible.length === 0) {
@@ -130,7 +131,7 @@ export const autoPayoutEligibility = onSchedule(
           gstAmount,
           gstRate: GST_RATE,
           isAutomatic: true,
-          currency: "INR",
+          currency: getDefaultCurrency(),
           status: "pending" as const,
           paymentMethod:
             seller.payoutDetails?.method === "upi"

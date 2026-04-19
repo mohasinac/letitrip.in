@@ -6,10 +6,10 @@
  * Carts are low-value state that accumulate from anonymous or churned users.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { cartRepository } from "@mohasinac/appkit/features/cart/server";
 import { logInfo, logError } from "../utils/logger";
 import { batchDelete } from "../utils/batchHelper";
 import { SCHEDULES, REGION, CART_TTL_DAYS } from "../config/constants";
-import { cartRepository } from "../repositories";
 
 const JOB = "cartPrune";
 
@@ -26,7 +26,7 @@ export const cartPrune = onSchedule(
     logInfo(JOB, `Pruning carts idle for > ${CART_TTL_DAYS} days`);
 
     try {
-      const refs = await cartRepository.getStaleRefs();
+      const refs = await cartRepository.getStaleRefs(CART_TTL_DAYS);
 
       if (refs.length === 0) {
         logInfo(JOB, "No stale carts found");

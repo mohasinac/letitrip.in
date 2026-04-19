@@ -16,10 +16,12 @@
  *   enough (< few thousand per product) to make this fast and safe.
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { ReviewStatusValues } from "@mohasinac/appkit/features/reviews";
+import { reviewRepository } from "@mohasinac/appkit/features/reviews/server";
+import { storeRepository } from "@mohasinac/appkit/features/stores/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
-import { reviewRepository, storeRepository } from "../repositories";
 
 const TRIGGER = "onReviewWrite";
 
@@ -42,8 +44,8 @@ export const onReviewWrite = onDocumentWritten(
     const afterStatus = (afterData?.status as string | undefined) ?? null;
 
     // Only act when an approved review is involved
-    const wasApproved = beforeStatus === "approved";
-    const isApproved = afterStatus === "approved";
+    const wasApproved = beforeStatus === ReviewStatusValues.APPROVED;
+    const isApproved = afterStatus === ReviewStatusValues.APPROVED;
 
     if (!wasApproved && !isApproved) {
       // e.g. pending → pending, pending → rejected — nothing to update

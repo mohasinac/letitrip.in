@@ -516,7 +516,7 @@ R8. Final duplicate sweep and shim removal
 | R6 | Variant-first UI uplift | repeated class bundles across feature UI | ✅ done (B24-B26+B29+B33-B35) | R5 | Medium | B24: Alert compact + Card adoption (7 files). B25: Stack gap adoption (7 files, ~30 patterns). B26: Row wave 3 (3 files, ~15 patterns). B29: Row wave 4 (5 files, ~11 patterns). B33: Row wave 5 (8 files, ~24 patterns). B34: Row wave 6 (9 files, 21 patterns). B35: Row wave 7 (14 files, 20 patterns). ~110 remaining patterns are non-Div (Button/Link/Nav/Span className, centering, inline-flex) — not eligible for Row. |
 | R7 | Style contract completion | ui component style ownership | ✅ done (B27-B32) | R6 | Medium | All 30 UI components + 2 outliers have .style.css with BEM appkit-* class hooks |
 | R8 | Final dedupe + shim purge | all duplicate/shim surfaces | ✅ complete (B36-B38 + B41) | R1-R7 | High | Enforce canonical imports and ownership; market literal + status enum final closure done |
-| R9 | Status enum constants | ~40 status string literals across appkit + letitrip | ✅ done (B07 appkit, B49-B52 letitrip routes, B48 actions) | R1 | High | Replace raw strings with typed enums/as-const in feature schemas. appkit: B07 (16 files). letitrip routes: B49/B50/B51/B52/B54. letitrip actions: B48. functions literals blocked by Wave 2 ESM migration. |
+| R9 | Status enum constants | ~40 status string literals across appkit + letitrip | ✅ done (B07 appkit, B49-B52 letitrip routes, B48 actions, B55 functions) | R1 | High | Replace raw strings with typed enums/as-const in feature schemas. appkit: B07 (16 files). letitrip routes: B49/B50/B51/B52/B54. letitrip actions: B48. functions: B55 (Wave 2 rewire — all status literals replaced via appkit StatusValues imports). |
 | R10 | ROUTES constant coverage | Sidebar pathname checks + appkit default-prop paths | not started | none | Medium | Extract path strings to ROUTES constants |
 | R11 | TextLink dedup | letitrip/src/components/typography/TextLink.tsx | not started | none | Low | Delete duplicate; rewire imports to appkit |
 | R12 | Server/client barrel split | ~20 features/*/index.ts mixed barrels + missing server-only/client-only guards | not started | none | ~~Critical~~ ✅ appkit done | Split barrels, add runtime guards — appkit complete; consumer rewires deferred |
@@ -1046,9 +1046,9 @@ Prereq: Wave 0 (baseline resolver wired)
 - [x] `src/db/indices/` deleted (tokens.index.json, users.index.json)
 - [x] `src/db/` directory deleted entirely
 
-#### Wave 2 — Functions Repository Retirement (15 files DELETE)
+#### Wave 2 — Functions Repository Retirement (15 files DELETE) ✅ DONE (B55)
 Prereq: Wave 1 (schemas resolved) ✅ + **appkit repo extensions (B05 blocker — see below)**
-Status: ⛔ BLOCKED — two remaining blockers (as of B50 analysis)
+Status: ✅ COMPLETE — Wave 2 rewire executed. All 15 local repo wrappers deleted. All 20 consumers (14 jobs + 6 triggers) rewired to appkit server barrels. `functions` typecheck: 0 errors. `functions` build: ✅ CJS 64 KB.
 
 **Blocker 1 — CJS/ESM packaging (confirmed B50 session):** functions package uses `"module": "commonjs"` with no `@mohasinac/appkit` dependency. appkit ships TypeScript source sub-paths (`"type": "module"`). Node.js cannot `require()` `.ts` files at runtime. Resolution plan:
 1. Add `"type": "module"` to `functions/package.json`
@@ -1069,22 +1069,22 @@ These will be fixed as part of the Wave 2 type migration pass.
 **B05 Gap Analysis (2026-04-18):** appkit repo extensions now ✅ COMPLETE (B05).
 
 Rewire all `functions/src/jobs/` and `functions/src/triggers/` to import repositories from appkit `/server` paths.
-- [ ] `functions/src/repositories/bid.repository.ts` → `@mohasinac/appkit/features/auctions/server`
-- [ ] `functions/src/repositories/cart.repository.ts` → `@mohasinac/appkit/features/cart/server`
-- [ ] `functions/src/repositories/category.repository.ts` → `@mohasinac/appkit/features/categories/server`
-- [ ] `functions/src/repositories/coupon.repository.ts` → `@mohasinac/appkit/features/promotions/server`
-- [ ] `functions/src/repositories/notification.repository.ts` → `@mohasinac/appkit/features/admin/server`
-- [ ] `functions/src/repositories/offer.repository.ts` → `@mohasinac/appkit/features/seller/server`
-- [ ] `functions/src/repositories/order.repository.ts` → `@mohasinac/appkit/features/orders/server`
-- [ ] `functions/src/repositories/payout.repository.ts` → `@mohasinac/appkit/features/payments/server`
-- [ ] `functions/src/repositories/product.repository.ts` → `@mohasinac/appkit/features/products/server`
-- [ ] `functions/src/repositories/review.repository.ts` → `@mohasinac/appkit/features/reviews/server`
-- [ ] `functions/src/repositories/session.repository.ts` → `@mohasinac/appkit/features/auth/server`
-- [ ] `functions/src/repositories/store.repository.ts` → `@mohasinac/appkit/features/stores/server`
-- [ ] `functions/src/repositories/token.repository.ts` → `@mohasinac/appkit/features/auth/server`
-- [ ] `functions/src/repositories/user.repository.ts` → `@mohasinac/appkit/features/auth/server`
-- [ ] `functions/src/repositories/index.ts` — delete barrel after all rewires
-- [ ] Typecheck `functions/` passes
+- [x] `functions/src/repositories/bid.repository.ts` → `@mohasinac/appkit/features/auctions/server` *(deleted)*
+- [x] `functions/src/repositories/cart.repository.ts` → `@mohasinac/appkit/features/cart/server` *(deleted)*
+- [x] `functions/src/repositories/category.repository.ts` → `@mohasinac/appkit/features/categories/server` *(deleted)*
+- [x] `functions/src/repositories/coupon.repository.ts` → `@mohasinac/appkit/features/promotions/server` *(deleted)*
+- [x] `functions/src/repositories/notification.repository.ts` → `@mohasinac/appkit/features/admin/server` *(deleted)*
+- [x] `functions/src/repositories/offer.repository.ts` → `@mohasinac/appkit/features/seller/server` *(deleted)*
+- [x] `functions/src/repositories/order.repository.ts` → `@mohasinac/appkit/features/orders/server` *(deleted)*
+- [x] `functions/src/repositories/payout.repository.ts` → `@mohasinac/appkit/features/payments/server` *(deleted)*
+- [x] `functions/src/repositories/product.repository.ts` → `@mohasinac/appkit/features/products/server` *(deleted)*
+- [x] `functions/src/repositories/review.repository.ts` → `@mohasinac/appkit/features/reviews/server` *(deleted)*
+- [x] `functions/src/repositories/session.repository.ts` → `@mohasinac/appkit/features/auth/server` *(deleted)*
+- [x] `functions/src/repositories/store.repository.ts` → `@mohasinac/appkit/features/stores/server` *(deleted)*
+- [x] `functions/src/repositories/token.repository.ts` → `@mohasinac/appkit/features/auth/server` *(deleted)*
+- [x] `functions/src/repositories/user.repository.ts` → `@mohasinac/appkit/features/auth/server` *(deleted)*
+- [x] `functions/src/repositories/index.ts` — delete barrel after all rewires *(deleted)*
+- [x] Typecheck `functions/` passes *(0 errors, build: CJS 64 KB)*
 
 #### Wave 3 — Component & Context & Hook Purge ✅ DONE (B45)
 Prereq: Wave 1
@@ -1383,7 +1383,7 @@ Scan basis: workspace-wide static inventory using file and pattern search across
 | B02 | W1 | Replace direct defaults in formatter/token/provider hotpaths | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Wired all 22 component/formatter/provider files to baseline resolver |
 | B03 | W2 | Seed factory override path + deterministic tests | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Created seed-market-config.ts; wired 5 factories (address/product/user/order/review) + 10 seed data files + 2 defaults to baseline resolver. 283 structured market literals replaced. |
 | B04 | W3 | letitrip schema barrel decoupling (`index.ts`, `field-names.ts`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Appkit already owns all 19 schema equivalents (letitrip schemas are re-exports). Added `UserSchemaDefaults` to auth/schemas/firestore.ts for generic defaults. "Duplicate" barrels are structural coincidence, not real duplication. `COMMON_FIELDS` has zero importers (dead code). `SCHEMA_DEFAULTS.ADMIN_EMAIL`/`CURRENCY` are consumer-specific → stay in letitrip. Letitrip deletions deferred. |
-| B05 | W3 | functions repository ownership migration path | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ❌ | 16 jobs/triggers import `../repositories` barrel |
+| B05 | W3 | functions repository ownership migration path | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 15 local repo wrappers deleted; 20 consumers (14 jobs + 6 triggers) rewired to appkit server barrels; functions typecheck 0 errors; build CJS 64 KB *(B55)* |
 | B06 | W4 | Thin action wrapper pass for P1 action files | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | All 5 P1 files (review, admin, seller-coupon, category, seller) verified ✅ thin-wrapper compliant: auth→rate-limit→parse→delegate to appkit domain. Seller Shiprocket branch uses deprecated standalones (refactor to ShiprocketProvider deferred to Post-Phase). No appkit-side work required; appkit owns all domain logic. |
 | B07 | W7 | Status enum constants migration (R9 wave 1) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Created `as const` status objects: ProductStatusValues, OrderStatusValues, RefundStatusValues, ReviewStatusValues, OfferStatusValues. Replaced ~30 string literal comparisons in 16 appkit files. Events/payouts/stores already had STATUS_VALUES. useAuth.ts wired to RealtimeEventStatus. |
 | B08 | W7 | ROUTES constants migration (R10) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Wired `UnauthorizedView.tsx` and `NotFoundView.tsx` default props to `DEFAULT_ROUTE_MAP` from `route-map.ts`. Letitrip Sidebar rewire deferred to Post-Phase Consumer Rewrite. |
@@ -1703,8 +1703,8 @@ Status: ✅ W6 complete (8/8). Style contract complete (B27-B32): 30 components 
 - [x] `grep -r` verify no residual imports *(B09 — confirmed zero)*
 
 - [x] Remove remaining shim/re-export surfaces. *(B36 wave 1: removed dead shim `appkit/src/react/hooks/firebaseRealtimeClient.ts`; B38 wave 2: removed dead stub `appkit/src/features/payments/components/index.ts` — full appkit-internal shim sweep complete)*
-- [x] Run final closure scan for raw status literals and route literals. *(R9 wave 2 non-functions: all done B50; functions literals blocked by Wave 2 ESM migration; R10 Sidebar moot — file deleted)*
-Status: ✅ complete (B07, B08, B09, B17, B18, B36, B48, B49, B50 complete; R9 wave 2 functions literals pending Wave 2 ESM migration)
+- [x] Run final closure scan for raw status literals and route literals. *(R9 wave 2 non-functions: all done B50; functions literals resolved in B55 Wave 2 rewire; R10 Sidebar moot — file deleted)*
+Status: ✅ complete (B07, B08, B09, B17, B18, B36, B48, B49, B50, B55 complete; R9 fully done)
 
 #### W8 - Server/Client Barrel Split + Guards (R12)
 

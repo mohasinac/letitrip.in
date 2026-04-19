@@ -24,6 +24,10 @@
  *   - Sequential inner loops avoid Firestore read-rate spikes.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products";
+import { categoriesRepository as categoryRepository } from "@mohasinac/appkit/features/categories/server";
+import { reviewRepository } from "@mohasinac/appkit/features/reviews/server";
+import { storeRepository } from "@mohasinac/appkit/features/stores/server";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import {
@@ -32,11 +36,6 @@ import {
   COLLECTIONS,
   QUERY_LIMIT,
 } from "../config/constants";
-import {
-  categoryRepository,
-  storeRepository,
-  reviewRepository,
-} from "../repositories";
 
 const JOB = "countersReconcile";
 
@@ -46,7 +45,7 @@ const JOB = "countersReconcile";
 async function reconcileCategories(): Promise<void> {
   const snap = await db
     .collection(COLLECTIONS.PRODUCTS)
-    .where("status", "==", "published")
+    .where("status", "==", ProductStatusValues.PUBLISHED)
     .limit(QUERY_LIMIT)
     .get();
 
@@ -92,7 +91,7 @@ async function reconcileCategories(): Promise<void> {
     );
     leafUpdated++;
 
-    const parentIds = await categoryRepository.getParentIds(catId);
+    const parentIds = (await categoryRepository.findById(catId))?.parentIds ?? [];
     for (const ancestorId of parentIds) {
       if (!ancestorAggregates[ancestorId]) {
         ancestorAggregates[ancestorId] = { productDelta: 0, auctionDelta: 0 };
@@ -145,7 +144,7 @@ async function reconcileStores(): Promise<void> {
         db
           .collection(COLLECTIONS.PRODUCTS)
           .where("sellerId", "==", sellerId)
-          .where("status", "==", "published")
+          .where("status", "==", ProductStatusValues.PUBLISHED)
           .limit(QUERY_LIMIT)
           .get(),
         db

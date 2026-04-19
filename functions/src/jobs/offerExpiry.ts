@@ -8,9 +8,10 @@
  *   2. Notifies the buyer
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/server";
+import { offerRepository } from "@mohasinac/appkit/features/seller/server";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
-import { offerRepository, notificationRepository } from "../repositories";
 
 const JOB = "offerExpiry";
 

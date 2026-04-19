@@ -1,20 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "outDir": "lib",
     "rootDir": "./src",
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@fn/*": ["src/*"]
-    }
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": ["src"],
