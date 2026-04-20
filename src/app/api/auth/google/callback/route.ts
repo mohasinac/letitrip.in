@@ -29,18 +29,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/server";
-import { createSessionCookie } from "@mohasinac/appkit/server";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
-import { parseUserAgent } from "@mohasinac/appkit/server";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
+import { createSessionCookie } from "@mohasinac/appkit";
+import { sessionRepository, userRepository } from "@mohasinac/appkit";
+import { parseUserAgent } from "@mohasinac/appkit";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { DEFAULT_USER_DATA } from "@mohasinac/appkit/server";
-import { RTDB_PATHS } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import type { UserRole } from "@mohasinac/appkit/server";
-import { RTDBPayloadStatus } from "@mohasinac/appkit/server";
+import { DEFAULT_USER_DATA } from "@mohasinac/appkit";
+import { RTDB_PATHS } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import type { UserRole } from "@mohasinac/appkit";
+import { RTDBPayloadStatus } from "@mohasinac/appkit";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

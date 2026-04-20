@@ -9,19 +9,19 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit/server";
-import { ValidationError } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 import {
   shiprocketAuthenticate,
   shiprocketAddPickupLocation,
   SHIPROCKET_TOKEN_TTL_MS,
-} from "@mohasinac/appkit/server";
-import type { SellerShippingConfig } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { SellerShippingConfig } from "@mohasinac/appkit";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 

@@ -12,12 +12,12 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise } from "@mohasinac/appkit/server";
-import { siteSettingsRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { getDefaultCurrency } from "@mohasinac/appkit/server";
+import { createRazorpayOrder, rupeesToPaise } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { getDefaultCurrency } from "@mohasinac/appkit";
 
 const createOrderSchema = z.object({
   amount: z.number().positive("Amount must be positive"),

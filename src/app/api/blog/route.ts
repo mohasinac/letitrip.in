@@ -1,5 +1,5 @@
 import { initProviders } from "@/providers.config";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit";
 
 function isMissingFirestoreIndexError(error: unknown): boolean {
 	const message = error instanceof Error ? error.message : String(error);
@@ -10,10 +10,10 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 }
 
 export async function GET(
-	...args: Parameters<typeof import("@mohasinac/appkit/server").GET>
+	...args: Parameters<typeof import("@mohasinac/appkit").GET>
 ) {
 	await initProviders();
-	const { GET } = await import("@mohasinac/appkit/server");
+	const { GET } = await import("@mohasinac/appkit");
 	const [request] = args as [Request, ...unknown[]];
 	const requestUrl = new URL(request.url);
 	const hasSearchQuery = Boolean(requestUrl.searchParams.get("q"));

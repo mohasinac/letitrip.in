@@ -4,15 +4,15 @@ import "@/providers.config";
  * GET  /api/admin/orders — List all orders with pagination & filtering
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { orderRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { orderRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 /**
  * GET /api/admin/orders

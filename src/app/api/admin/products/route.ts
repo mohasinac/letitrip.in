@@ -6,12 +6,12 @@ import "@/providers.config";
  */
 
 import { NextRequest } from "next/server";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { productRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import {
   validateRequestBody,
   formatZodErrors,

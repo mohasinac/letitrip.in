@@ -7,18 +7,18 @@ import "@/providers.config";
  * Supports filtering by userId and limiting results.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { getAdminAuth } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { sessionRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { sessionRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
 export const GET = createRouteHandler({
   roles: ["admin", "moderator"],

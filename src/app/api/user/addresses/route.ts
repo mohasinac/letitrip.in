@@ -8,13 +8,13 @@ import "@/providers.config";
  * Max addresses per user: 10
  */
 
-import { addressRepository } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { addressRepository } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 import { userAddressCreateSchema } from "@/validation/request-schemas";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 const MAX_ADDRESSES_PER_USER = 10;
 

@@ -6,24 +6,24 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { eventRepository } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import type { SieveModel } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { eventRepository } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import type { SieveModel } from "@mohasinac/appkit";
 import {
   finalizeStagedMediaField,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
-} from "@mohasinac/appkit/server";
-import type { SurveyConfig, FeedbackConfig } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { SurveyConfig, FeedbackConfig } from "@mohasinac/appkit";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),

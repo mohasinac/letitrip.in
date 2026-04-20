@@ -10,7 +10,7 @@
  *
  * Reference: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
  */
-import { createInstrumentation } from "@mohasinac/appkit/server";
+import { createInstrumentation } from "@mohasinac/appkit";
 import { initProviders } from "./src/providers.config";
 
 const { register } = createInstrumentation({

@@ -9,7 +9,7 @@
  * Split from admin.actions.ts for maintainability.
  */
 
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   getAdminDashboardStats,
   getAdminAnalytics,
@@ -21,15 +21,15 @@ import {
   listAdminProducts,
   listAdminStores,
   listAdminSessions,
-} from "@mohasinac/appkit/server";
-import type { OrderDocument } from "@mohasinac/appkit/server";
-import type { PayoutDocument } from "@mohasinac/appkit/server";
-import type { UserDocument } from "@mohasinac/appkit/server";
-import type { ProductDocument } from "@mohasinac/appkit/server";
-import type { BlogPostDocument } from "@mohasinac/appkit/server";
-import type { StoreDocument } from "@mohasinac/appkit/server";
-import type { BidDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { OrderDocument } from "@mohasinac/appkit";
+import type { PayoutDocument } from "@mohasinac/appkit";
+import type { UserDocument } from "@mohasinac/appkit";
+import type { ProductDocument } from "@mohasinac/appkit";
+import type { BlogPostDocument } from "@mohasinac/appkit";
+import type { StoreDocument } from "@mohasinac/appkit";
+import type { BidDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 // ─── Dashboard & Analytics ────────────────────────────────────────────────
 

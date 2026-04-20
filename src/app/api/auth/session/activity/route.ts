@@ -4,14 +4,14 @@
  */
 
 import { NextRequest } from "next/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { ValidationError } from "@mohasinac/appkit/server";
-import { sessionRepository } from "@mohasinac/appkit/server";
-import { verifySessionCookie } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
+import { handleApiError } from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { sessionRepository } from "@mohasinac/appkit";
+import { verifySessionCookie } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { getOptionalSessionCookie } from "@mohasinac/appkit";
 
 export async function POST(request: NextRequest) {
   try {

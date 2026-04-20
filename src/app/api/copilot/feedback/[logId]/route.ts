@@ -8,13 +8,13 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { copilotLogRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { AppError } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { copilotLogRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { AppError } from "@mohasinac/appkit";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ---------------------------------------------------------------------------

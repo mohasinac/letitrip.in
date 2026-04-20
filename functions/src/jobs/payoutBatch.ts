@@ -13,7 +13,7 @@
  *   razorpay.account_number="ACCOUNT_NO"
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { payoutRepository } from "@mohasinac/appkit/server";
+import { payoutRepository } from "@mohasinac/appkit";
 import { type DocumentReference } from "firebase-admin/firestore";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";

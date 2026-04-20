@@ -6,10 +6,10 @@
  * Mutations use Server Action: updatePayoutSettingsAction.
  */
 
-import { userRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import type { SellerPayoutDetails } from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler } from "@mohasinac/appkit";
+import type { SellerPayoutDetails } from "@mohasinac/appkit";
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 

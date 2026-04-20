@@ -6,16 +6,16 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   categoryCreateSchema,
   categoryUpdateSchema,
@@ -31,13 +31,13 @@ import {
   getCategoryBySlug,
   getCategoryChildren,
   fetchCategoryTree,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import type {
   CategoryDocument,
   CategoryUpdateInput,
   CategoryTreeNode,
-} from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -104,7 +104,7 @@ export async function createCategoryAction(
       display: body.display
         ? { ...body.display, showInFooter: body.display.showInFooter ?? false }
         : { showInMenu: true, showInFooter: false as boolean },
-    } as import("@mohasinac/appkit/server").CategoryCreateInput,
+    } as import("@mohasinac/appkit").CategoryCreateInput,
     admin.uid,
   );
 }

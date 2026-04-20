@@ -6,13 +6,13 @@
  * Admin must approve via /api/admin/stores/[uid] before the store goes live.
  */
 
-import { userRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import type { UserDocument } from "@mohasinac/appkit/server";
-import { StoreStatusValues } from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import type { UserDocument } from "@mohasinac/appkit";
+import { StoreStatusValues } from "@mohasinac/appkit";
 
 export const POST = createApiHandler({
   auth: true,

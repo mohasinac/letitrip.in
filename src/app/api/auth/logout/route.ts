@@ -11,14 +11,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@mohasinac/appkit/server";
-import { verifySessionCookie } from "@mohasinac/appkit/server";
-import { sessionRepository } from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { getAdminApp } from "@mohasinac/appkit";
+import { verifySessionCookie } from "@mohasinac/appkit";
+import { sessionRepository } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { getOptionalSessionCookie } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 export async function POST(request: NextRequest) {
   try {

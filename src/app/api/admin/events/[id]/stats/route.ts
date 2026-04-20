@@ -4,10 +4,10 @@ import "@/providers.config";
  * GET /api/admin/events/:id/stats — Get statistics for an event
  */
 
-import { successResponse } from "@mohasinac/appkit/server";
-import { eventRepository, eventEntryRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit";
+import { eventRepository, eventEntryRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 type RouteContext = { params: Promise<{ id: string }> };
 

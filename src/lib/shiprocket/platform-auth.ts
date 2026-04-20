@@ -13,9 +13,9 @@
  * Token lifetime is ~10 days; we refresh after 9 days to stay safe.
  */
 
-import { AppError } from "@mohasinac/appkit/server";
-import { siteSettingsRepository } from "@mohasinac/appkit/server";
-import { shiprocketAuthenticate } from "@mohasinac/appkit/server";
+import { AppError } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit";
+import { shiprocketAuthenticate } from "@mohasinac/appkit";
 
 // ─── In-memory token cache (single-process; good enough for serverless) ────────
 

@@ -4,13 +4,13 @@ import "@/providers.config";
  * GET /api/admin/dashboard
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   userRepository,
   productRepository,
   orderRepository,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 
 export const GET = createRouteHandler({
   auth: true,

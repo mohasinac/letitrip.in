@@ -9,17 +9,17 @@ import {
   createSessionCookie,
   verifyIdToken,
   verifySessionCookie,
-} from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { ValidationError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
-import { parseUserAgent } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { getOptionalSessionCookie } from "@mohasinac/appkit";
+import { sessionRepository, userRepository } from "@mohasinac/appkit";
+import { parseUserAgent } from "@mohasinac/appkit";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@mohasinac/appkit/server";
+import { getAdminApp } from "@mohasinac/appkit";
 
 /**
  * Create session cookie with session tracking

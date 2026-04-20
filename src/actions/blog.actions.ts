@@ -6,16 +6,16 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   createBlogPost,
   updateBlogPost,
@@ -25,15 +25,15 @@ import {
   getFeaturedBlogPosts,
   getLatestBlogPosts,
   getBlogPostBySlug,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   createBlogPostSchema,
   updateBlogPostSchema,
   type CreateBlogPostInput,
   type UpdateBlogPostInput,
-} from "@mohasinac/appkit/server";
-import type { BlogPostDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { BlogPostDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 export type { CreateBlogPostInput, UpdateBlogPostInput };
 

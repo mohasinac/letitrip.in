@@ -1,0 +1,3 @@
+[submodule "appkit"]
+	path = appkit
+	url = https://github.com/mohasinac/appkit.git

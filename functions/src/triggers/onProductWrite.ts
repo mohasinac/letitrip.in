@@ -14,9 +14,9 @@
  *   - On hard delete of a published product: decrement counters.
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { categoriesRepository as categoryRepository } from "@mohasinac/appkit/server";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
-import { storeRepository } from "@mohasinac/appkit/server";
+import { categoriesRepository as categoryRepository } from "@mohasinac/appkit";
+import { ProductStatusValues } from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";

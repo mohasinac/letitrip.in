@@ -10,10 +10,10 @@
  */
 
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { userRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
 export const GET = createApiHandler({
   auth: true,

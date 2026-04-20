@@ -4,9 +4,9 @@ import "@/providers.config";
  * GET /api/notifications/unread-count — Get unread notification count for current user
  */
 
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { notificationRepository } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { notificationRepository } from "@mohasinac/appkit";
 
 /**
  * GET /api/notifications/unread-count

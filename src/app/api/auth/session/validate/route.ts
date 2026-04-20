@@ -4,11 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { verifySessionCookie } from "@mohasinac/appkit/server";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { getOptionalSessionCookie } from "@mohasinac/appkit/server";
+import { handleApiError } from "@mohasinac/appkit";
+import { verifySessionCookie } from "@mohasinac/appkit";
+import { sessionRepository, userRepository } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { getOptionalSessionCookie } from "@mohasinac/appkit";
 
 export async function GET(request: NextRequest) {
   try {

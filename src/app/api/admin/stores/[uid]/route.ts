@@ -6,11 +6,11 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit/server";
-import { storeRepository, userRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit";
+import { storeRepository, userRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
 type RouteContext = { params: Promise<{ uid: string }> };
 

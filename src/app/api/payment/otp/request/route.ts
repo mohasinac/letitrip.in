@@ -12,12 +12,12 @@ import "@/providers.config";
  * Auth required: yes (payments are only for logged-in users).
  */
 
-import { successResponse } from "@mohasinac/appkit/server";
-import { ApiError } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { smsCounterRepository } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit";
+import { ApiError } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { smsCounterRepository } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 /** Return today's date string (YYYY-MM-DD) in IST (UTC+5:30). */
 function getTodayIST(): string {

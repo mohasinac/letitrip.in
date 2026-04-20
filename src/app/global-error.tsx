@@ -6,7 +6,7 @@
  *
  * Route-level wrapper for the centralized appkit GlobalError component.
  */
-import { GlobalError } from "@mohasinac/appkit/client";
+import { GlobalError } from "@mohasinac/appkit";
 
 export default function AppGlobalError({
 	error,

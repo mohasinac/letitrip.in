@@ -1,24 +1,24 @@
 import "@/providers.config";
 import { z } from "zod";
 import {
-  verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit/server";
+  verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit";
 import {
-  unitOfWork, siteSettingsRepository, offerRepository, userRepository, } from "@mohasinac/appkit/server";
-import { failedCheckoutRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+  unitOfWork, siteSettingsRepository, offerRepository, userRepository, } from "@mohasinac/appkit";
+import { failedCheckoutRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
-  ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/server";
-import { getAdminRealtimeDb, getAdminDb } from "@mohasinac/appkit/server";
-import { RTDB_PATHS } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/server";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
-import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit/server";
-import { getDefaultCurrency } from "@mohasinac/appkit/server";
+  ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit";
+import { getAdminRealtimeDb, getAdminDb } from "@mohasinac/appkit";
+import { RTDB_PATHS } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit";
+import { ProductStatusValues } from "@mohasinac/appkit";
+import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit";
+import { getDefaultCurrency } from "@mohasinac/appkit";
 
 /**
  * Payment - Verify Razorpay Payment
@@ -39,8 +39,8 @@ import { getDefaultCurrency } from "@mohasinac/appkit/server";
  *   notes                — Optional order notes
  */
 
-import { consentOtpRef } from "@mohasinac/appkit/server";
-import type { AddressDocument } from "@mohasinac/appkit/server";
+import { consentOtpRef } from "@mohasinac/appkit";
+import type { AddressDocument } from "@mohasinac/appkit";
 
 const verifySchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -145,7 +145,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         failedCheckoutRepository
           .logPayment(
             user!.uid,
-            reason as import("@mohasinac/appkit/server").FailedPaymentReason,
+            reason as import("@mohasinac/appkit").FailedPaymentReason,
             "Consent OTP missing or expired at payment verify time",
             {
               gatewayOrderId: razorpay_order_id,

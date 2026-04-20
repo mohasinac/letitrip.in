@@ -5,13 +5,13 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { sendContactEmail } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { sendContactEmail } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),

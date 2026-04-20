@@ -4,11 +4,11 @@ import "@/providers.config";
  * GET /api/promotions — Returns promoted products, featured products and active coupons
  */
 
-import { productRepository, couponsRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
+import { productRepository, couponsRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { ProductStatusValues } from "@mohasinac/appkit";
 
 /**
  * GET /api/promotions

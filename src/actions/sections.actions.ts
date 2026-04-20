@@ -6,16 +6,16 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   createHomepageSection,
   updateHomepageSection,
@@ -28,9 +28,9 @@ import {
   updateSectionSchema,
   type CreateHomepageSectionInput,
   type UpdateHomepageSectionInput,
-} from "@mohasinac/appkit/server";
-import type { HomepageSectionDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { HomepageSectionDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 export type { CreateHomepageSectionInput, UpdateHomepageSectionInput };
 

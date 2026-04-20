@@ -14,23 +14,23 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@mohasinac/appkit/server";
+import { getAdminApp } from "@mohasinac/appkit";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { parseUserAgent } from "@mohasinac/appkit/server";
-import { createSessionCookie } from "@mohasinac/appkit/server";
-import { sessionRepository, userRepository } from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { errorResponse } from "@mohasinac/appkit/server";
+import { parseUserAgent } from "@mohasinac/appkit";
+import { createSessionCookie } from "@mohasinac/appkit";
+import { sessionRepository, userRepository } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { errorResponse } from "@mohasinac/appkit";
 import {
   ValidationError,
   AuthenticationError,
   AppError,
-} from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { z } from "zod";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit";
 
 const loginSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

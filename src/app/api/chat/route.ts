@@ -7,16 +7,16 @@ import {
   chatRepository,
   orderRepository,
   userRepository,
-} from "@mohasinac/appkit/server";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { FEATURE_FLAGS } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { NotFoundError, AuthorizationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { FEATURE_FLAGS } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { NotFoundError, AuthorizationError } from "@mohasinac/appkit";
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
 
 const createRoomSchema = z.object({
   orderId: z.string().min(1),

@@ -13,8 +13,8 @@
  *     trigger quota errors and force costly retries.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { productRepository } from "@mohasinac/appkit/server";
-import { reviewRepository } from "@mohasinac/appkit/server";
+import { productRepository } from "@mohasinac/appkit";
+import { reviewRepository } from "@mohasinac/appkit";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
 

@@ -15,21 +15,21 @@ import "@/providers.config";
  * - Implement FAQ A/B testing
  */
 
-import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getBooleanParam,
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { faqCreateSchema } from "@mohasinac/appkit/server";
-import { invalidateCache } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { slugifyQuestion } from "@mohasinac/appkit/server";
-import type { FAQDocument } from "@mohasinac/appkit/server";
-import { errorResponse } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { faqCreateSchema } from "@mohasinac/appkit";
+import { invalidateCache } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { slugifyQuestion } from "@mohasinac/appkit";
+import type { FAQDocument } from "@mohasinac/appkit";
+import { errorResponse } from "@mohasinac/appkit";
 
 /**
  * GET /api/faqs

@@ -21,7 +21,16 @@ export function initProviders(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
     // ── Market defaults (must run before any formatter/provider reads baseline)
-    const { configureMarketDefaults } = await import("@mohasinac/appkit/server");
+    const {
+      configureMarketDefaults,
+      firebaseAuthProvider,
+      firebaseSessionProvider,
+      createResendProvider,
+      firebaseStorageProvider,
+      firebaseDbProvider,
+      tailwindAdapter,
+      registerProviders,
+    } = await import("@mohasinac/appkit/providers");
     configureMarketDefaults({
       currency: "INR",
       locale: "en-IN",
@@ -30,18 +39,7 @@ export function initProviders(): Promise<void> {
       timezone: "Asia/Kolkata",
       currencySymbol: "₹",
     });
-    const { firebaseAuthProvider, firebaseSessionProvider } =
-      await import("@mohasinac/appkit/server");
-    const { createResendProvider } =
-      await import("@mohasinac/appkit/server");
-    const { firebaseStorageProvider } =
-      await import("@mohasinac/appkit/server");
-    const { firebaseDbProvider } =
-      await import("@mohasinac/appkit/server");
-    const { tailwindAdapter } =
-      await import("@mohasinac/appkit/server");
-    const { siteSettingsRepository } = await import("@mohasinac/appkit/server");
-    const { registerProviders } = await import("@mohasinac/appkit/server");
+    const { siteSettingsRepository } = await import("@mohasinac/appkit");
 
     registerProviders({
       db: firebaseDbProvider,
@@ -93,7 +91,7 @@ export function initProviders(): Promise<void> {
  *
  * Usage:
  *   import { withProviders } from "@/providers.config";
- *   import { GET as _GET } from "@mohasinac/appkit/server";
+ *   import { GET as _GET } from "@mohasinac/appkit";
  *   export const GET = withProviders(_GET);
  */
 export function withProviders<A extends unknown[], R>(

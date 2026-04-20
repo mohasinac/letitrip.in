@@ -14,7 +14,7 @@
  *   const razorpay = new Razorpay({ key_id: keys.razorpayKeyId, key_secret: keys.razorpayKeySecret });
  */
 import "server-only";
-import { siteSettingsRepository } from "@mohasinac/appkit/server";
+import { siteSettingsRepository } from "@mohasinac/appkit";
 
 export interface ResolvedKeys {
   // Razorpay

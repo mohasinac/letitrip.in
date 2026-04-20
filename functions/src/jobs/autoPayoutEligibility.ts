@@ -22,10 +22,10 @@
  */
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { getDefaultCurrency } from "@mohasinac/appkit/server";
-import { userRepository } from "@mohasinac/appkit/server";
-import { orderRepository } from "@mohasinac/appkit/server";
-import { payoutRepository } from "@mohasinac/appkit/server";
+import { getDefaultCurrency } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
+import { orderRepository } from "@mohasinac/appkit";
+import { payoutRepository } from "@mohasinac/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logWarn, logError } from "../utils/logger";
 import { SCHEDULES, REGION, BATCH_LIMIT } from "../config/constants";

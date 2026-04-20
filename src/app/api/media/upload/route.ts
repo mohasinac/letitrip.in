@@ -1,16 +1,16 @@
 import "@/providers.config";
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { getAdminStorage as getStorage } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import {
-  formatFileSize, generateMediaFilename } from "@mohasinac/appkit/server";
-import type { MediaFilenameContext } from "@mohasinac/appkit/server";
+  formatFileSize, generateMediaFilename } from "@mohasinac/appkit";
+import type { MediaFilenameContext } from "@mohasinac/appkit";
 
 /**
  * Media Upload API Route

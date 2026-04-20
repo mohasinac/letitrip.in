@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
 import {
   createReview as createReviewDomain,
   updateReview as updateReviewDomain,
@@ -21,20 +21,20 @@ import {
   listReviewsBySeller as listReviewsBySellerDomain,
   getHomepageReviews as getHomepageReviewsDomain,
   getReviewById as getReviewByIdDomain,
-} from "@mohasinac/appkit/server";
-import { reviewStatusSchema } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { reviewStatusSchema } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   AuthorizationError,
   ValidationError,
-} from "@mohasinac/appkit/server";
-import type { ReviewDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { ReviewDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { mediaUrlSchema } from "@/validation/request-schemas";
-import type { UpdateReviewActionInput } from "@mohasinac/appkit/server";
+import type { UpdateReviewActionInput } from "@mohasinac/appkit";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 

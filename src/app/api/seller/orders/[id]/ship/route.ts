@@ -3,9 +3,9 @@ import "@/providers.config";
  * Seller Offers API Route
  * GET /api/seller/offers â€” Returns all incoming offers for the authenticated seller
  */
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { offerRepository } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { offerRepository } from "@mohasinac/appkit";
 
 export const GET = createApiHandler({
   roles: ["seller", "admin", "moderator"],

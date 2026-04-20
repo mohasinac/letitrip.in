@@ -1,9 +1,9 @@
 import "@/providers.config";
-import { orderRepository, productRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { formatMonthYear } from "@mohasinac/appkit/server";
+import { orderRepository, productRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { formatMonthYear } from "@mohasinac/appkit";
 
 /**
  * Seller Analytics API Route
@@ -17,8 +17,8 @@ import { formatMonthYear } from "@mohasinac/appkit/server";
  *  3. Aggregate totals, monthly breakdown (last 6 months), and top products
  */
 
-import type { OrderDocument } from "@mohasinac/appkit/server";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
+import type { OrderDocument } from "@mohasinac/appkit";
+import { ProductStatusValues } from "@mohasinac/appkit";
 
 /**
  * Fetch seller orders from past 6 months using Sieve date filtering (database-level).

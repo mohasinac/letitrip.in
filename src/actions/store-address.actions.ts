@@ -8,19 +8,19 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   listStoreAddressesForSeller,
   createStoreAddressForSeller,
   updateStoreAddressForSeller,
   deleteStoreAddressForSeller,
-} from "@mohasinac/appkit/server";
-import type { StoreAddressDocument } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { StoreAddressDocument } from "@mohasinac/appkit";
 
 // ─── Validation ────────────────────────────────────────────────────────────
 

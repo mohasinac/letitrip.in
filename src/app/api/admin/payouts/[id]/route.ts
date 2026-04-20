@@ -6,11 +6,11 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit/server";
-import { payoutRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { successResponse } from "@mohasinac/appkit";
+import { payoutRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 type RouteContext = { params: Promise<{ id: string }> };
 
 const updatePayoutSchema = z.object({

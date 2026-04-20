@@ -1,7 +1,7 @@
-﻿import "@/providers.config";
+import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb, getAdminAuth } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { getAdminDb, getAdminAuth } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 import {
   encryptPiiFields,
   addPiiIndices,
@@ -19,7 +19,7 @@ import {
   EVENT_ENTRY_PII_FIELDS,
   CHAT_PII_FIELDS,
   getPiiConfigError,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   usersSeedData,
   addressesSeedData,
@@ -42,29 +42,29 @@ import {
   homepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
   HOMEPAGE_SECTIONS_COLLECTION,
-} from "@mohasinac/appkit/server";
-import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/server";
-import { FAQS_COLLECTION } from "@mohasinac/appkit/server";
-import { USER_COLLECTION } from "@mohasinac/appkit/server";
-import { ORDER_COLLECTION } from "@mohasinac/appkit/server";
-import { REVIEW_COLLECTION } from "@mohasinac/appkit/server";
-import { BID_COLLECTION } from "@mohasinac/appkit/server";
-import { COUPONS_COLLECTION } from "@mohasinac/appkit/server";
-import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/server";
-import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit/server";
-import { PAYOUT_COLLECTION } from "@mohasinac/appkit/server";
-import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit/server";
-import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit/server";
-import { SESSION_COLLECTION } from "@mohasinac/appkit/server";
-import { CART_COLLECTION } from "@mohasinac/appkit/server";
-import { STORE_COLLECTION } from "@mohasinac/appkit/server";
-import { PRODUCT_COLLECTION } from "@mohasinac/appkit/server";
-import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/server";
-import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit";
+import { FAQS_COLLECTION } from "@mohasinac/appkit";
+import { USER_COLLECTION } from "@mohasinac/appkit";
+import { ORDER_COLLECTION } from "@mohasinac/appkit";
+import { REVIEW_COLLECTION } from "@mohasinac/appkit";
+import { BID_COLLECTION } from "@mohasinac/appkit";
+import { COUPONS_COLLECTION } from "@mohasinac/appkit";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
+import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
+import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
+import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit";
+import { SESSION_COLLECTION } from "@mohasinac/appkit";
+import { CART_COLLECTION } from "@mohasinac/appkit";
+import { STORE_COLLECTION } from "@mohasinac/appkit";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
+import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
+import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -309,8 +309,8 @@ export async function GET(_request: NextRequest) {
               ).length;
             }
           } else if (colName === "faqs") {
-            // FAQs use generated IDs â€” build them the same way the POST handler does
-            const { generateFAQId } = await import("@mohasinac/appkit/server");
+            // FAQs use generated IDs — build them the same way the POST handler does
+            const { generateFAQId } = await import("@mohasinac/appkit");
             const refs = (seedData as any[]).map((faq: any) => {
               const id = generateFAQId({
                 category: faq.category,
@@ -420,7 +420,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -438,7 +438,7 @@ export async function POST(request: NextRequest) {
                   disabled,
                 } = userData as any;
 
-                // Check if Firestore document already exists â€” skip if so
+                // Check if Firestore document already exists — skip if so
                 const docRef = db.collection(firestoreCollection).doc(uid);
                 const docSnapshot = await docRef.get();
                 if (docSnapshot.exists) {
@@ -488,7 +488,7 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
-                // Write new Firestore document â€” encrypt PII fields
+                // Write new Firestore document — encrypt PII fields
                 let docData = stripUndefined({ ...userData });
                 // Add blind indices from plaintext BEFORE encrypting
                 docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
@@ -593,7 +593,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else {
-            // Regular collections â€” bulk-check existence then batch write (500 per batch)
+            // Regular collections — bulk-check existence then batch write (500 per batch)
             type WriteItem = {
               docRef: FirebaseFirestore.DocumentReference;
               data: Record<string, any>;
@@ -605,7 +605,7 @@ export async function POST(request: NextRequest) {
               let { id, ...data } = docData as any;
 
               if (!id && collectionName === "faqs") {
-                const { generateFAQId } = await import("@mohasinac/appkit/server");
+                const { generateFAQId } = await import("@mohasinac/appkit");
                 id = generateFAQId({
                   category: (docData as any).category,
                   question: (docData as any).question,
@@ -683,7 +683,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -808,7 +808,7 @@ export async function POST(request: NextRequest) {
 
                 // Special handling for FAQs - generate ID if missing
                 if (!id && collectionName === "faqs") {
-                  const { generateFAQId } = await import("@mohasinac/appkit/server");
+                  const { generateFAQId } = await import("@mohasinac/appkit");
                   id = generateFAQId({
                     category: (docData as any).category,
                     question: (docData as any).question,

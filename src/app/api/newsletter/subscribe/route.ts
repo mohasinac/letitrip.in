@@ -5,14 +5,14 @@ import "@/providers.config";
  */
 
 import { z } from "zod";
-import { newsletterRepository } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { newsletterRepository } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 const subscribeSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

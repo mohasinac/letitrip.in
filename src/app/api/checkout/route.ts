@@ -1,17 +1,17 @@
 import "@/providers.config";
 import { z } from "zod";
 import {
-  unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit/server";
-import { failedCheckoutRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+  unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit";
+import { failedCheckoutRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
-  ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/server";
+  ApiError, ValidationError, NotFoundError, } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit";
 
 /**
  * Checkout API
@@ -38,19 +38,19 @@ import { splitCartIntoOrderGroups, resolveDate } from "@mohasinac/appkit/server"
  * exactly one transaction wins and the other returns that item as unavailable.
  */
 
-import { getAdminDb } from "@mohasinac/appkit/server";
-import { PRODUCT_COLLECTION } from "@mohasinac/appkit/server";
-import { CART_COLLECTION } from "@mohasinac/appkit/server";
+import { getAdminDb } from "@mohasinac/appkit";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
+import { CART_COLLECTION } from "@mohasinac/appkit";
 import {
   consentOtpRef,
   consentOtpRateLimitRef,
   CONSENT_OTP_MAX_BYPASS_CREDITS,
-} from "@mohasinac/appkit/server";
-import type { AddressDocument } from "@mohasinac/appkit/server";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
-import type { ProductDocument } from "@mohasinac/appkit/server";
-import { OrderStatusValues, PaymentStatusValues } from "@mohasinac/appkit/server";
-import { getDefaultCurrency } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { AddressDocument } from "@mohasinac/appkit";
+import { ProductStatusValues } from "@mohasinac/appkit";
+import type { ProductDocument } from "@mohasinac/appkit";
+import { OrderStatusValues, PaymentStatusValues } from "@mohasinac/appkit";
+import { getDefaultCurrency } from "@mohasinac/appkit";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
 
@@ -255,7 +255,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
       failedCheckoutRepository
         .logCheckout(
           uid,
-          reason as import("@mohasinac/appkit/server").FailedCheckoutReason,
+          reason as import("@mohasinac/appkit").FailedCheckoutReason,
           err instanceof Error ? err.message : String(err),
           { addressId, paymentMethod },
         )

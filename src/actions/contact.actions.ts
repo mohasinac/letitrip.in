@@ -9,14 +9,14 @@
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import { sendContactEmail } from "@mohasinac/appkit/server";
+import { sendContactEmail } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { ValidationError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 

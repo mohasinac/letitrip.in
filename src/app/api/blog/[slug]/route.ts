@@ -4,10 +4,10 @@ import "@/providers.config";
  * GET /api/blog/:slug — Get a published blog post by slug
  */
 
-import { blogRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { BlogPostStatusValues } from "@mohasinac/appkit/server";
+import { blogRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { BlogPostStatusValues } from "@mohasinac/appkit";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 

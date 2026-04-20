@@ -1,7 +1,7 @@
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminDb, getAdminAuth } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { getAdminDb, getAdminAuth } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 import {
   encryptPiiFields,
   addPiiIndices,
@@ -19,7 +19,7 @@ import {
   EVENT_ENTRY_PII_FIELDS,
   CHAT_PII_FIELDS,
   getPiiConfigError,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   usersSeedData,
   addressesSeedData,
@@ -42,29 +42,29 @@ import {
   homepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
   HOMEPAGE_SECTIONS_COLLECTION,
-} from "@mohasinac/appkit/server";
-import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit/server";
-import { FAQS_COLLECTION } from "@mohasinac/appkit/server";
-import { USER_COLLECTION } from "@mohasinac/appkit/server";
-import { ORDER_COLLECTION } from "@mohasinac/appkit/server";
-import { REVIEW_COLLECTION } from "@mohasinac/appkit/server";
-import { BID_COLLECTION } from "@mohasinac/appkit/server";
-import { COUPONS_COLLECTION } from "@mohasinac/appkit/server";
-import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/server";
-import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit/server";
-import { PAYOUT_COLLECTION } from "@mohasinac/appkit/server";
-import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit/server";
-import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit/server";
-import { SESSION_COLLECTION } from "@mohasinac/appkit/server";
-import { CART_COLLECTION } from "@mohasinac/appkit/server";
-import { STORE_COLLECTION } from "@mohasinac/appkit/server";
-import { PRODUCT_COLLECTION } from "@mohasinac/appkit/server";
-import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/server";
-import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit";
+import { FAQS_COLLECTION } from "@mohasinac/appkit";
+import { USER_COLLECTION } from "@mohasinac/appkit";
+import { ORDER_COLLECTION } from "@mohasinac/appkit";
+import { REVIEW_COLLECTION } from "@mohasinac/appkit";
+import { BID_COLLECTION } from "@mohasinac/appkit";
+import { COUPONS_COLLECTION } from "@mohasinac/appkit";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
+import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
+import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
+import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit";
+import { SESSION_COLLECTION } from "@mohasinac/appkit";
+import { CART_COLLECTION } from "@mohasinac/appkit";
+import { STORE_COLLECTION } from "@mohasinac/appkit";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
+import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
+import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -245,7 +245,7 @@ async function countExistingForCollection(
   }
 
   if (colName === "faqs") {
-    const { generateFAQId } = await import("@mohasinac/appkit/server");
+    const { generateFAQId } = await import("@mohasinac/appkit");
     const refs = (seedData as any[]).map((faq: any) => {
       const id = generateFAQId({
         category: faq.category,
@@ -656,7 +656,7 @@ export async function POST(request: NextRequest) {
               let { id, ...data } = docData as any;
 
               if (!id && collectionName === "faqs") {
-                const { generateFAQId } = await import("@mohasinac/appkit/server");
+                const { generateFAQId } = await import("@mohasinac/appkit");
                 id = generateFAQId({
                   category: (docData as any).category,
                   question: (docData as any).question,
@@ -859,7 +859,7 @@ export async function POST(request: NextRequest) {
 
                 // Special handling for FAQs - generate ID if missing
                 if (!id && collectionName === "faqs") {
-                  const { generateFAQId } = await import("@mohasinac/appkit/server");
+                  const { generateFAQId } = await import("@mohasinac/appkit");
                   id = generateFAQId({
                     category: (docData as any).category,
                     question: (docData as any).question,

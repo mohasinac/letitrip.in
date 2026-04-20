@@ -5,9 +5,9 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   createCarouselSlide,
   updateCarouselSlide,
@@ -16,12 +16,12 @@ import {
   listActiveCarouselSlides,
   listAllCarouselSlides,
   getCarouselSlideById,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import type {
   CarouselSlideInput,
   CarouselSlideUpdateInput,
-} from "@mohasinac/appkit/server";
-import type { CarouselSlideDocument } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { CarouselSlideDocument } from "@mohasinac/appkit";
 
 const createSlideSchema = z.object({
   title: z.string().min(1),

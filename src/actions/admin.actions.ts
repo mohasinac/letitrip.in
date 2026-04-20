@@ -11,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { requireRoleUser } from "@mohasinac/appkit";
 import {
   revokeSession as revokeSessionDomain,
   revokeUserSessions as revokeUserSessionsDomain,
@@ -23,24 +23,24 @@ import {
   adminUpdateProduct as adminUpdateProductDomain,
   adminCreateProduct as adminCreateProductDomain,
   adminDeleteProduct as adminDeleteProductDomain,
-} from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   AuthorizationError,
   NotFoundError,
   ValidationError,
-} from "@mohasinac/appkit/server";
-import { payoutStatusSchema } from "@mohasinac/appkit/server";
-import { userRoleSchema } from "@mohasinac/appkit/server";
-import { storeStatusSchema } from "@mohasinac/appkit/server";
-import type { OrderDocument, OrderAdminUpdateInput } from "@mohasinac/appkit/server";
-import type { PayoutDocument, PayoutUpdateInput } from "@mohasinac/appkit/server";
-import type { UserDocument, UserAdminUpdateInput } from "@mohasinac/appkit/server";
-import type { ProductDocument, ProductAdminUpdateInput } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { payoutStatusSchema } from "@mohasinac/appkit";
+import { userRoleSchema } from "@mohasinac/appkit";
+import { storeStatusSchema } from "@mohasinac/appkit";
+import type { OrderDocument, OrderAdminUpdateInput } from "@mohasinac/appkit";
+import type { PayoutDocument, PayoutUpdateInput } from "@mohasinac/appkit";
+import type { UserDocument, UserAdminUpdateInput } from "@mohasinac/appkit";
+import type { ProductDocument, ProductAdminUpdateInput } from "@mohasinac/appkit";
 import {
   validateRequestBody,
   productCreateSchema,

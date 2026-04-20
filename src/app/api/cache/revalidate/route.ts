@@ -27,11 +27,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { invalidateCache } from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { AuthenticationError, ValidationError } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit/server";
+import { invalidateCache } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
 
 export async function POST(request: NextRequest) {
   try {

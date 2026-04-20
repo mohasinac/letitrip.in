@@ -10,12 +10,12 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/server";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   becomeSeller,
   createStore,
@@ -41,8 +41,8 @@ import {
   type UpdatePayoutSettingsInput,
   type RequestPayoutInput,
   type BulkSellerOrderResult,
-} from "@mohasinac/appkit/server";
-import { userRepository } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import {
   productCreateSchema,
@@ -57,18 +57,18 @@ import {
   shiprocketGeneratePickup,
   isShiprocketTokenExpired,
   SHIPROCKET_TOKEN_TTL_MS,
-} from "@mohasinac/appkit/server";
-import { resolveDate } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { NotFoundError } from "@mohasinac/appkit/server";
-import { orderRepository } from "@mohasinac/appkit/server";
-import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit/server";
-import type { StoreDocument } from "@mohasinac/appkit/server";
-import type { SellerPayoutDetails, SellerShippingConfig } from "@mohasinac/appkit/server";
-import type { OrderDocument } from "@mohasinac/appkit/server";
-import type { CouponDocument } from "@mohasinac/appkit/server";
-import type { ProductDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { resolveDate } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { NotFoundError } from "@mohasinac/appkit";
+import { orderRepository } from "@mohasinac/appkit";
+import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit";
+import type { StoreDocument } from "@mohasinac/appkit";
+import type { SellerPayoutDetails, SellerShippingConfig } from "@mohasinac/appkit";
+import type { OrderDocument } from "@mohasinac/appkit";
+import type { CouponDocument } from "@mohasinac/appkit";
+import type { ProductDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 // --- Become Seller ------------------------------------------------------------
 

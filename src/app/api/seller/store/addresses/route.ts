@@ -8,11 +8,11 @@ import "@/providers.config";
  * Mutations (create/update/delete) use Server Actions.
  */
 
-import { storeRepository, storeAddressRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { NotFoundError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { storeRepository, storeAddressRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { NotFoundError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 export const GET = createRouteHandler({
   auth: true,

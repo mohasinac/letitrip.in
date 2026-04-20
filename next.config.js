@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig = {
   // Keep appkit bundled by Next so subpath imports such as
   // @mohasinac/appkit/server do not rely on Node external ESM resolution.
+  transpilePackages: ["@mohasinac/appkit"],
   serverExternalPackages: ["@upstash/ratelimit", "@upstash/redis"],
   images: {
     remotePatterns: [

@@ -4,7 +4,7 @@
     "private":  true,
     "scripts":  {
                     "dev":  "next dev",
-                    "watch:appkit":  "npm --prefix ../appkit run watch",
+                    "watch:appkit":  "npm --prefix ./appkit run watch",
                     "build":  "next build",
                     "start":  "next start",
                     "test":  "jest",
@@ -13,13 +13,13 @@
                     "pre-commit":  "npm run lint",
                     "lint":  "eslint src",
                     "lint:fix":  "eslint src --fix",
-                    "index:generate":  "node ../appkit/scripts/get-index.js",
-                    "firebase:generate":  "node ../appkit/scripts/firebase-merge.mjs",
-                    "firebase:deploy":  "node ../appkit/scripts/firebase-merge.mjs --deploy",
-                    "firebase:deploy:rules":  "node ../appkit/scripts/firebase-merge.mjs --deploy --only firestore:rules,storage,database",
-                    "firebase:deploy:indexes":  "node ../appkit/scripts/firebase-merge.mjs --deploy --only firestore:indexes",
-                    "firebase:reset":  "node ../appkit/scripts/firebase-reset.mjs",
-                    "firebase:reset:all":  "node ../appkit/scripts/firebase-reset.mjs --yes"
+                    "index:generate":  "node ./appkit/scripts/get-index.js",
+                    "firebase:generate":  "node ./appkit/scripts/firebase-merge.mjs",
+                    "firebase:deploy":  "node ./appkit/scripts/firebase-merge.mjs --deploy",
+                    "firebase:deploy:rules":  "node ./appkit/scripts/firebase-merge.mjs --deploy --only firestore:rules,storage,database",
+                    "firebase:deploy:indexes":  "node ./appkit/scripts/firebase-merge.mjs --deploy --only firestore:indexes",
+                    "firebase:reset":  "node ./appkit/scripts/firebase-reset.mjs",
+                    "firebase:reset:all":  "node ./appkit/scripts/firebase-reset.mjs --yes"
                 },
     "dependencies":  {
                          "@auth/firebase-adapter":  "^2.11.1",
@@ -47,7 +47,7 @@
                          "sharp":  "^0.33.5",
                          "tailwind-merge":  "^3.5.0",
                          "zod":  "^4.3.6",
-                         "@mohasinac/appkit":  "file:../appkit"
+                         "@mohasinac/appkit":  "file:./appkit"
                      },
     "devDependencies":  {
                             "@testing-library/dom":  "^10.4.1",

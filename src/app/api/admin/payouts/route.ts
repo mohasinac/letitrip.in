@@ -5,18 +5,18 @@ import "@/providers.config";
  * GET /api/admin/payouts — List all payouts (filterable by status)
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { buildSieveFilters } from "@mohasinac/appkit/server";
-import { payoutRepository } from "@mohasinac/appkit/server";
-import { piiBlindIndex } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { PAYOUT_FIELDS } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { buildSieveFilters } from "@mohasinac/appkit";
+import { payoutRepository } from "@mohasinac/appkit";
+import { piiBlindIndex } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { PAYOUT_FIELDS } from "@mohasinac/appkit";
 
 /**
  * GET /api/admin/payouts

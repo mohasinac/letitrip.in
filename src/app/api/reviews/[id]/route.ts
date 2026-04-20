@@ -5,11 +5,11 @@ import "@/providers.config";
  * Issues a Firebase custom token for Realtime Database read-only subscriptions.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { chatRepository } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { getAdminAuth } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { chatRepository } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 export const POST = createRouteHandler({
   auth: true,

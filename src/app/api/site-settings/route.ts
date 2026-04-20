@@ -16,19 +16,19 @@ import "@/providers.config";
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { siteSettingsRepository } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { siteSettingsUpdateSchema } from "@/validation/request-schemas";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
+import { handleApiError } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit";
 import { SCHEMA_DEFAULTS } from "@/constants/field-names";
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { invalidateIntegrationKeysCache } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
 
 /**
  * GET /api/site-settings

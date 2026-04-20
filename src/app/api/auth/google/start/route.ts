@@ -19,12 +19,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/server";
-import { RTDB_PATHS } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { AppError } from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { RTDB_PATHS } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { AppError } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

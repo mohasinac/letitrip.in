@@ -19,9 +19,9 @@ import {
   getRelatedProducts,
   getSellerStorefrontProducts,
   type ProductListActionParams,
-} from "@mohasinac/appkit/server";
-import type { ProductDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { ProductDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 export type { ProductListActionParams };
 export type ProductListResult = FirebaseSieveResult<ProductDocument>;

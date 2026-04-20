@@ -4,11 +4,11 @@ import "@/providers.config";
  * PATCH /api/notifications/read-all — Mark all user notifications as read
  */
 
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { notificationRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { notificationRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
 /**
  * PATCH /api/notifications/read-all

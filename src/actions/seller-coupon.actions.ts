@@ -5,21 +5,21 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit/server";
+import { requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   sellerCreateCoupon,
   sellerUpdateCoupon,
   sellerDeleteCoupon,
   type SellerCreateCouponInput,
   type SellerUpdateCouponInput,
-} from "@mohasinac/appkit/server";
-import { userRepository } from "@mohasinac/appkit/server";
-import type { CouponDocument } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
+import type { CouponDocument } from "@mohasinac/appkit";
 
 const createSchema = z.object({
   code: z.string().min(1).max(20).toUpperCase().optional(),

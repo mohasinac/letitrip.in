@@ -13,15 +13,15 @@ import "@/providers.config";
  */
 
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
+import { getAdminApp } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { z } from "zod";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { sendPasswordResetEmailWithLink } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { serverLogger } from "@mohasinac/appkit";
+import { sendPasswordResetEmailWithLink } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

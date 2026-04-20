@@ -3,9 +3,9 @@ import "@/providers.config";
  * Seller Coupons API Route
  * GET /api/seller/coupons — Returns all coupons owned by the authenticated seller
  */
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { couponsRepository } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { couponsRepository } from "@mohasinac/appkit";
 
 export const GET = createApiHandler({
   roles: ["seller", "admin", "moderator"],

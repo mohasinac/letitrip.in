@@ -6,14 +6,14 @@ import "@/providers.config";
  * Generates a Firebase email verification link and sends it via Resend.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { sendVerificationSchema } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
+import { getAdminAuth } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { sendVerificationSchema } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 export const POST = createRouteHandler<
   (typeof sendVerificationSchema)["_output"]

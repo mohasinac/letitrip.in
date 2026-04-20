@@ -1,13 +1,13 @@
 import "@/providers.config";
 
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
-} from "@mohasinac/appkit/server";
-import { faqsRepository } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { faqsRepository } from "@mohasinac/appkit";
 
 export const GET = createRouteHandler({
   auth: true,

@@ -1,10 +1,10 @@
 "use server";
 import { z } from "zod";
-import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit/server";
+import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit";
 import {
-  rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
-import { resolveDate } from "@mohasinac/appkit/server";
+  rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
+import { resolveDate } from "@mohasinac/appkit";
 
 
 /**
@@ -31,10 +31,10 @@ import {
   type CreateEventInput,
   type UpdateEventInput,
   type EnterEventInput,
-} from "@mohasinac/appkit/server";
-import type { EventDocument, EventEntryDocument } from "@mohasinac/appkit/server";
-import type { FirebaseSieveResult } from "@mohasinac/appkit/server";
-import { maskPublicEventEntry } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { EventDocument, EventEntryDocument } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { maskPublicEventEntry } from "@mohasinac/appkit";
 
 // --- Schemas --------------------------------------------------------------
 

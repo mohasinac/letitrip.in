@@ -6,12 +6,12 @@
  * Dev-only auth + delegates to appkit demoSeed which calls the API route.
  */
 
-import { ValidationError } from "@mohasinac/appkit/server";
+import { ValidationError } from "@mohasinac/appkit";
 import {
   demoSeed,
   type SeedCollectionName,
   type SeedOperationResult,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 
 /**
  * Run seed load/delete operation. Dev-only — throws if NODE_ENV is production.

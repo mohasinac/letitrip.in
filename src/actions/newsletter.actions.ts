@@ -12,14 +12,14 @@ import { headers } from "next/headers";
 import {
   subscribeNewsletter,
   NEWSLETTER_SUBSCRIBER_FIELDS,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { ValidationError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import type { SupportedNewsletterSource } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import type { SupportedNewsletterSource } from "@mohasinac/appkit";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 

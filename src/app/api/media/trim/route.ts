@@ -11,10 +11,10 @@ import "@/providers.config";
  * 3. Or use client-side FFmpeg.js for lightweight trimming
  */
 
-import { errorResponse } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
-import { trimDataSchema } from "@mohasinac/appkit/server";
+import { errorResponse } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { trimDataSchema } from "@mohasinac/appkit";
 
 /**
  * POST /api/media/trim

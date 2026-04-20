@@ -10,11 +10,11 @@ import "@/providers.config";
  * files that were uploaded but the parent form was dismissed without saving.
  */
 
-import { getAdminStorage as getStorage } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 const TMP_PREFIX = "tmp/";
 

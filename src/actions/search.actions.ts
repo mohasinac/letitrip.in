@@ -7,8 +7,8 @@
  * This wrapper adds Next.js server-action semantics.
  */
 
-import { searchProducts, type SearchProductsResult } from "@mohasinac/appkit/server";
-import type { SearchQuery } from "@mohasinac/appkit/server";
+import { searchProducts, type SearchProductsResult } from "@mohasinac/appkit";
+import type { SearchQuery } from "@mohasinac/appkit";
 
 export type { SearchQuery, SearchProductsResult };
 

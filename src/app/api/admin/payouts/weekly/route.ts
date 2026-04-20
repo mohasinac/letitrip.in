@@ -28,13 +28,13 @@ import {
   userRepository,
   orderRepository,
   payoutRepository,
-} from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import type { OrderDocument } from "@mohasinac/appkit/server";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import type { OrderDocument } from "@mohasinac/appkit";
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 

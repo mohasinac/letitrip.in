@@ -6,9 +6,9 @@ import "@/providers.config";
  *
  * Mutations use Server Action: createSellerProductAction.
  */
-import { createApiHandler } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { productRepository } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit";
 
 export const GET = createApiHandler({
   roles: ["seller", "admin", "moderator"],

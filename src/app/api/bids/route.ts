@@ -6,19 +6,19 @@
  */
 
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit/server";
+import { createApiHandler } from "@mohasinac/appkit";
 
-import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit/server";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/server";
-import { BidStatusValues } from "@mohasinac/appkit/server";
-import { successResponse, errorResponse } from "@mohasinac/appkit/server";
-import { maskPublicBid } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit/server";
-import { NotFoundError } from "@mohasinac/appkit/server";
-import { resolveDate } from "@mohasinac/appkit/server";
+import { bidRepository, productRepository, unitOfWork } from "@mohasinac/appkit";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { BidStatusValues } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { maskPublicBid } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit";
+import { NotFoundError } from "@mohasinac/appkit";
+import { resolveDate } from "@mohasinac/appkit";
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),

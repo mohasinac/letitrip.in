@@ -17,13 +17,13 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@mohasinac/appkit/server";
-import { handleApiError } from "@mohasinac/appkit/server";
-import { AuthenticationError, ValidationError } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { getAdminRealtimeDb } from "@mohasinac/appkit/server";
-import { RTDB_PATHS } from "@mohasinac/appkit/server";
+import { verifyWebhookSignature } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit";
+import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { RTDB_PATHS } from "@mohasinac/appkit";
 
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
 export const maxDuration = 60;

@@ -11,13 +11,13 @@ import "@/providers.config";
  * server-side when a checkout session is completed (future payment integration).
  */
 
-import { orderRepository } from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit/server";
-import type { OrderStatus } from "@mohasinac/appkit/server";
-import { OrderStatusValues } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { orderRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { getSearchParams, getStringParam } from "@mohasinac/appkit";
+import type { OrderStatus } from "@mohasinac/appkit";
+import { OrderStatusValues } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 
 const VALID_STATUSES: OrderStatus[] = [
   OrderStatusValues.PENDING,

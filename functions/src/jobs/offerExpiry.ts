@@ -8,8 +8,8 @@
  *   2. Notifies the buyer
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { notificationRepository } from "@mohasinac/appkit/server";
-import { offerRepository } from "@mohasinac/appkit/server";
+import { notificationRepository } from "@mohasinac/appkit";
+import { offerRepository } from "@mohasinac/appkit";
 import { logInfo, logError, logWarn } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
 

@@ -4,10 +4,10 @@
  * Realtime Token Server Action � thin entrypoint
  */
 
-import { requireAuthUser } from "@mohasinac/appkit/server";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/server";
-import { AuthorizationError } from "@mohasinac/appkit/server";
-import { issueRealtimeToken, type RealtimeTokenResult } from "@mohasinac/appkit/server";
+import { requireAuthUser } from "@mohasinac/appkit";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
+import { AuthorizationError } from "@mohasinac/appkit";
+import { issueRealtimeToken, type RealtimeTokenResult } from "@mohasinac/appkit";
 
 export async function getRealtimeTokenAction(): Promise<RealtimeTokenResult> {
   const user = await requireAuthUser();

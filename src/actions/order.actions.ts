@@ -7,19 +7,19 @@
  * domain functions.  No business logic here.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit/server";
+import { requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   cancelOrderForUser,
   listOrdersForUser,
   getOrderByIdForUser,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import { z } from "zod";
-import type { OrderDocument } from "@mohasinac/appkit/server";
+import type { OrderDocument } from "@mohasinac/appkit";
 
 const cancelSchema = z.object({
   id: z.string().min(1),

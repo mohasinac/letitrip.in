@@ -7,18 +7,18 @@
  * domain functions.  No business logic here.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit/server";
+import { requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError } from "@mohasinac/appkit";
 import {
   addToWishlist,
   removeFromWishlist,
   getWishlistForUser,
-} from "@mohasinac/appkit/server";
-import type { UserWishlistItem } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import type { UserWishlistItem } from "@mohasinac/appkit";
 
 export type { UserWishlistItem };
 export type EnrichedWishlistItem = UserWishlistItem;

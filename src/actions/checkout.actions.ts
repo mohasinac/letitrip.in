@@ -7,19 +7,19 @@
  * domain functions.  No business logic or OTP logic here.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit/server";
+import { requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
-} from "@mohasinac/appkit/server";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   sendCheckoutConsentOtp,
   verifyCheckoutConsentOtp,
   grantCheckoutConsentViaSms,
-} from "@mohasinac/appkit/server";
-import { userRepository } from "@mohasinac/appkit/server";
-import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
+import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 

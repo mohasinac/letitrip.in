@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
 import { SEO_CONFIG } from "@/constants";
-import { getAdminDb } from "@mohasinac/appkit/server";
-import { PRODUCT_COLLECTION } from "@mohasinac/appkit/server";
+import { getAdminDb } from "@mohasinac/appkit";
+import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_FIELDS } from "@/constants/field-names";
-import { EVENTS_COLLECTION, EVENT_FIELDS } from "@mohasinac/appkit/server";
-import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit/server";
-import { CATEGORIES_COLLECTION } from "@mohasinac/appkit/server";
-import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit/server";
-import { CATEGORY_FIELDS } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
+import { EVENTS_COLLECTION, EVENT_FIELDS } from "@mohasinac/appkit";
+import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit";
+import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit";
+import { CATEGORY_FIELDS } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
 import { ROUTES } from "@/constants";
 
 const BASE_URL = SEO_CONFIG.siteUrl;

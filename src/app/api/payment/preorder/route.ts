@@ -27,19 +27,19 @@ import {
   verifyPaymentSignatureWithKeys,
   fetchRazorpayOrder,
   paiseToRupees,
-} from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
 import {
   orderRepository,
   productRepository,
   addressRepository,
-} from "@mohasinac/appkit/server";
-import { successResponse } from "@mohasinac/appkit/server";
-import { ValidationError, NotFoundError } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import { createRouteHandler } from "@mohasinac/appkit/server";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit/server";
-import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit/server";
-import { getDefaultCurrency } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { ValidationError, NotFoundError } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit";
+import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit";
+import { getDefaultCurrency } from "@mohasinac/appkit";
 
 const preorderDepositSchema = z.object({
   razorpay_order_id: z.string().min(1),

@@ -19,12 +19,12 @@ import {
   requireAuthFromRequest as _requireAuthFromRequest,
   requireRoleFromRequest as _requireRoleFromRequest,
   verifySessionCookie,
-} from "@mohasinac/appkit/server";
-import { userRepository } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit/server";
-import type { UserRole } from "@mohasinac/appkit/server";
-import type { SessionUser } from "@mohasinac/appkit/server";
-import type { UserDocument } from "@mohasinac/appkit/server";
+} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import type { UserRole } from "@mohasinac/appkit";
+import type { SessionUser } from "@mohasinac/appkit";
+import type { UserDocument } from "@mohasinac/appkit";
 
 async function findUserById(uid: string): Promise<UserDocument | null> {
   return userRepository.findById(uid) as Promise<UserDocument | null>;

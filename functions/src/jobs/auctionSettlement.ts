@@ -11,11 +11,11 @@
  *   5. Writes `bid_won` / `bid_lost` notifications via notificationRepository
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { ProductStatusValues } from "@mohasinac/appkit/server";
-import { bidRepository } from "@mohasinac/appkit/server";
-import { notificationRepository } from "@mohasinac/appkit/server";
-import { orderRepository } from "@mohasinac/appkit/server";
-import { productRepository } from "@mohasinac/appkit/server";
+import { ProductStatusValues } from "@mohasinac/appkit";
+import { bidRepository } from "@mohasinac/appkit";
+import { notificationRepository } from "@mohasinac/appkit";
+import { orderRepository } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
