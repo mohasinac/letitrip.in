@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { RegisterForm, type RegisterFormValues } from "@mohasinac/appkit/features/auth";
-import { ROUTES } from "@mohasinac/appkit/constants";
+import { RegisterForm, type RegisterFormValues } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit";
 import Link from "next/link";
 
 export default function Page() {

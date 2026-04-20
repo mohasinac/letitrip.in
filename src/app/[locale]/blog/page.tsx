@@ -1,4 +1,4 @@
-import { BlogIndexPageView } from "@mohasinac/appkit/features/blog";
+import { BlogIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 

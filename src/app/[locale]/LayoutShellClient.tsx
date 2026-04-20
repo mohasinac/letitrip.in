@@ -5,17 +5,17 @@ import { useMemo, useCallback, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { ROUTES } from "@mohasinac/appkit/constants";
+import { ROUTES } from "@mohasinac/appkit";
 import {
   AppLayoutShell,
   type AppLayoutShellProps,
   type MainNavbarItem,
   LocaleSwitcher,
-} from "@mohasinac/appkit/features/layout";
+} from "@mohasinac/appkit";
 import { useSession } from "@mohasinac/appkit";
 import { useLogout } from "@mohasinac/appkit";
 import { NotificationBell } from "@mohasinac/appkit";
-import { Div, Input } from "@mohasinac/appkit/ui";
+import { Div, Input } from "@mohasinac/appkit";
 import Link from "next/link";
 
 export default function LayoutShellClient({

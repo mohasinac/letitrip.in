@@ -1,4 +1,4 @@
-import { AdminUsersView } from "@mohasinac/appkit/features/admin";
+import { AdminUsersView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminUsersView>{null}</AdminUsersView>;

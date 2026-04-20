@@ -1,4 +1,4 @@
-import { Container, Heading, Main, Section, Stack, Text } from "@mohasinac/appkit/ui";
+import { Container, Heading, Main, Section, Stack, Text } from "@mohasinac/appkit";
 
 type RoutePlaceholderViewProps = {
   title: string;

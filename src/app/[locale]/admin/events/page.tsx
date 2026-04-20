@@ -1,4 +1,4 @@
-import { AdminEventsView } from "@mohasinac/appkit/features/events";
+import { AdminEventsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminEventsView>{null}</AdminEventsView>;

@@ -1,4 +1,4 @@
-import { HowPreOrdersWorkView } from "@mohasinac/appkit/features/about";
+import { HowPreOrdersWorkView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowPreOrdersWorkView />;

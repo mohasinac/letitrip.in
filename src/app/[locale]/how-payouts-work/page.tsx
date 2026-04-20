@@ -1,4 +1,4 @@
-import { HowPayoutsWorkView } from "@mohasinac/appkit/features/about";
+import { HowPayoutsWorkView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowPayoutsWorkView />;

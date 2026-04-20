@@ -1,4 +1,4 @@
-import { BlogPostView } from "@mohasinac/appkit/features/blog";
+import { BlogPostView } from "@mohasinac/appkit";
 
 export default async function Page({
   params,

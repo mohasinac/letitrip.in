@@ -1,4 +1,4 @@
-import { UnauthorizedView } from "@mohasinac/appkit/features/about";
+import { UnauthorizedView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <UnauthorizedView />;

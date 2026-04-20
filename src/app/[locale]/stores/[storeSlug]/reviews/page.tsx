@@ -1,6 +1,6 @@
-import { StoreReviewsView } from "@mohasinac/appkit/features/stores";
-import type { Review } from "@mohasinac/appkit/features/reviews";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import { StoreReviewsView } from "@mohasinac/appkit";
+import type { Review } from "@mohasinac/appkit";
+import { Div, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;

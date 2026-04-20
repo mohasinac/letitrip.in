@@ -1,4 +1,4 @@
-import { AdminBlogView } from "@mohasinac/appkit/features/admin";
+import { AdminBlogView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminBlogView>{null}</AdminBlogView>;

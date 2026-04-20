@@ -1,4 +1,4 @@
-import { SellerPayoutsView } from "@mohasinac/appkit/features/seller";
+import { SellerPayoutsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SellerPayoutsView />;

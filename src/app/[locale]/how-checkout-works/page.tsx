@@ -1,4 +1,4 @@
-import { HowCheckoutWorksView } from "@mohasinac/appkit/features/about";
+import { HowCheckoutWorksView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowCheckoutWorksView />;

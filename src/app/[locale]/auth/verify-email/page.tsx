@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { VerifyEmailView } from "@mohasinac/appkit/features/auth";
-import { FirebaseClientAuthProvider } from "@mohasinac/appkit/providers/firebase-client";
-import { ROUTES } from "@mohasinac/appkit/constants";
+import { VerifyEmailView } from "@mohasinac/appkit";
+import { FirebaseClientAuthProvider } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 
 const authProvider = new FirebaseClientAuthProvider();
 

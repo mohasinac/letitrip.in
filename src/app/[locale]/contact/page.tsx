@@ -12,7 +12,7 @@ import {
   Stack,
   Text,
   Textarea,
-} from "@mohasinac/appkit/ui";
+} from "@mohasinac/appkit";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);

@@ -1,5 +1,5 @@
-import { AuctionDetailView } from "@mohasinac/appkit/features/products";
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { AuctionDetailView } from "@mohasinac/appkit";
+import { Div, Heading, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ id: string }>;

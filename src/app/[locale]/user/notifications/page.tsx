@@ -1,4 +1,4 @@
-import { UserNotificationsView } from "@mohasinac/appkit/features/account";
+import { UserNotificationsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <UserNotificationsView />;

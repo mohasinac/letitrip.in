@@ -20,7 +20,7 @@ import {
   Badge,
   Button,
   Checkbox,
-} from "@mohasinac/appkit/ui";
+} from "@mohasinac/appkit";
 import { demoSeedAction } from "@/actions/demo-seed.actions";
 import type { SeedCollectionName, SeedOperationResult } from "@/actions/demo-seed.actions";
 

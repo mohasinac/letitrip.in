@@ -1,4 +1,4 @@
-import { AdminPayoutsView } from "@mohasinac/appkit/features/admin";
+import { AdminPayoutsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminPayoutsView />;

@@ -1,4 +1,4 @@
-import { HowAuctionsWorkView } from "@mohasinac/appkit/features/about";
+import { HowAuctionsWorkView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowAuctionsWorkView />;

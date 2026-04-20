@@ -1,4 +1,4 @@
-import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/features/stores";
+import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;

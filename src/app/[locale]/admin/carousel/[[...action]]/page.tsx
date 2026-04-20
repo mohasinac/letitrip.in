@@ -1,4 +1,4 @@
-import { AdminCarouselView } from "@mohasinac/appkit/features/admin";
+import { AdminCarouselView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminCarouselView />;

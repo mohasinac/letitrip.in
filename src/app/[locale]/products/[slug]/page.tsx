@@ -1,5 +1,5 @@
-import { ProductDetailView } from "@mohasinac/appkit/features/products";
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { ProductDetailView } from "@mohasinac/appkit";
+import { Div, Heading, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ slug: string }>;

@@ -1,4 +1,4 @@
-import { WishlistView } from "@mohasinac/appkit/features/wishlist";
+import { WishlistView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <WishlistView />;

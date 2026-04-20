@@ -1,8 +1,8 @@
 "use client";
 
-import type { CategoryItem } from "@mohasinac/appkit/features/categories";
-import { CategoriesListView } from "@mohasinac/appkit/features/categories";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import type { CategoryItem } from "@mohasinac/appkit";
+import { CategoriesListView } from "@mohasinac/appkit";
+import { Div, Text } from "@mohasinac/appkit";
 
 export function CategoriesRouteClient() {
   return (

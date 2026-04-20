@@ -1,4 +1,4 @@
-import { MarketplaceHomepageView } from "@mohasinac/appkit/features/homepage";
+import { MarketplaceHomepageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 

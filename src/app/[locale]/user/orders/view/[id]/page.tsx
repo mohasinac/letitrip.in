@@ -1,4 +1,4 @@
-import { OrderDetailView } from "@mohasinac/appkit/features/account";
+import { OrderDetailView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <OrderDetailView />;

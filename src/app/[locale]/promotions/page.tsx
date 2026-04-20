@@ -1,5 +1,5 @@
-import { PromotionsView } from "@mohasinac/appkit/features/promotions";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import { PromotionsView } from "@mohasinac/appkit";
+import { Div, Text } from "@mohasinac/appkit";
 
 export default function Page() {
   return (

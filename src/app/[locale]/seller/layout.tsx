@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit/constants";
-import { useDashboardNav } from "@mohasinac/appkit/features/layout";
-import { SellerSidebar, type SellerNavItem } from "@mohasinac/appkit/features/seller";
-import { ProtectedRoute } from "@mohasinac/appkit/features/auth";
+import { ROUTES } from "@mohasinac/appkit";
+import { useDashboardNav } from "@mohasinac/appkit";
+import { SellerSidebar, type SellerNavItem } from "@mohasinac/appkit";
+import { ProtectedRoute } from "@mohasinac/appkit";
 import { useSession } from "@mohasinac/appkit";
 
 const SELLER_NAV_ITEMS: SellerNavItem[] = [

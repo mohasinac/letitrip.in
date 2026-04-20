@@ -1,4 +1,4 @@
-import { AboutView } from "@mohasinac/appkit/features/about";
+import { AboutView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AboutView />;

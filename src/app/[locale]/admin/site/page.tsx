@@ -1,4 +1,4 @@
-import { AdminSiteView } from "@mohasinac/appkit/features/admin";
+import { AdminSiteView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminSiteView />;

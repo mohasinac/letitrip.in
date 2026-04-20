@@ -1,4 +1,4 @@
-import { HowReviewsWorkView } from "@mohasinac/appkit/features/about";
+import { HowReviewsWorkView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowReviewsWorkView />;

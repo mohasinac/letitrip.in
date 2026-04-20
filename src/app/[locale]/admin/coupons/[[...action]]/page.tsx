@@ -1,4 +1,4 @@
-import { AdminCouponsView } from "@mohasinac/appkit/features/admin";
+import { AdminCouponsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminCouponsView>{null}</AdminCouponsView>;

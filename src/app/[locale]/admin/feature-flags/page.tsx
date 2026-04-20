@@ -1,4 +1,4 @@
-import { AdminFeatureFlagsView } from "@mohasinac/appkit/features/admin";
+import { AdminFeatureFlagsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminFeatureFlagsView />;

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ForgotPasswordView } from "@mohasinac/appkit/features/auth";
-import { FirebaseClientAuthProvider } from "@mohasinac/appkit/providers/firebase-client";
-import { ROUTES } from "@mohasinac/appkit/constants";
+import { ForgotPasswordView } from "@mohasinac/appkit";
+import { FirebaseClientAuthProvider } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 import Link from "next/link";
 
 const authProvider = new FirebaseClientAuthProvider();

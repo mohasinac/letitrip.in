@@ -1,4 +1,4 @@
-import { ProductsIndexPageView } from "@mohasinac/appkit/features/products";
+import { ProductsIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 

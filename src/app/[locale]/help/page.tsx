@@ -1,4 +1,4 @@
-import { HelpPageView } from "@mohasinac/appkit/features/about";
+import { HelpPageView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HelpPageView />;

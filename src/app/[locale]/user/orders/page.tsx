@@ -1,4 +1,4 @@
-import { UserOrdersView } from "@mohasinac/appkit/features/account";
+import { UserOrdersView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <UserOrdersView />;

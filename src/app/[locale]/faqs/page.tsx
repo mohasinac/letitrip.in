@@ -1,4 +1,4 @@
-import { FAQPageView } from "@mohasinac/appkit/features/about";
+import { FAQPageView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <FAQPageView />;

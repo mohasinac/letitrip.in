@@ -1,4 +1,4 @@
-import { TrackOrderView } from "@mohasinac/appkit/features/about";
+import { TrackOrderView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <TrackOrderView />;

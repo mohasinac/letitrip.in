@@ -1,5 +1,5 @@
-import { StoreAuctionsView } from "@mohasinac/appkit/features/stores";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import { StoreAuctionsView } from "@mohasinac/appkit";
+import { Div, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;

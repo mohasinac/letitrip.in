@@ -1,4 +1,4 @@
-import { SellerDashboardView } from "@mohasinac/appkit/features/seller";
+import { SellerDashboardView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SellerDashboardView />;

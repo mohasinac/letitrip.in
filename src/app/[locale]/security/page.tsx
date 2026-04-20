@@ -1,4 +1,4 @@
-import { SecurityPrivacyView } from "@mohasinac/appkit/features/about";
+import { SecurityPrivacyView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SecurityPrivacyView />;

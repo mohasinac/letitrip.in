@@ -1,4 +1,4 @@
-import { HowOffersWorkView } from "@mohasinac/appkit/features/about";
+import { HowOffersWorkView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <HowOffersWorkView />;

@@ -1,7 +1,7 @@
 "use client";
 
-import { ReviewsListView } from "@mohasinac/appkit/features/reviews";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import { ReviewsListView } from "@mohasinac/appkit";
+import { Div, Text } from "@mohasinac/appkit";
 
 export function ReviewsRouteClient() {
   return (

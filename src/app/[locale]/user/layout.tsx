@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit/constants";
-import { useDashboardNav } from "@mohasinac/appkit/features/layout";
-import { ProtectedRoute, type AuthGuardUser } from "@mohasinac/appkit/features/auth";
+import { ROUTES } from "@mohasinac/appkit";
+import { useDashboardNav } from "@mohasinac/appkit";
+import { ProtectedRoute, type AuthGuardUser } from "@mohasinac/appkit";
 import { useSession } from "@mohasinac/appkit";
 
 export default function UserLayout({ children }: { children: ReactNode }) {

@@ -1,4 +1,4 @@
-import { SellerGuideView } from "@mohasinac/appkit/features/seller";
+import { SellerGuideView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SellerGuideView />;

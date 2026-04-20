@@ -1,4 +1,4 @@
-import { SellerAnalyticsView } from "@mohasinac/appkit/features/seller";
+import { SellerAnalyticsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SellerAnalyticsView />;

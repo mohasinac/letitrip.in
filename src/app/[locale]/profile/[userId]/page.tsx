@@ -1,4 +1,4 @@
-import { PublicProfileView } from "@mohasinac/appkit/features/about";
+import { PublicProfileView } from "@mohasinac/appkit";
 
 export default async function Page({
   params,

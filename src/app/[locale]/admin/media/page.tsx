@@ -1,4 +1,4 @@
-import { AdminMediaView } from "@mohasinac/appkit/features/admin";
+import { AdminMediaView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminMediaView />;

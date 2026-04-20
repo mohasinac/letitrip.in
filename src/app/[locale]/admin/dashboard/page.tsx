@@ -1,4 +1,4 @@
-import { AdminDashboardView } from "@mohasinac/appkit/features/admin";
+import { AdminDashboardView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminDashboardView />;

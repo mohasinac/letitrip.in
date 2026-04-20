@@ -1,4 +1,4 @@
-import { StoresListView, type StoreListItem } from "@mohasinac/appkit/features/stores";
+import { StoresListView, type StoreListItem } from "@mohasinac/appkit";
 
 export default function Page() {
   return (

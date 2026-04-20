@@ -1,5 +1,5 @@
-import { SearchView } from "@mohasinac/appkit/features/search";
-import { Button, Div, Input, Text } from "@mohasinac/appkit/ui";
+import { SearchView } from "@mohasinac/appkit";
+import { Button, Div, Input, Text } from "@mohasinac/appkit";
 
 type Props = {
   searchParams: Promise<{ q?: string }>;

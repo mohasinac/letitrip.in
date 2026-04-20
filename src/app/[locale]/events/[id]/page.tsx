@@ -1,5 +1,5 @@
-import { EventDetailView } from "@mohasinac/appkit/features/events";
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { EventDetailView } from "@mohasinac/appkit";
+import { Div, Heading, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ id: string }>;

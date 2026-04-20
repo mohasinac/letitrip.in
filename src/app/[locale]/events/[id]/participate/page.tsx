@@ -1,5 +1,5 @@
-import { EventParticipateView } from "@mohasinac/appkit/features/events";
-import { Button, Div, Heading, Input, Text } from "@mohasinac/appkit/ui";
+import { EventParticipateView } from "@mohasinac/appkit";
+import { Button, Div, Heading, Input, Text } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ id: string }>;

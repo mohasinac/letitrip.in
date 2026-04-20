@@ -1,4 +1,4 @@
-import { AdminCopilotView } from "@mohasinac/appkit/features/copilot";
+import { AdminCopilotView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminCopilotView />;
