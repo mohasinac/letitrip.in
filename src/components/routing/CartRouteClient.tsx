@@ -1,7 +1,6 @@
 "use client";
 
-import { CartView } from "@mohasinac/appkit";
-import { Button, Div, Heading, Text } from "@mohasinac/appkit";
+import { Button, CartView, Div, Heading, Text } from "@mohasinac/appkit/client";
 
 export function CartRouteClient() {
   return (

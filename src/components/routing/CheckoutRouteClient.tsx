@@ -1,7 +1,6 @@
 "use client";
 
-import { CheckoutView } from "@mohasinac/appkit";
-import { Button, Div, Heading, Input, Stack, Text } from "@mohasinac/appkit";
+import { Button, CheckoutView, Div, Heading, Input, Stack, Text } from "@mohasinac/appkit/client";
 
 export function CheckoutRouteClient() {
   return (

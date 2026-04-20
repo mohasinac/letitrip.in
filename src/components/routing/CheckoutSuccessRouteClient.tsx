@@ -1,7 +1,6 @@
 "use client";
 
-import { CheckoutSuccessView } from "@mohasinac/appkit";
-import { Button, Div, Heading, Text } from "@mohasinac/appkit";
+import { Button, CheckoutSuccessView, Div, Heading, Text } from "@mohasinac/appkit/client";
 
 export function CheckoutSuccessRouteClient() {
   return (

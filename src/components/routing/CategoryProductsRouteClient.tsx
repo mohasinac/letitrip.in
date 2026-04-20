@@ -1,7 +1,6 @@
 "use client";
 
-import { CategoryProductsView } from "@mohasinac/appkit";
-import { Div, Text } from "@mohasinac/appkit";
+import { CategoryProductsView, Div, Text } from "@mohasinac/appkit/client";
 
 type CategoryProductsRouteClientProps = {
   slug: string;

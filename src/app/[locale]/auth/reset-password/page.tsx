@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { ResetPasswordView } from "@mohasinac/appkit";
-import { FirebaseClientAuthProvider } from "@mohasinac/appkit/client";
-import { ROUTES } from "@mohasinac/appkit";
+import {
+  FirebaseClientAuthProvider,
+  ResetPasswordView,
+  ROUTES,
+} from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 const authProvider = new FirebaseClientAuthProvider();

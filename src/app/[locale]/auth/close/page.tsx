@@ -1,4 +1,4 @@
-import { AuthStatusPanel } from "@mohasinac/appkit";
+import { AuthStatusPanel } from "@mohasinac/appkit/client";
 
 export default function Page() {
   return (

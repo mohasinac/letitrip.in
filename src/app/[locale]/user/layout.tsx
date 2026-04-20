@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
-import { useDashboardNav } from "@mohasinac/appkit";
-import { ProtectedRoute, type AuthGuardUser } from "@mohasinac/appkit";
-import { useSession } from "@mohasinac/appkit";
+import {
+  ROUTES,
+  useDashboardNav,
+  ProtectedRoute,
+  useSession,
+  type AuthGuardUser,
+} from "@mohasinac/appkit/client";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();

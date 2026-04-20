@@ -8,21 +8,21 @@
  */
 
 import React, { useState, useTransition } from "react";
-import { MediaImage } from "@mohasinac/appkit";
 import {
-  Section,
-  Container,
-  Stack,
-  Row,
-  Grid,
-  Heading,
-  Text,
   Badge,
   Button,
   Checkbox,
-} from "@mohasinac/appkit";
+  Container,
+  Grid,
+  Heading,
+  MediaImage,
+  Row,
+  Section,
+  Stack,
+  Text,
+} from "@mohasinac/appkit/client";
 import { demoSeedAction } from "@/actions/demo-seed.actions";
-import type { SeedCollectionName, SeedOperationResult } from "@/actions/demo-seed.actions";
+import type { SeedCollectionName, SeedOperationResult } from "@/actions/demo-seed.types";
 
 const POKEMON_COLLECTIONS: SeedCollectionName[] = [
   "users",
@@ -254,14 +254,21 @@ export function PokemonSeedPanel() {
               📋 Seeded Cards Preview
             </Heading>
             <Grid cols={3} gap="md" className="sm:grid-cols-4 lg:grid-cols-6">
-              {FEATURED_CARDS.map((card) => (
+              {FEATURED_CARDS.map((card, index) => (
                 <Stack
                   key={card.num}
                   gap="none"
                   className="rounded-xl overflow-hidden border border-[#FFCB05]/20 bg-white/5"
                 >
                   <div className="aspect-square w-full">
-                    <MediaImage src={CARD_IMG(card.num)} alt={card.name} size="card" className="w-full block" />
+                    <MediaImage
+                      src={CARD_IMG(card.num)}
+                      alt={card.name}
+                      size="card"
+                      className="w-full block"
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
                   </div>
                   <Stack gap="none" className="p-2">
                     <Text className="text-xs font-bold text-[#FFCB05]">{card.name}</Text>

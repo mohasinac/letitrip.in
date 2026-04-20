@@ -1,8 +1,6 @@
 "use client";
 
-import type { StoreProductItem } from "@mohasinac/appkit";
-import { StoreProductsView } from "@mohasinac/appkit";
-import { Div, Text } from "@mohasinac/appkit";
+import { Div, StoreProductsView, Text, type StoreProductItem } from "@mohasinac/appkit/client";
 
 type StoreProductsRouteClientProps = {
   storeSlug: string;

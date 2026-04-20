@@ -5,17 +5,17 @@ import { useMemo, useCallback, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { ROUTES } from "@mohasinac/appkit";
 import {
   AppLayoutShell,
+  LocaleSwitcher,
+  NotificationBell,
+  ROUTES,
+  Div,
+  Input,
+  useSession,
   type AppLayoutShellProps,
   type MainNavbarItem,
-  LocaleSwitcher,
-} from "@mohasinac/appkit";
-import { useSession } from "@mohasinac/appkit";
-import { useLogout } from "@mohasinac/appkit";
-import { NotificationBell } from "@mohasinac/appkit";
-import { Div, Input } from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 export default function LayoutShellClient({
@@ -29,16 +29,18 @@ export default function LayoutShellClient({
   const locale = useLocale();
   const { user } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
-  const logoutMutation = useLogout();
 
   const handleLogout = useCallback(async () => {
     try {
-      await logoutMutation.mutateAsync();
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
       router.push(String(ROUTES.AUTH.LOGIN));
     } catch {
       router.push(String(ROUTES.AUTH.LOGIN));
     }
-  }, [logoutMutation, router]);
+  }, [router]);
 
   const navItems = useMemo<MainNavbarItem[]>(
     () => [

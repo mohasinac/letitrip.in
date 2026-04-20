@@ -29,5 +29,3 @@ export async function demoSeedAction(vars: {
   return demoSeed(vars, baseUrl);
 }
 
-export type { SeedCollectionName, SeedOperationResult };
-

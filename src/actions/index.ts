@@ -423,5 +423,5 @@ export { demoSeedAction } from "./demo-seed.actions";
 export type {
   SeedCollectionName,
   SeedOperationResult,
-} from "./demo-seed.actions";
+} from "./demo-seed.types";
 

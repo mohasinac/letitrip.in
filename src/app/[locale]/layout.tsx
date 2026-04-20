@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { ToastProvider } from "@mohasinac/appkit";
 import {
   BottomActionsProvider,
   DashboardNavProvider,
   LayoutClient,
   SkipToMain,
-} from "@mohasinac/appkit";
-import { SessionProvider, ThemeProvider } from "@mohasinac/appkit/client";
-import { ZodSetup } from "@mohasinac/appkit";
+  SessionProvider,
+  ThemeProvider,
+  ToastProvider,
+  ZodSetup,
+} from "@mohasinac/appkit/client";
 import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";

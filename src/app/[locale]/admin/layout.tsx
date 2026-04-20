@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
-import { useDashboardNav } from "@mohasinac/appkit";
-import { AdminSidebar } from "@mohasinac/appkit";
-import { ProtectedRoute, type AuthGuardUser } from "@mohasinac/appkit";
-import { useSession } from "@mohasinac/appkit";
+import {
+  ROUTES,
+  useDashboardNav,
+  AdminSidebar,
+  ProtectedRoute,
+  useSession,
+  type AuthGuardUser,
+} from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 const ADMIN_NAV_ITEMS = [

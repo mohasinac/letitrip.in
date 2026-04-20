@@ -2,7 +2,8 @@ import "./globals.css";
 import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
-import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit";
+import { initProviders } from "@/providers.config";
+import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit/server";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],
@@ -103,11 +104,13 @@ export const metadata: Metadata = {
  * All providers (ThemeProvider, SessionProvider, NextIntlClientProvider…)
  * live in src/app/[locale]/layout.tsx so they receive the locale param.
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await initProviders();
+
   return (
     <html
       lang="en"

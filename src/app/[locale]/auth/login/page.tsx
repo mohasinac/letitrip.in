@@ -13,7 +13,7 @@ import {
   Section,
   Stack,
   Text,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);

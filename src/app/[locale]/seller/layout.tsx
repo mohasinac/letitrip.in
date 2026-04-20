@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
-import { useDashboardNav } from "@mohasinac/appkit";
-import { SellerSidebar, type SellerNavItem } from "@mohasinac/appkit";
-import { ProtectedRoute } from "@mohasinac/appkit";
-import { useSession } from "@mohasinac/appkit";
+import {
+  ROUTES,
+  useDashboardNav,
+  SellerSidebar,
+  ProtectedRoute,
+  useSession,
+  type SellerNavItem,
+} from "@mohasinac/appkit/client";
 
 const SELLER_NAV_ITEMS: SellerNavItem[] = [
   { href: String(ROUTES.SELLER.DASHBOARD), label: "Dashboard" },
