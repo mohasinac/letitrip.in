@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AboutView } from "@mohasinac/appkit/features/about";
 
 export default function Page() {
-  return <RoutePlaceholderView title="About" />;
+  return <AboutView />;
 }

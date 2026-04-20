@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { UserAddressesView } from "@mohasinac/appkit/features/account";
 
 export default function Page() {
-  return <RoutePlaceholderView title="User / Addresses / Edit / Detail" />;
+  return <UserAddressesView />;
 }

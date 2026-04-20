@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { HowPayoutsWorkView } from "@mohasinac/appkit/features/about";
 
 export default function Page() {
-  return <RoutePlaceholderView title="How payouts work" />;
+  return <HowPayoutsWorkView />;
 }

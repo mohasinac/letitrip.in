@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AdminCopilotView } from "@mohasinac/appkit/features/copilot";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Admin / Copilot" />;
+  return <AdminCopilotView />;
 }

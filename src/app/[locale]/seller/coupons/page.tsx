@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { SellerCouponsView } from "@mohasinac/appkit/features/seller";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Seller / Coupons" />;
+  return <SellerCouponsView />;
 }

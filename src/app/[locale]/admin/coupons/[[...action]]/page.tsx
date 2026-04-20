@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AdminCouponsView } from "@mohasinac/appkit/features/admin";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Admin / Coupons / Detail" />;
+  return <AdminCouponsView>{null}</AdminCouponsView>;
 }

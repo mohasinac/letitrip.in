@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { UserOrdersView } from "@mohasinac/appkit/features/account";
 
 export default function Page() {
-  return <RoutePlaceholderView title="User / Orders" />;
+  return <UserOrdersView />;
 }

@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AdminMediaView } from "@mohasinac/appkit/features/admin";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Admin / Media" />;
+  return <AdminMediaView />;
 }

@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AdminReviewsView } from "@mohasinac/appkit/features/admin";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Admin / Reviews / Detail" />;
+  return <AdminReviewsView>{null}</AdminReviewsView>;
 }

@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { HowPreOrdersWorkView } from "@mohasinac/appkit/features/about";
 
 export default function Page() {
-  return <RoutePlaceholderView title="How pre orders work" />;
+  return <HowPreOrdersWorkView />;
 }

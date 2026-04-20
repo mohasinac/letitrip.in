@@ -1,5 +1,10 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { FAQPageView } from "@mohasinac/appkit/features/about";
 
-export default function Page() {
-  return <RoutePlaceholderView title="Faqs / Detail" />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  const { category } = await params;
+  return <FAQPageView category={category} />;
 }

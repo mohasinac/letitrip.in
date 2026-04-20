@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { PolicyPageView } from "@mohasinac/appkit/features/about";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Refund policy" />;
+  return <PolicyPageView policy="refund" />;
 }

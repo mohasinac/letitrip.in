@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { WishlistView } from "@mohasinac/appkit/features/wishlist";
 
 export default function Page() {
-  return <RoutePlaceholderView title="User / Wishlist" />;
+  return <WishlistView />;
 }

@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AdminEventsView } from "@mohasinac/appkit/features/events";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Admin / Events" />;
+  return <AdminEventsView>{null}</AdminEventsView>;
 }

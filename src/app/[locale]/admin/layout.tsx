@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/constants";
 import { useDashboardNav } from "@mohasinac/appkit/features/layout";
 import { AdminSidebar } from "@mohasinac/appkit/features/admin";
-import { ProtectedRoute } from "@mohasinac/appkit/features/auth";
+import { ProtectedRoute, type AuthGuardUser } from "@mohasinac/appkit/features/auth";
 import { useSession } from "@mohasinac/appkit";
 import Link from "next/link";
 
@@ -47,7 +47,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <ProtectedRoute
-      user={user}
+      user={user as AuthGuardUser | null}
       loading={loading}
       requireAuth
       requireRole="admin"
