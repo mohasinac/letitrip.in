@@ -1702,7 +1702,7 @@ export const UI_LABELS = {
     VERIFIED_PURCHASE: "Verified",
   },
 
-  // ── Admin Navigation Settings ──────────────────────────────────────────────
+  // -- Admin Navigation Settings ----------------------------------------------
   ADMIN_NAVIGATION: {
     TITLE: "Navigation Settings",
     SUBTITLE:
@@ -1724,7 +1724,7 @@ export const UI_LABELS = {
     SAVE_FAILED: "Failed to save navigation settings",
   },
 
-  // ── Admin Analytics ────────────────────────────────────────────────────────
+  // -- Admin Analytics --------------------------------------------------------
   ADMIN_ANALYTICS: {
     PAGE_TITLE: "Sales Analytics",
     PAGE_SUBTITLE: "Revenue and order trends across the platform",
@@ -1742,7 +1742,7 @@ export const UI_LABELS = {
     ORDERS_LABEL: "Orders",
   },
 
-  // ── Seller Analytics ───────────────────────────────────────────────────────
+  // -- Seller Analytics -------------------------------------------------------
   SELLER_ANALYTICS: {
     PAGE_TITLE: "Your Analytics",
     PAGE_SUBTITLE: "Sales performance and revenue overview",

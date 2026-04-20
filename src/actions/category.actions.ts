@@ -156,7 +156,7 @@ export async function deleteCategoryAction(id: string): Promise<void> {
   return deleteCategory(id);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listCategoriesAction(params?: {
   filters?: string;

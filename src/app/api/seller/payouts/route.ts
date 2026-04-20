@@ -19,7 +19,7 @@ import { orderRepository, payoutRepository } from "@mohasinac/appkit";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@mohasinac/appkit";
 import { PayoutStatusValues } from "@mohasinac/appkit";
 
-// ─── Helper ───────────────────────────────────────────────────────────────
+// --- Helper ---------------------------------------------------------------
 
 async function computeSellerEarnings(sellerId: string) {
   const eligibleOrdersResult = await orderRepository.listAll({
@@ -47,7 +47,7 @@ async function computeSellerEarnings(sellerId: string) {
   };
 }
 
-// ─── GET — List payouts + earnings summary ─────────────────────────────────
+// --- GET — List payouts + earnings summary ---------------------------------
 
 export const GET = createRouteHandler({
   auth: true,

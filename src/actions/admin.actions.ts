@@ -46,7 +46,7 @@ import {
   productCreateSchema,
 } from "@/validation/request-schemas";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────
+// --- Schemas --------------------------------------------------------------
 
 const revokeSessionSchema = z.object({
   sessionId: z.string().min(1, "sessionId is required"),
@@ -56,7 +56,7 @@ const revokeUserSessionsSchema = z.object({
   userId: z.string().min(1, "userId is required"),
 });
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 /**
  * Revoke a single session (admin only).
@@ -110,7 +110,7 @@ export async function revokeUserSessionsAction(
   return revokeUserSessionsDomain(admin.uid, userId);
 }
 
-// ─── Order mutations ───────────────────────────────────────────────────────
+// --- Order mutations -------------------------------------------------------
 
 const orderUpdateSchema = z.object({
   status: z.string().optional(),
@@ -147,7 +147,7 @@ export async function adminUpdateOrderAction(
   );
 }
 
-// ─── Payout mutations ──────────────────────────────────────────────────────
+// --- Payout mutations ------------------------------------------------------
 
 const payoutUpdateSchema = z.object({
   status: payoutStatusSchema.optional(),
@@ -183,7 +183,7 @@ export async function adminUpdatePayoutAction(
   );
 }
 
-// ─── User mutations ───────────────────────────────────────────────────────
+// --- User mutations -------------------------------------------------------
 
 const userUpdateSchema = z.object({
   role: userRoleSchema.optional(),
@@ -232,7 +232,7 @@ export async function adminDeleteUserAction(uid: string): Promise<void> {
   await adminDeleteUserDomain(admin.uid, uid);
 }
 
-// ─── Store approval mutations ─────────────────────────────────────────────
+// --- Store approval mutations ---------------------------------------------
 
 const storeApprovalSchema = z.object({
   uid: z.string().min(1),
@@ -262,7 +262,7 @@ export async function adminUpdateStoreStatusAction(
   await adminUpdateStoreStatusDomain(admin.uid, { uid, action });
 }
 
-// ─── Product mutations (admin override) ──────────────────────────────────
+// --- Product mutations (admin override) ----------------------------------
 
 const productAdminUpdateSchema = z.object({
   status: z.string().optional(),

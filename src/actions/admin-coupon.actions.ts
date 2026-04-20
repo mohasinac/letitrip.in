@@ -26,7 +26,7 @@ import {
 import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────
+// --- Schemas --------------------------------------------------------------
 
 const couponIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -74,7 +74,7 @@ const updateCouponSchema = createCouponSchema.partial();
 export type AdminCreateCouponInput = z.infer<typeof createCouponSchema>;
 export type AdminUpdateCouponInput = z.infer<typeof updateCouponSchema>;
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function adminCreateCouponAction(
   input: AdminCreateCouponInput,
@@ -162,7 +162,7 @@ export async function adminDeleteCouponAction(id: string): Promise<void> {
   await adminDeleteCouponDomain(admin.uid, id);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listAdminCouponsAction(params?: {
   filters?: string;

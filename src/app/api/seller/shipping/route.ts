@@ -23,7 +23,7 @@ import {
 } from "@mohasinac/appkit";
 import type { SellerShippingConfig } from "@mohasinac/appkit";
 
-// ─── Schemas ────────────────────────────────────────────────────────────────
+// --- Schemas ----------------------------------------------------------------
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
@@ -58,7 +58,7 @@ const updateShippingSchema = z.discriminatedUnion("method", [
   }),
 ]);
 
-// ─── Helper: strip server-only fields before sending to client ───────────────
+// --- Helper: strip server-only fields before sending to client ---------------
 
 function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
   SellerShippingConfig,
@@ -84,7 +84,7 @@ function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
   };
 }
 
-// ─── GET ─────────────────────────────────────────────────────────────────────
+// --- GET ---------------------------------------------------------------------
 
 export const GET = createApiHandler({
   auth: true,
@@ -96,7 +96,7 @@ export const GET = createApiHandler({
   },
 });
 
-// ─── PATCH ────────────────────────────────────────────────────────────────────
+// --- PATCH --------------------------------------------------------------------
 
 export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
   {
@@ -117,7 +117,7 @@ export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
           isConfigured: true,
         };
       } else {
-        // ── Shiprocket method ──────────────────────────────────────────────────
+        // -- Shiprocket method --------------------------------------------------
         const existing = user!.shippingConfig as SellerShippingConfig | undefined;
         let token = existing?.shiprocketToken;
         let tokenExpiry = existing?.shiprocketTokenExpiry;

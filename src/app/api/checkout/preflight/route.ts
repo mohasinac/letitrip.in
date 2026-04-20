@@ -26,13 +26,13 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
 import type { CartItemDocument } from "@mohasinac/appkit";
 
-// ─── Schema ───────────────────────────────────────────────────────────────────
+// --- Schema -------------------------------------------------------------------
 
 const schema = z.object({
   addressId: z.string().min(1, "addressId is required"),
 });
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 export interface UnavailableItem {
   productId: string;
@@ -41,7 +41,7 @@ export interface UnavailableItem {
   availableQty: number;
 }
 
-// ─── POST Handler ─────────────────────────────────────────────────────────────
+// --- POST Handler -------------------------------------------------------------
 
 export const POST = createRouteHandler<(typeof schema)["_output"]>({
   auth: true,

@@ -24,7 +24,7 @@ import {
 } from "@mohasinac/appkit";
 import type { AddressDocument } from "@mohasinac/appkit";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 const addressBodySchema = z.object({
   label: z.string().min(1).max(60),
@@ -42,7 +42,7 @@ const addressBodySchema = z.object({
 
 export type AddressInput = z.infer<typeof addressBodySchema>;
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function createAddressAction(
   input: AddressInput,
@@ -117,7 +117,7 @@ export async function setDefaultAddressAction(
   return setDefaultAddressForUser(user.uid, addressId) as Promise<AddressDocument>;
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listAddressesAction(): Promise<AddressDocument[]> {
   const user = await requireAuthUser();

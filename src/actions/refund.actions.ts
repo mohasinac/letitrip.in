@@ -20,7 +20,7 @@ import {
   type PartialRefundResult,
 } from "@mohasinac/appkit";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────
+// --- Schemas --------------------------------------------------------------
 
 const partialRefundSchema = z.object({
   orderId: z.string().min(1),
@@ -31,7 +31,7 @@ const partialRefundSchema = z.object({
 export type PartialRefundInput = z.infer<typeof partialRefundSchema>;
 export type { PartialRefundResult };
 
-// ─── Admin: Issue partial refund ───────────────────────────────────────────
+// --- Admin: Issue partial refund -------------------------------------------
 
 export async function adminPartialRefundAction(
   input: PartialRefundInput,
@@ -57,7 +57,7 @@ export async function adminPartialRefundAction(
   );
 }
 
-// ─── User: Preview refund amount before confirming cancellation ────────────
+// --- User: Preview refund amount before confirming cancellation ------------
 
 export async function previewCancellationRefundAction(
   orderId: string,

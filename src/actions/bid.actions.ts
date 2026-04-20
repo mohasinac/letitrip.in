@@ -26,7 +26,7 @@ import type {
 import type { BidDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),
@@ -34,7 +34,7 @@ const placeBidSchema = z.object({
   autoMaxBid: z.number().positive().optional(),
 });
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function placeBidAction(
   input: PlaceBidInput,

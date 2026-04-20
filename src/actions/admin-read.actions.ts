@@ -31,7 +31,7 @@ import type { StoreDocument } from "@mohasinac/appkit";
 import type { BidDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-// ─── Dashboard & Analytics ────────────────────────────────────────────────
+// --- Dashboard & Analytics ------------------------------------------------
 
 export async function getAdminDashboardStatsAction() {
   await requireRoleUser(["admin", "moderator"]);
@@ -43,7 +43,7 @@ export async function getAdminAnalyticsAction() {
   return getAdminAnalytics();
 }
 
-// ─── Paginated List Queries ───────────────────────────────────────────────
+// --- Paginated List Queries -----------------------------------------------
 
 export async function listAdminOrdersAction(params?: {
   filters?: string;

@@ -44,7 +44,7 @@ export async function cancelOrderAction(
   return cancelOrderForUser(user.uid, parsed.data.id, parsed.data.reason);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listOrdersAction(): Promise<OrderDocument[]> {
   const user = await requireAuthUser();

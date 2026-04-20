@@ -21,7 +21,7 @@ import {
 import { userRepository } from "@mohasinac/appkit";
 import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// --- Schemas ------------------------------------------------------------------
 
 const sendSchema = z.object({
   addressId: z.string().min(1),
@@ -35,7 +35,7 @@ const verifySchema = z.object({
     .regex(/^\d{6}$/, "Must be 6 digits"),
 });
 
-// ─── Actions ──────────────────────────────────────────────────────────────────
+// --- Actions ------------------------------------------------------------------
 
 export async function sendConsentOtpAction(
   addressId: string,

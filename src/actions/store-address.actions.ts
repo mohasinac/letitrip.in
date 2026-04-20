@@ -22,7 +22,7 @@ import {
 } from "@mohasinac/appkit";
 import type { StoreAddressDocument } from "@mohasinac/appkit";
 
-// ─── Validation ────────────────────────────────────────────────────────────
+// --- Validation ------------------------------------------------------------
 
 const storeAddressBodySchema = z.object({
   label: z.string().min(1).max(60),
@@ -40,7 +40,7 @@ const storeAddressBodySchema = z.object({
 
 export type StoreAddressInput = z.infer<typeof storeAddressBodySchema>;
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function listStoreAddressesAction(): Promise<
   StoreAddressDocument[]

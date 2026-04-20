@@ -223,7 +223,7 @@ export {
   grantCheckoutConsentViaSmsAction,
 } from "./checkout.actions";
 
-// ─── Read Actions (2-hop: Hook → Action → Repository) ────────────────────────
+// --- Read Actions (2-hop: Hook → Action → Repository) ------------------------
 
 // Product reads (public)
 export type { ProductListActionParams, ProductListResult } from "./product.actions";

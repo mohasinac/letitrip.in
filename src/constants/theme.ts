@@ -15,7 +15,7 @@
 import { THEME_CONSTANTS as _base } from "@mohasinac/appkit";
 
 export const THEME_CONSTANTS = {
-  // ── Base sections — sourced from @mohasinac/tokens ──────────────────────
+  // -- Base sections — sourced from @mohasinac/tokens ----------------------
   // Identity (spread first so project overrides win):
   themed: _base.themed,
   layout: _base.layout,
@@ -112,7 +112,7 @@ export const THEME_CONSTANTS = {
       "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" as const,
   },
 
-  // ── Letitrip.in brand extensions ────────────────────────────────────────
+  // -- Letitrip.in brand extensions ----------------------------------------
 
   /**
    * Button styles — CTA and interactive variants.
@@ -349,7 +349,7 @@ export const THEME_CONSTANTS = {
     devHeroChipBoldBg: "bg-zinc-300 dark:bg-white/20",
     devHeroChipBoldText: "text-zinc-900 dark:text-white",
 
-    // ── Page-level hero banners ────────────────────────────────────────────
+    // -- Page-level hero banners --------------------------------------------
     // Used on all static/info pages (contact, help, legal, how-it-works, etc.)
     // Light: dark-green → cobalt  |  Dark: hot-pink → cobalt
     pageHero:

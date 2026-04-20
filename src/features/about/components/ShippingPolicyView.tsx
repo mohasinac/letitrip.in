@@ -88,7 +88,7 @@ export async function ShippingPolicyView() {
           {t("subtitle")}
         </Text>
 
-        {/* ── Order Delivery Diagram ── */}
+        {/* -- Order Delivery Diagram -- */}
         <FlowDiagram
           title={`🚚 ${t("diagramTitle")}`}
           titleClass="text-sky-700 dark:text-sky-300"

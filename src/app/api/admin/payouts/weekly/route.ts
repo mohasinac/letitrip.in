@@ -38,7 +38,7 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
-// ─── Route ────────────────────────────────────────────────────────────────────
+// --- Route --------------------------------------------------------------------
 
 export const POST = createRouteHandler({
   auth: true,
@@ -64,7 +64,7 @@ export const POST = createRouteHandler({
       });
     }
 
-    // ── 2. Group by sellerId ──────────────────────────────────────────────
+    // -- 2. Group by sellerId ----------------------------------------------
     const bySeller = shiprocketDelivered.reduce<
       Map<string, typeof shiprocketDelivered>
     >((map, order) => {
@@ -83,7 +83,7 @@ export const POST = createRouteHandler({
       platformFee: number;
     }[] = [];
 
-    // ── 3. Create one payout per seller ────────────────────────────────────
+    // -- 3. Create one payout per seller ------------------------------------
     for (const [sellerId, orders] of bySeller.entries()) {
       const seller = await userRepository.findById(sellerId);
       if (!seller) {

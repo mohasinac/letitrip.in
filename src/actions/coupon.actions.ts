@@ -25,7 +25,7 @@ import type {
   CouponCartValidationResult,
 } from "@mohasinac/appkit";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 const validateCouponSchema = z.object({
   code: z.string().min(1).max(50),
@@ -53,7 +53,7 @@ export type ValidateCouponForCartInput = z.infer<
 
 export type { CouponValidationResult, CouponCartValidationResult };
 
-// ─── Server Actions ─────────────────────────────────────────────────────────
+// --- Server Actions ---------------------------------------------------------
 
 export async function validateCouponAction(
   input: ValidateCouponInput,

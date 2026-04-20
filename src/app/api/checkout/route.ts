@@ -52,7 +52,7 @@ import type { ProductDocument } from "@mohasinac/appkit";
 import { OrderStatusValues, PaymentStatusValues } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 
-// ─── Validation Schema ────────────────────────────────────────────────────────
+// --- Validation Schema --------------------------------------------------------
 
 const checkoutSchema = z.object({
   addressId: z.string().min(1, "addressId is required"),
@@ -62,7 +62,7 @@ const checkoutSchema = z.object({
   excludedProductIds: z.array(z.string()).optional(),
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// --- Helpers ------------------------------------------------------------------
 
 /**
  * Formats an AddressDocument into a single-line string for the order record.
@@ -81,7 +81,7 @@ function formatShippingAddress(a: AddressDocument): string {
   return parts.join(", ");
 }
 
-// ─── POST Handler ─────────────────────────────────────────────────────────────
+// --- POST Handler -------------------------------------------------------------
 
 export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
@@ -309,7 +309,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
         0,
       );
 
-      // ── Shipping fee ──────────────────────────────────────────────────────
+      // -- Shipping fee ------------------------------------------------------
       let shippingFee = 0;
       const sellerId = firstItem.sellerId;
       if (sellerId) {
@@ -329,7 +329,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
         }
       }
 
-      // ── COD deposit ───────────────────────────────────────────────────────
+      // -- COD deposit -------------------------------------------------------
       const isCodLike =
         paymentMethod === "cod" || paymentMethod === "upi_manual";
       const depositAmount = isCodLike
@@ -342,7 +342,7 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
 
       const orderTotal = groupTotal + shippingFee;
 
-      // ── Collect deduplicated main images for order display convenience ────
+      // -- Collect deduplicated main images for order display convenience ----
       const imageUrls = [
         ...new Set(
           group

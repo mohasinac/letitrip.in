@@ -12,13 +12,13 @@
 import type { FeaturesConfig } from "@mohasinac/appkit";
 
 export default {
-  // ── Shell (always on) ────────────────────────────────────────────────────
+  // -- Shell (always on) ----------------------------------------------------
   layout: true,
   forms: true,
   filters: true,
   media: true,
 
-  // ── Shared domain (Tier B) ───────────────────────────────────────────────
+  // -- Shared domain (Tier B) -----------------------------------------------
   auth: true,
   account: true,
   products: true,
@@ -35,7 +35,7 @@ export default {
   homepage: true,
   admin: true,
 
-  // ── letitrip-specific (Tier C) ───────────────────────────────────────────
+  // -- letitrip-specific (Tier C) -------------------------------------------
   events: true,
   auctions: true,
   promotions: true,
@@ -43,7 +43,7 @@ export default {
   stores: true,
   "pre-orders": true,
 
-  // ── Other projects — not used here ──────────────────────────────────────
+  // -- Other projects — not used here --------------------------------------
   consultation: false,
   concern: false,
   corporate: false,

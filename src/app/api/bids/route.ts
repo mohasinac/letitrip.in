@@ -137,7 +137,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       } as any);
     });
 
-    // ── Write to Realtime DB for live bid streaming ─────────────────
+    // -- Write to Realtime DB for live bid streaming -----------------
     try {
       const rtdb = getAdminRealtimeDb();
       await rtdb.ref(`/auction-bids/${productId}`).set({

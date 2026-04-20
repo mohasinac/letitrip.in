@@ -11,7 +11,7 @@ import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
 import type { SellerPayoutDetails } from "@mohasinac/appkit";
 
-// ─── Helper ───────────────────────────────────────────────────────────────────
+// --- Helper -------------------------------------------------------------------
 
 function sanitisePayoutDetails(details: SellerPayoutDetails | undefined): Omit<
   SellerPayoutDetails,
@@ -28,7 +28,7 @@ function sanitisePayoutDetails(details: SellerPayoutDetails | undefined): Omit<
   return { ...details, bankAccount: safeBank };
 }
 
-// ─── GET ─────────────────────────────────────────────────────────────────────
+// --- GET ---------------------------------------------------------------------
 
 export const GET = createApiHandler({
   auth: true,

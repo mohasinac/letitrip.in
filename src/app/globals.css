@@ -398,7 +398,7 @@
   animation: spin 1s linear infinite !important;
 }
 
-/* ── Sprint 0: New Keyframes ──────────────────────────────────────────── */
+/* -- Sprint 0: New Keyframes -------------------------------------------- */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -424,14 +424,14 @@
   50%       { transform: translateY(-20px); opacity: 0.7; }
 }
 
-/* ── Sprint 0: Stagger Utilities ─────────────────────────────────────── */
+/* -- Sprint 0: Stagger Utilities --------------------------------------- */
 .stagger-1 { animation: fadeInUp 0.6s ease forwards; }
 .stagger-2 { animation: fadeInUp 0.7s ease forwards; animation-delay: 100ms; }
 .stagger-3 { animation: fadeInUp 0.6s ease forwards; animation-delay: 250ms; }
 .stagger-4 { animation: fadeInUp 0.6s ease forwards; animation-delay: 350ms; }
 .stagger-5 { animation: fadeInUp 0.6s ease forwards; animation-delay: 550ms; }
 
-/* ── Sprint 0: Accent Divider ────────────────────────────────────────── */
+/* -- Sprint 0: Accent Divider ------------------------------------------ */
 .accent-divider {
   border: none;
   height: 1px;
@@ -439,7 +439,7 @@
   opacity: 0.35;
 }
 
-/* ── Sprint 0: Card Lift Utility ─────────────────────────────────────── */
+/* -- Sprint 0: Card Lift Utility --------------------------------------- */
 .card-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .card-lift:hover {
   transform: translateY(-4px);
@@ -448,7 +448,7 @@
     0 4px 10px  -3px rgba(101, 196, 8, 0.06);
 }
 
-/* ── Sprint 0: Gradient Text Utilities ───────────────────────────────── */
+/* -- Sprint 0: Gradient Text Utilities --------------------------------- */
 .text-gradient-primary {
   background: linear-gradient(to right, #65c408, #84e122);
   -webkit-background-clip: text;

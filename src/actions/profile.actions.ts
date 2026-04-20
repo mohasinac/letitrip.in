@@ -24,7 +24,7 @@ import {
 } from "@mohasinac/appkit";
 import type { UserDocument } from "@mohasinac/appkit";
 
-// ─── Validation schema ────────────────────────────────────────────────────────
+// --- Validation schema --------------------------------------------------------
 
 const updateProfileSchema = z.object({
   displayName: z.string().optional(),
@@ -45,7 +45,7 @@ const updateProfileSchema = z.object({
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
-// ─── Server Action ────────────────────────────────────────────────────────────
+// --- Server Action ------------------------------------------------------------
 
 export async function updateProfileAction(
   input: UpdateProfileInput,
@@ -69,7 +69,7 @@ export async function updateProfileAction(
   return updateUserProfile(user.uid, parsed.data) as Promise<UserDocument>;
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function getMyProfileAction(): Promise<UserDocument | null> {
   const user = await requireAuthUser();

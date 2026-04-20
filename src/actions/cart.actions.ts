@@ -24,7 +24,7 @@ import {
 } from "@mohasinac/appkit";
 import type { CartDocument } from "@mohasinac/appkit";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 const addToCartSchema = z.object({
   productId: z.string().min(1),
@@ -59,7 +59,7 @@ const mergeGuestCartSchema = z.object({
     .max(50),
 });
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 export async function addToCartAction(
   input: z.infer<typeof addToCartSchema>,
@@ -140,7 +140,7 @@ export async function mergeGuestCartAction(
   return mergeGuestCart(user.uid, parsed.data.items);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function getCartAction(): Promise<CartDocument | null> {
   const user = await requireAuthUser();

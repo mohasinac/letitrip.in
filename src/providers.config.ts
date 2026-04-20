@@ -20,17 +20,24 @@ let initPromise: Promise<void> | null = null;
 export function initProviders(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = (async () => {
-    // ── Market defaults (must run before any formatter/provider reads baseline)
-    const {
-      configureMarketDefaults,
-      firebaseAuthProvider,
-      firebaseSessionProvider,
-      createResendProvider,
-      firebaseStorageProvider,
-      firebaseDbProvider,
-      tailwindAdapter,
-      registerProviders,
-    } = await import("@mohasinac/appkit/providers");
+    // -- Market defaults (must run before any formatter/provider reads baseline)
+    const [
+      { configureMarketDefaults },
+      { firebaseAuthProvider, firebaseSessionProvider },
+      { createResendProvider },
+      { firebaseStorageProvider },
+      { firebaseDbProvider },
+      { tailwindAdapter },
+      { registerProviders },
+    ] = await Promise.all([
+      import("@mohasinac/appkit/core/baseline-resolver"),
+      import("@mohasinac/appkit/providers/auth-firebase"),
+      import("@mohasinac/appkit/providers/email-resend"),
+      import("@mohasinac/appkit/providers/storage-firebase"),
+      import("@mohasinac/appkit/providers/db-firebase"),
+      import("@mohasinac/appkit/style/tailwind"),
+      import("@mohasinac/appkit/contracts/registry"),
+    ]);
     configureMarketDefaults({
       currency: "INR",
       locale: "en-IN",
@@ -39,7 +46,7 @@ export function initProviders(): Promise<void> {
       timezone: "Asia/Kolkata",
       currencySymbol: "₹",
     });
-    const { siteSettingsRepository } = await import("@mohasinac/appkit");
+    const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
 
     registerProviders({
       db: firebaseDbProvider,

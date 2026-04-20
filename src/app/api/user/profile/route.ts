@@ -49,7 +49,7 @@ export const GET = createApiHandler({
   },
 });
 
-// ─── Update Profile ───────────────────────────────────────────────────────────
+// --- Update Profile -----------------------------------------------------------
 
 const updateProfileSchema = z.object({
   displayName: z.string().optional(),

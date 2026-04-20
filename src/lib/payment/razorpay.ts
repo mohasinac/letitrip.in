@@ -18,7 +18,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { AppError } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 
-// ─── Credential Resolution ────────────────────────────────────────────────────
+// --- Credential Resolution ----------------------------------------------------
 
 /**
  * Resolve Razorpay credentials: Firestore DB first, env var fallback.
@@ -46,7 +46,7 @@ async function resolveRazorpayCredentials() {
   };
 }
 
-// ─── Razorpay Instance ────────────────────────────────────────────────────────
+// --- Razorpay Instance --------------------------------------------------------
 
 /**
  * Returns a Razorpay SDK instance initialised with the current credentials.
@@ -67,7 +67,7 @@ async function getRazorpay(): Promise<Razorpay> {
   return new Razorpay({ key_id, key_secret });
 }
 
-// ─── Order Creation ────────────────────────────────────────────────────────────
+// --- Order Creation ------------------------------------------------------------
 
 export interface RazorpayOrderOptions {
   /** Amount in paise (smallest currency unit). E.g. ₹500 → 50000 */
@@ -103,7 +103,7 @@ export async function createRazorpayOrder(
   return order as unknown as RazorpayOrder;
 }
 
-// ─── Payment Signature Verification ───────────────────────────────────────────
+// --- Payment Signature Verification -------------------------------------------
 
 export interface RazorpayPaymentResult {
   razorpay_order_id: string;
@@ -139,7 +139,7 @@ export async function verifyPaymentSignature(
   );
 }
 
-// ─── Webhook Signature Verification ──────────────────────────────────────────
+// --- Webhook Signature Verification ------------------------------------------
 
 /**
  * Verifies Razorpay webhook signature.
@@ -169,7 +169,7 @@ export async function verifyWebhookSignature(
   );
 }
 
-// ─── Currency Utilities ────────────────────────────────────────────────────────
+// --- Currency Utilities --------------------------------------------------------
 
 /** Convert rupees (float) → paise (integer) for Razorpay amount field */
 export function rupeesToPaise(rupees: number): number {
@@ -181,7 +181,7 @@ export function paiseToRupees(paise: number): number {
   return paise / 100;
 }
 
-// ─── Refund ────────────────────────────────────────────────────────────────────
+// --- Refund --------------------------------------------------------------------
 
 export interface RazorpayRefundResult {
   id: string;

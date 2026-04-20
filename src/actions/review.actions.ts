@@ -36,7 +36,7 @@ import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import type { UpdateReviewActionInput } from "@mohasinac/appkit";
 
-// ─── Validation schemas ────────────────────────────────────────────────────
+// --- Validation schemas ----------------------------------------------------
 
 /**
  * Minimal form input — server action resolves productTitle, sellerId, and
@@ -59,7 +59,7 @@ const updateReviewSchema = z.object({
   videoUrl: mediaUrlSchema.optional().nullable(),
 });
 
-// ─── Server Actions ────────────────────────────────────────────────────────
+// --- Server Actions --------------------------------------------------------
 
 /**
  * Submit a new review for a product.
@@ -133,7 +133,7 @@ export async function deleteReviewAction(reviewId: string): Promise<void> {
   await deleteReviewDomain(user.uid, reviewId);
 }
 
-// ─── Admin Actions ─────────────────────────────────────────────────────────
+// --- Admin Actions ---------------------------------------------------------
 
 const adminUpdateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5).optional(),
@@ -210,7 +210,7 @@ export async function voteReviewHelpfulAction(
   await voteReviewHelpfulDomain(reviewId, helpful);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listReviewsByProductAction(
   productId: string,

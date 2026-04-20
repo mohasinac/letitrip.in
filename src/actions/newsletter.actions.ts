@@ -21,7 +21,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import type { SupportedNewsletterSource } from "@mohasinac/appkit";
 
-// ─── Validation schema ────────────────────────────────────────────────────────
+// --- Validation schema --------------------------------------------------------
 
 const subscribeSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -37,7 +37,7 @@ const subscribeSchema = z.object({
 
 export type SubscribeNewsletterInput = z.infer<typeof subscribeSchema>;
 
-// ─── Server Action ────────────────────────────────────────────────────────────
+// --- Server Action ------------------------------------------------------------
 
 /**
  * Subscribe an email to the newsletter.

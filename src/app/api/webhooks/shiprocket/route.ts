@@ -27,7 +27,7 @@ import type { OrderDocument } from "@mohasinac/appkit";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-// ─── Shiprocket → our internal order status mapping ──────────────────────────
+// --- Shiprocket → our internal order status mapping --------------------------
 
 const SHIPPED_STATUSES = new Set([
   "Shipped",
@@ -47,7 +47,7 @@ const CANCELLED_STATUSES = new Set([
   "Damaged",
 ]);
 
-// ─── Signature verification helper ───────────────────────────────────────────
+// --- Signature verification helper -------------------------------------------
 
 function verifyShiprocketSignature(body: string, signature: string): boolean {
   const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
@@ -64,7 +64,7 @@ function verifyShiprocketSignature(body: string, signature: string): boolean {
   );
 }
 
-// ─── Route ────────────────────────────────────────────────────────────────────
+// --- Route --------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
   let rawBody = "";

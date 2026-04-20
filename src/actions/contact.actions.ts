@@ -18,7 +18,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 
-// ─── Validation schema ────────────────────────────────────────────────────────
+// --- Validation schema --------------------------------------------------------
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -32,7 +32,7 @@ const contactSchema = z.object({
 
 export type SendContactInput = z.infer<typeof contactSchema>;
 
-// ─── Server Action ────────────────────────────────────────────────────────────
+// --- Server Action ------------------------------------------------------------
 
 /**
  * Send a contact form message.

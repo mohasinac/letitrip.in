@@ -17,7 +17,7 @@ import { AppError } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { shiprocketAuthenticate } from "@mohasinac/appkit";
 
-// ─── In-memory token cache (single-process; good enough for serverless) ────────
+// --- In-memory token cache (single-process; good enough for serverless) --------
 
 interface CachedToken {
   token: string;
@@ -28,7 +28,7 @@ const TOKEN_TTL_MS = 9 * 24 * 60 * 60 * 1000; // 9 days
 
 let _cache: CachedToken | null = null;
 
-// ─── Credential Resolution ────────────────────────────────────────────────────
+// --- Credential Resolution ----------------------------------------------------
 
 async function resolveCredentials(): Promise<{
   email: string;
@@ -49,7 +49,7 @@ async function resolveCredentials(): Promise<{
   };
 }
 
-// ─── Platform Token ───────────────────────────────────────────────────────────
+// --- Platform Token -----------------------------------------------------------
 
 /**
  * Get (or refresh) the platform Shiprocket JWT token.

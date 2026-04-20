@@ -80,7 +80,7 @@ export async function deleteNotificationAction(id: string): Promise<void> {
   await deleteNotification(id);
 }
 
-// ─── Read Actions ─────────────────────────────────────────────────────────────
+// --- Read Actions -------------------------------------------------------------
 
 export async function listNotificationsAction(
   limit = 20,

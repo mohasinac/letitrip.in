@@ -260,7 +260,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         0,
       );
 
-      // ── Shipping fee (same logic as checkout route) ──────────────────────
+      // -- Shipping fee (same logic as checkout route) ----------------------
       let shippingFee = 0;
       const sellerId = firstItem.sellerId;
       if (sellerId) {
@@ -280,7 +280,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         }
       }
 
-      // ── Razorpay platform fee ────────────────────────────────────────────
+      // -- Razorpay platform fee --------------------------------------------
       const platformFee =
         Math.round(groupTotal * (razorpayFeePercent / 100) * 100) / 100;
       const orderTotal = groupTotal + shippingFee;
@@ -299,7 +299,7 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
         0,
       );
 
-      // ── Collect deduplicated main images for order display convenience ────
+      // -- Collect deduplicated main images for order display convenience ----
       const imageUrls = [
         ...new Set(
           group
