@@ -22,9 +22,13 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@mohasinac/appkit/server": [
+        "./node_modules/@mohasinac/appkit/dist/server.js"
       ]
     }
   },

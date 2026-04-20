@@ -1,3 +1,7 @@
+import { StoresListView, type StoreListItem } from "@mohasinac/appkit/features/stores";
+
 export default function Page() {
-  return null;
+  return (
+    <StoresListView stores={[] as StoreListItem[]} labels={{ empty: "No stores available yet." }} />
+  );
 }

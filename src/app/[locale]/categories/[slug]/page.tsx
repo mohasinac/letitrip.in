@@ -1,3 +1,10 @@
-export default function Page() {
-  return null;
+import { CategoryProductsRouteClient } from "@/components/routing/CategoryProductsRouteClient";
+
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { slug } = await params;
+  return <CategoryProductsRouteClient slug={slug} />;
 }

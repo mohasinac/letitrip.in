@@ -1,3 +1,5 @@
+import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+
 export default function Page() {
-  return null;
+  return <RoutePlaceholderView title="Sellers / Detail" />;
 }

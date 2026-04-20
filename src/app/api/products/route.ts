@@ -83,14 +83,15 @@ function buildFilters(url: URL): string {
 }
 
 async function _GET(request: Request): Promise<NextResponse> {
-  try {
-    const url = new URL(request.url);
-    const page = numParam(url, "page", 1);
-    const pageSize = numParam(url, "pageSize", 20);
-    const sorts = param(url, "sorts") ?? param(url, "sort") ?? "-createdAt";
+  const url = new URL(request.url);
+  const page = numParam(url, "page", 1);
+  const pageSize = numParam(url, "pageSize", 20);
+  const sorts = param(url, "sorts") ?? param(url, "sort") ?? "-createdAt";
+  const filters = buildFilters(url);
 
+  try {
     const result = await productRepository.list({
-      filters: buildFilters(url),
+      filters,
       sorts,
       page,
       pageSize,
@@ -105,6 +106,12 @@ async function _GET(request: Request): Promise<NextResponse> {
         pageSize,
         totalPages: result.totalPages,
         hasMore: result.hasMore,
+        query: {
+          filters,
+          sorts,
+          page,
+          pageSize,
+        },
       },
     });
     response.headers.set(
@@ -113,6 +120,33 @@ async function _GET(request: Request): Promise<NextResponse> {
     );
     return response;
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const isRecoverableQueryError =
+      message.includes("FAILED_PRECONDITION") ||
+      message.toLowerCase().includes("index") ||
+      message.toLowerCase().includes("requires an index");
+
+    if (isRecoverableQueryError) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          items: [],
+          total: 0,
+          page,
+          pageSize,
+          totalPages: 0,
+          hasMore: false,
+          query: {
+            filters,
+            sorts,
+            page,
+            pageSize,
+          },
+        },
+        warning: "Query fallback due to index constraints",
+      });
+    }
+
     console.error("[products] GET /api/products failed", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },

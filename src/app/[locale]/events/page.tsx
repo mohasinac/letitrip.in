@@ -1,3 +1,5 @@
+import { EventsListView, type EventItem } from "@mohasinac/appkit/features/events";
+
 export default function Page() {
-  return null;
+  return <EventsListView events={[] as EventItem[]} />;
 }

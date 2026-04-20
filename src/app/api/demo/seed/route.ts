@@ -92,6 +92,7 @@ type CollectionName =
 interface SeedRequest {
   action: "load" | "delete";
   collections?: CollectionName[];
+  dryRun?: boolean;
 }
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
@@ -189,6 +190,83 @@ function encryptSeedPii(collection: string, data: any, _original?: any): any {
   return result;
 }
 
+async function countExistingForCollection(
+  db: ReturnType<typeof getAdminDb>,
+  colName: CollectionName,
+): Promise<number> {
+  const seedData = SEED_DATA_MAP[colName];
+  if (!seedData || seedData.length === 0) return 0;
+
+  if (colName === "addresses") {
+    const refs = (seedData as any[])
+      .filter((d) => d.userId && d.id)
+      .map((d) =>
+        db
+          .collection(USER_COLLECTION)
+          .doc(d.userId)
+          .collection(ADDRESS_SUBCOLLECTION)
+          .doc(d.id),
+      );
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "storeAddresses") {
+    const refs = (seedData as any[])
+      .filter((d) => d.storeSlug && d.id)
+      .map((d) =>
+        db
+          .collection(STORE_COLLECTION)
+          .doc(d.storeSlug)
+          .collection(STORE_ADDRESS_SUBCOLLECTION)
+          .doc(d.id),
+      );
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "siteSettings") {
+    const snap = await db.collection(COLLECTION_MAP[colName]).doc("global").get();
+    return snap.exists ? 1 : 0;
+  }
+
+  if (colName === "users") {
+    const refs = (seedData as any[])
+      .filter((d) => d.uid)
+      .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.uid));
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "faqs") {
+    const { generateFAQId } = await import("@mohasinac/appkit/server");
+    const refs = (seedData as any[]).map((faq: any) => {
+      const id = generateFAQId({
+        category: faq.category,
+        question: faq.question,
+      });
+      return db.collection(COLLECTION_MAP[colName]).doc(id);
+    });
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  const refs = (seedData as any[])
+    .filter((d) => d.id)
+    .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.id));
+  if (refs.length === 0) return 0;
+  const snaps = await db.getAll(...refs);
+  return snaps.filter((s) => s.exists).length;
+}
+
 /**
  * Remove any existing Firebase Auth users that hold the same email or phone
  * as the seed user we're about to create. In a demo environment this lets us
@@ -250,94 +328,14 @@ export async function GET(_request: NextRequest) {
 
     const collections = await Promise.all(
       (Object.keys(SEED_DATA_MAP) as CollectionName[]).map(async (colName) => {
-        const seedData = SEED_DATA_MAP[colName];
-        const seedCount = seedData.length;
-
-        if (seedCount === 0) {
-          return { name: colName, seedCount: 0, existingCount: 0 };
-        }
-
-        let existingCount = 0;
-
+        const seedCount = SEED_DATA_MAP[colName]?.length ?? 0;
         try {
-          if (colName === "addresses") {
-            const refs = (seedData as any[])
-              .filter((d) => d.userId && d.id)
-              .map((d) =>
-                db
-                  .collection(USER_COLLECTION)
-                  .doc(d.userId)
-                  .collection(ADDRESS_SUBCOLLECTION)
-                  .doc(d.id),
-              );
-            if (refs.length > 0) {
-              const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter(
-                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
-              ).length;
-            }
-          } else if (colName === "storeAddresses") {
-            const refs = (seedData as any[])
-              .filter((d) => d.storeSlug && d.id)
-              .map((d) =>
-                db
-                  .collection(STORE_COLLECTION)
-                  .doc(d.storeSlug)
-                  .collection(STORE_ADDRESS_SUBCOLLECTION)
-                  .doc(d.id),
-              );
-            if (refs.length > 0) {
-              const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter(
-                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
-              ).length;
-            }
-          } else if (colName === "siteSettings") {
-            const snap = await db
-              .collection(COLLECTION_MAP[colName])
-              .doc("global")
-              .get();
-            existingCount = snap.exists ? 1 : 0;
-          } else if (colName === "users") {
-            const refs = (seedData as any[])
-              .filter((d) => d.uid)
-              .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.uid));
-            if (refs.length > 0) {
-              const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter(
-                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
-              ).length;
-            }
-          } else if (colName === "faqs") {
-            // FAQs use generated IDs — build them the same way the POST handler does
-              const { generateFAQId } = await import("@mohasinac/appkit/server");
-            const refs = (seedData as any[]).map((faq: any) => {
-              const id = generateFAQId({
-                category: faq.category,
-                question: faq.question,
-              });
-              return db.collection(COLLECTION_MAP[colName]).doc(id);
-            });
-            if (refs.length > 0) {
-              const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter(
-                (s: FirebaseFirestore.DocumentSnapshot) => s.exists,
-              ).length;
-            }
-          } else {
-            const refs = (seedData as any[])
-              .filter((d) => d.id)
-              .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.id));
-            if (refs.length > 0) {
-              const snaps = await db.getAll(...refs);
-              existingCount = snaps.filter((s) => s.exists).length;
-            }
-          }
+          const existingCount = await countExistingForCollection(db, colName);
+          return { name: colName, seedCount, existingCount };
         } catch (err: unknown) {
           serverLogger.error(`Error checking status for ${colName}:`, err);
+          return { name: colName, seedCount, existingCount: 0 };
         }
-
-        return { name: colName, seedCount, existingCount };
       }),
     );
 
@@ -368,7 +366,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: SeedRequest = await request.json();
-    const { action, collections } = body;
+    const { action, collections, dryRun = false } = body;
 
     if (!action || !["load", "delete"].includes(action)) {
       return NextResponse.json(
@@ -404,6 +402,59 @@ export async function POST(request: NextRequest) {
           { status: 500 },
         );
       }
+    }
+
+    if (dryRun) {
+      const collectionPlans = await Promise.all(
+        collectionsToProcess.map(async (collectionName) => {
+          const seedCount = SEED_DATA_MAP[collectionName]?.length ?? 0;
+          const existingCount = await countExistingForCollection(db, collectionName);
+          const wouldCreate = action === "load" ? Math.max(seedCount - existingCount, 0) : 0;
+          const wouldDelete = action === "delete" ? Math.min(seedCount, existingCount) : 0;
+          const wouldSkip =
+            action === "load"
+              ? Math.min(seedCount, existingCount)
+              : Math.max(seedCount - existingCount, 0);
+
+          return {
+            name: collectionName,
+            seedCount,
+            existingCount,
+            wouldCreate,
+            wouldDelete,
+            wouldSkip,
+          };
+        }),
+      );
+
+      const totals = collectionPlans.reduce(
+        (acc, plan) => {
+          acc.wouldCreate += plan.wouldCreate;
+          acc.wouldDelete += plan.wouldDelete;
+          acc.wouldSkip += plan.wouldSkip;
+          return acc;
+        },
+        { wouldCreate: 0, wouldDelete: 0, wouldSkip: 0 },
+      );
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          message:
+            action === "load"
+              ? `Dry run complete. Would create ${totals.wouldCreate}, skip ${totals.wouldSkip}.`
+              : `Dry run complete. Would delete ${totals.wouldDelete}, skip ${totals.wouldSkip}.`,
+          details: {
+            created: totals.wouldCreate,
+            deleted: totals.wouldDelete,
+            skipped: totals.wouldSkip,
+            errors: 0,
+            dryRun: true,
+            collections: collectionsToProcess,
+            collectionPlans,
+          },
+        },
+      });
     }
 
     let totalCreated = 0;

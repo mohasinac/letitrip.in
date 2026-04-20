@@ -19,6 +19,7 @@ import {
 export async function demoSeedAction(vars: {
   action: "load" | "delete";
   collections?: SeedCollectionName[];
+  dryRun?: boolean;
 }): Promise<SeedOperationResult> {
   if (process.env.NODE_ENV === "production") {
     throw new ValidationError("Not available in production");
