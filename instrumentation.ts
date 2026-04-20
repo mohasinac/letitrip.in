@@ -1,22 +1,23 @@
 /**
  * Next.js Instrumentation Hook
  *
- * `register()` is called ONCE when the Node.js server process starts,
- * before any request is handled — including API routes.
- *
- * This is the correct place for one-time DI / provider registration.
- * Heavy observability (APM, error tracking, health checks) must NOT live
- * here on Vercel Hobby tier — use Firebase Functions (functions/src/) instead.
+ * `register()` is called ONCE when the server process starts, before any
+ * request is handled. The dynamic import of providers.config is deferred
+ * inside the onNodeServer callback so it only runs on the Node.js runtime.
+ * The appkit files that were previously triggering Edge warnings (server-logger,
+ * admin, encryption) now use lazy require() for Node built-ins (fs, path,
+ * crypto), so this import chain no longer causes Edge Runtime warnings.
  *
  * Reference: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
  */
 import { createInstrumentation } from "@mohasinac/appkit/instrumentation";
-import { initProviders } from "./src/providers.config";
 
 const { register } = createInstrumentation({
   onNodeServer: async () => {
+    const { initProviders } = await import("./src/providers.config");
     await initProviders();
   },
 });
 
 export { register };
+
