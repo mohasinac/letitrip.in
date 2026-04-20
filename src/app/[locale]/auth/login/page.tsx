@@ -7,6 +7,8 @@ import {
   Button,
   Container,
   Heading,
+  Input,
+  Label,
   Main,
   Section,
   Stack,
@@ -68,10 +70,10 @@ export default function Page() {
               className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6"
             >
               <div>
-                <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="login-email" className="mb-1 block text-sm font-medium text-zinc-700">
                   Email Address
-                </label>
-                <input
+                </Label>
+                <Input
                   id="login-email"
                   name="email"
                   type="email"
@@ -82,10 +84,10 @@ export default function Page() {
               </div>
 
               <div>
-                <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="login-password" className="mb-1 block text-sm font-medium text-zinc-700">
                   Password
-                </label>
-                <input
+                </Label>
+                <Input
                   id="login-password"
                   name="password"
                   type="password"
@@ -96,16 +98,16 @@ export default function Page() {
               </div>
 
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   id="remember-me"
                   name="remember"
                   type="checkbox"
                   aria-label="Remember me"
                   className="h-4 w-4 rounded border-zinc-300"
                 />
-                <label htmlFor="remember-me" className="text-sm text-zinc-700">
+                <Label htmlFor="remember-me" className="text-sm text-zinc-700">
                   Remember me
-                </label>
+                </Label>
               </div>
 
               <Button type="submit" disabled={loading}>

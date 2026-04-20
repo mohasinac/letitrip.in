@@ -5,10 +5,13 @@ import {
   Button,
   Container,
   Heading,
+  Input,
+  Label,
   Main,
   Section,
   Stack,
   Text,
+  Textarea,
 } from "@mohasinac/appkit/ui";
 
 export default function Page() {
@@ -59,10 +62,10 @@ export default function Page() {
               className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6"
             >
               <div>
-                <label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-zinc-700">
                   Your Name
-                </label>
-                <input
+                </Label>
+                <Input
                   id="contact-name"
                   name="name"
                   aria-label="Your Name"
@@ -72,10 +75,10 @@ export default function Page() {
               </div>
 
               <div>
-                <label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-zinc-700">
                   Email Address
-                </label>
-                <input
+                </Label>
+                <Input
                   id="contact-email"
                   name="email"
                   type="email"
@@ -86,10 +89,10 @@ export default function Page() {
               </div>
 
               <div>
-                <label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-zinc-700">
                   Subject
-                </label>
-                <input
+                </Label>
+                <Input
                   id="contact-subject"
                   name="subject"
                   aria-label="Subject"
@@ -98,10 +101,10 @@ export default function Page() {
               </div>
 
               <div>
-                <label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-zinc-700">
                   Message
-                </label>
-                <textarea
+                </Label>
+                <Textarea
                   id="contact-message"
                   name="message"
                   aria-label="Message"

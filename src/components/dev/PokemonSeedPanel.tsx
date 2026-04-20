@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useTransition } from "react";
+import { MediaImage } from "@mohasinac/appkit";
 import {
   Section,
   Container,
@@ -259,7 +260,9 @@ export function PokemonSeedPanel() {
                   gap="none"
                   className="rounded-xl overflow-hidden border border-[#FFCB05]/20 bg-white/5"
                 >
-                  <img src={CARD_IMG(card.num)} alt={card.name} className="w-full block" />
+                  <div className="aspect-square w-full">
+                    <MediaImage src={CARD_IMG(card.num)} alt={card.name} size="card" className="w-full block" />
+                  </div>
                   <Stack gap="none" className="p-2">
                     <Text className="text-xs font-bold text-[#FFCB05]">{card.name}</Text>
                     <Text className="text-[0.65rem] text-slate-400">{card.rarity}</Text>
