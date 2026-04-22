@@ -1,5 +1,5 @@
 import { PromotionsView } from "@mohasinac/appkit";
-import { Div, Text } from "@mohasinac/appkit";
+import { EmptyState } from "@mohasinac/appkit/ui";
 
 export default function Page() {
   return (
@@ -20,9 +20,15 @@ export default function Page() {
         featuredSubtitle: "Featured promotions",
       }}
       renderDealsSection={() => (
-        <Div className="rounded-xl border border-zinc-200 bg-white p-5">
-          <Text className="text-zinc-600">No promotional deals yet.</Text>
-        </Div>
+        <EmptyState
+          title="No active deals"
+          description="Check back soon for exclusive offers and limited-time deals."
+          icon={
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M7 7h.01M3 3l4.95 4.95m0 0A7 7 0 1021 12a7 7 0 00-7-7 7 7 0 00-4.95 2.05L3 3" />
+            </svg>
+          }
+        />
       )}
     />
   );

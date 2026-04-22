@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Cart API Routes
  *
@@ -24,7 +24,7 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.getOrCreate(user!.uid);
@@ -34,9 +34,9 @@ export const GET = createRouteHandler({
       subtotal: cartRepository.getSubtotal(cart),
     });
   },
-});
+}));
 
-export const POST = createRouteHandler<(typeof addToCartSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_output"]>({
   auth: true,
   schema: addToCartSchema,
   handler: async ({ user, body }) => {
@@ -83,9 +83,9 @@ export const POST = createRouteHandler<(typeof addToCartSchema)["_output"]>({
       201,
     );
   },
-});
+}));
 
-export const DELETE = createRouteHandler({
+export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.clearCart(user!.uid);
@@ -94,5 +94,5 @@ export const DELETE = createRouteHandler({
       SUCCESS_MESSAGES.CART.CLEARED,
     );
   },
-});
+}));
 

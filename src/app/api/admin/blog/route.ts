@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Blog API Route
  * GET  /api/admin/blog — List all blog posts
@@ -63,7 +63,7 @@ const createBlogPostSchema = z.object({
  * meta.total / published / drafts / featured are always computed from the
  * full unfiltered dataset so stat cards remain accurate regardless of filter.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -138,12 +138,12 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 
 /**
  * POST /api/admin/blog — Create a new blog post
  */
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   schema: createBlogPostSchema,
@@ -179,5 +179,5 @@ export const POST = createRouteHandler({
 
     return successResponse(post, SUCCESS_MESSAGES.BLOG.CREATED);
   },
-});
+}));
 

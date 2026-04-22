@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Event Entries API Route
  * GET /api/admin/events/:id/entries — List entries for an event

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * GET /api/admin/stores
  *
@@ -17,7 +17,7 @@ import { storeRepository } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -72,5 +72,5 @@ export const GET = createRouteHandler({
 
     return successResponse({ ...result, items: stores });
   },
-});
+}));
 

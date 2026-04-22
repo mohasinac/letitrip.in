@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Promotions API Route
  * GET /api/promotions â€” Returns promoted products, featured products and active coupons
@@ -18,7 +18,7 @@ import { ProductStatusValues } from "@mohasinac/appkit";
  *  - featuredProducts: published products with featured=true (limit 8)
  *  - activeCoupons: coupons with validity.isActive=true
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   handler: async () => {
     serverLogger.info("Promotions page data requested");
 
@@ -58,4 +58,4 @@ export const GET = createRouteHandler({
       activeCoupons: activeCouponsResult.items,
     });
   },
-});
+}));

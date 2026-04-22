@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Newsletter Subscribe API Route
  * POST /api/newsletter/subscribe — Subscribe an email to the newsletter
@@ -26,7 +26,7 @@ const subscribeSchema = z.object({
     .optional(),
 });
 
-export const POST = createRouteHandler<(typeof subscribeSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof subscribeSchema)["_output"]>({
   schema: subscribeSchema,
   handler: async ({ request, body }) => {
     type SupportedNewsletterSource = "footer" | "homepage" | "checkout" | "popup";
@@ -77,5 +77,5 @@ export const POST = createRouteHandler<(typeof subscribeSchema)["_output"]>({
       SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED,
     );
   },
-});
+}));
 

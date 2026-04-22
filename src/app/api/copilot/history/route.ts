@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * GET /api/copilot/history
  *
@@ -14,7 +14,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { AppError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -47,5 +47,5 @@ export const GET = createRouteHandler({
       );
     }
   },
-});
+}));
 

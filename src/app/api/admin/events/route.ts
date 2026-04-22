@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Events API Route
  * GET /api/admin/events  — Paginated list with Sieve filtering
@@ -110,7 +110,7 @@ const createEventSchema = z.object({
 // ---------------------------------------------------------------------------
 // GET — list events
 // ---------------------------------------------------------------------------
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -152,12 +152,12 @@ export const GET = createRouteHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 
 // ---------------------------------------------------------------------------
 // POST — create event
 // ---------------------------------------------------------------------------
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
   schema: createEventSchema,
@@ -206,5 +206,5 @@ export const POST = createRouteHandler({
 
     return successResponse(event, SUCCESS_MESSAGES.EVENT.CREATED, 201);
   },
-});
+}));
 

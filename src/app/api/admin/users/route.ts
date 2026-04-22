@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * API Route: Admin Users Management
  * GET /api/admin/users - List users with search, role filter, disabled filter
@@ -26,7 +26,7 @@ import { USER_FIELDS } from "@mohasinac/appkit";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — max results per page (default 100)
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -105,5 +105,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

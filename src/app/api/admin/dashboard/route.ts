@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * API Route: Admin Dashboard Statistics
  * GET /api/admin/dashboard
@@ -12,7 +12,7 @@ import {
   orderRepository,
 } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {
@@ -54,5 +54,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

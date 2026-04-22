@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * User Wishlist API — Collection
  *
@@ -24,7 +24,7 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const items = await wishlistRepository.getWishlistItems(user!.uid);
@@ -47,7 +47,7 @@ export const GET = createRouteHandler({
       meta: { total: enriched.length },
     });
   },
-});
+}));
 
 /**
  * POST /api/user/wishlist
@@ -55,7 +55,7 @@ export const GET = createRouteHandler({
  * Body: { productId: string }
  * Adds a product to the user's wishlist (idempotent).
  */
-export const POST = createRouteHandler<(typeof addSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,
   handler: async ({ user, body }) => {
@@ -71,5 +71,5 @@ export const POST = createRouteHandler<(typeof addSchema)["_output"]>({
 
     return successResponse({ productId }, SUCCESS_MESSAGES.WISHLIST.ADDED, 201);
   },
-});
+}));
 

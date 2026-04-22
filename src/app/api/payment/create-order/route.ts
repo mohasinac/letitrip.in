@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Payment - Create Razorpay Order
  *
@@ -25,7 +25,7 @@ const createOrderSchema = z.object({
   receipt: z.string().optional(),
 });
 
-export const POST = createRouteHandler<(typeof createOrderSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
@@ -61,5 +61,5 @@ export const POST = createRouteHandler<(typeof createOrderSchema)["_output"]>({
       baseAmount: amount,
     });
   },
-});
+}));
 

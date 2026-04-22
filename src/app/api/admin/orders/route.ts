@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Orders API Route
  * GET  /api/admin/orders — List all orders with pagination & filtering
@@ -23,7 +23,7 @@ import { serverLogger } from "@mohasinac/appkit";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — results per page (default 50)
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -61,5 +61,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

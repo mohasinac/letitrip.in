@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Notifications API Route
  * GET  /api/notifications         — List user's notifications (paginated)
@@ -47,7 +47,7 @@ const createNotificationSchema = z.object({
 /**
  * GET /api/notifications — List authenticated user's notifications
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
@@ -62,12 +62,12 @@ export const GET = createRouteHandler({
 
     return successResponse({ notifications, unreadCount });
   },
-});
+}));
 
 /**
  * POST /api/notifications — Create a notification (admin only, or internal system calls)
  */
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
   schema: createNotificationSchema,
@@ -81,5 +81,5 @@ export const POST = createRouteHandler({
 
     return successResponse(notification, SUCCESS_MESSAGES.NOTIFICATION.SENT);
   },
-});
+}));
 

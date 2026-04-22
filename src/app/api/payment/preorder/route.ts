@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Pre-Order Deposit Payment
  *
@@ -50,7 +50,7 @@ const preorderDepositSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-export const POST = createRouteHandler<
+export const POST = withProviders(createRouteHandler<
   (typeof preorderDepositSchema)["_output"]
 >({
   auth: true,

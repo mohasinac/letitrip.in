@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Add Phone Number API Route
  * POST /api/profile/add-phone
@@ -16,7 +16,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const POST = createRouteHandler<(typeof addPhoneSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,
   schema: addPhoneSchema,
   handler: async ({ user, body }) => {
@@ -44,5 +44,5 @@ export const POST = createRouteHandler<(typeof addPhoneSchema)["_output"]>({
       SUCCESS_MESSAGES.PHONE.VALIDATED,
     );
   },
-});
+}));
 

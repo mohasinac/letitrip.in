@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * POST /api/auth/event/init
  *
@@ -34,7 +34,7 @@ import { RTDBPayloadStatus } from "@mohasinac/appkit";
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;
 
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
     if (!rl.success) return errorResponse("Too many requests", 429);
@@ -52,5 +52,5 @@ export const POST = createRouteHandler({
     serverLogger.info("Auth event initialised", { eventId });
     return successResponse({ eventId, customToken, expiresAt });
   },
-});
+}));
 

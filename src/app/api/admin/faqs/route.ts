@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 
 import { createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
@@ -9,7 +9,7 @@ import {
 } from "@mohasinac/appkit";
 import { faqsRepository } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -46,5 +46,5 @@ export const GET = createRouteHandler({
 
     return successResponse(result);
   },
-});
+}));
 

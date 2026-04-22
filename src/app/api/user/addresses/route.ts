@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * User Addresses API — Collection
  *
@@ -23,13 +23,13 @@ const MAX_ADDRESSES_PER_USER = 10;
  *
  * Returns all addresses for the authenticated user, ordered by createdAt desc.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const addresses = await addressRepository.findByUser(user!.uid);
     return successResponse(addresses);
   },
-});
+}));
 
 /**
  * POST /api/user/addresses
@@ -38,7 +38,7 @@ export const GET = createRouteHandler({
  * Enforces a maximum of 10 addresses per user.
  * If isDefault is true, clears the default flag from all existing addresses.
  */
-export const POST = createRouteHandler<
+export const POST = withProviders(createRouteHandler<
   (typeof userAddressCreateSchema)["_output"]
 >({
   auth: true,

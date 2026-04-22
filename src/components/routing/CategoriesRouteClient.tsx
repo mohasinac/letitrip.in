@@ -1,6 +1,7 @@
 "use client";
 
-import { CategoriesListView, Div, Text, type CategoryItem } from "@mohasinac/appkit/client";
+import { CategoriesListView, type CategoryItem } from "@mohasinac/appkit/client";
+import { EmptyState } from "@mohasinac/appkit/ui";
 
 export function CategoriesRouteClient() {
   return (
@@ -12,9 +13,15 @@ export function CategoriesRouteClient() {
       items={[] as CategoryItem[]}
       total={0}
       renderCategories={() => (
-        <Div className="rounded-xl border border-zinc-200 bg-white p-5">
-          <Text className="text-zinc-600">No categories available yet.</Text>
-        </Div>
+        <EmptyState
+          title="No categories yet"
+          description="Categories will appear here once they are added to the marketplace."
+          icon={
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+          }
+        />
       )}
     />
   );

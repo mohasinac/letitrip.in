@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Reset Password API Route
  * PUT /api/auth/reset-password
@@ -16,7 +16,7 @@ import { resetPasswordSchema } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
+export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,
   handler: async ({ body }) => {
     const { newPassword } = body!;
@@ -28,5 +28,5 @@ export const PUT = createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
 
     return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   },
-});
+}));
 

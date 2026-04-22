@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * FAQs API Routes
  *
@@ -49,7 +49,7 @@ import { errorResponse } from "@mohasinac/appkit";
  * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
  * ✅ Caching implemented with LONG preset (30 min TTL)
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     // Parse query parameters
     const searchParams = getSearchParams(request);
@@ -172,7 +172,7 @@ export const GET = createRouteHandler({
     );
     return response;
   },
-});
+}));
 
 /**
  * POST /api/faqs
@@ -196,7 +196,7 @@ export const GET = createRouteHandler({
  * ✅ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
-export const POST = createRouteHandler<(typeof faqCreateSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_output"]>({
   auth: true,
   roles: ["admin"],
   schema: faqCreateSchema,
@@ -224,5 +224,5 @@ export const POST = createRouteHandler<(typeof faqCreateSchema)["_output"]>({
 
     return successResponse(faq, SUCCESS_MESSAGES.FAQ.CREATED, 201);
   },
-});
+}));
 

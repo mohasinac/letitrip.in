@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Coupons API Route
  * GET  /api/admin/coupons — Delegated to @mohasinac/feat-admin
@@ -57,7 +57,7 @@ const couponCreateSchema = z.object({
 /**
  * GET /api/admin/coupons
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -86,12 +86,12 @@ export const GET = createRouteHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 
 /**
  * POST /api/admin/coupons
  */
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async ({ request, user }) => {
@@ -124,5 +124,5 @@ export const POST = createRouteHandler({
 
     return successResponse(created, SUCCESS_MESSAGES.COUPON.CREATED);
   },
-});
+}));
 

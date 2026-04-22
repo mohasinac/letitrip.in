@@ -1,10 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { PreOrdersView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return (
-    <RoutePlaceholderView
-      title="Pre-Orders"
-      description="Upcoming pre-order items will appear here once listing feeds are connected."
-    />
-  );
+  return <PreOrdersView />;
 }

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Coupon Validate API Route
  * POST /api/coupons/validate — Validate a coupon code against a purchase amount
@@ -24,7 +24,7 @@ const validateSchema = z.object({
  * Body: { code: string, orderTotal: number }
  * Returns: { valid: boolean, discountAmount: number, coupon?, error? }
  */
-export const POST = createRouteHandler<(typeof validateSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof validateSchema)["_output"]>({
   auth: true,
   schema: validateSchema,
   handler: async ({ user, body }) => {
@@ -41,5 +41,5 @@ export const POST = createRouteHandler<(typeof validateSchema)["_output"]>({
     });
     return successResponse(result);
   },
-});
+}));
 

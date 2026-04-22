@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useCallback, useState } from "react";
+import { Fragment, useMemo, useCallback, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -9,12 +9,15 @@ import {
   AppLayoutShell,
   LocaleSwitcher,
   NotificationBell,
+  NavigationLoader,
   ROUTES,
   Div,
-  Input,
+  Button,
+  Search,
   useSession,
   type AppLayoutShellProps,
   type MainNavbarItem,
+  type SearchLabels,
 } from "@mohasinac/appkit/client";
 import Link from "next/link";
 
@@ -29,6 +32,17 @@ export default function LayoutShellClient({
   const locale = useLocale();
   const { user } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const searchLabels: SearchLabels = useMemo(() => ({
+    placeholder: "Search products",
+    title: "Search",
+    closeAriaLabel: "Close search",
+    quickLinks: "Quick links",
+    searching: "Searching…",
+    clearAriaLabel: "Clear search",
+    ariaLabel: "Search",
+    browseProducts: (query) => `Browse results for "${query}"`,
+  }), []);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -143,6 +157,15 @@ export default function LayoutShellClient({
               zoom: user.avatarMetadata.zoom ?? 1,
             }
           : null,
+        stats: user.stats
+          ? {
+              totalOrders: user.stats.totalOrders as number | undefined,
+              auctionsWon: user.stats.auctionsWon as number | undefined,
+              itemsSold: user.stats.itemsSold as number | undefined,
+              reviewsCount: user.stats.reviewsCount as number | undefined,
+              rating: user.stats.rating as number | undefined,
+            }
+          : null,
       }
     : null;
 
@@ -183,6 +206,7 @@ export default function LayoutShellClient({
   };
 
   return (
+    <Fragment>
     <AppLayoutShell
       navItems={navItems}
       sidebarSections={sidebarSections}
@@ -228,30 +252,44 @@ export default function LayoutShellClient({
         logout: tNav("logout"),
       }}
       footer={footer}
-      searchSlot={
-        <Div className="border-b border-zinc-200 bg-white/95 p-3 dark:border-slate-800 dark:bg-slate-950/95">
-          <Div className="mx-auto flex w-full max-w-screen-xl items-center gap-2">
-            <Input
+      searchSlotRenderer={(onClose) => (
+        <Div className="border-b border-zinc-200 bg-white/95 dark:border-slate-800 dark:bg-slate-950/95">
+          <Div className="mx-auto flex w-full max-w-screen-xl items-center gap-2 px-4 py-2 sm:px-6 lg:px-8">
+            <Search
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search products"
-              className="h-10"
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  const query = searchQuery.trim();
-                  router.push(
-                    query
-                      ? `${String(ROUTES.PUBLIC.PRODUCTS)}?search=${encodeURIComponent(query)}`
-                      : String(ROUTES.PUBLIC.PRODUCTS),
-                  );
-                }
+              onChange={setSearchQuery}
+              onSearch={(query) => {
+                router.push(
+                  query.trim()
+                    ? `${String(ROUTES.PUBLIC.PRODUCTS)}?search=${encodeURIComponent(query.trim())}`
+                    : String(ROUTES.PUBLIC.PRODUCTS),
+                );
+                onClose();
               }}
+              deferred
+              router={{ push: (href) => router.push(href) }}
+              labels={searchLabels}
+              className="flex-1"
             />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-label="Close search"
+              onClick={onClose}
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-slate-800 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </Button>
           </Div>
         </Div>
-      }
+      )}
     >
       {children}
     </AppLayoutShell>
+    <NavigationLoader />
+    </Fragment>
   );
 }

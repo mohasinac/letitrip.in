@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * User Sessions API - My Sessions
  * GET /api/user/sessions - Get my active sessions
@@ -14,12 +14,12 @@ import { createRouteHandler } from "@mohasinac/appkit";
 /**
  * Get current user's sessions
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const sessions = await sessionRepository.findAllByUser(user!.uid, 20);
     const activeCount = await sessionRepository.countActiveByUser(user!.uid);
     return successResponse({ sessions, activeCount, total: sessions.length });
   },
-});
+}));
 

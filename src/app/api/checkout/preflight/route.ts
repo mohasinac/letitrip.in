@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Checkout Preflight
  *
@@ -43,7 +43,7 @@ export interface UnavailableItem {
 
 // --- POST Handler -------------------------------------------------------------
 
-export const POST = createRouteHandler<(typeof schema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof schema)["_output"]>({
   auth: true,
   schema,
   handler: async ({ user }) => {
@@ -85,5 +85,5 @@ export const POST = createRouteHandler<(typeof schema)["_output"]>({
 
     return successResponse({ available, unavailable });
   },
-});
+}));
 

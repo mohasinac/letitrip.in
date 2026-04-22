@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Session Management â€” Revoke All Sessions For a User
  *
@@ -26,7 +26,7 @@ const revokeUserSchema = z.object({
  *
  * Revokes all active sessions for the given user and returns the count.
  */
-export const POST = createRouteHandler<(typeof revokeUserSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["_output"]>({
   auth: true,
   roles: ["admin", "moderator"],
   schema: revokeUserSchema,
@@ -46,4 +46,4 @@ export const POST = createRouteHandler<(typeof revokeUserSchema)["_output"]>({
       SUCCESS_MESSAGES.ADMIN.SESSIONS_REVOKED,
     );
   },
-});
+}));

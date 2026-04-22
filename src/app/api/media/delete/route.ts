@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * DELETE /api/media?url=...
  *
@@ -49,7 +49,7 @@ function extractStoragePath(url: string): string | null {
   }
 }
 
-export const DELETE = createRouteHandler({
+export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.API);
@@ -117,5 +117,5 @@ export const DELETE = createRouteHandler({
       return errorResponse("Failed to delete file", 500);
     }
   },
-});
+}));
 

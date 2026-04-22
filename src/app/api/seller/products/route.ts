@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Seller Products API Route
  * GET /api/seller/products — Returns the authenticated seller's products
@@ -10,7 +10,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   roles: ["seller", "admin", "moderator"],
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
@@ -50,5 +50,5 @@ export const GET = createApiHandler({
       },
     });
   },
-});
+}));
 

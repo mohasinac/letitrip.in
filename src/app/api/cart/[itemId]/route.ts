@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * POST /api/cart/merge
  *
@@ -30,7 +30,7 @@ const mergeCartSchema = z.object({
     .max(50), // Reasonable cap to prevent abuse
 });
 
-export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
   schema: mergeCartSchema,
   handler: async ({ user, body }) => {
@@ -70,4 +70,4 @@ export const POST = createRouteHandler<(typeof mergeCartSchema)["_output"]>({
       subtotal: cartRepository.getSubtotal(cart),
     });
   },
-});
+}));

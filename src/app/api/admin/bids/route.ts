@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Bids API Route
  * GET /api/admin/bids
@@ -7,7 +7,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { bidRepository } from "@mohasinac/appkit";
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -31,5 +31,5 @@ export const GET = createApiHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 

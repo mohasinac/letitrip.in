@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Media Trim API Route — DISABLED for Free Tier
  *
@@ -22,7 +22,7 @@ import { trimDataSchema } from "@mohasinac/appkit";
  * ⚠️ DISABLED on free tier
  * Requires Firebase Cloud Functions with FFmpeg or paid tier upgrade
  */
-export const POST = createRouteHandler<(typeof trimDataSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof trimDataSchema)["_output"]>({
   auth: true,
   schema: trimDataSchema,
   handler: async ({ request }) => {
@@ -38,5 +38,5 @@ export const POST = createRouteHandler<(typeof trimDataSchema)["_output"]>({
       503,
     );
   },
-});
+}));
 

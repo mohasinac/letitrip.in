@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Notifications Read-All API
  * PATCH /api/notifications/read-all — Mark all user notifications as read
@@ -13,7 +13,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 /**
  * PATCH /api/notifications/read-all
  */
-export const PATCH = createRouteHandler({
+export const PATCH = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     serverLogger.info("Marking all notifications as read", {
@@ -22,5 +22,5 @@ export const PATCH = createRouteHandler({
     const count = await notificationRepository.markAllAsRead(user!.uid);
     return successResponse({ count }, SUCCESS_MESSAGES.NOTIFICATION.ALL_READ);
   },
-});
+}));
 

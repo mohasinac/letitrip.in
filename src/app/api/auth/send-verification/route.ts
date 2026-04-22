@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Send Verification Email API Route
  * POST /api/auth/send-verification
@@ -15,7 +15,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const POST = createRouteHandler<
+export const POST = withProviders(createRouteHandler<
   (typeof sendVerificationSchema)["_output"]
 >({
   schema: sendVerificationSchema,

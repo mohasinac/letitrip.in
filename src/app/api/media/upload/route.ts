@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
@@ -47,7 +47,7 @@ const TMP_UPLOAD_PREFIX = "tmp";
  * - context: string (optional) - JSON-encoded MediaFilenameContext for SEO filename
  *   e.g. {"type":"product-image","name":"iPhone 15 Pro","category":"Smartphones","store":"TechStore","index":1}
  */
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   // No JSON schema — body is multipart/form-data; parsed below via request.formData()
   handler: async ({ user, request }) => {
@@ -390,5 +390,5 @@ export const POST = createRouteHandler({
       201,
     );
   },
-});
+}));
 

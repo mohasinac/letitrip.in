@@ -1,10 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { AuctionsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return (
-    <RoutePlaceholderView
-      title="Auctions"
-      description="Live auction listings will appear here when data bindings are connected."
-    />
-  );
+  return <AuctionsView />;
 }

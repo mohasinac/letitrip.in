@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Verify Email API Route
  * GET /api/auth/verify-email?token=xxxxx
@@ -14,7 +14,7 @@ import { getSearchParams, getStringParam } from "@mohasinac/appkit";
 import { ValidationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const token = getStringParam(searchParams, "token");
@@ -27,5 +27,5 @@ export const GET = createRouteHandler({
     // This endpoint is called post-verification to confirm success.
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
   },
-});
+}));
 

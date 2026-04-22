@@ -42,11 +42,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   const openMobile = useCallback(() => setMobileOpen(true), []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const toggleMobile = useCallback(
+    () => setMobileOpen((prev) => !prev),
+    [],
+  );
 
   useEffect(() => {
-    registerNav(openMobile);
+    registerNav({ open: openMobile, close: closeMobile, toggle: toggleMobile });
     return () => unregisterNav();
-  }, [registerNav, unregisterNav, openMobile]);
+  }, [registerNav, unregisterNav, openMobile, closeMobile, toggleMobile]);
 
   return (
     <ProtectedRoute
@@ -62,6 +66,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     >
       <AdminSidebar
         activePath={pathname}
+        mobileOpen={mobileOpen}
+        onCloseMobile={closeMobile}
         renderNavItems={(activePath) =>
           ADMIN_NAV_ITEMS.map((item) => (
             <Link

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * POST /api/realtime/token
  *
@@ -11,7 +11,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { chatRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     let chatIds: Record<string, boolean> = {};
@@ -37,4 +37,4 @@ export const POST = createRouteHandler({
 
     return successResponse({ customToken, expiresAt: Date.now() + 3_600_000 });
   },
-});
+}));

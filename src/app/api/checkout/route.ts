@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
   unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit";
@@ -83,7 +83,7 @@ function formatShippingAddress(a: AddressDocument): string {
 
 // --- POST Handler -------------------------------------------------------------
 
-export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
@@ -449,5 +449,5 @@ export const POST = createRouteHandler<(typeof checkoutSchema)["_output"]>({
       SUCCESS_MESSAGES.CHECKOUT.ORDER_PLACED,
     );
   },
-});
+}));
 

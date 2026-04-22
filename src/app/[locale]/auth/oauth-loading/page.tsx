@@ -1,5 +1,5 @@
-import { RoutePlaceholderView } from "@/components/routing/RoutePlaceholderView";
+import { OAuthLoadingView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <RoutePlaceholderView title="Auth / Oauth loading" />;
+  return <OAuthLoadingView />;
 }

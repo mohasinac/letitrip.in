@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * User Orders API — Collection
  *
@@ -34,7 +34,7 @@ const VALID_STATUSES: OrderStatus[] = [
  * Returns all orders for the authenticated user.
  * Optional query param: ?status=<OrderStatus>
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
@@ -61,5 +61,5 @@ export const GET = createRouteHandler({
       total: result.total,
     });
   },
-});
+}));
 

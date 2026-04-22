@@ -56,10 +56,10 @@ export default function Page() {
       <Section className="py-12">
         <Container size="sm">
           <Stack gap="md">
-            <Heading level={1} className="text-3xl font-semibold text-zinc-900">
+            <Heading level={1} className="text-3xl font-semibold text-zinc-900 dark:text-zinc-50">
               Sign In
             </Heading>
-            <Text className="text-zinc-600">
+            <Text className="text-zinc-600 dark:text-zinc-400">
               Welcome back. Sign in to continue.
             </Text>
 
@@ -67,10 +67,10 @@ export default function Page() {
               action={(fd) => {
                 void onSubmit(fd);
               }}
-              className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6"
+              className="space-y-4 rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6"
             >
               <div>
-                <Label htmlFor="login-email" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="login-email" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Email Address
                 </Label>
                 <Input
@@ -79,12 +79,12 @@ export default function Page() {
                   type="email"
                   aria-label="Email Address"
                   required
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
               </div>
 
               <div>
-                <Label htmlFor="login-password" className="mb-1 block text-sm font-medium text-zinc-700">
+                <Label htmlFor="login-password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Password
                 </Label>
                 <Input
@@ -93,7 +93,7 @@ export default function Page() {
                   type="password"
                   aria-label="Password"
                   required
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
               </div>
 
@@ -103,22 +103,26 @@ export default function Page() {
                   name="remember"
                   type="checkbox"
                   aria-label="Remember me"
-                  className="h-4 w-4 rounded border-zinc-300"
+                  className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-primary"
                 />
-                <Label htmlFor="remember-me" className="text-sm text-zinc-700">
+                <Label htmlFor="remember-me" className="text-sm text-zinc-700 dark:text-zinc-300">
                   Remember me
                 </Label>
               </div>
 
-              <Button type="submit" disabled={loading}>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="!bg-zinc-900 !text-white hover:!bg-zinc-800 dark:!bg-zinc-100 dark:!text-zinc-900 dark:hover:!bg-zinc-200"
+              >
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
 
-              <Text className="text-sm text-zinc-600">
+              <Text className="text-sm text-zinc-600 dark:text-zinc-400">
                 New here? <Link href={`/${locale}/auth/register`}>Create account</Link>
               </Text>
 
-              {error ? <Text className="text-sm text-red-600">{error}</Text> : null}
+              {error ? <Text className="text-sm text-red-600 dark:text-red-400">{error}</Text> : null}
             </form>
           </Stack>
         </Container>

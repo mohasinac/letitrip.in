@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Notifications Unread Count API
  * GET /api/notifications/unread-count â€” Get unread notification count for current user
@@ -11,10 +11,10 @@ import { notificationRepository } from "@mohasinac/appkit";
 /**
  * GET /api/notifications/unread-count
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const count = await notificationRepository.getUnreadCount(user!.uid);
     return successResponse({ count });
   },
-});
+}));

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * POST /api/payment/event/init
  *
@@ -47,7 +47,7 @@ const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
-export const POST = createRouteHandler<(typeof bodySchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
   schema: bodySchema,
   handler: async ({ request, user, body }) => {
@@ -73,5 +73,5 @@ export const POST = createRouteHandler<(typeof bodySchema)["_output"]>({
       expiresAt,
     });
   },
-});
+}));
 

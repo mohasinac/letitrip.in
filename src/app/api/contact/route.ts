@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Contact API Route
  * POST /api/contact — Send a contact message to support
@@ -23,7 +23,7 @@ const contactSchema = z.object({
     .max(5000),
 });
 
-export const POST = createRouteHandler<(typeof contactSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
   handler: async ({ request, body }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
@@ -45,5 +45,5 @@ export const POST = createRouteHandler<(typeof contactSchema)["_output"]>({
       return errorResponse(ERROR_MESSAGES.CONTACT.SEND_FAILED, 500);
     return successResponse({ sent: true }, SUCCESS_MESSAGES.CONTACT.SENT);
   },
-});
+}));
 

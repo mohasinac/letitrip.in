@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
   verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit";
@@ -67,7 +67,7 @@ function formatShippingAddress(a: AddressDocument): string {
     .join(", ");
 }
 
-export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
   auth: true,
   schema: verifySchema,
   handler: async ({ user, body }) => {
@@ -397,5 +397,5 @@ export const POST = createRouteHandler<(typeof verifySchema)["_output"]>({
       SUCCESS_MESSAGES.CHECKOUT.PAYMENT_RECEIVED,
     );
   },
-});
+}));
 

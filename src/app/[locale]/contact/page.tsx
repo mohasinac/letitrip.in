@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Button,
   Container,
+  Div,
   Heading,
   Input,
   Label,
@@ -59,10 +60,10 @@ export default function Page() {
               action={(fd) => {
                 void onSubmit(fd);
               }}
-              className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6"
+              className="space-y-4 rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6"
             >
-              <div>
-                <Label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-zinc-700">
+              <Div>
+                <Label htmlFor="contact-name" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Your Name
                 </Label>
                 <Input
@@ -70,12 +71,12 @@ export default function Page() {
                   name="name"
                   aria-label="Your Name"
                   required
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <Label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-zinc-700">
+              <Div>
+                <Label htmlFor="contact-email" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Email Address
                 </Label>
                 <Input
@@ -84,24 +85,24 @@ export default function Page() {
                   type="email"
                   aria-label="Email Address"
                   required
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <Label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-zinc-700">
+              <Div>
+                <Label htmlFor="contact-subject" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Subject
                 </Label>
                 <Input
                   id="contact-subject"
                   name="subject"
                   aria-label="Subject"
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
-              </div>
+              </Div>
 
-              <div>
-                <Label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-zinc-700">
+              <Div>
+                <Label htmlFor="contact-message" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Message
                 </Label>
                 <Textarea
@@ -110,15 +111,19 @@ export default function Page() {
                   aria-label="Message"
                   required
                   rows={5}
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                  className="w-full rounded-md border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-slate-500 px-3 py-2"
                 />
-              </div>
+              </Div>
 
-              <Button type="submit" disabled={loading}>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="!bg-zinc-900 !text-white hover:!bg-zinc-800 dark:!bg-zinc-100 dark:!text-zinc-900 dark:hover:!bg-zinc-200"
+              >
                 {loading ? "Sending..." : "Send Message"}
               </Button>
 
-              {status ? <Text className="text-sm text-zinc-600">{status}</Text> : null}
+              {status ? <Text className="text-sm text-zinc-600 dark:text-zinc-300">{status}</Text> : null}
             </form>
           </Stack>
         </Container>

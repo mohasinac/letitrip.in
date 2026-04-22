@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * API Route: Delete User Account
  * DELETE /api/profile/delete-account
@@ -17,7 +17,7 @@ import {
 import { getAdminAuth } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-export const DELETE = createRouteHandler({
+export const DELETE = withProviders(createRouteHandler({
   auth: true,
   schema: deleteAccountSchema,
   handler: async ({ user, request }) => {
@@ -36,5 +36,5 @@ export const DELETE = createRouteHandler({
 
     return successResponse(null, SUCCESS_MESSAGES.ACCOUNT.DELETED);
   },
-});
+}));
 

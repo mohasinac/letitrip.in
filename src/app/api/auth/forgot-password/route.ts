@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * API Route: Password Reset Request (Backend-Only)
  * POST /api/auth/forgot-password
@@ -27,7 +27,7 @@ const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
 });
 
-export const POST = createRouteHandler<
+export const POST = withProviders(createRouteHandler<
   (typeof forgotPasswordSchema)["_output"]
 >({
   schema: forgotPasswordSchema,

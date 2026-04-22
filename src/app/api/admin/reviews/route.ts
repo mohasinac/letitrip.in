@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Reviews API Route
  * GET /api/admin/reviews
@@ -10,7 +10,7 @@ import { piiBlindIndex } from "@mohasinac/appkit";
 import { REVIEW_FIELDS } from "@/constants/field-names";
 import { reviewRepository } from "@mohasinac/appkit";
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -50,5 +50,5 @@ export const GET = createApiHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Payment OTP - Request Gate
  *
@@ -26,7 +26,7 @@ function getTodayIST(): string {
   return new Date(istMs).toISOString().split("T")[0];
 }
 
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     // 1. Per-user 15-minute cooldown — checked via Firestore so it persists across
@@ -63,5 +63,5 @@ export const POST = createRouteHandler({
 
     return successResponse({ allowed: true, count });
   },
-});
+}));
 

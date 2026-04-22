@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Newsletter API Route
  * GET /api/admin/newsletter — List subscribers with stats
@@ -27,7 +27,7 @@ import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit";
  * meta.total / active / unsubscribed are always computed from the
  * full unfiltered dataset so stat cards remain accurate.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async ({ request }) => {
@@ -85,5 +85,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

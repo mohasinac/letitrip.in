@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { orderRepository, productRepository } from "@mohasinac/appkit";
@@ -91,7 +91,7 @@ async function loadCurrentMonthOrders(): Promise<OrderDocument[]> {
   return allItems;
 }
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async () => {
@@ -218,5 +218,5 @@ export const GET = createRouteHandler({
       topProducts: topProductsWithImages,
     });
   },
-});
+}));
 

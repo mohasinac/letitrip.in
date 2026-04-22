@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Products API Route
  * GET  /api/admin/products — Delegated to @mohasinac/feat-admin
@@ -21,7 +21,7 @@ import {
 /**
  * GET /api/admin/products
  */
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -50,14 +50,14 @@ export const GET = createApiHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 
 /**
  * POST /api/admin/products
  *
  * Create a new product as admin (can set any status, sellerId etc.)
  */
-export const POST = createApiHandler({
+export const POST = withProviders(createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
     handler: async ({ request, user }) => {
@@ -84,5 +84,5 @@ export const POST = createApiHandler({
 
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   },
-});
+}));
 

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { orderRepository, productRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
@@ -63,7 +63,7 @@ function normalizeDate(raw: Date | string | number): Date {
   return new Date(raw as string | number);
 }
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const sellerId = user!.uid;
@@ -184,5 +184,5 @@ export const GET = createRouteHandler({
       topProducts,
     });
   },
-});
+}));
 

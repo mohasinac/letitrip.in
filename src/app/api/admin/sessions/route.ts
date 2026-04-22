@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Sessions API Route
  * GET /api/admin/sessions
@@ -20,7 +20,7 @@ import { sessionRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
@@ -95,5 +95,5 @@ export const GET = createRouteHandler({
       SUCCESS_MESSAGES.SESSION.FETCHED,
     );
   },
-});
+}));
 

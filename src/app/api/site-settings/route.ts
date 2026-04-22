@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Site Settings API Routes
  *
@@ -41,7 +41,7 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
     const settings = await siteSettingsRepository.getSingleton();
@@ -103,7 +103,7 @@ export const GET = createApiHandler({
     response.headers.set("ETag", etag);
     return response;
   },
-});
+}));
 
 /**
  * PATCH /api/site-settings
@@ -120,7 +120,7 @@ export const GET = createApiHandler({
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
-export const PATCH = createRouteHandler<
+export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({
   auth: true,
@@ -162,6 +162,6 @@ export const PATCH = createRouteHandler<
       SUCCESS_MESSAGES.ADMIN.SETTINGS_SAVED,
     );
   },
-});
+}));
 
 

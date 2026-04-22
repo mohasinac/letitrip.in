@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Seller Offers API Route
  * GET /api/seller/offers — Returns all incoming offers for the authenticated seller
@@ -7,7 +7,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { offerRepository } from "@mohasinac/appkit";
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   roles: ["seller", "admin", "moderator"],
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
@@ -43,5 +43,5 @@ export const GET = createApiHandler({
       hasMore: result.hasMore,
     });
   },
-});
+}));
 

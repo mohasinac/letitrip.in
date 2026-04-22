@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * POST /api/admin/payouts/weekly
  *
@@ -40,7 +40,7 @@ const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 // --- Route --------------------------------------------------------------------
 
-export const POST = createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
   handler: async () => {
@@ -178,5 +178,5 @@ export const POST = createRouteHandler({
       SUCCESS_MESSAGES.PAYOUT.WEEKLY_PROCESSED,
     );
   },
-});
+}));
 

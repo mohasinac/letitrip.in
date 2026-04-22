@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { randomBytes } from "crypto";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { cropDataSchema } from "@mohasinac/appkit";
@@ -34,7 +34,7 @@ import axios from "axios";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
-export const POST = createRouteHandler<(typeof cropDataSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
   schema: cropDataSchema,
   handler: async ({ request, user, body }) => {
@@ -138,5 +138,5 @@ export const POST = createRouteHandler<(typeof cropDataSchema)["_output"]>({
       SUCCESS_MESSAGES.MEDIA.IMAGE_CROPPED,
     );
   },
-});
+}));
 

@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Verify Phone Number API Route
  * POST /api/profile/verify-phone
@@ -16,7 +16,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
+export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,
   schema: verifyPhoneSchema,
   handler: async ({ user }) => {
@@ -39,5 +39,5 @@ export const POST = createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
       SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
     );
   },
-});
+}));
 

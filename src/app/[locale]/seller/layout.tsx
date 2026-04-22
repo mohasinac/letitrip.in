@@ -29,14 +29,19 @@ export default function SellerLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const openMobile = useCallback(() => setMobileOpen(true), []);
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const toggleMobile = useCallback(
+    () => setMobileOpen((prev) => !prev),
+    [],
+  );
 
   useEffect(() => {
-    registerNav(openMobile);
+    registerNav({ open: openMobile, close: closeMobile, toggle: toggleMobile });
     return () => unregisterNav();
-  }, [registerNav, unregisterNav, openMobile]);
+  }, [registerNav, unregisterNav, openMobile, closeMobile, toggleMobile]);
 
   return (
     <ProtectedRoute
@@ -50,7 +55,12 @@ export default function SellerLayout({ children }: { children: ReactNode }) {
         unauthorizedPath: String(ROUTES.ERRORS.UNAUTHORIZED),
       }}
     >
-      <SellerSidebar items={SELLER_NAV_ITEMS} activeHref={pathname} />
+      <SellerSidebar
+        items={SELLER_NAV_ITEMS}
+        activeHref={pathname}
+        mobileOpen={mobileOpen}
+        onCloseMobile={closeMobile}
+      />
       {children}
     </ProtectedRoute>
   );

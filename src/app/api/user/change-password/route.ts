@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Change Password API Route
  * POST /api/user/change-password
@@ -13,7 +13,7 @@ import { successResponse } from "@mohasinac/appkit";
 import { changePasswordSchema } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-export const POST = createRouteHandler<
+export const POST = withProviders(createRouteHandler<
   (typeof changePasswordSchema)["_output"]
 >({
   auth: true,

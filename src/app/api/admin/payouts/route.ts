@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Admin Payouts API
  *
@@ -29,7 +29,7 @@ import { PAYOUT_FIELDS } from "@mohasinac/appkit";
  *
  * summary stats are always computed from the full unfiltered dataset.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
   handler: async ({ request }) => {
@@ -129,5 +129,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

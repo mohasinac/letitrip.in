@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * GET /api/seller/store/addresses — List pickup addresses for the seller's store.
  *
@@ -14,7 +14,7 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { NotFoundError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["seller", "admin"],
   handler: async ({ user }) => {
@@ -25,5 +25,5 @@ export const GET = createRouteHandler({
     const addresses = await storeAddressRepository.findByStore(store.storeSlug);
     return successResponse(addresses);
   },
-});
+}));
 

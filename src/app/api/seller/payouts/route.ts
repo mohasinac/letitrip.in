@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Seller Payouts API
  *
@@ -49,7 +49,7 @@ async function computeSellerEarnings(sellerId: string) {
 
 // --- GET — List payouts + earnings summary ---------------------------------
 
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
     const uid = user!.uid;
@@ -114,5 +114,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

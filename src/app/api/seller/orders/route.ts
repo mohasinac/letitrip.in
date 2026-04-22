@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Seller Orders API Route
  *
@@ -28,7 +28,7 @@ import { serverLogger } from "@mohasinac/appkit";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — results per page (default 20)
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
@@ -82,5 +82,5 @@ export const GET = createRouteHandler({
       },
     });
   },
-});
+}));
 

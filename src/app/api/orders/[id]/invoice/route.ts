@@ -1,4 +1,4 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { NotFoundError } from "@mohasinac/appkit";
@@ -11,7 +11,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
  * Returns order details for invoice rendering.
  * Requires authentication; only the order owner may fetch their invoice.
  */
-export const GET = createRouteHandler({
+export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
@@ -33,4 +33,4 @@ export const GET = createRouteHandler({
 
     return successResponse({ order });
   },
-});
+}));
