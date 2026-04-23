@@ -7,7 +7,7 @@
  * being accepted at checkout even if the API validation is bypassed.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { couponsRepository as couponRepository } from "@mohasinac/appkit";
+import { couponsRepository as couponRepository } from "../lib/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";

@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 /**
  * Product Server Actions -- thin entrypoints.
@@ -23,7 +23,6 @@ import {
 import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-export type { ProductListActionParams };
 export type ProductListResult = FirebaseSieveResult<ProductDocument>;
 
 export async function listProductsAction(

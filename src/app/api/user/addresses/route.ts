@@ -62,5 +62,5 @@ export const POST = withProviders(createRouteHandler<
 
     return successResponse(address, SUCCESS_MESSAGES.ADDRESS.CREATED, 201);
   },
-});
+}));
 

@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Wishlist Server Actions — thin entrypoint
+ * Wishlist Server Actions â€” thin entrypoint
  *
  * Authenticates, validates, rate-limits, then delegates to appkit
  * domain functions.  No business logic here.
@@ -20,7 +20,6 @@ import {
 } from "@mohasinac/appkit";
 import type { UserWishlistItem } from "@mohasinac/appkit";
 
-export type { UserWishlistItem };
 export type EnrichedWishlistItem = UserWishlistItem;
 
 export async function addToWishlistAction(productId: string): Promise<void> {

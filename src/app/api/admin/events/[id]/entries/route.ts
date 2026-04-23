@@ -24,9 +24,48 @@ export async function GET(
   const searchParams = getSearchParams(request);
   const page = getNumberParam(searchParams, "page", 1, { min: 1 });
   const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 200 });
+  const reviewStatus = getStringParam(searchParams, "reviewStatus");
+  const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 
-  serverLogger.info("Admin listing event entries", { eventId, page, pageSize });
+  serverLogger.info("Admin listing event entries", {
+    eventId,
+    page,
+    pageSize,
+    reviewStatus,
+    q,
+  });
 
-  const result = await eventEntryRepository.listForEvent(eventId, { page, pageSize });
-  return Response.json(successResponse(result));
+  const result = await eventEntryRepository.listForEvent(eventId, {
+    page,
+    pageSize,
+    filters:
+      reviewStatus && reviewStatus !== "all"
+        ? `reviewStatus==${reviewStatus}`
+        : undefined,
+  });
+
+  if (!q) {
+    return Response.json(successResponse(result));
+  }
+
+  const filtered = result.items.filter((entry) => {
+    const displayName = (entry.userDisplayName || "").toLowerCase();
+    const email = (entry.userEmail || "").toLowerCase();
+    const userId = (entry.userId || "").toLowerCase();
+    const entryId = (entry.id || "").toLowerCase();
+    return (
+      displayName.includes(q) ||
+      email.includes(q) ||
+      userId.includes(q) ||
+      entryId.includes(q)
+    );
+  });
+
+  return Response.json(successResponse({
+    ...result,
+    items: filtered,
+    total: filtered.length,
+    totalPages: 1,
+    hasMore: false,
+  }));
 }

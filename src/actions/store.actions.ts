@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Store Server Actions — thin entrypoint
+ * Store Server Actions â€” thin entrypoint
  *
  * Delegates entirely to appkit store query actions.
  * No auth required for read-only public queries.
@@ -21,7 +21,6 @@ import type { StoreDocument } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-export type { StoreQueryListParams, StoreContentParams, StoreReviewsResult };
 
 export async function listStoresAction(
   params: StoreQueryListParams = {},

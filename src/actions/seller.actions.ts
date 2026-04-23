@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Seller Server Actions � thin entrypoint
+ * Seller Server Actions ï¿½ thin entrypoint
  *
  * Auth + rate-limit + validation ? delegates to appkit seller domain functions.
  * Shiprocket-specific shipping (updateSellerShipping, verifyShiprocketPickupOtp,
@@ -137,7 +137,7 @@ export async function updateStoreAction(
 
 const bankAccountInputSchema = z.object({
   accountHolderName: z.string().min(2).max(100),
-  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9�18 digits"),
+  accountNumber: z.string().regex(/^\d{9,18}$/, "Account number must be 9ï¿½18 digits"),
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
   bankName: z.string().min(2).max(100),
   accountType: z.enum(["savings", "current"]).default("savings"),
@@ -412,7 +412,7 @@ export async function shipOrderAction(
   return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
 }
 
-// --- Update Seller Shipping (shiprocket � stays in letitrip) ------------------
+// --- Update Seller Shipping (shiprocket ï¿½ stays in letitrip) ------------------
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
@@ -541,4 +541,3 @@ export async function verifyShiprocketPickupOtpAction(
   return { message: result.message || "Pickup address verified successfully" };
 }
 
-export type { BecomeSellerResult, CreateStoreInput, UpdateStoreInput, UpdatePayoutSettingsInput, RequestPayoutInput, BulkSellerOrderResult };

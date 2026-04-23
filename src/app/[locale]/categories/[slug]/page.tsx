@@ -1,10 +1,10 @@
-import { CategoryProductsRouteClient } from "@/components/routing/CategoryProductsRouteClient";
+import { redirect } from "next/navigation";
 
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 };
 
 export default async function Page({ params }: Props) {
-  const { slug } = await params;
-  return <CategoryProductsRouteClient slug={slug} />;
+  const { locale, slug } = await params;
+  redirect(`/${locale}/categories/${slug}/products/sort/relevance/page/1`);
 }

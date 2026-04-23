@@ -1,4 +1,4 @@
-import { BecomeSellerView } from "@mohasinac/appkit";
+﻿import { BecomeSellerView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <BecomeSellerView />;

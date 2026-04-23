@@ -16,14 +16,14 @@ import {
   Container,
   Grid,
   Heading,
-  MediaImage,
   Row,
   Section,
-  Spinner,
   Stack,
   Text,
   Div,
+  MediaImage,
 } from "@mohasinac/appkit/client";
+import { Spinner } from "@mohasinac/appkit/ui";
 import { demoSeedAction } from "@/actions/demo-seed.actions";
 import type { SeedCollectionName, SeedOperationResult } from "@/actions/demo-seed.types";
 
@@ -558,16 +558,15 @@ export function PokemonSeedPanel() {
                   gap="none"
                   className="rounded-xl overflow-hidden border border-amber-600/40 dark:border-[#FFCB05]/20 bg-gray-50 dark:bg-white/5"
                 >
-                  <div className="aspect-square w-full">
+                  <Div className="aspect-square w-full">
                     <MediaImage
                       src={CARD_IMG(card.num)}
                       alt={card.name}
                       size="card"
                       className="w-full block"
                       priority={index === 0}
-                      loading={index === 0 ? "eager" : "lazy"}
                     />
-                  </div>
+                  </Div>
                   <Stack gap="none" className="p-2">
                     <Text className="text-xs font-bold text-amber-600 dark:text-[#FFCB05]">{card.name}</Text>
                     <Text className="text-[0.65rem] text-gray-600 dark:text-slate-400">{card.rarity}</Text>

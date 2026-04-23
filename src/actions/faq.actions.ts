@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 /**
  * FAQ Server Actions -- thin entrypoints.
@@ -34,7 +34,6 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import type { FAQDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-export type { VoteFaqActionInput, VoteFaqActionResult, FaqCreateInput, FaqUpdateInput };
 export type AdminCreateFaqInput = FaqCreateInput;
 export type AdminUpdateFaqInput = FaqUpdateInput;
 

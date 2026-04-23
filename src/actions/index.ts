@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Server Actions
  *
  * Barrel export for all Server Actions (`"use server"` functions).
- * These bypass the service → apiClient → HTTP → API route chain and call
+ * These bypass the service â†’ apiClient â†’ HTTP â†’ API route chain and call
  * repositories directly, reducing mutation latency from 7 hops to 2.
  *
  * Usage in hooks/components:
@@ -51,17 +51,17 @@ export {
   deleteNotificationAction,
 } from "./notification.actions";
 
-// Contact (public — no auth)
+// Contact (public â€” no auth)
 export { sendContactAction } from "./contact.actions";
 export type { SendContactInput } from "./contact.actions";
 
-// Newsletter (public — no auth)
+// Newsletter (public â€” no auth)
 export { subscribeNewsletterAction } from "./newsletter.actions";
 export type { SubscribeNewsletterInput } from "./newsletter.actions";
 
 // FAQ voting (auth required)
 export { voteFaqAction } from "./faq.actions";
-export type { VoteFaqActionInput, VoteFaqActionResult } from "./faq.actions";
+
 
 // Profile update (auth required)
 export { updateProfileAction } from "./profile.actions";
@@ -96,8 +96,6 @@ export {
 export type {
   ValidateCouponInput,
   ValidateCouponForCartInput,
-  CouponValidationResult,
-  CouponCartValidationResult,
 } from "./coupon.actions";
 
 // Seller coupon CRUD (seller role required)
@@ -106,10 +104,7 @@ export {
   sellerUpdateCouponAction,
   sellerDeleteCouponAction,
 } from "./seller-coupon.actions";
-export type {
-  SellerCreateCouponInput,
-  SellerUpdateCouponInput,
-} from "./seller-coupon.actions";
+
 
 // Seller application (auth required)
 export { becomeSellerAction } from "./seller.actions";
@@ -128,7 +123,6 @@ export {
   updateSellerShippingAction,
   verifyShiprocketPickupOtpAction,
 } from "./seller.actions";
-export type { BulkSellerOrderResult } from "./seller.actions";
 
 // Category mutations (admin only)
 export { createCategoryAction } from "./category.actions";
@@ -155,7 +149,7 @@ export {
   updateBlogPostAction,
   deleteBlogPostAction,
 } from "./blog.actions";
-export type { CreateBlogPostInput, UpdateBlogPostInput } from "./blog.actions";
+
 
 // Event mutations (admin only + user participation)
 export {
@@ -165,7 +159,7 @@ export {
   changeEventStatusAction,
   adminUpdateEventEntryAction,
 } from "./event.actions";
-export type { CreateEventInput, UpdateEventInput } from "./event.actions";
+
 
 // Carousel mutations (admin only)
 export {
@@ -174,11 +168,6 @@ export {
   deleteCarouselSlideAction,
   reorderCarouselSlidesAction,
 } from "./carousel.actions";
-export type {
-  CarouselSlideInput,
-  CarouselSlideUpdateInput,
-} from "./carousel.actions";
-
 // Homepage section mutations (admin only)
 export {
   createHomepageSectionAction,
@@ -186,10 +175,7 @@ export {
   deleteHomepageSectionAction,
   reorderHomepageSectionsAction,
 } from "./sections.actions";
-export type {
-  CreateHomepageSectionInput,
-  UpdateHomepageSectionInput,
-} from "./sections.actions";
+
 
 // Coupon admin CRUD (admin only)
 export {
@@ -223,10 +209,9 @@ export {
   grantCheckoutConsentViaSmsAction,
 } from "./checkout.actions";
 
-// --- Read Actions (2-hop: Hook → Action → Repository) ------------------------
+// --- Read Actions (2-hop: Hook â†’ Action â†’ Repository) ------------------------
 
 // Product reads (public)
-export type { ProductListActionParams, ProductListResult } from "./product.actions";
 export {
   listProductsAction,
   getProductByIdAction,
@@ -384,9 +369,9 @@ export {
   listAdminSessionsAction,
 } from "./admin-read.actions";
 
-// Event entry (public � auth optional per event type)
+// Event entry (public ï¿½ auth optional per event type)
 export { enterEventAction } from "./event.actions";
-export type { EnterEventInput } from "./event.actions";
+
 
 // Admin coupon list (admin role required)
 export { listAdminCouponsAction } from "./admin-coupon.actions";
@@ -394,7 +379,7 @@ export { listAdminCouponsAction } from "./admin-coupon.actions";
 // Site settings update (admin role required)
 export { updateSiteSettingsAction } from "./site-settings.actions";
 
-// Offer mutations (auth required — buyer / seller)
+// Offer mutations (auth required â€” buyer / seller)
 export {
   makeOfferAction,
   respondToOfferAction,
@@ -405,18 +390,14 @@ export {
   listSellerOffersAction,
   checkoutOfferAction,
 } from "./offer.actions";
-export type {
-  MakeOfferInput,
-  RespondToOfferInput,
-  BuyerCounterInput,
-} from "./offer.actions";
+
 
 // Refund (admin only)
 export {
   adminPartialRefundAction,
   previewCancellationRefundAction,
 } from "./refund.actions";
-export type { PartialRefundInput, PartialRefundResult } from "./refund.actions";
+export type { PartialRefundInput } from "./refund.actions";
 
 // Demo seed (admin only, dev environment)
 export { demoSeedAction } from "./demo-seed.actions";

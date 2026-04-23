@@ -1,5 +1,4 @@
-import { StoreAuctionsView } from "@mohasinac/appkit";
-import { Div, Text } from "@mohasinac/appkit";
+import { StoreAuctionsPageView } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
@@ -7,16 +6,5 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-
-  return (
-    <StoreAuctionsView
-      storeSlug={storeSlug}
-      labels={{ title: "Store Auctions" }}
-      renderAuctions={() => (
-        <Div className="rounded-xl border border-zinc-200 bg-white p-5">
-          <Text className="text-zinc-600">No store auctions found.</Text>
-        </Div>
-      )}
-    />
-  );
+  return <StoreAuctionsPageView storeSlug={storeSlug} />;
 }

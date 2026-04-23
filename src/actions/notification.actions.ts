@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Notification Server Actions — thin wrapper
+ * Notification Server Actions â€” thin wrapper
  *
  * Business logic lives in @mohasinac/appkit/features/admin (notification actions).
  * This wrapper adds auth, rate-limiting, and Next.js server-action semantics.
@@ -22,7 +22,6 @@ import {
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import type { NotificationDocument } from "@mohasinac/appkit";
 
-export type { NotificationDocument };
 
 /**
  * Mark a single notification as read.

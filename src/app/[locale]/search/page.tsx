@@ -1,42 +1,54 @@
-import { SearchView } from "@mohasinac/appkit";
-import { Button, Div, Input } from "@mohasinac/appkit";
-import { EmptyState } from "@mohasinac/appkit/ui";
+import {
+  Button,
+  Div,
+  Input,
+  SearchView,
+  Text,
+} from "@mohasinac/appkit";
+import { redirect } from "next/navigation";
 
 type Props = {
-  searchParams: Promise<{ q?: string }>;
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 };
 
-export default async function Page({ searchParams }: Props) {
-  const { q } = await searchParams;
+function normalizePage(page: string | undefined): number {
+  const parsed = Number(page ?? "1");
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+function buildCanonicalSearchPath(locale: string, query: string, page: number): string {
+  const encodedQuery = encodeURIComponent(query);
+  return `/${locale}/search/${encodedQuery}/tab/all/sort/relevance/page/${page}`;
+}
+
+export default async function Page({ params, searchParams }: Props) {
+  const { locale } = await params;
+  const { q, page } = await searchParams;
+  const query = (q ?? "").trim();
+
+  if (query) {
+    redirect(buildCanonicalSearchPath(locale, query, normalizePage(page)));
+  }
 
   return (
     <SearchView
-      query={q}
+      query={query}
       total={0}
       isLoading={false}
       renderSearchInput={() => (
-        <Div className="flex items-center gap-2">
-          <Input defaultValue={q ?? ""} placeholder="Search products, categories, stores" />
-          <Button type="button">Search</Button>
-        </Div>
+        <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
+          <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
+          <Button type="submit">Search</Button>
+        </form>
       )}
       renderResults={() => (
-        <EmptyState
-          title={q ? `No results for "${q}"` : "Search the marketplace"}
-          description={
-            q
-              ? "Try a different keyword, or browse categories to discover products."
-              : "Enter a keyword above to search across products, stores, and categories."
-          }
-          icon={
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <circle cx="11" cy="11" r="8" />
-              <path d="M21 21l-4.35-4.35" />
-            </svg>
-          }
-          actionLabel={q ? "Browse categories" : undefined}
-          actionHref={q ? "/categories" : undefined}
-        />
+        !query ? (
+          <Div className="rounded-xl border border-zinc-200 bg-white p-6 text-center dark:border-slate-700 dark:bg-slate-900">
+            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Search the marketplace</Text>
+            <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Enter a keyword above to search products and stores.</Text>
+          </Div>
+        ) : null
       )}
     />
   );

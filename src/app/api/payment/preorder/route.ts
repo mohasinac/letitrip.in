@@ -159,5 +159,5 @@ export const POST = withProviders(createRouteHandler<
 
     return successResponse({ orderId: order.id });
   },
-});
+}));
 

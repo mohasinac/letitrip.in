@@ -1,5 +1,5 @@
-import { AdminUsersView } from "@mohasinac/appkit";
+﻿import { AdminUsersView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminUsersView>{null}</AdminUsersView>;
+  return <AdminUsersView />;
 }

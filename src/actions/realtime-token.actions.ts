@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Realtime Token Server Action � thin entrypoint
+ * Realtime Token Server Action ï¿½ thin entrypoint
  */
 
 import { requireAuthUser } from "@mohasinac/appkit";
@@ -16,4 +16,3 @@ export async function getRealtimeTokenAction(): Promise<RealtimeTokenResult> {
   return issueRealtimeToken(user.uid, (user as any).role ?? "user");
 }
 
-export type { RealtimeTokenResult };

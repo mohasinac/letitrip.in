@@ -29,6 +29,7 @@ const ADMIN_NAV_ITEMS = [
   { href: String(ROUTES.ADMIN.NAVIGATION), label: "Navigation" },
   { href: String(ROUTES.ADMIN.SECTIONS), label: "Sections" },
   { href: String(ROUTES.ADMIN.CAROUSEL), label: "Carousel" },
+  { href: "/admin/ads", label: "Ads" },
   { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
   { href: String(ROUTES.ADMIN.FAQS), label: "FAQs" },
 ];

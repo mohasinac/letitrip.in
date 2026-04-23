@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Coupon Server Actions — thin entrypoint
+ * Coupon Server Actions â€” thin entrypoint
  *
  * Authenticates, validates, rate-limits, then delegates to appkit
  * domain functions.  No business logic here.
@@ -51,7 +51,6 @@ export type ValidateCouponForCartInput = z.infer<
   typeof validateCouponForCartSchema
 >;
 
-export type { CouponValidationResult, CouponCartValidationResult };
 
 // --- Server Actions ---------------------------------------------------------
 

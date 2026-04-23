@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Seller Coupon Server Actions � thin entrypoint
+ * Seller Coupon Server Actions ï¿½ thin entrypoint
  */
 
 import { z } from "zod";
@@ -120,4 +120,3 @@ export async function sellerDeleteCouponAction(couponId: string): Promise<void> 
   return sellerDeleteCoupon(user.uid, role, couponId);
 }
 
-export type { SellerCreateCouponInput, SellerUpdateCouponInput };

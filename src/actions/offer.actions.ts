@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Offer Server Actions � thin entrypoint
+ * Offer Server Actions ï¿½ thin entrypoint
  *
  * Authenticates, rate-limits, validates, then delegates to
  * appkit offer domain functions. No business logic here.
@@ -134,4 +134,3 @@ export async function checkoutOfferAction(
   return checkoutOffer(user.uid, offerId);
 }
 
-export type { MakeOfferInput, RespondToOfferInput, BuyerCounterInput };

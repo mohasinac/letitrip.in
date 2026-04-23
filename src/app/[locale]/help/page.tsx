@@ -1,4 +1,6 @@
-import { HelpPageView } from "@mohasinac/appkit";
+﻿import { HelpPageView } from "@mohasinac/appkit";
+
+export const revalidate = 3600;
 
 export default function Page() {
   return <HelpPageView />;

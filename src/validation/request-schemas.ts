@@ -272,6 +272,12 @@ export const siteSettingsUpdateSchema = z
     supportEmail: z.string().email().optional(),
     maintenanceMode: z.boolean().optional(),
     maintenanceMessage: z.string().max(500).optional(),
+    announcementBar: z
+      .object({
+        enabled: z.boolean(),
+        message: z.string().min(1).max(500),
+      })
+      .optional(),
     emailSettings: z
       .object({
         fromName: z.string().min(1).max(100),

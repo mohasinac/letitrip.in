@@ -1,5 +1,5 @@
-import { AdminBidsView } from "@mohasinac/appkit";
+﻿import { AdminBidsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminBidsView>{null}</AdminBidsView>;
+  return <AdminBidsView />;
 }

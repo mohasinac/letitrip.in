@@ -1,4 +1,4 @@
-import { AdminNavigationView } from "@mohasinac/appkit";
+﻿import { AdminNavigationView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminNavigationView />;

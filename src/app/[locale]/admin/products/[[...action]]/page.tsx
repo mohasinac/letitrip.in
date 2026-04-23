@@ -1,5 +1,5 @@
-import { AdminProductsView } from "@mohasinac/appkit";
+﻿import { AdminProductsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminProductsView>{null}</AdminProductsView>;
+  return <AdminProductsView />;
 }

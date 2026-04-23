@@ -1,4 +1,4 @@
-import { SellerAuctionsView } from "@mohasinac/appkit";
+﻿import { SellerAuctionsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <SellerAuctionsView />;

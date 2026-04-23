@@ -240,6 +240,5 @@ export async function enterEventAction(
   return enterEvent(eventId, parsed.data as EnterEventInput, user);
 }
 
-// --- Re-export types -------------------------------------------------------
-
-export type { CreateEventInput, UpdateEventInput, EnterEventInput };
+// Types must be imported directly from @mohasinac/appkit at call sites
+// (cannot re-export types from "use server" files — Turbopack proxies them)

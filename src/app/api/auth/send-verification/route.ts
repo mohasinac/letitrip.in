@@ -39,5 +39,5 @@ export const POST = withProviders(createRouteHandler<
 
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT);
   },
-});
+}));
 

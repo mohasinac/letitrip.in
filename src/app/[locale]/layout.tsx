@@ -14,6 +14,7 @@ import {
 import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
+import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 
 type Props = {
   children: ReactNode;
@@ -33,7 +34,7 @@ export default async function Layout({ children, params }: Props) {
       timeZone={LOCALE_CONFIG.TIMEZONE}
       now={new Date()}
     >
-      <SkipToMain />
+      <ClientProviderInitializer />
       <ZodSetup />
       <ThemeProvider>
         <SessionProvider initialUser={null}>

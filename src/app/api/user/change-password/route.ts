@@ -26,5 +26,5 @@ export const POST = withProviders(createRouteHandler<
 
     return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   },
-});
+}));
 

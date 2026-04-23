@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Refund Server Actions — thin entrypoint
+ * Refund Server Actions â€” thin entrypoint
  *
  * Authenticates, validates, rate-limits, then delegates to appkit
  * domain functions.  No business logic here.
@@ -29,7 +29,6 @@ const partialRefundSchema = z.object({
 });
 
 export type PartialRefundInput = z.infer<typeof partialRefundSchema>;
-export type { PartialRefundResult };
 
 // --- Admin: Issue partial refund -------------------------------------------
 

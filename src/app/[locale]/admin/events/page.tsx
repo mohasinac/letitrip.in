@@ -1,5 +1,5 @@
-import { AdminEventsView } from "@mohasinac/appkit";
+﻿import { AdminEventsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminEventsView>{null}</AdminEventsView>;
+  return <AdminEventsView />;
 }

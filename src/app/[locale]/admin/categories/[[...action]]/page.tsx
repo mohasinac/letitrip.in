@@ -1,5 +1,5 @@
-import { AdminCategoriesView } from "@mohasinac/appkit";
+﻿import { AdminCategoriesView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminCategoriesView>{null}</AdminCategoriesView>;
+  return <AdminCategoriesView />;
 }

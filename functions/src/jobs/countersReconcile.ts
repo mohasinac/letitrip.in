@@ -24,10 +24,12 @@
  *   - Sequential inner loops avoid Firestore read-rate spikes.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { ProductStatusValues } from "@mohasinac/appkit";
-import { categoriesRepository as categoryRepository } from "@mohasinac/appkit";
-import { reviewRepository } from "@mohasinac/appkit";
-import { storeRepository } from "@mohasinac/appkit";
+import {
+  ProductStatusValues,
+  categoriesRepository as categoryRepository,
+  reviewRepository,
+  storeRepository,
+} from "../lib/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import {

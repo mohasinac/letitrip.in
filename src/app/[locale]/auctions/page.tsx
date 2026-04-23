@@ -1,5 +1,7 @@
-import { AuctionsView } from "@mohasinac/appkit";
+﻿import { AuctionsListView } from "@mohasinac/appkit";
+
+export const revalidate = 60;
 
 export default function Page() {
-  return <AuctionsView />;
+  return <AuctionsListView />;
 }

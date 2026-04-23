@@ -2,6 +2,127 @@
 
 Standardize all included surfaces (public, admin, seller) to one shared listing visual system based on appkit ownership: desktop left filter sidebar, mobile full-width filter drawer, shared top toolbar (search/sort/list-grid/select/bulk), and route-param driven state (slug/path segment first) with apply-on-click filter behavior. Public category-detail and store-detail pages are explicitly in scope as listing-extensions of product pages with fixed parent context (current category/store locked while child inventory is filtered/listed). Product detail pages are also explicitly in scope via a Detail-Commerce pattern: desktop sticky action rail plus mobile sticky bottom action bar for quick actions (buy/add-to-cart/wishlist). Card designs are standardized across product, auction, pre-order, blog, event, store, review, and category cards, with pre-order cards explicitly aligned to product/auction interaction patterns. PII display must always show masked human-readable values (for example A*h) and never raw encrypted tokens (for example pii:v1:...). Navigation behavior must enforce mutually exclusive opening between dashboard sidebar (role nav) and public sidebar: opening one auto-closes the other; closing either does not auto-open anything. For non-list pages (detail/forms/analytics), keep the same visual frame but hide irrelevant controls to avoid forced/empty UI. The homepage must render all 18 sections (see section map below) with correct INR currency and masked PII.
 
+### Phase 3 Addendum: Public Route Mock Views (ASCII) and Real-Data Contract
+
+All mock views below are structural guides only. Runtime data source must be live server data via appkit actions/repositories; no local hardcoded arrays, no fake placeholders as primary content.
+
+#### Events listing: /events
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Events                                                              │
+│ Upcoming and active campaigns                                       │
+├──────────────────────────────────────────────────────────────────────┤
+│ [Event Card] [Event Card] [Event Card] [Event Card]                │
+│  title      title      title      title                             │
+│  starts/end starts/end starts/end starts/end                        │
+│  status     status     status     status                            │
+├──────────────────────────────────────────────────────────────────────┤
+│ Pagination: < Prev | Page N of M | Next >                           │
+└──────────────────────────────────────────────────────────────────────┘
+Data contract:
+- Source: listPublicEvents
+- Empty state allowed only when API returns empty.
+```
+
+#### Event detail: /events/[id]
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Event Hero (cover image)                                            │
+│ Title | Status Chip | Type Chip                                     │
+│ Description                                                         │
+├───────────────────────────────┬──────────────────────────────────────┤
+│ Event timing + entry summary  │ Poll/Config snapshot                │
+│ - startsAt                    │ - options / form fields (if any)    │
+│ - endsAt                      │                                      │
+├───────────────────────────────┴──────────────────────────────────────┤
+│ Leaderboard (top 10)                                              │
+│ #1 user *** points                                                  │
+│ #2 user *** points                                                  │
+└──────────────────────────────────────────────────────────────────────┘
+Data contract:
+- Source: getPublicEventById + getEventLeaderboard.
+- Not-found path must render unavailable state (no mock body).
+```
+
+#### Event participate: /events/[id]/participate
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Participate in {event.title}                                        │
+│ event.description                                                    │
+│ Ends at: {event.endsAt}                                             │
+├──────────────────────────────────────────────────────────────────────┤
+│ [poll option radio list if configured]                              │
+│ [survey/feedback fields if configured]                              │
+│ [Submit Participation]  (disabled when closed)                      │
+└──────────────────────────────────────────────────────────────────────┘
+Data contract:
+- Source: getPublicEventById.
+- Form shape must derive from event config; never static one-field fallback as primary UI.
+```
+
+#### Search listing: /search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Search                                                              │
+│ [query input.................................][Search]              │
+├──────────────────────────────────────────────────────────────────────┤
+│ Results grid                                                        │
+│ [Product Card][Product Card][Product Card][Product Card]           │
+│ [Product Card][Product Card][Product Card][Product Card]           │
+└──────────────────────────────────────────────────────────────────────┘
+No-results state:
+- "No results for {q}" + recovery hint.
+Data contract:
+- Source: searchProducts.
+- Canonical search route is segment-based (`/search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]`); base `/search?q=...` redirects to canonical route.
+```
+
+#### Promotions: /promotions/[tab]
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Promotions                                                          │
+│ Latest offers and campaigns                                         │
+├──────────────────────────────────────────────────────────────────────┤
+│ Coupons                                                             │
+│ [Coupon Card] [Coupon Card]                                         │
+├──────────────────────────────────────────────────────────────────────┤
+│ Deals                                                               │
+│ [Product Card][Product Card][Product Card][Product Card]           │
+├──────────────────────────────────────────────────────────────────────┤
+│ Featured                                                            │
+│ [Product Card][Product Card][Product Card][Product Card]           │
+└──────────────────────────────────────────────────────────────────────┘
+Data contract:
+- Source: getPromotions (activeCoupons/promotedProducts/featuredProducts).
+- Canonical tab route is segment-based (`/promotions/[tab]`); base `/promotions` redirects to `/promotions/deals`.
+```
+
+#### Sellers: /sellers and /sellers/[id]
+
+```text
+Index (/sellers)
+┌──────────────────────────────────────────────────────────────────────┐
+│ Sellers / Stores                                                    │
+│ [Store Card][Store Card][Store Card]                               │
+│ [Store Card][Store Card][Store Card]                               │
+└──────────────────────────────────────────────────────────────────────┘
+
+Detail (/sellers/[id])
+┌──────────────────────────────────────────────────────────────────────┐
+│ Public Profile                                                      │
+│ Avatar + seller name + trust metadata                              │
+│ Seller products / activity blocks                                   │
+└──────────────────────────────────────────────────────────────────────┘
+Data contract:
+- /sellers source: StoresIndexPageView self-fetch path.
+- /sellers/[id] source: route param -> PublicProfileView userId.
+```
+
 ### URL Contract (SEO + SSR)
 
 - Canonical URLs must use slugs and route params (path segments), not query params, for indexable navigation state.
@@ -23,6 +144,15 @@ Standardize all included surfaces (public, admin, seller) to one shared listing 
 - Search route with tab: `/search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]`
 - Public profile tab: `/profile/[username]/[tab]`
 - Notification center tab: `/user/notifications/[tab]`
+
+Implementation checkpoint (2026-04-23):
+- Canonical segment route families are now in place for category detail and store detail:
+	- `/categories/[slug]/[tab]/sort/[sortKey]/page/[page]`
+	- `/stores/[storeSlug]/[tab]/sort/[sortKey]/page/[page]`
+- Canonical category and store segment routes render appkit-backed views directly (no local mock datasets).
+- Metadata generation and canonical-link parity are validated for canonical promotions/search/category/store segment routes.
+- Homepage section body rendering no longer uses the hardcoded full-page fallback bundle when section records are missing; section content is DB-driven.
+- Event and blog cards now degrade gracefully for incomplete API payloads (safe title + non-blank image rendering), preventing blank-card regressions without introducing local mock data.
 
 ---
 
@@ -711,7 +841,7 @@ SITEWIDE AD SLOT MAP — MOBILE
 │ [Newsletter / Footer / Bottom Nav] │
 └─────────────────────────────────────┘
 
-PROMOTIONS TAB WITH AD SLOT — DESKTOP (/promotions?tab=deals)
+PROMOTIONS TAB WITH AD SLOT — DESKTOP (/promotions/deals)
 ┌──────────────────────────────────────────────────────────────┐
 │ [Coupons][Deals][Featured]                                  │
 ├────────────────────┬─────────────────────────────────────────┤
@@ -3390,6 +3520,48 @@ FILTER DRAWER — MOBILE (shared `FilterDrawer`)
 36. Execute card-system rollout, including pre-order parity with product/auction cards and alignment for blog/event/store/review/category cards.
 37. Apply PII masking rules across all public/admin/seller/user views that display personal data.
 38. Roll out ad placements selectively across public surfaces using the registry: homepage first, then promotions/search/listing feeds, then content rails.
+
+### Phase 3 Implementation Checkpoint (2026-04-23)
+
+- Implemented with real repository-backed RSC views (no hardcoded listing/detail payloads):
+  - Public listings: products, auctions, pre-orders, stores, categories, reviews.
+  - Listing-extension surfaces: category detail and store detail tabs.
+  - Detail-commerce surfaces: product detail, auction detail, pre-order detail.
+
+STORE DETAIL TABS — DESKTOP (implemented)
+
++--------------------------------------------------------------------------------------+
+| Store Header (name, rating, metadata)                                                |
+| [Products] [Auctions] [Reviews] [About]                                              |
++--------------------------------------------------------------------------------------+
+| Active Tab Content                                                                    |
+|                                                                                      |
+|  Products: Card grid (sellerId/store owner filtered)                                 |
+|  Auctions: Auction card grid (isAuction=true filtered)                               |
+|  Reviews: Approved review cards (store seller filtered)                              |
+|  About: Store profile/about content                                                   |
++--------------------------------------------------------------------------------------+
+
+CATEGORY DETAIL — DESKTOP (implemented)
+
++--------------------------------------------------------------------------------------+
+| Breadcrumb: Home / Categories / {Category}                                           |
+| Category title + description                                                          |
++--------------------------------------------------------------------------------------+
+| Product Card Grid (status=published + categorySlug={slug})                           |
+| [card] [card] [card] [card]                                                          |
+| [card] [card] [card] [card]                                                          |
++--------------------------------------------------------------------------------------+
+
+DETAIL-COMMERCE — DESKTOP (implemented for product/auction/pre-order)
+
++--------------------------------------+-----------------------------------------------+
+| Gallery / media                       | Summary + pricing + actions                   |
+| (real image fallback handling)        | (real payload, no mock placeholders)          |
+|                                       |                                               |
+|                                       | Primary CTA                                   |
+|                                       | Secondary CTA / bid / reserve                 |
++--------------------------------------+-----------------------------------------------+
 
 ### Phase 4: Migrate seller surfaces
 

@@ -1,4 +1,6 @@
-import { HowOffersWorkView } from "@mohasinac/appkit";
+﻿import { HowOffersWorkView } from "@mohasinac/appkit";
+
+export const revalidate = 3600;
 
 export default function Page() {
   return <HowOffersWorkView />;

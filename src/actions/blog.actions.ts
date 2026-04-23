@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 /**
  * Blog Server Actions -- thin entrypoints.
@@ -35,7 +35,6 @@ import {
 import type { BlogPostDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-export type { CreateBlogPostInput, UpdateBlogPostInput };
 
 const blogIdSchema = z.object({ id: z.string().min(1, "id is required") });
 

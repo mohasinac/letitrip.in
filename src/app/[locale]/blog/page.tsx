@@ -1,7 +1,7 @@
-import { BlogIndexPageView } from "@mohasinac/appkit";
+﻿import { BlogIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 
-export default async function Page() {
+export default function Page() {
   return <BlogIndexPageView />;
 }

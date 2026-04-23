@@ -1,4 +1,5 @@
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
@@ -6,15 +7,11 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  const store: StoreDetail = {
-    id: storeSlug,
-    storeSlug,
-    ownerId: "",
-    storeName: storeSlug,
-    status: "active",
-    isPublic: true,
-    storeDescription: "Store about route wired to appkit.",
-  };
+  const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);
 
-  return <StoreAboutView store={store} />;
+  if (!store) {
+    return null;
+  }
+
+  return <StoreAboutView store={store as unknown as StoreDetail} />;
 }

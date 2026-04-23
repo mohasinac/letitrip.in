@@ -6,7 +6,30 @@ const nextConfig = {
   // Keep appkit bundled by Next so subpath imports such as
   // @mohasinac/appkit/server do not rely on Node external ESM resolution.
   transpilePackages: ["@mohasinac/appkit"],
-  serverExternalPackages: ["@upstash/ratelimit", "@upstash/redis"],
+  serverExternalPackages: [
+    "@upstash/ratelimit",
+    "@upstash/redis",
+    // Exclude all Firebase Admin and Google Cloud packages from client bundle
+    "firebase-admin",
+    "@google-cloud/firestore",
+    "@google-cloud/storage",
+    "@google-cloud/common",
+    "google-auth-library",
+    "google-gax",
+    "gaxios",
+    "gtoken",
+    "jws",
+    "teeny-request",
+    "http-proxy-agent",
+    "https-proxy-agent",
+    "configstore",
+    "graceful-fs",
+    "make-dir",
+    "write-file-atomic",
+    "dot-prop",
+    "json-file-plus",
+    "@mohasinac/sievejs",
+  ],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },

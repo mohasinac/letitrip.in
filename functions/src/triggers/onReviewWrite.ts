@@ -16,9 +16,11 @@
  *   enough (< few thousand per product) to make this fast and safe.
  */
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { ReviewStatusValues } from "@mohasinac/appkit";
-import { reviewRepository } from "@mohasinac/appkit";
-import { storeRepository } from "@mohasinac/appkit";
+import {
+  ReviewStatusValues,
+  reviewRepository,
+  storeRepository,
+} from "../lib/appkit";
 import { db } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";

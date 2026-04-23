@@ -13,9 +13,11 @@
  *   5. Pushes a real-time alert to `notifications/{uid}` in Realtime DB.
  */
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { notificationRepository } from "@mohasinac/appkit";
-import { bidRepository } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import {
+  notificationRepository,
+  bidRepository,
+  productRepository,
+} from "../lib/appkit";
 import { db, getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";

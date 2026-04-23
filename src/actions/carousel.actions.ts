@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Carousel Server Actions � thin entrypoint (admin only)
+ * Carousel Server Actions ï¿½ thin entrypoint (admin only)
  */
 
 import { z } from "zod";
@@ -83,4 +83,3 @@ export async function getCarouselSlideByIdAction(id: string): Promise<CarouselSl
   return getCarouselSlideById(id) as any;
 }
 
-export type { CarouselSlideInput, CarouselSlideUpdateInput };

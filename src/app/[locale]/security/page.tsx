@@ -1,4 +1,6 @@
-import { SecurityPrivacyView } from "@mohasinac/appkit";
+﻿import { SecurityPrivacyView } from "@mohasinac/appkit";
+
+export const revalidate = 3600;
 
 export default function Page() {
   return <SecurityPrivacyView />;

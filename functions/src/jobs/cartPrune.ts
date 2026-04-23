@@ -6,7 +6,7 @@
  * Carts are low-value state that accumulate from anonymous or churned users.
  */
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { cartRepository } from "@mohasinac/appkit";
+import { cartRepository } from "../lib/appkit";
 import { logInfo, logError } from "../utils/logger";
 import { batchDelete } from "../utils/batchHelper";
 import { SCHEDULES, REGION, CART_TTL_DAYS } from "../config/constants";

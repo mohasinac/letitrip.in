@@ -1,4 +1,4 @@
-import { StoreProductsRouteClient } from "@/components/routing/StoreProductsRouteClient";
+import { StoreProductsPageView } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
@@ -6,5 +6,5 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  return <StoreProductsRouteClient storeSlug={storeSlug} />;
+  return <StoreProductsPageView storeSlug={storeSlug} />;
 }

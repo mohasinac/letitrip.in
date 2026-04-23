@@ -9,7 +9,7 @@
  *      (confirmed, shipped, delivered).
  */
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { notificationRepository } from "@mohasinac/appkit";
+import { notificationRepository } from "../lib/appkit";
 import { getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";

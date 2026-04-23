@@ -1,5 +1,7 @@
-import { ReviewsRouteClient } from "@/components/routing/ReviewsRouteClient";
+﻿import { ReviewsIndexPageView } from "@mohasinac/appkit";
+
+export const revalidate = 120;
 
 export default function Page() {
-  return <ReviewsRouteClient />;
+  return <ReviewsIndexPageView />;
 }

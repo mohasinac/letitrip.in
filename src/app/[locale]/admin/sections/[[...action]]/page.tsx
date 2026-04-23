@@ -1,4 +1,4 @@
-import { AdminSectionsView } from "@mohasinac/appkit";
+﻿import { AdminSectionsView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminSectionsView />;

@@ -53,5 +53,5 @@ export const POST = withProviders(createRouteHandler<
       SUCCESS_MESSAGES.PASSWORD.RESET_EMAIL_SENT,
     );
   },
-});
+}));
 

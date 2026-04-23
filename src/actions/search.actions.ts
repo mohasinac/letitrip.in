@@ -1,7 +1,7 @@
-"use server";
+﻿"use server";
 
 /**
- * Search Server Action — thin wrapper
+ * Search Server Action â€” thin wrapper
  *
  * Business logic lives in @mohasinac/appkit/features/search.
  * This wrapper adds Next.js server-action semantics.
@@ -10,7 +10,6 @@
 import { searchProducts, type SearchProductsResult } from "@mohasinac/appkit";
 import type { SearchQuery } from "@mohasinac/appkit";
 
-export type { SearchQuery, SearchProductsResult };
 
 // Backwards-compat alias
 export type SearchParams = SearchQuery;

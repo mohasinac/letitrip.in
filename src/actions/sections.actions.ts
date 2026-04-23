@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 /**
  * Homepage Sections Server Actions -- thin entrypoints.
@@ -32,7 +32,6 @@ import {
 import type { HomepageSectionDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
-export type { CreateHomepageSectionInput, UpdateHomepageSectionInput };
 
 const sectionIdSchema = z.object({ id: z.string().min(1, "id is required") });
 

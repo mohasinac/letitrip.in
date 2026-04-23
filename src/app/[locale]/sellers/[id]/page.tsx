@@ -1,5 +1,7 @@
-import { SellerStorefrontView } from "@mohasinac/appkit";
+﻿import { PublicProfileView } from "@mohasinac/appkit";
 
-export default function Page() {
-  return <SellerStorefrontView />;
+export const revalidate = 120;
+
+export default function Page({ params }: { params: { id: string } }) {
+  return <PublicProfileView userId={params.id} />;
 }
