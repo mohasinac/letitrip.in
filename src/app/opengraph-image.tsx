@@ -24,7 +24,7 @@ export default function OpengraphImage() {
         position: "relative",
         overflow: "hidden",
       }}
-    >
+     data-section="opengraph-image-div-1">
       {/* Background pattern */}
       <div
         style={{
@@ -50,7 +50,7 @@ export default function OpengraphImage() {
           marginBottom: 32,
           fontSize: 64,
         }}
-      >
+       data-section="opengraph-image-div-2">
         🛍️
       </div>
 
@@ -64,7 +64,7 @@ export default function OpengraphImage() {
           marginBottom: 16,
           textShadow: "0 4px 24px rgba(0,0,0,0.3)",
         }}
-      >
+       data-section="opengraph-image-div-3">
         {SEO_CONFIG.siteName}
       </div>
 
@@ -76,7 +76,7 @@ export default function OpengraphImage() {
           fontWeight: 400,
           letterSpacing: "0.5px",
         }}
-      >
+       data-section="opengraph-image-div-4">
         Shop, Bid &amp; Sell — India&apos;s Multi-Seller Marketplace
       </div>
 
@@ -89,7 +89,7 @@ export default function OpengraphImage() {
           color: "rgba(255,255,255,0.6)",
           letterSpacing: "1px",
         }}
-      >
+       data-section="opengraph-image-div-5">
         letitrip.in
       </div>
     </div>,

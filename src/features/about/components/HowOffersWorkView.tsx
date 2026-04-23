@@ -63,12 +63,12 @@ export async function HowOffersWorkView() {
   const RULES = [t("rulesItem1"), t("rulesItem2"), t("rulesItem3")];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10" data-section="howoffersworkview-div-27">
       {/* Hero */}
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className={`${page.container.md} text-center`}>
+        <div className={`${page.container.md} text-center`} data-section="howoffersworkview-div-28">
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
@@ -80,7 +80,7 @@ export async function HowOffersWorkView() {
 
       <div
         className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}
-      >
+       data-section="howoffersworkview-div-29">
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8 text-center">
@@ -91,13 +91,13 @@ export async function HowOffersWorkView() {
               <div
                 key={number}
                 className={`${flex.center} gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
-              >
+               data-section="howoffersworkview-div-30">
                 <div
                   className={`flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/40 ${flex.center} text-xl`}
-                >
+                 data-section="howoffersworkview-div-31">
                   {icon}
                 </div>
-                <div>
+                <div data-section="howoffersworkview-div-32">
                   <Text className="font-semibold mb-0.5">
                     {number}. {title}
                   </Text>
@@ -126,12 +126,12 @@ export async function HowOffersWorkView() {
           </Heading>
           <div
             className={`rounded-xl border p-6 ${themed.bgSecondary} ${themed.border} space-y-3`}
-          >
+           data-section="howoffersworkview-div-33">
             {RULES.map((rule, i) => (
-              <div key={i} className={`${flex.center} gap-3`}>
+              <div key={i} className={`${flex.center} gap-3`} data-section="howoffersworkview-div-34">
                 <div
                   className={`flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`}
-                >
+                 data-section="howoffersworkview-div-35">
                   {i + 1}
                 </div>
                 <Text variant="secondary" className="text-sm leading-relaxed">
@@ -152,7 +152,7 @@ export async function HowOffersWorkView() {
           <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
             {t("ctaText")}
           </Text>
-          <div className={`${flex.center} gap-4 flex-wrap`}>
+          <div className={`${flex.center} gap-4 flex-wrap`} data-section="howoffersworkview-div-36">
             <TextLink href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK} variant="muted">
               {t("seeAuctions")}
             </TextLink>

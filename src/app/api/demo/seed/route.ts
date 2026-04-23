@@ -21,13 +21,13 @@ import {
   getPiiConfigError,
 } from "@mohasinac/appkit";
 import {
-  usersSeedData,
+  pokemonUsersSeedData,
   addressesSeedData,
   storeAddressesSeedData,
-  categoriesSeedData,
-  storesSeedData,
+  pokemonCategoriesSeedData,
+  pokemonStoresSeedData,
   sessionsSeedData,
-  productsSeedData,
+  pokemonProductsSeedData,
   ordersSeedData,
   reviewsSeedData,
   cartsSeedData,
@@ -38,8 +38,8 @@ import {
   payoutsSeedData,
   notificationsSeedData,
   blogPostsSeedData,
-  carouselSlidesSeedData,
-  homepageSectionsSeedData,
+  pokemonCarouselSlidesSeedData,
+  pokemonHomepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
 } from "@mohasinac/appkit";
@@ -66,6 +66,46 @@ import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
 import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+
+const wishlistsSeedData: Array<{
+  userId: string;
+  productId: string;
+  addedAt: Date;
+}> = [
+  {
+    userId: "user-ash-ketchum-pallet-ash",
+    productId: "product-charizard-base1-4-holo-rare-fire-blaine-1",
+    addedAt: daysAgo(7),
+  },
+  {
+    userId: "user-ash-ketchum-pallet-ash",
+    productId: "product-mewtwo-base1-10-holo-rare-psychic-surge-1",
+    addedAt: daysAgo(5),
+  },
+  {
+    userId: "user-misty-water-gym-misty",
+    productId: "product-zapdos-base1-16-holo-rare-electric-surge-1",
+    addedAt: daysAgo(4),
+  },
+  {
+    userId: "user-lt-surge-electric-surge",
+    productId: "product-blastoise-base1-2-holo-rare-water-misty-1",
+    addedAt: daysAgo(3),
+  },
+  {
+    userId: "user-blaine-fire-gym-blaine",
+    productId: "product-venusaur-base1-15-holo-rare-grass-blaine-1",
+    addedAt: daysAgo(2),
+  },
+  {
+    userId: "user-ash-ketchum-pallet-ash",
+    productId: "product-blastoise-base1-2-holo-rare-water-misty-1",
+    addedAt: daysAgo(1),
+  },
+];
+
 type CollectionName =
   | "users"
   | "addresses"
@@ -87,7 +127,8 @@ type CollectionName =
   | "events"
   | "eventEntries"
   | "sessions"
-  | "carts";
+  | "carts"
+  | "wishlists";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -117,21 +158,23 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   eventEntries: EVENT_ENTRIES_COLLECTION,
   sessions: SESSION_COLLECTION,
   carts: CART_COLLECTION,
+  wishlists: "wishlist", // Subcollection under users
 };
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
-  users: usersSeedData,
+  // Pokemon-first core datasets are owned in appkit.
+  users: pokemonUsersSeedData,
   addresses: addressesSeedData,
   storeAddresses: storeAddressesSeedData,
-  categories: categoriesSeedData,
-  stores: storesSeedData,
-  products: productsSeedData,
+  categories: pokemonCategoriesSeedData,
+  stores: pokemonStoresSeedData,
+  products: pokemonProductsSeedData,
   orders: ordersSeedData,
   reviews: reviewsSeedData,
   bids: bidsSeedData,
   coupons: couponsSeedData,
-  carouselSlides: carouselSlidesSeedData,
-  homepageSections: homepageSectionsSeedData,
+  carouselSlides: pokemonCarouselSlidesSeedData,
+  homepageSections: pokemonHomepageSectionsSeedData,
   siteSettings: [siteSettingsSeedData], // Wrap singleton in array
   faqs: faqSeedData,
   notifications: notificationsSeedData,
@@ -141,6 +184,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   eventEntries: eventEntriesSeedData,
   sessions: sessionsSeedData,
   carts: cartsSeedData,
+  wishlists: wishlistsSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
@@ -222,6 +266,22 @@ async function countExistingForCollection(
           .doc(d.storeSlug)
           .collection(STORE_ADDRESS_SUBCOLLECTION)
           .doc(d.id),
+      );
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "wishlists") {
+    const refs = (seedData as any[])
+      .filter((d) => d.userId && d.productId)
+      .map((d) =>
+        db
+          .collection(USER_COLLECTION)
+          .doc(d.userId)
+          .collection("wishlist")
+          .doc(d.productId),
       );
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
@@ -376,7 +436,8 @@ export async function POST(request: NextRequest) {
     }
 
     const collectionsToProcess =
-      collections || (Object.keys(COLLECTION_MAP) as CollectionName[]);
+      collections ?? (Object.keys(COLLECTION_MAP) as CollectionName[]);
+
     const db = getAdminDb();
     const auth = getAdminAuth();
 
@@ -630,6 +691,42 @@ export async function POST(request: NextRequest) {
                 totalErrors++;
               }
             }
+          } else if (collectionName === "wishlists") {
+            // Wishlists are subcollection under users; doc id is productId
+            for (const wishlistData of seedData) {
+              try {
+                const { userId, productId, ...data } = wishlistData as any;
+
+                if (!userId || !productId) {
+                  serverLogger.error("Wishlist item missing userId or productId");
+                  totalErrors++;
+                  continue;
+                }
+
+                const docRef = db
+                  .collection(USER_COLLECTION)
+                  .doc(userId)
+                  .collection("wishlist")
+                  .doc(productId);
+                const docSnapshot = await docRef.get();
+                if (docSnapshot.exists) {
+                  totalSkipped++;
+                  continue;
+                }
+
+                await docRef.set(
+                  stripUndefined({
+                    productId,
+                    ...data,
+                    addedAt: data.addedAt ?? new Date(),
+                  }),
+                );
+                totalCreated++;
+              } catch (err) {
+                serverLogger.error(`Error seeding wishlist item:`, err);
+                totalErrors++;
+              }
+            }
           } else if (collectionName === "siteSettings") {
             // Site settings is a singleton document
             const settingsData = seedData[0];
@@ -840,6 +937,36 @@ export async function POST(request: NextRequest) {
                 totalErrors++;
               }
             }
+            } else if (collectionName === "wishlists") {
+              // Wishlists are subcollection under users; doc id is productId
+              for (const wishlistData of seedData) {
+                try {
+                  const { userId, productId } = wishlistData as any;
+
+                  if (!userId || !productId) {
+                    serverLogger.error("Wishlist item missing userId or productId");
+                    totalErrors++;
+                    continue;
+                  }
+
+                  const docRef = db
+                    .collection(USER_COLLECTION)
+                    .doc(userId)
+                    .collection("wishlist")
+                    .doc(productId);
+                  const docSnapshot = await docRef.get();
+
+                  if (docSnapshot.exists) {
+                    await docRef.delete();
+                    totalDeleted++;
+                  } else {
+                    totalSkipped++;
+                  }
+                } catch (err) {
+                  serverLogger.error(`Error deleting wishlist item:`, err);
+                  totalErrors++;
+                }
+              }
           } else if (collectionName === "siteSettings") {
             // Delete singleton document
             const docRef = db.collection(firestoreCollection).doc("global");

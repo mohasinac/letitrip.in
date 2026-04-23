@@ -102,12 +102,12 @@ export async function HowReviewsWorkView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10" data-section="howreviewsworkview-div-51">
       {/* Hero */}
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className={`${page.container.md} text-center`}>
+        <div className={`${page.container.md} text-center`} data-section="howreviewsworkview-div-52">
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
@@ -119,7 +119,7 @@ export async function HowReviewsWorkView() {
 
       <div
         className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}
-      >
+       data-section="howreviewsworkview-div-53">
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8 text-center">
@@ -130,13 +130,13 @@ export async function HowReviewsWorkView() {
               <div
                 key={number}
                 className={`flex items-start gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
-              >
+               data-section="howreviewsworkview-div-54">
                 <div
                   className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}
-                >
+                 data-section="howreviewsworkview-div-55">
                   {icon}
                 </div>
-                <div>
+                <div data-section="howreviewsworkview-div-56">
                   <Text className="font-semibold mb-0.5">
                     {number}. {title}
                   </Text>
@@ -165,12 +165,12 @@ export async function HowReviewsWorkView() {
           <Heading level={2} className="mb-8 text-center">
             {t("infoTitle")}
           </Heading>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2" data-section="howreviewsworkview-div-57">
             {INFO_CARDS.map(({ icon: Icon, title, text, color, iconColor }) => (
-              <div key={title} className={`rounded-xl border p-5 ${color}`}>
+              <div key={title} className={`rounded-xl border p-5 ${color}`} data-section="howreviewsworkview-div-58">
                 <div
                   className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}
-                >
+                 data-section="howreviewsworkview-div-59">
                   <Icon className={`w-5 h-5 ${iconColor}`} />
                 </div>
                 <Text className="font-semibold mb-1">{title}</Text>
@@ -192,7 +192,7 @@ export async function HowReviewsWorkView() {
           <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
             {t("ctaText")}
           </Text>
-          <div className={`${flex.center} gap-4 flex-wrap`}>
+          <div className={`${flex.center} gap-4 flex-wrap`} data-section="howreviewsworkview-div-60">
             <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
             <TextLink href={ROUTES.PUBLIC.HOW_ORDERS_WORK} variant="muted">
               {t("ctaOrders")}

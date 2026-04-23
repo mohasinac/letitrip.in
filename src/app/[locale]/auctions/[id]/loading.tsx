@@ -3,7 +3,7 @@ import { Section, Stack, Skeleton } from "@mohasinac/appkit/ui";
 export default function Loading() {
   return (
     <Section className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div data-testid="auction-detail-loading-grid" className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Skeleton variant="rectangular" height="400px" className="rounded-xl w-full" />
         <Stack gap="md">
           <Skeleton variant="text" width="70%" height="28px" />

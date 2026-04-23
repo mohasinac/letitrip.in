@@ -45,7 +45,7 @@ export const GET = withProviders(createRouteHandler({
           { status: ProductStatusValues.PUBLISHED },
         ),
         couponsRepository.list({
-          filters: `validity.isActive==true,validity.endDate>=${nowIso},validity.startDate<=${nowIso}`,
+          filters: `validity.isActive==true,validity.endDate>=${nowIso}`,
           sorts: "validity.endDate",
           page: "1",
           pageSize: "50",
@@ -55,7 +55,9 @@ export const GET = withProviders(createRouteHandler({
     return successResponse({
       promotedProducts: promotedResult.items,
       featuredProducts: featuredResult.items,
-      activeCoupons: activeCouponsResult.items,
+      activeCoupons: activeCouponsResult.items.filter(
+        (c) => !c.validity?.startDate || c.validity.startDate <= nowIso,
+      ),
     });
   },
 }));

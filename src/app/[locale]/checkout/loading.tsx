@@ -3,7 +3,7 @@ import { Section, Stack, Skeleton } from "@mohasinac/appkit/ui";
 export default function Loading() {
   return (
     <Section className="p-6 max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div data-testid="checkout-loading-grid" className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Shipping/Payment */}
         <Stack gap="lg">
           <Stack gap="sm">

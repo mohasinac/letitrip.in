@@ -55,12 +55,12 @@ export async function FeesView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10" data-section="feesview-div-10">
       {/* Hero */}
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className={`${page.container.sm} text-center`}>
+        <div className={`${page.container.sm} text-center`} data-section="feesview-div-11">
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
@@ -72,13 +72,13 @@ export async function FeesView() {
 
       <div
         className={`${page.container.sm} py-10 md:py-12 lg:py-16 space-y-12`}
-      >
+       data-section="feesview-div-12">
         {/* Fee table */}
         <Section>
           <Heading level={2} className="mb-6">
             {t("tableTitle")}
           </Heading>
-          <div className={`overflow-x-auto rounded-xl border ${themed.border}`}>
+          <div className={`overflow-x-auto rounded-xl border ${themed.border}`} data-section="feesview-div-13">
             <table className="w-full text-sm">
               <thead className={themed.bgSecondary}>
                 <tr>
@@ -132,11 +132,11 @@ export async function FeesView() {
           </Text>
           <div
             className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 max-w-sm`}
-          >
+           data-section="feesview-div-14">
             <Heading level={3} className="text-base mb-4">
               {t("payoutExampleProduct")}
             </Heading>
-            <div className="space-y-2">
+            <div className="space-y-2" data-section="feesview-div-15">
               {OFFER_PAYOUT_ROWS.map((row, i) => (
                 <div
                   key={i}
@@ -145,7 +145,7 @@ export async function FeesView() {
                       ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 font-bold"
                       : ""
                   }`}
-                >
+                 data-section="feesview-div-16">
                   <Text
                     className={
                       row.highlight

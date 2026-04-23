@@ -49,7 +49,7 @@ export function HomepageNewsletterForm() {
       <label htmlFor="homepage-newsletter-email" className="sr-only">
         Email address
       </label>
-      <div className="flex w-full flex-col gap-2 sm:flex-row">
+      <div className="flex w-full flex-col gap-2 sm:flex-row" data-section="homepagenewsletterform-div-9">
         <input
           id="homepage-newsletter-email"
           type="email"

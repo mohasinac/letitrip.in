@@ -3,7 +3,7 @@ import { Grid, Section, Stack, Skeleton } from "@mohasinac/appkit/ui";
 export default function Loading() {
   return (
     <Section className="p-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div data-testid="auctions-loading-toolbar" className="mb-6 flex items-center justify-between">
         <Skeleton variant="text" width="200px" height="32px" />
         <Skeleton variant="rectangular" width="120px" height="36px" className="rounded-lg" />
       </div>

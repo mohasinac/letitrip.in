@@ -3,13 +3,13 @@ import { Section, Stack, Skeleton } from "@mohasinac/appkit/ui";
 export default function Loading() {
   return (
     <Section className="p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div data-testid="cart-loading-grid" className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart items */}
-        <div className="lg:col-span-2">
+        <div data-testid="cart-loading-items" className="lg:col-span-2">
           <Skeleton variant="text" width="180px" height="28px" className="mb-4" />
           <Stack gap="md">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex gap-4">
+              <div key={i} data-testid="cart-loading-item" className="flex gap-4">
                 <Skeleton variant="rectangular" width="100px" height="100px" className="rounded-lg" />
                 <Stack gap="sm" className="flex-grow">
                   <Skeleton variant="text" width="70%" />

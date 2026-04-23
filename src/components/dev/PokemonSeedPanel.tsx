@@ -41,6 +41,7 @@ const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
   "orders",
   "bids",
   "carts",
+  "wishlists",
   "coupons",
   "reviews",
   "payouts",
@@ -138,6 +139,7 @@ export function PokemonSeedPanel() {
     orders: "Orders",
     bids: "Bids / Auctions",
     carts: "Carts",
+    wishlists: "Wishlists",
     coupons: "Coupons (POKEFEST15, TRAINERS-CLOSET10, PROF-OAKS15)",
     reviews: "Reviews",
     payouts: "Payouts",
@@ -149,7 +151,7 @@ export function PokemonSeedPanel() {
     faqs: "FAQs",
     notifications: "Notifications",
     sessions: "Sessions",
-    siteSettings: "Site Settings",
+    siteSettings: "Site Settings + Ad Inventory / Placements",
     storeAddresses: "Store Addresses",
   };
 
@@ -252,9 +254,9 @@ export function PokemonSeedPanel() {
           aria-label={loadingMessage || "Loading…"}
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-5"
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
-        >
+         data-section="pokemonseedpanel-div-7">
           <Spinner size="xl" variant="pokeball" label={loadingMessage || "Loading…"} />
-          <div className="text-center px-6">
+          <div className="text-center px-6" data-section="pokemonseedpanel-div-8">
             <p className="text-white font-bold text-lg leading-snug">
               {isPending ? loadingMessage : "Loading status…"}
             </p>
@@ -351,7 +353,7 @@ export function PokemonSeedPanel() {
               {/* Transactional Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  🛒 Transactional (orders, bids, carts, coupons, reviews, payouts)
+                  🛒 Transactional (orders, bids, carts, wishlists, coupons, reviews, payouts)
                 </Text>
                 <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
                   {TRANSACTIONAL_COLLECTIONS.map((col) => (
@@ -399,7 +401,7 @@ export function PokemonSeedPanel() {
               {/* System Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  ⚙️ System (notifications, sessions, site settings, store addresses)
+                  ⚙️ System (notifications, sessions, site settings with ads, store addresses)
                 </Text>
                 <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
                   {SYSTEM_COLLECTIONS.map((col) => (
@@ -588,6 +590,12 @@ export function PokemonSeedPanel() {
                 </Text>
                 <Text>
                   <strong className="text-gray-900 dark:text-slate-200">PokéFest 2026 Coupon Drop</strong> — POKEFEST15, TRAINERS-CLOSET10, and PROF-OAKS15 discount codes with event entries and notifications.
+                </Text>
+                <Text>
+                  <strong className="text-gray-900 dark:text-slate-200">Wishlist + Promotions Coverage</strong> — seeded wishlist items, promoted products, featured products, active coupons, and homepage-linked merchandising flows.
+                </Text>
+                <Text>
+                  <strong className="text-gray-900 dark:text-slate-200">Admin Ads Coverage</strong> — site settings include ad placements, consent gating, and sample ad inventory for homepage, listings, and search slots.
                 </Text>
                 <Text>
                   <strong className="text-gray-900 dark:text-slate-200">Role-Based Credentials</strong> — Admin, seller, and buyer accounts are created and credentials are shown after seeding.

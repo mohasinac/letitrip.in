@@ -1,5 +1,5 @@
-﻿import { DemoSeedView } from "@mohasinac/appkit";
+﻿import { PokemonSeedPanel } from "@/components/dev/PokemonSeedPanel";
 
 export default function Page() {
-  return <DemoSeedView />;
+  return <PokemonSeedPanel />;
 }

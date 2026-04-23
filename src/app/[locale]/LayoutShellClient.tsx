@@ -326,7 +326,7 @@ export default function LayoutShellClient({
         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
           Get deals & drops in your inbox
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2" data-section="layoutshellclient-div-6">
           <input
             type="email"
             placeholder="your@email.com"

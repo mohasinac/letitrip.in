@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <Section className="p-6">
       {/* Filter bar */}
-      <div className="mb-6 flex items-center justify-between">
+      <div data-testid="products-loading-toolbar" className="mb-6 flex items-center justify-between">
         <Skeleton variant="rectangular" width="180px" height="36px" className="rounded-lg" />
         <Skeleton variant="rectangular" width="120px" height="36px" className="rounded-lg" />
       </div>
