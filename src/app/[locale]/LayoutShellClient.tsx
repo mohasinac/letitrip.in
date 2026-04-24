@@ -21,6 +21,7 @@ import {
 } from "@mohasinac/appkit/client";
 import Link from "next/link";
 import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
+import { API_ROUTES } from "@/constants";
 
 export default function LayoutShellClient({
   children,
@@ -47,7 +48,7 @@ export default function LayoutShellClient({
 
   const handleLogout = useCallback(async () => {
     try {
-      await fetch("/api/auth/logout", {
+      await fetch(API_ROUTES.AUTH.LOGOUT, {
         method: "POST",
         credentials: "include",
       });

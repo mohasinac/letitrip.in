@@ -15,6 +15,9 @@ import { MAIN_NAV_ITEMS } from "@/constants/navigation";
 // Routes constants
 export * from "./routes";
 
+// API route constants
+export { API_ROUTES } from "./api";
+
 // Configuration constants
 export * from "./config";
 
