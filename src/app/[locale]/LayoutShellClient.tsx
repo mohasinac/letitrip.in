@@ -12,6 +12,7 @@ import {
   NavigationLoader,
   ROUTES,
   Div,
+  Text,
   Button,
   Search,
   useSession,
@@ -324,9 +325,9 @@ export default function LayoutShellClient({
         onSubmit={(e) => e.preventDefault()}
         className="flex flex-col gap-2"
       >
-        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+        <Text size="xs" className="font-medium text-zinc-700 dark:text-zinc-300">
           Get deals & drops in your inbox
-        </p>
+        </Text>
         <div className="flex gap-2" data-section="layoutshellclient-div-6">
           <input
             type="email"

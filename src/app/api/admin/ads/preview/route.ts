@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { AD_FIELDS } from "@/constants/field-names";
 
 import {
   createApiHandler as createRouteHandler,
@@ -70,7 +71,7 @@ export const GET = withProviders(
       // 2. respect consent gate if consentRequired
       // 3. are within their schedule window
       const eligible = inventory.filter((item) => {
-        if (item.status !== "active" && item.status !== "scheduled") return false;
+        if (item.status !== AD_FIELDS.STATUS_VALUES.ACTIVE && item.status !== AD_FIELDS.STATUS_VALUES.SCHEDULED) return false;
         const placementIds = Array.isArray(item.placementIds) ? item.placementIds : [];
         if (!placementIds.includes(placementId)) return false;
         if (item.requiresConsent && !consentGranted) return false;

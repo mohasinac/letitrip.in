@@ -66,3 +66,24 @@ export type {
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";
 
+// Schema field name & status constants
+export {
+  PRODUCT_FIELDS,
+  PRODUCT_STATUS_TRANSITIONS,
+  ORDER_FIELDS,
+  REVIEW_FIELDS,
+  BID_FIELDS,
+  AD_FIELDS,
+  EVENT_FIELDS,
+  PAYOUT_FIELDS,
+  STORE_FIELDS,
+  OAUTH_STATE_VALUES,
+  CAROUSEL_FIELDS,
+  COUPON_FIELDS,
+  FAQ_FIELDS,
+  HOMEPAGE_SECTION_FIELDS,
+  SITE_SETTINGS_FIELDS,
+  COMMON_FIELDS,
+  SCHEMA_DEFAULTS,
+} from "./field-names";
+

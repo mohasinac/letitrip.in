@@ -1,4 +1,5 @@
 import "@/providers.config";
+import { EVENT_FIELDS } from "@/constants/field-names";
 /**
  * Admin Events [id] API Route
  * GET    /api/admin/events/:id — Get a single event
@@ -71,6 +72,6 @@ export async function DELETE(
 ): Promise<Response> {
   const { id } = await context.params;
   serverLogger.info("Admin deleting event", { id });
-  await eventRepository.changeStatus(id, "cancelled" as any);
+  await eventRepository.changeStatus(id, EVENT_FIELDS.STATUS_VALUES.CANCELLED as any);
   return Response.json(successResponse(null, SUCCESS_MESSAGES.EVENT.DELETED));
 }

@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
+import { AD_FIELDS } from "@/constants/field-names";
 import {
   createApiHandler as createRouteHandler,
   errorResponse,
@@ -19,7 +20,7 @@ const adPatchSchema = z
   .object({
     name: z.string().min(2).max(120).optional(),
     provider: z.enum(["manual", "adsense", "thirdParty"]).optional(),
-    status: z.enum(["draft", "active", "scheduled", "paused"]).optional(),
+    status: z.enum(Object.values(AD_FIELDS.STATUS_VALUES) as [string, ...string[]]).optional(),
     placementIds: z.array(z.string().min(1).max(80)).min(1).optional(),
     requiresConsent: z.boolean().optional(),
     priority: z.number().int().min(0).max(1000).optional(),
@@ -128,16 +129,16 @@ export const PATCH = withProviders(
           : existingHistory,
         // Set publishedAt / publishedBy on first activation
         publishedAt:
-          body?.status === "active" && prevStatus !== "active"
+          body?.status === AD_FIELDS.STATUS_VALUES.ACTIVE && prevStatus !== AD_FIELDS.STATUS_VALUES.ACTIVE
             ? nowIso
             : (existing as Record<string, unknown>).publishedAt,
         publishedBy:
-          body?.status === "active" && prevStatus !== "active"
+          body?.status === AD_FIELDS.STATUS_VALUES.ACTIVE && prevStatus !== AD_FIELDS.STATUS_VALUES.ACTIVE
             ? (user?.uid || "admin")
             : (existing as Record<string, unknown>).publishedBy,
       };
 
-      if (nextStatus === "active" || nextStatus === "scheduled") {
+      if (nextStatus === AD_FIELDS.STATUS_VALUES.ACTIVE || nextStatus === AD_FIELDS.STATUS_VALUES.SCHEDULED) {
         const publishValidation = getPublishValidation(
           updated as AdInventoryRecord,
           placements as PlacementRecord[],
@@ -145,7 +146,7 @@ export const PATCH = withProviders(
         );
         if (!publishValidation.isPublishable) {
           return errorResponse(
-            `Ad cannot be ${updated.status === "active" ? "published" : "scheduled"}: ${publishValidation.issues.join("; ")}`,
+            `Ad cannot be ${updated.status === AD_FIELDS.STATUS_VALUES.ACTIVE ? "published" : "scheduled"}: ${publishValidation.issues.join("; ")}`,
             400,
           );
         }

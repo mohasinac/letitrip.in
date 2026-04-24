@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { PAYOUT_FIELDS } from "@/constants/field-names";
 /**
  * POST /api/admin/payouts/weekly
  *
@@ -109,7 +110,7 @@ export const POST = withProviders(createRouteHandler({
         platformFee,
         platformFeeRate: PLATFORM_COMMISSION_RATE,
         currency: "INR",
-        status: "pending" as const,
+        status: PAYOUT_FIELDS.STATUS_VALUES.PENDING,
         paymentMethod:
           seller.payoutDetails?.method === "upi"
             ? ("upi" as const)

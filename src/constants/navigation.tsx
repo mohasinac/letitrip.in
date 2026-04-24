@@ -44,7 +44,7 @@ export interface NavItem {
  * Labels injected by MainNavbar via useTranslations("nav").
  * Translation key order: home, products, auctions, preOrders, categories, stores, events, blog, reviews
  */
-const { navIcons } = THEME_CONSTANTS.componentColors;
+const { navIcons } = THEME_CONSTANTS.colors;
 const iconSm = THEME_CONSTANTS.icon.size.sm;
 
 export const MAIN_NAV_ITEMS: NavItem[] = [

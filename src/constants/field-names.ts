@@ -275,6 +275,89 @@ export const BID_FIELDS = {
 } as const;
 
 // ============================================================================
+// AD FIELDS
+// ============================================================================
+
+export const AD_FIELDS = {
+  ID: "id",
+  TITLE: "title",
+  STATUS: "status",
+  ORDER: "order",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+
+  STATUS_VALUES: {
+    DRAFT: "draft",
+    ACTIVE: "active",
+    SCHEDULED: "scheduled",
+    PAUSED: "paused",
+  },
+} as const;
+
+// ============================================================================
+// EVENT FIELDS
+// ============================================================================
+
+export const EVENT_FIELDS = {
+  ID: "id",
+  TITLE: "title",
+  STATUS: "status",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+
+  STATUS_VALUES: {
+    DRAFT: "draft",
+    PUBLISHED: "published",
+    ACTIVE: "active",
+    ENDED: "ended",
+    CANCELLED: "cancelled",
+    PAUSED: "paused",
+  },
+} as const;
+
+// ============================================================================
+// PAYOUT FIELDS
+// ============================================================================
+
+export const PAYOUT_FIELDS = {
+  ID: "id",
+  STATUS: "status",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+
+  STATUS_VALUES: {
+    PENDING: "pending",
+    PROCESSING: "processing",
+    PAID: "paid",
+    FAILED: "failed",
+    CANCELLED: "cancelled",
+  },
+} as const;
+
+// ============================================================================
+// STORE / SELLER FIELDS
+// ============================================================================
+
+export const STORE_FIELDS = {
+  STATUS_VALUES: {
+    ACTIVE: "active",
+    PENDING: "pending",
+    SUSPENDED: "suspended",
+    REJECTED: "rejected",
+  },
+} as const;
+
+// ============================================================================
+// GOOGLE AUTH / OAUTH STATE FIELDS
+// ============================================================================
+
+export const OAUTH_STATE_VALUES = {
+  PENDING: "pending",
+  USED: "used",
+  EXPIRED: "expired",
+} as const;
+
+// ============================================================================
 // CAROUSEL SLIDE FIELDS
 // ============================================================================
 

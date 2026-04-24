@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
+import { AD_FIELDS } from "@/constants/field-names";
 import {
   createApiHandler as createRouteHandler,
   errorResponse,
@@ -18,7 +19,9 @@ import {
 } from "./validation";
 
 const placementIdSchema = z.string().min(1).max(80);
-const adStatusSchema = z.enum(["draft", "active", "scheduled", "paused"]);
+const adStatusSchema = z.enum(
+  Object.values(AD_FIELDS.STATUS_VALUES) as [string, ...string[]]
+);
 const adProviderSchema = z.enum(["manual", "adsense", "thirdParty"]);
 
 const adInventoryItemSchema = z.object({
@@ -232,7 +235,7 @@ export const POST = withProviders(
         updatedBy: user?.uid || "admin",
       };
 
-      if (nextItem.status === "active" || nextItem.status === "scheduled") {
+      if (nextItem.status === AD_FIELDS.STATUS_VALUES.ACTIVE || nextItem.status === AD_FIELDS.STATUS_VALUES.SCHEDULED) {
         const publishValidation = getPublishValidation(
           nextItem as AdInventoryRecord,
           placements as PlacementRecord[],
@@ -240,7 +243,7 @@ export const POST = withProviders(
         );
         if (!publishValidation.isPublishable) {
           return errorResponse(
-            `Ad cannot be ${nextItem.status === "active" ? "published" : "scheduled"}: ${publishValidation.issues.join("; ")}`,
+            `Ad cannot be ${nextItem.status === AD_FIELDS.STATUS_VALUES.ACTIVE ? "published" : "scheduled"}: ${publishValidation.issues.join("; ")}`,
             400,
           );
         }

@@ -1,4 +1,5 @@
 import "@/providers.config";
+import { STORE_FIELDS } from "@/constants/field-names";
 /**
  * Admin Stores [uid] API Route
  * GET   /api/admin/stores/:uid — Get a store by owner UID
@@ -15,7 +16,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 type RouteContext = { params: Promise<{ uid: string }> };
 
 const updateStoreSchema = z.object({
-  storeStatus: z.enum(["active", "pending", "suspended", "rejected"]).optional(),
+  storeStatus: z.enum(Object.values(STORE_FIELDS.STATUS_VALUES) as [string, ...string[]]).optional(),
   adminNotes: z.string().optional(),
   isFeatured: z.boolean().optional(),
 });

@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { EVENT_FIELDS } from "@/constants/field-names";
 import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit";
@@ -69,7 +70,7 @@ const createEventSchema = z.object({
   type: z.enum(["sale", "offer", "poll", "survey", "feedback"]),
   title: z.string().min(1),
   description: z.string().optional(),
-  status: z.enum(["draft", "active", "paused", "ended"]).default("draft"),
+  status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]).default(EVENT_FIELDS.STATUS_VALUES.DRAFT),
   startsAt: dateInputSchema,
   endsAt: dateInputSchema,
   coverImage: singleImageMediaSchema,
@@ -89,7 +90,7 @@ const updateEventSchema = createEventSchema.partial();
 
 const changeStatusSchema = z.object({
   id: z.string().min(1),
-  status: z.enum(["draft", "active", "paused", "ended"]),
+  status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
 });
 
 const updateEntrySchema = z.object({

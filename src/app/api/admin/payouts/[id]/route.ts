@@ -1,4 +1,5 @@
 import "@/providers.config";
+import { PAYOUT_FIELDS } from "@/constants/field-names";
 /**
  * Admin Payouts [id] API Route
  * GET   /api/admin/payouts/:id — Get a single payout
@@ -14,7 +15,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 type RouteContext = { params: Promise<{ id: string }> };
 
 const updatePayoutSchema = z.object({
-  status: z.enum(["pending", "processing", "paid", "failed", "cancelled"]),
+  status: z.enum(Object.values(PAYOUT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
   transactionId: z.string().optional(),
   notes: z.string().optional(),
 });

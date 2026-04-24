@@ -16,6 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { ORDER_FIELDS } from "@/constants/field-names";
 import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";
@@ -110,16 +111,16 @@ export async function POST(request: NextRequest) {
     if (awb) updates.shiprocketAWB = awb;
 
     if (status === DELIVERED_STATUS) {
-      updates.status = "delivered";
+      updates.status = ORDER_FIELDS.STATUS_VALUES.DELIVERED;
       updates.deliveryDate = new Date();
-      updates.payoutStatus = "eligible";
+      updates.payoutStatus = ORDER_FIELDS.PAYOUT_STATUS_VALUES.ELIGIBLE;
       serverLogger.info("Shiprocket webhook: order delivered", {
         orderId,
         srOrderId,
       });
     } else if (SHIPPED_STATUSES.has(status)) {
-      if (order.status !== "delivered") {
-        updates.status = "shipped";
+      if (order.status !== ORDER_FIELDS.STATUS_VALUES.DELIVERED) {
+        updates.status = ORDER_FIELDS.STATUS_VALUES.SHIPPED;
       }
     } else if (CANCELLED_STATUSES.has(status)) {
       serverLogger.info("Shiprocket webhook: order cancelled/returned", {

@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { EVENT_FIELDS } from "@/constants/field-names";
 /**
  * Admin Events API Route
  * GET /api/admin/events  — Paginated list with Sieve filtering
@@ -194,7 +195,7 @@ export const POST = withProviders(createRouteHandler({
       pollConfig: body.pollConfig,
       surveyConfig: body.surveyConfig as SurveyConfig | undefined,
       feedbackConfig: body.feedbackConfig as FeedbackConfig | undefined,
-      status: "draft",
+      status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
       createdBy: user.uid,
     });
 

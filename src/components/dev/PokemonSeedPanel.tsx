@@ -257,12 +257,12 @@ export function PokemonSeedPanel() {
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
          data-section="pokemonseedpanel-div-7">
           <Spinner size="xl" variant="pokeball" label={loadingMessage || "Loading…"} />
-          <div className="text-center px-6" data-section="pokemonseedpanel-div-8">
-            <p className="text-white font-bold text-lg leading-snug">
+          <Div className="text-center px-6">
+            <Text className="text-white font-bold text-lg leading-snug">
               {isPending ? loadingMessage : "Loading status…"}
-            </p>
+            </Text>
             {isPending && (
-              <p className="text-white/70 text-sm mt-1">
+              <Text className="text-white/70 text-sm mt-1">
                 {elapsedSecs < 5
                   ? "Starting up…"
                   : elapsedSecs < 15
@@ -270,9 +270,9 @@ export function PokemonSeedPanel() {
                   : elapsedSecs < 35
                   ? `${elapsedSecs}s — seeding products & users…`
                   : `${elapsedSecs}s — almost done, hang tight…`}
-              </p>
+              </Text>
             )}
-          </div>
+          </Div>
         </div>
       )}
 

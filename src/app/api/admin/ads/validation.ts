@@ -1,5 +1,7 @@
+import { AD_FIELDS } from "@/constants/field-names";
+
 type AdProvider = "manual" | "adsense" | "thirdParty";
-type AdStatus = "draft" | "active" | "scheduled" | "paused";
+type AdStatus = typeof AD_FIELDS.STATUS_VALUES[keyof typeof AD_FIELDS.STATUS_VALUES];
 
 export type AdInventoryRecord = {
   id?: string;
@@ -163,7 +165,7 @@ export function getPublishValidation(
     issues.push("End date must be after start date");
   }
 
-  if (item.status === "scheduled") {
+  if (item.status === AD_FIELDS.STATUS_VALUES.SCHEDULED) {
     if (!startAt) {
       issues.push("Scheduled ads require a valid start date");
     } else if (startAt.getTime() <= now) {
@@ -171,7 +173,7 @@ export function getPublishValidation(
     }
   }
 
-  if (item.status === "active") {
+  if (item.status === AD_FIELDS.STATUS_VALUES.ACTIVE) {
     if (startAt && startAt.getTime() > now) {
       issues.push("Active ads cannot have a future start date");
     }

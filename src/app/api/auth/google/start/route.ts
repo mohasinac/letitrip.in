@@ -19,6 +19,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { OAUTH_STATE_VALUES } from "@/constants/field-names";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 import { RTDB_PATHS } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Verify the event node exists and is still pending
     const db = getAdminRealtimeDb();
     const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
-    if (!snap.exists() || snap.val()?.status !== "pending") {
+    if (!snap.exists() || snap.val()?.status !== OAUTH_STATE_VALUES.PENDING) {
       serverLogger.warn("Google OAuth start: event not found or expired", {
         eventId,
       });

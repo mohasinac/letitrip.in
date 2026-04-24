@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 export default function Page() {
-  redirect("/promotions/deals");
+  redirect("/user/become-seller");
 }

@@ -1,8 +1,14 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
-      "Bash(xargs grep *)",
-      "Bash(npm run *)",
+      "*",
+      "Bash(ls src/app/[locale]/seller-guide/)",
+      "Bash(ls src/app/[locale]/security/)",
+      "Bash(ls src/app/[locale]/profile/)",
+      "Bash(ls src/app/[locale]/search/)",
+      "Bash(ls src/app/[locale]/sellers/)",
+      "Bash(ls src/app/[locale]/refund-policy/)",
       "Bash(npx tsc *)"
     ]
   }

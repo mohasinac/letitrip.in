@@ -1,4 +1,5 @@
 import "@/providers.config";
+import { EVENT_FIELDS } from "@/constants/field-names";
 /**
  * Admin Event Status API Route
  * PATCH /api/admin/events/:id/status — Update event status
@@ -12,7 +13,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 type RouteContext = { params: Promise<{ id: string }> };
 
 const updateStatusSchema = z.object({
-  status: z.enum(["draft", "published", "active", "ended", "cancelled", "paused"]),
+  status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
 });
 
 export async function PATCH(
