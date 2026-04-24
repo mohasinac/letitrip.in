@@ -1,3 +1,18 @@
+@import "@mohasinac/appkit/tokens";
+
+/* Consumer Theme Overrides */
+:root {
+  /* Colors - override appkit defaults */
+  --appkit-color-primary: #84e122; /* Lime Green */
+  --appkit-color-secondary: #e91e8c; /* Hot Pink */
+
+  /* Spacing - can override if needed */
+  /* --appkit-space-4: 1rem; */
+
+  /* Border radius - can override if needed */
+  /* --appkit-radius-card: 1rem; */
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

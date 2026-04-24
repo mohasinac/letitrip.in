@@ -166,6 +166,25 @@ export const THEME_CONSTANTS = {
       /** Default max width for horizontal scroller items */
       railMaxW: "max-w-[clamp(240px,36vw,380px)]" as const,
     },
+    /** Standard card heights for consistency */
+    height: {
+      sm: "h-32" as const,
+      md: "h-48" as const,
+      lg: "h-64" as const,
+      xl: "h-80" as const,
+      product: "h-72" as const,
+      store: "h-56" as const,
+      event: "h-80" as const,
+      blog: "h-96" as const,
+    },
+    /** Standard card widths for consistency */
+    width: {
+      sm: "w-32" as const,
+      md: "w-48" as const,
+      lg: "w-64" as const,
+      xl: "w-80" as const,
+      full: "w-full" as const,
+    },
   },
 
   /** Homepage section dimensions (viewport-relative + clamped). */
@@ -490,6 +509,18 @@ export const THEME_CONSTANTS = {
       titleBar: "text-zinc-600 dark:text-zinc-300",
       navbar: "text-zinc-900 dark:text-zinc-100",
       onLight: "text-zinc-600 dark:text-zinc-300",
+    },
+    // Per-item nav icon colors — change here to retheme all nav icons at once
+    navIcons: {
+      home: "text-blue-500 dark:text-blue-400",
+      products: "text-emerald-500 dark:text-emerald-400",
+      auctions: "text-amber-500 dark:text-amber-400",
+      preOrders: "text-purple-500 dark:text-purple-400",
+      categories: "text-violet-500 dark:text-violet-400",
+      stores: "text-orange-500 dark:text-orange-400",
+      events: "text-rose-500 dark:text-rose-400",
+      blog: "text-cyan-500 dark:text-cyan-400",
+      reviews: "text-yellow-500 dark:text-yellow-400",
     },
     // Icon button hovers
     iconButton: {

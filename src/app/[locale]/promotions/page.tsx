@@ -1,10 +1,25 @@
-import { redirect } from "next/navigation";
+import { PromotionsView } from "@mohasinac/appkit";
 
-type Props = {
-  params: Promise<{ locale: string }>;
-};
+export const revalidate = 120;
 
-export default async function Page({ params }: Props) {
-  const { locale } = await params;
-  redirect(`/${locale}/promotions/deals`);
+export default function Page() {
+  return (
+    <PromotionsView
+      labels={{
+        exclusiveOffersBadge: "Exclusive Offers",
+        title: "Promotions & Deals",
+        subtitle: "Discover amazing deals and exclusive offers on our products",
+        emptyDeals: "No deals available right now",
+        checkBack: "Check back later for new promotions!",
+        couponsTitle: "Available Coupons",
+        couponsSubtitle: "Use these coupons at checkout",
+        emptyCoupons: "No coupons available",
+        dealsTitle: "Hot Deals",
+        dealsSubtitle: "Limited time offers",
+        featuredTitle: "Featured Products",
+        featuredSubtitle: "Handpicked for you",
+      }}
+      hasContent={true}
+    />
+  );
 }

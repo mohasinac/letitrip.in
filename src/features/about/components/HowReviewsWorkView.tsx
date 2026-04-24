@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Stack, FlowDiagram } from "@mohasinac/appkit";
+import { Heading, Text, Section, Stack, FlowDiagram, Div, Grid } from "@mohasinac/appkit";
 import type { FlowStep } from "@mohasinac/appkit";
 import { TextLink } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
@@ -102,49 +102,45 @@ export async function HowReviewsWorkView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10" data-section="howreviewsworkview-div-51">
+    <Div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Hero */}
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className={`${page.container.md} text-center`} data-section="howreviewsworkview-div-52">
+        <Div className={`${page.container.md} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
           <Text variant="none" className="text-white/80 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
-        </div>
+        </Div>
       </Section>
 
-      <div
-        className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}
-       data-section="howreviewsworkview-div-53">
+      <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8 text-center">
             {t("stepsTitle")}
           </Heading>
-            <Stack gap="md" className="gap-5">
+          <Stack gap="md">
             {STEPS.map(({ number, icon, title, text }) => (
-              <div
+              <Div
                 key={number}
-                className={`flex items-start gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
-               data-section="howreviewsworkview-div-54">
-                <div
-                  className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}
-                 data-section="howreviewsworkview-div-55">
+                className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
+              >
+                <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}>
                   {icon}
-                </div>
-                <div data-section="howreviewsworkview-div-56">
+                </Div>
+                <Div>
                   <Text className="font-semibold mb-0.5">
                     {number}. {title}
                   </Text>
                   <Text variant="secondary" className="text-sm leading-relaxed">
                     {text}
                   </Text>
-                </div>
-              </div>
+                </Div>
+              </Div>
             ))}
           </Stack>
         </Section>
@@ -165,21 +161,19 @@ export async function HowReviewsWorkView() {
           <Heading level={2} className="mb-8 text-center">
             {t("infoTitle")}
           </Heading>
-          <div className="grid gap-5 sm:grid-cols-2" data-section="howreviewsworkview-div-57">
+          <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
             {INFO_CARDS.map(({ icon: Icon, title, text, color, iconColor }) => (
-              <div key={title} className={`rounded-xl border p-5 ${color}`} data-section="howreviewsworkview-div-58">
-                <div
-                  className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}
-                 data-section="howreviewsworkview-div-59">
+              <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+                <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
                   <Icon className={`w-5 h-5 ${iconColor}`} />
-                </div>
+                </Div>
                 <Text className="font-semibold mb-1">{title}</Text>
                 <Text variant="secondary" className="text-sm leading-relaxed">
                   {text}
                 </Text>
-              </div>
+              </Div>
             ))}
-          </div>
+          </Grid>
         </Section>
 
         {/* CTA */}
@@ -192,15 +186,15 @@ export async function HowReviewsWorkView() {
           <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
             {t("ctaText")}
           </Text>
-          <div className={`${flex.center} gap-4 flex-wrap`} data-section="howreviewsworkview-div-60">
+          <Div className={`${flex.center} gap-4 flex-wrap`}>
             <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
             <TextLink href={ROUTES.PUBLIC.HOW_ORDERS_WORK} variant="muted">
               {t("ctaOrders")}
             </TextLink>
-          </div>
+          </Div>
         </Section>
-      </div>
-    </div>
+      </Div>
+    </Div>
   );
 }
 

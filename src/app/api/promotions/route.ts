@@ -22,7 +22,8 @@ export const GET = withProviders(createRouteHandler({
   handler: async () => {
     serverLogger.info("Promotions page data requested");
 
-    const nowIso = new Date().toISOString();
+    const now = new Date();
+    const nowIso = now.toISOString();
 
     const [promotedResult, featuredResult, activeCouponsResult] =
       await Promise.all([
@@ -56,7 +57,7 @@ export const GET = withProviders(createRouteHandler({
       promotedProducts: promotedResult.items,
       featuredProducts: featuredResult.items,
       activeCoupons: activeCouponsResult.items.filter(
-        (c) => !c.validity?.startDate || c.validity.startDate <= nowIso,
+        (c) => !c.validity?.startDate || new Date(c.validity.startDate) <= now,
       ),
     });
   },

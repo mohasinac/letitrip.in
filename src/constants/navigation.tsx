@@ -23,6 +23,7 @@ import {
   BookOpen,
   Star,
 } from "lucide-react";
+import { THEME_CONSTANTS } from "./theme";
 import { ROUTES } from "./routes";
 
 /**
@@ -43,57 +44,54 @@ export interface NavItem {
  * Labels injected by MainNavbar via useTranslations("nav").
  * Translation key order: home, products, auctions, preOrders, categories, stores, events, blog, reviews
  */
+const { navIcons } = THEME_CONSTANTS.componentColors;
+const iconSm = THEME_CONSTANTS.icon.size.sm;
+
 export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     key: "home",
     href: String(ROUTES.HOME),
-    icon: <Home className="w-5 h-5 text-blue-500 dark:text-blue-400" />,
+    icon: <Home className={`${iconSm} ${navIcons.home}`} />,
   },
   {
     key: "products",
     href: String(ROUTES.PUBLIC.PRODUCTS),
-    icon: (
-      <ShoppingBag className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-    ),
+    icon: <ShoppingBag className={`${iconSm} ${navIcons.products}`} />,
   },
   {
     key: "auctions",
     href: String(ROUTES.PUBLIC.AUCTIONS),
-    icon: <Gavel className="w-5 h-5 text-amber-500 dark:text-amber-400" />,
+    icon: <Gavel className={`${iconSm} ${navIcons.auctions}`} />,
   },
   {
     key: "preOrders",
     href: String(ROUTES.PUBLIC.PRE_ORDERS),
-    icon: (
-      <CalendarCheck className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-    ),
+    icon: <CalendarCheck className={`${iconSm} ${navIcons.preOrders}`} />,
   },
   {
     key: "categories",
     href: String(ROUTES.PUBLIC.CATEGORIES),
-    icon: (
-      <LayoutGrid className="w-5 h-5 text-violet-500 dark:text-violet-400" />
-    ),
+    icon: <LayoutGrid className={`${iconSm} ${navIcons.categories}`} />,
   },
   {
     key: "stores",
     href: String(ROUTES.PUBLIC.STORES),
-    icon: <Store className="w-5 h-5 text-orange-500 dark:text-orange-400" />,
+    icon: <Store className={`${iconSm} ${navIcons.stores}`} />,
   },
   {
     key: "events",
     href: String(ROUTES.PUBLIC.EVENTS),
-    icon: <CalendarDays className="w-5 h-5 text-rose-500 dark:text-rose-400" />,
+    icon: <CalendarDays className={`${iconSm} ${navIcons.events}`} />,
   },
   {
     key: "blog",
     href: String(ROUTES.PUBLIC.BLOG),
-    icon: <BookOpen className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />,
+    icon: <BookOpen className={`${iconSm} ${navIcons.blog}`} />,
   },
   {
     key: "reviews",
     href: String(ROUTES.PUBLIC.REVIEWS),
-    icon: <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />,
+    icon: <Star className={`${iconSm} ${navIcons.reviews}`} />,
   },
 ];
 

@@ -23,6 +23,7 @@ import {
   Div,
   MediaImage,
 } from "@mohasinac/appkit/client";
+import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
 import { Spinner } from "@mohasinac/appkit/ui";
 import { demoSeedAction } from "@/actions/demo-seed.actions";
 import type { SeedCollectionName, SeedOperationResult } from "@/actions/demo-seed.types";
@@ -177,7 +178,7 @@ export function PokemonSeedPanel() {
     const fetchStatus = async () => {
       setIsLoadingStatus(true);
       try {
-        const response = await fetch("/api/demo/seed", { method: "GET" });
+        const response = await fetch(API_ROUTES.DEMO.SEED, { method: "GET" });
         const payload = await response.json();
         const collections = (payload?.data?.collections ?? []) as SeedCollectionStatus[];
         setStatus(collections);
@@ -232,7 +233,7 @@ export function PokemonSeedPanel() {
           }
         }
 
-        const response = await fetch("/api/demo/seed", { method: "GET" });
+        const response = await fetch(API_ROUTES.DEMO.SEED, { method: "GET" });
         const payload = await response.json();
         const collections = (payload?.data?.collections ?? []) as SeedCollectionStatus[];
         setStatus(collections);
@@ -252,7 +253,7 @@ export function PokemonSeedPanel() {
           role="dialog"
           aria-modal="true"
           aria-label={loadingMessage || "Loading…"}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-5"
+          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center ${THEME_CONSTANTS.spacing.gap.md}`}
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
          data-section="pokemonseedpanel-div-7">
           <Spinner size="xl" variant="pokeball" label={loadingMessage || "Loading…"} />
@@ -331,7 +332,7 @@ export function PokemonSeedPanel() {
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
                   🗂️ Core (users, stores, categories, products, addresses)
                 </Text>
-                <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
+                <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
                   {CORE_COLLECTIONS.map((col) => (
                     <Div key={col} className="flex items-center">
                       <Checkbox
@@ -355,7 +356,7 @@ export function PokemonSeedPanel() {
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
                   🛒 Transactional (orders, bids, carts, wishlists, coupons, reviews, payouts)
                 </Text>
-                <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
+                <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
                   {TRANSACTIONAL_COLLECTIONS.map((col) => (
                     <Div key={col} className="flex items-center">
                       <Checkbox
@@ -379,7 +380,7 @@ export function PokemonSeedPanel() {
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
                   📣 Content (blog, events, carousel, homepage, FAQs)
                 </Text>
-                <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
+                <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
                   {CONTENT_COLLECTIONS.map((col) => (
                     <Div key={col} className="flex items-center">
                       <Checkbox
@@ -403,7 +404,7 @@ export function PokemonSeedPanel() {
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
                   ⚙️ System (notifications, sessions, site settings with ads, store addresses)
                 </Text>
-                <Grid cols={2} gap="sm" className="md:grid-cols-3 lg:grid-cols-4">
+                <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
                   {SYSTEM_COLLECTIONS.map((col) => (
                     <Div key={col} className="flex items-center">
                       <Checkbox
@@ -426,7 +427,7 @@ export function PokemonSeedPanel() {
 
           {/* Controls */}
           <Stack gap="sm">
-            <Row justify="center" className="flex-wrap gap-4">
+            <Row justify="center" className={`flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}>
               <Checkbox
                 label={
                   <Text className="text-sm text-gray-800 dark:text-slate-200">

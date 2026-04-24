@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
+import { Text } from "@mohasinac/appkit/ui";
 
 export function HomepageNewsletterForm() {
   const [email, setEmail] = useState("");
@@ -16,7 +18,7 @@ export function HomepageNewsletterForm() {
     setSuccess(null);
 
     try {
-      const response = await fetch("/api/newsletter/subscribe", {
+      const response = await fetch(API_ROUTES.NEWSLETTER.SUBSCRIBE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,11 +47,11 @@ export function HomepageNewsletterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-3">
+    <form onSubmit={onSubmit} className={`mx-auto flex w-full max-w-xl flex-col ${THEME_CONSTANTS.spacing.gap.xs}`}>
       <label htmlFor="homepage-newsletter-email" className="sr-only">
         Email address
       </label>
-      <div className="flex w-full flex-col gap-2 sm:flex-row" data-section="homepagenewsletterform-div-9">
+      <div className={`flex w-full flex-col ${THEME_CONSTANTS.spacing.gap.xs} sm:flex-row`} data-section="homepagenewsletterform-div-9">
         <input
           id="homepage-newsletter-email"
           type="email"
@@ -64,20 +66,20 @@ export function HomepageNewsletterForm() {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full sm:w-auto rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending ? "Subscribing..." : "Subscribe"}
         </button>
       </div>
       {error ? (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <Text size="sm" className="text-red-600 dark:text-red-400" role="alert">
           {error}
-        </p>
+        </Text>
       ) : null}
       {success ? (
-        <p className="text-sm text-green-700 dark:text-green-400" role="status">
+        <Text size="sm" className={`${THEME_CONSTANTS.themed.textSuccess}`} role="status">
           {success}
-        </p>
+        </Text>
       ) : null}
     </form>
   );

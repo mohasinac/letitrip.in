@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Caption, Grid, Section } from "@mohasinac/appkit";
+import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div } from "@mohasinac/appkit";
 import { TextLink } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
@@ -41,37 +41,37 @@ export async function TrackOrderView() {
   ];
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10" data-section="trackorderview-div-72">
+    <Container className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
       <Section
         className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
       >
-        <div className={`${page.container.sm} text-center`} data-section="trackorderview-div-73">
+        <Container className={`${page.container.sm} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
           <Text variant="none" className="text-white/80">
             {t("subtitle")}
           </Text>
-        </div>
+        </Container>
       </Section>
 
-      <div
+      <Container
         className={`${page.container.md} py-14 md:py-16 space-y-14 md:space-y-16`}
-       data-section="trackorderview-div-74">
+      >
         {/* Sign-in prompt */}
         <Section
           className={`${themed.bgSecondary} rounded-2xl border ${themed.border} p-8 text-center`}
         >
-          <div
+          <Div
             className={`w-16 h-16 bg-primary/10 dark:bg-primary/15 rounded-full ${flex.center} mx-auto mb-4`}
-           data-section="trackorderview-div-75">
+          >
             <ShoppingBag className="w-8 h-8 text-primary" />
-          </div>
+          </Div>
           <Heading level={2} className="mb-3">
             {t("signInPrompt")}
           </Heading>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6" data-section="trackorderview-div-76">
+          <Row gap="md" className="justify-center mt-6">
             <TextLink
               href={ROUTES.AUTH.LOGIN}
               className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white font-medium px-6 py-3 rounded-lg transition-colors`}
@@ -84,7 +84,7 @@ export async function TrackOrderView() {
             >
               {t("viewOrders")}
             </TextLink>
-          </div>
+          </Row>
         </Section>
 
         {/* How it works */}
@@ -95,25 +95,24 @@ export async function TrackOrderView() {
           {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}
           <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
-              <div
-                key={title}
+              <Card
                 className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 relative`}
-               data-section="trackorderview-div-77">
+              >
                 <Caption className="absolute top-4 right-4 font-bold">
                   {String(index + 1).padStart(2, "0")}
                 </Caption>
-                <div
+                <Div
                   className={`w-12 h-12 ${bg} rounded-xl ${flex.center} mb-4`}
-                 data-section="trackorderview-div-78">
+                >
                   <Icon className={`w-6 h-6 ${color}`} />
-                </div>
+                </Div>
                 <Heading level={3} className="mb-2">
                   {title}
                 </Heading>
                 <Text variant="secondary" size="sm" className="leading-relaxed">
                   {text}
                 </Text>
-              </div>
+              </Card>
             ))}
           </Grid>
         </Section>
@@ -122,15 +121,15 @@ export async function TrackOrderView() {
         <Section
           className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}
         >
-          <div data-section="trackorderview-div-79">
+          <Stack gap="sm">
             <Heading level={2} className="mb-1">
               {t("needHelpTitle")}
             </Heading>
             <Text variant="secondary" size="sm">
               {t("needHelpText")}
             </Text>
-          </div>
-          <div className="flex gap-3 flex-shrink-0" data-section="trackorderview-div-80">
+          </Stack>
+          <Row gap="md" className="flex-shrink-0">
             <TextLink
               href={ROUTES.PUBLIC.HELP}
               className={`text-sm ${themed.textSecondary} hover:text-primary underline underline-offset-4 transition-colors`}
@@ -143,10 +142,10 @@ export async function TrackOrderView() {
             >
               {t("contactSupport")}
             </TextLink>
-          </div>
+          </Row>
         </Section>
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }
 
