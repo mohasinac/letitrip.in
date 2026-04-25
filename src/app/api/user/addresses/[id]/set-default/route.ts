@@ -1,7 +1,17 @@
-import { initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
+import {
+  addressRepository,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
 
-export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").GET>) {
-	await initProviders();
-	const { GET } = await import("@mohasinac/appkit");
-	return GET(...args);
-}
+export const POST = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const updated = await addressRepository.setDefault(user!.uid, id);
+      return successResponse(updated, "Default address updated");
+    },
+  }),
+);

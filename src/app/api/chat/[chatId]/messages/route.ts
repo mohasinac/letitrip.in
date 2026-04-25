@@ -1,13 +1,25 @@
-import { initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
+import {
+  sendChatMessage,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
+import { z } from "zod";
 
-export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").GET>) {
-  await initProviders();
-  const { GET } = await import("@mohasinac/appkit");
-  return GET(...args);
-}
+const messageSchema = z.object({
+  message: z.string().min(1),
+});
 
-export async function POST(...args: Parameters<typeof import("@mohasinac/appkit").POST>) {
-  await initProviders();
-  const { POST } = await import("@mohasinac/appkit");
-  return POST(...args);
-}
+// GET messages are read directly from Firebase RTDB on the client via real-time subscription.
+// This POST handler is the server-side entry point for sending a new message.
+export const POST = withProviders(
+  createRouteHandler({
+    auth: true,
+    schema: messageSchema,
+    handler: async ({ user, body, params }) => {
+      const chatId = (params as { chatId: string }).chatId;
+      const result = await sendChatMessage(user!.uid, chatId, body!.message);
+      return successResponse(result, "Message sent", 201);
+    },
+  }),
+);

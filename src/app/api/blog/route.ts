@@ -1,5 +1,5 @@
 import { initProviders } from "@/providers.config";
-import { serverLogger } from "@mohasinac/appkit";
+import { blogGET, serverLogger } from "@mohasinac/appkit";
 
 function isMissingFirestoreIndexError(error: unknown): boolean {
 	const message = error instanceof Error ? error.message : String(error);
@@ -10,16 +10,15 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 }
 
 export async function GET(
-	...args: Parameters<typeof import("@mohasinac/appkit").GET>
+	...args: Parameters<typeof blogGET>
 ) {
 	await initProviders();
-	const { GET } = await import("@mohasinac/appkit");
 	const [request] = args as [Request, ...unknown[]];
 	const requestUrl = new URL(request.url);
 	const hasSearchQuery = Boolean(requestUrl.searchParams.get("q"));
 
 	try {
-		const response = await GET(...args);
+		const response = await blogGET(...args);
 
 		if (hasSearchQuery && response.status >= 500) {
 			const fallbackUrl = new URL(request.url);
@@ -34,7 +33,7 @@ export async function GET(
 				method: "GET",
 				headers: request.headers,
 			});
-			return GET(fallbackRequest as Parameters<typeof GET>[0]);
+			return blogGET(fallbackRequest as Parameters<typeof blogGET>[0]);
 		}
 
 		return response;
@@ -52,7 +51,7 @@ export async function GET(
 				method: "GET",
 				headers: request.headers,
 			});
-			return GET(fallbackRequest as Parameters<typeof GET>[0]);
+			return blogGET(fallbackRequest as Parameters<typeof blogGET>[0]);
 		}
 
 		throw error;

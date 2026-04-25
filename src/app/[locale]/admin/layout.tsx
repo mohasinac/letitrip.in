@@ -24,6 +24,8 @@ const ADMIN_NAV_ITEMS = [
   { href: String(ROUTES.ADMIN.COUPONS), label: "Coupons" },
   { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews" },
   { href: String(ROUTES.ADMIN.BLOG), label: "Blog" },
+  { href: String(ROUTES.ADMIN.BIDS), label: "Bids" },
+  { href: String(ROUTES.ADMIN.EVENTS), label: "Events" },
   { href: String(ROUTES.ADMIN.MEDIA), label: "Media" },
   { href: String(ROUTES.ADMIN.SITE), label: "Site Settings" },
   { href: String(ROUTES.ADMIN.NAVIGATION), label: "Navigation" },
@@ -32,6 +34,7 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/ads", label: "Ads" },
   { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
   { href: String(ROUTES.ADMIN.FAQS), label: "FAQs" },
+  { href: String(ROUTES.ADMIN.COPILOT), label: "Copilot" },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {

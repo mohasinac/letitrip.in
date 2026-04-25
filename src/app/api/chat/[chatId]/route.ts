@@ -1,13 +1,33 @@
-import { initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
+import {
+  chatRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
-export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").GET>) {
-  await initProviders();
-  const { GET } = await import("@mohasinac/appkit");
-  return GET(...args);
-}
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const chatId = (params as { chatId: string }).chatId;
+      const room = await chatRepository.findById(chatId);
+      if (!room) return errorResponse("Chat room not found", 404);
+      if (!room.participantIds?.includes(user!.uid)) {
+        return errorResponse("Forbidden", 403);
+      }
+      return successResponse(room);
+    },
+  }),
+);
 
-export async function POST(...args: Parameters<typeof import("@mohasinac/appkit").POST>) {
-  await initProviders();
-  const { POST } = await import("@mohasinac/appkit");
-  return POST(...args);
-}
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const chatId = (params as { chatId: string }).chatId;
+      await chatRepository.softDeleteForUser(chatId, user!.uid);
+      return successResponse(null, "Chat room removed");
+    },
+  }),
+);

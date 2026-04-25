@@ -1,8 +1,10 @@
 import { withProviders } from "@/providers.config";
 import {
-  GET as _GET,
-  POST as _POST,
+  productItemGET,
+  productItemPATCH,
+  productItemDELETE,
 } from "@mohasinac/appkit";
 
-export const GET = withProviders(_GET);
-export const POST = withProviders(_POST);
+export const GET = withProviders(productItemGET);
+export const PATCH = withProviders(productItemPATCH);
+export const DELETE = withProviders(productItemDELETE);

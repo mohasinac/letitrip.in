@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { reviewRepository } from "@mohasinac/appkit";
+import { reviewRepository, createReview, successResponse, errorResponse } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-import { POST as _POST } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -131,5 +131,14 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 }
 
-export const POST = withProviders(_POST);
+export const POST = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, request }) => {
+      const body = await request.json().catch(() => ({}));
+      const result = await createReview({ ...body, userId: user!.uid });
+      return successResponse(result, "Review submitted", 201);
+    },
+  }),
+);
 

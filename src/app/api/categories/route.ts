@@ -1,14 +1,5 @@
-import { initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
+import { categoriesGET, POST as categoriesPOST } from "@mohasinac/appkit";
 
-export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").GET>) {
-  await initProviders();
-  const { GET } = await import("@mohasinac/appkit");
-  return GET(...args);
-}
-
-export async function POST(...args: Parameters<typeof import("@mohasinac/appkit").POST>) {
-  await initProviders();
-  const { POST } = await import("@mohasinac/appkit");
-  return POST(...args);
-}
-
+export const GET = withProviders(categoriesGET);
+export const POST = withProviders(categoriesPOST);

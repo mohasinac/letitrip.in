@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { productRepository } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-import { POST as _POST } from "@mohasinac/appkit";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -156,5 +155,4 @@ async function _GET(request: Request): Promise<NextResponse> {
 }
 
 export const GET = withProviders(_GET);
-export const POST = withProviders(_POST);
 
