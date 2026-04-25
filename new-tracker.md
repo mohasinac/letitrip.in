@@ -775,17 +775,565 @@ User applied "latest standard" pattern changes. All changes validated — tsc EX
 
 ---
 
+---
+
+## Audit Findings (Pass 15 — 2026-04-25)
+
+### Deep Live-vs-Local Comparison (21-section gap analysis in INSTRUCTIONS.md)
+
+Full comparison of the live site at https://www.letitrip.in against the local build,
+covering every major page category. **INSTRUCTIONS.md** is the authoritative record.
+
+---
+
+### CRITICAL: Phase 15 Status Was Wrong — Listing Page Toolbars Are NOT Wired
+
+Phase 15 was marked ✅ Done with the reasoning "all listing pages delegate to appkit views
+which include built-in filters." This is incorrect.
+
+**What's actually happening:**
+
+| Page | Component Used | Has Toolbar? |
+|------|----------------|--------------|
+| `/auctions` | `AuctionsListView` | ❌ No — bare heading + grid only |
+| `/products` | `ProductsIndexPageView` | ❌ No — bare server component |
+| `/pre-orders` | `PreOrdersListView` | ❌ No |
+| `/stores` | `StoresListView` | ❌ No |
+
+The appkit has TWO auction views:
+- `AuctionsListView` — bare, heading + grid, no toolbar ← **what we're using**
+- `AuctionsView` — full shell with `renderSearch/renderSort/renderFilters/renderPagination` slots ← **what we should use**
+
+Same pattern for products: `ProductsIndexPageView` (bare) vs `ProductsView` (full shell).
+
+**Tools that exist but are never wired:**
+
+| Component | Path | Purpose |
+|-----------|------|---------|
+| `AuctionsView` | `appkit/src/features/auctions/components/AuctionsView.tsx` | Auction toolbar shell |
+| `ProductsView` | `appkit/src/features/products/components/ProductsView.tsx` | Products toolbar shell |
+| `SlottedListingView` | `appkit/src/ui/components/SlottedListingView.tsx` | Base listing shell |
+| `ProductFilters` | `appkit/src/features/products/components/ProductFilters.tsx` | Full filter panel |
+| `FilterPanel` | `appkit/src/features/filters/FilterPanel.tsx` | Config-driven filters + URL params |
+| `Pagination` | `appkit/src/ui/components/Pagination.tsx` | Smart ellipsis ‹ 1 2 3 … › |
+
+**Phase 15 status corrected from ✅ Done → ⏳ Pending (actual wiring not done).**
+
+---
+
+### CRITICAL: Phase 19.5 Ad Slots — Key Logic Broken
+
+Phase 19.5 marks ad slots as ✅ Done ("4 ad slots wired in page.tsx"). The ad slot
+objects ARE passed from `src/app/[locale]/page.tsx` — but they never fire because the
+key lookup inside `MarketplaceHomepageView` is broken:
+
+```tsx
+// MarketplaceHomepageView.tsx ~line 137:
+const adSlotKey = `after${section.order}`  // produces "after0", "after1", "after2"...
+// adSlots keys are: "afterHero", "afterFeaturedProducts", "afterReviews", "afterFAQ"
+// These never match → no ad slot ever renders
+```
+
+The wiring in `page.tsx` is correct. The consumer in `MarketplaceHomepageView.tsx` is broken.
+
+**Phase 19.5 status corrected from ✅ Done → ⏳ Pending (key mismatch bug in appkit).**
+
+---
+
+### CRITICAL: Phase 19.1 FAQ Section — Still Hardcoded Empty
+
+Phase 19.1 marks all 18 sections as ✅ Done. The FAQ `case` block exists in the switch
+but is hardcoded:
+
+```tsx
+case "faq": return (
+  <FAQSection tabs={[]} activeTab="" items={[]} ... />  // BUG: always empty
+);
+```
+
+Even when a `faq` doc exists in Firestore with `showOnHomepage: true`, it always renders
+"No data available." Real FAQ data must be fetched from `faqRepository.getHomepageFAQs()`.
+
+**Phase 19.1 corrected — FAQ wiring is incomplete.**
+
+---
+
+### NEW: Appkit Core Bugs (8 confirmed)
+
+Full catalog in `INSTRUCTIONS.md §13` (Regression Catalog). Summary:
+
+| Bug | File | Line | Effect |
+|-----|------|------|--------|
+| `void perView` | `HorizontalScroller.tsx` | 67 | All carousel cards render in one flat row |
+| Dark mode CSS wrong mechanism | `HorizontalScroller.style.css` | 71 | Arrows invisible when app dark mode toggled |
+| Grid slide has no width | `HorizontalScroller.tsx` | 122 | 2-row grid snap breaks mid-slide |
+| HeroCarousel returns `null` | `HeroCarousel.tsx` | 97 | Blank gap in homepage locally (no fallback) |
+| Ad slot key mismatch | `MarketplaceHomepageView.tsx` | 137 | Ad slots never fire (see above) |
+| FAQ hardcoded `items={[]}` | `MarketplaceHomepageView.tsx` | 326 | FAQ always shows empty |
+| No `case "brands":` in switch | `MarketplaceHomepageView.tsx` | — | Brands section silently dropped |
+| Product gallery CSS bg-image | `ProductDetailPageView.tsx` | — | Image not clickable, no lightbox |
+
+---
+
+### NEW: Slot-Shell Pattern — ~20 Pages Render Blank Content
+
+All authenticated pages and most detail pages pass zero render props to their appkit
+views. The appkit views accept `renderXxx?: () => ReactNode` for every section — called
+with no props, they render layout chrome only.
+
+**Reference implementations (correct pattern):**
+- `/events/[id]` — fetches data server-side, passes all 5 render props ✅
+- `/search/[slug]/tab/.../page/...` — fetches + wires all slots ✅
+- `/promotions/[tab]` — fetches + wires all slots ✅
+
+**Pages that pass zero props (render blank):**
+
+| Category | Count | Examples |
+|----------|-------|---------|
+| User dashboard | 10 pages | `/user`, `/user/orders`, `/user/wishlist`, etc. |
+| Seller dashboard | 10 pages | `/seller`, `/seller/analytics`, `/seller/store`, etc. |
+| Admin (partial) | 3 pages | renderCharts + renderRecentActivity missing |
+| Detail pages | 3 pages | `/auctions/[id]`, `/pre-orders/[id]`, `/profile/[userId]` |
+
+---
+
+### NEW: Product Detail Page — Multiple Missing Features
+
+`ProductDetailPageView.tsx` has the following gaps vs live site:
+
+| Feature | Live | Local | Component (exists in appkit) |
+|---------|------|-------|-------------------------------|
+| Gallery | `<img>` + lightbox | CSS `background-image` div | `ImageLightbox` — built, unused |
+| Thumbnails | Strip below main image | None | — |
+| Image counter | "1 / 2" | None | — |
+| Tabs below fold | Description / Specs / Reviews | None | `ProductTabs` — built, unused |
+| Related products | Carousel below tabs | None | `RelatedProducts` — built, unused |
+| Sticky buy bar | Mobile sticky CTA | None | `BuyBar` — built, unused |
+
+---
+
+### NEW: Cart & Checkout Stub
+
+- **Cart** (`src/components/routing/CartRouteClient.tsx`): uses `useGuestCart` (localStorage
+  only). Authenticated `/api/cart` exists but never called. No coupon, no multi-seller,
+  no shipping estimate.
+
+- **Checkout** (`src/components/routing/CheckoutRouteClient.tsx`): explicit stub with
+  in-code comment "transactional bindings are next." Hardcoded `<Input>` fields.
+  `[Place Order]` button does nothing. Razorpay APIs exist but are not called.
+
+---
+
+### New Phases Required
+
+See Phase 24, 25, 26, 27 below.
+
+---
+
+## Phase 24 — Appkit Core Bug Fixes
+
+> **Dependency:** Must complete before P1–P6. All carousels, homepage, and dark mode are broken until these are fixed.  
+> After each fix run `npm run watch:appkit` to rebuild before testing.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 24.1 | Fix `perView` — implement ResizeObserver item-width calc | ⏳ Pending | CRITICAL | `appkit/src/ui/components/HorizontalScroller.tsx:67` | Replace `void perView` with ResizeObserver-based `itemWidth = (containerWidth - (n-1)*gap) / n` |
+| 24.2 | Fix dark mode CSS — `.dark` selector instead of `prefers-color-scheme` | ⏳ Pending | HIGH | `appkit/src/ui/components/HorizontalScroller.style.css:71` | Replace `@media (prefers-color-scheme: dark)` blocks with `.dark` class selectors |
+| 24.3 | Fix grid slide width — `flex: 0 0 100%` on `appkit-hscroller__slide` | ⏳ Pending | HIGH | `appkit/src/ui/components/HorizontalScroller.tsx:122` | Add `style={{ width: "100%", flexShrink: 0 }}` to slide wrapper |
+| 24.4 | Fix HeroCarousel — static fallback when `slides.length === 0` | ⏳ Pending | HIGH | `appkit/src/features/homepage/components/HeroCarousel.tsx:97` | Return placeholder banner instead of `null` |
+| 24.5 | Fix ad slot keys — map `section.type` to correct key | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:137` | `AD_SLOT_MAP[section.type]` instead of `` `after${section.order}` `` |
+| 24.6 | Fix FAQ data — call `faqRepository.getHomepageFAQs()` | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:326` | Replace hardcoded `tabs={[]} items={[]}` with real fetch |
+| 24.7 | Add `case "brands":` to homepage section switch | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | Add BrandsCarousel render case |
+| 24.8 | Rebuild appkit + verify `npm run build` still passes | ⏳ Pending | CRITICAL | — | `npm run watch:appkit` then `npm run build` |
+
+---
+
+## Phase 25 — Product Detail Page
+
+> **Dependency:** Phase 24 complete (carousel/lightbox uses same HScroller).
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 25.1 | Gallery: replace CSS bg-image with `<img>` + `ImageLightbox` | ⏳ Pending | CRITICAL | `appkit/src/features/products/components/ProductDetailPageView.tsx` | Import `ImageLightbox`; add `useState` for open/index; replace div |
+| 25.2 | Thumbnail strip for multiple images | ⏳ Pending | HIGH | Same | Render `images.slice(1)` as clickable thumb row |
+| 25.3 | Wire `renderTabs` → `ProductTabs` | ⏳ Pending | HIGH | Same | Description / Specifications / Delivery / Reviews tabs |
+| 25.4 | Wire `renderRelated` → `RelatedProducts` | ⏳ Pending | MEDIUM | Same | "You might also like" carousel below fold |
+| 25.5 | Wire `BuyBar` for mobile sticky actions | ⏳ Pending | MEDIUM | Same | Import and mount `BuyBar`; show on scroll past action rail |
+
+---
+
+## Phase 26 — Listing Page Toolbars (Phase 15 Redo)
+
+> **Corrects Phase 15** which was incorrectly marked Done. The toolbar-capable views exist in appkit but the wrong (bare) views are being used in pages.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 26.1 | Auctions: use `AuctionsView` + wire `renderSearch/Sort/Filters/Pagination` | ⏳ Pending | CRITICAL | `src/app/[locale]/auctions/page.tsx` | Replace `<AuctionsListView />` with `<AuctionsView>` + `ProductFilters` + `Pagination` |
+| 26.2 | Products: use `ProductsView` + wire toolbar | ⏳ Pending | CRITICAL | `src/app/[locale]/products/page.tsx` | Same pattern |
+| 26.3 | Pre-orders: wire toolbar | ⏳ Pending | HIGH | `src/app/[locale]/pre-orders/page.tsx` | Same pattern |
+| 26.4 | Stores: wire toolbar | ⏳ Pending | MEDIUM | `src/app/[locale]/stores/page.tsx` | Same pattern |
+| 26.5 | Wire `ProductFilters` with URL param persistence | ⏳ Pending | HIGH | All listing pages | Build `UrlTable` adapter from `searchParams`; pass to `ProductFilters` |
+| 26.6 | Wire `Pagination` component to all listing pages | ⏳ Pending | HIGH | All listing pages | Connect page count + current page from Firestore response |
+
+---
+
+## Phase 27 — Slot-Shell Page Wiring
+
+> **Dependency:** Phases 24–26 complete (stable appkit). Use `/events/[id]/page.tsx` as the reference pattern.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 27.1 | Auction detail: pass all 4 render props from page | ⏳ Pending | CRITICAL | `src/app/[locale]/auctions/[id]/page.tsx` | renderGallery / renderInfo / renderBidForm / renderMobileBidForm |
+| 27.2 | Pre-order detail: pass 3 render props | ⏳ Pending | CRITICAL | `src/app/[locale]/pre-orders/[id]/page.tsx` | renderGallery / renderInfo / renderBuyBar |
+| 27.3 | Public profile: server-fetch user data, pass to view | ⏳ Pending | HIGH | `src/app/[locale]/profile/[userId]/page.tsx` | displayName, avatarUrl, stats from user repository |
+| 27.4 | User hub (`/user`): wire renderProfile + renderNav + renderRecentOrders | ⏳ Pending | HIGH | `src/app/[locale]/user/page.tsx` | — |
+| 27.5 | User orders: wire renderTable | ⏳ Pending | HIGH | `src/app/[locale]/user/orders/page.tsx` | — |
+| 27.6 | User wishlist: wire renderProducts + renderTabs + renderSearch + renderSort | ⏳ Pending | HIGH | `src/app/[locale]/user/wishlist/page.tsx` | WishlistView has data logic, needs display wired |
+| 27.7 | User addresses / settings / notifications / messages / offers | ⏳ Pending | MEDIUM | `src/app/[locale]/user/*/page.tsx` (5 pages) | Pass renderList/renderForm/renderItems etc. |
+| 27.8 | Seller dashboard: wire renderStats + renderQuickActions + renderRevenueChart + renderTopProducts + renderRecentListings | ⏳ Pending | HIGH | `src/app/[locale]/seller/page.tsx` | — |
+| 27.9 | Seller analytics / store / offers / shipping | ⏳ Pending | MEDIUM | `src/app/[locale]/seller/*/page.tsx` (4 pages) | renderStats/renderChart/renderForm etc. |
+| 27.10 | Admin dashboard: wire renderCharts + renderRecentActivity | ⏳ Pending | HIGH | `src/app/[locale]/admin/dashboard/page.tsx` | Stats already work; charts + activity missing |
+| 27.11 | Admin analytics + site settings | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/*/page.tsx` (2 pages) | — |
+
+---
+
+## Phase 28 — Cart & Checkout Real Implementation
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 28.1 | Cart: call `/api/cart` when authenticated | ⏳ Pending | CRITICAL | `src/components/routing/CartRouteClient.tsx` | Replace `useGuestCart` with auth-aware hook; merge guest on login |
+| 28.2 | Cart: add coupon code field | ⏳ Pending | HIGH | Same | POST `/api/cart/coupon`; show discount line |
+| 28.3 | Cart: multi-seller grouping + shipping estimate | ⏳ Pending | HIGH | Same | Group by `product.sellerId`; show per-seller shipping |
+| 28.4 | Checkout: address selection from `/api/user/addresses` | ⏳ Pending | CRITICAL | `src/components/routing/CheckoutRouteClient.tsx` | Replace hardcoded inputs with saved address list + add-new |
+| 28.5 | Checkout: Razorpay modal integration | ⏳ Pending | CRITICAL | Same | `POST /api/payment/create-order` → open Razorpay → `POST /api/payment/verify` |
+| 28.6 | Checkout: order creation + redirect to `/orders/[id]` | ⏳ Pending | CRITICAL | Same | On verified payment, create order, redirect to confirmation |
+| 28.7 | Checkout success: wire `CheckoutSuccessRouteClient` | ⏳ Pending | HIGH | `src/components/routing/CheckoutSuccessRouteClient.tsx` | Show order summary + estimated delivery |
+
+---
+
+## Phase 29 — Local Development Seed Data
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 29.1 | Create Firestore seed script | ⏳ Pending | HIGH | `scripts/seed-firestore.ts` (new) | Seed `carousel_slides`, `homepage_sections`, `site_settings` |
+| 29.2 | Add seed to demo endpoint | ⏳ Pending | MEDIUM | `src/app/api/demo/seed/route.ts` | Extend `/demo/seed` to cover homepage sections + carousel |
+| 29.3 | Document seed process in README | ⏳ Pending | LOW | `README.md` | One-command local bootstrap |
+
+---
+
+## Updated Current Status
+
+| Phase | Name | Status | Progress | Notes |
+|-------|------|--------|----------|-------|
+| 7 | Hardcode Cleanup | ✅ Done | 4/4 | All done |
+| 8 | Wrapper Migration | ✅ Done | 4/4 | All about views migrated |
+| 9 | Style System | ✅ Done | 6/6 | Tokens + CSS vars + Tailwind complete |
+| 10 | Card Consistency | ✅ Done | 5/5 | All card types standardized |
+| 11 | Carousel Improvements | ✅ Done | 4/4 | Structure done; **perView bug still in appkit (Phase 24.1)** |
+| 12 | Form Responsiveness | ✅ Done | 5/5 | All done |
+| 13 | API Optimization | ✅ Done | 5/5 | ISR + loading states handled |
+| 14 | Route Fixes | ✅ Done | 5/5 | 30+ broken routes fixed + error pages |
+| 15 | Filter Implementation | ⚠️ Wrong | 0/5 | **Corrected Pass 15**: bare list views used; toolbar views not wired → Phase 26 |
+| 16 | Firebase & Functions | ✅ Done | 4/4 | 20 functions deployed |
+| 17 | Auth & Database | ✅ Done | 4/4 | Clean |
+| 18 | Data Issues | ⏳ Not started | 0/4 | Seed + detail pages; see also Phase 29 |
+| 19 | Homepage Sections | ⚠️ Partial | 3/5 | **19.5 ad slots broken (key mismatch)**, **FAQ case hardcoded empty** → Phase 24 |
+| 20 | Abstractions | ✅ Done | 4/4 | ROUTES.ADMIN.ADS added |
+| 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
+| 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
+| 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
+| **24** | **Appkit Core Bugs** | ⏳ Not started | 0/8 | **NEW — P0, blocks everything** |
+| **25** | **Product Detail Page** | ⏳ Not started | 0/5 | **NEW — gallery, lightbox, tabs, related, BuyBar** |
+| **26** | **Listing Toolbars (Phase 15 Redo)** | ⏳ Not started | 0/6 | **NEW — correct Phase 15 mistake** |
+| **27** | **Slot-Shell Page Wiring** | ⏳ Not started | 0/11 | **NEW — 20+ blank pages** |
+| **28** | **Cart & Checkout** | ⏳ Not started | 0/7 | **NEW — explicit stub, Razorpay unconnected** |
+| **29** | **Local Seed Data** | ⏳ Not started | 0/3 | **NEW — homepage blank locally** |
+
+---
+
+---
+
+## Audit Findings (Pass 16 — 2026-04-25)
+
+### Admin Pages, Category, Store, Detail Views, Rich Text Deep Dive
+
+---
+
+### Admin Pages — Most Are Self-Fetching (Better Than Expected)
+
+The majority of admin list views use `useAdminListingData` hook and **self-render without
+any render props**. They are largely functional locally once the admin session works.
+
+| Component | Self-fetching? | Works without props? | What's missing |
+|-----------|---------------|---------------------|----------------|
+| `AdminUsersView` | ✅ `useAdminListingData` | ✅ Table + invite CTA | No overlay/edit drawer slot |
+| `AdminProductsView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminOrdersView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminCategoriesView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminBlogView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminCouponsView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminPayoutsView` | ✅ `useAdminListingData` | ✅ Table | No overlay/drawer |
+| `AdminAnalyticsView` | ✅ `useQuery` when `shouldFetch=true` | ⚠️ Stats + 2 charts + table | `renderDateRange` slot empty → no date range picker |
+| `AdminAdsView` | ✅ paginated ads query | ⚠️ Basic table | No draft/schedule UI; only active/paused states |
+| `AdminSiteView` | ✅ `useSiteSettings` | ⚠️ Announcement bar only | `renderTabs`/`renderForm` slots for nav/logo/footer config not wired |
+| `AdminEventsView` | ❌ **DOES NOT EXIST** | ❌ | Only `AdminEventEntriesView` exists (entries, not event CRUD) |
+
+**Key discovery:** Admin list views mostly work — Phase 27.10/27.11 admin tasks are lighter
+than expected. The real gap is:
+1. `AdminEventsView` is missing — events cannot be created/edited/deleted via admin
+2. `AdminAnalyticsView.renderDateRange` slot needs a date range picker component
+3. `AdminSiteView` — only announcement bar configured; logo/nav/footer settings slots empty
+
+---
+
+### Category Pages — Self-Fetching, No Toolbar
+
+| Component | Self-fetching? | Toolbar? | Rich text? |
+|-----------|---------------|----------|------------|
+| `CategoriesIndexPageView` | ✅ `categoriesRepository.list()` | ❌ No filters/sort/pagination | — |
+| `CategoryDetailPageView` | ✅ parallel fetch category + products | ❌ No filters/sort/pagination on product grid | ⚠️ Description is plain text display (not RichText) |
+| `CategoryForm` (admin) | N/A | N/A | ✅ `RichTextEditor` for description |
+
+Category pages work (they fetch their own data) but show a static product grid. Users
+cannot filter by price, condition, or brand; cannot sort; no pagination on category pages.
+
+**Needed:** Add toolbar (filter/sort/pagination) to `CategoryDetailPageView` — same
+`ProductFilters` + `Pagination` pattern as Phase 26.
+
+---
+
+### Store Pages — Each Tab Self-Fetching, No Toolbar
+
+| Component | Self-fetching? | Toolbar? | Rich text? |
+|-----------|---------------|----------|------------|
+| `StoreProductsPageView` | ✅ `productRepository.list()` filtered by seller | ❌ No toolbar | — |
+| `StoreAuctionsPageView` | ✅ `productRepository.list(isAuction=true)` | ❌ No toolbar | — |
+| `StoreReviewsPageView` | ✅ `reviewRepository` | ❌ No pagination/filter | ✅ Review comments via RichText |
+| `StoreAboutView` | Accepts `store` prop (page fetches) | N/A | ⚠️ Bio: RichText ✅ but `returnPolicy`/`shippingPolicy` use `whitespace-pre-line` only |
+| `StoreDetailLayoutView` | ✅ `storeRepository.findBySlug()` | N/A (header only) | ✅ Bio via RichText |
+
+Store pages work but need toolbar treatment. `StoreAboutView` policies (return/shipping)
+are plain text with `whitespace-pre-line` — need `RichText` for HTML-formatted policies.
+`renderSocialLinks` and `renderStats` slots in `StoreAboutView` are never passed from the
+`about/page.tsx` → social links and stats are blank.
+
+---
+
+### Detail View Slots — More Than Previously Documented
+
+**`AuctionDetailView`** has 6 render slots (not 4 as previously tracked):
+```
+renderGallery    — main gallery area
+renderInfo       — title, current bid, reserve status, seller
+renderBidForm    — desktop bid input + submit
+renderMobileBidForm — mobile-optimized bid form
+renderBidHistory — ← NEWLY FOUND: real-time bid feed (AuctionBidHistory component)
+renderRelated    — ← NEWLY FOUND: related items carousel
+```
+Phase 27.1 must wire all 6 slots, not 4.
+
+**`ProductDetailView`** has 5 render slots (drives `ProductDetailPageView`):
+```
+renderGallery / renderInfo / renderActions / renderTabs / renderRelated
+```
+Phase 25 wires these through `ProductDetailPageView`.
+
+**`EventDetailView`** (confirmed pure slot-shell, 5 slots — already wired by page ✅):
+```
+renderCoverImage / renderHeader / renderContent / renderLeaderboard / renderParticipateAction
+```
+
+---
+
+### Blog Detail — Largely Self-Contained
+
+`BlogPostView` uses `useBlogPost(slug)` hook to self-fetch and has 6 render prop slots
+for additional customization:
+```
+renderImage       — cover image override
+renderContent     — body content override (default: RichText)
+renderBackButton  — navigation
+renderLoading     — custom skeleton
+renderError       — custom error state
+renderRelatedCard — per related post renderer
+```
+
+The page at `src/app/[locale]/blog/[slug]/page.tsx` should self-work because
+`BlogPostView` fetches via hook. **Check:** does the page pass the `slug` prop?
+If yes, blog detail is functional. If it uses the slot-shell default, content renders via
+`<RichText html={normalizeRichTextHtml(post.content)} />` automatically.
+
+---
+
+### Review Detail — No Dedicated Page (Modal Only)
+
+There is **no `ReviewDetailView`** component. Reviews are embedded in:
+- `ReviewsList` — card grid with RichText for review comment
+- `ReviewModal` — modal overlay for expanded review (RichText for comment)
+
+No `/reviews/[id]` page exists by design. Reviews are always inline (product page tabs,
+store reviews tab). This is correct behavior — no gap to fix.
+
+---
+
+### Rich Text — Fully Implemented, Some Gaps in Usage
+
+**What works:**
+- `RichText` display component: sanitized HTML, Tailwind prose classes, copy-code button,
+  optional syntax highlight. Used in 16+ files.
+- `RichTextEditor` editor component: contentEditable with toolbar. Used in all admin forms.
+- `normalizeRichTextHtml(html)` utility pre-processes HTML before render.
+
+**Gaps in usage (places that should use RichText but don't):**
+
+| Location | Current | Should Be | Fix |
+|----------|---------|-----------|-----|
+| `StoreAboutView` `returnPolicy` | `whitespace-pre-line` plain text | `<RichText html={...} />` | Swap in appkit |
+| `StoreAboutView` `shippingPolicy` | `whitespace-pre-line` plain text | `<RichText html={...} />` | Swap in appkit |
+| `CategoryDetailPageView` description | Plain text display | `<RichText html={normalizeRichTextHtml(category.description)} />` | Swap in appkit |
+| `StoreAboutView` `renderSocialLinks` slot | Never passed from page | Social links component | Wire from `about/page.tsx` |
+| `StoreAboutView` `renderStats` slot | Never passed from page | Store sales stats | Wire from `about/page.tsx` |
+| Product specs tab | No `renderSpecs` passed to `ProductTabs` | Specs table via RichText or structured | Phase 25.3 |
+| Blog post — `renderRelatedCard` | Not passed | `BlogCard` component | Wire from `blog/[slug]/page.tsx` |
+
+---
+
+### Shell Component Hierarchy (For Reference)
+
+```
+ListingViewShell     — listing table + drawer/modal/detail-view-portal slots
+  └─ used by: admin list views, SlottedListingView (public listings)
+
+DetailViewShell      — grid-3 | grid-2 | narrow | stacked layouts
+  ├─ grid-3: product detail, auction detail (gallery | info | sticky actions)
+  ├─ grid-2: blog post, event detail
+  ├─ narrow: event detail (max-w-3xl centered)
+  └─ stacked: dashboard sections
+
+StackedViewShell     — multi-section admin dashboards
+  └─ used by: AdminAnalyticsView, AdminAdsView, AdminSiteView
+```
+
+---
+
+## Phase 30 — Admin Events CRUD (Missing View)
+
+`AdminEventsView` does not exist. Event entries can be viewed via `AdminEventEntriesView`
+but events cannot be created, edited, or deleted through the admin panel.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 30.1 | Create `AdminEventsView` in appkit | ⏳ Pending | HIGH | `appkit/src/features/admin/components/AdminEventsView.tsx` (new) | Follow `AdminBlogView` pattern: `useAdminListingData` + table with create/edit/delete |
+| 30.2 | Wire `/admin/events/page.tsx` to new view | ⏳ Pending | HIGH | `src/app/[locale]/admin/events/page.tsx` | Replace whatever currently renders |
+| 30.3 | Admin analytics: wire `renderDateRange` slot | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/analytics/page.tsx` | Pass a date range picker component |
+| 30.4 | Admin site: wire `renderTabs`/`renderForm` for nav/logo/footer config | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/site/page.tsx` | Extend beyond announcement bar |
+
+---
+
+## Phase 31 — Category & Store Toolbars
+
+> Extends Phase 26 (listing toolbars). Category and store tab pages also need the filter/sort/pagination treatment.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 31.1 | Category detail: add `ProductFilters` + `Pagination` to product grid | ⏳ Pending | HIGH | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | Wire filter/sort/pagination — same pattern as Phase 26 |
+| 31.2 | Category detail: add RichText for category description | ⏳ Pending | MEDIUM | Same | Replace plain text display with `<RichText html={normalizeRichTextHtml(category.description)} />` |
+| 31.3 | Store products tab: add toolbar (filter/sort/pagination) | ⏳ Pending | HIGH | `appkit/src/features/stores/components/StoreProductsPageView.tsx` | Same ProductFilters + Pagination pattern |
+| 31.4 | Store auctions tab: add toolbar | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAuctionsPageView.tsx` | Same pattern |
+| 31.5 | Store reviews tab: add pagination + rating filter | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreReviewsPageView.tsx` | Rating filter (1–5 stars) + Pagination |
+| 31.6 | Store about: fix `returnPolicy`/`shippingPolicy` — use RichText | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | Replace `whitespace-pre-line` with `<RichText html={normalizeRichTextHtml(policy)} />` |
+| 31.7 | Store about: wire `renderSocialLinks` + `renderStats` from page | ⏳ Pending | MEDIUM | `src/app/[locale]/stores/[storeSlug]/about/page.tsx` | Fetch store stats, pass to `StoreAboutView` |
+
+---
+
+## Phase 32 — Detail View Dynamic Sections & Tabs
+
+> All detail pages need their full slot inventory wired. This phase covers the newly discovered slots and dynamic tab content.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 32.1 | Auction detail: wire `renderBidHistory` (newly found slot) | ⏳ Pending | HIGH | `src/app/[locale]/auctions/[id]/page.tsx` | Pass `<AuctionBidHistory productId={id} />` — real-time RTDB feed |
+| 32.2 | Auction detail: wire `renderRelated` (newly found slot) | ⏳ Pending | MEDIUM | Same | Pass `<RelatedProducts productId={id} />` |
+| 32.3 | Product `renderTabs`: wire all 4 tab contents | ⏳ Pending | HIGH | `appkit/src/features/products/components/ProductDetailPageView.tsx` | Pass `renderDescription`/`renderSpecs`/`renderReviews`/`renderExtraTab` to `ProductTabs` |
+| 32.4 | Product tabs: `renderSpecs` — structured specs table | ⏳ Pending | MEDIUM | Same | Map `product.specifications` (key/value pairs) to a table component |
+| 32.5 | Product tabs: `renderReviews` — inline review list | ⏳ Pending | HIGH | Same | Pass `<ReviewsList productId={product.id} />` to the reviews tab |
+| 32.6 | Blog post: wire `renderRelatedCard` slot | ⏳ Pending | MEDIUM | `src/app/[locale]/blog/[slug]/page.tsx` | Pass `(post) => <BlogCard post={post} />` to `BlogPostView` |
+| 32.7 | Blog post: verify `slug` prop passed (confirm self-fetch works) | ⏳ Pending | HIGH | Same | Confirm `<BlogPostView slug={slug} />` — if so, blog detail is functional |
+| 32.8 | Event detail: verify all 5 render slots passed (reference pattern) | ⏳ Pending | LOW | `src/app/[locale]/events/[id]/page.tsx` | Audit-only — this page already works correctly |
+| 32.9 | Pre-order detail: wire `renderBuyBar` with reserve count progress bar | ⏳ Pending | HIGH | `src/app/[locale]/pre-orders/[id]/page.tsx` | Show "X of Y reserved" + progress bar + [Reserve Now] |
+| 32.10 | Rich text: add `renderDescription` to `ProductTabs` with RichText body | ⏳ Pending | MEDIUM | Same as 32.3 | Pass full `<RichText html={normalizeRichTextHtml(product.description)} />` as description tab |
+
+---
+
+## Phase 33 — Rich Text Completeness
+
+> All content fields that store HTML should render via `RichText`, not plain text or `whitespace-pre-line`.
+
+| # | Task | Status | Priority | File | Fix |
+|---|------|--------|----------|------|-----|
+| 33.1 | Store about: `returnPolicy` → `<RichText>` | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | See Phase 31.6 (shared task) |
+| 33.2 | Store about: `shippingPolicy` → `<RichText>` | ⏳ Pending | MEDIUM | Same | See Phase 31.6 (shared task) |
+| 33.3 | Category description: plain text → `<RichText>` on detail page | ⏳ Pending | MEDIUM | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | See Phase 31.2 (shared task) |
+| 33.4 | Event detail: `event.description` body — confirm RichText used in `renderContent` | ⏳ Pending | LOW | `src/app/[locale]/events/[id]/page.tsx` | Verify `EventDetailView renderContent` passes `<RichText html={...} />` |
+| 33.5 | Admin analytics: `renderSummaryCards` — confirm correct cards wired | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/analytics/page.tsx` | Wire summary card data from analytics API response |
+| 33.6 | Audit: find any remaining `dangerouslySetInnerHTML` outside RichText | ⏳ Pending | LOW | Grep codebase | Replace any raw `dangerouslySetInnerHTML` with sanitized `<RichText>` |
+
+---
+
+## Updated Current Status
+
+| Phase | Name | Status | Progress | Notes |
+|-------|------|--------|----------|-------|
+| 7 | Hardcode Cleanup | ✅ Done | 4/4 | All done |
+| 8 | Wrapper Migration | ✅ Done | 4/4 | All about views migrated |
+| 9 | Style System | ✅ Done | 6/6 | Tokens + CSS vars + Tailwind complete |
+| 10 | Card Consistency | ✅ Done | 5/5 | All card types standardized |
+| 11 | Carousel Improvements | ✅ Done | 4/4 | Structure done; **perView bug still in appkit → Phase 24.1** |
+| 12 | Form Responsiveness | ✅ Done | 5/5 | All done |
+| 13 | API Optimization | ✅ Done | 5/5 | ISR + loading states handled |
+| 14 | Route Fixes | ✅ Done | 5/5 | 30+ broken routes fixed + error pages |
+| 15 | Filter Implementation | ⚠️ Wrong | 0/5 | **Corrected Pass 15** — bare list views used → Phase 26 |
+| 16 | Firebase & Functions | ✅ Done | 4/4 | 20 functions deployed |
+| 17 | Auth & Database | ✅ Done | 4/4 | Clean |
+| 18 | Data Issues | ⏳ Not started | 0/4 | Seed + detail page verification → Phase 29 |
+| 19 | Homepage Sections | ⚠️ Partial | 3/5 | Ad slot key broken, FAQ hardcoded empty → Phase 24 |
+| 20 | Abstractions | ✅ Done | 4/4 | ROUTES.ADMIN.ADS added |
+| 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
+| 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
+| 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
+| 24 | Appkit Core Bugs | ⏳ Not started | 0/8 | **P0 — blocks everything** |
+| 25 | Product Detail Page | ⏳ Not started | 0/5 | Gallery, lightbox, tabs, related, BuyBar |
+| 26 | Listing Toolbars (Phase 15 Redo) | ⏳ Not started | 0/6 | Auctions, products, pre-orders, stores |
+| 27 | Slot-Shell Page Wiring | ⏳ Not started | 0/11 | User/seller/admin dashboards + detail pages |
+| 28 | Cart & Checkout | ⏳ Not started | 0/7 | Razorpay + auth cart + order creation |
+| 29 | Local Seed Data | ⏳ Not started | 0/3 | Homepage blank locally |
+| **30** | **Admin Events CRUD + Analytics** | ⏳ Not started | 0/4 | **NEW — AdminEventsView missing entirely** |
+| **31** | **Category & Store Toolbars** | ⏳ Not started | 0/7 | **NEW — no toolbar on category/store tab pages** |
+| **32** | **Detail View Dynamic Sections & Tabs** | ⏳ Not started | 0/10 | **NEW — bid history, product tabs, blog related, preorder bar** |
+| **33** | **Rich Text Completeness** | ⏳ Not started | 0/6 | **NEW — store policies, category desc, event body use plain text** |
+
+---
+
 ## Next Steps (Priority Order)
 
-### Current (Pass 14 Complete)
-- ✅ Phase 16 fully done (4/4) — all 20 functions deployed
-- ✅ Phase 19 fully done (5/5) — stats seed added
-- ✅ Phase 23.1 done — `npm run build` passes clean
-- ✅ TSC 0 errors in both packages
-- ✅ generateMetadata on all 6 missing detail pages (blog, profile, sellers, products, auctions, pre-orders)
+### Current (Pass 16 Complete — Admin/Category/Store/Detail/RichText Audited)
+- ✅ Admin pages — most self-fetch and work; `AdminEventsView` missing (Phase 30)
+- ✅ Category pages — self-fetch but no toolbar, no RichText for description (Phases 31, 33)
+- ✅ Store pages — tabs self-fetch; no toolbar; about policies use wrong text renderer (Phase 31)
+- ✅ Detail view slots — AuctionDetailView has 6 slots (not 4); `renderBidHistory` + `renderRelated` newly found (Phase 32)
+- ✅ BlogPostView — self-contained with `useBlogPost` hook; functional if `slug` prop passed
+- ✅ ReviewDetail — no dedicated page by design; modal-only is correct
+- ✅ Rich text — fully built and in use; 6 gaps where plain text is used instead (Phase 33)
 
 ### Pending (Priority Order)
-1. **Phase 18** — Run app, hit `/demo/seed`, open every detail page (product/auction/event/blog/store/profile) and document any 404/empty states
-2. **Phase 22** — Responsive audit: test at 375px / 768px / 1024px on all major page types
-3. **Phase 23.2–23.8** — Smoke test all routes; Lighthouse ≥90; cross-browser; mobile device; final launch checklist</content>
+1. **Phase 24** — Fix 8 appkit core bugs. Start: `HorizontalScroller.tsx:67` (perView)
+2. **Phase 25 + 32** — Product detail: gallery/lightbox + full tab wiring (description, specs, reviews) + BuyBar
+3. **Phase 26 + 31** — Listing toolbars: auctions/products/pre-orders/stores listing + category detail + store tabs
+4. **Phase 29 / 18** — Seed data + verify all detail pages load
+5. **Phase 27** — Wire all remaining slot-shell pages (user/seller dashboards, auction/preorder detail)
+6. **Phase 30** — Create `AdminEventsView`, wire analytics date range, extend admin site settings
+7. **Phase 28** — Cart/checkout: auth cart API, Razorpay, order creation
+8. **Phase 33** — Rich text completeness: store policies, category descriptions, event content
+9. **Phase 22** — Responsive audit: 375px / 768px / 1024px
+10. **Phase 23.2–23.8** — Smoke tests, Lighthouse ≥90, cross-browser, final launch checklist</content>
 <parameter name="filePath">d:\proj\letitrip.in\new-tracker.md
