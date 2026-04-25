@@ -1,21 +1,11 @@
-/**
- * GET /api/user/profile
- * Fetch the currently authenticated user's profile
- *
- * PATCH /api/user/profile
- * Update the currently authenticated user's profile
- *
- * This endpoint uses Firebase Admin SDK (server-side) to fetch/update user data,
- * maintaining the API-only architecture and avoiding client-side Firestore access.
- */
-
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { userRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
     return successResponse({
@@ -47,7 +37,7 @@ export const GET = createApiHandler({
       updatedAt: user!.updatedAt,
     });
   },
-});
+}));
 
 // --- Update Profile -----------------------------------------------------------
 
@@ -68,7 +58,7 @@ const updateProfileSchema = z.object({
     .optional(),
 });
 
-export const PATCH = createApiHandler<(typeof updateProfileSchema)["_output"]>({
+export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,
   handler: async ({ user, body }) => {
@@ -97,5 +87,5 @@ export const PATCH = createApiHandler<(typeof updateProfileSchema)["_output"]>({
       SUCCESS_MESSAGES.USER.PROFILE_UPDATED,
     );
   },
-});
+}));
 
