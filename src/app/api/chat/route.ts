@@ -3,6 +3,7 @@
  * POST /api/chat   — create or return existing chat room (buyer ↔ seller for an order)
  */
 
+import { withProviders } from "@/providers.config";
 import {
   chatRepository,
   orderRepository,
@@ -30,21 +31,21 @@ const CHAT_DISABLED_RESPONSE = () =>
  * GET /api/chat
  * Returns all chat rooms the authenticated user is participating in.
  */
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
     if (!FEATURE_FLAGS.CHAT_ENABLED) return CHAT_DISABLED_RESPONSE();
     const rooms = await chatRepository.listForUser(user!.uid);
     return successResponse({ rooms });
   },
-});
+}));
 
 /**
  * POST /api/chat
  * Creates a chat room for a buyer↔seller conversation on an order.
  * Idempotent — returns the existing room if it already exists.
  */
-export const POST = createApiHandler<(typeof createRoomSchema)["_output"]>({
+export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
   auth: true,
   schema: createRoomSchema,
   handler: async ({ user, body }) => {
@@ -105,5 +106,5 @@ export const POST = createApiHandler<(typeof createRoomSchema)["_output"]>({
     });
     return successResponse({ room }, SUCCESS_MESSAGES.CHAT.ROOM_CREATED, 201);
   },
-});
+}));
 

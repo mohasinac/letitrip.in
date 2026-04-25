@@ -35,9 +35,9 @@ export const PATCH = withProviders(
     auth: true,
     roles: ["admin", "moderator"],
     schema: updateOrderSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
-      await adminUpdateOrder(id, body! as any);
+      await adminUpdateOrder(user!.uid, id, body! as any);
       return successResponse({ id, ...body }, "Order updated");
     },
   }),

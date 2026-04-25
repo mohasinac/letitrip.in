@@ -17,7 +17,7 @@ export const PATCH = withProviders(
     schema: feedbackSchema,
     handler: async ({ body, params }) => {
       const logId = (params as { logId: string }).logId;
-      await copilotLogRepository.update(logId, { feedback: body!.feedback } as any);
+      await copilotLogRepository.setFeedback(logId, body!.feedback as any);
       return successResponse(null, "Feedback recorded");
     },
   }),

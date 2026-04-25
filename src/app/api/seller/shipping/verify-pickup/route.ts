@@ -8,6 +8,7 @@
  * This endpoint verifies that OTP and marks the address as verified.
  */
 
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { userRepository } from "@mohasinac/appkit";
 import { ValidationError } from "@mohasinac/appkit";
@@ -24,7 +25,7 @@ const verifyOTPSchema = z.object({
   pickupLocationId: z.number().int().positive(),
 });
 
-export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
+export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   auth: true,
   roles: ["seller", "admin"],
   schema: verifyOTPSchema,
@@ -86,7 +87,7 @@ export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
       SUCCESS_MESSAGES.SHIPPING.PICKUP_VERIFIED,
     );
   },
-});
+}));
 
 
 

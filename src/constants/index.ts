@@ -30,20 +30,8 @@ export type { ThemeMode } from "./theme";
 // SEO configuration
 export {
   SEO_CONFIG,
-  generateMetadata,
-  generateProfileMetadata,
-  generateProductMetadata,
-  generateCategoryMetadata,
-  generateBlogMetadata,
-  generateAuctionMetadata,
-  generateSearchMetadata,
 } from "./seo";
-export type {
-  ProductSeoInput,
-  CategorySeoInput,
-  BlogSeoInput,
-  AuctionSeoInput,
-} from "./seo";
+export type { ProductSeoInput, CategorySeoInput, BlogSeoInput, AuctionSeoInput } from "./seo.server";
 
 // Navigation constants
 export { MAIN_NAV_ITEMS } from "./navigation";

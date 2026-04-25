@@ -1,14 +1,14 @@
-import {
-  SEO_CONFIG as APPKIT_SEO_CONFIG,
-  createSeoConfig,
-  generateMetadata,
-  generateProfileMetadata,
-  generateProductMetadata,
-  generateCategoryMetadata,
-  generateBlogMetadata,
-  generateAuctionMetadata,
-  generateSearchMetadata,
-} from "@mohasinac/appkit/server";
+// Minimal local SEO base to avoid importing server-only modules into client bundles.
+const APPKIT_SEO_CONFIG = {
+  siteUrl: "https://letitrip.in",
+  defaultTitle: "letitrip — Curated Marketplace",
+  defaultDescription:
+    "Discover unique products, auctions, and pre-orders on letitrip — your curated online marketplace.",
+  defaultImage: "/images/og-default.png",
+  siteName: "letitrip",
+  twitterHandle: "@letitrip",
+  locale: "en-IN",
+};
 
 type PageSeoEntry = { title: string; description: string; keywords: string[] };
 
@@ -69,22 +69,7 @@ export const SEO_CONFIG = {
   },
 };
 
-export {
-  createSeoConfig,
-  generateMetadata,
-  generateProfileMetadata,
-  generateProductMetadata,
-  generateCategoryMetadata,
-  generateBlogMetadata,
-  generateAuctionMetadata,
-  generateSearchMetadata,
-};
-
-export type {
-  SeoConfig,
-  ProductSeoInput,
-  CategorySeoInput,
-  BlogSeoInput,
-  AuctionSeoInput,
-} from "@mohasinac/appkit/server";
+// Server-only helpers (generateMetadata, etc.) are exported from
+// `src/constants/seo.server.ts` to avoid pulling server-only modules
+// into client bundles that import `@/constants`.
 

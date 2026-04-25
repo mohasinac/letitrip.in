@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { EventParticipateView, Div, Heading, Text, EVENT_ENDPOINTS } from "@mohasinac/appkit";
+import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { EventParticipateView } from "@mohasinac/appkit/features/events";
+import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit";
 
 interface Props {
@@ -24,7 +26,7 @@ export function EventParticipateClient({ event }: Props) {
         body.pollVotes = selectedVotes;
         if (pollComment) body.pollComment = pollComment;
       }
-      const res = await fetch(EVENT_ENDPOINTS.ENTRIES(event.id), {
+      const res = await fetch(API_ROUTES.EVENTS.ENTRIES(event.id), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

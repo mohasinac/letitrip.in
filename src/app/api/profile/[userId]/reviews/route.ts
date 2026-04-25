@@ -15,11 +15,11 @@ export const GET = withProviders(
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 20, { min: 1, max: 50 });
 
-      const result = await reviewRepository.list({
-        filters: `sellerId==${userId},status==approved`,
+      const result = await reviewRepository.listForSeller(userId, {
+        filters: "status==approved",
         sorts: "-createdAt",
-        page: String(page),
-        pageSize: String(pageSize),
+        page,
+        pageSize,
       });
 
       return successResponse(result);

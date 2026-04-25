@@ -1,27 +1,30 @@
-import * as admin from "firebase-admin";
+import { getApps, initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
+import { getDatabase } from "firebase-admin/database";
+import type { Database } from "firebase-admin/database";
 
-// Initialise once — Firebase Functions runtime already has Application Default
-// Credentials (ADC) set, so no explicit credential config is needed.
-if (!admin.apps.length) {
-  admin.initializeApp();
+// Initialise once — Firebase Functions runtime has Application Default
+// Credentials (ADC), so no explicit credential config is needed.
+if (!getApps().length) {
+  initializeApp();
 }
 
-export const db = admin.firestore();
-export const auth = admin.auth();
-export const storage = admin.storage();
+export const db = getFirestore();
+export const auth = getAuth();
+export const storage = getStorage();
 
-// RTDB is lazily initialized — admin.database() requires FIREBASE_DATABASE_URL
-// which is only available inside the Firebase Functions runtime, not when the
-// Firebase CLI loads this module locally to introspect exports.
-let _rtdb: admin.database.Database | null = null;
-export function getRtdb(): admin.database.Database {
+// RTDB is lazily initialized — only available in Functions runtime, not
+// when the Firebase CLI loads this module locally to introspect exports.
+let _rtdb: Database | null = null;
+export function getRtdb(): Database {
   if (!_rtdb) {
-    _rtdb = admin.database();
+    _rtdb = getDatabase();
   }
   return _rtdb;
 }
 
-// Convenience — used in every job to run batched writes
 export function newBatch() {
   return db.batch();
 }

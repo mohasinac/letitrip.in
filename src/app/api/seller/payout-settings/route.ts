@@ -6,6 +6,7 @@
  * Mutations use Server Action: updatePayoutSettingsAction.
  */
 
+import { withProviders } from "@/providers.config";
 import { userRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
@@ -30,7 +31,7 @@ function sanitisePayoutDetails(details: SellerPayoutDetails | undefined): Omit<
 
 // --- GET ---------------------------------------------------------------------
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   auth: true,
   roles: ["seller", "admin"],
   handler: async ({ user }) => {
@@ -40,5 +41,5 @@ export const GET = createApiHandler({
       ),
     });
   },
-});
+}));
 

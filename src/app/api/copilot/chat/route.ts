@@ -6,6 +6,7 @@
  * Logs every exchange to Firestore for auditing.
  */
 
+import { withProviders } from "@/providers.config";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createApiHandler } from "@mohasinac/appkit";
@@ -68,7 +69,7 @@ Rules:
 // POST handler
 // ---------------------------------------------------------------------------
 
-export const POST = createApiHandler<(typeof chatSchema)["_output"]>({
+export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"]>({
   auth: true,
   roles: ["admin", "moderator"],
   schema: chatSchema,
@@ -146,5 +147,5 @@ export const POST = createApiHandler<(typeof chatSchema)["_output"]>({
       );
     }
   },
-});
+}));
 

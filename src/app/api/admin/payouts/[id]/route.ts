@@ -34,9 +34,9 @@ export const PATCH = withProviders(
     auth: true,
     roles: ["admin", "moderator"],
     schema: updatePayoutSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
-      await adminUpdatePayout(id, body! as any);
+      await adminUpdatePayout(user!.uid, id, body! as any);
       return successResponse({ id, ...body }, "Payout updated");
     },
   }),

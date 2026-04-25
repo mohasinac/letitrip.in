@@ -8,6 +8,7 @@
  *     and optionally register a pickup address (which triggers OTP to seller's phone)
  */
 
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { userRepository } from "@mohasinac/appkit";
 import { ValidationError } from "@mohasinac/appkit";
@@ -86,7 +87,7 @@ function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
 
 // --- GET ---------------------------------------------------------------------
 
-export const GET = createApiHandler({
+export const GET = withProviders(createApiHandler({
   auth: true,
   roles: ["seller", "admin"],
   handler: async ({ user }) => {
@@ -94,11 +95,11 @@ export const GET = createApiHandler({
       shippingConfig: sanitiseConfig(user!.shippingConfig as SellerShippingConfig | undefined),
     });
   },
-});
+}));
 
 // --- PATCH --------------------------------------------------------------------
 
-export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
+export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema)["_output"]>(
   {
     auth: true,
     roles: ["seller", "admin"],
@@ -225,5 +226,5 @@ export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
       );
     },
   },
-);
+));
 

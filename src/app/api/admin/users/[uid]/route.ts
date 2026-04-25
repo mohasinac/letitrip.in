@@ -34,9 +34,9 @@ export const PATCH = withProviders(
     auth: true,
     roles: ["admin", "moderator"],
     schema: updateUserSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const uid = (params as { uid: string }).uid;
-      await adminUpdateUser(uid, body! as any);
+      await adminUpdateUser(user!.uid, uid, body! as any);
       return successResponse({ uid, ...body }, "User updated");
     },
   }),
@@ -46,9 +46,9 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
-    handler: async ({ params }) => {
+    handler: async ({ params, user }) => {
       const uid = (params as { uid: string }).uid;
-      await adminDeleteUser(uid);
+      await adminDeleteUser(user!.uid, uid);
       return successResponse(null, "User deleted");
     },
   }),

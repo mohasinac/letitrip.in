@@ -136,7 +136,7 @@ export const POST = withProviders(
     auth: true,
     handler: async ({ user, request }) => {
       const body = await request.json().catch(() => ({}));
-      const result = await createReview({ ...body, userId: user!.uid });
+      const result = await createReview(user!.uid, body as any);
       return successResponse(result, "Review submitted", 201);
     },
   }),

@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorView } from "@mohasinac/appkit";
+import { ErrorView } from "@mohasinac/appkit/next";
 
 type Props = {
   error: Error & { digest?: string };

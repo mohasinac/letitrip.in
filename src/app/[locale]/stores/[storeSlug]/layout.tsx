@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
-  params: Promise<{ storeSlug: string }>;
+  params: Promise<unknown>;
 };
 
 export default async function Layout({ children, params }: Props) {

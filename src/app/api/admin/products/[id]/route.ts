@@ -40,9 +40,9 @@ export const PATCH = withProviders(
     auth: true,
     roles: ["admin", "moderator"],
     schema: updateProductSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
-      const updated = await adminUpdateProduct(id, body! as any);
+      const updated = await adminUpdateProduct(user!.uid, id, body! as any);
       return successResponse(updated, "Product updated");
     },
   }),
@@ -52,9 +52,9 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
-    handler: async ({ params }) => {
+    handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
-      await adminDeleteProduct(id);
+      await adminDeleteProduct(user!.uid, id);
       return successResponse(null, "Product deleted");
     },
   }),

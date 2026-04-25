@@ -18,11 +18,11 @@ import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 
 type Props = {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
+  params: Promise<unknown>;
 };
 
 export default async function Layout({ children, params }: Props) {
-  const { locale: rawLocale } = await params;
+  const { locale: rawLocale } = (await params) as { locale: string };
   const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const messages = await getMessages();

@@ -3,5 +3,5 @@ export {
   PUBLIC_ROUTES,
   PROTECTED_ROUTES,
   AUTH_ROUTES,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/next";
 

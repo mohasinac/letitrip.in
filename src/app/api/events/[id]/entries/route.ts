@@ -10,7 +10,10 @@ export const POST = withProviders(
     handler: async ({ user, request, params }) => {
       const eventId = (params as { id: string }).id;
       const body = await request.json().catch(() => ({}));
-      const result = await enterEvent(eventId, body, user ?? undefined);
+      const safeUser = user
+        ? { uid: user.uid, displayName: (user as any).displayName ?? undefined, email: user.email ?? undefined }
+        : undefined;
+      const result = await enterEvent(eventId, body, safeUser);
       return successResponse(result, "Entry submitted", 201);
     },
   }),

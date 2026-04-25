@@ -1,7 +1,8 @@
-﻿import { FAQPageView } from "@mohasinac/appkit";
+import { FAQPageView } from "@mohasinac/appkit";
 
 export const revalidate = 3600;
 
-export default function Page({ params }: { params: { category: string } }) {
-  return <FAQPageView category={params.category} />;
+export default async function Page({ params }: { params: Promise<{ category: string }> }) {
+  const { category } = await params;
+  return <FAQPageView category={category} />;
 }

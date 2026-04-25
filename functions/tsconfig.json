@@ -12,7 +12,12 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@mohasinac/appkit": ["../../appkit/dist/index"],
+      "@mohasinac/appkit/*": ["../../appkit/dist/*"]
+    }
   },
   "compileOnSave": true,
   "include": ["src"],
