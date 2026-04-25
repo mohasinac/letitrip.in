@@ -1,42 +1,28 @@
 import { withProviders } from "@/providers.config";
-/**
- * Verify Phone Number API Route
- * POST /api/profile/verify-phone
- *
- * Called AFTER client-side Firebase confirmationResult.confirm(code).
- * Updates the phoneVerified flag in Firestore for the authenticated user.
- */
+import {
+  reviewRepository,
+  createRouteHandler,
+  successResponse,
+  getSearchParams,
+  getNumberParam,
+} from "@mohasinac/appkit";
 
-import { getAdminAuth } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { verifyPhoneSchema } from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+export const GET = withProviders(
+  createRouteHandler({
+    handler: async ({ request, params }) => {
+      const userId = (params as { userId: string }).userId;
+      const searchParams = getSearchParams(request);
+      const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+      const pageSize = getNumberParam(searchParams, "pageSize", 20, { min: 1, max: 50 });
 
-export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
-  auth: true,
-  schema: verifyPhoneSchema,
-  handler: async ({ user }) => {
-    const auth = getAdminAuth();
-    const userRecord = await auth.getUser(user!.uid);
+      const result = await reviewRepository.list({
+        filters: `sellerId==${userId},status==approved`,
+        sorts: "-createdAt",
+        page: String(page),
+        pageSize: String(pageSize),
+      });
 
-    if (!userRecord.phoneNumber) {
-      throw new ValidationError(ERROR_MESSAGES.PHONE.NO_PHONE);
-    }
-
-    // verificationId + code validated by schema; actual verification is client-side.
-    // Mark phone as verified in Firestore.
-    await userRepository.update(user!.uid, {
-      phoneVerified: true,
-      phoneNumber: userRecord.phoneNumber,
-    } as any);
-
-    return successResponse(
-      { phoneNumber: userRecord.phoneNumber },
-      SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
-    );
-  },
-}));
+      return successResponse(result);
+    },
+  }),
+);

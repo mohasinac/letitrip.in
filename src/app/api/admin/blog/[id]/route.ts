@@ -1,23 +1,14 @@
-import "@/providers.config";
-/**
- * Admin Blog [id] API Route
- * GET    /api/admin/blog/:id � Get a single blog post
- * PATCH  /api/admin/blog/:id � Update a blog post
- * DELETE /api/admin/blog/:id � Delete a blog post
- */
-
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { blogRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import {
+  blogRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
+  BlogPostStatusValues,
 } from "@mohasinac/appkit";
-import { BlogPostStatusValues } from "@mohasinac/appkit";
-type RouteContext = { params: Promise<{ id: string }> };
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -44,70 +35,61 @@ const updateBlogPostSchema = z.object({
   metaDescription: z.string().optional(),
 });
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const post = await blogRepository.findBySlug(id).catch(() => null);
-  if (!post) {
-    return Response.json(
-      { success: false, error: ERROR_MESSAGES.BLOG.NOT_FOUND },
-      { status: 404 },
-    );
-  }
-  return Response.json({ success: true, data: post });
-}
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const post = await blogRepository.findBySlug(id).catch(() => null);
+      if (!post) return errorResponse("Blog post not found", 404);
+      return successResponse(post);
+    },
+  }),
+);
 
-export async function PATCH(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateBlogPostSchema)["_output"]>({
+    auth: true,
+    roles: ["admin", "moderator"],
+    schema: updateBlogPostSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      const { publishedAt, coverImage: coverImageRaw, contentImages: contentImagesRaw, additionalImages: additionalImagesRaw, ...rest } = body!;
 
-  const body = await request.json().catch(() => ({}));
-  const parsed = updateBlogPostSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { success: false, error: parsed.error.format() },
-      { status: 400 },
-    );
-  }
+      const coverImage = coverImageRaw !== undefined
+        ? await finalizeStagedMediaObject(coverImageRaw)
+        : undefined;
+      const contentImages = contentImagesRaw
+        ? await finalizeStagedMediaObjectArray(contentImagesRaw)
+        : undefined;
+      const additionalImages = additionalImagesRaw
+        ? await finalizeStagedMediaObjectArray(additionalImagesRaw)
+        : undefined;
 
-  const { publishedAt, coverImage: coverImageRaw, contentImages: contentImagesRaw, additionalImages: additionalImagesRaw, ...rest } = parsed.data;
+      const updateData = {
+        ...rest,
+        ...(coverImage !== undefined && { coverImage }),
+        ...(contentImages !== undefined && { contentImages }),
+        ...(additionalImages !== undefined && { additionalImages }),
+        ...(publishedAt && { publishedAt: new Date(publishedAt) }),
+        ...(rest.status === BlogPostStatusValues.PUBLISHED && !publishedAt && { publishedAt: new Date() }),
+      };
 
-  const coverImage = coverImageRaw !== undefined
-    ? await finalizeStagedMediaObject(coverImageRaw)
-    : undefined;
-  const contentImages = contentImagesRaw
-    ? await finalizeStagedMediaObjectArray(contentImagesRaw)
-    : undefined;
-  const additionalImages = additionalImagesRaw
-    ? await finalizeStagedMediaObjectArray(additionalImagesRaw)
-    : undefined;
+      const updated = await blogRepository.update(id, updateData);
+      return successResponse(updated, "Blog post updated");
+    },
+  }),
+);
 
-  const updateData = {
-    ...rest,
-    ...(coverImage !== undefined && { coverImage }),
-    ...(contentImages !== undefined && { contentImages }),
-    ...(additionalImages !== undefined && { additionalImages }),
-    ...(publishedAt && { publishedAt: new Date(publishedAt) }),
-    ...(rest.status === BlogPostStatusValues.PUBLISHED && !publishedAt && {
-      publishedAt: new Date(),
-    }),
-  };
-
-  serverLogger.info("Updating blog post", { id });
-  const updated = await blogRepository.update(id, updateData);
-  return Response.json(successResponse(updated, SUCCESS_MESSAGES.BLOG.UPDATED));
-}
-
-export async function DELETE(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  serverLogger.info("Deleting blog post", { id });
-  await blogRepository.delete(id);
-  return Response.json(successResponse(null, SUCCESS_MESSAGES.BLOG.DELETED));
-}
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      await blogRepository.delete(id);
+      return successResponse(null, "Blog post deleted");
+    },
+  }),
+);

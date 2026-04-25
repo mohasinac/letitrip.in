@@ -1,19 +1,12 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { EVENT_FIELDS } from "@/constants/field-names";
-/**
- * Admin Events [id] API Route
- * GET    /api/admin/events/:id — Get a single event
- * PATCH  /api/admin/events/:id — Update an event
- * DELETE /api/admin/events/:id — Delete an event
- */
-
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { eventRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-type RouteContext = { params: Promise<{ id: string }> };
+import {
+  eventRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
 const updateEventSchema = z.object({
   title: z.string().min(1).optional(),
@@ -23,55 +16,47 @@ const updateEventSchema = z.object({
   status: z.string().optional(),
 }).passthrough();
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const events = await eventRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
-  const event = events.items[0];
-  if (!event) {
-    return Response.json(
-      { success: false, error: ERROR_MESSAGES.GENERIC.NOT_FOUND },
-      { status: 404 },
-    );
-  }
-  return Response.json({ success: true, data: event });
-}
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const events = await eventRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
+      const event = events.items[0];
+      if (!event) return errorResponse("Event not found", 404);
+      return successResponse(event);
+    },
+  }),
+);
 
-export async function PATCH(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const body = await request.json().catch(() => ({}));
-  const parsed = updateEventSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { success: false, error: parsed.error.format() },
-      { status: 400 },
-    );
-  }
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateEventSchema)["_output"]>({
+    auth: true,
+    roles: ["admin", "moderator"],
+    schema: updateEventSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      const { startsAt, endsAt, ...rest } = body!;
+      const updateData = {
+        ...rest,
+        ...(startsAt && { startsAt: new Date(startsAt) }),
+        ...(endsAt && { endsAt: new Date(endsAt) }),
+      };
+      const updated = await eventRepository.updateEvent(id, updateData as any);
+      return successResponse(updated, "Event updated");
+    },
+  }),
+);
 
-  serverLogger.info("Admin updating event", { id });
-
-  const { startsAt, endsAt, ...rest } = parsed.data;
-  const updateData = {
-    ...rest,
-    ...(startsAt && { startsAt: new Date(startsAt) }),
-    ...(endsAt && { endsAt: new Date(endsAt) }),
-  };
-
-  const updated = await eventRepository.updateEvent(id, updateData as any);
-  return Response.json(successResponse(updated, SUCCESS_MESSAGES.EVENT.UPDATED));
-}
-
-export async function DELETE(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  serverLogger.info("Admin deleting event", { id });
-  await eventRepository.changeStatus(id, EVENT_FIELDS.STATUS_VALUES.CANCELLED as any);
-  return Response.json(successResponse(null, SUCCESS_MESSAGES.EVENT.DELETED));
-}
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      await eventRepository.changeStatus(id, EVENT_FIELDS.STATUS_VALUES.CANCELLED as any);
+      return successResponse(null, "Event cancelled");
+    },
+  }),
+);

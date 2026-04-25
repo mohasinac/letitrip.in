@@ -1,61 +1,61 @@
-import { withProviders } from "@/providers.config";
-/**
- * Promotions API Route
- * GET /api/promotions â€” Returns promoted products, featured products and active coupons
- */
+import { initProviders } from "@/providers.config";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
-import { productRepository, couponsRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { ProductStatusValues } from "@mohasinac/appkit";
+export const dynamic = "force-dynamic";
 
-/**
- * GET /api/promotions
- *
- * Returns:
- *  - promotedProducts: published products with isPromoted=true (limit 12)
- *  - featuredProducts: published products with featured=true (limit 8)
- *  - activeCoupons: coupons with validity.isActive=true
- */
-export const GET = withProviders(createRouteHandler({
-  handler: async () => {
-    serverLogger.info("Promotions page data requested");
+function sseChunk(type: string, data?: unknown): Uint8Array {
+  return new TextEncoder().encode(`data: ${JSON.stringify({ type, data })}\n\n`);
+}
 
-    const nowIso = new Date().toISOString();
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+): Promise<Response> {
+  await initProviders();
 
-    const [promotedResult, featuredResult, activeCouponsResult] =
-      await Promise.all([
-        productRepository.list(
-          {
-            filters: `status==${ProductStatusValues.PUBLISHED},isPromoted==true`,
-            sorts: "-createdAt",
-            page: "1",
-            pageSize: "12",
-          },
-          { status: ProductStatusValues.PUBLISHED },
-        ),
-        productRepository.list(
-          {
-            filters: `status==${ProductStatusValues.PUBLISHED},featured==true`,
-            sorts: "-createdAt",
-            page: "1",
-            pageSize: "8",
-          },
-          { status: ProductStatusValues.PUBLISHED },
-        ),
-        couponsRepository.list({
-          filters: `validity.isActive==true,validity.endDate>=${nowIso},validity.startDate<=${nowIso}`,
-          sorts: "validity.endDate",
-          page: "1",
-          pageSize: "50",
-        }),
-      ]);
+  const { id: productId } = await params;
+  const rtdb = getAdminRealtimeDb();
+  const ref = rtdb.ref(`/auction-bids/${productId}`);
 
-    return successResponse({
-      promotedProducts: promotedResult.items,
-      featuredProducts: featuredResult.items,
-      activeCoupons: activeCouponsResult.items,
-    });
-  },
-}));
+  let valueListener: ((snap: any) => void) | null = null;
+
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(sseChunk("connected"));
+
+      valueListener = (snapshot: any) => {
+        const data = snapshot.val();
+        if (data) {
+          try {
+            controller.enqueue(sseChunk("update", data));
+          } catch {
+            // Stream already closed
+          }
+        }
+      };
+
+      ref.on("value", valueListener, () => {
+        try {
+          controller.enqueue(sseChunk("error"));
+        } catch {
+          // Stream already closed
+        }
+      });
+    },
+    cancel() {
+      if (valueListener) {
+        ref.off("value", valueListener);
+        valueListener = null;
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
+}

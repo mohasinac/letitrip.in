@@ -1,46 +1,22 @@
 import { withProviders } from "@/providers.config";
-/**
- * Seller Offers API Route
- * GET /api/seller/offers â€” Returns all incoming offers for the authenticated seller
- */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
+import { createRouteHandler, successResponse, errorResponse } from "@mohasinac/appkit";
+import { shipOrderAction } from "@/actions/seller.actions";
 
-export const GET = withProviders(createApiHandler({
-  roles: ["seller", "admin", "moderator"],
-  handler: async ({ request, user }) => {
-    const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(
-      100,
-      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
-    );
-    const sorts =
-      url.searchParams.get("sorts") ??
-      url.searchParams.get("sort") ??
-      "-createdAt";
+export const POST = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["seller", "admin"],
+    handler: async ({ request, params }) => {
+      const orderId = (params as { id: string }).id;
+      const body = await request.json().catch(() => ({}));
 
-    const filterParts: string[] = [];
-    const status = url.searchParams.get("status");
-    if (status && status !== "all") filterParts.push(`status==${status}`);
-    const extraFilters = url.searchParams.get("filters");
-    if (extraFilters) filterParts.push(extraFilters);
-
-    const result = await offerRepository.findBySeller(user!.uid, {
-      filters: filterParts.join(",") || undefined,
-      sorts,
-      page,
-      pageSize,
-    });
-
-    return successResponse({
-      items: result.items,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalPages: result.totalPages,
-      hasMore: result.hasMore,
-    });
-  },
-}));
+      try {
+        const result = await shipOrderAction(orderId, body);
+        return successResponse(result, "Order marked as shipped");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Failed to ship order";
+        return errorResponse(msg, 400);
+      }
+    },
+  }),
+);

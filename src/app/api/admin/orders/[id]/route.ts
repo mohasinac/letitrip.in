@@ -1,17 +1,12 @@
-import "@/providers.config";
-/**
- * Admin Orders [id] API Route
- * GET   /api/admin/orders/:id — Get a single order
- * PATCH /api/admin/orders/:id — Update order status
- */
-
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { orderRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-type RouteContext = { params: Promise<{ id: string }> };
+import {
+  adminUpdateOrder,
+  orderRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
 const updateOrderSchema = z.object({
   status: z.string().optional(),
@@ -22,43 +17,28 @@ const updateOrderSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const orders = await orderRepository.listAll({ filters: `id==${id}`, page: "1", pageSize: "1" });
-  const order = orders.items[0];
-  if (!order) {
-    return Response.json(
-      { success: false, error: ERROR_MESSAGES.ORDER.NOT_FOUND },
-      { status: 404 },
-    );
-  }
-  return Response.json({ success: true, data: order });
-}
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const order = await orderRepository.findById(id);
+      if (!order) return errorResponse("Order not found", 404);
+      return successResponse(order);
+    },
+  }),
+);
 
-export async function PATCH(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const body = await request.json().catch(() => ({}));
-  const parsed = updateOrderSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { success: false, error: parsed.error.format() },
-      { status: 400 },
-    );
-  }
-
-  const { status, ...rest } = parsed.data;
-
-  serverLogger.info("Admin updating order", { id, status });
-
-  if (status) {
-    await orderRepository.updateStatus(id, status as any, { ...(rest.trackingNumber && { trackingNumber: rest.trackingNumber }), ...(rest.trackingUrl && { trackingUrl: rest.trackingUrl }), ...(rest.notes && { notes: rest.notes }) } as any);
-  }
-
-  return Response.json(successResponse({ id, status, ...rest }, SUCCESS_MESSAGES.ORDER.UPDATED));
-}
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateOrderSchema)["_output"]>({
+    auth: true,
+    roles: ["admin", "moderator"],
+    schema: updateOrderSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      await adminUpdateOrder(id, body! as any);
+      return successResponse({ id, ...body }, "Order updated");
+    },
+  }),
+);

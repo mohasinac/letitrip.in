@@ -1,25 +1,22 @@
-import "@/providers.config";
-/**
- * Bids [id] API Route
- * GET /api/bids/:id — Get bids for a product (id = productId)
- */
+import { withProviders } from "@/providers.config";
+import {
+  createRouteHandler,
+  successResponse,
+  listBidsByProduct,
+  getSearchParams,
+  getNumberParam,
+} from "@mohasinac/appkit";
 
-import { bidRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+export const GET = withProviders(
+  createRouteHandler({
+    handler: async ({ request, params }) => {
+      const productId = (params as { id: string }).id;
+      const searchParams = getSearchParams(request);
+      const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+      const pageSize = getNumberParam(searchParams, "pageSize", 20, { min: 1, max: 100 });
 
-type RouteContext = { params: Promise<{ id: string }> };
-
-export async function GET(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const url = new URL(request.url);
-  const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 20));
-
-  serverLogger.info("Bid list by product requested", { productId: id });
-
-  // id is productId
-  const bids = await bidRepository.findByProduct(id);
-  return Response.json({ success: true, data: (bids ?? []).slice(0, limit) });
-}
+      const result = await listBidsByProduct(productId, { page, pageSize });
+      return successResponse(result);
+    },
+  }),
+);

@@ -1,42 +1,25 @@
-import "@/providers.config";
-/**
- * Admin Orders Refund API Route
- * POST /api/admin/orders/:id/refund — Process a refund for an order
- */
-
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { orderRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-
-type RouteContext = { params: Promise<{ id: string }> };
+import {
+  orderRepository,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
 
 const refundSchema = z.object({
   amount: z.number().min(0),
   reason: z.string().min(1),
 });
 
-export async function POST(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const body = await request.json().catch(() => ({}));
-  const parsed = refundSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { success: false, error: parsed.error.format() },
-      { status: 400 },
-    );
-  }
-
-  const { amount, reason } = parsed.data;
-
-  serverLogger.info("Admin processing order refund", { id, amount, reason });
-
-  await orderRepository.cancelOrder(id, reason, amount);
-
-  return Response.json(successResponse({ id, amount, reason }, SUCCESS_MESSAGES.ORDER.CANCELLED));
-}
+export const POST = withProviders(
+  createRouteHandler<(typeof refundSchema)["_output"]>({
+    auth: true,
+    roles: ["admin", "moderator"],
+    schema: refundSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      await orderRepository.cancelOrder(id, body!.reason, body!.amount);
+      return successResponse({ id, ...body }, "Order refunded");
+    },
+  }),
+);

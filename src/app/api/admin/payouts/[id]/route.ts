@@ -1,18 +1,13 @@
-import "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { PAYOUT_FIELDS } from "@/constants/field-names";
-/**
- * Admin Payouts [id] API Route
- * GET   /api/admin/payouts/:id — Get a single payout
- * PATCH /api/admin/payouts/:id — Update payout status
- */
-
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { payoutRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-type RouteContext = { params: Promise<{ id: string }> };
+import {
+  adminUpdatePayout,
+  payoutRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
 const updatePayoutSchema = z.object({
   status: z.enum(Object.values(PAYOUT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
@@ -20,43 +15,29 @@ const updatePayoutSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const payouts = await payoutRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
-  const payout = payouts.items[0];
-  if (!payout) {
-    return Response.json(
-      { success: false, error: ERROR_MESSAGES.PAYOUT.NOT_FOUND },
-      { status: 404 },
-    );
-  }
-  return Response.json({ success: true, data: payout });
-}
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const payouts = await payoutRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
+      const payout = payouts.items[0];
+      if (!payout) return errorResponse("Payout not found", 404);
+      return successResponse(payout);
+    },
+  }),
+);
 
-export async function PATCH(
-  request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id } = await context.params;
-  const body = await request.json().catch(() => ({}));
-  const parsed = updatePayoutSchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { success: false, error: parsed.error.format() },
-      { status: 400 },
-    );
-  }
-
-  const { status, transactionId, notes } = parsed.data;
-
-  serverLogger.info("Admin updating payout status", { id, status });
-
-  await payoutRepository.updateStatus(id, status as any, {
-    ...(notes && { adminNote: notes }),
-  } as any);
-
-  return Response.json(successResponse({ id, status }, SUCCESS_MESSAGES.PAYOUT.UPDATED));
-}
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updatePayoutSchema)["_output"]>({
+    auth: true,
+    roles: ["admin", "moderator"],
+    schema: updatePayoutSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      await adminUpdatePayout(id, body! as any);
+      return successResponse({ id, ...body }, "Payout updated");
+    },
+  }),
+);

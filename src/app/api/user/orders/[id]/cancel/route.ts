@@ -1,18 +1,23 @@
 import { withProviders } from "@/providers.config";
-/**
- * GET /api/user/offers
- *
- * Returns authenticated buyer's offers, newest first.
- */
+import { z } from "zod";
+import {
+  cancelOrderForUser,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
 
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
+const cancelSchema = z.object({
+  reason: z.string().min(1).max(500).default("Cancelled by user"),
+});
 
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  handler: async ({ user }) => {
-    const result = await offerRepository.findByBuyer(user!.uid);
-    return successResponse(result);
-  },
-}));
+export const POST = withProviders(
+  createRouteHandler<(typeof cancelSchema)["_output"]>({
+    auth: true,
+    schema: cancelSchema,
+    handler: async ({ user, body, params }) => {
+      const orderId = (params as { id: string }).id;
+      await cancelOrderForUser(user!.uid, orderId, body!.reason);
+      return successResponse(null, "Order cancelled");
+    },
+  }),
+);

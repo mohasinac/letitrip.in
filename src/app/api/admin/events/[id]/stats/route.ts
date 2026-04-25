@@ -1,45 +1,36 @@
-import "@/providers.config";
-/**
- * Admin Event Stats API Route
- * GET /api/admin/events/:id/stats — Get statistics for an event
- */
+import { withProviders } from "@/providers.config";
+import {
+  eventRepository,
+  eventEntryRepository,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
-import { successResponse } from "@mohasinac/appkit";
-import { eventRepository, eventEntryRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const eventId = (params as { id: string }).id;
+      const events = await eventRepository.list({ filters: `id==${eventId}`, page: "1", pageSize: "1" });
+      const event = events.items[0];
+      if (!event) return errorResponse("Event not found", 404);
 
-type RouteContext = { params: Promise<{ id: string }> };
+      const [totalEntries, approvedEntries, flaggedEntries] = await Promise.all([
+        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1 }),
+        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==approved" }),
+        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==flagged" }),
+      ]);
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-): Promise<Response> {
-  const { id: eventId } = await context.params;
-
-  serverLogger.info("Admin fetching event stats", { eventId });
-
-  const events = await eventRepository.list({ filters: `id==${eventId}`, page: "1", pageSize: "1" });
-  const event = events.items[0];
-  if (!event) {
-    return Response.json(
-      { success: false, error: ERROR_MESSAGES.GENERIC.NOT_FOUND },
-      { status: 404 },
-    );
-  }
-
-  const [totalEntries, approvedEntries, flaggedEntries] = await Promise.all([
-    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1 }),
-    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==approved" }),
-    eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==flagged" }),
-  ]);
-
-  return Response.json(successResponse({
-    event,
-    stats: {
-      totalEntries: totalEntries.total ?? 0,
-      approvedEntries: approvedEntries.total ?? 0,
-      flaggedEntries: flaggedEntries.total ?? 0,
+      return successResponse({
+        event,
+        stats: {
+          totalEntries: totalEntries.total ?? 0,
+          approvedEntries: approvedEntries.total ?? 0,
+          flaggedEntries: flaggedEntries.total ?? 0,
+        },
+      });
     },
-  }));
-}
+  }),
+);

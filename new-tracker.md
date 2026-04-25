@@ -4,7 +4,7 @@
 > Based on exhaustive codebase audit performed on 2026-04-24.
 > This is the single source of truth for all remaining fixes before launch.
 
-**Last updated:** 2026-04-25 (pass 7) — 4 gaps fixed: created `src/instrumentation.ts` (CRITICAL — providers now initialize at server boot via Next.js register() hook); created `.env.example` (all ~40 required env vars documented); deleted dead seed copy at `events/[id]/enter/route.ts`; deleted dead 404 stub at `faqs/[id]/vote/route.ts`
+**Last updated:** 2026-04-25 (pass 9) — 18 more routes fixed: 3 wrong-content files (`user/orders/[id]`, `user/orders/[id]/cancel`, `orders/[id]/invoice`) + 12 admin routes missing `withProviders`/auth guards (critical security fix) + 3 abstraction fixes (`bids/route.ts` 170-line duplicate, `bids/[id]/route.ts` bad provider, `admin/orders/[id]` raw handler). Total running: ~50 routes fixed across passes 4–9. Pass 8: 8 more wrong-content API routes fixed. Pass 7: 4 gaps fixed (instrumentation.ts, .env.example, dead routes).
 **Scope:** All 25 tasks from user requirements
 **Priority:** Launch-critical — no regressions, maximum effort, single pass
 
@@ -347,7 +347,7 @@ ca| 7.3 | Replace hardcoded UI strings | ✅ Done | HIGH | 6 files | nav icon co
 | 11 | Carousel Improvements | ✅ Done | 4/4 | HorizontalScroller, breakpoints, navigation done |
 | 12 | Form Responsiveness | ✅ Done | 5/5 | All done: admin forms delegate to appkit (collapsible/sidepanel native); newsletter + width done |
 | 13 | API Optimization | ✅ Done | 5/5 | Minimal client fetches, ISR caching on all listing pages, appkit handles loading states |
-| 14 | Route Fixes | ✅ Done | 5/5 | Nav links, route constants, canonical redirects + 22 broken API routes fixed (passes 4+6+7): generic-GET bug, wrong-content files, blank error pages, dead routes deleted |
+| 14 | Route Fixes | ✅ Done | 5/5 | Nav links, route constants, canonical redirects + 30+ broken API routes fixed (passes 4–8): generic-GET bug, 12 wrong-content files, blank error pages, dead routes deleted |
 | 15 | Filter Implementation | ✅ Done | 5/5 | All listing pages delegate to appkit with built-in search/filter/sort/pagination + usePendingFilters |
 | 16 | Firebase & Functions | 🔄 In Progress | 3/4 | Indexes + rules done; functions built (lib/ exists); `firebase deploy --only functions` still needed |
 | 16.x | Server Init (pass 7) | ✅ Done | — | `src/instrumentation.ts` created — providers init at boot via Next.js register() hook |
@@ -530,12 +530,94 @@ All remaining modified API routes audited individually:
 
 ---
 
+## Audit Findings (Pass 8 — 2026-04-25)
+
+### Third Wave: More Wrong-Content Files
+
+Systematic per-file read of all ~150 API routes in `src/app/api/` revealed 8 more wrong-content files where the route body didn't match the route path.
+
+### Gaps Found & Fixed (Pass 8)
+| Gap | Fix Applied |
+|-----|-------------|
+| `api/notifications/[id]/route.ts` — WRONG CONTENT: had unread-count handler (copy of `unread-count/route.ts`) instead of per-notification PATCH/DELETE | Fixed: `PATCH` calls `markNotificationRead(id)`, `DELETE` calls `notificationRepository.delete(id)` |
+| `api/realtime/bids/[id]/route.ts` — WRONG CONTENT: had promotions data GET handler (copy of `promotions/route.ts`) instead of SSE bid stream | Fixed: SSE endpoint (`text/event-stream`) that opens RTDB listener at `/auction-bids/${productId}` and streams `update` events; used by `useRealtimeBids` hook |
+| `api/cart/[itemId]/route.ts` — WRONG CONTENT: had cart/merge handler (copy of `cart/merge/route.ts`) instead of cart item PATCH/DELETE | Fixed: `PATCH` calls `updateCartItem(uid, itemId, { quantity })`, `DELETE` calls `removeCartItem(uid, itemId)` |
+| `api/profile/[userId]/route.ts` — WRONG CONTENT: had verify-phone handler (copy of `profile/verify-phone/route.ts`) instead of public profile GET | Fixed: GET returns safe public fields only (uid, displayName, photoURL, role, stats, publicProfile) |
+| `api/profile/[userId]/reviews/route.ts` — WRONG CONTENT: had verify-phone handler (same copy) instead of seller reviews GET | Fixed: GET uses `reviewRepository.list()` filtered to `sellerId==${userId},status==approved` |
+| `api/seller/orders/[id]/ship/route.ts` — WRONG CONTENT: had seller offers GET handler instead of ship order POST | Fixed: POST calls `shipOrderAction(orderId, body)` from `@/actions/seller.actions` (handles both custom shipping and Shiprocket) |
+| `api/user/sessions/[id]/route.ts` — WRONG CONTENT: had full user profile GET/PATCH handler (copy of `user/profile/route.ts`) instead of session DELETE | Fixed: `DELETE` calls `revokeSession(sessionId, user.uid)` |
+| `api/copilot/feedback/[logId]/route.ts` — WRONG CONTENT: had full copilot chat POST handler (copy of `copilot/chat/route.ts`) instead of feedback PATCH | Fixed: `PATCH` calls `copilotLogRepository.update(logId, { feedback })` for admin/moderator roles |
+
+### Verified Correct (Pass 8)
+- All 119 page.tsx files — verified clean; all delegate to appkit views (no stubs returning null/empty)
+- `next.config.js` — correct for Next.js 16 (no `instrumentationHook` flag needed, transpilePackages, serverExternalPackages all correct)
+- All auth/* routes — correct custom handlers with session management
+- All admin/* routes — correct with `createApiHandler`/`createRouteHandler` pattern
+- All seller/* routes — analytics, coupons, offers, orders, products, payouts, store, addresses, shipping — all correct
+- `user/offers/route.ts`, `user/profile/route.ts`, `user/become-seller/route.ts` — all correct
+- `stores/[storeSlug]/route.ts` and all sub-routes — use named appkit handlers
+- Copilot routes (chat, history) — correct
+- Payment/checkout/cart/bids/notifications/media routes — all verified correct after above fixes
+
+### Root Cause Pattern
+All wrong-content bugs follow the same copy-paste-at-scaffolding pattern: the file was created by copying an adjacent route file and the developer forgot to update the body. Pass 8 found 8 such files; prior passes found 4 more (total 12 wrong-content files across passes 6+7+8 — plus the previously-logged 9 generic-handler bugs in passes 4+6).
+
+---
+
+## Audit Findings (Pass 9 — 2026-04-25)
+
+### Critical Security Fix: Admin Routes Without Auth Guards
+Systematic grep for `import "@/providers.config"` (side-effect-only, does NOT call `initProviders()`) found 12 admin routes using raw `async function GET/PATCH/DELETE` with **zero auth or role checks** — any unauthenticated user could call these:
+
+| Route | Severity | Fix |
+|-------|----------|-----|
+| `admin/orders/[id]/refund/route.ts` | CRITICAL — anonymous refund | `withProviders(createRouteHandler({auth, roles:['admin','moderator']}))`; uses `orderRepository.cancelOrder` |
+| `admin/users/[uid]/route.ts` | CRITICAL — anonymous user role change | `withProviders`; `adminUpdateUser`, `adminDeleteUser` from appkit |
+| `admin/orders/[id]/route.ts` | CRITICAL — anonymous order update | `withProviders`; `adminUpdateOrder` from appkit; `findById` replaces `listAll` scan |
+| `admin/stores/[uid]/route.ts` | HIGH | `withProviders`; `adminUpdateStoreStatus` from appkit; `userRepository.findById` replaces role scan |
+| `admin/payouts/[id]/route.ts` | HIGH | `withProviders`; `adminUpdatePayout` from appkit |
+| `admin/products/[id]/route.ts` | HIGH | `withProviders`; `adminUpdateProduct`, `adminDeleteProduct` from appkit |
+| `admin/blog/[id]/route.ts` | HIGH — anonymous blog delete | `withProviders`; roles ['admin','moderator'] |
+| `admin/coupons/[id]/route.ts` | HIGH | `withProviders`; roles ['admin','moderator'] |
+| `admin/events/[id]/route.ts` | HIGH | `withProviders`; roles ['admin','moderator'] |
+| `admin/events/[id]/status/route.ts` | HIGH | `withProviders`; roles ['admin','moderator'] |
+| `admin/events/[id]/stats/route.ts` | MEDIUM | `withProviders`; roles ['admin','moderator'] |
+| `admin/events/[id]/entries/[entryId]/route.ts` | MEDIUM | `withProviders`; roles ['admin','moderator'] |
+
+Additionally `blog/[slug]/route.ts` (public) had same side-effect import — fixed to use `withProviders(createRouteHandler(...))`.
+
+### Wrong-Content Files (Pass 9)
+| Route | Wrong Content | Correct Content |
+|-------|---------------|-----------------|
+| `user/orders/[id]/route.ts` | `GET /api/user/offers` (copy of offers handler) | GET user order by ID via `getOrderByIdForUser` |
+| `user/orders/[id]/cancel/route.ts` | `GET /api/user/offers` (copy of offers handler) | POST cancel order via `cancelOrderForUser` |
+| `orders/[id]/invoice/route.ts` | Used `url.pathname.split("/")` to extract orderId instead of `params` | GET invoice using `params.id` directly |
+
+### Abstraction Violations Fixed (Pass 9)
+| Route | Violation | Fix |
+|-------|-----------|-----|
+| `bids/route.ts` | 170-line bid placement logic duplicating `placeBid` from appkit | Replaced with `placeBid(uid, email, body)` call |
+| `bids/[id]/route.ts` | Side-effect import + raw handler + manual `bidRepository` | `withProviders(createRouteHandler(...))` + `listBidsByProduct` |
+
+### Verified Correct (Pass 9)
+- `checkout/route.ts` — orchestrates appkit building blocks (`unitOfWork`, `splitCartIntoOrderGroups`, `consentOtpRef`); complex but legitimate orchestration, not duplication
+- `payment/verify/route.ts` — same pattern as checkout; legitimate orchestration
+- `cart/route.ts` — thin wrapper using `cartRepository`/`productRepository`; correct
+- `seller/orders/route.ts` — uses `createApiHandler` alias correctly; `listSellerOrders` pattern
+- `admin/orders/route.ts` — correct, uses `withProviders`
+- `seller.actions.ts` (543 lines) — all thin wrappers; Shiprocket calls are letitrip-specific
+- `admin.actions.ts` (345 lines) — all thin wrappers delegating to appkit domain functions
+
+### Root Pattern (Pass 9)
+A second class of systemic bug: routes scaffolded with `import "@/providers.config"` (side-effect only) + raw `async function` handlers — these bypass the `withProviders` wrapper entirely, getting no auth enforcement from `createRouteHandler`. All 12 are now fixed.
+
+---
+
 ## Next Steps (Priority Order)
 
 1. **Phase 16.3** — `firebase deploy --only functions` — push 20 pre-built functions; verify deployment
 2. **Phase 18** — Seed test data via `/demo/seed`; open every detail page; document any 404/empty states
 3. **Phase 22** — Responsive audit: test at 375px / 768px / 1024px on all major page types
 4. **Phase 23** — `npm run build` clean pass; smoke test all routes; Lighthouse ≥90; launch checklist
-5. **Cleanup** — Remove/replace `api/events/[id]/enter/route.ts` (seed route at wrong path)
-6. **appkit fix** — Add `ADS: "/admin/ads"` to `ADMIN` in `route-map.ts` to remove hardcoded string</content>
+5. **appkit fix** — Add `ADS: "/admin/ads"` to `ADMIN` in `route-map.ts` to remove hardcoded string in admin layout</content>
 <parameter name="filePath">d:\proj\letitrip.in\new-tracker.md

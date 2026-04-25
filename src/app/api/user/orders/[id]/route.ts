@@ -1,18 +1,19 @@
 import { withProviders } from "@/providers.config";
-/**
- * GET /api/user/offers
- *
- * Returns authenticated buyer's offers, newest first.
- */
+import {
+  getOrderByIdForUser,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+} from "@mohasinac/appkit";
 
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
-
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  handler: async ({ user }) => {
-    const result = await offerRepository.findByBuyer(user!.uid);
-    return successResponse(result);
-  },
-}));
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const orderId = (params as { id: string }).id;
+      const order = await getOrderByIdForUser(user!.uid, orderId);
+      if (!order) return errorResponse("Order not found", 404);
+      return successResponse(order);
+    },
+  }),
+);
