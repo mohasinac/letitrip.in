@@ -11,7 +11,9 @@
       "Bash(npx tsc *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(firebase deploy *)"
     ],
     "defaultMode": "bypassPermissions"
   }

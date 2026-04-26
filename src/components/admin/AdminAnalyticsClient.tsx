@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AdminAnalyticsView } from "@mohasinac/appkit";
+import { AdminAnalyticsView } from "@mohasinac/appkit/client";
 
 function today() {
   return new Date().toISOString().slice(0, 10);

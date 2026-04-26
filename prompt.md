@@ -712,6 +712,7 @@ Before moving to the next task, verify all 5 boxes are checked:
 □ 3. SEED    — seed data updated (or "no change needed" noted in commit)
 □ 4. TRACKER — new-tracker.md status updated ⏳ → ✅, progress count updated
 □ 5. DIAGRAM — INSTRUCTIONS.md §12 gap table + §13 bug entry + relevant ASCII updated
+□ 6. Build Issues and Resolutions — check and fix any build issues 
 ```
 
 If any box is unchecked, the task is **not done**. Do not start the next task.
