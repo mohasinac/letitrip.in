@@ -63,10 +63,10 @@
 
 | # | Status | Task | File | Impact |
 |---|--------|------|------|--------|
-| 12 | `[ ]` | Auctions: replace bare view with `AuctionsView` + `ProductFilters` + `Pagination` | `appkit/src/features/auctions/components/AuctionsListView.tsx` + `src/app/[locale]/auctions/page.tsx` | No search/filter/sort on auctions |
-| 13 | `[ ]` | Products: same — use `ProductsView` shell | `appkit/src/features/products/components/ProductsIndexPageView.tsx` + page | No toolbar on products listing |
-| 14 | `[ ]` | Pre-orders listing: same pattern | `src/app/[locale]/pre-orders/page.tsx` | No toolbar on pre-orders |
-| 15 | `[ ]` | Stores listing: same pattern | `src/app/[locale]/stores/page.tsx` | No toolbar on stores |
+| 12 | `[x]` | Auctions: replace bare view with `AuctionsView` + `ProductFilters` + `Pagination` | `appkit/src/features/auctions/components/AuctionsListView.tsx` + `src/app/[locale]/auctions/page.tsx` | ✅ Done — AuctionsListView → AuctionsIndexListing (useUrlTable + SlottedListingView) |
+| 13 | `[x]` | Products: same — use `ProductsView` shell | `appkit/src/features/products/components/ProductsIndexPageView.tsx` + page | ✅ Done — ProductsIndexPageView → ProductsIndexListing (useUrlTable + SlottedListingView) |
+| 14 | `[x]` | Pre-orders listing: same pattern | `appkit/src/features/pre-orders/components/PreOrdersListView.tsx` | ✅ Done phase 26.3 — PreOrdersIndexListing created (useUrlTable + useProducts(isPreOrder:true)) |
+| 15 | `[x]` | Stores listing: same pattern | `appkit/src/features/stores/components/StoresIndexPageView.tsx` | ✅ Done phase 26.4 — StoresIndexListing created (useUrlTable + useStores) |
 
 ### P3 — Detail Page Slot-Shells _(detail pages render layout chrome only)_
 
@@ -811,10 +811,10 @@ appkit/src/ui/components/Pagination.tsx
 
 | Page | Current component | Missing from current |
 |------|-------------------|---------------------|
-| `/auctions` | `AuctionsListView` (server, no toolbar) | subtitle, filters drawer, search, sort, pagination |
-| `/products` | `ProductsIndexPageView` (server, no toolbar) | filters drawer, search, sort, pagination |
-| `/pre-orders` | appkit view (server) | filters, search, sort, pagination |
-| `/stores` | `StoresIndexPageView` (server) | search, sort, pagination |
+| `/auctions` | `AuctionsListView` → `AuctionsIndexListing` ✅ | ✅ toolbar: search, sort, filters (ProductFilters), pagination (useUrlTable) |
+| `/products` | `ProductsIndexPageView` → `ProductsIndexListing` ✅ | ✅ toolbar: search, sort, filters, pagination (useUrlTable) |
+| `/pre-orders` | `PreOrdersListView` → `PreOrdersIndexListing` ✅ | ✅ toolbar: search, sort, pagination (phase 26.3) |
+| `/stores` | `StoresIndexPageView` → `StoresIndexListing` ✅ | ✅ toolbar: search, sort, pagination (phase 26.4) |
 | `/events` | appkit view (server) | filters, search, sort, pagination |
 | `/categories` | `CategoriesIndexPageView` (server) | search, sort, pagination |
 | `/blog` | appkit view (server) | search, category filter, pagination |
@@ -1226,16 +1226,16 @@ Lightbox (on click):                   No lightbox exists on this page.
 | Section / Feature | Live Site | Current Build | Root Cause |
 |-------------------|-----------|---------------|------------|
 | **LISTING PAGES** | | | |
-| Auctions: subtitle | ✅ "Bid on unique items" | ❌ No subtitle | Hardcoded H1 only |
-| Auctions: filter drawer | ✅ [▼ Filters] button | ❌ Missing entirely | ProductFilters not wired |
-| Auctions: search bar | ✅ [Search auctions...] | ❌ Missing | renderSearch not passed |
-| Auctions: sort dropdown | ✅ [Ending Soonest ▾] | ❌ Missing | renderSort not passed |
-| Products: filter/search/sort | ✅ | ❌ Missing | ProductsIndexPageView is plain server component |
-| All listing pages: pagination | ✅ ‹ 1 2 3 ... › | ❌ Missing | Pagination component exists, not wired |
-| Filter: category facets | ✅ | ❌ | ProductFilters.tsx exists, not imported |
-| Filter: price range slider | ✅ ₹0–₹500k | ❌ | RangeFilter.tsx exists, not imported |
-| Filter: condition/brand/tags | ✅ | ❌ | Same |
-| Filter URL persistence | ✅ params in URL | ❌ | UrlTable/FilterPanel not integrated |
+| Auctions: subtitle | ✅ "Bid on unique items" | ✅ Done (phase 26.1) | AuctionsIndexListing wired |
+| Auctions: filter drawer | ✅ [▼ Filters] button | ✅ Done (phase 26.1) | ProductFilters wired via useUrlTable |
+| Auctions: search bar | ✅ [Search auctions...] | ✅ Done (phase 26.1) | SlottedListingView manageSearch |
+| Auctions: sort dropdown | ✅ [Ending Soonest ▾] | ✅ Done (phase 26.1) | SlottedListingView manageSort |
+| Products: filter/search/sort | ✅ | ✅ Done (phase 26.2) | ProductsIndexListing wired |
+| All listing pages: pagination | ✅ ‹ 1 2 3 ... › | ✅ Done (phase 26.1–26.4) | Pagination in all Index*Listing via useUrlTable.setPage |
+| Filter: category facets | ✅ | ✅ Done (phase 26.1–26.2) | ProductFilters.tsx wired in auctions+products |
+| Filter: price range slider | ✅ ₹0–₹500k | ✅ Done (phase 26.1–26.2) | RangeFilter wired via ProductFilters |
+| Filter: condition/brand/tags | ✅ | ✅ Done (phase 26.1–26.2) | ProductFilters handles all facets |
+| Filter URL persistence | ✅ params in URL | ✅ Done (phase 26) | useUrlTable uses router.replace for all filter changes |
 | **CART & CHECKOUT** | | | |
 | Cart: authenticated items | ✅ From `/api/cart` | ❌ `useGuestCart` only | CartRouteClient not wired to auth API |
 | Cart: coupon code input | ✅ | ❌ Missing | Not implemented |
@@ -1337,6 +1337,8 @@ no sort, no pagination.                  renderPagination={...}
 
 **Effect:** Users cannot search, filter, or sort any listings. Results are hardcoded to
 page 1 / 24 items. No way to navigate to further pages.
+
+> ✅ Fixed phase 26 — All 4 listing pages now use Index*Listing client components (AuctionsIndexListing, ProductsIndexListing, PreOrdersIndexListing, StoresIndexListing) with useUrlTable + SlottedListingView full toolbar. ProductFilters + Pagination wired via useUrlTable URL-backed state.
 
 ---
 

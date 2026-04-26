@@ -968,12 +968,12 @@ See Phase 24, 25, 26, 27 below.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 26.1 | Auctions: use `AuctionsView` + wire `renderSearch/Sort/Filters/Pagination` | ⏳ Pending | CRITICAL | `src/app/[locale]/auctions/page.tsx` | Replace `<AuctionsListView />` with `<AuctionsView>` + `ProductFilters` + `Pagination` |
-| 26.2 | Products: use `ProductsView` + wire toolbar | ⏳ Pending | CRITICAL | `src/app/[locale]/products/page.tsx` | Same pattern |
-| 26.3 | Pre-orders: wire toolbar | ⏳ Pending | HIGH | `src/app/[locale]/pre-orders/page.tsx` | Same pattern |
-| 26.4 | Stores: wire toolbar | ⏳ Pending | MEDIUM | `src/app/[locale]/stores/page.tsx` | Same pattern |
-| 26.5 | Wire `ProductFilters` with URL param persistence | ⏳ Pending | HIGH | All listing pages | Build `UrlTable` adapter from `searchParams`; pass to `ProductFilters` |
-| 26.6 | Wire `Pagination` component to all listing pages | ⏳ Pending | HIGH | All listing pages | Connect page count + current page from Firestore response |
+| 26.1 | Auctions: use `AuctionsView` + wire `renderSearch/Sort/Filters/Pagination` | ✅ Done | CRITICAL | `appkit/src/features/auctions/components/AuctionsListView.tsx` | Already implemented: AuctionsListView → AuctionsIndexListing (client) with useUrlTable + SlottedListingView full toolbar |
+| 26.2 | Products: use `ProductsView` + wire toolbar | ✅ Done | CRITICAL | `appkit/src/features/products/components/ProductsIndexPageView.tsx` | Already implemented: ProductsIndexPageView → ProductsIndexListing (client) with useUrlTable + SlottedListingView full toolbar |
+| 26.3 | Pre-orders: wire toolbar | ✅ Done | HIGH | `appkit/src/features/pre-orders/components/PreOrdersListView.tsx` | Created PreOrdersIndexListing (client) with useUrlTable + useProducts(isPreOrder:true) + SlottedListingView; PreOrdersListView now passes initialData |
+| 26.4 | Stores: wire toolbar | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoresIndexPageView.tsx` | Created StoresIndexListing (client) with useUrlTable + useStores + SlottedListingView; added initialData to useStores hook; StoresIndexPageView now passes initialData |
+| 26.5 | Wire `ProductFilters` with URL param persistence | ✅ Done | HIGH | All listing pages | useUrlTable provides UrlTable-compatible interface; ProductFilters uses it in AuctionsIndexListing, ProductsIndexListing |
+| 26.6 | Wire `Pagination` component to all listing pages | ✅ Done | HIGH | All listing pages | Pagination wired in all Index*Listing client components via useUrlTable.setPage |
 
 ---
 
@@ -1292,18 +1292,18 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 12 | Form Responsiveness | ✅ Done | 5/5 | All done |
 | 13 | API Optimization | ✅ Done | 5/5 | ISR + loading states handled |
 | 14 | Route Fixes | ✅ Done | 5/5 | 30+ broken routes fixed + error pages |
-| 15 | Filter Implementation | ⚠️ Wrong | 0/5 | **Corrected Pass 15** — bare list views used → Phase 26 |
+| 15 | Filter Implementation | ✅ Done | 5/5 | Corrected via Phase 26: all 4 listing pages now have toolbar via Index*Listing client components |
 | 16 | Firebase & Functions | ✅ Done | 4/4 | 20 functions deployed |
 | 17 | Auth & Database | ✅ Done | 4/4 | Clean |
 | 18 | Data Issues | ⏳ Not started | 0/4 | Seed + detail page verification → Phase 29 |
-| 19 | Homepage Sections | ⚠️ Partial | 3/5 | Ad slot key broken, FAQ hardcoded empty → Phase 24 |
+| 19 | Homepage Sections | ✅ Done | 5/5 | All fixed in Phase 24 (ad slot key, FAQ data, brands case) |
 | 20 | Abstractions | ✅ Done | 4/4 | ROUTES.ADMIN.ADS added |
 | 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
 | 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
 | 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
 | 24 | Appkit Core Bugs | ✅ Done | 8/8 | perView, dark mode CSS, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild |
-| 25 | Product Detail Page | ⏳ Not started | 0/5 | Gallery, lightbox, tabs, related, BuyBar |
-| 26 | Listing Toolbars (Phase 15 Redo) | ⏳ Not started | 0/6 | Auctions, products, pre-orders, stores |
+| 25 | Product Detail Page | ✅ Done | 5/5 | Gallery, lightbox, tabs, related, BuyBar — all wired in Phase 25 |
+| 26 | Listing Toolbars (Phase 15 Redo) | ✅ Done | 6/6 | Auctions+Products already done; Pre-orders+Stores toolbars added via PreOrdersIndexListing+StoresIndexListing |
 | 27 | Slot-Shell Page Wiring | ⏳ Not started | 0/11 | User/seller/admin dashboards + detail pages |
 | 28 | Cart & Checkout | ⏳ Not started | 0/7 | Razorpay + auth cart + order creation |
 | 29 | Local Seed Data | ⏳ Not started | 0/3 | Homepage blank locally |
