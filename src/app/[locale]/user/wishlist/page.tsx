@@ -4,7 +4,7 @@ import {
   useAuth,
   InteractiveProductCard,
   ROUTES,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 
 export default function Page() {
   const { user } = useAuth();

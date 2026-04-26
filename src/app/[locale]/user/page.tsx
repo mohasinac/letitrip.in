@@ -5,7 +5,7 @@ import {
   useOrders,
   OrdersList,
   ROUTES,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 const NAV_LINKS = [

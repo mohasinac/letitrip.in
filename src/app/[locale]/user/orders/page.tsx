@@ -5,7 +5,7 @@ import {
   useUrlTable,
   OrdersList,
   ROUTES,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
 
 export default function Page() {

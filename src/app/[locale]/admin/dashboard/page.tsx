@@ -1,5 +1,5 @@
 "use client";
-import { AdminDashboardView, ROUTES } from "@mohasinac/appkit";
+import { AdminDashboardView, ROUTES } from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 const QUICK_ACTIONS = [

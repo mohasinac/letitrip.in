@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Div, Heading, Text } from "@mohasinac/appkit/ui";
-import { EventParticipateView } from "@mohasinac/appkit/features/events";
+import { EventParticipateView } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit";
 

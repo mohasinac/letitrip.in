@@ -9,10 +9,10 @@ import {
   registerClientAuthProvider,
   registerClientRealtimeProvider,
   registerClientSessionAdapter,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import type { AdapterAuthUser } from "@mohasinac/appkit";
+import type { AdapterAuthUser } from "@mohasinac/appkit/client";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

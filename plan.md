@@ -1,5 +1,32 @@
 ## Plan: Unified Listing UX Rollout (Public + Admin + Seller)
 
+---
+
+## Build Issues and Resolutions
+
+### Root Causes of Build Failures
+- **Client Components Importing Server Code**: Client components (marked with "use client") were importing from `@mohasinac/appkit`, which includes server-side code like Firebase Admin SDK and Node.js modules (e.g., `fs`, `child_process`). This caused Next.js Turbopack to bundle server-only modules into client bundles, leading to "Can't resolve 'fs'" errors.
+- **Barrel Exports Pulling in Unintended Dependencies**: The main `appkit/src/index.ts` barrel file exported everything, including server components and providers, causing transitive imports of server code in client builds.
+- **Lack of Separate Entry Points**: No clear separation between client-safe and server-side exports, leading to incorrect imports.
+
+### Correct Way to Export and Import from Appkit
+- **Entry Points**:
+  - `@mohasinac/appkit/client`: For client components, hooks, UI primitives, and client-safe features. Exports are marked with "use client" and exclude server dependencies.
+  - `@mohasinac/appkit/server`: For server components, actions, and server-side logic.
+  - `@mohasinac/appkit/ui`: For UI components and layout primitives.
+  - `@mohasinac/appkit`: Main entry for general use, but avoid in client components to prevent server code inclusion.
+- **Import Guidelines**:
+  - Client components (pages with "use client"): Import from `@mohasinac/appkit/client`.
+  - Server components and actions: Import from `@mohasinac/appkit` or specific sub-paths.
+  - UI/layout: Import from `@mohasinac/appkit/ui` or `@mohasinac/appkit/client`.
+- **Export Strategy**:
+  - Client-safe items (UI, hooks, client providers) go in `client.ts`.
+  - Server items stay in `index.ts` or `server.ts`.
+  - Use `serverExternalPackages` in `next.config.js` to exclude server modules from client bundles.
+- **Resolution Applied**: Added client exports to `client.ts`, updated client page imports, and configured `serverExternalPackages` to exclude Firebase and Node.js modules.
+
+---
+
 Standardize all included surfaces (public, admin, seller) to one shared listing visual system based on appkit ownership: desktop left filter sidebar, mobile full-width filter drawer, shared top toolbar (search/sort/list-grid/select/bulk), and route-param driven state (slug/path segment first) with apply-on-click filter behavior. Public category-detail and store-detail pages are explicitly in scope as listing-extensions of product pages with fixed parent context (current category/store locked while child inventory is filtered/listed). Product detail pages are also explicitly in scope via a Detail-Commerce pattern: desktop sticky action rail plus mobile sticky bottom action bar for quick actions (buy/add-to-cart/wishlist). Card designs are standardized across product, auction, pre-order, blog, event, store, review, and category cards, with pre-order cards explicitly aligned to product/auction interaction patterns. PII display must always show masked human-readable values (for example A*h) and never raw encrypted tokens (for example pii:v1:...). Navigation behavior must enforce mutually exclusive opening between dashboard sidebar (role nav) and public sidebar: opening one auto-closes the other; closing either does not auto-open anything. For non-list pages (detail/forms/analytics), keep the same visual frame but hide irrelevant controls to avoid forced/empty UI. The homepage must render all 18 sections (see section map below) with correct INR currency and masked PII.
 
 ### Phase 3 Addendum: Public Route Mock Views (ASCII) and Real-Data Contract

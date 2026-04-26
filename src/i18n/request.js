@@ -5,17 +5,17 @@
  * This file is referenced in next.config.js via createNextIntlPlugin.
  */
 
-import { hasLocale } from "next-intl";
-import { getRequestConfig } from "next-intl/server";
-import { setupZodErrorMap } from "@mohasinac/appkit";
-import { routing } from "./routing";
-import { mergeFeatureMessages } from "@mohasinac/appkit";
-import features from "@/features.config";
-import { LOCALE_CONFIG } from "@/constants";
+const { hasLocale } = require("next-intl");
+const { getRequestConfig } = require("next-intl/server");
+// const { setupZodErrorMap } = require("@mohasinac/appkit");
+const { routing } = require("./routing");
+// const { mergeFeatureMessages } = require("@mohasinac/appkit");
+const features = require("../features.config");
+const { LOCALE_CONFIG } = require("../constants");
 
-export default getRequestConfig(async ({ requestLocale }) => {
+module.exports = getRequestConfig(async ({ requestLocale }) => {
   // Apply custom Zod error messages on every server request (idempotent)
-  setupZodErrorMap();
+  // setupZodErrorMap();
 
   // Determine the locale from the request (set by middleware or [locale] segment).
   // With localePrefix:"never" and localeCookie:false, requestLocale may be
@@ -26,11 +26,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   const projectMessages = (await import(`../../messages/${locale}.json`))
     .default;
-  const featureMessages = await mergeFeatureMessages(locale, features);
+  // const featureMessages = await mergeFeatureMessages(locale, features);
 
   return {
     locale,
-    messages: { ...featureMessages, ...projectMessages },
+    messages: { ...projectMessages },
     timeZone: LOCALE_CONFIG.TIMEZONE,
     now: new Date(),
   };
