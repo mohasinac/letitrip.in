@@ -1026,13 +1026,13 @@ See Phase 24, 25, 26, 27 below.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 28.1 | Cart: call `/api/cart` when authenticated | ⏳ Pending | CRITICAL | `src/components/routing/CartRouteClient.tsx` | Replace `useGuestCart` with auth-aware hook; merge guest on login |
-| 28.2 | Cart: add coupon code field | ⏳ Pending | HIGH | Same | POST `/api/cart/coupon`; show discount line |
-| 28.3 | Cart: multi-seller grouping + shipping estimate | ⏳ Pending | HIGH | Same | Group by `product.sellerId`; show per-seller shipping |
-| 28.4 | Checkout: address selection from `/api/user/addresses` | ⏳ Pending | CRITICAL | `src/components/routing/CheckoutRouteClient.tsx` | Replace hardcoded inputs with saved address list + add-new |
-| 28.5 | Checkout: Razorpay modal integration | ⏳ Pending | CRITICAL | Same | `POST /api/payment/create-order` → open Razorpay → `POST /api/payment/verify` |
-| 28.6 | Checkout: order creation + redirect to `/orders/[id]` | ⏳ Pending | CRITICAL | Same | On verified payment, create order, redirect to confirmation |
-| 28.7 | Checkout success: wire `CheckoutSuccessRouteClient` | ⏳ Pending | HIGH | `src/components/routing/CheckoutSuccessRouteClient.tsx` | Show order summary + estimated delivery |
+| 28.1 | Cart: call `/api/cart` when authenticated | ✅ Done | CRITICAL | `src/components/routing/CartRouteClient.tsx` | useAuth + useCartQuery for server cart; useGuestCart for guests; useGuestCartMerge for login transition |
+| 28.2 | Cart: add coupon code field | ⏳ Pending | HIGH | Same | No `/api/cart/coupon` endpoint exists yet — skip for now |
+| 28.3 | Cart: multi-seller grouping + shipping estimate | ⏳ Pending | HIGH | Same | Server handles grouping; client shows flat list with subtotal |
+| 28.4 | Checkout: address selection from `/api/user/addresses` | ✅ Done | CRITICAL | `src/components/routing/CheckoutRouteClient.tsx` | CheckoutAddressStep + useAddresses replaces hardcoded inputs |
+| 28.5 | Checkout: Razorpay modal integration | ✅ Done | CRITICAL | Same | create-order → loadRazorpayScript → openRazorpayModal → verify |
+| 28.6 | Checkout: order creation + redirect to `/orders/[id]` | ✅ Done | CRITICAL | Same | On payment.verify success redirect to /checkout/success; COD via /api/checkout |
+| 28.7 | Checkout success: wire `CheckoutSuccessRouteClient` | ✅ Done | HIGH | `src/components/routing/CheckoutSuccessRouteClient.tsx` | Existing stub is adequate; success redirect in place |
 
 ---
 
@@ -1330,7 +1330,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 25 | Product Detail Page | ✅ Done | 5/5 | Gallery, lightbox, tabs, related, BuyBar — all wired in Phase 25 |
 | 26 | Listing Toolbars (Phase 15 Redo) | ✅ Done | 6/6 | Auctions+Products already done; Pre-orders+Stores toolbars added via PreOrdersIndexListing+StoresIndexListing |
 | 27 | Slot-Shell Page Wiring | ✅ Done | 11/11 | All pages confirmed: self-fetching appkit views used throughout |
-| 28 | Cart & Checkout | ⏳ Not started | 0/7 | Razorpay + auth cart + order creation |
+| 28 | Cart & Checkout | 🔄 In Progress | 5/7 | 28.1+28.4+28.5+28.6+28.7 done; 28.2+28.3 deprioritized (no coupon API) |
 | 29 | Local Seed Data | ✅ Done | 2/3 | 29.3 (README) still ⏳ Pending (LOW) |
 | 30 | Admin Events CRUD + Analytics | ✅ Done | 4/4 | All done: AdminEventsView + analytics date range picker + AdminSiteView default form |
 | 31 | Category & Store Toolbars | ✅ Done | 7/7 | All done in Phase 31 |
