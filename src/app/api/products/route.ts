@@ -15,6 +15,7 @@ function numParam(url: URL, key: string, fallback: number): number {
 const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "status",
   "category",
+  "categorySlug",
   "brand",
   "condition",
   "sellerId",
@@ -49,6 +50,8 @@ function buildFilters(url: URL): string {
   if (status) parts.push(`status==${status}`);
   const category = param(url, "category");
   if (category) parts.push(`category==${category}`);
+  const categorySlug = param(url, "categorySlug");
+  if (categorySlug) parts.push(`categorySlug==${categorySlug}`);
   const brand = param(url, "brand");
   if (brand) parts.push(`brand==${brand}`);
   const condition = param(url, "condition");
