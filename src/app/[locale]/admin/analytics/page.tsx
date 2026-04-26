@@ -1,5 +1,5 @@
-﻿import { AdminAnalyticsView } from "@mohasinac/appkit";
+﻿import { AdminAnalyticsClient } from "@/components/admin/AdminAnalyticsClient";
 
 export default function Page() {
-  return <AdminAnalyticsView />;
+  return <AdminAnalyticsClient />;
 }
