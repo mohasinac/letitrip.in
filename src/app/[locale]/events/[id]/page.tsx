@@ -4,6 +4,7 @@ import {
   getEventLeaderboard,
   Div,
   Heading,
+  RichText,
   Text,
   ROUTES,
 } from "@mohasinac/appkit";
@@ -52,18 +53,45 @@ export default async function Page({ params }: Props) {
     );
   }
 
+  const e = event as unknown as Record<string, unknown>;
+  const coverImage =
+    typeof e.imageUrl === "string" ? e.imageUrl
+    : typeof e.bannerImage === "string" ? e.bannerImage
+    : null;
+
   return (
     <EventDetailView
+      renderCoverImage={
+        coverImage
+          ? () => (
+              <Div className="overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={coverImage}
+                  alt={event.title ?? "Event cover"}
+                  className="w-full object-cover max-h-72"
+                />
+              </Div>
+            )
+          : undefined
+      }
       renderHeader={() => (
-        <Div className="space-y-2">
+        <Div className="space-y-1">
           <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             {event.title}
           </Heading>
-          {event.description ? (
-            <Text className="text-zinc-600 dark:text-zinc-400">{event.description}</Text>
-          ) : null}
         </Div>
       )}
+      renderContent={
+        event.description
+          ? () => (
+              <RichText
+                html={typeof event.description === "string" ? event.description : ""}
+                className="text-zinc-600 dark:text-zinc-400"
+              />
+            )
+          : undefined
+      }
       renderLeaderboard={
         leaderboard.length > 0
           ? () => (
