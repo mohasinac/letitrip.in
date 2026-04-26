@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "*",
       "Bash(ls src/app/[locale]/seller-guide/)",
@@ -9,7 +8,11 @@
       "Bash(ls src/app/[locale]/search/)",
       "Bash(ls src/app/[locale]/sellers/)",
       "Bash(ls src/app/[locale]/refund-policy/)",
-      "Bash(npx tsc *)"
-    ]
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)"
+    ],
+    "defaultMode": "bypassPermissions"
   }
 }

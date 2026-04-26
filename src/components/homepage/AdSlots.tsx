@@ -7,7 +7,7 @@
  * For now, uses placeholder manual content to demonstrate the wiring.
  */
 
-import { AdSlot } from "@mohasinac/appkit";
+import { AdSlot } from "@mohasinac/appkit/client";
 import { Div, Text } from "@mohasinac/appkit/ui";
 
 /**

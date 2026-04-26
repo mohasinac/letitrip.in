@@ -1,5 +1,5 @@
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Caption, Div } from "@mohasinac/appkit";
+import { Heading, Text, Section, Caption, Div } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
 const { themed, page } = THEME_CONSTANTS;

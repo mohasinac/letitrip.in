@@ -1,6 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div } from "@mohasinac/appkit";
-import { TextLink } from "@mohasinac/appkit";
+import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div, TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 

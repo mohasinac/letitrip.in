@@ -4006,3 +4006,228 @@ Total covered routes: 110
 1. Choose the single source of truth between the two ListingLayout implementations before coding starts to prevent parallel architecture drift.
 2. Define a strict "page class checklist" in MIGRATION.md so each migrated page can be signed off consistently.
 3. Decide whether bulk actions on some public listing pages should be view-only disabled in MVP if no safe backend action exists yet.
+
+---
+
+## Post-Audit Implementation Status (2026-04-25)
+
+> This section was added after passes 1–16 of the implementation audit.
+> It records actual current state against this plan's design spec.
+> Authoritative detail is in `INSTRUCTIONS.md` (gap analysis, 21 sections) and
+> `new-tracker.md` (task tracker, Phases 7–33).
+> Do not modify the design spec above — this section is the delta layer only.
+
+---
+
+### Phase Completion Summary
+
+| Phase | Name | Plan State | Audit Finding |
+|-------|------|-----------|---------------|
+| 0 | Scope freeze + page classification | ✅ Complete | All 110 routes confirmed present |
+| 1 | Shared appkit contracts | ✅ Complete | Contracts implemented; see regressions below |
+| 2 | Admin surfaces | ⚠️ Partial | List views self-fetch and work; `AdminEventsView` missing entirely; analytics/site slots empty |
+| 3 | Public surfaces | ⚠️ Partial | Routes exist; listing toolbar not wired; detail pages use bare views without slot props |
+| 4 | Seller surfaces | ⚠️ Partial | Tables work; dashboard and analytics slots empty |
+| 5 | Cleanup + consolidation | ⏳ Not started | Blocked by Phase 3/4 completion |
+
+---
+
+### Regression Map — Plan Spec vs Actual State
+
+The Phase 3 checkpoint (line 3524) declared these as implemented. Audit found the
+following regressions against the plan's design spec:
+
+#### 1. Listing Pages — toolbar contract not fulfilled
+
+Plan specifies: result count, active chips, sort, filter trigger, browse mode visible immediately.
+Actual: bare heading + card grid only. No search, no sort, no filter drawer, no pagination.
+
+| Page | Plan Class | Plan Toolbar Required | Actual |
+|------|------------|----------------------|--------|
+| `/products` | Listing | Full control set | ❌ Bare grid |
+| `/auctions` | Listing | Full control set | ❌ Bare grid |
+| `/pre-orders` | Listing | Full control set | ❌ Bare grid |
+| `/stores` | Listing | Full control set | ❌ Bare grid |
+| `/categories/[slug]` | Listing-Extension | Filter/sort/pagination | ❌ Static grid |
+| `/stores/[slug]/products` | Listing-Extension | Filter/sort/pagination | ❌ Static grid |
+| `/stores/[slug]/auctions` | Listing-Extension | Filter/sort/pagination | ❌ Static grid |
+| `/stores/[slug]/reviews` | Listing-Extension | Pagination + rating filter | ❌ Static list |
+
+Root cause: `AuctionsListView`, `ProductsIndexPageView` (bare views) used instead of
+`AuctionsView`, `ProductsView` (toolbar-capable views). `ProductFilters` and `Pagination`
+components exist in appkit but are never imported by any public listing page.
+Fix: Phase 26 + 31 in `new-tracker.md`.
+
+#### 2. Detail-Commerce pages — gallery, tabs, and action rail not fulfilled
+
+Plan specifies: gallery/media, summary+pricing+actions in 3-col layout, sticky action rail
+(desktop), mobile sticky bottom action bar, tabbed below-fold content.
+
+Actual state of `ProductDetailPageView`:
+
+| Plan Feature | Actual |
+|-------------|--------|
+| Clickable gallery → lightbox | ❌ CSS `background-image` div, not clickable |
+| Thumbnail strip | ❌ Missing |
+| Image counter ("1 / 2") | ❌ Missing |
+| Tabbed below-fold (Description / Specs / Reviews) | ❌ `renderTabs` slot never passed |
+| Related products carousel | ❌ `renderRelated` slot never passed |
+| Sticky mobile action bar (`BuyBar`) | ❌ `BuyBar` component exists in appkit, never used |
+
+`ImageLightbox`, `ProductTabs`, `RelatedProducts`, `BuyBar` all exist in appkit and are
+fully implemented. None are imported or used in the product detail page.
+Fix: Phase 25 + 32 in `new-tracker.md`.
+
+Auction detail (`AuctionDetailView`) has 6 render slots. None are passed from
+`src/app/[locale]/auctions/[id]/page.tsx`. Renders layout chrome only.
+Fix: Phase 27.1 + 32.1–32.2.
+
+Pre-order detail (`PreOrderDetailView`) same pattern.
+Fix: Phase 27.2 + 32.9.
+
+#### 3. HorizontalScroller — `perView` contract broken
+
+Plan specifies: carousel shows N cards per view at responsive breakpoints (1 mobile,
+2 tablet, 3 desktop). The `PerViewConfig` interface was designed for exactly this.
+
+Actual: `void perView;` on line 67 of `HorizontalScroller.tsx` discards the prop
+immediately. All carousels render every card in one flat row regardless of breakpoint.
+
+Fix: Phase 24.1 — ResizeObserver-based item width calculation.
+
+#### 4. Homepage CMS sections — ad slots, FAQ, brands broken
+
+Plan specifies 18 homepage sections, ad slot system, FAQ with real data.
+
+| Plan Item | Actual |
+|-----------|--------|
+| Ad slots fire after hero/products/reviews/FAQ | ❌ Key logic produces `"after0"`, `"after1"` — never match slot names |
+| FAQ section renders from DB | ❌ Hardcoded `tabs={[]} items={[]}` — always empty |
+| Brands section renders | ❌ No `case "brands":` in switch — silently dropped |
+| HeroCarousel when DB empty | ❌ Returns `null` — blank gap, no fallback |
+
+Fix: Phase 24.3–24.7 in `new-tracker.md`.
+
+#### 5. Authenticated pages — slot-shell pattern not wired
+
+Plan specifies full user/seller/admin dashboards with stats, charts, activity, orders, etc.
+
+Actual: every page in `src/app/[locale]/user/`, `src/app/[locale]/seller/`, and most of
+`src/app/[locale]/admin/` passes zero render props to its appkit view. All slot-shell
+views render blank layout chrome only.
+
+Reference implementations that DO work correctly (follow these patterns):
+- `/events/[id]/page.tsx` — fetches data, passes all 5 render props
+- `/search/[slug]/tab/.../page.tsx` — fetches data, passes all render slots + pagination
+- `/promotions/[tab]/page.tsx` — fetches data, wires all render slots + labels
+
+Fix: Phase 27 in `new-tracker.md` (11 sub-tasks).
+
+#### 6. Cart and Checkout — transactional flow is a stub
+
+Plan specifies: multi-step checkout (Address → Payment → Review), Razorpay payment,
+order creation, authenticated cart with coupon support.
+
+Actual:
+- Cart uses `useGuestCart` (localStorage only). Authenticated `/api/cart` exists but is
+  never called. No coupon field, no multi-seller grouping, no shipping estimate.
+- Checkout file contains the comment "transactional bindings are next" — hardcoded
+  `<Input>` fields, `[Place Order]` button does nothing, Razorpay not integrated.
+
+Fix: Phase 28 in `new-tracker.md`.
+
+#### 7. Rich text — store policies and category descriptions use plain text
+
+Plan specifies rich text for all content fields.
+
+Actual gaps:
+- `StoreAboutView`: `returnPolicy` and `shippingPolicy` rendered as `whitespace-pre-line` plain text
+- `CategoryDetailPageView`: category description rendered as plain text
+- Both fields store HTML in Firestore but render it as escaped string
+
+The `RichText` component and `normalizeRichTextHtml` utility are fully implemented and
+used correctly in 16+ other places. Fix: Phase 33 in `new-tracker.md`.
+
+#### 8. AdminEventsView — missing entirely
+
+Plan includes admin event management. `AdminEventsView` component does not exist in
+`appkit/src/features/admin/components/`. Only `AdminEventEntriesView` exists (entries
+management, not event CRUD). Events cannot be created, edited, or deleted via admin.
+
+Fix: Phase 30.1 in `new-tracker.md`.
+
+---
+
+### Updated Action Priority Map (Post-Audit)
+
+Supersedes the Action Priority Map at lines 3686–3766. Items are ordered by dependency
+and impact, not by page family.
+
+| Priority | Phase | Action | Blocks |
+|----------|-------|--------|--------|
+| P0 | 24 | Fix appkit core bugs (perView, dark mode CSS, HeroCarousel, ad slots, FAQ, brands) | Everything |
+| P1 | 25 + 32 | Wire product detail page: gallery + lightbox + tabs + BuyBar + bid history | Detail-Commerce spec |
+| P2 | 26 + 31 | Wire listing toolbars: auctions, products, pre-orders, stores, category, store tabs | Listing + Listing-Extension spec |
+| P3 | 29 / 18 | Seed local Firestore + verify all detail pages load | All local testing |
+| P4 | 27 | Wire all slot-shell pages: user/seller/admin dashboards + auction/preorder detail | Dashboard spec |
+| P5 | 30 | Create AdminEventsView; wire admin analytics date range; extend admin site settings | Admin spec |
+| P6 | 28 | Wire cart auth + Razorpay + order creation | Checkout spec |
+| P7 | 33 | Fix rich text gaps: store policies, category descriptions | Content spec |
+| P8 | 22 | Responsive audit: 375px / 768px / 1024px | Responsive contract |
+| P9 | 23 | Smoke tests, Lighthouse ≥90, cross-browser, launch checklist | Launch |
+
+---
+
+### Updated State Matrix — Actual vs Plan
+
+Supplements the State Matrix at lines 3582–3682. "Actual" reflects current local build.
+
+| Page Family | Plan Target | Actual State | Gap |
+|-------------|-------------|-------------|-----|
+| Homepage | 18 sections, ads, CMS-driven | ❌ Blank locally (empty Firestore) | Seed + 5 appkit bugs |
+| Listing pages | Full toolbar (search/filter/sort/pages) | ❌ Bare grid, no toolbar | Phase 26 |
+| Listing-extension (category/store) | Toolbar + fixed parent context | ❌ Bare grid, no toolbar | Phase 31 |
+| Detail-Commerce (product) | Gallery + tabs + sticky rail | ❌ CSS bg-image, no tabs, no BuyBar | Phase 25+32 |
+| Detail-Commerce (auction) | 6-slot layout + real-time bids | ❌ All 6 slots empty | Phase 27+32 |
+| Detail-Commerce (pre-order) | Gallery + reserve progress | ❌ All 3 slots empty | Phase 27+32 |
+| Promotions + Search | Tabbed listing + toolbar | ✅ Wired correctly | None |
+| Events detail | Slot-shell + 5 render props | ✅ Wired correctly | None |
+| Blog detail | RichText body + related posts | ✅ Self-fetches via hook | Minor: renderRelatedCard |
+| Checkout | 3-step + Razorpay + order API | ❌ Explicit stub | Phase 28 |
+| User account (10 pages) | Stats + nav + orders + wishlist | ❌ All blank (zero slot props) | Phase 27 |
+| Seller dashboard (10 pages) | Stats + chart + listings | ❌ All blank (zero slot props) | Phase 27 |
+| Admin list views (7) | Self-fetching tables | ✅ Work (useAdminListingData) | Minor: no edit drawer |
+| Admin analytics | Charts + date range | ⚠️ Charts present, date range empty | Phase 30 |
+| Admin events CRUD | Create/edit/delete events | ❌ AdminEventsView missing | Phase 30 |
+| Rich text content | All HTML fields via RichText | ⚠️ Store policies + category desc plain text | Phase 33 |
+
+---
+
+### Seed Data Status (Post-Audit)
+
+The homepage and most detail pages require Firestore data to render anything locally.
+
+| Collection | Plan requires | Local status | Action |
+|------------|--------------|-------------|--------|
+| `carousel_slides` | ≥2 active slides | ❌ Empty | Phase 29 |
+| `homepage_sections` | ≥1 doc per type | ❌ Empty | Phase 29 |
+| `site_settings/singleton` | Announcement + settings | ❌ Empty | Phase 29 |
+| `products` | ≥3 with images[], specs[] | ⚠️ May exist via /demo/seed | Verify + enrich |
+| `auctions` | ≥2 with bid history | ⚠️ May exist via /demo/seed | Verify + enrich |
+| `faq_items` | ≥3 with `showOnHomepage:true` | ❌ Missing (FAQ bug hid them) | Phase 24.6 + seed |
+| `stores` | ≥1 with HTML bio + policies | ⚠️ May exist | Verify HTML fields |
+| `categories` | ≥3 with HTML description | ⚠️ May exist | Verify HTML field |
+
+Run `/demo/seed` after Phase 24 fixes are in place to exercise the corrected homepage.
+
+---
+
+### Cross-References
+
+| Document | Role |
+|----------|------|
+| `INSTRUCTIONS.md` | Full architectural gap analysis (21 sections), ASCII before/after diagrams, bug catalog with file:line references |
+| `new-tracker.md` | Task tracker (Phases 7–33, 180+ tasks), per-task status, audit findings passes 1–16 |
+| `prompt.md` | Session working prompt — orient, implement, seed, update tracker and diagrams, commit |
+| `appkit/src/seed/` | Seed data files for all Firestore collections |
+| `src/app/api/demo/seed/route.ts` | POST /demo/seed endpoint for local data bootstrapping |

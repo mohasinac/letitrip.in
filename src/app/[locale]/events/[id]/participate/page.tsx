@@ -1,4 +1,5 @@
-import { getPublicEventById, Div, Heading, Text, ROUTES } from "@mohasinac/appkit";
+import { getPublicEventById, ROUTES } from "@mohasinac/appkit";
+import { Div, Heading, Text } from "@mohasinac/appkit/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EventParticipateClient } from "./EventParticipateClient";

@@ -1,5 +1,7 @@
 ﻿import { listPublicEventsAction } from "@/actions/event.actions";
-import { AdSlot, Div, EventsListView } from "@mohasinac/appkit";
+import { EventsListView } from "@mohasinac/appkit";
+import { AdSlot } from "@mohasinac/appkit/client";
+import { Div } from "@mohasinac/appkit/ui";
 import type { EventItem } from "@mohasinac/appkit";
 import type { EventDocument } from "@mohasinac/appkit";
 
