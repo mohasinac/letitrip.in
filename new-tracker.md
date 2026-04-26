@@ -1223,8 +1223,8 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 30.1 | Create `AdminEventsView` in appkit | ⏳ Pending | HIGH | `appkit/src/features/admin/components/AdminEventsView.tsx` (new) | Follow `AdminBlogView` pattern: `useAdminListingData` + table with create/edit/delete |
-| 30.2 | Wire `/admin/events/page.tsx` to new view | ⏳ Pending | HIGH | `src/app/[locale]/admin/events/page.tsx` | Replace whatever currently renders |
+| 30.1 | Create `AdminEventsView` in appkit | ✅ Done | HIGH | `appkit/src/features/events/components/AdminEventsView.tsx` | Rewritten to follow `AdminBlogView` pattern: `useAdminListingData` + `AdminListingScaffold` with title/type/status/date columns |
+| 30.2 | Wire `/admin/events/page.tsx` to new view | ✅ Done | HIGH | `src/app/[locale]/admin/events/page.tsx` | Already renders `<AdminEventsView />` — now works with built-in data fetching |
 | 30.3 | Admin analytics: wire `renderDateRange` slot | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/analytics/page.tsx` | Pass a date range picker component |
 | 30.4 | Admin site: wire `renderTabs`/`renderForm` for nav/logo/footer config | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/site/page.tsx` | Extend beyond announcement bar |
 
