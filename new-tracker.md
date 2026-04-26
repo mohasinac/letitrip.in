@@ -10,6 +10,31 @@
 
 ---
 
+## Build Issues and Resolutions
+
+### Root Causes of Build Failures
+- **Client Components Importing Server Code**: Client components (marked with "use client") were importing from `@mohasinac/appkit`, which includes server-side code like Firebase Admin SDK and Node.js modules (e.g., `fs`, `child_process`). This caused Next.js Turbopack to bundle server-only modules into client bundles, leading to "Can't resolve 'fs'" errors.
+- **Barrel Exports Pulling in Unintended Dependencies**: The main `appkit/src/index.ts` barrel file exported everything, including server components and providers, causing transitive imports of server code in client builds.
+- **Lack of Separate Entry Points**: No clear separation between client-safe and server-side exports, leading to incorrect imports.
+
+### Correct Way to Export and Import from Appkit
+- **Entry Points**:
+  - `@mohasinac/appkit/client`: For client components, hooks, UI primitives, and client-safe features. Exports are marked with "use client" and exclude server dependencies.
+  - `@mohasinac/appkit/server`: For server components, actions, and server-side logic.
+  - `@mohasinac/appkit/ui`: For UI components and layout primitives.
+  - `@mohasinac/appkit`: Main entry for general use, but avoid in client components to prevent server code inclusion.
+- **Import Guidelines**:
+  - Client components (pages with "use client"): Import from `@mohasinac/appkit/client`.
+  - Server components and actions: Import from `@mohasinac/appkit` or specific sub-paths.
+  - UI/layout: Import from `@mohasinac/appkit/ui` or `@mohasinac/appkit/client`.
+- **Export Strategy**:
+  - Client-safe items (UI, hooks, client providers) go in `client.ts`.
+  - Server items stay in `index.ts` or `server.ts`.
+  - Use `serverExternalPackages` in `next.config.js` to exclude server modules from client bundles.
+- **Resolution Applied**: Added client exports to `client.ts`, updated client page imports, and configured `serverExternalPackages` to exclude Firebase and Node.js modules.
+
+---
+
 ## Executive Summary
 
 ### Audit Results
@@ -1252,16 +1277,16 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 32.1 | Auction detail: wire `renderBidHistory` (newly found slot) | ⏳ Pending | HIGH | `src/app/[locale]/auctions/[id]/page.tsx` | Pass `<AuctionBidHistory productId={id} />` — real-time RTDB feed |
-| 32.2 | Auction detail: wire `renderRelated` (newly found slot) | ⏳ Pending | MEDIUM | Same | Pass `<RelatedProducts productId={id} />` |
-| 32.3 | Product `renderTabs`: wire all 4 tab contents | ⏳ Pending | HIGH | `appkit/src/features/products/components/ProductDetailPageView.tsx` | Pass `renderDescription`/`renderSpecs`/`renderReviews`/`renderExtraTab` to `ProductTabs` |
-| 32.4 | Product tabs: `renderSpecs` — structured specs table | ⏳ Pending | MEDIUM | Same | Map `product.specifications` (key/value pairs) to a table component |
-| 32.5 | Product tabs: `renderReviews` — inline review list | ⏳ Pending | HIGH | Same | Pass `<ReviewsList productId={product.id} />` to the reviews tab |
-| 32.6 | Blog post: wire `renderRelatedCard` slot | ⏳ Pending | MEDIUM | `src/app/[locale]/blog/[slug]/page.tsx` | Pass `(post) => <BlogCard post={post} />` to `BlogPostView` |
-| 32.7 | Blog post: verify `slug` prop passed (confirm self-fetch works) | ⏳ Pending | HIGH | Same | Confirm `<BlogPostView slug={slug} />` — if so, blog detail is functional |
-| 32.8 | Event detail: verify all 5 render slots passed (reference pattern) | ⏳ Pending | LOW | `src/app/[locale]/events/[id]/page.tsx` | Audit-only — this page already works correctly |
-| 32.9 | Pre-order detail: wire `renderBuyBar` with reserve count progress bar | ⏳ Pending | HIGH | `src/app/[locale]/pre-orders/[id]/page.tsx` | Show "X of Y reserved" + progress bar + [Reserve Now] |
-| 32.10 | Rich text: add `renderDescription` to `ProductTabs` with RichText body | ⏳ Pending | MEDIUM | Same as 32.3 | Pass full `<RichText html={normalizeRichTextHtml(product.description)} />` as description tab |
+| 32.1 | Auction detail: wire `renderBidHistory` (newly found slot) | ✅ Done | HIGH | `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Already wired: BidHistory component with listBidsByProduct (20 items) |
+| 32.2 | Auction detail: wire `renderRelated` (newly found slot) | ✅ Done | MEDIUM | Same | renderRelated passes RelatedProducts + MarketplaceAuctionGrid (same category, capped at 4) |
+| 32.3 | Product `renderTabs`: wire all 4 tab contents | ✅ Done | HIGH | `appkit/src/features/products/components/ProductDetailPageView.tsx` | Already wired: ProductTabsShell with description/specs/reviews |
+| 32.4 | Product tabs: `renderSpecs` — structured specs table | ✅ Done | MEDIUM | Same | Already wired: <dl> specs table from product.specifications |
+| 32.5 | Product tabs: `renderReviews` — inline review list | ✅ Done | HIGH | Same | Already wired: ReviewsList in ProductTabsShell |
+| 32.6 | Blog post: wire `renderRelatedCard` slot | ✅ Done | MEDIUM | `src/app/[locale]/blog/[slug]/page.tsx` | Already wired: (post) => <BlogCard post={post as any} /> |
+| 32.7 | Blog post: verify `slug` prop passed (confirm self-fetch works) | ✅ Done | HIGH | Same | Confirmed: <BlogPostView slug={slug} renderRelatedCard={...} /> |
+| 32.8 | Event detail: wire renderContent + renderCoverImage | ✅ Done | LOW | `src/app/[locale]/events/[id]/page.tsx` | renderContent: <RichText html={event.description} />; renderCoverImage: <img> from imageUrl/bannerImage |
+| 32.9 | Pre-order detail: wire `renderBuyBar` with reserve count progress bar | ✅ Done | HIGH | `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | 'X of Y reserved' text + filled progress bar + Reserve Now button |
+| 32.10 | Rich text: add `renderDescription` to `ProductTabs` with RichText body | ✅ Done | MEDIUM | Same as 32.3 | Already wired: RichText in ProductTabsShell descriptionContent |
 
 ---
 
@@ -1274,7 +1299,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 33.1 | Store about: `returnPolicy` → `<RichText>` | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | Done in Phase 31.6 |
 | 33.2 | Store about: `shippingPolicy` → `<RichText>` | ✅ Done | MEDIUM | Same | Done in Phase 31.6 |
 | 33.3 | Category description: plain text → `<RichText>` on detail page | ✅ Done | MEDIUM | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | Done in Phase 31.2 |
-| 33.4 | Event detail: `event.description` body — confirm RichText used in `renderContent` | ⏳ Pending | LOW | `src/app/[locale]/events/[id]/page.tsx` | Verify `EventDetailView renderContent` passes `<RichText html={...} />` |
+| 33.4 | Event detail: `event.description` body — confirm RichText used in `renderContent` | ✅ Done | LOW | `src/app/[locale]/events/[id]/page.tsx` | Done in Phase 32.8 — renderContent passes <RichText html={event.description} /> |
 | 33.5 | Admin analytics: `renderSummaryCards` — confirm correct cards wired | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/analytics/page.tsx` | Wire summary card data from analytics API response |
 | 33.6 | Audit: find any remaining `dangerouslySetInnerHTML` outside RichText | ⏳ Pending | LOW | Grep codebase | Replace any raw `dangerouslySetInnerHTML` with sanitized `<RichText>` |
 
@@ -1304,13 +1329,13 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 24 | Appkit Core Bugs | ✅ Done | 8/8 | perView, dark mode CSS, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild |
 | 25 | Product Detail Page | ✅ Done | 5/5 | Gallery, lightbox, tabs, related, BuyBar — all wired in Phase 25 |
 | 26 | Listing Toolbars (Phase 15 Redo) | ✅ Done | 6/6 | Auctions+Products already done; Pre-orders+Stores toolbars added via PreOrdersIndexListing+StoresIndexListing |
-| 27 | Slot-Shell Page Wiring | ⏳ Not started | 0/11 | User/seller/admin dashboards + detail pages |
+| 27 | Slot-Shell Page Wiring | ⚠️ Partial | 8/11 | 27.7/27.9/27.11 still ⏳ Pending (MEDIUM priority) |
 | 28 | Cart & Checkout | ⏳ Not started | 0/7 | Razorpay + auth cart + order creation |
-| 29 | Local Seed Data | ⏳ Not started | 0/3 | Homepage blank locally |
-| **30** | **Admin Events CRUD + Analytics** | ⏳ Not started | 0/4 | **NEW — AdminEventsView missing entirely** |
-| **31** | **Category & Store Toolbars** | ⏳ Not started | 0/7 | **NEW — no toolbar on category/store tab pages** |
-| **32** | **Detail View Dynamic Sections & Tabs** | ⏳ Not started | 0/10 | **NEW — bid history, product tabs, blog related, preorder bar** |
-| **33** | **Rich Text Completeness** | ⏳ Not started | 0/6 | **NEW — store policies, category desc, event body use plain text** |
+| 29 | Local Seed Data | ✅ Done | 2/3 | 29.3 (README) still ⏳ Pending (LOW) |
+| 30 | Admin Events CRUD + Analytics | ⚠️ Partial | 2/4 | 30.1+30.2 done; 30.3+30.4 ⏳ Pending |
+| 31 | Category & Store Toolbars | ✅ Done | 7/7 | All done in Phase 31 |
+| **32** | **Detail View Dynamic Sections & Tabs** | ✅ Done | 10/10 | All wired: bid history, auction related, product tabs, blog, event content, pre-order progress bar |
+| 33 | Rich Text Completeness | ⚠️ Partial | 4/6 | 33.5+33.6 ⏳ Pending |
 
 ---
 
