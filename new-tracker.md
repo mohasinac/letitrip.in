@@ -1236,13 +1236,13 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 31.1 | Category detail: add `ProductFilters` + `Pagination` to product grid | ⏳ Pending | HIGH | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | Wire filter/sort/pagination — same pattern as Phase 26 |
-| 31.2 | Category detail: add RichText for category description | ⏳ Pending | MEDIUM | Same | Replace plain text display with `<RichText html={normalizeRichTextHtml(category.description)} />` |
-| 31.3 | Store products tab: add toolbar (filter/sort/pagination) | ⏳ Pending | HIGH | `appkit/src/features/stores/components/StoreProductsPageView.tsx` | Same ProductFilters + Pagination pattern |
-| 31.4 | Store auctions tab: add toolbar | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAuctionsPageView.tsx` | Same pattern |
-| 31.5 | Store reviews tab: add pagination + rating filter | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreReviewsPageView.tsx` | Rating filter (1–5 stars) + Pagination |
-| 31.6 | Store about: fix `returnPolicy`/`shippingPolicy` — use RichText | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | Replace `whitespace-pre-line` with `<RichText html={normalizeRichTextHtml(policy)} />` |
-| 31.7 | Store about: wire `renderSocialLinks` + `renderStats` from page | ⏳ Pending | MEDIUM | `src/app/[locale]/stores/[storeSlug]/about/page.tsx` | Fetch store stats, pass to `StoreAboutView` |
+| 31.1 | Category detail: add `ProductFilters` + `Pagination` to product grid | ✅ Done | HIGH | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` → `CategoryProductsListing.tsx` | `useUrlTable` + `ProductFilters` + `Pagination` + SSR hydration via `initialData` |
+| 31.2 | Category detail: add RichText for category description | ✅ Done | MEDIUM | Same | `<RichText html={normalizeRichTextHtml(category.description)} />` in `CategoryDetailPageView` |
+| 31.3 | Store products tab: add toolbar (filter/sort/pagination) | ✅ Done | HIGH | `appkit/src/features/stores/components/StoreProductsListing.tsx` (new) | `useUrlTable` + `useProducts(sellerId, isAuction:false)` + `ProductFilters` + `Pagination` |
+| 31.4 | Store auctions tab: add toolbar | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoreAuctionsListing.tsx` (new) | `useUrlTable` + `useProducts(sellerId, isAuction:true)` + `MarketplaceAuctionCard` |
+| 31.5 | Store reviews tab: add pagination + rating filter | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoreReviewsListing.tsx` (new) | `useStoreReviews` + client-side star filter + PAGE_SIZE=12 prev/next pagination |
+| 31.6 | Store about: fix `returnPolicy`/`shippingPolicy` — use RichText | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | `<RichText html={normalizeRichTextHtml(policy)} />` — also covers Phase 33.1/33.2 |
+| 31.7 | Store about: wire `renderSocialLinks` + `renderStats` from page | ✅ Done | MEDIUM | `src/app/[locale]/stores/[storeSlug]/about/page.tsx` | Inline JSX for stats (itemsSold/totalReviews/averageRating) and social links row |
 
 ---
 
@@ -1271,9 +1271,9 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 33.1 | Store about: `returnPolicy` → `<RichText>` | ⏳ Pending | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | See Phase 31.6 (shared task) |
-| 33.2 | Store about: `shippingPolicy` → `<RichText>` | ⏳ Pending | MEDIUM | Same | See Phase 31.6 (shared task) |
-| 33.3 | Category description: plain text → `<RichText>` on detail page | ⏳ Pending | MEDIUM | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | See Phase 31.2 (shared task) |
+| 33.1 | Store about: `returnPolicy` → `<RichText>` | ✅ Done | MEDIUM | `appkit/src/features/stores/components/StoreAboutView.tsx` | Done in Phase 31.6 |
+| 33.2 | Store about: `shippingPolicy` → `<RichText>` | ✅ Done | MEDIUM | Same | Done in Phase 31.6 |
+| 33.3 | Category description: plain text → `<RichText>` on detail page | ✅ Done | MEDIUM | `appkit/src/features/categories/components/CategoryDetailPageView.tsx` | Done in Phase 31.2 |
 | 33.4 | Event detail: `event.description` body — confirm RichText used in `renderContent` | ⏳ Pending | LOW | `src/app/[locale]/events/[id]/page.tsx` | Verify `EventDetailView renderContent` passes `<RichText html={...} />` |
 | 33.5 | Admin analytics: `renderSummaryCards` — confirm correct cards wired | ⏳ Pending | MEDIUM | `src/app/[locale]/admin/analytics/page.tsx` | Wire summary card data from analytics API response |
 | 33.6 | Audit: find any remaining `dangerouslySetInnerHTML` outside RichText | ⏳ Pending | LOW | Grep codebase | Replace any raw `dangerouslySetInnerHTML` with sanitized `<RichText>` |
