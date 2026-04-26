@@ -1,4 +1,4 @@
-import { BlogPostView, getBlogPostBySlug } from "@mohasinac/appkit";
+import { BlogPostView, BlogCard, getBlogPostBySlug, ROUTES } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/constants/seo.server";
 
@@ -27,5 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  return <BlogPostView slug={slug} />;
+  return (
+    <BlogPostView
+      slug={slug}
+      renderRelatedCard={(post) => (
+        <BlogCard post={post as any} />
+      )}
+    />
+  );
 }
