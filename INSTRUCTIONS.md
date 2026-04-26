@@ -1289,11 +1289,11 @@ Lightbox (on click):                   No lightbox exists on this page.
 | Newsletter | ✅ | ❌ | No doc |
 | Blog Articles | ✅ | ❌ | No doc |
 | Pre-footer trust strip | ✅ 5 icons | ✅/❌ | Depends on appkit component |
-| Product gallery + lightbox | ✅ | ❌ Broken | Only bg-image div, no ImageLightbox |
-| Product thumbnails | ✅ | ❌ | Only single primary image shown |
-| Product sticky buy bar | ✅ | ❌ | Not wired in ProductDetailPageView |
-| Product tabs (desc/specs) | ✅ | ❌ | Not wired in ProductDetailPageView |
-| Related products section | ✅ | ❌ | Not wired |
+| Product gallery + lightbox | ✅ | ✅ Done (phase-25.1) | ProductGalleryClient: <img> + ImageLightbox |
+| Product thumbnails | ✅ | ✅ Done (phase-25.2) | Thumbnail strip + counter in ProductGalleryClient |
+| Product sticky buy bar | ✅ | ✅ Done (phase-25.5) | BuyBar sibling, lg:hidden |
+| Product tabs (desc/specs) | ✅ | ✅ Done (phase-25.3) | ProductTabsShell: desc/specs/reviews |
+| Related products section | ✅ | ✅ Done (phase-25.4) | RelatedProducts + ProductGrid (same category) |
 | HScroller: 3 cards at once | ✅ | ✅ Done (phase-24.1) | perView ResizeObserver implemented |
 | HScroller: dark mode arrows | ✅ | ✅ Done (phase-24.2) | .dark class selectors added |
 | Ad slots | ⚠️ Placeholder | ✅ Done (phase-24.5) | AD_SLOT_MAP[section.type] key lookup |
@@ -1490,6 +1490,10 @@ renderGallery={() =>
 5. Wire `renderRelated` to `RelatedProducts` component
 6. Wire `BuyBar` for mobile sticky actions
 
+> ✅ Fixed phase 25 — ProductGalleryClient (<img> + thumbnail strip + ImageLightbox);
+> ProductTabsShell (desc/specs/reviews); RelatedProducts + ProductGrid wired;
+> BuyBar sibling for mobile sticky actions (lg:hidden)
+
 ---
 
 ### BUG 7 — HorizontalScroller dark mode: wrong CSS mechanism
@@ -1560,31 +1564,33 @@ COL 1 — Gallery:          COL 2 — Info:            COL 3 — Actions (sticky
                                                      - RelatedProducts carousel
 ```
 
-### What the current build has
+### What the current build has (after phase 25)
 
 ```
 3-column layout (structure correct):
 
-COL 1 — Gallery:          COL 2 — Info:            COL 3 — Actions:
-  - Single image           - Title h1                - Price
-  - CSS background-image   - Price (if number type)  - [Add to Cart] (disabled if OOS)
-  - NOT clickable          - Description (RichText)  - [Add to Wishlist]
-  - NO thumbnails          - Seller name (if any)
-  - NO counter            
+COL 1 — Gallery (✅ fixed):   COL 2 — Info:            COL 3 — Actions:
+  - <img> tag ✅               - Title h1                - Price
+  - Click → ImageLightbox ✅   - Price                   - [Add to Cart]
+  - Thumbnail strip ✅         - Description (RichText)  - [Add to Wishlist]
+  - "N / M" counter ✅         - Seller name
 
-BELOW FOLD: renderTabs=undefined, renderRelated=undefined → nothing renders
+BELOW FOLD (✅ fixed):
+  - ProductTabsShell: Description / Specifications / Reviews tabs ✅
+  - RelatedProducts carousel (same category, 4 items max) ✅
+  - BuyBar (mobile sticky, price + Add to Cart, lg:hidden) ✅
 ```
 
-### Required components (all exist in appkit, not wired)
+### Required components (all now wired)
 
 | Component | Path | Status |
 |-----------|------|--------|
-| `ImageLightbox` | appkit/src/ui/components/ImageLightbox.tsx | Built, not used |
-| `MediaLightbox` | appkit/src/features/media/MediaLightbox.tsx | Built, not used |
-| `ProductTabs` | appkit/src/features/products/components/ProductTabs.tsx | Built, not used |
-| `RelatedProducts` | appkit/src/features/products/components/RelatedProducts.tsx | Built, not used |
-| `BuyBar` | appkit/src/features/products/components/BuyBar.tsx | Built, not used |
-| `ProductInfo` | appkit/src/features/products/components/ProductInfo.tsx | Built, not used |
+| `ImageLightbox` | appkit/src/ui/components/ImageLightbox.tsx | ✅ Used via ProductGalleryClient |
+| `ProductGalleryClient` | appkit/src/features/products/components/ProductGalleryClient.tsx | ✅ Created phase 25.1 |
+| `ProductTabsShell` | appkit/src/features/products/components/ProductTabsShell.tsx | ✅ Created phase 25.3 |
+| `RelatedProducts` | appkit/src/features/products/components/RelatedProducts.tsx | ✅ Wired phase 25.4 |
+| `BuyBar` | appkit/src/features/products/components/BuyBar.tsx | ✅ Wired phase 25.5 |
+| `ReviewsList` | appkit/src/features/reviews/components/ReviewsList.tsx | ✅ Wired in tabs phase 25.3 |
 
 ---
 

@@ -954,11 +954,11 @@ See Phase 24, 25, 26, 27 below.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 25.1 | Gallery: replace CSS bg-image with `<img>` + `ImageLightbox` | ⏳ Pending | CRITICAL | `appkit/src/features/products/components/ProductDetailPageView.tsx` | Import `ImageLightbox`; add `useState` for open/index; replace div |
-| 25.2 | Thumbnail strip for multiple images | ⏳ Pending | HIGH | Same | Render `images.slice(1)` as clickable thumb row |
-| 25.3 | Wire `renderTabs` → `ProductTabs` | ⏳ Pending | HIGH | Same | Description / Specifications / Delivery / Reviews tabs |
-| 25.4 | Wire `renderRelated` → `RelatedProducts` | ⏳ Pending | MEDIUM | Same | "You might also like" carousel below fold |
-| 25.5 | Wire `BuyBar` for mobile sticky actions | ⏳ Pending | MEDIUM | Same | Import and mount `BuyBar`; show on scroll past action rail |
+| 25.1 | Gallery: replace CSS bg-image with `<img>` + `ImageLightbox` | ✅ Done | CRITICAL | `appkit/src/features/products/components/ProductDetailPageView.tsx` | ProductGalleryClient.tsx created; main <img> + click-to-lightbox |
+| 25.2 | Thumbnail strip for multiple images | ✅ Done | HIGH | Same | Thumbnail strip in ProductGalleryClient; activeIndex state + counter |
+| 25.3 | Wire `renderTabs` → `ProductTabs` | ✅ Done | HIGH | Same | ProductTabsShell (RSC-safe ReactNode props) wired w/ description, specs dl, ReviewsList |
+| 25.4 | Wire `renderRelated` → `RelatedProducts` | ✅ Done | MEDIUM | Same | RelatedProducts + ProductGrid from same category, capped at 4 |
+| 25.5 | Wire `BuyBar` for mobile sticky actions | ✅ Done | MEDIUM | Same | BuyBar sibling after ProductDetailView; price + Add to Cart shown on mobile |
 
 ---
 
