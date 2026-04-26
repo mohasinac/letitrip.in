@@ -681,36 +681,28 @@ SectionCarousel<T>
 
 HorizontalScroller internals:
   Single-row mode (rows=1):
-    Each item → <div class="appkit-hscroller__item flex-none" style="minWidth:Npx">
+    Each item → <div class="appkit-hscroller__item flex-none" style="width:Npx flexShrink:0">
+    width computed by ResizeObserver from perView config (phase-24.1 ✅)
   Grid mode (rows>1):
     Items grouped in slides of 6 (3×2 grid)
-    Each slide → <div class="appkit-hscroller__slide grid grid-cols-1 sm:grid-cols-3">
-    Slide has NO explicit width set (BUG — see Section 10)
+    Each slide → <div class="appkit-hscroller__slide grid grid-cols-1 sm:grid-cols-3"
+                           style="width:100% flexShrink:0"> (phase-24.3 ✅)
 ```
 
-### The perView prop — CRITICAL BUG
+### The perView prop — ✅ FIXED (phase-24.1)
 
-In `HorizontalScroller.tsx`, line 67:
-```tsx
-void perView;  // ← this prop is accepted but completely discarded
-void rows;     // ← rows IS used below despite this line
-```
-
-`perView` (type `PerViewConfig`) is designed to control how many cards show at once
-(e.g. `{base:1, sm:2, md:3}`). The component accepts the prop but **never calculates
-item width from it**. Items get only `minItemWidth` (default 220px), so in a 1200px
-container all items are visible simultaneously.
+`resolvePerView()` helper maps `PerViewConfig` breakpoints to container width.
+`ResizeObserver` on the scroll container computes `itemWidth = (containerWidth - (n-1)*gap) / n`
+and applies it as `style={{ width: itemWidth, flexShrink: 0 }}` on each item.
 
 **Live site behavior**: 3 products visible at once, arrows scroll 3 at a time.
-**Current build behavior**: All 18 products visible in one flat row simultaneously.
+**Current build behavior**: Same — perView={base:1,sm:2,md:3} now respected.
 
-### Carousel CSS — dark mode mismatch
+### Carousel CSS — dark mode — ✅ FIXED (phase-24.2)
 
-`HorizontalScroller.style.css` uses `@media (prefers-color-scheme: dark)` for arrow/fade
-colors, but the app uses Tailwind's class-based dark mode (`dark:` prefix). These are
-mutually exclusive — if the user toggles dark mode via the UI toggle (which adds the
-`dark` class), the CSS media query never fires, so arrows stay white-on-white and fade
-edges show the wrong background color.
+`HorizontalScroller.style.css` now uses `.dark .appkit-hscroller__arrow { ... }` and
+`.dark .appkit-hscroller__fade--left/right { ... }` class selectors, matching Tailwind's
+class-based dark mode. `@media (prefers-color-scheme: dark)` blocks removed.
 
 ---
 
@@ -1167,7 +1159,7 @@ The homepage is 100% database-driven. A fresh environment has no Firestore data:
 LIVE SITE (seeded Firestore)         LOCAL DEV (empty Firestore)
 ══════════════════════════           ════════════════════════════
  Announcement Bar                     Announcement Bar (fallback text)
- Hero Carousel (5 slides)         ✗   [nothing — returns null]
+ Hero Carousel (5 slides)         ✗   [placeholder "Coming Soon" banner]
  "Pokémon Base Set 151" section   ✗   [nothing]
  Shop by Type section             ✗   [nothing]
  Stats (4 counters)               ✗   [nothing]
@@ -1191,15 +1183,15 @@ LIVE SITE (seeded Firestore)         LOCAL DEV (empty Firestore)
 ### Carousel cards-per-view regression
 
 ```
-LIVE SITE                              CURRENT BUILD
+LIVE SITE                              CURRENT BUILD (phase-24.1 ✅)
 ─────────────────────────────          ─────────────────────────────────────────
 Featured Products section:             Featured Products section:
-  ┌──────┐ ┌──────┐ ┌──────┐  ←→       ┌──┐┌──┐┌──┐┌──┐┌──┐┌──┐┌──┐┌──┐┌──┐
-  │ card │ │ card │ │ card │            │  ││  ││  ││  ││  ││  ││  ││  ││  │...
-  │      │ │      │ │      │            └──┘└──┘└──┘└──┘└──┘└──┘└──┘└──┘└──┘
-  └──────┘ └──────┘ └──────┘           All 18 cards in one long flat row.
-  3 visible, arrows scroll by 3        perView prop is void'd — ignored.
-  18 cards total = 6 "pages"           minItemWidth=220px only constraint.
+  ┌──────┐ ┌──────┐ ┌──────┐  ←→       ┌──────┐ ┌──────┐ ┌──────┐  ←→
+  │ card │ │ card │ │ card │            │ card │ │ card │ │ card │
+  │      │ │      │ │      │            │      │ │      │ │      │
+  └──────┘ └──────┘ └──────┘           └──────┘ └──────┘ └──────┘
+  3 visible, arrows scroll by 3        perView={base:1,sm:2,md:3} respected.
+  18 cards total = 6 "pages"           ResizeObserver calculates item width.
 ```
 
 ### Product page gallery regression
@@ -1279,21 +1271,21 @@ Lightbox (on click):                   No lightbox exists on this page.
 | **HOMEPAGE** | | | |
 | Announcement bar | ✅ Custom text from DB | ⚠️ Hardcoded fallback | No site_settings doc |
 | Hero carousel 5 slides | ✅ | ❌ Invisible (returns null) | No carousel_slides docs |
-| Hero carousel fallback | N/A | ❌ Blank gap in layout | HeroCarousel has no fallback |
+| Hero carousel fallback | N/A | ✅ Done (phase-24.4) | Placeholder banner with "Coming Soon" |
 | Welcome section | ✅ | ❌ | No homepage_sections doc |
 | Stats section | ✅ | ❌ | No doc or empty stats array |
 | Trust indicators | ✅ | ❌ | No doc |
 | How It Works | ✅ | ❌ | No doc |
 | Shop by Category | ✅ HScroller | ❌ | No doc |
-| Shop by Brand | ✅ | ❌ | brands type has no render case |
-| Featured Products | ✅ 3 per view | ❌ All 18 flat | perView voided + no Firestore data |
+| Shop by Brand | ✅ | ✅ Done (phase-24.7) | BrandsSection + case "brands": added |
+| Featured Products | ✅ 3 per view | ✅ Done (phase-24.1) | perView now uses ResizeObserver |
 | Live Auctions | ✅ | ❌ | No doc |
 | Pre-Orders | ✅ | ❌ | No doc |
 | Top Stores | ✅ | ❌ | No doc |
 | Events | ✅ | ❌ | No doc |
 | Customer Reviews | ✅ | ❌ | No doc |
 | Security section | ✅ | ❌ | No doc |
-| FAQ section | ⚠️ Empty on live | ❌ | Hardcoded items=[] |
+| FAQ section | ⚠️ Empty on live | ✅ Done (phase-24.6) | faqsRepository.getHomepageFAQs() wired |
 | Newsletter | ✅ | ❌ | No doc |
 | Blog Articles | ✅ | ❌ | No doc |
 | Pre-footer trust strip | ✅ 5 icons | ✅/❌ | Depends on appkit component |
@@ -1302,9 +1294,9 @@ Lightbox (on click):                   No lightbox exists on this page.
 | Product sticky buy bar | ✅ | ❌ | Not wired in ProductDetailPageView |
 | Product tabs (desc/specs) | ✅ | ❌ | Not wired in ProductDetailPageView |
 | Related products section | ✅ | ❌ | Not wired |
-| HScroller: 3 cards at once | ✅ | ❌ | perView prop voided |
-| HScroller: dark mode arrows | ✅ | ❌ | CSS uses prefers-color-scheme not .dark class |
-| Ad slots | ⚠️ Placeholder | ❌ Never fires | Ad slot key logic broken |
+| HScroller: 3 cards at once | ✅ | ✅ Done (phase-24.1) | perView ResizeObserver implemented |
+| HScroller: dark mode arrows | ✅ | ✅ Done (phase-24.2) | .dark class selectors added |
+| Ad slots | ⚠️ Placeholder | ✅ Done (phase-24.5) | AD_SLOT_MAP[section.type] key lookup |
 
 ---
 
@@ -1367,6 +1359,8 @@ itemWidth = (containerWidth - (perView - 1) * gap) / perView
 This must be reactive to viewport width (use `ResizeObserver`), matching the current
 breakpoint from the `PerViewConfig` object.
 
+> ✅ Fixed phase-24.1 — resolvePerView() helper + ResizeObserver calculates itemWidth per breakpoint
+
 ---
 
 ### BUG 2 — HeroCarousel: returns null when no slides, no fallback
@@ -1383,6 +1377,8 @@ if (!slides || slides.length === 0) {
 looks broken with a large gap between the announcement bar and whatever renders below.
 
 **Fix needed:** Return a static placeholder/skeleton banner when `slides.length === 0`.
+
+> ✅ Fixed phase-24.4 — Returns branded placeholder with "Coming Soon" text matching heroMinH height
 
 ---
 
@@ -1412,6 +1408,8 @@ const adSlotKey = AD_SLOT_MAP[section.type];
 // not via the section loop.
 ```
 
+> ✅ Fixed phase-24.5 — AD_SLOT_MAP[section.type] replaces after${section.order}; afterHero already wired directly
+
 ---
 
 ### BUG 4 — FAQ section always renders with empty data
@@ -1437,6 +1435,8 @@ case "faq": {
 **Fix needed:** Fetch FAQ data from `faqRepository.getHomepageFAQs()` inside
 `MarketplaceHomepageView` before rendering, and pass real items/tabs.
 
+> ✅ Fixed phase-24.6 — faqsRepository.getHomepageFAQs() fetched in parallel; items mapped and passed to FAQSection
+
 ---
 
 ### BUG 5 — `brands` section type has no render case
@@ -1449,6 +1449,8 @@ silently dropped without any console warning.
 
 **Fix needed:** Either add a `case "brands":` with a BrandsCarousel component, or
 remove the type from the admin UI and schema.
+
+> ✅ Fixed phase-24.7 — BrandsSection.tsx created (uses useTopBrands hook); case "brands": added to switch
 
 ---
 
@@ -1511,6 +1513,8 @@ The CSS media query fires based on OS preference, NOT the in-app dark mode toggl
 **Fix needed:** Remove `@media (prefers-color-scheme: dark)` blocks and replace with
 `.dark .appkit-hscroller__arrow { ... }` and `.dark .appkit-hscroller__fade--left { ... }`.
 
+> ✅ Fixed phase-24.2 — @media (prefers-color-scheme: dark) replaced with .dark class selectors throughout
+
 ---
 
 ### BUG 8 — Grid mode slides lack explicit width
@@ -1529,6 +1533,8 @@ flex scroll container it will size to content rather than `100%` of the containe
 scrolling by `containerWidth * 0.8` may land mid-slide.
 
 **Fix needed:** Add `width: 100%` or `flex: 0 0 100%` to `appkit-hscroller__slide`.
+
+> ✅ Fixed phase-24.3 — style={{ width: "100%", flexShrink: 0 }} added to slide wrapper div
 
 ---
 

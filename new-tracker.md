@@ -937,14 +937,14 @@ See Phase 24, 25, 26, 27 below.
 
 | # | Task | Status | Priority | File | Fix |
 |---|------|--------|----------|------|-----|
-| 24.1 | Fix `perView` — implement ResizeObserver item-width calc | ⏳ Pending | CRITICAL | `appkit/src/ui/components/HorizontalScroller.tsx:67` | Replace `void perView` with ResizeObserver-based `itemWidth = (containerWidth - (n-1)*gap) / n` |
-| 24.2 | Fix dark mode CSS — `.dark` selector instead of `prefers-color-scheme` | ⏳ Pending | HIGH | `appkit/src/ui/components/HorizontalScroller.style.css:71` | Replace `@media (prefers-color-scheme: dark)` blocks with `.dark` class selectors |
-| 24.3 | Fix grid slide width — `flex: 0 0 100%` on `appkit-hscroller__slide` | ⏳ Pending | HIGH | `appkit/src/ui/components/HorizontalScroller.tsx:122` | Add `style={{ width: "100%", flexShrink: 0 }}` to slide wrapper |
-| 24.4 | Fix HeroCarousel — static fallback when `slides.length === 0` | ⏳ Pending | HIGH | `appkit/src/features/homepage/components/HeroCarousel.tsx:97` | Return placeholder banner instead of `null` |
-| 24.5 | Fix ad slot keys — map `section.type` to correct key | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:137` | `AD_SLOT_MAP[section.type]` instead of `` `after${section.order}` `` |
-| 24.6 | Fix FAQ data — call `faqRepository.getHomepageFAQs()` | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:326` | Replace hardcoded `tabs={[]} items={[]}` with real fetch |
-| 24.7 | Add `case "brands":` to homepage section switch | ⏳ Pending | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | Add BrandsCarousel render case |
-| 24.8 | Rebuild appkit + verify `npm run build` still passes | ⏳ Pending | CRITICAL | — | `npm run watch:appkit` then `npm run build` |
+| 24.1 | Fix `perView` — implement ResizeObserver item-width calc | ✅ Done | CRITICAL | `appkit/src/ui/components/HorizontalScroller.tsx:67` | resolvePerView() helper + ResizeObserver sets itemWidth per breakpoint |
+| 24.2 | Fix dark mode CSS — `.dark` selector instead of `prefers-color-scheme` | ✅ Done | HIGH | `appkit/src/ui/components/HorizontalScroller.style.css:71` | Both @media blocks replaced with .dark class selectors |
+| 24.3 | Fix grid slide width — `flex: 0 0 100%` on `appkit-hscroller__slide` | ✅ Done | HIGH | `appkit/src/ui/components/HorizontalScroller.tsx:122` | style={{ width: "100%", flexShrink: 0 }} added to slide wrapper |
+| 24.4 | Fix HeroCarousel — static fallback when `slides.length === 0` | ✅ Done | HIGH | `appkit/src/features/homepage/components/HeroCarousel.tsx:97` | Returns branded "Coming Soon" placeholder matching heroMinH |
+| 24.5 | Fix ad slot keys — map `section.type` to correct key | ✅ Done | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:137` | AD_SLOT_MAP[section.type] replaces after${section.order} |
+| 24.6 | Fix FAQ data — call `faqRepository.getHomepageFAQs()` | ✅ Done | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx:326` | faqsRepository.getHomepageFAQs() fetched in parallel; items passed to FAQSection |
+| 24.7 | Add `case "brands":` to homepage section switch | ✅ Done | MEDIUM | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | BrandsSection.tsx created; case "brands": added; 3 brand seeds added |
+| 24.8 | Rebuild appkit + verify `npm run build` still passes | ✅ Done | CRITICAL | — | appkit build clean; letitrip tsc 0 errors |
 
 ---
 
@@ -1301,7 +1301,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
 | 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
 | 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
-| 24 | Appkit Core Bugs | ⏳ Not started | 0/8 | **P0 — blocks everything** |
+| 24 | Appkit Core Bugs | ✅ Done | 8/8 | perView, dark mode CSS, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild |
 | 25 | Product Detail Page | ⏳ Not started | 0/5 | Gallery, lightbox, tabs, related, BuyBar |
 | 26 | Listing Toolbars (Phase 15 Redo) | ⏳ Not started | 0/6 | Auctions, products, pre-orders, stores |
 | 27 | Slot-Shell Page Wiring | ⏳ Not started | 0/11 | User/seller/admin dashboards + detail pages |
