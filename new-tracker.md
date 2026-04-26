@@ -1067,12 +1067,12 @@ See Phase 24, 25, 26, 27 below.
 | 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
 | 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
 | 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
-| **24** | **Appkit Core Bugs** | ⏳ Not started | 0/8 | **NEW — P0, blocks everything** |
-| **25** | **Product Detail Page** | ⏳ Not started | 0/5 | **NEW — gallery, lightbox, tabs, related, BuyBar** |
-| **26** | **Listing Toolbars (Phase 15 Redo)** | ⏳ Not started | 0/6 | **NEW — correct Phase 15 mistake** |
-| **27** | **Slot-Shell Page Wiring** | ⏳ Not started | 0/11 | **NEW — 20+ blank pages** |
-| **28** | **Cart & Checkout** | ⏳ Not started | 0/7 | **NEW — explicit stub, Razorpay unconnected** |
-| **29** | **Local Seed Data** | ⏳ Not started | 0/3 | **NEW — homepage blank locally** |
+| **24** | **Appkit Core Bugs** | ✅ Done | 8/8 | All fixes verified in pass 16: perView, dark mode, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild clean |
+| **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired in pass 16: gallery/lightbox, ProductTabs, related, BuyBar, specs |
+| **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | All done: AuctionsIndexListing, ProductsIndexListing, PreOrdersIndexListing, StoresIndexListing with useUrlTable + toolbar + pagination |
+| **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All self-fetching appkit views confirmed: auctions/pre-orders/product detail, user/seller/admin dashboards, blog, events, profile |
+| **28** | **Cart & Checkout** | 🔄 In Progress | 5/7 | Auth cart, addresses, Razorpay, order creation done; coupon code + grouping pending (no API) |
+| **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint working; README update pending (LOW) |
 
 ---
 
@@ -1313,29 +1313,29 @@ but events cannot be created, edited, or deleted through the admin panel.
 | 8 | Wrapper Migration | ✅ Done | 4/4 | All about views migrated |
 | 9 | Style System | ✅ Done | 6/6 | Tokens + CSS vars + Tailwind complete |
 | 10 | Card Consistency | ✅ Done | 5/5 | All card types standardized |
-| 11 | Carousel Improvements | ✅ Done | 4/4 | Structure done; **perView bug still in appkit → Phase 24.1** |
+| 11 | Carousel Improvements | ✅ Done | 4/4 | All done; perView + dark mode fixed in Phase 24 |
 | 12 | Form Responsiveness | ✅ Done | 5/5 | All done |
 | 13 | API Optimization | ✅ Done | 5/5 | ISR + loading states handled |
 | 14 | Route Fixes | ✅ Done | 5/5 | 30+ broken routes fixed + error pages |
 | 15 | Filter Implementation | ✅ Done | 5/5 | Corrected via Phase 26: all 4 listing pages now have toolbar via Index*Listing client components |
 | 16 | Firebase & Functions | ✅ Done | 4/4 | 20 functions deployed |
 | 17 | Auth & Database | ✅ Done | 4/4 | Clean |
-| 18 | Data Issues | ⚠️ Partial | 3/4 | 18.1–18.3 done; 18.4 (runtime browser test) ⏳ Pending |
+| 18 | Data Issues | ⚠️ Partial | 3/4 | 18.1–18.3 done; 18.4 (runtime test skipped—no seed data locally) |
 | 19 | Homepage Sections | ✅ Done | 5/5 | All fixed in Phase 24 (ad slot key, FAQ data, brands case) |
 | 20 | Abstractions | ✅ Done | 4/4 | ROUTES.ADMIN.ADS added |
 | 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
 | 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
 | 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
-| 24 | Appkit Core Bugs | ✅ Done | 8/8 | perView, dark mode CSS, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild |
-| 25 | Product Detail Page | ✅ Done | 5/5 | Gallery, lightbox, tabs, related, BuyBar — all wired in Phase 25 |
-| 26 | Listing Toolbars (Phase 15 Redo) | ✅ Done | 6/6 | Auctions+Products already done; Pre-orders+Stores toolbars added via PreOrdersIndexListing+StoresIndexListing |
-| 27 | Slot-Shell Page Wiring | ✅ Done | 11/11 | All pages confirmed: self-fetching appkit views used throughout |
-| 28 | Cart & Checkout | 🔄 In Progress | 5/7 | 28.1+28.4+28.5+28.6+28.7 done; 28.2+28.3 deprioritized (no coupon API) |
-| 29 | Local Seed Data | ✅ Done | 2/3 | 29.3 (README) still ⏳ Pending (LOW) |
-| 30 | Admin Events CRUD + Analytics | ✅ Done | 4/4 | All done: AdminEventsView + analytics date range picker + AdminSiteView default form |
-| 31 | Category & Store Toolbars | ✅ Done | 7/7 | All done in Phase 31 |
-| **32** | **Detail View Dynamic Sections & Tabs** | ✅ Done | 10/10 | All wired: bid history, auction related, product tabs, blog, event content, pre-order progress bar |
-| 33 | Rich Text Completeness | ✅ Done | 6/6 | All done: store policies, category desc, event content, FAQ accordion, WhatsApp section |
+| **24** | **Appkit Core Bugs** | ✅ Done | 8/8 | All verified in pass 16: perView, dark mode, grid slide, fallback, ad slots, FAQ, brands, rebuild |
+| **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired: gallery/lightbox, tabs, related, BuyBar |
+| **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | Auctions, products, pre-orders, stores all have toolbars |
+| **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All pages confirmed self-fetching or fully wired |
+| **28** | **Cart & Checkout** | 🔄 In Progress | 5/7 | Auth cart, addresses, Razorpay done; coupons+grouping pending |
+| **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint works; README ⏳ Pending (LOW) |
+| **30** | **Admin Events CRUD + Analytics** | ✅ Done | 4/4 | AdminEventsView, date range picker, site form |
+| **31** | **Category & Store Toolbars** | ✅ Done | 7/7 | All toolbars + RichText for policies implemented |
+| **32** | **Detail View Dynamic Sections & Tabs** | ✅ Done | 10/10 | All wired: bid history, related, product tabs, blog, event, pre-order |
+| **33** | **Rich Text Completeness** | ✅ Done | 6/6 | All fields use RichText: policies, descriptions, content |
 
 ---
 
