@@ -23,6 +23,48 @@ Standalone Next.js marketplace application that consumes `@mohasinac/appkit` fro
 npm install
 ```
 
+## Local Development — Seed Firestore
+
+After starting the dev server, seed all Firestore collections with one command:
+
+```bash
+# 1. Start the dev server
+npm run dev
+
+# 2. Seed Firestore (run once — safe to re-run, uses upsert)
+curl -X POST http://localhost:3000/api/demo/seed \
+  -H "Content-Type: application/json" \
+  -d '{"action":"load"}'
+```
+
+Or use the UI at **[http://localhost:3000/demo/seed](http://localhost:3000/demo/seed)** to seed or delete collections interactively.
+
+### What gets seeded
+
+| Collection | Count | Notes |
+|---|---|---|
+| `users` | 8 | 1 admin, 3 buyers, 3 sellers |
+| `categories` | 13 | 4 root + 9 children |
+| `products` | 10 | 9 regular + 1 auction |
+| `orders` | 12 | Various statuses |
+| `reviews` | 15 | Approved / pending / rejected |
+| `bids` | 8 | For auction product |
+| `coupons` | 10 | Fixed / percent / free-shipping |
+| `carouselSlides` | 6 | Hero carousel |
+| `homepageSections` | 14 | All section types |
+| `siteSettings` | 1 | Announcement bar |
+| `faqs` | 102 | FAQ accordion |
+
+### Demo user accounts
+
+| Email | Role | Password |
+|---|---|---|
+| admin@letitrip.in | admin | TempPass123! |
+| john.doe@example.com | buyer | TempPass123! |
+| electronics.store@example.com | seller | TempPass123! |
+
+Full details: [src/app/[locale]/demo/seed/README.md](src/app/%5Blocale%5D/demo/seed/README.md)
+
 ## Scripts
 
 ```bash
