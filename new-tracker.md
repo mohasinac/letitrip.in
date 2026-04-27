@@ -1028,7 +1028,7 @@ See Phase 24, 25, 26, 27 below.
 |---|------|--------|----------|------|-----|
 | 28.1 | Cart: call `/api/cart` when authenticated | ✅ Done | CRITICAL | `src/components/routing/CartRouteClient.tsx` | useAuth + useCartQuery for server cart; useGuestCart for guests; useGuestCartMerge for login transition |
 | 28.2 | Cart: add coupon code field | ⏳ Pending | HIGH | Same | No `/api/cart/coupon` endpoint exists yet — skip for now |
-| 28.3 | Cart: multi-seller grouping + shipping estimate | ⏳ Pending | HIGH | Same | Server handles grouping; client shows flat list with subtotal |
+| 28.3 | Cart: multi-seller grouping + shipping estimate | ✅ Done | HIGH | Same | groupBySeller() helper groups CartItem[] by sellerId; seller headers shown when multi-seller; "Shipping: Calculated at checkout" in summary |
 | 28.4 | Checkout: address selection from `/api/user/addresses` | ✅ Done | CRITICAL | `src/components/routing/CheckoutRouteClient.tsx` | CheckoutAddressStep + useAddresses replaces hardcoded inputs |
 | 28.5 | Checkout: Razorpay modal integration | ✅ Done | CRITICAL | Same | create-order → loadRazorpayScript → openRazorpayModal → verify |
 | 28.6 | Checkout: order creation + redirect to `/orders/[id]` | ✅ Done | CRITICAL | Same | On payment.verify success redirect to /checkout/success; COD via /api/checkout |
@@ -1071,7 +1071,7 @@ See Phase 24, 25, 26, 27 below.
 | **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired in pass 16: gallery/lightbox, ProductTabs, related, BuyBar, specs |
 | **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | All done: AuctionsIndexListing, ProductsIndexListing, PreOrdersIndexListing, StoresIndexListing with useUrlTable + toolbar + pagination |
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All self-fetching appkit views confirmed: auctions/pre-orders/product detail, user/seller/admin dashboards, blog, events, profile |
-| **28** | **Cart & Checkout** | 🔄 In Progress | 5/7 | Auth cart, addresses, Razorpay, order creation done; coupon code + grouping pending (no API) |
+| **28** | **Cart & Checkout** | 🔄 In Progress | 6/7 | Auth cart, addresses, Razorpay, order creation, grouping done; coupon code pending (no API) |
 | **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint working; README update pending (LOW) |
 
 ---
@@ -1330,7 +1330,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired: gallery/lightbox, tabs, related, BuyBar |
 | **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | Auctions, products, pre-orders, stores all have toolbars |
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All pages confirmed self-fetching or fully wired |
-| **28** | **Cart & Checkout** | 🔄 In Progress | 5/7 | Auth cart, addresses, Razorpay done; coupons+grouping pending |
+| **28** | **Cart & Checkout** | 🔄 In Progress | 6/7 | Auth cart, addresses, Razorpay, multi-seller grouping done; coupon code pending (no API) |
 | **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint works; README ⏳ Pending (LOW) |
 | **30** | **Admin Events CRUD + Analytics** | ✅ Done | 4/4 | AdminEventsView, date range picker, site form |
 | **31** | **Category & Store Toolbars** | ✅ Done | 7/7 | All toolbars + RichText for policies implemented |

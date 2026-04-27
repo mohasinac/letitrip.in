@@ -1330,14 +1330,14 @@ Lightbox (on click):                   No lightbox exists on this page.
 | Filter: condition/brand/tags | ✅ | ✅ Done (phase 26.1–26.2) | ProductFilters handles all facets |
 | Filter URL persistence | ✅ params in URL | ✅ Done (phase 26) | useUrlTable uses router.replace for all filter changes |
 | **CART & CHECKOUT** | | | |
-| Cart: authenticated items | ✅ From `/api/cart` | ❌ `useGuestCart` only | CartRouteClient not wired to auth API |
-| Cart: coupon code input | ✅ | ❌ Missing | Not implemented |
-| Cart: multi-seller grouping | ✅ | ❌ Missing | Not implemented |
-| Cart: shipping cost estimate | ✅ | ❌ Missing | Not implemented |
-| Checkout: saved addresses | ✅ | ❌ Hardcoded inputs | Explicit stub ("bindings are next") |
-| Checkout: Razorpay modal | ✅ | ❌ [Place Order] does nothing | Not wired |
-| Checkout: order creation API | ✅ | ❌ | Not connected |
-| Checkout: steps (3) | ✅ Address → Payment → Review | ⚠️ 3 labels, no real content | Stub only |
+| Cart: authenticated items | ✅ From `/api/cart` | ✅ Done (phase 28.1) | useCartQuery + useAuth; guest cart merges on login |
+| Cart: coupon code input | ✅ | ❌ Missing | No `/api/cart/coupon` endpoint exists yet |
+| Cart: multi-seller grouping | ✅ | ✅ Done (phase 28.3) | groupBySeller() groups items by sellerId; seller headers shown when multi-seller |
+| Cart: shipping cost estimate | ✅ | ✅ Done (phase 28.3) | "Calculated at checkout" placeholder in CartSummary breakdown |
+| Checkout: saved addresses | ✅ | ✅ Done (phase 28.4) | CheckoutAddressStep + useAddresses; renders address cards |
+| Checkout: Razorpay modal | ✅ | ✅ Done (phase 28.5) | create-order → loadRazorpayScript → openRazorpayModal → verify |
+| Checkout: order creation API | ✅ | ✅ Done (phase 28.6) | POST /api/payment/verify + /api/checkout (COD); redirects to /checkout/success |
+| Checkout: steps (3) | ✅ Address → Payment → Review | ✅ Done (phase 28.4–28.6) | Address → OTP → Payment with real handlers |
 | **USER DASHBOARD** | | | |
 | `/user` hub page | ✅ Profile + nav + recent orders | ❌ Empty shell | No render props passed |
 | `/user/profile` | ✅ Stats + edit form | ❌ Empty shell | No render props passed |
