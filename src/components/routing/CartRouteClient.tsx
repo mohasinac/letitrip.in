@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Button,
   CartItemRow,
@@ -8,6 +8,7 @@ import {
   CartView,
   Div,
   Heading,
+  Input,
   Text,
   useAuth,
   useCartQuery,
@@ -120,6 +121,47 @@ export function CartRouteClient() {
   const sellerGroups = useMemo(() => groupBySeller(cartItems), [cartItems]);
   const isMultiSeller = sellerGroups.length > 1;
 
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountAmount: number;
+  } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
+
+  const handleApplyCoupon = useCallback(async () => {
+    if (!couponCode.trim() || !isAuthenticated) return;
+    setIsCouponLoading(true);
+    setCouponError("");
+    try {
+      const res = await fetch("/api/cart/coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim().toUpperCase() }),
+        credentials: "include",
+      });
+      const data = await res.json() as { data?: { code: string; discountAmount: number }; error?: string };
+      if (!res.ok) {
+        setCouponError((data as { error?: string }).error ?? "Invalid coupon code");
+      } else {
+        setAppliedCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
+        setCouponCode("");
+      }
+    } catch {
+      setCouponError("Failed to apply coupon. Please try again.");
+    } finally {
+      setIsCouponLoading(false);
+    }
+  }, [couponCode, isAuthenticated]);
+
+  const handleRemoveCoupon = useCallback(() => {
+    setAppliedCoupon(null);
+    setCouponError("");
+  }, []);
+
+  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const finalTotal = Math.max(0, subtotal - discountAmount);
+
   const handleQtyChange = useCallback(
     (id: string, qty: number) => {
       if (!isAuthenticated) {
@@ -181,12 +223,74 @@ export function CartRouteClient() {
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">Shipping</Text>
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">Calculated at checkout</Text>
               </Div>
+              {appliedCoupon && (
+                <Div className="flex items-center justify-between">
+                  <Text className="text-sm text-green-600 dark:text-green-400">
+                    Coupon ({appliedCoupon.code})
+                  </Text>
+                  <Text className="text-sm text-green-600 dark:text-green-400">
+                    &minus;&#x20B9;{appliedCoupon.discountAmount.toFixed(2)}
+                  </Text>
+                </Div>
+              )}
+              {isAuthenticated && !isEmpty && (
+                <Div className="mt-2">
+                  {appliedCoupon ? (
+                    <Div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 px-3 py-2">
+                      <Text className="text-xs text-green-700 dark:text-green-300 font-medium">
+                        {appliedCoupon.code} applied
+                      </Text>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-700 dark:hover:text-zinc-200"
+                      >
+                        Remove
+                      </button>
+                    </Div>
+                  ) : (
+                    <Div className="space-y-1">
+                      <Div className="flex gap-2">
+                        <Input
+                          type="text"
+                          placeholder="Coupon code"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                          className="flex-1 text-sm"
+                          maxLength={50}
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={isCouponLoading || !couponCode.trim()}
+                          className="text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+                        >
+                          {isCouponLoading ? "…" : "Apply"}
+                        </Button>
+                      </Div>
+                      {couponError && (
+                        <Text className="text-xs text-red-600 dark:text-red-400">{couponError}</Text>
+                      )}
+                    </Div>
+                  )}
+                </Div>
+              )}
             </Div>
           )}
           renderTotal={() => (
-            <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
-              Subtotal: &#x20B9;{subtotal.toFixed(2)}
-            </Text>
+            <Div>
+              {appliedCoupon && (
+                <Div className="mb-1 flex items-center justify-between">
+                  <Text className="text-sm text-zinc-500 dark:text-zinc-400">Subtotal</Text>
+                  <Text className="text-sm text-zinc-500 dark:text-zinc-400 line-through">
+                    &#x20B9;{subtotal.toFixed(2)}
+                  </Text>
+                </Div>
+              )}
+              <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
+                Total: &#x20B9;{finalTotal.toFixed(2)}
+              </Text>
+            </Div>
           )}
         />
       )}
