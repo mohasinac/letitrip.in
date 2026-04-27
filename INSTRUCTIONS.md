@@ -731,6 +731,74 @@ class-based dark mode. `@media (prefers-color-scheme: dark)` blocks removed.
 
 ---
 
+## 9. Listing Pages — Filter / Search / Sort / Pagination — Reuse Appkit Components
+
+### Component Architecture — Mobile & Desktop Both Coded
+
+**All appkit listing components support both mobile and desktop automatically.**  
+You do NOT need to write separate mobile code. Use these components:
+
+| Component | Desktop | Mobile | When to Use |
+|-----------|---------|--------|-------------|
+| **`<ListingLayout>`** | Persistent sidebar + toolbar | Filter drawer + stacked toolbar | Public listing pages (products, auctions, stores, categories, etc.) |
+| **`<SlottedListingView>`** | Manual toolbar assembly | Manual toolbar assembly | Admin dashboards, seller pages, custom layouts |
+| **`<FilterDrawer>`** | N/A (inside ListingLayout) | Bottom drawer | Do NOT use directly — wrapped in ListingLayout |
+| **`<SideDrawer>`** | Side panel | Full-screen modal | Edit/create forms (addresses, products, etc.) |
+
+### Example: Using ListingLayout (Mobile + Desktop Automatic)
+
+```tsx
+// appkit/src/features/products/components/ProductsIndexListing.tsx
+import { ListingLayout, SlottedListingView, Input, SortDropdown } from "@mohasinac/appkit/ui";
+
+export function ProductsIndexListing() {
+  const table = useUrlTable(...);
+  const { products, total, totalPages, page, isLoading } = useProducts(...);
+
+  return (
+    <ListingLayout
+      // Desktop: sticky toolbar with search, sort, view toggle
+      // Mobile: two rows — [Filter Search] [Sort View]
+      searchSlot={<Input placeholder="Search..." />}
+      sortSlot={<SortDropdown options={...} />}
+      
+      // Desktop: left sidebar
+      // Mobile: filter button → bottom drawer
+      filterContent={<ProductFilters table={table} />}
+      filterActiveCount={activeCount}
+      onFilterApply={handleApply}
+      onFilterClear={handleClear}
+      
+      // Rest of slots...
+    >
+      <ProductGrid products={products} />
+    </ListingLayout>
+  );
+}
+```
+
+**What you get automatically:**
+
+```
+┌─ DESKTOP (lg+) ──────────────────────────────┐
+│ [Filter ▼]  [Search...]  [Sort ▼]  [View]  │
+├─────────┬──────────────────────────────────┤
+│ Filter  │ ProductGrid (responsive cards)  │
+│ panel   │                                  │
+│ (sticky)│ Pagination ▼                     │
+└─────────┴──────────────────────────────────┘
+
+┌─ MOBILE (<lg) ────────────────────────────┐
+│ [Filter ▼] [Search...] [Sort ▼] [View]   │
+├────────────────────────────────────────────┤
+│ ProductGrid (single column)                │
+│                                            │
+│ Pagination ▼                               │
+│                                            │
+│ (When filter button clicked → bottom drawer)│
+└────────────────────────────────────────────┘
+```
+
 ## 9. Listing Pages — Filter / Search / Sort / Pagination Regression
 
 ### What the live site has on every listing page

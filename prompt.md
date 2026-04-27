@@ -184,6 +184,153 @@ docs(phase-X.Y): update tracker and diagrams for <feature>
 
 ---
 
+---
+
+## COMPONENT REUSE CHECKLIST — CRITICAL
+
+**EVERY new page or feature must reuse existing appkit components for search, filters, and drawers.  
+Do NOT create custom implementations.**
+
+### Listing Pages — Always Use These
+
+**For public listing pages** (products, auctions, pre-orders, stores, categories, etc.):
+
+```tsx
+// ✅ CORRECT — reuse appkit ListingLayout or SlottedListingView
+import { ListingLayout } from "@mohasinac/appkit/ui";
+import { ProductFilters } from "./ProductFilters";
+
+export function ProductListingPage() {
+  // Your page state and hooks...
+  
+  return (
+    <ListingLayout
+      // Desktop: persistent left sidebar + filters button
+      // Mobile: filter button opens bottom drawer via <Drawer>
+      // BOTH: automatic based on screen size — NO manual code needed
+      filterContent={<ProductFilters ... />}
+      filterActiveCount={activeCount}
+      onFilterApply={handleApplyFilters}
+      onFilterClear={handleClearFilters}
+      searchSlot={<Input ... />}
+      sortSlot={<SortDropdown ... />}
+      // rest of slots...
+    />
+  );
+}
+```
+
+**For admin/seller dashboards** (orders, products, etc.):
+
+```tsx
+// ✅ CORRECT — use SlottedListingView for custom layouts
+import { SlottedListingView } from "@mohasinac/appkit/ui";
+
+export function SellerOrdersPage() {
+  return (
+    <SlottedListingView
+      renderFilters={() => <OrderFilters ... />}
+      renderSearch={(search, setSearch) => <SearchInput ... />}
+      renderTable={() => <OrdersTable ... />}
+    />
+  );
+}
+```
+
+### Filter & Search Components — Appkit Exports
+
+| Component | Purpose | Mobile | Desktop | Example |
+|-----------|---------|--------|---------|----------|
+| **`<ListingLayout>`** | Full listing shell with toolbar + sidebar + mobile drawer | ✅ Bottom drawer | ✅ Sidebar | Public product/auction pages |
+| **`<SlottedListingView>`** | Lightweight listing slots (no auto toolbar management) | Manual | Manual | Admin dashboards, custom layouts |
+| **`<FilterDrawer>`** | Slide-out mobile filter panel (do NOT use alone) | ✅ Yes | N/A | Already wrapped in ListingLayout |
+| **`<SideDrawer>`** | Generic form/edit drawer (addresses, products, etc.) | ✅ Full modal | ✅ Side panel | AddressSelectorCreate, CategorySelectorCreate |
+| **`<Input>`** | Search/text input | ✅ Yes | ✅ Yes | Wrap in `renderSearch` slot |
+| **`<SortDropdown>`** | Sort selector | ✅ Yes | ✅ Yes | Wrap in `renderSort` slot |
+| **`usePendingFilters`** | Hook for deferred filter apply (stage → apply) | ✅ Yes | ✅ Yes | Inside FilterDrawer/sidebar footer |
+| **`useUrlTable`** | Hook for pagination/sort/search URL state | ✅ Yes | ✅ Yes | Listing pages |
+
+### Pattern: Desktop vs Mobile
+
+**The appkit handles both automatically:**
+
+```
+DESKTOP (lg+):
+  [Filter btn] [Search]        [Sort] [View]  [Pagination ▶]
+  ┌──────────┐
+  │ Filters  │ ← Left sidebar
+  │ (sticky) │   Open/closed via toggle button
+  │          │
+  └──────────┴─────────────────────────────────┐
+             Results grid/table
+             ↓ Pagination ↓
+
+MOBILE (<lg):
+  [Filter btn] [Search]
+  [Sort] [View] [Page]
+  
+  When filter button clicked:
+    ↓↓↓ Bottom drawer slides up ↓↓↓
+    ┌─────────────────────────────┐
+    │ Filters     [X close]       │
+    │ ┌─────────────────────────┐ │
+    │ │ - Type: [All] [New] [Used]│
+    │ │ - Price: [─────●─────]  │ │
+    │ │                         │ │
+    │ └─────────────────────────┘ │
+    │ [Clear All]  [Apply (3)]    │
+    └─────────────────────────────┘
+```
+
+### ❌ ANTI-PATTERNS — DO NOT DO
+
+```tsx
+// ❌ WRONG — Custom drawer in ProductListingPage
+const [filterOpen, setFilterOpen] = useState(false);
+return (
+  <>
+    <div className="my-toolbar">
+      <button onClick={() => setFilterOpen(true)}>Custom Filter</button>
+    </div>
+    {filterOpen && (
+      <div className="my-custom-drawer">
+        {/* custom filter implementation */}
+      </div>
+    )}
+  </>
+);
+
+// ❌ WRONG — No mobile filter support at all
+<div className="flex gap-4">
+  <ProductFilters /> {/* Only shows at all breakpoints */}
+  <ProductGrid />
+</div>
+
+// ❌ WRONG — Search only on desktop
+{isDesktop && <SearchInput />}
+
+// ❌ WRONG — Duplicating FilterDrawer behavior
+import { FilterDrawer } from "@mohasinac/appkit";
+return (
+  <>
+    <FilterDrawer isOpen={...} onClose={...}>
+      {/* This is already inside ListingLayout! */}
+    </FilterDrawer>
+    {/* ... more custom drawer code ... */}
+  </>
+);
+```
+
+### ✅ CORRECT PATTERN
+
+1. **Use `ListingLayout`** if you need full toolbar + filters + search + sort
+2. **Use `SlottedListingView`** if you need custom toolbar assembly
+3. **Use `SideDrawer`** for edit/create forms (addresses, products, etc.)
+4. **Pass render functions** — never create your own drawer/modal
+5. **Let appkit handle mobile/desktop** — no `if (isMobile)` in your code
+
+---
+
 ## PRIORITY ORDER
 
 Work through phases in this exact order. Do not skip ahead.
