@@ -1042,7 +1042,7 @@ See Phase 24, 25, 26, 27 below.
 |---|------|--------|----------|------|-----|
 | 29.1 | Create Firestore seed script | ✅ Done | HIGH | `src/app/api/demo/seed/route.ts` | Already implemented — `pokemonCarouselSlidesSeedData`, `pokemonHomepageSectionsSeedData`, `siteSettingsSeedData` all seeded via `/api/demo/seed` POST |
 | 29.2 | Add seed to demo endpoint | ✅ Done | MEDIUM | Same | `carouselSlides`, `homepageSections`, `siteSettings`, `faqs` already in `SEED_DATA_MAP` |
-| 29.3 | Document seed process in README | ⏳ Pending | LOW | `README.md` | One-command local bootstrap |
+| 29.3 | Document seed process in README | ✅ Done | LOW | `README.md` | Added 'Local Development — Seed Firestore' section: curl + UI instructions, collection table, demo credentials |
 
 ---
 
@@ -1331,7 +1331,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | Auctions, products, pre-orders, stores all have toolbars |
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All pages confirmed self-fetching or fully wired |
 | **28** | **Cart & Checkout** | 🔄 In Progress | 6/7 | Auth cart, addresses, Razorpay, multi-seller grouping done; coupon code pending (no API) |
-| **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint works; README ⏳ Pending (LOW) |
+| **29** | **Local Seed Data** | ✅ Done | 3/3 | Seed endpoint + demo UI + README documentation complete |
 | **30** | **Admin Events CRUD + Analytics** | ✅ Done | 4/4 | AdminEventsView, date range picker, site form |
 | **31** | **Category & Store Toolbars** | ✅ Done | 7/7 | All toolbars + RichText for policies implemented |
 | **32** | **Detail View Dynamic Sections & Tabs** | ✅ Done | 10/10 | All wired: bid history, related, product tabs, blog, event, pre-order |
