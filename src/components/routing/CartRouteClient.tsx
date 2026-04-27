@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   Button,
   CartItemRow,
@@ -25,6 +25,26 @@ interface ServerCartItem {
   currency: string;
   quantity: number;
   sellerId?: string;
+  sellerName?: string;
+}
+
+interface SellerGroup {
+  sellerId: string;
+  sellerName: string;
+  items: CartItem[];
+}
+
+function groupBySeller(items: CartItem[]): SellerGroup[] {
+  const map = new Map<string, SellerGroup>();
+  for (const item of items) {
+    const sid = item.meta.sellerId ?? "unknown";
+    const sname = item.meta.attributes?.sellerName ?? "Marketplace Seller";
+    if (!map.has(sid)) {
+      map.set(sid, { sellerId: sid, sellerName: sname, items: [] });
+    }
+    map.get(sid)!.items.push(item);
+  }
+  return Array.from(map.values());
 }
 
 interface ServerCartResponse {
@@ -45,6 +65,9 @@ function serverItemsToCartItems(items: ServerCartItem[]): CartItem[] {
       price: item.price,
       currency: item.currency ?? "INR",
       sellerId: item.sellerId,
+      attributes: {
+        sellerName: item.sellerName ?? "Marketplace Seller",
+      },
     },
   }));
 }
@@ -94,6 +117,8 @@ export function CartRouteClient() {
 
   const isEmpty = cartItems.length === 0;
   const isLoading = loading || (isAuthenticated && serverLoading);
+  const sellerGroups = useMemo(() => groupBySeller(cartItems), [cartItems]);
+  const isMultiSeller = sellerGroups.length > 1;
 
   const handleQtyChange = useCallback(
     (id: string, qty: number) => {
@@ -118,17 +143,28 @@ export function CartRouteClient() {
       isEmpty={isEmpty}
       isLoading={isLoading}
       renderItems={(itemsLoading) => (
-        <Div className="space-y-3">
+        <Div className="space-y-4">
           {itemsLoading ? (
             <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
           ) : (
-            cartItems.map((item) => (
-              <CartItemRow
-                key={item.id}
-                item={item}
-                onQtyChange={handleQtyChange}
-                onRemove={handleRemove}
-              />
+            sellerGroups.map((group) => (
+              <Div key={group.sellerId}>
+                {isMultiSeller && (
+                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    Sold by {group.sellerName}
+                  </Text>
+                )}
+                <Div className="space-y-3">
+                  {group.items.map((item) => (
+                    <CartItemRow
+                      key={item.id}
+                      item={item}
+                      onQtyChange={handleQtyChange}
+                      onRemove={handleRemove}
+                    />
+                  ))}
+                </Div>
+              </Div>
             ))
           )}
         </Div>
@@ -137,9 +173,15 @@ export function CartRouteClient() {
         <CartSummary
           labels={{ title: "Summary" }}
           renderBreakdown={() => (
-            <Text className="text-sm text-zinc-600 dark:text-zinc-300">
-              {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
-            </Text>
+            <Div className="space-y-1">
+              <Text className="text-sm text-zinc-600 dark:text-zinc-300">
+                {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
+              </Text>
+              <Div className="flex items-center justify-between">
+                <Text className="text-sm text-zinc-500 dark:text-zinc-400">Shipping</Text>
+                <Text className="text-sm text-zinc-500 dark:text-zinc-400">Calculated at checkout</Text>
+              </Div>
+            </Div>
           )}
           renderTotal={() => (
             <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
