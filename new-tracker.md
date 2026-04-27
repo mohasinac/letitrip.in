@@ -1054,15 +1054,15 @@ See Phase 24, 25, 26, 27 below.
 | 8 | Wrapper Migration | ✅ Done | 4/4 | All about views migrated |
 | 9 | Style System | ✅ Done | 6/6 | Tokens + CSS vars + Tailwind complete |
 | 10 | Card Consistency | ✅ Done | 5/5 | All card types standardized |
-| 11 | Carousel Improvements | ✅ Done | 4/4 | Structure done; **perView bug still in appkit (Phase 24.1)** |
+| 11 | Carousel Improvements | ✅ Done | 4/4 | All done; perView + dark mode + grid slide fixed in Phase 24 |
 | 12 | Form Responsiveness | ✅ Done | 5/5 | All done |
 | 13 | API Optimization | ✅ Done | 5/5 | ISR + loading states handled |
 | 14 | Route Fixes | ✅ Done | 5/5 | 30+ broken routes fixed + error pages |
-| 15 | Filter Implementation | ⚠️ Wrong | 0/5 | **Corrected Pass 15**: bare list views used; toolbar views not wired → Phase 26 |
+| 15 | Filter Implementation | ✅ Done | 5/5 | Corrected via Phase 26: all 4 listing pages now use Index*Listing client components with useUrlTable + toolbar + pagination |
 | 16 | Firebase & Functions | ✅ Done | 4/4 | 20 functions deployed |
 | 17 | Auth & Database | ✅ Done | 4/4 | Clean |
-| 18 | Data Issues | ⏳ Not started | 0/4 | Seed + detail pages; see also Phase 29 |
-| 19 | Homepage Sections | ⚠️ Partial | 3/5 | **19.5 ad slots broken (key mismatch)**, **FAQ case hardcoded empty** → Phase 24 |
+| 18 | Data Issues | ⚠️ Partial | 3/4 | 18.1–18.3 done (root cause, seed, relations verified); 18.4 runtime detail-page test still pending |
+| 19 | Homepage Sections | ✅ Done | 5/5 | All fixed in Phase 24: AD_SLOT_MAP key lookup, faqsRepository.getHomepageFAQs(), brands case added |
 | 20 | Abstractions | ✅ Done | 4/4 | ROUTES.ADMIN.ADS added |
 | 21 | SSR Optimization | ✅ Done | 3/4 | Island perf deferred |
 | 22 | Responsive Audit | ⏳ Not started | 0/8 | Needs running app |
@@ -1073,6 +1073,10 @@ See Phase 24, 25, 26, 27 below.
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All self-fetching appkit views confirmed: auctions/pre-orders/product detail, user/seller/admin dashboards, blog, events, profile |
 | **28** | **Cart & Checkout** | ✅ Done | 7/7 | All done: auth cart, addresses, Razorpay, order creation, coupon code, multi-seller grouping, checkout success |
 | **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint working; README update pending (LOW) |
+| **30** | **Admin Events CRUD + Analytics** | ✅ Done | 4/4 | AdminEventsView created; analytics date range picker; site settings slots confirmed |
+| **31** | **Category & Store Toolbars** | ✅ Done | 7/7 | CategoryProductsListing + StoreProductsListing + StoreAuctionsListing + StoreReviewsListing; RichText for policies + description |
+| **32** | **Detail View Dynamic Sections** | ✅ Done | 10/10 | All slots wired: bid history, related auctions, product tabs (desc/specs/reviews), blog related card, event content, pre-order buy bar |
+| **33** | **Rich Text Completeness** | ✅ Done | 6/6 | All HTML content fields use RichText: store policies, category description, event content, FAQ accordion |
 
 ---
 
@@ -1341,24 +1345,19 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 ## Next Steps (Priority Order)
 
-### Current (Pass 16 Complete — Admin/Category/Store/Detail/RichText Audited)
-- ✅ Admin pages — most self-fetch and work; `AdminEventsView` missing (Phase 30)
-- ✅ Category pages — self-fetch but no toolbar, no RichText for description (Phases 31, 33)
-- ✅ Store pages — tabs self-fetch; no toolbar; about policies use wrong text renderer (Phase 31)
-- ✅ Detail view slots — AuctionDetailView has 6 slots (not 4); `renderBidHistory` + `renderRelated` newly found (Phase 32)
-- ✅ BlogPostView — self-contained with `useBlogPost` hook; functional if `slug` prop passed
-- ✅ ReviewDetail — no dedicated page by design; modal-only is correct
-- ✅ Rich text — fully built and in use; 6 gaps where plain text is used instead (Phase 33)
+### Current (Pass 17 Complete — Full Code Verification 2026-04-27)
+
+All Phases 24–33 verified against actual source files (20/20 checks confirmed). Stale status entries corrected:
+- Phase 11 note updated (perView fixed in Phase 24)
+- Phase 15 corrected from ⚠️ Wrong → ✅ Done (fixed via Phase 26)
+- Phase 18 corrected from ⏳ Not started → ⚠️ Partial (3/4 done; 18.4 is runtime only)
+- Phase 19 corrected from ⚠️ Partial → ✅ Done (all fixed in Phase 24)
+- Phases 30–33 added to status table (were missing)
+- `useCouponValidate` exported from `@mohasinac/appkit/client` barrel
 
 ### Pending (Priority Order)
-1. **Phase 24** — Fix 8 appkit core bugs. Start: `HorizontalScroller.tsx:67` (perView)
-2. **Phase 25 + 32** — Product detail: gallery/lightbox + full tab wiring (description, specs, reviews) + BuyBar
-3. **Phase 26 + 31** — Listing toolbars: auctions/products/pre-orders/stores listing + category detail + store tabs
-4. **Phase 29 / 18** — Seed data + verify all detail pages load
-5. **Phase 27** — Wire all remaining slot-shell pages (user/seller dashboards, auction/preorder detail)
-6. **Phase 30** — Create `AdminEventsView`, wire analytics date range, extend admin site settings
-7. **Phase 28** — Cart/checkout: auth cart API, Razorpay, order creation
-8. **Phase 33** — Rich text completeness: store policies, category descriptions, event content
-9. **Phase 22** — Responsive audit: 375px / 768px / 1024px
-10. **Phase 23.2–23.8** — Smoke tests, Lighthouse ≥90, cross-browser, final launch checklist</content>
+1. **Phase 18.4** — Runtime: `POST /api/demo/seed` then browser-verify all detail pages load
+2. **Phase 22** — Responsive audit: 375px / 768px / 1024px on all major pages
+3. **Phase 23.2–23.8** — Smoke tests, Lighthouse ≥90, cross-browser, final launch checklist
+4. **Phase 29.3** — README: one-command local seed bootstrap docs (LOW)</content>
 <parameter name="filePath">d:\proj\letitrip.in\new-tracker.md
