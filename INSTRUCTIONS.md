@@ -1331,7 +1331,7 @@ Lightbox (on click):                   No lightbox exists on this page.
 | Filter URL persistence | ✅ params in URL | ✅ Done (phase 26) | useUrlTable uses router.replace for all filter changes |
 | **CART & CHECKOUT** | | | |
 | Cart: authenticated items | ✅ From `/api/cart` | ✅ Done (phase 28.1) | useCartQuery + useAuth; guest cart merges on login |
-| Cart: coupon code input | ✅ | ❌ Missing | No `/api/cart/coupon` endpoint exists yet |
+| Cart: coupon code input | ✅ | ✅ Done (phase 28.2) | POST /api/cart/coupon + coupon input with Apply/Remove UX; discount shown in breakdown |
 | Cart: multi-seller grouping | ✅ | ✅ Done (phase 28.3) | groupBySeller() groups items by sellerId; seller headers shown when multi-seller |
 | Cart: shipping cost estimate | ✅ | ✅ Done (phase 28.3) | "Calculated at checkout" placeholder in CartSummary breakdown |
 | Checkout: saved addresses | ✅ | ✅ Done (phase 28.4) | CheckoutAddressStep + useAddresses; renders address cards |
