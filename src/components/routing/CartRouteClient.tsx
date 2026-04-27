@@ -127,6 +127,7 @@ export function CartRouteClient() {
     discountAmount: number;
   } | null>(null);
   const [couponError, setCouponError] = useState("");
+
   const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   const handleApplyCoupon = useCallback(async () => {
@@ -142,7 +143,7 @@ export function CartRouteClient() {
       });
       const data = await res.json() as { data?: { code: string; discountAmount: number }; error?: string };
       if (!res.ok) {
-        setCouponError((data as { error?: string }).error ?? "Invalid coupon code");
+        setCouponError(data.error ?? "Invalid coupon code");
       } else {
         setAppliedCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
         setCouponCode("");
