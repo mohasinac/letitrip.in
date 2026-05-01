@@ -1069,7 +1069,7 @@ See Phase 24, 25, 26, 27 below.
 | 23 | Final Validation | ⏳ Not started | 0/8 | Go-live prep |
 | **24** | **Appkit Core Bugs** | ✅ Done | 8/8 | All fixes verified in pass 16: perView, dark mode, grid slide, HeroCarousel fallback, ad slots, FAQ data, brands case, rebuild clean |
 | **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired in pass 16: gallery/lightbox, ProductTabs, related, BuyBar, specs |
-| **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | All done: AuctionsIndexListing, ProductsIndexListing, PreOrdersIndexListing, StoresIndexListing with useUrlTable + toolbar + pagination |
+| **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 9/9 | All done: AuctionsIndexListing, ProductsIndexListing, PreOrdersIndexListing, StoresIndexListing + EventsIndexListing, BlogIndexListing, ReviewsIndexListing with useUrlTable + SlottedListingView toolbar + pagination |
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All self-fetching appkit views confirmed: auctions/pre-orders/product detail, user/seller/admin dashboards, blog, events, profile |
 | **28** | **Cart & Checkout** | ✅ Done | 7/7 | All done: auth cart, addresses, Razorpay, order creation, coupon code, multi-seller grouping, checkout success |
 | **29** | **Local Seed Data** | ✅ Done | 2/3 | Seed endpoint working; README update pending (LOW) |
@@ -1345,15 +1345,16 @@ but events cannot be created, edited, or deleted through the admin panel.
 
 ## Next Steps (Priority Order)
 
-### Current (Pass 17 Complete — Full Code Verification 2026-04-27)
+### Current (Pass 18 Complete — Listing Toolbar Gap Fixed 2026-05-01)
 
-All Phases 24–33 verified against actual source files (20/20 checks confirmed). Stale status entries corrected:
-- Phase 11 note updated (perView fixed in Phase 24)
-- Phase 15 corrected from ⚠️ Wrong → ✅ Done (fixed via Phase 26)
-- Phase 18 corrected from ⏳ Not started → ⚠️ Partial (3/4 done; 18.4 is runtime only)
-- Phase 19 corrected from ⚠️ Partial → ✅ Done (all fixed in Phase 24)
-- Phases 30–33 added to status table (were missing)
-- `useCouponValidate` exported from `@mohasinac/appkit/client` barrel
+Events, Blog, and Reviews listing pages were using bare grids with no search/sort/filter/pagination — violating the SlottedListingView standard in prompt.md. Fixed:
+- `EventsIndexListing` — useUrlTable + useEvents + EventFilters (type/status/date) + SlottedListingView
+- `EventsListPageView` — server wrapper with SSR initial data; `/events/page.tsx` now delegates to it
+- `BlogIndexListing` — useUrlTable + useBlogPosts + BlogFilters (category) + SlottedListingView
+- `BlogIndexPageView` — refactored from bare grid to BlogIndexListing delegation
+- `ReviewsIndexListing` — star-rating filter + sort by date/rating + SlottedListingView + pagination
+- `ReviewsIndexPageView` — refactored from bare sorted grid to ReviewsIndexListing delegation
+- All exported from `@mohasinac/appkit` barrel; Phase 26 count updated to 9/9
 
 ### Pending (Priority Order)
 1. **Phase 18.4** — Runtime: `POST /api/demo/seed` then browser-verify all detail pages load
