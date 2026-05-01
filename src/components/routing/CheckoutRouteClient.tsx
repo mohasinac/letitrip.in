@@ -213,8 +213,9 @@ export function CheckoutRouteClient() {
           (err as { error?: string }).error ?? "Payment verification failed",
         );
       }
-
-      router.push("/checkout/success");
+      const verifyData = await verifyRes.json().catch(() => ({}));
+      const firstOrderId = (verifyData?.data?.orderIds as string[] | undefined)?.[0];
+      router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "Payment failed. Please retry.",
@@ -246,7 +247,9 @@ export function CheckoutRouteClient() {
           (err as { error?: string }).error ?? "Order placement failed",
         );
       }
-      router.push("/checkout/success");
+      const codData = await res.json().catch(() => ({}));
+      const firstCodOrderId = (codData?.data?.orderIds as string[] | undefined)?.[0];
+      router.push(firstCodOrderId ? `/checkout/success?orderId=${firstCodOrderId}` : "/checkout/success");
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "Order failed. Please retry.",
