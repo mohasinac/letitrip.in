@@ -1334,7 +1334,7 @@ but events cannot be created, edited, or deleted through the admin panel.
 | **25** | **Product Detail Page** | ✅ Done | 5/5 | All wired: gallery/lightbox, tabs, related, BuyBar |
 | **26** | **Listing Toolbars (Phase 15 Redo)** | ✅ Done | 6/6 | Auctions, products, pre-orders, stores all have toolbars |
 | **27** | **Slot-Shell Page Wiring** | ✅ Done | 11/11 | All pages confirmed self-fetching or fully wired |
-| **28** | **Cart & Checkout** | 🔄 In Progress | 6/7 | Auth cart, addresses, Razorpay, multi-seller grouping done; coupon code pending (no API) |
+| **28** | **Cart & Checkout** | ✅ Done | 7/7 | Auth cart, coupon code, multi-seller grouping, address selection, Razorpay, order creation, success redirect all complete |
 | **29** | **Local Seed Data** | ✅ Done | 3/3 | Seed endpoint + demo UI + README documentation complete |
 | **30** | **Admin Events CRUD + Analytics** | ✅ Done | 4/4 | AdminEventsView, date range picker, site form |
 | **31** | **Category & Store Toolbars** | ✅ Done | 7/7 | All toolbars + RichText for policies implemented |
