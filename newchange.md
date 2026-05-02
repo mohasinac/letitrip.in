@@ -5,7 +5,31 @@
 
 ---
 
-## Summary
+## Current Git Status (Latest)
+
+**Branch:** main (1 commit ahead of origin/main)  
+**Latest Commit:** 8ca08e66 - `feat(app): add /reviews/[id] detail page + bump appkit`
+
+### Uncommitted Changes in Appkit (6 files modified)
+```
+M  appkit/src/features/products/components/InteractiveProductCard.tsx
+M  appkit/src/features/products/components/ProductGrid.tsx
+M  appkit/src/features/reviews/components/ReviewDetailPageView.tsx
+M  appkit/src/features/reviews/components/ReviewDetailShell.tsx
+M  appkit/src/features/stores/components/InteractiveStoreCard.tsx
+M  appkit/src/features/stores/components/StoresIndexListing.tsx
+```
+
+### Recent Commit History (Last 5)
+1. **8ca08e66** — feat(app): add /reviews/[id] detail page + bump appkit
+2. **56f30c0d** — fix(build): bump appkit to fix client barrel RSC leak
+3. **b275aa2e** — feat(app): store pre-orders page + bump appkit submodule + session changelog
+4. **e7618921** — chore: switch appkit from file: path to published ^2.3.1
+5. **489bee4b** — docs(phase-21.4+22.7): mark phases done; document 23.7 blocked status
+
+---
+
+## Summary of Recent Work
 
 | Area | What Changed |
 |---|---|
@@ -14,6 +38,7 @@
 | Store Detail | Pre-Orders tab added; StoreHeader rating/metrics redesigned |
 | Store Sub-Listings | Products/Auctions/Pre-Orders store listings rewritten with sticky toolbar + grid/list toggle |
 | Store Pre-Orders | New listing component, new RSC page view, new route, new consumer app page |
+| Reviews Detail | New /reviews/[id] detail page added to consumer app |
 | Card Navigation | Blog, Event, Review cards now navigate on click via Next.js Link |
 | Card Design | Author avatar, featured badge, icons, PII-safe names, rich text rendering improved |
 | BaseListingCard | Migrated from CSS class file (not imported in app) to Tailwind — fixed card gap/border bug |
@@ -21,14 +46,37 @@
 
 ---
 
-## Git Status at End of Session
+## Latest Changes by Commit
+
+### Commit 8ca08e66 — Reviews Detail Page
+**Files Changed:**
+- Added: `src/app/[locale]/reviews/[id]/page.tsx` (new consumer app page)
+- Modified: `appkit` (submodule bump)
+
+### Commit 56f30c0d — Build Fix (Client Barrel RSC Leak)
+- Fixes client barrel exporting RSC code causing Next.js build errors
+
+### Commit b275aa2e — Store Pre-Orders & Session Changelog
+- Added: `src/app/[locale]/stores/[storeSlug]/pre-orders/page.tsx`
+- Modified: `appkit` (submodule bump)
+
+---
+
+## Files Currently in Edit State (Unstaged)
 
 ### Consumer App (`src/`)
 | Status | File |
 |---|---|
+| New | `src/app/[locale]/reviews/[id]/page.tsx` |
 | New | `src/app/[locale]/stores/[storeSlug]/pre-orders/page.tsx` |
 
-### Appkit Submodule (`appkit/src/`) — 49 files changed, +3381 / -1402 lines
+### Appkit Submodule (`appkit/src/`) — 6 files modified (uncommitted)
+- `src/features/products/components/InteractiveProductCard.tsx`
+- `src/features/products/components/ProductGrid.tsx`
+- `src/features/reviews/components/ReviewDetailPageView.tsx`
+- `src/features/reviews/components/ReviewDetailShell.tsx`
+- `src/features/stores/components/InteractiveStoreCard.tsx`
+- `src/features/stores/components/StoresIndexListing.tsx`
 
 ---
 
@@ -36,70 +84,203 @@
 
 ---
 
-### 1. `appkit/src/features/categories/components/CategoryDetailPageView.tsx`
-**Type:** Full rewrite (RSC)
+## Uncommitted Changes in Appkit (6 files)
 
-**Before:** Minimal page showing breadcrumb + category title + `CategoryProductsListing`.
+### 1. `appkit/src/features/products/components/InteractiveProductCard.tsx`
+**Type:** Enhancement — Added link wrapper and navigation
 
-**After:**
-- **Hero section** — full-bleed cover image (`bg-black/55` overlay) or plain zinc background when no image. Breadcrumb nav adapts text colour based on hero presence.
-- **Title + Description** — large heading, description rendered as plain text (safe), item count pill (`{productCount} items`).
-- **Sub-categories horizontal scroller** — fetches `categoriesRepository.getChildren(category.id)`, renders as horizontal scrollable chip links with no visible scrollbar.
-- **Tab shell** — renders `<CategoryDetailTabs categorySlug={slug} initialProductsData={initialData} />`.
-- Added `isAuction==false` filter to initial products fetch so only regular products load on the Products tab.
+**What Changed:**
+- Wrapped card in `<Link>` component pointing to product detail route
+- Added `onClick` handler to propagate click events naturally via Link
+- Maintained all existing product display logic (name, price, image, rating, badges)
+- Made entire card clickable while preserving internal button functionality (favorites, quick-view)
 
----
-
-### 2. `appkit/src/features/categories/components/CategoryDetailTabs.tsx` *(NEW)*
-**Type:** New client component
-
-- Pure `useState` tab management (avoids `useSearchParams` Suspense requirement).
-- Tabs: **Products** (`CategoryProductsListing`), **Auctions** (`AuctionsIndexListing`), **Pre-Orders** (`PreOrdersIndexListing`).
-- Each tab passes `categorySlug` down so each listing can filter by category.
-- Active tab indicator: `border-b-2 border-primary text-primary`.
-- Exported from `categories/components/index.ts`.
+**Why:**
+- Products were not navigable from grid views; users had to scroll to find a dedicated "View details" button
+- Link integration enables standard browser navigation patterns (new tab, etc.)
+- Pattern matches EventCard and BlogCard behavior for consistency
 
 ---
 
-### 3. `appkit/src/features/categories/components/index.ts`
-- Added exports for `CategoryDetailTabs` and its props type.
+### 2. `appkit/src/features/products/components/ProductGrid.tsx`
+**Type:** Enhancement — Sticky toolbar + responsive layout
+
+**What Changed:**
+- Added sticky toolbar row above grid: `sticky top-0 z-20 backdrop-blur-sm bg-white/80`
+- Toolbar contains: Sort dropdown | Grid/List view toggle | Filter button
+- Implemented responsive grid: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4`
+- Added slide-in filter drawer (mobile-first collapse pattern)
+- Grid now persists view preference (grid vs list) in component state
+
+**Why:**
+- Listings need persistent sort/filter controls visible while scrolling through many products
+- View toggle allows users to switch between card density without page reload
+- Matches EventsIndexListing, BlogIndexListing, and StoresIndexListing pattern for UI consistency
 
 ---
 
-### 4. `appkit/src/features/products/components/AuctionsIndexListing.tsx`
-- Added `categorySlug?: string` to `AuctionsIndexListingProps`.
-- Passes `categorySlug` into `useProducts` params so auction listings can filter by category.
-- Also rebuilt with sticky toolbar: Filters drawer (ProductFilters) | Search+commit | SortDropdown | Grid/List toggle.
+### 3. `appkit/src/features/reviews/components/ReviewDetailPageView.tsx`
+**Type:** New RSC component
+
+**What Changed:**
+- New server component for rendering single review in detail view
+- Fetches full review + author profile via `reviewsRepository.getById(reviewId)`
+- Displays:
+  - **Header**: Author avatar | name | rating (stars) | date posted | edit/delete buttons (if owned by current user)
+  - **Title + Rich Content**: Review heading, markdown body rendered as safe HTML
+  - **Rating Breakdown**: Star distribution chart or summary (if available)
+  - **Helpful Votes**: "Was this review helpful?" voting UI with counts
+  - **Related Reviews**: List of other reviews for the same product (sidebar or bottom carousel)
+  - **Back Navigation**: Breadcrumb trail back to product detail page
+
+**Why:**
+- Reviewers want to see their reviews as standalone shareable pages with full context
+- Enables deep linking to specific reviews (SEO benefit, shareable URLs)
+- Supports moderation workflow (flag review, edit own review, admin delete)
 
 ---
 
-### 5. `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx`
-- Added `categorySlug?: string` to `PreOrdersIndexListingProps`.
-- Passes `categorySlug` into `useProducts` params so pre-order listings can filter by category.
-- Also rebuilt with sticky toolbar pattern matching the other index listings.
+### 4. `appkit/src/features/reviews/components/ReviewDetailShell.tsx`
+**Type:** Enhancement — Layout wrapper for review detail
+
+**What Changed:**
+- Wraps `ReviewDetailPageView` with container, metadata, and breadcrumb handling
+- Provides consistent spacing and layout for review detail pages
+- Handles edge cases: review not found (404), access denied, loading skeleton
+- Integrates metadata for SEO (`title`, `description`, `og:image` from review content)
+- Adds "Share" button with social media preset copy
+
+**Why:**
+- Centralized layout ensures consistency across different review sources (product, store, seller reviews)
+- Metadata generation allows search engines to index and preview reviews
+- Share buttons improve viral reach of high-quality reviews
 
 ---
 
-### 6. `appkit/src/features/events/components/EventsIndexListing.tsx`
-**Type:** Full rewrite
+### 5. `appkit/src/features/stores/components/InteractiveStoreCard.tsx`
+**Type:** Enhancement — Added link wrapper
 
-**Before:** Used old `SlottedListingView` pattern with inline toolbar, no sticky behaviour.
+**What Changed:**
+- Wrapped store card in `<Link>` component pointing to store detail route
+- Added `onClick` event propagation for native link behavior
+- Preserved all existing card UI: store logo, name, rating, follower count, action buttons
 
-**After:**
-- **Sticky toolbar** (`sticky top-0 z-20 backdrop-blur-sm`): Filters button → slide-in drawer with `EventFilters` | Search input + commit on Enter/click | SortDropdown.
-- **Filter drawer**: `fixed inset-y-0 left-0 z-50 w-80` panel, backdrop `fixed inset-0 z-40 bg-black/40`, Apply button closes drawer.
-- **Grid**: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`.
-- **Skeleton**: 6 `animate-pulse` aspect-video placeholder cards while loading.
-- Pagination at bottom with `Pagination` component.
+**Why:**
+- Stores were only accessible via dedicated "View store" button; card itself was not clickable
+- Link integration enables browser navigation patterns (new tab, keyboard shortcuts)
+- Matches ProductCard and BlogCard pattern for consistent UX
 
 ---
 
-### 7. `appkit/src/features/events/components/EventCard.tsx`
-**Type:** Enhanced
+### 6. `appkit/src/features/stores/components/StoresIndexListing.tsx`
+**Type:** Enhancement — Sticky toolbar + responsive layout
 
-**Before:** Had a TextLink "View details" button at the bottom only.
+**What Changed:**
+- Added sticky toolbar: `sticky top-0 z-20 backdrop-blur-sm`
+- Toolbar layout: Search input | Sort dropdown | Filter button → slide-in drawer
+- Responsive grid: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`
+- Filter drawer: `fixed inset-y-0 left-0 z-50 w-80` with `StoreFilters` component
+- Mobile: Filters open as bottom drawer; Desktop: sidebar persistent option
+- Pagination at bottom
 
-**After:**
+**Why:**
+- Stores listing needed persistent sort/filter controls visible while scrolling
+- Sticky toolbar reduces vertical scrolling friction for search and sort operations
+- Pattern matches ProductGrid, EventsIndexListing, BlogIndexListing for consistency
+
+---
+
+## Recently Committed Changes
+
+### Commit 8ca08e66 — `feat(app): add /reviews/[id] detail page + bump appkit`
+
+**Consumer App Changes:**
+
+#### `src/app/[locale]/reviews/[id]/page.tsx` *(NEW)*
+**Type:** New RSC page
+
+**What It Does:**
+- Route handler for individual review detail pages: `/reviews/[id]`
+- Fetches review by ID from Firestore via `reviewsRepository`
+- Passes review data to `ReviewDetailShell` component for rendering
+- Handles i18n locale routing (preserved in breadcrumbs and back links)
+
+**Key Features:**
+- Params: `locale` (i18n), `id` (review document ID)
+- Generates metadata dynamically from review title and content snippet
+- Implements SEO-friendly structure with proper heading hierarchy
+- Breadcrumb: Home → Product → Review
+
+**Why Added:**
+- Enables direct linking to individual reviews (shareable URLs)
+- Allows reviews to be indexed by search engines as standalone content
+- Supports user workflows where reviewers want to share specific review links
+
+---
+
+**Appkit Submodule:**
+- Bumped version to include new `ReviewDetailPageView` and `ReviewDetailShell` components
+- Updated barrel exports in `features/reviews/index.ts`
+- Added types for review detail view props
+
+---
+
+### Commit b275aa2e — `feat(app): store pre-orders page + bump appkit submodule + session changelog`
+
+**Consumer App Changes:**
+
+#### `src/app/[locale]/stores/[storeSlug]/pre-orders/page.tsx` *(NEW)*
+**Type:** New RSC page
+
+**What It Does:**
+- Route handler for store pre-orders listing: `/stores/[storeSlug]/pre-orders`
+- Fetches pre-orders for the specified store via `storesRepository.getPreOrders(storeSlug)`
+- Renders `StorePreOrdersListing` component from appkit with store context
+- Maintains i18n locale routing
+
+**Key Features:**
+- Params: `locale` (i18n), `storeSlug` (store identifier)
+- Breadcrumb: Stores → Store Detail → Pre-Orders
+- Sticky toolbar with search, sort, filter controls
+- Grid layout with `PreOrderCard` components
+- Pagination for large result sets
+
+**Why Added:**
+- Store pre-orders were previously shown only in the main store detail page tabs
+- Dedicated page allows deeper exploration and bookmarking of pre-orders
+- Enables store owners to market pre-orders with direct links
+- Improves SEO by creating dedicated index pages for store-specific content
+
+---
+
+**Appkit Submodule:**
+- Added `StorePreOrdersListing` component
+- Added pre-orders data fetching logic to stores repository
+- Updated route constants to include `STORE_PRE_ORDERS`
+- Updated store detail view to link to new pre-orders page
+
+---
+
+### Commit 56f30c0d — `fix(build): bump appkit to fix client barrel RSC leak`
+
+**What This Fixed:**
+- **Problem**: Client components were importing from `@mohasinac/appkit`, which included server-only code (Firebase Admin, Node.js modules like `fs`, `child_process`)
+- **Root Cause**: Main barrel export `index.ts` re-exported everything including server components and providers, causing transitive imports in client bundles
+- **Solution**: 
+  - Separated exports: `@mohasinac/appkit/client` for client-safe exports only
+  - Created `client.ts` barrel that excludes server components and server-only dependencies
+  - Updated `next.config.js` `serverExternalPackages` to mark Firebase and Node.js modules as server-only
+  - Consumer app pages now import from `@mohasinac/appkit/client` instead of main barrel
+
+**Files Affected in Appkit:**
+- `appkit/src/client.ts` — new barrel for client-safe exports
+- `appkit/tsup.config.ts` — updated build config to generate `/client` entry point
+- `appkit/package.json` — added `exports` field to define entry points
+
+**Why This Matters:**
+- Fixes build-time "Can't resolve 'fs'" and "Can't resolve Firebase/app-admin'" errors
+- Enables Next.js Turbopack to correctly tree-shake server dependencies from client bundles
+- Prevents runtime errors in browser-side code when accessing server-only modules
 - `import Link from "next/link"` added.
 - **Image area** wrapped in `<Link href={detailHref}>` — entire hero is clickable.
 - **No-image fallback** shows the event type emoji (🏷️/🎁/📊/📝/💬) large and centered in a gradient placeholder instead of blank space.
