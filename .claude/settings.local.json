@@ -13,7 +13,11 @@
       "Bash(git commit -m ' *)",
       "Bash(npm run *)",
       "Bash(npm install *)",
-      "Bash(firebase deploy *)"
+      "Bash(firebase deploy *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k,':', v\\) for k,v in d.get\\('scripts',{}\\).items\\(\\)]\")",
+      "Bash(tee /tmp/build.txt)",
+      "Read(//tmp/**)",
+      "PowerShell(cd d:\\\\proj\\\\letitrip.in; npm run build 2>&1 | Out-File -Encoding utf8 \"$env:TEMP\\\\build.txt\"; Get-Content \"$env:TEMP\\\\build.txt\" | Select-Object -First 200)"
     ],
     "defaultMode": "bypassPermissions"
   }
