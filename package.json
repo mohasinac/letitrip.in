@@ -14,6 +14,8 @@
                     "test:smoke:all:existing":  "cross-env SMOKE_USE_EXISTING_SERVER=1 node scripts/qa/smoke-all-pages.mjs",
                                         "test:smoke:browser":  "cross-env SMOKE_SEED_FIRST=0 node scripts/qa/smoke-browser.mjs",
                                         "test:smoke:browser:watch":  "cross-env SMOKE_SEED_FIRST=0 SMOKE_HEADLESS=0 SMOKE_SLOW_MO=300 node scripts/qa/smoke-browser.mjs",
+                    "test:audit":  "node scripts/qa/audit-browser.mjs",
+                    "test:audit:existing":  "cross-env AUDIT_USE_EXISTING=1 node scripts/qa/audit-browser.mjs",
                     "pre-commit":  "npm run lint",
                     "lint":  "eslint src",
                     "lint:fix":  "eslint src --fix",
