@@ -17,7 +17,8 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k,':', v\\) for k,v in d.get\\('scripts',{}\\).items\\(\\)]\")",
       "Bash(tee /tmp/build.txt)",
       "Read(//tmp/**)",
-      "PowerShell(cd d:\\\\proj\\\\letitrip.in; npm run build 2>&1 | Out-File -Encoding utf8 \"$env:TEMP\\\\build.txt\"; Get-Content \"$env:TEMP\\\\build.txt\" | Select-Object -First 200)"
+      "PowerShell(cd d:\\\\proj\\\\letitrip.in; npm run build 2>&1 | Out-File -Encoding utf8 \"$env:TEMP\\\\build.txt\"; Get-Content \"$env:TEMP\\\\build.txt\" | Select-Object -First 200)",
+      "PowerShell(taskkill /F /IM node.exe; Write-Host \"Exit: $LASTEXITCODE\")"
     ],
     "defaultMode": "bypassPermissions"
   }
