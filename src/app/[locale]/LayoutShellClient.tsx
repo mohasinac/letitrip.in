@@ -163,29 +163,47 @@ export default function LayoutShellClient({
       />
     ) : null;
 
+  // Wishlist heart icon (always visible, guests + authenticated)
+  const wishlistIcon = (
+    <Link
+      href={String(ROUTES.USER.WISHLIST)}
+      aria-label="Wishlist"
+      className="flex items-center justify-center w-9 h-9 rounded-lg text-zinc-600 hover:text-red-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-slate-800 transition-colors"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+      </svg>
+    </Link>
+  );
+
   // Notification bell slot (only when authenticated)
-  const notificationSlot = user ? (
-    <NotificationBell
-      viewAllHref={String(ROUTES.USER.NOTIFICATIONS)}
-      labels={{
-        title: "Notifications",
-        unread: "unread",
-        markAllRead: "Mark all read",
-        empty: "No notifications",
-        emptyDesc: "You're all caught up!",
-        viewAll: "View all",
-        markRead: "Mark read",
-        viewAction: "View",
-        loading: "Loading…",
-        error: "Failed to load notifications",
-      }}
-      renderLink={({ href, children: linkChildren, onClick, className }) => (
-        <Link href={href} onClick={onClick} className={className}>
-          {linkChildren}
-        </Link>
+  const notificationSlot = (
+    <>
+      {wishlistIcon}
+      {user && (
+        <NotificationBell
+          viewAllHref={String(ROUTES.USER.NOTIFICATIONS)}
+          labels={{
+            title: "Notifications",
+            unread: "unread",
+            markAllRead: "Mark all read",
+            empty: "No notifications",
+            emptyDesc: "You're all caught up!",
+            viewAll: "View all",
+            markRead: "Mark read",
+            viewAction: "View",
+            loading: "Loading…",
+            error: "Failed to load notifications",
+          }}
+          renderLink={({ href, children: linkChildren, onClick, className }) => (
+            <Link href={href} onClick={onClick} className={className}>
+              {linkChildren}
+            </Link>
+          )}
+        />
       )}
-    />
-  ) : undefined;
+    </>
+  );
 
   // Dev/seed slot — only for admin users in non-production
   const devSlot =
@@ -372,7 +390,7 @@ export default function LayoutShellClient({
           { label: "Seller Guide", href: String(ROUTES.PUBLIC.SELLER_GUIDE) },
           { label: "Fees & Pricing", href: String(ROUTES.PUBLIC.FEES) },
           { label: "How Payouts Work", href: String(ROUTES.PUBLIC.HOW_PAYOUTS_WORK) },
-          { label: "Seller Dashboard", href: String(ROUTES.SELLER.DASHBOARD) },
+          { label: "Store Dashboard", href: String(ROUTES.STORE.DASHBOARD) },
         ],
       },
       {
@@ -424,7 +442,7 @@ export default function LayoutShellClient({
       userWishlistHref={String(ROUTES.USER.WISHLIST)}
       userSettingsHref={String(ROUTES.USER.SETTINGS)}
       adminHref={String(ROUTES.ADMIN.DASHBOARD)}
-      sellerHref={String(ROUTES.SELLER.DASHBOARD)}
+      storeHref={String(ROUTES.STORE.DASHBOARD)}
       loginHref={String(ROUTES.AUTH.LOGIN)}
       homeHref={String(ROUTES.HOME)}
       shopHref={String(ROUTES.PUBLIC.PRODUCTS)}
@@ -442,7 +460,7 @@ export default function LayoutShellClient({
         settings: tNav("settings"),
         dashboardSectionTitle: tNav("dashboard"),
         adminDashboard: tNav("adminDashboard"),
-        sellerDashboard: tNav("sellerDashboard"),
+        storeDashboard: tNav("storeDashboard"),
         logout: tNav("logout"),
       }}
       footer={footer}

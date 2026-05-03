@@ -537,3 +537,489 @@ fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-slate-900  ← panel
 - **appkit TypeScript**: ✅ 0 errors (`npx tsc --noEmit`)
 - **Consumer app TypeScript**: ✅ 0 errors (`npx tsc --noEmit`)
 - **Files changed in appkit**: 49 files, +3381 / -1402 lines
+
+---
+
+## Session Improvements (2026-05-03 - Continued)
+
+### Reviews Listing Enhancements
+
+#### 1. **ReviewsIndexListing.tsx** — Complete Toolbar Overhaul
+**Type:** Full rewrite with sticky toolbar
+
+**Before:** Simple star rating chips + sort dropdown, no search, no filter drawer.
+
+**After:**
+- **Sticky toolbar** (`sticky top-0 z-20 backdrop-blur-sm`): Filters button → slide-in drawer | Search input + commit button | Sort dropdown
+- **Filter drawer**: Integrates `ReviewFilters` component with all filters (status, rating, brand, date range)
+- **Search**: Full-text search on review `title` and `body` fields, applied on client
+- **Date range filter**: `dateFrom` / `dateTo` filters (new — see below)
+- **Responsive**: Toolbar layout adapts to mobile/desktop screen sizes
+- **Props**: Now accepts `variant?: "admin" | "seller" | "public"` to control which filters are shown
+- **Grid**: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`
+- **Pagination**: Handles large result sets with configurable page size (12 per page)
+
+**Why:** Improves discoverability of reviews by offering date-based filtering (e.g., "only show reviews from last 30 days"), search capability, and consistent toolbar pattern across all listing pages (events, blog, products, etc.).
+
+---
+
+#### 2. **ReviewFilters.tsx** — Date Range Filter Added
+**Type:** Schema extension
+
+**Changes:**
+- Added `dateFrom` and `dateTo` to `REVIEW_FILTER_KEYS` for all variants (admin, seller, public)
+- Imported `RangeFilter` component
+- Added `<RangeFilter type="date" />` section in JSX, positioned before admin-only filters
+- Supports min/max date input with i18n labels (`minDate`, `maxDate`, `dateRange`)
+
+**Why:** Enables filtering reviews by creation date — useful for reviewing recent feedback or comparing old vs new customer sentiment.
+
+---
+
+### Guest Wishlist Implementation
+
+#### 3. **guest-wishlist.ts** (NEW) — Utility Library
+**Type:** New localStorage-backed wishlist for unauthenticated users
+
+**Exports:**
+- `GuestWishlistItem` interface: `{ itemId, type, title?, image?, addedAt }`
+- `addToGuestWishlist(itemId, type, snapshot?)` — Add item if not already present
+- `removeFromGuestWishlist(itemId, type)` — Remove item
+- `isInGuestWishlist(itemId, type)` — Check if item is wishlisted
+- `getGuestWishlistItems()` — Get all items
+- `getGuestWishlistByType(type)` — Get items filtered by type (product, auction, preorder, category, store)
+- `getGuestWishlistCount()` — Get total count
+- `clearGuestWishlist()` — Clear all items
+
+**Storage:**
+- Key: `{NEXT_PUBLIC_APP_ID}_guest_wishlist` (falls back to `"guest_wishlist"`)
+- Persists to `window.localStorage` as JSON array
+- Handles missing/corrupt data gracefully (returns `[]`)
+
+**Why:** Allows guests to save items to wishlist without authentication, with persistence across page reloads and sessions.
+
+---
+
+#### 4. **useGuestWishlist.ts** (NEW) — React Hook
+**Type:** Client-side state management for guest wishlist
+
+**API:**
+```typescript
+const {
+  items,                    // GuestWishlistItem[]
+  count,                    // number (total items)
+  countByType,              // (type) => number
+  add,                      // (itemId, type, snapshot?) => void
+  remove,                   // (itemId, type) => void
+  isInWishlist,             // (itemId, type) => boolean
+  getByType,                // (type) => GuestWishlistItem[]
+  clear,                    // () => void
+  isInitialized,            // boolean (hydration complete)
+} = useGuestWishlist();
+```
+
+**Why:** Provides React-friendly interface for managing guest wishlist with auto-sync to localStorage.
+
+---
+
+#### 5. **useWishlistWithGuest.ts** (NEW) — Unified Wishlist Hook
+**Type:** Smart fallback hook for authenticated and guest users
+
+**Behavior:**
+- If `userId` provided → uses `useWishlist` (API-based, requires authentication)
+- If `userId` null/undefined → uses `useGuestWishlist` (localStorage-based)
+- Normalizes both to same return shape for seamless consumption
+
+**API:**
+```typescript
+const wishlist = useWishlistWithGuest(userId, opts);
+// Returns:
+{
+  items,                    // Unified item format
+  total,
+  wishlistedIds,
+  isWishlisted,
+  isLoading,
+  error,
+  refetch,
+  isGuest,                  // true if using guest mode
+  guestWishlist?,           // Exposed if isGuest === true
+}
+```
+
+**Why:** Enables components to work seamlessly with both authenticated users (API) and guests (localStorage) without conditional logic. Guest wishlists are preserved if user later authenticates (can be merged server-side).
+
+---
+
+### Cart & Wishlist Session Verification
+
+#### 6. **Cart Implementation Review**
+**Status:** ✅ Already correctly implemented
+
+**Verification:**
+- `CartRouteClient`: Uses `useAuth()` to check `user?.uid`
+- `useCartQuery`: Called with `enabled: !!user?.uid` — API only when authenticated
+- **Guest cart**: Used when `!user?.uid` via `useGuestCart()`
+- **Merge on auth**: `useGuestCartMerge` merges guest items to server when user logs in
+- **Checkout**: Coupon API calls guarded by `if (!isAuthenticated) return`
+
+**Conclusion:** Cart correctly uses API only on user session, fallback to guest cart with persistent storage. No changes needed.
+
+---
+
+#### 7. **Wishlist Implementation Review**
+**Status:** ✅ Updated for guest support
+
+**Verification:**
+- Old `WishlistView`: Required `userId` prop, no guest support
+- New `useWishlistWithGuest`: Detects authentication and switches between API and localStorage automatically
+- Guest wishlist: Persists to localStorage, survives page reloads
+- Future: Can merge guest wishlists to authenticated user's API wishlist on login
+
+**Integration Points:**
+- Pages/components using `WishlistView` can now pass `userId={user?.uid}` and gracefully degrade to guest mode
+- Alternative: Use `useWishlistWithGuest(userId)` directly in custom components for finer control
+
+---
+
+### Exports Updated
+
+**appkit/src/client.ts** (client-side barrel):
+- ✅ Exported `useGuestWishlist`
+- ✅ Exported `useWishlistWithGuest`
+- ✅ Exported all guest-wishlist utilities
+- ✅ Exported `GuestWishlistItem` type
+
+**appkit/src/features/wishlist/index.ts** (feature barrel):
+- ✅ Re-exported `useGuestWishlist` and `useWishlistWithGuest` hooks
+- ✅ Re-exported `guest-wishlist.ts` utilities
+
+---
+
+## Summary of Additions
+
+| Component | Type | Purpose |
+|-----------|------|---------|
+| `ReviewsIndexListing` | Rewrite | Sticky toolbar + search + filter drawer + date range filter |
+| `ReviewFilters` | Enhancement | Added `dateFrom`/`dateTo` to filter schema |
+| `guest-wishlist.ts` | New | localStorage-backed wishlist for guests |
+| `useGuestWishlist` | New | React hook for guest wishlist state management |
+| `useWishlistWithGuest` | New | Unified hook for auth + guest wishlist fallback |
+
+---
+
+## Quality Assurance
+
+- **Reviews toolbar**: Tested locally with star filter, search, sort, date range filters working in sync
+- **Guest wishlist**: localStorage keys respect `NEXT_PUBLIC_APP_ID` env var for multi-tenant isolation
+- **Cart verification**: Confirmed `enabled: !!user?.uid` guard prevents API calls when user is null
+- **Types**: All new exports include TypeScript types for tree-shaking and IntelliSense
+
+---
+
+## Session 2026-05-03 Continued — Wishlist Integration, Nav Fixes, Card Sizes
+
+### 1. `src/app/[locale]/LayoutShellClient.tsx` — Wishlist Heart Icon in Title Bar
+**Type:** Enhancement
+
+- Added a persistent wishlist heart icon (SVG outline heart, `w-5 h-5`) to the title bar — visible for **all users** (guest and authenticated).
+- Heart links to `ROUTES.USER.WISHLIST`, shows `hover:text-red-500` on hover.
+- `titleBarNotificationSlot` now renders a React Fragment containing: wishlist heart + `NotificationBell` (authenticated only).
+- No counter badge — just the icon.
+- Placed beside cart icon (left of it, via `notificationSlot` position in TitleBar layout).
+
+---
+
+### 2. `appkit/src/features/products/components/ProductsIndexListing.tsx` — Wishlist Wired
+**Type:** Enhancement
+
+**Imports added:**
+- `useSession` from `../../../react/contexts/SessionContext`
+- `useWishlistWithGuest` from `../../wishlist/hooks/useWishlistWithGuest`
+- `apiClient` from `../../../http`
+
+**Logic added:**
+- `wl = useWishlistWithGuest(user?.uid ?? null)` — unified hook for guest/auth state
+- `handleWishlistToggle(productId)`:
+  - Guest: calls `guestWishlist.add/remove(productId, "product")`
+  - Authenticated: calls `apiClient.post("/api/user/wishlist", { productId })` or `apiClient.delete(\`/api/user/wishlist/${productId}\`)`
+
+**Props passed to `ProductGrid`:**
+- `onWishlistToggle={handleWishlistToggle}` — enables wishlist button on every product card
+- `wishlistedIds={wl.wishlistedIds}` — heart shows as filled when product is wishlisted
+
+**Grid change:** Skeleton loading grid changed from `xl:grid-cols-5` to max `lg:grid-cols-4` (larger cards).
+
+---
+
+### 3. `appkit/src/features/products/components/AuctionsIndexListing.tsx` — Wishlist Wired
+**Type:** Enhancement
+
+**Same imports as above.**
+
+**Logic added:**
+- `wishlistActions = { addToWishlist, removeFromWishlist }` with guest/auth dual path using `"auction"` type for guest wishlist
+
+**Props passed to `MarketplaceAuctionGrid`:**
+- `wishlistActions={wishlistActions}` — enables wishlist toggle on each auction card
+
+**Grid change:** `lg:grid-cols-4` → `lg:grid-cols-3` (larger cards, 3 per row on desktop).
+
+---
+
+### 4. `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` — Wishlist Wired
+**Type:** Enhancement
+
+**Same imports as above.**
+
+**Logic added:**
+- `wishlistActions = { addToWishlist, removeFromWishlist }` with `"preorder"` type for guest wishlist
+
+**Props passed to each `MarketplacePreorderCard`:**
+- `wishlistActions={wishlistActions}` — on both list-view and grid-view variants
+
+**Grid change:** Removed `xl:grid-cols-5`, max is now `lg:grid-cols-4` (larger cards).
+
+---
+
+### 5. `src/app/[locale]/admin/page.tsx` *(NEW)* — Admin Root Redirect
+**Type:** Bug Fix (404)
+
+```tsx
+import { redirect } from "next/navigation";
+import { ROUTES } from "@mohasinac/appkit";
+
+export default function Page() {
+  redirect(String(ROUTES.ADMIN.DASHBOARD));
+}
+```
+
+- `/admin` was returning 404 — no root page existed.
+- Now redirects to `ROUTES.ADMIN.DASHBOARD`.
+
+---
+
+### 6. `src/app/[locale]/seller/layout.tsx` — Complete Seller Nav Items
+**Type:** Bug Fix (missing nav items)
+
+Added nav items that were present in `ROUTES.SELLER` but missing from `SELLER_NAV_ITEMS`:
+- Pre-Orders (`ROUTES.SELLER.PRE_ORDERS`)
+- Payout Settings (`ROUTES.SELLER.PAYOUT_SETTINGS`)
+- Addresses (`ROUTES.SELLER.ADDRESSES`)
+
+---
+
+### 7. `src/app/[locale]/user/layout.tsx` — Complete User Nav Items
+**Type:** Bug Fix (missing nav items)
+
+Added nav items that were missing:
+- Messages (`ROUTES.USER.MESSAGES`)
+- Become a Seller (`ROUTES.USER.BECOME_SELLER`)
+
+---
+
+### 8. `src/app/[locale]/seller/pre-orders/page.tsx` *(NEW)* — Seller Pre-Orders Placeholder
+**Type:** Bug Fix (404)
+
+- `ROUTES.SELLER.PRE_ORDERS = "/seller/pre-orders"` was defined but no page existed.
+- Created stub page with "Pre-order management is coming soon." message.
+- Note: `SellerPreOrdersView` does not exist in appkit yet — placeholder until it's built.
+
+---
+
+### 9. `messages/en.json` — Missing Translation Namespaces
+**Type:** Bug Fix (MISSING_MESSAGE errors)
+
+**`publicProfile`** namespace added (10 keys):
+- `profileTitle`, `memberSince`, `statListings`, `statReviews`, `statMessages`
+- `listingsTitle`, `noListings`, `reviewsTitle`, `noReviews`, `backHome`
+
+**`howOrdersWork`** namespace extended (34 keys):
+- Status pairs: `statusPending/Desc`, `statusConfirmed/Desc`, `statusShipped/Desc`, `statusDelivered/Desc`, `statusCancelled/Desc`
+- Info card pairs: `infoCard1Title/Text` through `infoCard4Title/Text`
+- Diagram steps: `diagramStep1` through `diagramStep5`
+
+**`howOffersWork`** namespace extended (17 keys):
+- `rule1` through `rule5`, `ctaBrowse`, `ctaOrders`
+- `diagramStep1` through `diagramStep5`
+
+---
+
+### Appkit Build
+- `npm run build` run in `appkit/` after all source changes — ✅ 0 errors, `dist/` updated.
+
+---
+
+### Summary Table
+
+| File | Change | Type |
+|------|--------|------|
+| `src/app/[locale]/LayoutShellClient.tsx` | Wishlist heart icon in title bar | Enhancement |
+| `appkit/src/features/products/components/ProductsIndexListing.tsx` | Wishlist wired + grid size | Enhancement |
+| `appkit/src/features/products/components/AuctionsIndexListing.tsx` | Wishlist wired + grid size | Enhancement |
+| `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` | Wishlist wired + grid size | Enhancement |
+| `src/app/[locale]/admin/page.tsx` | Admin redirect page (was 404) | Bug Fix |
+| `src/app/[locale]/seller/layout.tsx` | Complete seller nav items | Bug Fix |
+| `src/app/[locale]/user/layout.tsx` | Complete user nav items | Bug Fix |
+| `src/app/[locale]/seller/pre-orders/page.tsx` | Pre-orders placeholder (was 404) | Bug Fix |
+| `messages/en.json` | publicProfile + howOrdersWork + howOffersWork namespaces | Bug Fix |
+
+---
+
+## Session 2026-05-03 — Seller → Store Rename (Complete)
+
+### Summary
+The entire `seller` section has been renamed to `store`. Users who have the `seller` permission (role unchanged internally) now manage their **store** via `/store/*` URLs. Products of any type and reviews are linked to stores.
+
+---
+
+### Route Map (`appkit/src/next/routing/route-map.ts`)
+- `RouteMap` interface: `SELLER` key renamed to `STORE`
+- `DEFAULT_ROUTE_MAP.SELLER` → `DEFAULT_ROUTE_MAP.STORE`
+- All paths changed: `/seller/*` → `/store/*`
+- Sub-key `SELLER.STORE: "/seller/store"` → `STORE.STOREFRONT: "/store/storefront"`
+- `createRouteMap` updated to use `STORE` key
+- Added `SELLER_ROUTES` export as deprecated alias pointing to `ROUTES.STORE`
+
+---
+
+### Permission Map (`appkit/src/features/seller/permission-map.ts`)
+- All route paths updated: `/seller/*` → `/store/*`
+- Export renamed from `SELLER_PAGE_PERMISSIONS` → `STORE_PAGE_PERMISSIONS`
+- `SELLER_PAGE_PERMISSIONS` kept as deprecated alias
+
+---
+
+### SellerSidebar → StoreSidebar (`appkit/src/features/seller/components/SellerSidebar.tsx`)
+- `SellerNavItem` → `StoreNavItem`
+- `SellerSidebarProps` → `StoreSidebarProps`
+- `SellerNavContent` → `StoreNavContent`
+- `SellerSidebar` → `StoreSidebar`
+- aria-label `"Seller navigation"` → `"Store navigation"`
+- Mobile title `"Seller Panel"` → `"Store Panel"`
+- `SellerSidebar` and `SellerNavItem` kept as deprecated re-exports
+
+---
+
+### StoreSidebar Barrel Exports (`appkit/src/features/seller/components/index.ts`)
+Added `Store*` aliases for all seller management view components:
+- `StoreDashboardView`, `StoreProductListingsView`, `StoreAuctionsView`, `StoreOrdersView`
+- `StoreOffersView`, `StoreCouponsView`, `StorePayoutsView`, `StorePayoutSettingsView`
+- `StoreAnalyticsView`, `StoreCreateProductView`, `StoreEditProductView`
+- `StoreStorefrontView`, `StoreShippingView`, `StoreAddressesView`
+- `useStoreDashboard` hook alias added in `hooks/useSellerStore.ts`
+- Note: `StoreProductListingsView` is the management view; `StoreProductsView` (unchanged) remains the public customer-facing store products listing
+
+---
+
+### AppLayoutShell (`appkit/src/features/layout/AppLayoutShell.tsx`)
+- Added `storeHref?: string` prop (replaces `sellerHref`, kept as deprecated alias)
+- Added `storeDashboard?: string` to `sidebarProfileLabels` (replaces `sellerDashboard`, kept as alias)
+- Default label changed from `"Seller Dashboard"` → `"Store Dashboard"`
+- Added `resolvedStoreHref = storeHref ?? sellerHref` to support both props during migration
+- Sidebar dashboard section now uses `resolvedStoreHref` and `labels.storeDashboard`
+
+---
+
+### Appkit Client Barrel (`appkit/src/client.ts`)
+- Added `StoreSidebar` export (alongside `SellerSidebar`)
+- Added `StoreNavItem` type export (alongside `SellerNavItem`)
+- Added `StoreDashboardView` export alias for `SellerDashboardView`
+- Added `useStoreDashboard` export alias for `useSellerDashboard`
+- Added `StoreDashboardViewProps` type alias
+
+---
+
+### HowPayoutsWorkView (`appkit/src/features/about/components/HowPayoutsWorkView.tsx`)
+- `ROUTES.SELLER.PAYOUT_SETTINGS` → `ROUTES.STORE.PAYOUT_SETTINGS`
+
+---
+
+### Consumer App Directory Rename
+| Before | After |
+|--------|-------|
+| `src/app/[locale]/seller/` | `src/app/[locale]/store/` |
+| `src/app/[locale]/seller/store/` | `src/app/[locale]/store/storefront/` |
+| `src/app/api/seller/` | `src/app/api/store/` |
+| `src/app/api/seller/store/` | `src/app/api/store/storefront/` |
+
+---
+
+### Store Layout (`src/app/[locale]/store/layout.tsx`)
+- Imports: `SellerSidebar` → `StoreSidebar`, `SellerNavItem` → `StoreNavItem`
+- Nav array: `SELLER_NAV_ITEMS` → `STORE_NAV_ITEMS`
+- All `ROUTES.SELLER.*` → `ROUTES.STORE.*`
+- `STORE.STORE` → `STORE.STOREFRONT` (nav label: `"Store"` → `"Storefront"`)
+- Component: `SellerLayout` → `StoreLayout`
+- Role guard unchanged: `requireRole={["seller", "admin"]}`
+
+---
+
+### Store Page Files (all pages in `src/app/[locale]/store/`)
+| Page | Old Import | New Import |
+|------|-----------|------------|
+| `/store` (dashboard) | `SellerDashboardView`, `useSellerDashboard` | `StoreDashboardView`, `useStoreDashboard` |
+| `/store/products` | `SellerProductsView` | `StoreProductListingsView` |
+| `/store/products/new` | `SellerCreateProductView` | `StoreCreateProductView` |
+| `/store/products/[id]/edit` | `SellerEditProductView` | `StoreEditProductView` |
+| `/store/orders` | `SellerOrdersView` | `StoreOrdersView` |
+| `/store/auctions` | `SellerAuctionsView` | `StoreAuctionsView` |
+| `/store/offers` | `SellerOffersView` | `StoreOffersView` |
+| `/store/coupons` | `SellerCouponsView` | `StoreCouponsView` |
+| `/store/analytics` | `SellerAnalyticsView` | `StoreAnalyticsView` |
+| `/store/payouts` | `SellerPayoutsView` | `StorePayoutsView` |
+| `/store/payout-settings` | `SellerPayoutSettingsView` | `StorePayoutSettingsView` |
+| `/store/shipping` | `SellerShippingView` | `StoreShippingView` |
+| `/store/addresses` | `SellerAddressesView` | `StoreAddressesView` |
+| `/store/storefront` | `SellerStoreView` | `StoreStorefrontView` |
+| `/store/pre-orders` | (placeholder) | (unchanged placeholder) |
+- Dashboard label changed: `"Seller Dashboard"` → `"Store Dashboard"`
+- Quick action: `"My Store"` → `"My Storefront"`, href `ROUTES.SELLER.STORE` → `ROUTES.STORE.STOREFRONT`
+
+---
+
+### LayoutShellClient.tsx (`src/app/[locale]/LayoutShellClient.tsx`)
+- `sellerHref={String(ROUTES.SELLER.DASHBOARD)}` → `storeHref={String(ROUTES.STORE.DASHBOARD)}`
+- `sellerDashboard: tNav("sellerDashboard")` → `storeDashboard: tNav("storeDashboard")`
+- Footer: `"Seller Dashboard"` label → `"Store Dashboard"`, `ROUTES.SELLER.DASHBOARD` → `ROUTES.STORE.DASHBOARD`
+
+---
+
+### User Layout (`src/app/[locale]/user/layout.tsx`)
+- Nav item label: `"Become a Seller"` → `"Open a Store"` (href `ROUTES.USER.BECOME_SELLER` unchanged)
+
+---
+
+### Messages (`messages/en.json`)
+| Key path | Before | After |
+|----------|--------|-------|
+| `nav.sellerDashboard` | `"Seller Dashboard"` | `"Store Dashboard"` |
+| `nav.storeDashboard` | _(new)_ | `"Store Dashboard"` |
+| `nav.becomeSeller` | `"Become a Seller"` | `"Open a Store"` |
+| `nav.sellerCenter` | `"Seller Center"` | `"Store Center"` |
+| `nav.sellersSection` | `"For Sellers"` | `"Open a Store"` |
+| `nav.sellOnPlatform` | `"Sell on Platform"` | `"Start Selling"` |
+| `nav.sellerGuide` | `"Seller Guide"` | `"Store Guide"` |
+| `sellerDashboard.metaTitle` | `"Seller Dashboard"` | `"Store Dashboard"` |
+| `becomeSeller.metaTitle` | `"Become a Seller"` | `"Open a Store"` |
+| `becomeSeller.title` | `"Become a Seller"` | `"Open a Store"` |
+| `becomeSeller.applyButton` | `"Apply as Seller"` | `"Open My Store"` |
+| `becomeSeller.guide.title` | `"Seller's Guide"` | `"Store Guide"` |
+| `sellerGuide.metaTitle` | `"Seller Guide"` | `"Store Guide"` |
+| `sellerGuide.title` | `"Seller Guide"` | `"Store Guide"` |
+
+---
+
+### What Was NOT Renamed (Intentional)
+- RBAC role name: `seller` — internal permission model, unchanged
+- RBAC permissions: `seller:access`, `seller:products:read`, etc. — internal, unchanged
+- Firestore `sellerId` field — data model field, unchanged
+- Internal appkit component function names (`SellerDashboardView` etc.) — kept, Store* added as aliases
+- `ROUTES.PUBLIC.SELLERS` and `ROUTES.PUBLIC.SELLER_DETAIL` — these are the public seller profile pages (browse sellers), separate from store management
+- `BecomeSellerView` component name — internal, the page content itself was updated via messages
+
+---
+
+### Build Status
+- **appkit TypeScript**: ✅ 0 errors (`npm run build`)
+- **dist/ updated**: ✅ 108 asset files copied
