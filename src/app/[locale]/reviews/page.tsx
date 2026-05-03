@@ -1,7 +1,11 @@
-﻿import { ReviewsIndexPageView } from "@mohasinac/appkit";
+import { ReviewsIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 
-export default function Page() {
-  return <ReviewsIndexPageView />;
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[]>;
+}) {
+  return <ReviewsIndexPageView searchParams={searchParams} />;
 }

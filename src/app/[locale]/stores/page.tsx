@@ -1,7 +1,11 @@
-﻿import { StoresIndexPageView } from "@mohasinac/appkit";
+import { StoresIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 
-export default function Page() {
-  return <StoresIndexPageView />;
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[]>;
+}) {
+  return <StoresIndexPageView searchParams={searchParams} />;
 }

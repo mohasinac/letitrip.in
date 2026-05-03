@@ -1,4 +1,83 @@
-# Change Log — Session 2026-05-03
+# Change Log — Session 2026-05-03 (Updated)
+
+---
+
+## Session Update — 2026-05-03 (Filter/Search + Pokemon Seed Data Pass)
+
+### What Was Built
+
+#### 1. Admin Search & Filter Infrastructure
+
+**`appkit/src/features/admin/hooks/useAdminListingData.ts`**
+- Added `filters?: string` and `q?: string` params to `UseAdminListingDataOptions`
+- Both params are included in the React Query `queryKey` and forwarded to the API endpoint
+
+**`appkit/src/features/admin/components/AdminListingScaffold.tsx`**
+- Made search input functional: added `onSearch`, `searchValue` props
+- Search fires on Enter keypress
+- Filter group buttons now support `active` (highlight active option) and `onSelect` callback
+- Added `onClearFilters` prop
+
+#### 2. All Admin Views Updated with Resource-Specific Filters
+
+| View | Search | Filters |
+|---|---|---|
+| `AdminUsersView` | name/email/handle | Status (Active/Disabled), Role (admin/seller/buyer/moderator) |
+| `AdminProductsView` | title/sku/seller | Status (published/draft/archived), Type (Products/Auctions/Pre-orders) |
+| `AdminReviewsView` | product/store/author | Status (approved/pending/rejected), Rating (1-5) |
+| `AdminStoresView` | store name/slug/owner | Status (active/pending/suspended/rejected) |
+| `AdminCategoriesView` | name/slug/parent | Active (Active/Inactive), Featured (Featured Only) |
+| `AdminCarouselView` | title/URL | Status (Active/Inactive) |
+| `AdminBlogView` | title/author/tags | Status (published/draft/archived), Featured (Featured Only) |
+| `AdminFaqsView` | question/category | Status (Active/Inactive) |
+| `AdminEventsView` | title/type | Status (published/draft/active/ended), Type (contest/giveaway/sale/poll/flash-sale) |
+
+#### 3. Public Listing Views — SearchParams Wiring
+
+All public listing pages in `src/app/[locale]/` now pass `searchParams` to view components for SSR filtering:
+
+| Page | Search | Filters |
+|---|---|---|
+| **Products** | By name | Condition, price min/max, shipping (free), store/seller |
+| **Auctions** | By name | Current bid min/max, store, start/end date |
+| **Pre-orders** | By name | Price min/max, status, store, start/end date |
+| **Categories** | By name / parent name | Featured, item count, root-level only, tier |
+| **Stores** | By store name | Status, rating min, featured, total product count |
+| **Reviews** | By product/store/username | Status, rating, min helpful votes, date range |
+| **Blog** | By title/tags | Status, featured, category, date range |
+| **Events** | By title | Status, type, date range |
+
+Filter bars use the existing `*Filters` drawer components (ProductFilters, AuctionFilters, etc.) driven by URL search params via `useUrlTable`.
+
+#### 4. Pokemon Seed Data — Complete Conversion
+
+**Reviews** (`appkit/src/seed/reviews-seed-data.ts`) — fully rewritten:
+- 24 Pokemon-themed reviews (19 approved, 3 pending, 2 rejected)
+- Real product IDs (Charizard, Mewtwo, Blastoise, Pikachu, etc.)
+- Real user IDs (Ash, Gary, Brock, Professor Oak, Sabrina, Erika)
+- Real seller IDs (Misty's Water Cards, Surge's Electric Gym, Blaine's Fire Shoppe)
+
+**Carts, Wishlists, Bids, Blog Posts, Events, Addresses** — rewritten with Pokemon-themed product IDs, user IDs, and seller IDs.
+
+**`pokemon-seed-bundle.ts`** — updated to export all seed datasets.
+
+#### 5. Firestore Composite Indexes
+
+**`firestore.indexes.json`** — 36 new composite indexes added:
+- Products: `condition+status`, `sellerId+condition`, `sellerId+price`, `price+status`, `freeShipping+status`, `title+status`
+- Auctions: `isAuction+sellerId+auctionEndDate`, `isAuction+currentBid+auctionEndDate`
+- Pre-orders: `isPreOrder+sellerId+deliveryDate`, `isPreOrder+preOrderStatus`
+- Categories: `isFeatured+metrics.totalItemCount`, `tier+isFeatured+name`, `isActive+isFeatured`
+- Stores: `status+stats.averageRating`, `status+isFeatured`, `status+stats.totalProducts`
+- Reviews: `status+helpfulCount`, `status+rating+helpfulCount`, `sellerId+status+rating`, `productId+status+rating`
+- Blog: `status+isFeatured+publishedAt`, `status+views+publishedAt`
+- Events: `type+status+startsAt`, `status+endsAt+startsAt`
+
+#### 6. TypeScript Status
+- **appkit**: ✅ Zero errors
+- **main app**: All errors pre-existing (store page component name mismatches, stale .next types — not introduced by this session)
+
+---
 
 > Full record of every file touched, why it was changed, and what was fixed or built.
 > Covers work across both the **appkit** submodule (`appkit/src/`) and the **consumer app** (`src/`).
