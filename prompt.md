@@ -35,14 +35,25 @@ Dashboard sidebars (admin/store/user) already have a mobile FAB — those are do
 
 7. Update `newchange.md` at the top with a new Part entry.
 
+### ✅ Already done (navigation — partial, Part 16):
+- Dashboard FABs (admin/store/user) use `createPortal`, sit above bottom nav — done
+- Store/user sidebar converted to grouped nav (`StoreNavGroup` / `UserNavGroup`) — done
+- LayoutShellClient Browse nav group opens by default — done
+- **Still needed:** bottom nav bar on mobile for the PUBLIC shell (`AppLayoutShell`); hamburger trigger below title bar on desktop
+
+### ✅ Already fixed in this session (Part 17):
+- **Welcome section** — Added `type: "welcome"` seed (order 0, above carousel) to `pokemon-homepage-sections-seed-data.ts`. Re-seed to activate.
+- **FAQ page crash** — Added complete `"faqs"` namespace to `messages/en.json` (7 categories, 19 items). `/faqs` page now loads.
+- **Homepage sections** — All 12 sections: welcome(0)→carousel(1)→products(2)→auctions(3)→pre-orders(4)→trust(5)→categories(6)→stores(7)→reviews(8)→faq(9)→newsletter(10)→blog(11).
+
 ---
 
 ## 📋 FULL PENDING QUEUE (work in this order after navigation)
 
 | # | Task | Notes |
 |---|------|-------|
-| 1 | **Navigation** | ↑ described above — START HERE |
-| 2 | **Buy Now buttons** | Add for: (a) simple products, (b) auctions with `buyoutPrice`, (c) pre-orders. Wire in `ProductDetailPageView`, `AuctionDetailView`, `PreOrderDetailView`. Appkit `BuyBar` already exists — check if it has a buyout path first. |
+| 1 | **Navigation** | ↑ described above — START HERE (partial: FABs done; mobile bottom nav + desktop hamburger trigger still needed) |
+| 2 | **Buy Now buttons** | ⚠️ Partial — Product detail has Buy Now (Part 16). Auction buyout + pre-order Add to Cart also wired (Part 16). Verify these are committed and working in browser. |
 | 3 | **Offer logic** | Re-add for simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
 | 4 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
 | 5 | **Collapsible filters** | Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. |

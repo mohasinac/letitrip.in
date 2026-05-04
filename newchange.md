@@ -2,6 +2,32 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 17 — FAQ Page Fix + Homepage Welcome Section + Seed Updates)
+
+### FAQ page crash fixed
+
+`FAQPageView` calls `getTranslations("faqs")` and then `t.raw("categories")` / `t.raw("items")`. The "faqs" namespace was missing entirely from `messages/en.json`, causing a 500 error on `/faqs`.
+
+- **Fix:** Added complete `"faqs"` namespace to `messages/en.json`:
+  - All label keys: `title`, `subtitle`, `categoriesLabel`, `allCategories`, `emptyTitle`, `emptyText`, `stillNeedHelpTitle`, `stillNeedHelpText`, `helpCenter`, `contactUs`
+  - `categories` array — 7 categories with `slug`, `label`, `icon`
+  - `items` array — 19 real FAQ items covering all 7 categories with accurate LetItRip content
+
+### Homepage welcome section re-added
+
+The `MarketplaceHomepageView` has a `"welcome"` section type that renders `<WelcomeSection>` with hero title, subtitle, CTA buttons, and trust chips. No seed document existed for it, so it never appeared.
+
+- **Fix:** Added `section-welcome-multifranchise-0` (type: `"welcome"`, order: 0) to `appkit/src/seed/pokemon-homepage-sections-seed-data.ts`. It sits above the hero carousel (order 1). Re-seed via `POST /api/demo/seed` to activate.
+- Config: h1 "India's #1 Collectibles Marketplace", subtitle with all 7 franchises, Shop Now + Live Auctions CTAs.
+
+### Section order now complete
+
+Homepage has 12 ordered sections: welcome(0) → carousel(1) → products(2) → auctions(3) → pre-orders(4) → trust(5) → categories(6) → stores(7) → reviews(8) → faq(9) → newsletter(10) → blog(11).
+
+**Files changed:** `appkit/src/seed/pokemon-homepage-sections-seed-data.ts`, `messages/en.json`
+
+---
+
 ## Session Update — 2026-05-05 (Part 16 — Detail Pages: Bids, Descriptions, Buy Now, Add to Cart)
 
 ### What changed

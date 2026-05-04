@@ -4252,5 +4252,47 @@
     "reviewsTitle": "Reviews",
     "noReviews": "No reviews yet.",
     "backHome": "Back to Home"
+  },
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about buying collectibles on LetItRip",
+    "categoriesLabel": "Browse by Category",
+    "allCategories": "All FAQs",
+    "emptyTitle": "No FAQs found",
+    "emptyText": "We couldn't find any FAQs for this category. Try browsing all FAQs.",
+    "stillNeedHelpTitle": "Still need help?",
+    "stillNeedHelpText": "Our support team is available 7 days a week to help collectors like you.",
+    "helpCenter": "Visit Help Centre",
+    "contactUs": "Contact Support",
+    "categories": [
+      { "slug": "general", "label": "General", "icon": "❓" },
+      { "slug": "orders_payment", "label": "Orders & Payment", "icon": "💳" },
+      { "slug": "shipping_delivery", "label": "Shipping & Delivery", "icon": "📦" },
+      { "slug": "returns_refunds", "label": "Returns & Refunds", "icon": "↩️" },
+      { "slug": "product_information", "label": "Product Information", "icon": "🔍" },
+      { "slug": "account_security", "label": "Account & Security", "icon": "🔐" },
+      { "slug": "technical_support", "label": "Technical Support", "icon": "🛠️" }
+    ],
+    "items": [
+      { "category": "general", "question": "What is LetItRip?", "answer": "LetItRip is India's curated multi-seller marketplace for Pokémon TCG cards and collectibles. Browse thousands of singles, sealed products, and PSA/BGS graded cards from verified sellers. You can also participate in live auctions to win rare items." },
+      { "category": "general", "question": "Is LetItRip only for Pokémon cards?", "answer": "No — LetItRip covers Pokémon TCG, Hot Wheels diecast, Beyblade Burst, Transformers, Anime Figures, Retro Gaming, and Cosplay accessories." },
+      { "category": "general", "question": "How do I buy on LetItRip?", "answer": "Browse products or auctions, add items to your cart or place a bid, then checkout securely with UPI, cards, or EMI via Razorpay. You need to create a free account to purchase." },
+      { "category": "general", "question": "Are sellers verified?", "answer": "Yes. All sellers go through a KYC verification process before listing products. You can see a seller's ratings, reviews, and transaction history on their store page." },
+      { "category": "orders_payment", "question": "What payment methods are accepted?", "answer": "We accept UPI (Google Pay, PhonePe, Paytm), credit/debit cards, net banking, and EMI via Razorpay. All transactions are secured with 256-bit SSL encryption." },
+      { "category": "orders_payment", "question": "Can I use a coupon code?", "answer": "Yes! Enter your coupon code at checkout. Coupons apply to the order subtotal. Each coupon has its own usage limit and expiry — check your account for active offers." },
+      { "category": "orders_payment", "question": "How do I track my order?", "answer": "After your order ships, you will receive a tracking number via email and SMS. You can also track it from your account under My Orders." },
+      { "category": "orders_payment", "question": "Is GST included in the price?", "answer": "Prices shown on LetItRip are inclusive of GST where applicable. Your invoice will show the GST breakdown. A GST invoice is available for all orders." },
+      { "category": "shipping_delivery", "question": "How long does delivery take?", "answer": "Delivery time depends on the seller's location and your pin code. Most orders ship within 1–3 business days and are delivered within 5–10 business days pan-India." },
+      { "category": "shipping_delivery", "question": "Do sellers ship across India?", "answer": "Yes, all verified sellers on LetItRip ship pan-India. Remote pin codes may have longer delivery windows. Check the product listing for seller-specific shipping details." },
+      { "category": "shipping_delivery", "question": "How are fragile collectibles packaged?", "answer": "Cards ship in top-loaders and bubble-wrapped envelopes. Figures and toys are packed in foam-lined boxes. Graded slabs ship in padded rigid mailers. All orders are fully tracked." },
+      { "category": "returns_refunds", "question": "What is the return policy?", "answer": "Returns are managed by each seller individually. Most sellers offer a 7-day return window for items that are not as described. Check the store's return policy on their storefront page before purchasing." },
+      { "category": "returns_refunds", "question": "What if I receive a fake or damaged item?", "answer": "Contact us immediately with photos. Fake items are eligible for a full refund and the seller account is reviewed. Use the Report Item button on your order page." },
+      { "category": "product_information", "question": "Are graded cards authentic?", "answer": "Yes. All PSA, BGS, and CGC graded cards listed on LetItRip come with their original slab. We verify the certification number against the grading company's database before approval." },
+      { "category": "product_information", "question": "What condition grades are used?", "answer": "We use standard TCG grading: Mint (M), Near Mint (NM), Lightly Played (LP), Moderately Played (MP), Heavily Played (HP), and Damaged (D). Graded slabs use the official PSA/BGS/CGC numeric scale." },
+      { "category": "account_security", "question": "How do I reset my password?", "answer": "Click Forgot Password on the login page and enter your email. You will receive a reset link within a few minutes. Check your spam folder if you don't see it." },
+      { "category": "account_security", "question": "How do I become a seller?", "answer": "Go to your account and click Open a Store. Complete the KYC verification form with your PAN and bank details. Once approved (usually within 24 hours), you can start listing products." },
+      { "category": "technical_support", "question": "The website isn't loading properly. What should I do?", "answer": "Try clearing your browser cache and cookies, or use an incognito window. If the issue persists, try a different browser or device. Contact support if the problem continues." },
+      { "category": "technical_support", "question": "I'm not receiving OTP for verification. What should I do?", "answer": "Check that your phone number is entered correctly with the +91 country code. OTPs expire in 60 seconds — request a new one if it expires. Contact support if you still don't receive it." }
+    ]
   }
 }
