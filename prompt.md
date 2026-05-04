@@ -7,11 +7,14 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Category filter — searchable dropdown**
+**Next up: Sticky toolbar fix**
 
-Offer logic is complete (Part 23). Next task from the queue:
+Searchable category filter is complete (Part 24 — already in codebase). Next task:
 
-Replace the current category list/chips in `ProductFilters`, `AuctionFilters`, and `PreOrderFilters` with a searchable combobox that shows selected categories inline. The filter component already has a `searchable` prop on `FilterFacetSection` — but the search box only appears when > 8 options and the section is open. Make the search always visible when `searchable={true}` (remove the `> 8` gate from `FilterFacetSection`). Apply via "Apply Filters" only (already buffered in `pendingTable`).
+Listing page toolbar must stick below the site header as user scrolls. Currently `ListingLayout.tsx` / `ProductsIndexListing.tsx` uses a fixed `top-14` (56px). The actual header height is set in CSS as `--header-height` (default `3.5rem = 56px`). Audit `ListingToolbar` in `appkit/src/ui/components/ListingToolbar.tsx` — change the sticky `top` to `var(--header-height, 3.5rem)` so it always tracks the real header.
+
+### ✅ Completed (Part 24 — Searchable category filter verified):
+- `FilterFacetSection` search shows whenever `searchable={true}` — `> 8` gate was already removed in commit `71b1724`.
 
 ### ✅ Completed (Part 23 — Offer Logic):
 - `SellerOffersPanel`: interactive Accept/Decline/Counter with status filter tabs on `/store/offers`

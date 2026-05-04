@@ -2,6 +2,13 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 24 — Searchable category filter verified complete)
+
+### What changed
+No code changes — `FilterFacetSection.tsx` already had the `> 8` gate removed in commit `71b1724`. Search box shows whenever `searchable={true}`, regardless of option count. All three filter components pass `searchable={categoryOptions.length > 6}`. Task is done.
+
+---
+
 ## Session Update — 2026-05-05 (Part 23 — Offer Logic: SellerOffersPanel + UserOffersPanel + allowOffers seed)
 
 ### What changed
