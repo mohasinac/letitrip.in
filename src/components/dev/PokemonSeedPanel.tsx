@@ -134,27 +134,72 @@ export function PokemonSeedPanel() {
   const collectionLabel: Record<string, string> = {
     users: "Users",
     addresses: "Addresses",
-    stores: "Stores (PokéVault Cards, Trainer's Closet, Prof. Oak's)",
-    categories: "Categories (TCG, Figures, Apparel)",
-    products: "Products (101 Pokémon — TCG, figures, auctions, pre-orders)",
+    stores: "Stores",
+    categories: "Categories",
+    products: "Products",
     orders: "Orders",
-    bids: "Bids / Auctions",
+    bids: "Bids",
     carts: "Carts",
     wishlists: "Wishlists",
-    coupons: "Coupons (POKEFEST15, TRAINERS-CLOSET10, PROF-OAKS15)",
+    coupons: "Coupons",
     reviews: "Reviews",
     payouts: "Payouts",
-    blogPosts: "Blog Posts (PokéFest, TCG guide, March auctions)",
-    events: "Events (PokéFest 2026)",
+    blogPosts: "Blog Posts",
+    events: "Events",
     eventEntries: "Event Entries",
     carouselSlides: "Carousel Slides",
     homepageSections: "Homepage Sections",
     faqs: "FAQs",
     notifications: "Notifications",
     sessions: "Sessions",
-    siteSettings: "Site Settings + Ad Inventory / Placements",
+    siteSettings: "Site Settings",
     storeAddresses: "Store Addresses",
   };
+
+  const getCollectionStatus = (col: SeedCollectionName) =>
+    status.find((s) => s.name === col);
+
+  function CollectionRow({ col }: { col: SeedCollectionName }) {
+    const st = getCollectionStatus(col);
+    const seeded = st?.existingCount ?? 0;
+    const total = st?.seedCount ?? 0;
+    const pct = total > 0 ? Math.round((seeded / total) * 100) : 0;
+    const allSeeded = total > 0 && seeded >= total;
+    const noneSeeded = seeded === 0;
+    return (
+      <Div className="flex items-center gap-2 min-w-0">
+        <Checkbox
+          id={`col-${col}`}
+          checked={selectedCollections.has(col)}
+          onChange={() => toggleCollection(col)}
+          disabled={isPending}
+          label={
+            <Div className="flex items-center gap-1.5 min-w-0">
+              <Text className="text-sm text-gray-800 dark:text-slate-200 leading-snug truncate">
+                {collectionLabel[col] ?? col}
+              </Text>
+              {isLoadingStatus ? (
+                <Text className="text-[0.65rem] text-gray-400 shrink-0">…</Text>
+              ) : st ? (
+                <Text
+                  className={`text-[0.65rem] font-mono shrink-0 px-1 rounded ${
+                    allSeeded
+                      ? "text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30"
+                      : noneSeeded
+                      ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30"
+                      : "text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30"
+                  }`}
+                >
+                  {seeded}/{total}
+                  {total > 0 && !allSeeded && ` (${pct}%)`}
+                </Text>
+              ) : null}
+            </Div>
+          }
+        />
+      </Div>
+    );
+  }
 
   const toggleCollection = (col: SeedCollectionName) => {
     const newSet = new Set(selectedCollections);
@@ -319,107 +364,69 @@ export function PokemonSeedPanel() {
                     </Button>
                   </Row>
                 </Row>
-                <Text className="text-xs text-gray-600 dark:text-slate-300">
-                  {selectedCollections.size} of {ALL_COLLECTIONS.length} selected
-                  {selectedCollections.size === DEFAULT_SELECTED.length && selectedCollections.size < ALL_COLLECTIONS.length
-                    ? " (system collections excluded by default)"
-                    : ""}
-                </Text>
+                <Div className="flex flex-wrap gap-3 items-center">
+                  <Text className="text-xs text-gray-600 dark:text-slate-300">
+                    {selectedCollections.size} of {ALL_COLLECTIONS.length} selected
+                    {selectedCollections.size === DEFAULT_SELECTED.length && selectedCollections.size < ALL_COLLECTIONS.length
+                      ? " (system excluded by default)"
+                      : ""}
+                  </Text>
+                  {status.length > 0 && (
+                    <Text className="text-xs font-mono text-gray-500 dark:text-slate-400">
+                      DB:{" "}
+                      {(() => {
+                        const seeded = status.reduce((a, s) => a + s.existingCount, 0);
+                        const total = status.reduce((a, s) => a + s.seedCount, 0);
+                        const pct = total > 0 ? Math.round((seeded / total) * 100) : 0;
+                        const allDone = seeded >= total;
+                        return (
+                          <span className={allDone ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}>
+                            {seeded}/{total} docs ({pct}% seeded)
+                          </span>
+                        );
+                      })()}
+                    </Text>
+                  )}
+                </Div>
               </Stack>
 
               {/* Core Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  🗂️ Core (users, stores, categories, products, addresses)
+                  🗂️ Core — users, stores, categories, products, addresses
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
-                  {CORE_COLLECTIONS.map((col) => (
-                    <Div key={col} className="flex items-center">
-                      <Checkbox
-                        id={`col-${col}`}
-                        checked={selectedCollections.has(col)}
-                        onChange={() => toggleCollection(col)}
-                        disabled={isPending}
-                        label={
-                          <Text className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
-                            {collectionLabel[col] ?? col}
-                          </Text>
-                        }
-                      />
-                    </Div>
-                  ))}
+                  {CORE_COLLECTIONS.map((col) => <CollectionRow key={col} col={col} />)}
                 </Grid>
               </Stack>
 
               {/* Transactional Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  🛒 Transactional (orders, bids, carts, wishlists, coupons, reviews, payouts)
+                  🛒 Transactional — orders, bids, carts, wishlists, coupons, reviews, payouts
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
-                  {TRANSACTIONAL_COLLECTIONS.map((col) => (
-                    <Div key={col} className="flex items-center">
-                      <Checkbox
-                        id={`col-${col}`}
-                        checked={selectedCollections.has(col)}
-                        onChange={() => toggleCollection(col)}
-                        disabled={isPending}
-                        label={
-                          <Text className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
-                            {collectionLabel[col] ?? col}
-                          </Text>
-                        }
-                      />
-                    </Div>
-                  ))}
+                  {TRANSACTIONAL_COLLECTIONS.map((col) => <CollectionRow key={col} col={col} />)}
                 </Grid>
               </Stack>
 
               {/* Content Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  📣 Content (blog, events, carousel, homepage, FAQs)
+                  📣 Content — blog, events, carousel, homepage, FAQs
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
-                  {CONTENT_COLLECTIONS.map((col) => (
-                    <Div key={col} className="flex items-center">
-                      <Checkbox
-                        id={`col-${col}`}
-                        checked={selectedCollections.has(col)}
-                        onChange={() => toggleCollection(col)}
-                        disabled={isPending}
-                        label={
-                          <Text className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
-                            {collectionLabel[col] ?? col}
-                          </Text>
-                        }
-                      />
-                    </Div>
-                  ))}
+                  {CONTENT_COLLECTIONS.map((col) => <CollectionRow key={col} col={col} />)}
                 </Grid>
               </Stack>
 
               {/* System Collections */}
               <Stack gap="sm">
                 <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
-                  ⚙️ System (notifications, sessions, site settings with ads, store addresses)
+                  ⚙️ System — notifications, sessions, site settings, store addresses
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
-                  {SYSTEM_COLLECTIONS.map((col) => (
-                    <Div key={col} className="flex items-center">
-                      <Checkbox
-                        id={`col-${col}`}
-                        checked={selectedCollections.has(col)}
-                        onChange={() => toggleCollection(col)}
-                        disabled={isPending}
-                        label={
-                          <Text className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
-                            {collectionLabel[col] ?? col}
-                          </Text>
-                        }
-                      />
-                    </Div>
-                  ))}
+                  {SYSTEM_COLLECTIONS.map((col) => <CollectionRow key={col} col={col} />)}
                 </Grid>
               </Stack>
             </Stack>

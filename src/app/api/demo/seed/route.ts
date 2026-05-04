@@ -742,8 +742,14 @@ export async function POST(request: NextRequest) {
                 continue;
               }
 
+              // Slug normalization: use slug as docId when present; ensure slug
+              // field is always written so every doc is addressable by slug.
+              const slug: string | undefined = (docData as any).slug;
+              const docId = slug ?? id;
+              if (!data.slug) data.slug = docId;
+
               items.push({
-                docRef: db.collection(firestoreCollection).doc(id),
+                docRef: db.collection(firestoreCollection).doc(docId),
                 data: encryptSeedPii(
                   collectionName,
                   stripUndefined(data),
