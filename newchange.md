@@ -2,6 +2,98 @@
 
 ---
 
+## Session Update — 2026-05-04 (Part 8 — Firebase-Side Query Processing)
+
+### Problem
+
+Three Vercel API routes were performing meaningful computation inside the Vercel serverless runtime:
+
+| Route | Work done on Vercel | Max data pulled to Vercel |
+|---|---|---|
+| `GET /api/admin/analytics` | Fetched up to 5 000 order docs, aggregated revenue + monthly breakdown + top-5 products | ~5 000 OrderDocument JSON objects |
+| `GET /api/store/analytics` | Fetched up to 1 500 seller order docs, same aggregation | ~1 500 OrderDocument JSON objects |
+| `GET /api/promotions` | Fetched ≤50 coupons, applied in-memory start-date guard | 50 coupon docs |
+
+On the free Vercel plan every ms of CPU and every MB of RAM counts. Pulling thousands of Firestore documents across the internet to Vercel just to sum `totalPrice` is wasteful in both compute and network. Firebase Functions running in `asia-south1` (same region as Firestore) query the database over Google's internal network — no internet hop, sub-millisecond reads, no Vercel billing impact.
+
+### Solution — Firebase HTTPS Functions + Thin Proxy
+
+**Pattern:**
+1. All Firestore querying, Sieve DSL filtering/sorting/pagination, and in-memory aggregation moves into Firebase HTTPS functions (`onRequest`) secured by a shared internal secret (`x-internal-secret` header).
+2. The Vercel API routes become thin proxies: verify the Firebase session cookie (minimal CPU), then `fetch()` the Firebase Function and return the result.
+3. Result: Vercel only handles auth + one HTTP hop. All data processing stays at Firebase.
+
+### Files Created
+
+```
+functions/src/callable/adminAnalytics.ts   ← NEW  admin analytics — all aggregation on Firebase
+functions/src/callable/storeAnalytics.ts   ← NEW  seller analytics — all aggregation on Firebase
+functions/src/callable/promotions.ts       ← NEW  promotions data + coupon start-date guard
+```
+
+#### `adminAnalytics` Firebase Function
+- Accepts `POST` with `x-internal-secret` header
+- Runs `loadPast12MonthsOrders()` and `loadCurrentMonthOrders()` via `orderRepository.listAll()` with Sieve date filters — Firestore-native, paginated
+- Aggregates monthly breakdown (last 12 months) and top-5 products by revenue entirely on Firebase servers
+- Returns `{ summary, ordersByMonth, topProducts }`
+- `memory: "512MiB"`, `timeoutSeconds: 120`, `maxInstances: 10`
+
+#### `storeAnalytics` Firebase Function
+- Accepts `POST` with `x-internal-secret` + `{ sellerId }` body (seller uid forwarded from Vercel after session verification)
+- Runs `loadSeller6MonthOrders(sellerId)` with Sieve `sellerId==X,createdAt>=Y` filter
+- Aggregates monthly breakdown (last 6 months) and top-5 products on Firebase servers
+- Returns `{ summary, revenueByMonth, topProducts }`
+- `memory: "256MiB"`, `timeoutSeconds: 120`, `maxInstances: 20`
+
+#### `promotions` Firebase Function
+- Accepts `POST` with `x-internal-secret` header
+- Fetches promoted products, featured products, and active coupons via Sieve — all Firestore-native
+- Coupon start-date guard (`!startDate || startDate <= now`) runs here on Firebase servers; Firestore cannot express "null OR ≤ value" as a single compound query, so this minimal in-memory filter (≤50 items) is correct on Firebase rather than Vercel
+- Returns `{ promotedProducts, featuredProducts, activeCoupons }`
+- `memory: "256MiB"`, `timeoutSeconds: 30`, `maxInstances: 20`
+
+### Files Updated
+
+```
+functions/src/lib/appkit.ts                ← add formatMonthYear + OrderDocument type exports
+functions/src/index.ts                     ← export adminAnalytics, storeAnalytics, promotionsApi
+src/app/api/admin/analytics/route.ts       ← thin proxy (auth check → Firebase Function)
+src/app/api/store/analytics/route.ts       ← thin proxy (auth check → Firebase Function)
+src/app/api/promotions/route.ts            ← thin proxy (→ Firebase Function)
+```
+
+### Env Vars Required
+
+Add these to **Vercel** project settings (Settings → Environment Variables):
+
+| Variable | Value |
+|---|---|
+| `FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL` | Cloud Run URL of `adminAnalytics` (available after `firebase deploy --only functions`) |
+| `FIREBASE_FUNCTION_STORE_ANALYTICS_URL` | Cloud Run URL of `storeAnalytics` |
+| `FIREBASE_FUNCTION_PROMOTIONS_URL` | Cloud Run URL of `promotionsApi` |
+| `FIREBASE_INTERNAL_SECRET` | Strong random secret (e.g. `openssl rand -hex 32`) |
+
+Add the **same** `FIREBASE_INTERNAL_SECRET` to Firebase Functions:
+```bash
+firebase functions:secrets:set FIREBASE_INTERNAL_SECRET
+# or for local emulator:
+echo 'FIREBASE_INTERNAL_SECRET=<same-value>' >> functions/.env
+```
+
+### Deployment Sequence
+
+1. `cd functions && npm run build` — confirm zero TypeScript errors ✅
+2. `firebase deploy --only functions` — deploys all 3 new functions, note their Cloud Run URLs from the output
+3. Add the 4 env vars to Vercel (URLs from step 2 + the shared secret)
+4. `vercel deploy` — redeploy consumer app with new env vars
+
+### TypeScript Verification
+
+- **Firebase Functions**: ✅ 0 errors (`npx tsc --noEmit`)
+- **Consumer app**: ✅ 0 errors (`npx tsc --noEmit`)
+
+---
+
 ## Session Update — 2026-05-04 (Part 7 — Vercel Preview Deployment)
 
 ### Vercel Preview Deploy

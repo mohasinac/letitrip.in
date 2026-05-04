@@ -71,3 +71,8 @@ export { onProductWrite } from "./triggers/onProductWrite";
 export { onReviewWrite } from "./triggers/onReviewWrite";
 export { onCategoryWrite } from "./triggers/onCategoryWrite";
 export { onStoreWrite } from "./triggers/onStoreWrite";
+
+// ── HTTPS endpoints (server-to-server, secured by internal secret) ────────
+export { adminAnalytics } from "./callable/adminAnalytics";
+export { storeAnalytics } from "./callable/storeAnalytics";
+export { promotionsApi } from "./callable/promotions";

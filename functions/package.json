@@ -2,7 +2,6 @@
   "name": "letitrip-functions",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "Firebase Cloud Functions for LetItRip — scheduled jobs and Firestore triggers",
   "engines": {
     "node": "20"
