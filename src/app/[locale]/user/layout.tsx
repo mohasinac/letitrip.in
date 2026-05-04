@@ -87,7 +87,8 @@ export default function UserLayout({ children }: { children: ReactNode }) {
           className="fixed bottom-[calc(var(--appkit-bottom-nav-height,3.5rem)+0.375rem)] left-3 z-30 md:hidden flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-slate-900 shadow-lg border border-zinc-200 dark:border-slate-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v18" />
           </svg>
         </button>,
         document.body

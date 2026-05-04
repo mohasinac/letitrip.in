@@ -2,6 +2,26 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 19 — Navigation Overhaul: Mobile Bottom Nav + Desktop Floating Hamburger)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/layout/BottomNavbar.tsx` | Added `navItems?: BottomNavItem[]` and `onMoreToggle?: () => void` props. When `navItems` provided, renders first 4 items from the array + a "More" hamburger button (5th slot) instead of the hardcoded Home/Shop/Search/Cart/Profile layout |
+| `appkit/src/features/layout/AppLayoutShell.tsx` | Removed `<MainNavbar>` from the sticky header (desktop nav links removed). Added a `hidden lg:flex fixed` hamburger button anchored just below the sticky header (`top: calc(var(--header-height) + 6px)`, left edge) that opens/closes the public sidebar. Passes `navItems` and `onMoreToggle={handleTogglePublicSidebar}` to `BottomNavbar` |
+
+### Behaviour after this change
+
+- **Mobile (< lg):** Bottom nav shows first 4 navItems (Home, Products, Auctions, Pre-Orders) with icon + label. 5th slot is a "More" hamburger that opens the full sidebar with all items + profile/auth.
+- **Desktop (≥ lg):** Inline nav-link bar removed. A small pill-shaped hamburger button floats at the left edge just below the sticky header — clicking it opens the sidebar drawer with all nav sections.
+- **Backward compat:** When `navItems` is NOT passed to `BottomNavbar`, it falls back to the original 5-slot Home/Shop/Search/Cart/Profile layout.
+
+### Seed impact
+None.
+
+---
+
 ## Session Update — 2026-05-05 (Part 18 — Slug URL Fix for Auctions, Pre-orders & Products Seed)
 
 ### What changed

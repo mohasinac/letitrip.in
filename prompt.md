@@ -7,53 +7,31 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: User Request — Navigation Overhaul**
+**Next up: Buy Now button verification + Offer logic**
 
-The main public layout (`LayoutShellClient.tsx` → `AppLayoutShell`) currently shows a top hamburger sidebar on mobile. The user wants menu items moved to a **bottom nav bar** on mobile, and a **hamburger icon below the navbar** on desktop (not inside the top bar).
+Navigation overhaul is complete (Part 19). Next tasks:
 
-Dashboard sidebars (admin/store/user) already have a mobile FAB — those are done. This task is about the **public AppLayoutShell only**.
+1. **Verify Buy Now buttons in browser** — Product detail, auction buyout, pre-order Add to Cart were wired in Part 16. Confirm they work end-to-end (click → cart/checkout flow).
+2. **Offer logic** — Simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components.
 
-### What to do
+### ✅ Completed (Part 19 — Navigation):
+- **Mobile bottom nav** — `BottomNavbar` now accepts `navItems` prop; shows first 4 nav items (Home, Products, Auctions, Pre-Orders) + "More" button that opens sidebar.
+- **Desktop floating hamburger** — Fixed button at `left: 0, top: calc(var(--header-height) + 6px)` on `lg+` screens. Opens/closes sidebar. `MainNavbar` (desktop nav-link bar) removed.
+- **Appkit rebuilt and synced** — `appkit/src/features/layout/BottomNavbar.tsx` + `AppLayoutShell.tsx` updated.
 
-1. **Check if `AppLayoutShell` already supports a `bottomNav` prop** — read `appkit/src/ui/components/AppLayoutShell.tsx` (or wherever the component lives). If a `bottomNavItems` / `bottomNav` prop exists, wire it in `LayoutShellClient.tsx` with the same `navItems` array.
-
-2. **If no bottom nav prop exists**, add it to `AppLayoutShell` in appkit:
-   - On `< lg` screens: render a fixed bottom bar (`fixed bottom-0 left-0 right-0 z-40 pb-safe`) showing up to 5 icon+label items from `navItems`. The rest go in the hamburger sidebar.
-   - On `>= lg` screens: render the existing top nav bar unchanged.
-   - Rebuild appkit after changes.
-
-3. **Desktop hamburger** — user wants a hamburger icon **below** the navbar (not inside the title bar). On `>= lg` screens, add a small hamburger trigger anchored below the sticky title bar (e.g. `top-14` offset, left side) that opens the existing sidebar drawer. This replaces the inline nav links on desktop.
-
-4. **Same treatment for store and admin layouts** if they have a persistent sidebar nav — confirm or add a compact sidebar-open trigger below the top bar on desktop.
-
-5. Run `npx tsc --noEmit` — 0 errors before committing.
-
-6. Commit:
-   ```
-   feat(nav): bottom nav on mobile + below-navbar hamburger on desktop
-   ```
-
-7. Update `newchange.md` at the top with a new Part entry.
-
-### ✅ Already done (navigation — partial, Part 16):
-- Dashboard FABs (admin/store/user) use `createPortal`, sit above bottom nav — done
-- Store/user sidebar converted to grouped nav (`StoreNavGroup` / `UserNavGroup`) — done
-- LayoutShellClient Browse nav group opens by default — done
-- **Still needed:** bottom nav bar on mobile for the PUBLIC shell (`AppLayoutShell`); hamburger trigger below title bar on desktop
-
-### ✅ Already fixed in this session (Part 17):
-- **Welcome section** — Added `type: "welcome"` seed (order 0, above carousel) to `pokemon-homepage-sections-seed-data.ts`. Re-seed to activate.
-- **FAQ page crash** — Added complete `"faqs"` namespace to `messages/en.json` (7 categories, 19 items). `/faqs` page now loads.
-- **Homepage sections** — All 12 sections: welcome(0)→carousel(1)→products(2)→auctions(3)→pre-orders(4)→trust(5)→categories(6)→stores(7)→reviews(8)→faq(9)→newsletter(10)→blog(11).
+### ✅ Previously done:
+- Part 18: Slug URL fixes for auctions/pre-orders/products seed
+- Part 17: FAQ page crash fix, welcome section re-added to seed, all 12 homepage sections
+- Part 16: Detail pages (BidHistory, auction/pre-order tabs, product Buy Now), dashboard FABs, grouped nav
 
 ---
 
-## 📋 FULL PENDING QUEUE (work in this order after navigation)
+## 📋 FULL PENDING QUEUE
 
 | # | Task | Notes |
 |---|------|-------|
-| 1 | **Navigation** | ↑ described above — START HERE (partial: FABs done; mobile bottom nav + desktop hamburger trigger still needed) |
-| 2 | **Buy Now buttons** | ⚠️ Partial — Product detail has Buy Now (Part 16). Auction buyout + pre-order Add to Cart also wired (Part 16). Verify these are committed and working in browser. |
+| 1 | **Buy Now buttons** | ⚠️ Verify in browser — Product detail, auction buyout, pre-order Add to Cart wired in Part 16 |
+| 2 | **Offer logic** | Re-add for simple products only. 1 attempt per user. Check `appkit/src/features/offers/` |
 | 3 | **Offer logic** | Re-add for simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
 | 4 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
 | 5 | **Collapsible filters** | Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. |
