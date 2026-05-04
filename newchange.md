@@ -1388,3 +1388,111 @@ export interface UserNavGroup {
 | `src/app/[locale]/wishlist/page.tsx` | Created (public wishlist page) | Enhancement |
 | `appkit/src/features/account/components/UserSidebar.tsx` | Right-side + collapsible desktop + mobile accordion | Enhancement |
 | `appkit/src/client.ts` | Export `UserNavGroup` type | Enhancement |
+
+---
+
+## Session Update — 2026-05-04 (Part 2: Search/Filter Overhaul)
+
+### Summary
+
+Replaced all in-memory filtering with API-driven Sieve-based filtering. Added proper filter params for auctions, pre-orders, and reviews. Updated product schema, product repository, and product API to support new filter dimensions. Deployed 14 new Firestore composite indexes. Replaced anime/otaku coupon seed data with Pokemon TCG edition.
+
+---
+
+### 1. ReviewsIndexListing — API-Driven Conversion
+
+**Problem:** `ReviewsIndexListing` took a `reviews: Review[]` prop and did ALL filtering, sorting, and pagination IN MEMORY via `useMemo`. This prevented server-side search and meant the 12-per-page client pagination was operating on a 48-item server-fetched slice.
+
+**Solution:** Converted to use `useReviews` hook for API-driven pagination. Removed in-memory filtering entirely.
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `appkit/src/features/reviews/types/index.ts` | Added `q`, `dateFrom`, `dateTo`, `minVotes`, `maxVotes` to `ReviewListParams` |
+| `appkit/src/features/reviews/hooks/useReviews.ts` | Updated to pass all new filter params; auto-adds `latest=true` for general listing |
+| `appkit/src/features/reviews/components/ReviewsIndexListing.tsx` | Removed `reviews` prop → replaced with `useReviews` hook; removed in-memory filter logic |
+| `appkit/src/features/reviews/components/ReviewsIndexPageView.tsx` | Updated to build `ReviewListResponse` initialData for SSR hydration; added `q` + `maxVotes` to server-side filter builder |
+| `src/app/api/reviews/route.ts` | Extended `latest=true` path to accept `q` (→ `productTitle@=*`), `rating`, `dateFrom`, `dateTo`, `minVotes`, `maxVotes` Sieve filters |
+
+---
+
+### 2. Products API — Auction & Pre-Order Filter Params
+
+**Problem:** The products API only supported `minPrice`/`maxPrice` for price range. Auction-specific filters (bid range, auction end date) and pre-order filters (production status, delivery date, store) were not wired through to Firestore.
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `appkit/src/features/products/types/index.ts` | Added `isPreOrder`, `storeId`, `minBid`, `maxBid`, `dateFrom`, `dateTo`, `preOrderStatus`, `freeShipping` to `ProductListParams` |
+| `appkit/src/features/products/hooks/useProducts.ts` | Updated to serialize all new params to URL search params |
+| `appkit/src/features/products/repository/products.repository.ts` | Added `storeId` and `freeShipping` to `SIEVE_FIELDS` |
+| `src/app/api/products/route.ts` | Added `storeId`, `minBid`→`currentBid>=`, `maxBid`→`currentBid<=`, `dateFrom`/`dateTo` (auctions→`auctionEndDate`, pre-orders→`preOrderDeliveryDate`), `preOrderStatus`→`preOrderProductionStatus`, `freeShipping` to `buildFilters()` |
+| `appkit/src/features/products/components/ProductsIndexListing.tsx` | Added `storeId` and `freeShipping` params from URL table |
+| `appkit/src/features/products/components/ProductFilters.tsx` | Changed store filter URL param from `seller` to `storeId` to match API |
+
+---
+
+### 3. AuctionsIndexListing — Proper Auction Filter Params
+
+**Problem:** `AuctionsIndexListing` mapped `minBid`/`maxBid` to `minPrice`/`maxPrice` (wrong), and didn't pass `storeId`/`dateFrom`/`dateTo`.
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `appkit/src/features/products/components/AuctionsIndexListing.tsx` | Fixed param mapping: `minBid`/`maxBid` passed directly, added `storeId`, `dateFrom`, `dateTo` |
+| `appkit/src/features/auctions/components/AuctionFilters.tsx` | Changed store URL param from `store` to `storeId` to match API |
+
+---
+
+### 4. Pre-Orders — Proper Filter Component
+
+**Problem:** `PreOrdersIndexListing` used `ProductFilters` (wrong — shows condition/brand filters instead of pre-order specific ones).
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `appkit/src/features/pre-orders/components/PreOrderFilters.tsx` | Updated status options to `upcoming`/`in_production`/`ready_to_ship`/`shipped`; changed store URL param to `storeId`; step 100 for price |
+| `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` | Replaced `ProductFilters` with `PreOrderFilters`; added `storeId`, `preOrderStatus`, `dateFrom`, `dateTo` to `useProducts` params |
+| `appkit/src/features/pre-orders/components/index.ts` | Added `PreOrderFilters` export |
+
+---
+
+### 5. Coupons Seed Data — Pokemon TCG Edition
+
+**Problem:** `coupons-seed-data.ts` contained anime/otaku-themed coupons (WELCOME10, SAVE20, etc.) which don't match the Pokemon TCG platform theme.
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `appkit/src/seed/coupons-seed-data.ts` | Re-exports `pokemonCouponsSeedData` from `pokemon-coupons-seed-data.ts` as the canonical `couponsSeedData` |
+
+The 9 Pokemon TCG coupons (CATCHEM10, CHARIZARD25, POKESHIP, PIKADAY20, MISTYS15, BUYNOW500, GRADE10, POKE2026, FIRESALE12) are now the only coupon seed data.
+
+---
+
+### 6. Firestore Indexes — 14 New Composite Indexes
+
+Added composite indexes to `firestore.indexes.json` for the new filter combinations. **Deployed to Firebase.**
+
+New indexes added for `products` collection:
+- `storeId` + `status` + `createdAt`
+- `isAuction` + `storeId` + `status` + `auctionEndDate`
+- `isAuction` + `storeId` + `currentBid`
+- `isAuction` + `currentBid` + `auctionEndDate`
+- `isAuction` + `status` + `auctionEndDate` + `currentBid`
+- `isPreOrder` + `storeId` + `status` + `preOrderDeliveryDate`
+- `isPreOrder` + `preOrderProductionStatus` + `createdAt`
+- `isPreOrder` + `preOrderProductionStatus` + `preOrderDeliveryDate`
+- `freeShipping` + `status` + `createdAt`
+
+New indexes added for `reviews` collection:
+- `status` + `helpfulCount` (ASC) + `createdAt`
+- `status` + `rating` (ASC) + `helpfulCount`
+- `status` + `productTitle` + `createdAt`
+
+**Firebase deploy:** `firebase deploy --only firestore:indexes` — ✅ successful

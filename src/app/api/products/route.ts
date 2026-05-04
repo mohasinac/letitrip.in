@@ -19,6 +19,7 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "brand",
   "condition",
   "sellerId",
+  "storeId",
   "title",
   "price",
   "isAuction",
@@ -28,6 +29,10 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "stockQuantity",
   "availableQuantity",
   "tags",
+  "currentBid",
+  "auctionEndDate",
+  "preOrderDeliveryDate",
+  "preOrderProductionStatus",
 ]);
 
 function validateSieveFilters(
@@ -76,6 +81,29 @@ function buildFilters(url: URL): string {
   if (isPreOrder !== null) parts.push(`isPreOrder==${isPreOrder}`);
   const featured = param(url, "featured");
   if (featured === "true") parts.push("featured==true");
+  const storeId = param(url, "storeId");
+  if (storeId) parts.push(`storeId==${storeId}`);
+  const minBid = param(url, "minBid");
+  if (minBid !== null && !Number.isNaN(Number(minBid))) {
+    parts.push(`currentBid>=${minBid}`);
+  }
+  const maxBid = param(url, "maxBid");
+  if (maxBid !== null && !Number.isNaN(Number(maxBid))) {
+    parts.push(`currentBid<=${maxBid}`);
+  }
+  const dateFrom = param(url, "dateFrom");
+  const dateTo = param(url, "dateTo");
+  if (isAuction === "true") {
+    if (dateFrom) parts.push(`auctionEndDate>=${dateFrom}`);
+    if (dateTo) parts.push(`auctionEndDate<=${dateTo}`);
+  } else if (isPreOrder === "true") {
+    if (dateFrom) parts.push(`preOrderDeliveryDate>=${dateFrom}`);
+    if (dateTo) parts.push(`preOrderDeliveryDate<=${dateTo}`);
+  }
+  const preOrderStatus = param(url, "preOrderStatus");
+  if (preOrderStatus) parts.push(`preOrderProductionStatus==${preOrderStatus}`);
+  const freeShipping = param(url, "freeShipping");
+  if (freeShipping === "true") parts.push("freeShipping==true");
   const raw = param(url, "filters");
   if (raw) {
     const safe = validateSieveFilters(raw, SAFE_PRODUCT_FILTER_FIELDS);

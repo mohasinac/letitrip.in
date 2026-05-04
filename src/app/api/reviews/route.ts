@@ -36,13 +36,43 @@ function computeAggregates(ratings: number[]): {
   };
 }
 
+function buildPublicFilters(url: URL, baseFilters: string[]): string {
+  const parts = [...baseFilters];
+
+  const rating = param(url, "rating");
+  if (rating) {
+    const values = rating.split("|").filter(Boolean);
+    if (values.length === 1) parts.push(`rating==${values[0]}`);
+    else if (values.length > 1) parts.push(`rating==${values.join("|")}`);
+  }
+
+  const minVotes = param(url, "minVotes");
+  if (minVotes && !Number.isNaN(Number(minVotes))) {
+    parts.push(`helpfulCount>=${minVotes}`);
+  }
+  const maxVotes = param(url, "maxVotes");
+  if (maxVotes && !Number.isNaN(Number(maxVotes))) {
+    parts.push(`helpfulCount<=${maxVotes}`);
+  }
+
+  const dateFrom = param(url, "dateFrom");
+  if (dateFrom) parts.push(`createdAt>=${dateFrom}`);
+  const dateTo = param(url, "dateTo");
+  if (dateTo) parts.push(`createdAt<=${dateTo}`);
+
+  const q = param(url, "q")?.trim();
+  if (q) parts.push(`productTitle@=*${q}`);
+
+  return parts.filter(Boolean).join(",");
+}
+
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
     const featured = param(url, "featured") === "true";
     const latest = param(url, "latest") === "true";
     const page = numParam(url, "page", 1);
-    const pageSize = numParam(url, "pageSize", latest ? 24 : 10);
+    const pageSize = numParam(url, "pageSize", latest ? 12 : 10);
     const sorts = param(url, "sorts") ?? param(url, "sort") ?? "-createdAt";
 
     if (featured) {
@@ -61,11 +91,12 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     if (latest) {
+      const filters = buildPublicFilters(url, ["status==approved"]);
       const result = await reviewRepository.listAll({
-        filters: "status==approved",
+        filters,
         sorts,
         page,
-        pageSize,
+        pageSize: Math.min(pageSize, 50),
       });
       const response = NextResponse.json({
         success: true,
@@ -80,7 +111,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       });
       response.headers.set(
         "Cache-Control",
-        "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
+        "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
       );
       return response;
     }
@@ -141,4 +172,3 @@ export const POST = withProviders(
     },
   }),
 );
-
