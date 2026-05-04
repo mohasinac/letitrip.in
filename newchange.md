@@ -2,6 +2,108 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 7 — Admin Role Shown as User in Navigation)
+
+### Problem
+
+A logged-in admin was displayed as a regular user in all navigation sidebars — the admin dashboard and store management links never appeared.
+
+### Root Cause 1 — Stale session cookie claims overrode Firestore role
+
+**`appkit/src/http/api-handler.ts`** (`getUserFromRequest`, lines 87-93)
+
+The profile API's `getUserFromRequest` had a "prefer claims over Firestore" override. The intent was to pick up role changes faster, but the logic was backwards:
+
+- The session cookie is created via `createSessionCookie(idToken)` using the **original ID token the client sent**, which was minted before `setCustomUserClaims(uid, { role })` ran.
+- So the session cookie always carried the **pre-sync role** (typically `"user"`).
+- When `decoded.role ("user") !== userDoc.role ("admin")`, the override replaced the correct Firestore role with the stale claims role.
+- The profile API then returned `role: "user"`, and `AppLayoutShell` saw `isAdminOrSeller = false` → no admin/store nav links.
+
+**Fix:** Removed the claims override entirely. Firestore is read fresh on every request and is the authoritative source for role.
+
+### Root Cause 2 — SSR hydration was skipped
+
+**`src/app/[locale]/layout.tsx`**
+
+`SessionProvider` received `initialUser={null}` hardcoded, so the server never passed the authenticated user to the client. Every page load started with `user = null, loading = true` and waited for the client-side `onAuthStateChanged` round-trip before showing the correct nav — causing a flash of the wrong state.
+
+**Fix:** Call `getServerSessionUser()` (reads Firestore via the server-side session cookie) and pass the result as `initialUser`. The correct role is now available on the first SSR render with no client round-trip.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `appkit/src/http/api-handler.ts` | Removed stale-claims override; always return Firestore `userDoc` |
+| `src/app/[locale]/layout.tsx` | Import `getServerSessionUser`; pass `initialUser={initialUser}` to `SessionProvider` |
+
+---
+
+## Session Update — 2026-05-05 (Part 6 — Category Tree DFS Positioning)
+
+### Problem
+
+Categories had no global ordering that reflected their actual tree structure. The existing `order` field is a per-sibling sort key only — it can't answer "give me all categories between Cars and Ships in tree order" without loading and traversing the full tree in memory.
+
+### New fields on `CategoryDocument`
+
+**`appkit/src/features/categories/schemas/firestore.ts`**
+
+- `position: number` — 1-indexed global DFS pre-order position across the entire category tree. The half-open range `[position, position + subtreeSize)` covers a node plus all its descendants, enabling O(1) subtree range queries.
+- `subtreeSize: number` — count of self + all descendants.
+
+Both added to `DEFAULT_CATEGORY_DATA` (defaults: `position: 0`, `subtreeSize: 1`), `CATEGORIES_PUBLIC_FIELDS`, and `CATEGORY_FIELDS` constants.
+
+**Example state after seeding Cars → Sedan, SUV; Ships → Tanker:**
+```
+Cars     position=1  subtreeSize=3   rootId="cars"
+  Sedan  position=2  subtreeSize=1   rootId="cars"
+  SUV    position=3  subtreeSize=1   rootId="cars"
+Ships    position=4  subtreeSize=2   rootId="ships"
+  Tanker position=5  subtreeSize=1   rootId="ships"
+```
+Adding a new child under Cars inserts at position 4, shifts Ships→5 and Tanker→6.
+
+### Firebase Function — `onCategoryWrite` trigger
+
+**`functions/src/triggers/onCategoryWrite.ts`** (previously a no-op)
+
+- **CREATE**: computes `insertPosition = parent.position + parent.subtreeSize` (or `maxPosition + 1` for root categories). Shifts all nodes at `position >= insertPosition` up by 1. Writes `position` and `subtreeSize: 1` onto the new document. Increments every ancestor's `subtreeSize` by 1 via `FieldValue.increment` (atomic, no read-then-write race).
+- **DELETE**: shifts all nodes after the deleted subtree (`position >= deletedPos + deletedSize`) down by `subtreeSize`. Decrements ancestor `subtreeSizes`.
+- **MOVE** (parent change on update): sets `positionDirty = true` on the document and lets the nightly reconcile job rebuild. Full real-time subtree repositioning would require updating every descendant — too complex and slow for a trigger; moves are rare.
+
+All errors are non-fatal — the nightly job heals any drift, same pattern as `countersReconcile` for metrics.
+
+### Nightly reconcile job — `positionsReconcile`
+
+**`functions/src/jobs/positionsReconcile.ts`** — new file, runs **03:30 UTC** daily (30 min after `countersReconcile`)
+
+Full DFS rebuild algorithm:
+1. Load all category documents (single collection scan).
+2. Build in-memory adjacency map keyed by immediate parentId.
+3. Sort siblings by existing `order` field (preserves manual display order).
+4. DFS pre-order from each root; assign sequential 1-indexed `position`; back-calculate `subtreeSize` on the way up.
+5. Detect orphaned nodes (bad data / incomplete moves) and append them at the tail.
+6. Batch-write only documents where `position`/`subtreeSize` changed or `positionDirty` is true — no-op on clean days.
+
+Exported `reconcileCategoryPositions()` as a standalone async function for use in tests or manual one-off runs.
+
+**`functions/src/config/constants.ts`** — added `DAILY_0330: "30 3 * * *"` schedule constant.
+
+**`functions/src/index.ts`** — exported `positionsReconcile`; updated the header comment table.
+
+### Firestore indexes
+
+**`firestore.indexes.json`** — 4 new composite indexes on `categories`:
+
+| Index | Use case |
+|---|---|
+| `position ASC` | Range shifts during CREATE/DELETE trigger |
+| `rootId + position ASC` | Fetch all categories under a root in tree order |
+| `isActive + position ASC` | List active categories in global tree order |
+| `isActive + rootId + position ASC` | Narrowed active subtree listings per root |
+
+---
+
 ## Session Update — 2026-05-05 (Part 5 — Local-first Cart/Wishlist + Login/Logout Speed + Card Consistency)
 
 ### Local-first cart & wishlist architecture
