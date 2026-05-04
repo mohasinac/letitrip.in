@@ -50,7 +50,10 @@ function groupBySeller(items: CartItem[]): SellerGroup[] {
 }
 
 interface ServerCartResponse {
-  cart: { items: ServerCartItem[] };
+  cart: {
+    items: ServerCartItem[];
+    appliedCoupon?: { code: string; discountAmount: number; couponId?: string };
+  };
   subtotal: number;
   itemCount: number;
 }
@@ -123,14 +126,17 @@ export function CartRouteClient() {
   const sellerGroups = useMemo(() => groupBySeller(cartItems), [cartItems]);
   const isMultiSeller = sellerGroups.length > 1;
 
+  const serverAppliedCoupon = serverCart?.cart?.appliedCoupon ?? null;
+
   const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{
+  const [localCoupon, setLocalCoupon] = useState<{
     code: string;
     discountAmount: number;
   } | null>(null);
   const [couponError, setCouponError] = useState("");
-
   const [isCouponLoading, setIsCouponLoading] = useState(false);
+
+  const effectiveCoupon = localCoupon ?? serverAppliedCoupon;
 
   const handleApplyCoupon = useCallback(async () => {
     if (!couponCode.trim() || !isAuthenticated) return;
@@ -149,7 +155,7 @@ export function CartRouteClient() {
         setCouponError(errMsg);
         showToast(errMsg, "error");
       } else {
-        setAppliedCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
+        setLocalCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
         setCouponCode("");
         showToast(`Coupon "${data.data!.code}" applied! You saved ₹${data.data!.discountAmount.toFixed(2)}.`, "success");
       }
@@ -162,13 +168,16 @@ export function CartRouteClient() {
     }
   }, [couponCode, isAuthenticated]);
 
-  const handleRemoveCoupon = useCallback(() => {
-    setAppliedCoupon(null);
+  const handleRemoveCoupon = useCallback(async () => {
+    setLocalCoupon(null);
     setCouponError("");
+    if (isAuthenticated) {
+      await fetch("/api/cart/coupon", { method: "DELETE", credentials: "include" }).catch(() => {});
+    }
     showToast("Coupon removed.", "info");
-  }, [showToast]);
+  }, [isAuthenticated, showToast]);
 
-  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const discountAmount = effectiveCoupon?.discountAmount ?? 0;
   const finalTotal = Math.max(0, subtotal - discountAmount);
 
   const handleQtyChange = useCallback(
@@ -235,22 +244,22 @@ export function CartRouteClient() {
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">Shipping</Text>
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">Calculated at checkout</Text>
               </Div>
-              {appliedCoupon && (
+              {effectiveCoupon && (
                 <Div className="flex items-center justify-between">
                   <Text className="text-sm text-green-600 dark:text-green-400">
-                    Coupon ({appliedCoupon.code})
+                    Coupon ({effectiveCoupon.code})
                   </Text>
                   <Text className="text-sm text-green-600 dark:text-green-400">
-                    &minus;&#x20B9;{appliedCoupon.discountAmount.toFixed(2)}
+                    &minus;&#x20B9;{effectiveCoupon.discountAmount.toFixed(2)}
                   </Text>
                 </Div>
               )}
               {isAuthenticated && !isEmpty && (
                 <Div className="mt-2">
-                  {appliedCoupon ? (
+                  {effectiveCoupon ? (
                     <Div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 px-3 py-2">
                       <Text className="text-xs text-green-700 dark:text-green-300 font-medium">
-                        {appliedCoupon.code} applied
+                        {effectiveCoupon.code} applied
                       </Text>
                       <button
                         type="button"
@@ -291,7 +300,7 @@ export function CartRouteClient() {
           )}
           renderTotal={() => (
             <Div>
-              {appliedCoupon && (
+              {effectiveCoupon && (
                 <Div className="mb-1 flex items-center justify-between">
                   <Text className="text-sm text-zinc-500 dark:text-zinc-400">Subtotal</Text>
                   <Text className="text-sm text-zinc-500 dark:text-zinc-400 line-through">

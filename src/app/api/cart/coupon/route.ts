@@ -12,6 +12,8 @@ const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required").max(50),
 });
 
+const removeCouponSchema = z.object({});
+
 export const POST = withProviders(
   createRouteHandler<{ code: string }>({
     auth: true,
@@ -39,11 +41,32 @@ export const POST = withProviders(
         return ApiErrors.badRequest(result.error ?? "Invalid coupon code");
       }
 
+      // Persist applied coupon to cart document
+      const couponDoc = result.coupon as { id?: string } | undefined;
+      await cartRepository.setCoupon(user!.uid, {
+        code,
+        discountAmount: result.discountAmount,
+        couponId: couponDoc?.id,
+      });
+
       return successResponse({
         code,
         discountAmount: result.discountAmount,
         eligibleSubtotal: result.eligibleSubtotal,
+        couponId: couponDoc?.id,
       });
+    },
+  }),
+);
+
+// DELETE /api/cart/coupon — remove applied coupon
+export const DELETE = withProviders(
+  createRouteHandler<Record<string, never>>({
+    auth: true,
+    schema: removeCouponSchema,
+    handler: async ({ user }) => {
+      await cartRepository.clearCoupon(user!.uid);
+      return successResponse({ removed: true });
     },
   }),
 );
