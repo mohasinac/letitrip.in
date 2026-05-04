@@ -7,11 +7,14 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Filters — apply on click**
+**Next up: Collapsible filters**
 
-Offer logic is complete (Part 20). Next task:
+Filters apply-on-click is complete (Part 21 — already implemented). Next task:
 
-All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`.
+Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` for `FilterFacetSection` — add a `defaultCollapsed` prop that auto-collapses sections with more than 6 options.
+
+### ✅ Completed (Part 21 — Filters apply-on-click verified):
+- All three listing components (`ProductsIndexListing`, `AuctionsIndexListing`, `PreOrdersIndexListing`) already buffer filters in local state and only write to URL on "Apply Filters" click.
 
 ### ✅ Completed (Part 21 — Dark Mode Theming):
 - **`prefers-color-scheme` → `.dark` class** — 13 CSS files fixed: Toast, Card, Dropdown, Toggle, Checkbox, Radio, Tabs, Avatar, EmptyState, Slider, DashboardStatsCard, SideModal, ListingLayout.

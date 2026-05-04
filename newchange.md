@@ -2,6 +2,21 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 21 — Filters apply-on-click verified complete)
+
+### What changed
+
+No code changes required — `ProductsIndexListing`, `AuctionsIndexListing`, and `PreOrdersIndexListing` already implement the pending filter buffer pattern correctly:
+
+- Filter changes write to local `pendingFilters` state (not the URL)
+- "Apply Filters" button calls `applyFilters()` which writes all staged values to URL via `table.setMany()`
+- Opening the drawer re-syncs staging from the live URL via `openFilters()`
+- Sort dropdown and grid/list view toggle write directly to `table` on-change (correct behaviour)
+
+TSC: 0 errors.
+
+---
+
 ## Session Update — 2026-05-05 (Part 20 — Offer Logic: MakeOfferButton + Product Detail Slot)
 
 ### What changed
