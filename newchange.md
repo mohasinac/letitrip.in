@@ -1556,3 +1556,82 @@ New indexes added for `reviews` collection:
 - `status` + `productTitle` + `createdAt`
 
 **Firebase deploy:** `firebase deploy --only firestore:indexes` — ✅ successful
+
+---
+
+## Session Update — 2026-05-04 (Part 4 — Multi-Franchise Seed, Dev Tools, Full-Screen Panels)
+
+### Seed Data — Multi-Franchise Expansion (4 Franchises)
+
+Extended the seed catalogue from Pokémon-only to four franchises: **Pokémon TCG · Hot Wheels · Beyblade Burst · Transformers**.
+
+**New seed files (appkit/src/seed/)**
+- `hot-wheels-seed-data.ts` — 26 products: Car Culture, Treasure Hunt, Premium, Boulevard series + pre-orders
+- `beyblade-seed-data.ts` — 22 products: Burst GT, Dynamite Battle, DB series, stadiums + pre-orders
+- `transformers-seed-data.ts` — 18 products: G1 vintage, Studio Series, Legacy, Kingdom + pre-orders
+- `pokemon-seed-bundle.ts` — exports `allProductsSeedData` combining all 4 franchise arrays
+
+**Updated seed files**
+- `pokemon-products-seed-data.ts` — expanded to ~40 products including holos, non-holos, trainers, graded slab, booster box, 3 pre-orders
+- `pokemon-carousel-slides-seed-data.ts` — 5 slides (3 active with ≤2 cards+buttons, 2 disabled)
+- `pokemon-homepage-sections-seed-data.ts` — 5 sections with correct literal types (`maxProducts:18`, `itemsPerRow:3`, `mobileItemsPerRow:1`, `rows:2`)
+- `faq-seed-data.ts` — +38 new FAQs (Hot Wheels, Beyblade, Transformers, Seller topics); total ~103
+- `blog-posts-seed-data.ts` — +3 published posts with YouTube `<iframe>` embeds + HTML tables; total 14 posts
+- `events-seed-data.ts` — +7 events (sale, poll, survey, offer, feedback types); total 13 events
+- `pokemon-coupons-seed-data.ts` — +4 coupons (percentage, buy_x_get_y, fixed types)
+- `site-settings-seed-data.ts` — updated motto, announcement bar, SEO metadata for multi-franchise brand
+- `pokemon-users-seed-data.ts` — removed non-existent `banReason/bannedAt/bannedBy` fields
+- `index.ts` — added exports for all 3 new franchise files + `allProductsSeedData`
+
+**Seed route** (`src/app/api/demo/seed/route.ts`) — switched `products` to `allProductsSeedData` (all 4 franchises)
+
+**Schema fixes applied across all franchise files:**
+- Removed `materials`, `sections`, `preOrderNote` (non-existent fields)
+- `preOrderStatus: "open"` → `preOrderProductionStatus: "upcoming"`
+- `preOrderEstimatedDate` → `preOrderDeliveryDate`
+- Coupon types `"flat"` → `"fixed"`, `"free-item"` → `"buy_x_get_y"`
+- EventStatus `"cancelled"` → `"ended"` (not a valid value)
+- Homepage section literal type violations fixed
+
+---
+
+### Dev Tools — Mock Payment & Shipping Servers
+
+**`src/app/api/dev/mock-razorpay/route.ts`** (new)
+- Dev-only route, returns `403` when `NODE_ENV !== "development"`
+- `GET ?id=` fetch order · `POST` create order · `POST /payments/verify` · `POST /payments/capture/:id` · `POST /refunds`
+- In-memory `ORDERS` Map, full Razorpay response schema
+
+**`src/app/api/dev/mock-shiprocket/route.ts`** (new)
+- Dev-only route, returns `403` in production
+- `GET ?action=status|track|rates` · `POST ?action=login|create-order|cancel-order`
+- Random tracking statuses, mock courier rates (BlueDart, Delhivery, DTDC)
+
+**`src/components/dev/DevToolbar.tsx`** (new)
+- Floating fixed panel (bottom-right, z-9999), only renders on `localhost` / `NEXT_PUBLIC_APP_ENV=development`
+- Persists `{mockRazorpay, mockShiprocket, showToolbar}` to `localStorage["letitrip_dev_prefs"]`
+- Exports: `DevToolbar`, `isMockRazorpayEnabled()`, `isMockShiprocketEnabled()`, `getDevPrefs()`
+
+**`src/app/[locale]/layout.tsx`** — added `<DevToolbar />` as last child; self-guarding, zero production impact
+
+---
+
+### UI — Full-Screen Edit Panels
+
+**`appkit/src/ui/components/SideDrawer.style.css`**
+- Width: always `100%` on all breakpoints (removed `420px` left / `60%` right at `md`)
+- z-index: `50` → `40` — app navbar/BottomSheet (`z-50`) renders on top of open panels
+
+---
+
+### Appkit Build
+
+- `npm run build` → 0 TypeScript errors, 108 asset files copied to `dist/`
+- Appkit committed at `e836a7d`
+
+---
+
+### Vercel Deployment
+
+- All changes committed and pushed to `main`
+- Vercel preview deployment triggered via `main` branch push

@@ -2,6 +2,10 @@
 
 export const revalidate = 120;
 
-export default function Page() {
-  return <PreOrdersListView />;
+export default function Page({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[]>;
+}) {
+  return <PreOrdersListView searchParams={searchParams} />;
 }
