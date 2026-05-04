@@ -7,14 +7,18 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Collapsible filters**
+**Next up: Category filter — searchable dropdown**
 
-Filters apply-on-click is complete (Part 21 — already implemented). Next task:
+Collapsible filters is complete (Part 22). Next task:
 
-Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` for `FilterFacetSection` — add a `defaultCollapsed` prop that auto-collapses sections with more than 6 options.
+Replace the current category list/chips in `ProductFilters`, `AuctionFilters`, and `PreOrderFilters` with a searchable combobox that shows selected categories inline. The filter component already has a `searchable` prop on `FilterFacetSection` — but the search box only appears when > 8 options and the section is open. Make the search always visible when `searchable={true}` (remove the `> 8` gate from `FilterFacetSection`). Apply via "Apply Filters" only (already buffered in `pendingTable`).
+
+### ✅ Completed (Part 22 — Collapsible filter sections):
+- `RangeFilter` and `SwitchFilter` never collapse (`defaultCollapsed={false}`).
+- `FilterFacetSection` collapses only when `options.length > 6`.
 
 ### ✅ Completed (Part 21 — Filters apply-on-click verified):
-- All three listing components (`ProductsIndexListing`, `AuctionsIndexListing`, `PreOrdersIndexListing`) already buffer filters in local state and only write to URL on "Apply Filters" click.
+- All three listing components already buffer filters and only write to URL on "Apply Filters" click.
 
 ### ✅ Completed (Part 21 — Dark Mode Theming):
 - **`prefers-color-scheme` → `.dark` class** — 13 CSS files fixed: Toast, Card, Dropdown, Toggle, Checkbox, Radio, Tabs, Avatar, EmptyState, Slider, DashboardStatsCard, SideModal, ListingLayout.

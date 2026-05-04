@@ -2,6 +2,60 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 23 — Offer Logic: SellerOffersPanel + UserOffersPanel + allowOffers seed)
+
+### What changed
+
+**Seller dashboard — interactive offers management**
+- New `SellerOffersPanel` component (appkit) replaces read-only `SellerOffersView` on `/store/offers`
+- Shows all incoming offers grouped with product title, listed price, buyer's offered price, offer age, and expiry
+- Inline action buttons per pending offer: **Accept** / **Counter** / **Decline**
+- Accept: optional seller note → confirm → calls `respondToOfferAction({ action: "accept", ... })`
+- Counter: counter amount input + optional note → validates below listed price and differs from buyer's offer
+- Decline: optional note → confirm → calls `respondToOfferAction({ action: "decline", ... })`
+- Status filter tabs: All / Pending / Countered / Accepted / Declined / Expired
+- Optimistic status updates in UI without full page reload
+
+**Buyer dashboard — offers status + counter-accept**
+- New `UserOffersPanel` component (appkit) replaces stub `UserOffersView` on `/user/offers`
+- Shows all sent offers with: product title, listed price, offered amount, seller counter (if any), agreed price (if accepted)
+- For `countered` offers: **Accept Counter** (at seller's counter price) + **Withdraw** buttons
+- For `accepted` offers: **Checkout at Agreed Price** button → calls `checkoutOfferAction`
+- For `pending` offers: **Withdraw Offer** button with confirmation
+
+**Seed data — allowOffers**
+- `allowOffers: true` is now auto-set on all simple published in-stock products at seed time
+- Applied via `withAllowOffers` map in `pokemon-seed-bundle.ts` (all 7 franchises) and individually in `products-seed-data.ts` + `pokemon-products-seed-data.ts`
+- Auctions, pre-orders, out-of-stock, draft, discontinued products get `allowOffers: false`
+
+**Offer amount not shown to buyer**
+- `MakeOfferButton` auto-calculates offer = `max(minOfferPercent%, 85%)` of listed price but shows only "Make Offer" text — no amount disclosed
+
+### Re-seed impact
+Re-seed `products` collection to pick up `allowOffers: true` on existing documents.
+
+---
+
+## Session Update — 2026-05-05 (Part 22 — Collapsible filter sections)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/ProductFilters.tsx` | Condition, status, free-shipping toggle, price range → always open (`defaultCollapsed={false}`). Category, brand, store, tags → collapse only when `options.length > 6`. |
+| `appkit/src/features/auctions/components/AuctionFilters.tsx` | Category → dynamic by count. Date range → always open (was `true`). Store → dynamic by count. |
+| `appkit/src/features/pre-orders/components/PreOrderFilters.tsx` | Category/store → dynamic by count. Delivery date range → always open (was `true`). Production status → always open. |
+
+### Behaviour
+- `RangeFilter` and `SwitchFilter` sections are **never** collapsed — they always display their inputs.
+- `FilterFacetSection` starts collapsed only when it has **more than 6 options** (to avoid long scrolling lists); otherwise it starts open.
+- Each section is still user-toggleable regardless.
+
+### Seed impact
+None.
+
+---
+
 ## Session Update — 2026-05-05 (Part 21 — Filters apply-on-click verified complete)
 
 ### What changed
