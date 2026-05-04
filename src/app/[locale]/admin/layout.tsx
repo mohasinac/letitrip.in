@@ -36,6 +36,8 @@ const ADMIN_NAV_ITEMS = [
   { href: String(ROUTES.ADMIN.ADS), label: "Ads" },
   { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
   { href: String(ROUTES.ADMIN.FAQS), label: "FAQs" },
+  { href: String(ROUTES.ADMIN.NEWSLETTER), label: "Newsletter" },
+  { href: String(ROUTES.ADMIN.CONTACT), label: "Contact" },
   { href: String(ROUTES.ADMIN.COPILOT), label: "Copilot" },
 ];
 

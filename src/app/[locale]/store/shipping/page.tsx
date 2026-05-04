@@ -1,5 +1,5 @@
-import { StoreShippingView } from "@mohasinac/appkit";
+import { SellerShippingView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreShippingView />;
+  return <SellerShippingView />;
 }

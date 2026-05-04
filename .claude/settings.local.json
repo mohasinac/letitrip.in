@@ -18,7 +18,9 @@
       "Bash(tee /tmp/build.txt)",
       "Read(//tmp/**)",
       "PowerShell(cd d:\\\\proj\\\\letitrip.in; npm run build 2>&1 | Out-File -Encoding utf8 \"$env:TEMP\\\\build.txt\"; Get-Content \"$env:TEMP\\\\build.txt\" | Select-Object -First 200)",
-      "PowerShell(taskkill /F /IM node.exe; Write-Host \"Exit: $LASTEXITCODE\")"
+      "PowerShell(taskkill /F /IM node.exe; Write-Host \"Exit: $LASTEXITCODE\")",
+      "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/newsletter\")",
+      "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/contact\")"
     ],
     "defaultMode": "bypassPermissions"
   }

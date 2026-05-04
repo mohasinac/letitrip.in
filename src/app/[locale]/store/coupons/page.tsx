@@ -1,5 +1,5 @@
-import { StoreCouponsView } from "@mohasinac/appkit";
+import { SellerCouponsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreCouponsView />;
+  return <SellerCouponsView />;
 }

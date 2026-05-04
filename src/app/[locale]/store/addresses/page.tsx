@@ -1,5 +1,5 @@
-import { StoreAddressesView } from "@mohasinac/appkit";
+import { SellerAddressesView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreAddressesView />;
+  return <SellerAddressesView />;
 }

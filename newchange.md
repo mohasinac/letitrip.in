@@ -1,3 +1,142 @@
+# Change Log — Session 2026-05-04 (Latest)
+
+---
+
+## Session Update — 2026-05-04
+
+### 1. Category Filtering — Tree-Ordered Searchable Dropdown
+
+**Status:** Already implemented in previous session. `ProductsIndexListing.tsx` uses `useCategoryTree` + `categoriesToFacetOptions` to populate the category facet in the filter drawer. The `FilterFacetSection` component renders categories in DFS tree order with `↳ indent` prefix for sub-categories and a search input when there are more than 6 options. No changes required.
+
+---
+
+### 2. Newsletter Admin View (`AdminNewsletterView`)
+
+**Problem:** `/admin/newsletter` was in the permission map and nav but had no view component or page.
+
+**Files created/changed:**
+
+```
+appkit/src/features/admin/components/AdminNewsletterView.tsx   ← NEW
+appkit/src/features/admin/components/index.ts                  ← add exports
+appkit/src/index.ts                                            ← add exports
+src/app/[locale]/admin/newsletter/page.tsx                     ← NEW
+src/app/[locale]/admin/layout.tsx                              ← add nav item
+```
+
+**`AdminNewsletterView`** — subscriber listing with:
+- Search by email/source
+- Status filter: All / active / unsubscribed
+- Uses existing `ADMIN_ENDPOINTS.NEWSLETTER` (`/api/admin/newsletter`) — that route already existed
+
+---
+
+### 3. Contact Form — Firestore Storage + Admin View
+
+**Problem:** Contact form submissions only sent an email; nothing was stored for admin review.
+
+**Files created/changed:**
+
+```
+appkit/src/core/contact-submissions.repository.ts              ← NEW
+appkit/src/core/index.ts                                       ← add exports
+appkit/src/index.ts                                            ← add exports
+appkit/src/features/admin/actions/admin-read-actions.ts        ← add listAdminContactSubmissions
+appkit/src/features/admin/components/AdminContactView.tsx      ← NEW
+appkit/src/features/admin/components/index.ts                  ← add exports
+appkit/src/features/admin/server.ts                            ← export contactSubmissionsRepository
+appkit/src/constants/api-endpoints.ts                          ← add CONTACT_SUBMISSIONS
+appkit/src/next/routing/route-map.ts                           ← add ADMIN.CONTACT route
+src/app/api/admin/contact-submissions/route.ts                 ← NEW
+src/app/api/contact/route.ts                                   ← save to Firestore on submit
+src/app/[locale]/admin/contact/page.tsx                        ← NEW
+src/app/[locale]/admin/layout.tsx                              ← add nav item
+```
+
+**`ContactSubmissionsRepository`** — stores to `contactSubmissions` Firestore collection:
+- `save(input)` — called by contact API on every form submission (non-blocking)
+- `list(model)` — used by admin list API
+- `markRead(id)` / `markResolved(id)` — for future status updates
+
+**`AdminContactView`** — submission listing with:
+- Search by subject/name/email
+- Status filter: All / new / read / resolved
+
+**Contact API route** — now also calls `contactSubmissionsRepository.save()` (non-blocking, fire-and-forget) before sending the email. Failures are logged but don't affect the response.
+
+---
+
+### 4. Pokemon Coupons Seed Data
+
+**Problem:** `pokemon-seed-bundle.ts` had no coupon data — the existing `coupons-seed-data.ts` is anime/otaku themed, not Pokemon TCG themed.
+
+**Files created/changed:**
+
+```
+appkit/src/seed/pokemon-coupons-seed-data.ts   ← NEW (9 coupons)
+appkit/src/seed/pokemon-seed-bundle.ts         ← add export
+appkit/src/seed/index.ts                       ← add export
+```
+
+**9 Pokemon-themed coupons:**
+
+| Code | Name | Type | Value | Status |
+|---|---|---|---|---|
+| `CATCHEM10` | Gotta Catch 'Em — First Order | % | 10% off first order | Active |
+| `CHARIZARD25` | Charizard Hunt Discount | Fixed | ₹2500 off ₹20k+ | Active |
+| `POKESHIP` | Free Shipping — Sealed Pokemon | Free ship | No minimum | Active |
+| `PIKADAY20` | Pikachu Day Flash Sale | % | 20% — expired | Inactive |
+| `MISTYS15` | Misty's Water Cards Special | % | 15% store-specific | Active |
+| `BUYNOW500` | Auction Buy Now Saver | Fixed | ₹500 off auctions | Active |
+| `GRADE10` | Graded Collector Loyalty | % | 10% off graded cards | Active |
+| `POKE2026` | New Year 2026 Pokemon Sale | % | 25% — expired | Inactive |
+| `FIRESALE12` | Blaine's Fire Shoppe Flash Deal | % | 12% store-specific | Active |
+
+---
+
+### 5. Blog Post with Code Blocks
+
+**Problem:** All existing blog posts used `<p>`, `<ul>`, `<ol>` but none had `<pre><code>` blocks.
+
+**File changed:**
+
+```
+appkit/src/seed/blog-posts-seed-data.ts   ← add 1 new post
+```
+
+**New post:** "How to Query the Pokemon TCG API for Real-Time Card Prices" (`blog-how-to-query-pokemon-tcg-api-card-prices-tips`)
+- Category: Tips
+- Tags: api, developer, javascript, tutorial, tools
+- Contains 4 JavaScript code blocks in `<pre><code class="language-javascript">` format:
+  - Fetch a single card by set + number
+  - Search all holos in Base Set
+  - Cross-reference with LetItRip auction history
+  - Building a price alert function
+- Mentions rate limits, caching, and INR conversion best practices
+
+---
+
+### 6. AdminListingScaffold — Prop Destructuring Fix
+
+**Problem:** `AdminListingScaffold.tsx` defined `columns` and `getRowHref` in its props interface but forgot to destructure them in the function signature, causing TS2304 build errors.
+
+**File changed:**
+
+```
+appkit/src/features/admin/components/AdminListingScaffold.tsx
+```
+
+Added `columns` and `getRowHref` to the destructuring list in the function signature.
+
+---
+
+### Build Status
+
+- **appkit TypeScript**: ✅ 0 errors
+- **Consumer app TypeScript** (new files): ✅ 0 errors
+
+---
+
 # Change Log — Session 2026-05-03 (Latest)
 
 ---

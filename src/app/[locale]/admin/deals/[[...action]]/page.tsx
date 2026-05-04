@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAdminListingData, toRecordArray, toStringValue, toRelativeDate } from "@mohasinac/appkit";
-import { AdminListingScaffold } from "@mohasinac/appkit";
-import { ADMIN_ENDPOINTS } from "@mohasinac/appkit";
+import { useAdminListingData, toRecordArray, toStringValue, toRelativeDate, AdminListingScaffold, ADMIN_ENDPOINTS } from "@mohasinac/appkit/client";
 
 interface ProductsResponse {
   items?: unknown[];
@@ -43,7 +41,6 @@ export default function Page() {
       title="Deals (Promoted Products)"
       subtitle="Products flagged as promoted — shown in the Deals tab on the Promotions page"
       rows={rows}
-      total={total}
       isLoading={isLoading}
       errorMessage={errorMessage}
       searchValue={q}
@@ -52,10 +49,10 @@ export default function Page() {
       actionLabel="+ Add Product"
       actionHref="/admin/products/new"
       columns={[
-        { key: "primary", label: "Product" },
-        { key: "secondary", label: "Seller · Price" },
-        { key: "status", label: "Status" },
-        { key: "updatedAt", label: "Updated" },
+        { key: "primary", header: "Product" },
+        { key: "secondary", header: "Seller · Price" },
+        { key: "status", header: "Status" },
+        { key: "updatedAt", header: "Updated" },
       ]}
       getRowHref={(row) => `/admin/products/${row.id}/edit`}
     />

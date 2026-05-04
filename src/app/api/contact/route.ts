@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Contact API Route
- * POST /api/contact — Send a contact message to support
+ * POST /api/contact — Send a contact message to support and store in Firestore
  */
 
 import { z } from "zod";
@@ -12,6 +12,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
+import { contactSubmissionsRepository } from "@mohasinac/appkit";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -30,6 +31,12 @@ export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_ou
     if (!rl.success) return errorResponse("Too many requests", 429);
     const { name, email, subject, message } = body!;
     serverLogger.info("Contact form submission received", { subject });
+
+    // Persist to Firestore (non-blocking — don't fail if it errors)
+    contactSubmissionsRepository.save({ name, email, subject, message }).catch((err) => {
+      serverLogger.error("Failed to save contact submission to Firestore", err);
+    });
+
     const result = await sendContactEmail({ name, email, subject, message });
     if (!result.success && process.env.NODE_ENV !== "production") {
       serverLogger.warn(

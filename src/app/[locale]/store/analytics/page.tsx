@@ -1,5 +1,5 @@
-import { StoreAnalyticsView } from "@mohasinac/appkit";
+import { SellerAnalyticsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreAnalyticsView />;
+  return <SellerAnalyticsView />;
 }

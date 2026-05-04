@@ -1,5 +1,5 @@
-import { StoreStorefrontView } from "@mohasinac/appkit";
+import { SellerStorefrontView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreStorefrontView />;
+  return <SellerStorefrontView />;
 }

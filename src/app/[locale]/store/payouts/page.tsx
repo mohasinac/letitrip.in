@@ -1,5 +1,5 @@
-import { StorePayoutsView } from "@mohasinac/appkit";
+import { SellerPayoutsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StorePayoutsView />;
+  return <SellerPayoutsView />;
 }

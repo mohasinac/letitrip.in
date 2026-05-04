@@ -1,5 +1,5 @@
-import { StoreCreateProductView } from "@mohasinac/appkit";
+import { SellerCreateProductView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <StoreCreateProductView />;
+  return <SellerCreateProductView />;
 }
