@@ -26,7 +26,13 @@
       "Bash(xargs grep *)",
       "Bash(xargs ls *)",
       "Bash(git diff *)",
-      "PowerShell(npx tsc --noEmit 2>&1)"
+      "PowerShell(npx tsc --noEmit 2>&1)",
+      "PowerShell(\\(Get-Item d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\\).Target; \\(Get-Item d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\\).LinkType)",
+      "PowerShell(cmd /c \"dir d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" 2>&1)",
+      "PowerShell(head -5)",
+      "PowerShell(Get-ChildItem d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })",
+      "PowerShell($item = Get-Item \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" -Force; \"LinkType: $\\($item.LinkType\\)\"; \"Target: $\\($item.Target\\)\")",
+      "PowerShell(cmd /c dir \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" 2>&1)"
     ],
     "defaultMode": "bypassPermissions"
   }

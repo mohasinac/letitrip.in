@@ -118,3 +118,4 @@ test-results*.txt
 /public/worker-*.js
 /public/worker-*.js.map
 .claude/settings.local.json
+.claude/settings.local.json
