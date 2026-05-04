@@ -7,11 +7,20 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Firebase logs (Task 20)**
+**Next up: Cart & Checkout — auth-backed cart + Razorpay end-to-end (Task 21)**
 
-Tasks 17, 18, 19 done (Parts 38/38b, 39, 40). Next task:
+Tasks 17–20 done (Parts 38/38b, 39, 40, 43). Next task:
 
-Replace `console.log`/`console.error` with Firebase logging (Firebase Performance or custom structured logging). File-based logs only in local dev.
+Multi-coupon + partial checkout done (Part 37b). Remaining:
+1. **Auth-backed cart** — guest localStorage cart should sync to Firestore when user signs in; on page load read from Firestore if authenticated, fallback to localStorage.
+2. **Razorpay payment flow end-to-end** — verify `/api/checkout` → Razorpay order creation → `/api/payment/verify` → order save works in browser; check for missing env vars, unhandled edge cases.
+See `src/components/routing/CartRouteClient.tsx` and `src/components/routing/CheckoutRouteClient.tsx`.
+
+### ✅ Completed (Part 43 — Firebase structured logging):
+- `src/lib/logger.ts`: server-side; structured JSON to stdout in prod (Cloud Logging), writes to `logs/app.log` in dev.
+- `src/lib/client-logger.ts`: client-side; console in dev only, no-op in prod.
+- All 4 `console.log`/`console.error`/`console.warn` calls in `src/` replaced.
+- `proxy.ts`: Edge-safe — structured JSON passed to `console.error` for Cloud Logging ingestion.
 
 ### ✅ Completed (Part 40 — Cursive font + toggle):
 - `Playfair_Display` added to `src/app/layout.tsx` as `--font-cursive`; inline script applies `font-cursive` class on `<html>` from localStorage on load.
@@ -132,7 +141,7 @@ Replace `console.log`/`console.error` with Firebase logging (Firebase Performanc
 | ~~17~~ | ~~200 products + open-source images~~ | ✅ Done (Part 38/38b) |
 | ~~18~~ | ~~User nav collapsible~~ | ✅ Done (Part 39) |
 | ~~19~~ | ~~Cursive font + toggle~~ | ✅ Done (Part 40) |
-| 20 | **Firebase logs** | Replace `console.log`/`console.error` with Firebase logging (Firebase Performance or custom structured logging). File-based logs only in local dev. |
+| ~~20~~ | ~~Firebase logs~~ | ✅ Done (Part 43) — `src/lib/logger.ts` + `src/lib/client-logger.ts`; all 4 console calls replaced |
 | 21 | **Cart & Checkout (Phase 28)** | Multi-coupon + partial checkout done (Part 37b). Remaining: auth-backed cart (Firestore sync), Razorpay payment flow end-to-end verification. See `CartRouteClient.tsx` and `CheckoutRouteClient.tsx`. |
 | 22 | **Admin Events CRUD (Phase 30)** | `AdminEventsView` component in appkit. Create/edit events from admin panel. |
 | 23 | **Rich Text (Phase 33)** | Store bio, return/shipping policies, category descriptions, event content — all currently plain text. Wire `RichTextEditor` in create/edit forms. |
@@ -290,4 +299,4 @@ User auth records are always upserted; custom claims set for non-"user" roles.
 
 ---
 
-*Last updated: 2026-05-05 — Phases 24–27 done. Navigation overhaul is next.*
+*Last updated: 2026-05-05 — Task 20 (Firebase logs) done (Part 43). Task 21 (Cart & Checkout auth-sync + Razorpay) is next.*

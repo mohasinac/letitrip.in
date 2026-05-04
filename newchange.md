@@ -2,6 +2,54 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 45 — Cart merge fix + Razorpay key guard)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/cart/hooks/useGuestCartMerge.ts` | Fixed payload: was sending `GuestCartItem[]` directly; now wraps as `{ items: payload }` to match route schema |
+| `src/app/api/payment/create-order/route.ts` | Added early `ApiErrors.internalError` throw when `RAZORPAY_KEY_ID` env var is unset instead of silently returning `""` |
+
+### Details
+
+**Cart merge schema mismatch (silent login bug):**
+- `useGuestCartMerge` posted the guest cart as a bare JSON array `[{ productId, quantity }, ...]`
+- `POST /api/cart/merge` schema validates `{ items: [...] }` — so every post-login merge was a 400 that was swallowed by the hook's `.catch()`, leaving the user's guest cart un-merged
+- Fix: wrap the array as `{ items: payload }` in the default `mergeFn`
+
+**Razorpay key guard:**
+- `create-order` route returned `keyId: ""` when `RAZORPAY_KEY_ID` was not set in `.env`
+- The frontend would then try to `new Razorpay({ key: "" })` which silently fails or shows a confusing Razorpay error
+- Fix: fail fast on the server with a 500 so the user sees a clear "Payment not available" message
+
+---
+
+## Session Update — 2026-05-05 (Part 44 — Franchise homepage sections + filterByBrand)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/homepage/schemas/firestore.ts` | Added `filterByBrand?: string` to `ProductsSectionConfig`, `AuctionsSectionConfig`, `PreOrdersSectionConfig` |
+| `appkit/src/features/homepage/hooks/useFeaturedProducts.ts` | `filterByBrand` option appended to API filter query string; keyed by brand in react-query cache |
+| `appkit/src/features/homepage/hooks/useFeaturedAuctions.ts` | Same `filterByBrand` option + separate cache key per brand |
+| `appkit/src/features/homepage/hooks/useFeaturedPreOrders.ts` | Same `filterByBrand` option + separate cache key per brand |
+| `appkit/src/features/homepage/components/FeaturedProductsSection.tsx` | Added `filterByBrand` prop, passed to hook |
+| `appkit/src/features/homepage/components/FeaturedAuctionsSection.tsx` | Added `filterByBrand` prop, passed to hook |
+| `appkit/src/features/homepage/components/FeaturedPreOrdersSection.tsx` | Added `filterByBrand` prop, passed to hook |
+| `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | Reads `cfg.filterByBrand` from section config, passes to each section component |
+| `appkit/src/seed/homepage-sections-seed-data.ts` | Added 9 new franchise sections (sections 18–26): Hot Wheels products, Beyblade products, Transformers products, Anime Figures products, Pokémon TCG products, Hot Wheels auctions, Anime auctions, Transformers pre-orders, Beyblade pre-orders |
+
+### Details
+
+- Filter appended to the existing API query as `%2Cbrand%3D%3D{brand}` — no schema changes to the API layer needed
+- Each brand gets its own react-query cache key (`["products","featured","Hot Wheels"]` etc.) so hydration doesn't collide
+- Without `filterByBrand`, all three hooks behave exactly as before (backwards-compatible)
+- Homepage now has 26 sections (24 enabled): franchise rows appear after the generic featured/auctions/pre-orders rows, giving each collector vertical their own discovery surface
+
+---
+
 ## Session Update — 2026-05-05 (Part 43 — Firebase structured logging)
 
 ### What changed

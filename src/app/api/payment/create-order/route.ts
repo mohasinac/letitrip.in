@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRazorpayOrder, rupeesToPaise } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
+import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
@@ -29,6 +29,9 @@ export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)[
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId) throw ApiErrors.internalError("Razorpay is not configured on this server");
+
     const { amount, currency, receipt } = body!;
 
     // Apply Razorpay processing fee from site settings (default 5%).
@@ -56,7 +59,7 @@ export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)[
       razorpayOrderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
-      keyId: process.env.RAZORPAY_KEY_ID ?? "",
+      keyId,
       platformFee,
       baseAmount: amount,
     });
