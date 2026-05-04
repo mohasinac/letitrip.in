@@ -2,6 +2,29 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 38 — 200 products verified + picsum replaced)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/seed/hot-wheels-seed-data.ts` | `img()` → loremflickr `hot-wheels,diecast,toy` with hash-based lock |
+| `appkit/src/seed/beyblade-seed-data.ts` | `img()` → loremflickr `beyblade,spinning-top,toy` |
+| `appkit/src/seed/transformers-seed-data.ts` | `img()` → loremflickr `transformers,robot,action-figure` |
+| `appkit/src/seed/anime-figures-seed-data.ts` | `img()` → loremflickr `anime,figure,collectible` |
+| `appkit/src/seed/retro-gaming-seed-data.ts` | `img()` → loremflickr `retro,game,console,vintage` |
+| `appkit/src/seed/cosplay-accessories-seed-data.ts` | `img()` → loremflickr `cosplay,costume,anime` |
+| `appkit/src/seed/events-seed-data.ts` | 6 inline picsum URLs → loremflickr with franchise keywords |
+| `appkit/src/seed/pokemon-carousel-slides-seed-data.ts` | `picsumImg()` → loremflickr |
+| `appkit/src/seed/blog-posts-seed-data.ts` | 3 picsum cover images → loremflickr |
+
+### Details
+- Product count verified: ~200 across 7 franchise files (Pokemon 41, Hot Wheels 51, Beyblade 34, Transformers 12, Anime Figures 26, Retro Gaming 20, Cosplay 16)
+- Each seed uses hash of product seed string as loremflickr lock → same product always gets same image
+- No picsum.photos URLs remain in product/event/carousel/blog seed files
+
+---
+
 ## Session Update — 2026-05-05 (Part 39 — Multi-coupon conflict detection + cart UI)
 
 ### What changed
