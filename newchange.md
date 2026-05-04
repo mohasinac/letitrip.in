@@ -2,6 +2,66 @@
 
 ---
 
+## Session Update — 2026-05-04 (Part 3 — In-Memory Filtering Conversion Complete)
+
+### All Remaining In-Memory Filters Converted to API-Driven
+
+This session completes the full conversion: every listing component now delegates filtering, sorting, and pagination to the server. No client-side `useMemo` filtering remains in any public or account listing component.
+
+#### 1. `StoreReviewsListing` — API-Driven Rating Filter + Pagination
+
+**Files changed:**
+```
+appkit/src/features/stores/types/index.ts                       ← add totalFiltered, totalPages to StoreReviewsData
+appkit/src/features/stores/api/[storeSlug]/reviews/route.ts     ← accept rating/page/pageSize; server-side filter + paginate
+appkit/src/features/stores/hooks/useStores.ts                   ← useStoreReviews accepts params (rating, page, pageSize)
+appkit/src/features/stores/components/StoreReviewsListing.tsx   ← remove .filter()/.slice(); pass params to hook
+```
+
+**Before:** `useStoreReviews` fetched all reviews (capped at 10); `StoreReviewsListing` filtered by rating and sliced to `PAGE_SIZE` in a local variable — filtering and pagination were client-side with a hard cap of 10 total reviews.
+
+**After:**
+- Store reviews API accepts `rating` (filter), `page`, `pageSize` (pagination) query params
+- Aggregate metrics (averageRating, totalReviews, ratingDistribution) computed from **all** reviews (unfiltered) for the summary header
+- Rating filter and pagination applied server-side after flattening all product reviews
+- Response includes `totalFiltered` and `totalPages` for correct pagination UI
+- `useStoreReviews` passes `{ rating, page, pageSize }` in query params; queryKey includes param string for correct cache invalidation
+- `StoreReviewsListing` removed all `.filter()` and `.slice()` logic — just passes state to hook
+
+#### 2. `AddressesIndexListing` — API-Driven Filter (q, addressType, verified, activeOnly)
+
+**Files changed:**
+```
+src/app/api/user/addresses/route.ts                             ← accept q, addressType, verified, activeOnly query params
+appkit/src/features/account/hooks/useAddresses.ts               ← add AddressFilterParams; useAddresses accepts filters option
+appkit/src/features/account/components/AddressesIndexListing.tsx ← remove useMemo; pass filterParams to useAddresses
+```
+
+**Before:** `useAddresses` fetched all addresses; `AddressesIndexListing` had a `useMemo` block that filtered by q (text match on addressLine1/2, postalCode, label), addressType (pipe-separated), verified flag, and activeOnly flag.
+
+**After:**
+- `/api/user/addresses` GET route accepts filter params; applies them after `findByUser()` (post-decryption, since addresses use PII encryption in Firestore — Firestore-level filtering is not possible on encrypted fields)
+- `useAddresses` accepts `filters?: AddressFilterParams` option; builds query string and includes in queryKey
+- `AddressesIndexListing` removed `useMemo` import and filter block; passes `activeSearch`, `filterParams` directly to `useAddresses({ filters: { ... } })`
+- Note: address dataset is capped at 10 per user by the API, so server-side post-fetch filtering has negligible overhead
+
+#### 3. Categories — Previously Completed (Part 2)
+
+`CategoriesIndexListing` + `useCategoriesFiltered` hook: structured filters (isFeatured, isBrand, tier, rootOnly) go to `/api/categories?flat=true`; text search + productCount range + sort + pagination handled in-hook via useMemo on the API response (acceptable: Firestore cannot do substring search, dataset is small).
+
+#### 4. ReviewsIndexListing — Previously Completed (Part 2)
+
+Fully converted from in-memory to API-driven `useReviews` hook supporting q, rating, dateFrom, dateTo, minVotes, maxVotes.
+
+---
+
+### TypeScript Status
+
+- **appkit**: ✅ 0 errors (`npx tsc --noEmit`)
+- **Consumer app**: ✅ 0 errors (`npx tsc --noEmit`)
+
+---
+
 ## Session Update — 2026-05-04
 
 ### 1. Category Filtering — Tree-Ordered Searchable Dropdown
