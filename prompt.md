@@ -7,11 +7,14 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Bottom button bar on detail pages**
+**Next up: Order grouping**
 
-Sticky toolbar + mobile toolbar + searchable category are all complete (Parts 24-26). Next task:
+Bottom button bar + all toolbar tasks are done (Part 27). Next task:
 
-On product / auction / pre-order detail pages: a fixed bar **above the bottom nav** showing Buy Now / Add to Cart / Wishlist / Bid icons. Must always be visible on mobile without scrolling. Check `appkit/src/features/products/components/ProductDetailPageView.tsx`, `AuctionDetailPageView.tsx`, `PreOrderDetailPageView.tsx` — add a `renderBottomBar` slot or add a standard `BuyBar` component from `appkit/src/features/products/components/BuyBar.tsx`. The bar must sit above the bottom nav (`bottom-[var(--bottom-nav-height,3.5rem)]` or `bottom-16`).
+Auctions → always individual orders. Simple products + pre-orders from the same store → grouped into one order. Coupons apply to group total. Check `src/components/routing/CheckoutRouteClient.tsx` and the order creation API. Group cart items by `storeId` for non-auction items; each group becomes one order document; auctions always get their own separate order.
+
+### ✅ Completed (Part 27 — Bottom button bar verified):
+- `BuyBar` is already wired in all three detail page views at `fixed bottom-16 inset-x-0 lg:hidden`.
 
 ### ✅ Completed (Part 26 — Mobile toolbar row layout):
 - `ListingToolbar`: search on Row 1 (full width mobile); filters + sort + view toggle on Row 2.

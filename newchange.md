@@ -2,6 +2,17 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 27 — Bottom button bar verified complete)
+
+### What changed
+No code changes — `BuyBar` is already wired in all three detail page views:
+- `ProductDetailPageView`: shows price + Add to Cart + Buy Now (disabled when out of stock)
+- `AuctionDetailPageView`: shows Place Bid + Wishlist buttons
+- `PreOrderDetailPageView`: uses `renderBuyBar` slot
+`BuyBar` is positioned `fixed bottom-16 inset-x-0 lg:hidden` — sits above the bottom nav, hidden on desktop.
+
+---
+
 ## Session Update — 2026-05-05 (Part 26 — Mobile toolbar row layout + sticky toolbar verified)
 
 ### What changed
