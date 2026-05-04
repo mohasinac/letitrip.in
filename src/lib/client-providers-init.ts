@@ -10,6 +10,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase/config";
+import { clientWarn } from "./client-logger";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -37,7 +38,7 @@ function toAdapterUser(user: User): AdapterAuthUser {
 
 export function initializeClientProviders() {
   if (!hasFirebaseConfig || !auth) {
-    console.warn("Firebase config missing, client providers not initialized");
+    clientWarn("providers", "Firebase config missing, client providers not initialized");
     return;
   }
 

@@ -26,17 +26,17 @@ export default function middleware(request: NextRequest): NextResponse {
   try {
     return intlMiddleware(request);
   } catch (error) {
-    // ---- Log the crash (Edge-compatible — no file I/O) ----
+    // ---- Log the crash (Edge-compatible — no file I/O, structured JSON for Cloud Logging) ----
     const err = error instanceof Error ? error : new Error(String(error));
     console.error(
-      "[middleware] Unhandled error — redirecting to static error page",
-      {
-        message: err.message,
-        stack: err.stack,
+      JSON.stringify({
+        severity: "ERROR",
+        message: "[middleware] Unhandled error — redirecting to static error page",
+        error: err.message,
         url: request.nextUrl.pathname,
         method: request.method,
         timestamp: new Date().toISOString(),
-      },
+      }),
     );
 
     // ---- Redirect to /error.html (static, outside middleware matcher) ----

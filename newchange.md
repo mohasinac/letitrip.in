@@ -2,6 +2,29 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 43 — Firebase structured logging)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/lib/logger.ts` | New server-side logger: structured JSON to stdout in production (picked up by Firebase App Hosting / Cloud Logging); writes to `logs/app.log` in local dev |
+| `src/lib/client-logger.ts` | New client-side logger: console output in dev only, silent in production |
+| `src/app/api/products/route.ts` | `console.error` → `logError("products", ...)` |
+| `src/app/ClientProviderInitializer.tsx` | `console.error` → `clientError("providers", ...)` |
+| `src/lib/client-providers-init.ts` | `console.warn` → `clientWarn("providers", ...)` |
+| `src/proxy.ts` | `console.error(...)` → `console.error(JSON.stringify({severity, message, ...}))` — Edge-compatible structured JSON |
+
+### Details
+
+- All four `console.log`/`console.error`/`console.warn` calls in `src/` replaced
+- Server logger emits structured JSON with `{ severity, message, timestamp, ...data }` — Cloud Logging parses these automatically when running on Firebase App Hosting
+- Local dev writes to `logs/app.log` (file-based); the `logs/` directory is created on first write
+- Client logger is a no-op in production — client-side errors are never surfaced to end users
+- `proxy.ts` runs in Edge runtime where Node.js `fs` is unavailable; structured JSON passed to `console.error` so Firebase's Edge log collector still gets a parseable entry
+
+---
+
 ## Session Update — 2026-05-05 (Part 42 — Bid button scroll fix + coupon product-type conflicts)
 
 ### What changed

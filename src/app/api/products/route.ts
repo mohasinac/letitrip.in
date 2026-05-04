@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { productRepository } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
+import { logError } from "@/lib/logger";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -177,7 +178,7 @@ async function _GET(request: Request): Promise<NextResponse> {
       });
     }
 
-    console.error("[products] GET /api/products failed", error);
+    logError("products", "GET /api/products failed", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch products" },
       { status: 500 },

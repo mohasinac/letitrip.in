@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { initializeClientProviders } from "@/lib/client-providers-init";
+import { clientError } from "@/lib/client-logger";
 
 let initialized = false;
 
@@ -12,7 +13,7 @@ export default function ClientProviderInitializer() {
       try {
         initializeClientProviders();
       } catch (err) {
-        console.error("Failed to initialize client providers:", err);
+        clientError("providers", "Failed to initialize client providers", err);
       }
     }
   }, []);
