@@ -7,11 +7,23 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Events — polls + richer seed (Task 14)**
+**Next up: Homepage carousel (Task 15)**
 
-Stores, HorizontalScroller loop, toolbar, filters, offers all done (Parts 22-31). Next task:
+Events inline polls done (Part 33). Next task:
 
-Add public polls (no login required) and login-required polls to `EventDetailView`. Check `appkit/src/features/events/` for existing poll components or hooks. Add `pollConfig` to events seed data in `appkit/src/seed/`. Fix participate button if broken. Check if `EventDetailView` has a `renderPoll` or similar slot prop.
+Audit `HeroCarousel` in `appkit/src/features/homepage/components/HeroCarousel.tsx`. On mobile it should show 1 card per row and max 2 rows of slides. Check `pokemon-carousel-slides-seed-data.ts` for slide count and image dimensions. Fix any layout issues so the carousel renders correctly at 375px width.
+
+### ✅ Completed (Part 33 — Events inline poll voting):
+- `PollInlineClient` created: inline radio/checkbox poll with login-required auth gate.
+- `EventDetailView` `renderContent` wired to show poll options for poll events.
+- `PollConfig.requireLogin` added to appkit types; PSA poll seed marked login-required.
+
+### ✅ Completed (Part 32 — Order grouping + coupon persistence):
+- `couponCode`/`couponDiscount` added to `OrderDocument`.
+- `appliedCoupon` persisted in `CartDocument` via `setCoupon()`/`clearCoupon()` on `CartRepository`.
+- `/api/cart/coupon` POST persists to Firestore; DELETE clears it.
+- Cart page reads server-persisted coupon; derives `effectiveCoupon = localCoupon ?? serverAppliedCoupon`.
+- Both checkout routes (`/api/checkout` and `/api/payment/verify`) pro-rate discount across order groups and clear coupon after successful order.
 
 ### ✅ Completed (Part 31 — HorizontalScroller infinite loop):
 - `loop` prop added; clones first N items to end; instant-jump at boundaries for seamless wrap.
@@ -87,7 +99,7 @@ Add public polls (no login required) and login-required polls to `EventDetailVie
 | ~~11~~ | ~~Store reviews on auction pages~~ | ✅ Done (Part 29) |
 | ~~12~~ | ~~Stores seed — storeId not sellerId~~ | ✅ Done (Part 30 — already correct) |
 | ~~13~~ | ~~Circular/infinite horizontal scrollers~~ | ✅ Done (Part 31) |
-| 14 | **Events — polls + richer seed** | Add public polls (no login required) and login-required polls to `EventDetailView`. Add `pollConfig` to events seed data. Fix participate button if broken. |
+| ~~14~~ | ~~Events — polls + richer seed~~ | ✅ Done (Part 33) |
 | 15 | **Homepage carousel** | 1 card per row on mobile, max 2 rows, proper slide dimensions. Check `HeroCarousel` and `pokemon-carousel-slides-seed-data.ts`. |
 | 16 | **Ads — no empty space** | If `adSlots` prop has no content for a slot, render nothing (no reserved height). Fix in `MarketplaceHomepageView.tsx` and any listing page ad slots. |
 | 17 | **200 products + open-source images** | Verify `allProductsSeedData` across 7 franchises reaches ~200 products. Replace any `picsum.photos` or random image URLs with proper open-source image URLs (Wikimedia Commons, official TCG image APIs, etc.). Add `videoUrl` field where appropriate. |

@@ -2,6 +2,70 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 34 — HorizontalScroller circular loop refactor)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/components/HorizontalScroller.tsx` | Replaced clone-array loop with circular slot rendering via modulo index math |
+
+### Loop mode details
+- **Before:** `loopItems = [...items, ...items.slice(0, cloneCount)]` — new array on every render, right-side clones only; backward wrap was a jarring jump.
+- **After:** Fixed `itemCount + 2×loopCloneCount` DOM slots via `Array.from`; each slot maps to `items[((i - cloneCount) % n + n) % n]` — no array spread, no list growth.
+- Left clone zone (`slots 0..cloneCount-1`) mirrors the tail of the real list → backward-wrap buffer.
+- Right clone zone (`slots cloneCount+n..end`) mirrors the head → forward-wrap buffer.
+- `handleScrollLoop` fires on every `onScroll`; when scroll drifts into a clone zone it teleports by exactly one `n × stride` cycle — content is identical so the jump is invisible.
+- `isJumping` ref prevents re-entrant teleports during the instantaneous `scrollLeft` reset.
+- `loopInitialized` ref ensures the one-time scroll-to-real-start only fires once.
+- Auto-scroll no longer needs an `atEnd` special-case; teleporter handles both directions.
+- `scrollBy` (arrow/keyboard) simplified — no loop-specific branching.
+- `scrollerCls` extracted to a top-level helper to remove duplication between the two JSX return paths.
+
+---
+
+## Session Update — 2026-05-05 (Part 33 — Inline poll voting on event detail page)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/events/types/index.ts` | Added `requireLogin?: boolean` to `PollConfig` |
+| `appkit/src/seed/events-seed-data.ts` | PSA submission poll marked `requireLogin: true` |
+| `src/app/[locale]/events/[id]/PollInlineClient.tsx` | New client component: inline poll with radio/checkbox, auth gate, success state |
+| `src/app/[locale]/events/[id]/page.tsx` | `renderContent` now shows poll UI inline for poll events; `renderParticipateAction` hidden for poll events |
+
+### Details
+- Public polls (no `requireLogin`): anyone can vote inline on the detail page
+- Login-required polls: shows "Log In to Vote" CTA if user is not authenticated
+- Submit posts to `/api/events/[id]/entries` with `pollVotes` + optional `pollComment`
+- "Participate Now" button hidden for poll events (voting is inline); kept for surveys/feedback/offers
+
+---
+
+## Session Update — 2026-05-05 (Part 32 — Order grouping + coupon persistence)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/orders/schemas/firestore.ts` | Added `couponCode?: string` and `couponDiscount?: number` to `OrderDocument` |
+| `appkit/src/features/cart/schemas/firestore.ts` | Added `CartAppliedCoupon` interface + `appliedCoupon?` field to `CartDocument` |
+| `appkit/src/features/cart/repository/cart.repository.ts` | Added `setCoupon()` and `clearCoupon()` methods |
+| `src/app/api/cart/coupon/route.ts` | POST persists coupon via `cartRepository.setCoupon`; DELETE handler clears it |
+| `src/components/routing/CartRouteClient.tsx` | Fixed broken state names (`localCoupon`/`setLocalCoupon`); derives `effectiveCoupon = localCoupon ?? serverAppliedCoupon`; reads `appliedCoupon` from server cart |
+| `src/app/api/checkout/route.ts` | Reads `cart.appliedCoupon`; pro-rates discount across order groups; passes `couponCode`/`couponDiscount` to `orders.create`; clears `appliedCoupon` in transaction |
+| `src/app/api/payment/verify/route.ts` | Same coupon pro-rating + clearing in batch |
+
+### Behaviour
+- Coupon applied in cart page is persisted in Firestore `carts/{uid}.appliedCoupon` — survives navigation.
+- Cart page reads the server-persisted coupon and merges with any locally applied one (`localCoupon` wins).
+- At checkout, discount is pro-rated across order groups proportionally (group subtotal / cart subtotal × total discount).
+- Order documents record `couponCode` and `couponDiscount` per group.
+- Coupon is cleared from cart doc after successful checkout (both COD and Razorpay paths).
+
+---
+
 ## Session Update — 2026-05-05 (Part 31 — HorizontalScroller infinite loop mode)
 
 ### What changed
