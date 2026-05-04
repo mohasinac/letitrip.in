@@ -2,6 +2,24 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 46 — Rich text for event description)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/events/components/AdminEventEditorView.tsx` | Description field: plain `<textarea>` → `RichTextEditor`; imported from `../../../ui` |
+
+### Details
+
+- `AdminEventEditorView` is the create/edit form for events in the admin panel
+- The description field was a bare `<textarea>` — now uses the existing `RichTextEditor` (contentEditable + toolbar: bold, italic, underline, lists, links)
+- `RichTextEditor` stores HTML; already used in `ProductForm` and `CategoryForm` for the same purpose
+- No new dependencies — `RichTextEditor` uses native `document.execCommand()` with no external packages
+- Seed: no change needed
+
+---
+
 ## Session Update — 2026-05-05 (Part 45 — Cart merge fix + Razorpay key guard)
 
 ### What changed
@@ -25,20 +43,38 @@
 
 ---
 
-## Session Update — 2026-05-05 (Part 44b — PublicProfileView data wiring + FAQPageView fix)
+## Session Update — 2026-05-05 (Part 44b — Profile pages + FAQ route fixes)
 
 ### What changed
 
 | File | Change |
 |------|--------|
-| `appkit/src/features/about/components/PublicProfileView.tsx` | Replaced placeholder shell with live data — calls `getPublicUserProfile`, `getSellerProducts`, `getSellerReviews` in parallel; renders real displayName, avatar photo, listing count, and review count |
-| `appkit/src/features/about/components/FAQPageView.tsx` | Replaced `t.raw("categories")` / `t.raw("items")` with `getMessages()` typed access — avoids next-intl runtime errors when raw key shapes don't match |
+| `appkit/src/features/about/components/PublicProfileView.tsx` | Replaced placeholder shell with live data — calls `getPublicUserProfile`, `getSellerProducts`, `getSellerReviews` in parallel; renders real displayName, avatar photo, member-since date, listing count, and review count |
+| `appkit/src/features/about/components/FAQPageView.tsx` | Replaced `t.raw("categories")` / `t.raw("items")` with `getMessages()` typed access — more reliable for accessing array/object values in next-intl v4 |
+| `src/app/[locale]/faq/page.tsx` | **New file** — `/faq` was a 404; added redirect page that sends users to `/faqs` |
+| `src/app/[locale]/user/settings/page.tsx` | Wired `renderProfileForm={() => <ProfilePageClient />}` so the settings page shows the user's profile info and edit form (was previously empty except for FontToggle) |
 
 ### Details
 
-- `PublicProfileView` now shows the seller's real avatar (`<img>` with `object-cover`) if `photoURL` is present, falls back to the `<User>` icon placeholder
-- Listing count and review count are now live numbers instead of `"—"`
-- `FAQPageView` change is defensive: `getMessages()` returns the full message tree as a typed record, bypassing `t.raw()` which can throw on mismatched keys
+**PublicProfileView (`/profile/[userId]`):**
+- Was discarding `userId` with `void userId` and showing hardcoded placeholder strings ("Member", "Member since —", `"—"` for all stats)
+- Now fetches real data via `Promise.all([getPublicUserProfile, getSellerProducts, getSellerReviews])`
+- Avatar renders as `<img>` with `object-cover` when `photoURL` is set; falls back to `<User>` icon
+- Member-since date formatted with `toLocaleDateString("en", { month: "long", year: "numeric" })`
+- All data fetches wrapped in `.catch(() => null/[])` so the page degrades gracefully if Firestore is unavailable
+
+**FAQPageView (`/faqs`):**
+- `t.raw()` on array/object translation keys is fragile in next-intl v4 — switched to `getMessages()` which returns the full message tree, then accesses `messages.faqs` directly
+- Array guards (`Array.isArray(...)`) kept so empty-state renders if data is missing
+
+**`/faq` redirect:**
+- Route `/faq` (singular) did not exist; visiting it returned a 404
+- New `src/app/[locale]/faq/page.tsx` calls `redirect("/faqs")` immediately
+
+**Settings page profile form:**
+- `UserSettingsView` has render-prop slots for account info, profile form, verification sections, and password
+- Only `renderAppearance` (FontToggle) was wired; all other slots were empty
+- Wired `renderProfileForm` with existing `ProfilePageClient` — shows avatar, name, email, phone; includes inline edit form
 
 ---
 

@@ -7,14 +7,19 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Cart & Checkout — auth-backed cart + Razorpay end-to-end (Task 21)**
+**Next up: Rich Text editor (Task 23)**
 
-Tasks 17–20 done (Parts 38/38b, 39, 40, 43). Next task:
+Tasks 17–22 done (Parts 38/38b, 39, 40, 43, 45 + Task 22 already complete). Next task:
 
-Multi-coupon + partial checkout done (Part 37b). Remaining:
-1. **Auth-backed cart** — guest localStorage cart should sync to Firestore when user signs in; on page load read from Firestore if authenticated, fallback to localStorage.
-2. **Razorpay payment flow end-to-end** — verify `/api/checkout` → Razorpay order creation → `/api/payment/verify` → order save works in browser; check for missing env vars, unhandled edge cases.
-See `src/components/routing/CartRouteClient.tsx` and `src/components/routing/CheckoutRouteClient.tsx`.
+Store bio, return/shipping policies, category descriptions, event content are all plain text. Wire `RichTextEditor` (from appkit) into the relevant create/edit forms. Key locations:
+- Store profile edit form — bio, returnPolicy, shippingPolicy
+- Category admin create/edit — description
+- Event editor — description / content field
+Check appkit for an existing `RichTextEditor` component; if absent, use a lightweight `<textarea>` with Markdown preview as a fallback.
+
+### ✅ Completed (Part 45 — Cart merge fix + Razorpay key guard):
+- `useGuestCartMerge`: was posting bare array → now wraps as `{ items: payload }` matching route schema; fixes silent 400 on every post-login merge.
+- `create-order` route: throws `ApiErrors.internalError` when `RAZORPAY_KEY_ID` env var is unset instead of returning `""`.
 
 ### ✅ Completed (Part 43 — Firebase structured logging):
 - `src/lib/logger.ts`: server-side; structured JSON to stdout in prod (Cloud Logging), writes to `logs/app.log` in dev.
@@ -142,8 +147,8 @@ See `src/components/routing/CartRouteClient.tsx` and `src/components/routing/Che
 | ~~18~~ | ~~User nav collapsible~~ | ✅ Done (Part 39) |
 | ~~19~~ | ~~Cursive font + toggle~~ | ✅ Done (Part 40) |
 | ~~20~~ | ~~Firebase logs~~ | ✅ Done (Part 43) — `src/lib/logger.ts` + `src/lib/client-logger.ts`; all 4 console calls replaced |
-| 21 | **Cart & Checkout (Phase 28)** | Multi-coupon + partial checkout done (Part 37b). Remaining: auth-backed cart (Firestore sync), Razorpay payment flow end-to-end verification. See `CartRouteClient.tsx` and `CheckoutRouteClient.tsx`. |
-| 22 | **Admin Events CRUD (Phase 30)** | `AdminEventsView` component in appkit. Create/edit events from admin panel. |
+| ~~21~~ | ~~Cart & Checkout (Phase 28)~~ | ✅ Done (Part 45) — cart merge payload fixed; Razorpay key guard added |
+| ~~22~~ | ~~Admin Events CRUD (Phase 30)~~ | ✅ Already done — all 4 pages + appkit components fully wired |
 | 23 | **Rich Text (Phase 33)** | Store bio, return/shipping policies, category descriptions, event content — all currently plain text. Wire `RichTextEditor` in create/edit forms. |
 | 24 | **Responsive audit (Phase 22/23)** | 375px / 768px / 1024px viewport testing. Lighthouse ≥ 90. |
 
@@ -299,4 +304,4 @@ User auth records are always upserted; custom claims set for non-"user" roles.
 
 ---
 
-*Last updated: 2026-05-05 — Task 20 (Firebase logs) done (Part 43). Task 21 (Cart & Checkout auth-sync + Razorpay) is next.*
+*Last updated: 2026-05-05 — Tasks 21+22 done/verified. Task 23 (Rich Text) is next.*
