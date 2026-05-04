@@ -2,6 +2,105 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 22 — Slug = ID everywhere: cards, schema, seed runner, repositories + seed panel live counts)
+
+### What changed
+
+**Card / navigation slug fixes**
+- `EventCard` — detail href now uses `event.slug ?? event.id`
+- `StoresListView StoreCard` — href now uses `store.storeSlug ?? store.id`
+
+**EventDocument schema + EventItem type**
+- Added `slug?: string` to `EventDocument` (firestore.ts) and `EventItem` (types/index.ts)
+- Events repository `createEvent` now auto-generates `slug = slugify(title)` and writes it to Firestore
+
+**Events seed data — id = slug**
+- All 13 events renamed: `event-pokemon-summer-holo-sale-2026-sale` → `pokemon-summer-holo-sale-2026` (strip `event-` prefix + type suffix)
+- Both `id` and `slug` fields set to the clean slug
+- Event entry `eventId` cross-references updated to match new event IDs
+- Event URLs are now `/events/pokemon-summer-holo-sale-2026` etc.
+
+**Products seed data — id = slug**
+- `products-seed-data.ts` final export map now sets `id = slug = slugify(title)` for all ~101 products
+- e.g. `product-iphone-15-pro-max-smartphones-new-techhub-electronics-1` → `beyblade-super-saiyan-blue-dran-sword-1-4-scale-figure`
+
+**Seed runner normalization**
+- `src/app/api/demo/seed/route.ts`: resolves docId as `slug ?? id`; ensures `slug` field is always written on every seeded document
+
+**Products repository create**
+- New products use `slugify(title)` as both the document ID and the `slug` field (no more separate timestamp-suffixed IDs)
+
+**PokemonSeedPanel — live DB counts**
+- Each collection checkbox now shows a colour-coded `seeded/total` badge (green = full, amber = partial, red = empty)
+- Overall summary bar shows total DB count across all collections
+- Labels simplified (removed inline parenthetical details — counts show the real numbers)
+
+### Seed impact
+Re-seed required — existing Firestore documents with old IDs will be orphaned. Wipe + re-seed all collections via `/api/demo/seed` for consistent slug-based IDs.
+
+---
+
+## Session Update — 2026-05-05 (Part 21 — Dark Mode Theming: Fix `prefers-color-scheme` → `.dark` class + CSS variable tokens)
+
+### Root cause
+
+The app uses a class-based dark mode toggle (`.dark` on `<html>` via `ThemeContext`). Thirteen component CSS files were using `@media (prefers-color-scheme: dark)` instead — which responds to the OS setting only, completely ignoring the UI theme switch. Dark mode was visually broken for toasts, cards, dropdowns, checkboxes, radios, tabs, toggles, avatar, empty state, slider, dashboard stats cards, side modal, and the entire listing layout.
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/components/Toast.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class selectors for all 4 variants + icon bubble |
+| `appkit/src/ui/components/Card.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for all variants (flat, default, outlined, bordered, elevated, interactive, glass, all stat-* variants, header/footer borders); `white` → `var(--appkit-color-surface)` |
+| `appkit/src/ui/components/Dropdown.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for menu, items, composed menu, separator |
+| `appkit/src/ui/components/Toggle.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for focus ring, track off/on, thumb |
+| `appkit/src/ui/components/Checkbox.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for input, focus, hover, checked, error, text |
+| `appkit/src/ui/components/Radio.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for classic circle/dot and toggle pill/ring variants |
+| `appkit/src/ui/components/Tabs.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for tab list border and inactive trigger colors |
+| `appkit/src/ui/components/Avatar.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for avatar bg, fallback, overflow |
+| `appkit/src/ui/components/EmptyState.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for icon color |
+| `appkit/src/ui/components/Slider.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for accent-color |
+| `appkit/src/ui/components/DashboardStatsCard.style.css` | `@media (prefers-color-scheme: dark)` → `.dark` class for card bg/border, label, trend colors |
+| `appkit/src/ui/components/SideModal.style.css` | Both `@media (prefers-color-scheme: dark)` blocks → `.dark` class for panel bg and header border |
+| `appkit/src/ui/components/ListingLayout.style.css` | 11 separate `@media (prefers-color-scheme: dark)` blocks → `.dark` class: toolbar bg/border, view toggle wrap, pagination border, filter btn, bulk bar, sidebar panel/header/footer, mobile overlay/header/footer/close btn |
+| `appkit/src/ui/components/Button.style.css` | Hardcoded hex colors → `var(--appkit-color-*)` tokens for primary, secondary, outline, ghost, danger, warning variants |
+| `appkit/src/ui/components/Modal.style.css` | Panel/header/close button → CSS variable tokens; added `color: var(--appkit-color-text)` to title; close button gains `background-color` on hover |
+| `appkit/src/ui/components/Drawer.style.css` | Panel/drag/header/title/close button/footer → CSS variable tokens; added `color: var(--appkit-color-text)` to title; close button gains `background-color` on hover |
+
+### Behaviour after this change
+
+- Toggling dark mode via the UI now correctly applies dark styles to **all** appkit components — toasts, cards, dropdowns, checkboxes, radios, tabs, toggles, avatars, sliders, modals, drawers, sidebars, listing layout toolbars, etc.
+- Close buttons in Modal and Drawer now show a subtle background fill on hover in both light and dark modes, improving affordance.
+- Button variants reference the shared `--appkit-color-*` token system, so a consumer rebrand (overriding `--appkit-color-primary`) will automatically update button colours without touching this file.
+
+### Seed impact
+None.
+
+---
+
+## Session Update — 2026-05-05 (Part 20 — Titlebar Public Nav Toggle + Dashboard Nav Panel Icon)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/layout/TitleBarLayout.tsx` | Public sidebar toggle button: changed `hidden md:flex` → `flex` so the hamburger (opens public nav links) is visible on **both mobile and desktop** |
+| `appkit/src/features/layout/MainNavbar.tsx` | Dashboard nav toggle in `rightSlot`: replaced hamburger icon (`M4 6h16…`) with a **panel/sidebar icon** (rounded rectangle + left-column divider). The secondary navbar is `hidden lg:block` so this is desktop-only |
+| `src/app/[locale]/admin/layout.tsx` | Mobile FAB bottom-left: updated to use the same panel icon as the navbar dashboard toggle |
+| `src/app/[locale]/user/layout.tsx` | Mobile FAB bottom-left: updated to use the same panel icon as the navbar dashboard toggle |
+| `src/app/[locale]/store/layout.tsx` | Mobile FAB bottom-left: updated to use the same panel icon as the navbar dashboard toggle |
+
+### Behaviour after this change
+
+- **Titlebar (all screen sizes):** Hamburger (≡) on the right side opens the public sidebar (Browse, Support, profile links). Visible on mobile and desktop.
+- **Secondary navbar (desktop ≥ lg only):** When on a dashboard page (admin/user/store), a **panel icon** button appears in the right slot of the nav bar to open/close that page's sidebar nav.
+- **Mobile bottom-left FAB (< md):** Admin, user, and store layouts each portal a floating button using the **same panel icon** — tapping it opens the dashboard sidebar sheet. No navbar is shown on mobile, so this FAB is the only dashboard nav entry point.
+
+### Seed impact
+None.
+
+---
+
 ## Session Update — 2026-05-05 (Part 19 — Navigation Overhaul: Mobile Bottom Nav + Desktop Floating Hamburger)
 
 ### What changed
