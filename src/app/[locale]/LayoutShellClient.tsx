@@ -8,7 +8,6 @@ import { routing } from "@/i18n/routing";
 import {
   AppLayoutShell,
   LocaleSwitcher,
-  NotificationBell,
   NavigationLoader,
   ROUTES,
   Div,
@@ -150,10 +149,10 @@ export default function LayoutShellClient({
   );
 
   // Locale switcher for sidebar
-  const localeOptions = routing.locales.map((loc) => ({
-    value: loc,
-    label: loc.toUpperCase(),
-  }));
+  const localeOptions = useMemo(
+    () => routing.locales.map((loc) => ({ value: loc, label: loc.toUpperCase() })),
+    [],
+  );
 
   const sidebarLocaleSlot =
     routing.locales.length > 1 ? (
@@ -180,34 +179,8 @@ export default function LayoutShellClient({
     </Link>
   );
 
-  // Notification bell slot (only when authenticated)
-  const notificationSlot = (
-    <>
-      {wishlistIcon}
-      {user && (
-        <NotificationBell
-          viewAllHref={String(ROUTES.USER.NOTIFICATIONS)}
-          labels={{
-            title: "Notifications",
-            unread: "unread",
-            markAllRead: "Mark all read",
-            empty: "No notifications",
-            emptyDesc: "You're all caught up!",
-            viewAll: "View all",
-            markRead: "Mark read",
-            viewAction: "View",
-            loading: "Loading…",
-            error: "Failed to load notifications",
-          }}
-          renderLink={({ href, children: linkChildren, onClick, className }) => (
-            <Link href={href} onClick={onClick} className={className}>
-              {linkChildren}
-            </Link>
-          )}
-        />
-      )}
-    </>
-  );
+  // Notification bell hidden per product decision — only show wishlist
+  const notificationSlot = <>{wishlistIcon}</>;
 
   // Dev/seed slot — only for admin users in non-production
   const devSlot =
@@ -246,7 +219,7 @@ export default function LayoutShellClient({
       }
     : null;
 
-  const footer: AppLayoutShellProps["footer"] = {
+  const footer = useMemo<AppLayoutShellProps["footer"]>(() => ({
     brandName: "LetItRip",
     brandDescription:
       "India's collector-first marketplace for figures, TCG gear, cosplay, and curated collectibles. Trusted sellers, authentic products.",
@@ -418,7 +391,7 @@ export default function LayoutShellClient({
         ],
       },
     ],
-  };
+  }), []);
 
   return (
     <Fragment>

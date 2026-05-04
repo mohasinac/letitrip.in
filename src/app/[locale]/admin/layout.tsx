@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import {
   ROUTES,
@@ -9,36 +10,66 @@ import {
   ProtectedRoute,
   useSession,
   type AuthGuardUser,
+  type AdminNavGroup,
 } from "@mohasinac/appkit/client";
-import Link from "next/link";
 
-const ADMIN_NAV_ITEMS = [
-  { href: String(ROUTES.ADMIN.DASHBOARD), label: "Dashboard" },
-  { href: String(ROUTES.ADMIN.USERS), label: "Users" },
-  { href: String(ROUTES.ADMIN.PRODUCTS), label: "Products" },
-  { href: String(ROUTES.ADMIN.ORDERS), label: "Orders" },
-  { href: String(ROUTES.ADMIN.STORES), label: "Stores" },
-  { href: String(ROUTES.ADMIN.ANALYTICS), label: "Analytics" },
-  { href: String(ROUTES.ADMIN.PAYOUTS), label: "Payouts" },
-  { href: String(ROUTES.ADMIN.CATEGORIES), label: "Categories" },
-  { href: String(ROUTES.ADMIN.COUPONS), label: "Coupons" },
-  { href: String(ROUTES.ADMIN.DEALS), label: "Deals" },
-  { href: String(ROUTES.ADMIN.FEATURED), label: "Featured" },
-  { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews" },
-  { href: String(ROUTES.ADMIN.BLOG), label: "Blog" },
-  { href: String(ROUTES.ADMIN.BIDS), label: "Bids" },
-  { href: String(ROUTES.ADMIN.EVENTS), label: "Events" },
-  { href: String(ROUTES.ADMIN.MEDIA), label: "Media" },
-  { href: String(ROUTES.ADMIN.SITE), label: "Site Settings" },
-  { href: String(ROUTES.ADMIN.NAVIGATION), label: "Navigation" },
-  { href: String(ROUTES.ADMIN.SECTIONS), label: "Sections" },
-  { href: String(ROUTES.ADMIN.CAROUSEL), label: "Carousel" },
-  { href: String(ROUTES.ADMIN.ADS), label: "Ads" },
-  { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
-  { href: String(ROUTES.ADMIN.FAQS), label: "FAQs" },
-  { href: String(ROUTES.ADMIN.NEWSLETTER), label: "Newsletter" },
-  { href: String(ROUTES.ADMIN.CONTACT), label: "Contact" },
-  { href: String(ROUTES.ADMIN.COPILOT), label: "Copilot" },
+const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
+  {
+    title: "Management",
+    items: [
+      { href: String(ROUTES.ADMIN.DASHBOARD), label: "Dashboard" },
+      { href: String(ROUTES.ADMIN.USERS), label: "Users" },
+      { href: String(ROUTES.ADMIN.PRODUCTS), label: "Products" },
+      { href: String(ROUTES.ADMIN.ORDERS), label: "Orders" },
+      { href: String(ROUTES.ADMIN.STORES), label: "Stores" },
+    ],
+  },
+  {
+    title: "Finance",
+    items: [
+      { href: String(ROUTES.ADMIN.ANALYTICS), label: "Analytics" },
+      { href: String(ROUTES.ADMIN.PAYOUTS), label: "Payouts" },
+    ],
+  },
+  {
+    title: "Catalog",
+    items: [
+      { href: String(ROUTES.ADMIN.CATEGORIES), label: "Categories" },
+      { href: String(ROUTES.ADMIN.COUPONS), label: "Coupons" },
+      { href: String(ROUTES.ADMIN.DEALS), label: "Deals" },
+      { href: String(ROUTES.ADMIN.FEATURED), label: "Featured" },
+    ],
+  },
+  {
+    title: "Content",
+    items: [
+      { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews" },
+      { href: String(ROUTES.ADMIN.BLOG), label: "Blog" },
+      { href: String(ROUTES.ADMIN.BIDS), label: "Bids" },
+      { href: String(ROUTES.ADMIN.EVENTS), label: "Events" },
+      { href: String(ROUTES.ADMIN.MEDIA), label: "Media" },
+    ],
+  },
+  {
+    title: "Site",
+    items: [
+      { href: String(ROUTES.ADMIN.SITE), label: "Site Settings" },
+      { href: String(ROUTES.ADMIN.NAVIGATION), label: "Navigation" },
+      { href: String(ROUTES.ADMIN.SECTIONS), label: "Sections" },
+      { href: String(ROUTES.ADMIN.CAROUSEL), label: "Carousel" },
+      { href: String(ROUTES.ADMIN.ADS), label: "Ads" },
+      { href: String(ROUTES.ADMIN.FAQS), label: "FAQs" },
+      { href: String(ROUTES.ADMIN.NEWSLETTER), label: "Newsletter" },
+      { href: String(ROUTES.ADMIN.CONTACT), label: "Contact" },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
+      { href: String(ROUTES.ADMIN.COPILOT), label: "Copilot" },
+    ],
+  },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -46,19 +77,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const openMobile = useCallback(() => setMobileOpen(true), []);
-  const closeMobile = useCallback(() => setMobileOpen(false), []);
-  const toggleMobile = useCallback(
-    () => setMobileOpen((prev) => !prev),
-    [],
-  );
+  const openNav = useCallback(() => setOpen(true), []);
+  const closeNav = useCallback(() => setOpen(false), []);
+  const toggleNav = useCallback(() => setOpen((prev) => !prev), []);
 
   useEffect(() => {
-    registerNav({ open: openMobile, close: closeMobile, toggle: toggleMobile });
+    setMounted(true);
+    registerNav({ open: openNav, close: closeNav, toggle: toggleNav });
     return () => unregisterNav();
-  }, [registerNav, unregisterNav, openMobile, closeMobile, toggleMobile]);
+  }, [registerNav, unregisterNav, openNav, closeNav, toggleNav]);
 
   return (
     <ProtectedRoute
@@ -74,26 +104,26 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     >
       <AdminSidebar
         activePath={pathname}
-        mobileOpen={mobileOpen}
-        onCloseMobile={closeMobile}
-        renderNavItems={(activePath) =>
-          ADMIN_NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={closeMobile}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                activePath === item.href
-                  ? "bg-zinc-100 text-zinc-900 font-medium"
-                  : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))
-        }
+        groups={ADMIN_NAV_GROUPS}
+        mobileOpen={open}
+        onCloseMobile={closeNav}
       />
       {children}
+
+      {/* Mobile FAB — always visible above bottom nav on mobile */}
+      {mounted && createPortal(
+        <button
+          type="button"
+          onClick={toggleNav}
+          aria-label="Toggle admin navigation"
+          className="fixed bottom-6 left-4 z-30 md:hidden flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-slate-900 shadow-lg border border-zinc-200 dark:border-slate-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>,
+        document.body
+      )}
     </ProtectedRoute>
   );
 }

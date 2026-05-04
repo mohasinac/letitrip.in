@@ -2,6 +2,95 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 14 — Mega-Request Status Review)
+
+Complete status of the 35-point user request submitted at start of this session.
+
+### ✅ Completed (20 items)
+
+| # | Task | How |
+|---|------|-----|
+| 2 | Product cards — better colors, Buy Now primary, Cart secondary, always-visible Wishlist | `ProductGrid.tsx` full redesign |
+| 3 | Homepage sections all rendering | 6 new section types added to seed (categories, stores, reviews, FAQ, newsletter, blog) |
+| 5 | Firebase Functions deployed | `onCategoryWrite` + nightly `positionsReconcile` live (Part 8) |
+| 6 | Product type differentiation — pre-orders don't leak into `/products` | `isPreOrder: false` added to products query (Part 11) |
+| 8 | Toast feedback for all user actions | Auth, cart, checkout, addresses, profile, events, blog (Parts 10 + 12) |
+| 13 | Seed upsert (not skip) | All Firestore writes now `{ merge: true }` |
+| 13 | 8 stores, Beyblade/HotWheels/Transformers/Anime/Retro/Cosplay seeded | Seed files exist for all 7 franchises |
+| 14 | Emoji 404 calls fixed (`/%F0%9F%83%8F` etc.) | `ShopByCategorySection.tsx` — emoji as `<span>`, not `<img>` |
+| 15 | FAQ section on homepage | Seed data + lightbox CSS fixed |
+| 16 | Lightbox zoom/rotate/nav working | `globals.css` → `@import "@mohasinac/appkit/styles"` (Part 13) |
+| 17 | Auction/pre-order detail — descriptions, specs, reviews, related | `ProductDetailPageView` fully wired (Phase 25) |
+| 18 | Wishlist page — permanent skeleton fixed | `/api/wishlist` GET/POST/DELETE route created (Part 13) |
+| 18 | Profile page — blank shell fixed | `ProfilePageClient.tsx` with `useUpdateProfile` (Part 10) |
+| 20 | Blog detail pages crashing | API now returns `{ post, related }` correctly (Part 13) |
+| 21 | All button actions have toasts | Every auth/cart/checkout/address/profile/event/blog flow (Parts 10 + 12) |
+| 22 | User address pages blank | `UserAddressesClient`, `AddAddressClient`, `EditAddressClient` (Part 10) |
+| 26 | Admin role returned as "user" | Seed now sets Firebase custom claims for non-"user" roles |
+| 27 | Login/logout slow / wrong response | Google OAuth 3-bug fix + removed SSR Firebase call from root layout (Parts 9 + 12) |
+| 28 | Notification bell removed from all screens | `NotificationBell` removed from `LayoutShellClient.tsx` (Part 13) |
+| 35 | Every button has meaningful success/failure toast | Confirmed across all flows |
+
+### ⚠️ Partially Done (6 items)
+
+| # | Task | What's Left |
+|---|------|-------------|
+| 1 | Filters — apply only on "Apply Filters" click | Listing toolbar wired (Phase 26) but deferred `usePendingFilters` not confirmed wired |
+| 12 | Circular/infinite horizontal scrollers | `perView` fixed (Phase 24.1); infinite loop not yet implemented |
+| 13 | 200 products, open-source images, videos | 7 franchise seed files exist; exact count and image sources not verified |
+| 19 | Events — polls, participate fix, richer seed | Share toast done; polls + richer seed not done |
+| 32 | Pagination below sticky toolbar on mobile | Phase 26 toolbar done; mobile row positioning unclear |
+
+### ❌ Not Yet Done (15 items — work queue)
+
+| # | Task |
+|---|------|
+| 4 | Stores seed — use `storeId` not `sellerId` |
+| 7 | Collapsible filters — only collapse if many options; range/switch never collapse |
+| 9 | Buy Now buttons for simple products, auctions with buyout, pre-orders |
+| 10 | Order grouping — auctions individual; simple+pre-order grouped by store; coupons on group |
+| 11 | Store reviews + up to 10 other store products at bottom of auction pages |
+| 23 | Navigation — bottom nav on mobile; hamburger below navbar on desktop |
+| 24 | Offer logic — 1 attempt, seller accepts/rejects from store dashboard |
+| 25 | User navigation collapsible in sidebar (auto-collapsed by default) |
+| 29 | Cursive font + toggle in settings (below theme toggle) |
+| 30 | Firebase logs instead of console; file logs only in local dev |
+| 31 | Bottom button bar (Buy/Cart/Wishlist/Bid icons) always above bottom nav |
+| 33 | Sticky toolbar — sticks below breadcrumbs/searchbar as user scrolls |
+| 34 | Category filter as searchable dropdown showing selected categories |
+| 35 | Mobile toolbar: search+confirm row / sort+grid row / pagination row |
+| — | Ads: don't reserve space if no ads; don't show empty sections/carousels |
+
+---
+
+## Session Update — 2026-05-05 (Part 13 — Blog Fix + Wishlist API + Lightbox CSS + Nav Cleanup)
+
+### Blog detail page fixed
+
+`/api/blog/[slug]/route.ts` returned the raw `BlogPostDocument` as `data`, but `useBlogPost` expects `{ post, related }`. Every blog detail showed "Post not found".
+
+- **Fix:** Route now returns `successResponse({ post: toSerializable(doc), related: [...] })`. Also fetches up to 3 related posts and increments view count.
+
+### Wishlist page — API route created
+
+`useWishlist` called `GET /api/wishlist?userId=<uid>` which had no route, causing permanent loading skeleton.
+
+- **Fix:** Created `src/app/api/wishlist/route.ts` with GET (batch-enriched with product data), POST (add), DELETE (remove by productId query param).
+
+### Lightbox CSS now loading
+
+`globals.css` only imported tokens CSS — `.appkit-lightbox` styles were never loaded. Zoom, rotate, and navigation rendered but had no positioning.
+
+- **Fix:** Changed `@import "@mohasinac/appkit/tokens/tokens.css"` → `@import "@mohasinac/appkit/styles"` (includes all UI component CSS). Lightbox now fully functional.
+
+### Notification bell removed from header
+
+- `LayoutShellClient.tsx` — `NotificationBell` removed from title bar; wishlist heart icon remains.
+
+**0 TSC errors** after all changes.
+
+---
+
 ## Session Update — 2026-05-05 (Part 12 — Server Load Fix + Toast Notifications)
 
 ### Performance fix — removed server-side Firebase Admin call from root layout

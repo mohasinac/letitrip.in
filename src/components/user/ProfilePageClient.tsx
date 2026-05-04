@@ -36,7 +36,7 @@ export function ProfilePageClient() {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg space-y-4 animate-pulse">
+      <div className="w-full max-w-2xl space-y-4 animate-pulse">
         <div className="h-20 w-20 rounded-full bg-zinc-200 dark:bg-slate-700" />
         <div className="h-6 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
         <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-2/3" />
@@ -51,7 +51,7 @@ export function ProfilePageClient() {
   }
 
   return (
-    <div className="max-w-lg space-y-6">
+    <div className="w-full space-y-6">
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">My Profile</h1>
 
       {!editing ? (
