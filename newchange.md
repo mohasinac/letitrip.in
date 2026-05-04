@@ -2,6 +2,21 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 39 — User nav collapsible sidebar)
+
+### appkit — `UserSidebar` persistent sidebar variant
+- Added `variant?: "sidebar" | "overlay"` prop to `UserSidebar`.
+- `variant="sidebar"`: renders an inline `<aside>` on desktop (`md+`) — sticky below header, full-height, `w-52 lg:w-56`, always visible. Mobile still uses the BottomSheet triggered by `mobileOpen`.
+- `variant="overlay"` (default): unchanged — portal overlay on desktop, BottomSheet on mobile.
+- Group collapse behaviour: groups start **collapsed by default**; only the group containing the active page auto-expands on mount. `defaultOpen: true` on a group always forces it open.
+
+### app — User section two-column layout
+- `src/app/[locale]/user/layout.tsx`: wrapped `children` in `md:flex` container with `UserSidebar variant="sidebar"` on the left and `<main>` on the right.
+- Desktop now shows a persistent nav sidebar alongside user pages (Profile, Orders, Settings, etc.) without any toggle needed.
+- Mobile FAB (bottom-left) still opens the BottomSheet for mobile users.
+
+---
+
 ## Session Update — 2026-05-05 (Part 38b — Wikimedia Commons images + video fields)
 
 ### What changed
