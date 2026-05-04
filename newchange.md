@@ -2,6 +2,59 @@
 
 ---
 
+## Session Update — 2026-05-04 (Part 6 — TSC Verification + Appkit 2.3.2 Release)
+
+### TypeScript Check
+
+Both codebases verified clean with zero errors:
+- **appkit**: ✅ 0 errors (`npx tsc --noEmit` — exit 0)
+- **Consumer app**: ✅ 0 errors (`npx tsc --noEmit` — exit 0)
+
+### Appkit 2.3.2 Build & Publish
+
+- Bumped version `2.3.1` → `2.3.2` (`npm version patch`)
+- Built: `npm run build` → 0 errors, 108 asset files copied to `dist/`
+- Published: `npm publish --access public` → `@mohasinac/appkit@2.3.2` live on npm
+- Consumer app updated: `npm install @mohasinac/appkit@2.3.2`
+- Post-install TSC re-check: ✅ 0 errors
+
+---
+
+## Session Update — 2026-05-04 (Part 5 — Admin Events Editor + Appkit Export Fix)
+
+### 1. Admin Events — Create & Edit Pages
+
+**Problem:** `/admin/events` listing existed but had no create or edit routes, so the row navigation and "New Event" button had nowhere to go.
+
+**Files created:**
+```
+src/app/[locale]/admin/events/new/page.tsx          ← NEW (create mode)
+src/app/[locale]/admin/events/[id]/edit/page.tsx    ← NEW (edit mode)
+```
+
+Both pages use `AdminEventEditorView` from appkit:
+- **Create** (`/admin/events/new`): renders `<AdminEventEditorView />` with no props → blank form
+- **Edit** (`/admin/events/[id]/edit`): renders `<AdminEventEditorView eventId={id} />` → loads event by ID
+
+**Appkit bump** (`1e5ed197`): includes `AdminEventEditorView` component + row-click navigation wired in `AdminEventsView`.
+
+---
+
+### 2. Appkit Export Fix — `allProductsSeedData` at Package Root
+
+**Problem:** `allProductsSeedData` (the combined 4-franchise product array added in Part 4) was exported from the feature barrel but not from the package root `index.ts`, so consumers importing from `@mohasinac/appkit` received `undefined`.
+
+**Fix:** Appkit submodule bumped (`2f488339`) — adds `allProductsSeedData` to the root barrel export so the seed route's `import { allProductsSeedData } from "@mohasinac/appkit"` resolves correctly.
+
+---
+
+### Build Status
+
+- **appkit**: ✅ 0 errors
+- **Consumer app**: ✅ 0 errors
+
+---
+
 ## Session Update — 2026-05-04 (Part 3 — In-Memory Filtering Conversion Complete)
 
 ### All Remaining In-Memory Filters Converted to API-Driven
