@@ -1,4 +1,5 @@
 import { AuctionDetailPageView } from "@mohasinac/appkit";
+import { placeBidAction } from "@/actions/bid.actions";
 import type { Metadata } from "next";
 
 export const revalidate = 30;
@@ -13,5 +14,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <AuctionDetailPageView id={id} />;
+  return <AuctionDetailPageView id={id} onPlaceBid={placeBidAction} />;
 }

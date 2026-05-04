@@ -32,7 +32,8 @@
       "PowerShell(head -5)",
       "PowerShell(Get-ChildItem d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })",
       "PowerShell($item = Get-Item \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" -Force; \"LinkType: $\\($item.LinkType\\)\"; \"Target: $\\($item.Target\\)\")",
-      "PowerShell(cmd /c dir \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" 2>&1)"
+      "PowerShell(cmd /c dir \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" 2>&1)",
+      "PowerShell(robocopy \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\dist\" \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" /E /IS /IT /NFL /NDL /NJH /NJS)"
     ],
     "defaultMode": "bypassPermissions"
   }

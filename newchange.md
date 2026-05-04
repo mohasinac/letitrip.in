@@ -2,6 +2,77 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 42 — Bid button scroll fix + coupon product-type conflicts)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Wrapped `PlaceBidFormClient` in `<Div id="auction-bid-form">`; replaced inert `<Button>` in sticky `BuyBar` with `<a href="#auction-bid-form">` so tapping it scrolls to the interactive form |
+| `appkit/src/features/promotions/repository/coupons.repository.ts` | Removed unconditional pre-order exclusion; restructured auction/type filtering to use `applicableToAuctions` flag as the sole gate; updated "no eligible items" error message |
+
+### Details — bid button scroll
+
+- The sticky `BuyBar` at the bottom of the auction detail page had a `<Button>Place Bid</Button>` with no `onClick` or `href` — it appeared interactive but did nothing
+- Fix: added `id="auction-bid-form"` to the desktop sidebar form wrapper, and replaced the BuyBar `<Button>` with a native `<a href="#auction-bid-form">` styled with the same appkit button classes — clicking it now scrolls directly to the bid form
+
+### Details — coupon type conflicts
+
+**Before:**
+- Line 521 (`let eligible = cartItems.filter((item) => !item.isPreOrder)`) unconditionally stripped pre-order items from every coupon, so no coupon could ever discount a pre-order
+- For seller-scope coupons without `applicableToAuctions === true`, auctions were also stripped — so a generic seller coupon never applied to auction items even when the auction belonged to that seller
+
+**After:**
+- No blanket type exclusion; `eligible` starts as the full cart
+- Seller-scope: filter by `sellerId` only — auctions that carry the seller's ID are naturally included
+- `applicableToAuctions === true` → auction items only (auction-specific coupon)
+- `applicableToAuctions === false` → explicitly excludes auctions (simple + pre-order)
+- `applicableToAuctions` absent/`undefined` → applies to all product types (simple, pre-order, auction)
+- Error message is now specific: "This coupon only applies to auction items" when applicable
+
+### TSC: 0 errors
+
+---
+
+## Session Update — 2026-05-05 (Part 41 — Auction bid form wired + real product images in seed)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/auctions/components/PlaceBidFormClient.tsx` | **New** — `"use client"` bid form component: controlled number input, `useTransition` for async call, inline error/success feedback, Buy Now button, tags row |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Added `onPlaceBid?: (input) => Promise<unknown>` prop; `renderBidForm` and `renderMobileBidForm` now use `PlaceBidFormClient` when the prop is present; static fallback kept for SSR-only usage |
+| `src/app/[locale]/auctions/[id]/page.tsx` | Imports `placeBidAction` and passes it as `onPlaceBid` — bid form is now fully interactive |
+| `appkit/src/seed/events-seed-data.ts` | Replaced all 6 `loremflickr.com` cover image URLs with real product photos (Mattel CDN, Target Scene7, Wikimedia Commons, Seibertron) |
+| `appkit/src/seed/blog-posts-seed-data.ts` | Replaced 3 `loremflickr.com` cover images (Hot Wheels, Beyblade, Transformers posts) with official/Wikimedia product photos |
+| `appkit/src/seed/pokemon-stores-seed-data.ts` | Replaced 5 `picsum.photos` logo/banner URLs for Speed King Diecast, Bladers Paradise, Anime Vault India, Retro Vault India, and CosPlay India Hub with content-relevant product images |
+
+### Details — auction bid form
+- `PlaceBidFormClient` shows current bid, starting bid, bid count, and minimum increment
+- Input is pre-filled with `currentBid + minBidIncrement`; client-side validation before calling the server action
+- `useTransition` keeps the button showing "Placing Bid…" during the async round-trip; on success the input advances by one increment
+- Errors from `placeBidAction` (auth, rate-limit, auction ended, bid too low) surface inline below the input
+- Mobile bid form renders a full `PlaceBidFormClient` in a `lg:hidden` wrapper rather than the previous static dead button
+- Graceful fallback: if `onPlaceBid` is not passed the old static read-only UI is still rendered
+
+### Details — real product images
+- **Hot Wheels flash sale event** → Target Scene7 CDN — actual Car Culture 5-pack product photo
+- **Beyblade Burst poll event** → `commons.wikimedia.org` — real Beyblade Burst tops (`Beyblade.jpg`)
+- **Beyblade bundle offer event** → Target Scene7 CDN — Beyblade X stadium product shot
+- **Transformers survey event** → Target Scene7 CDN — Studio Series Optimus Prime figure
+- **Hot Wheels collector survey** → Wikimedia Commons — Hot Wheels diecast car collection display
+- **Transformers cancelled event** → Seibertron.com — G1 Optimus Prime toy photography
+- **Hot Wheels treasure hunt blog** → Mattel official CDN — 2025 RLC Super Treasure Hunt Set
+- **Beyblade beginner guide blog** → BigCommerce CDN — QuadDrive Cosmic Vector Battle Set
+- **Transformers G1 vs modern blog** → Target Scene7 CDN — Studio Series Leader Class figure
+- **Speed King Diecast store** → Wikimedia Commons — Hot Wheels model car + car collection
+- **Bladers Paradise store** → Wikimedia + BigCommerce — Beyblade top + QuadDrive set
+- **Anime Vault India / CosPlay India Hub** → Wikimedia Commons — anime figure convention display
+
+### TSC: 0 errors
+
+---
+
 ## Session Update — 2026-05-05 (Part 40 — Cursive font + settings toggle)
 
 ### What changed
