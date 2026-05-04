@@ -2,6 +2,17 @@
 
 ---
 
+## Session Update — 2026-05-04 (Part 7 — Vercel Preview Deployment)
+
+### Vercel Preview Deploy
+
+- Verified consumer app already on `@mohasinac/appkit@2.3.2` (latest)
+- Ran `vercel deploy` (preview, not production)
+- **Preview URL:** https://letitrip-2nav5yfqo-mohasin-ahamed-chinnapattans-projects.vercel.app
+- Inspect: `vercel inspect letitrip-2nav5yfqo-mohasin-ahamed-chinnapattans-projects.vercel.app --logs`
+
+---
+
 ## Session Update — 2026-05-04 (Part 6 — TSC Verification + Appkit 2.3.2 Release)
 
 ### TypeScript Check
