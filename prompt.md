@@ -7,11 +7,14 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Ads — no empty space (Task 16)**
+**Next up: 200 products + open-source images (Task 17)**
 
-Homepage carousel mobile fixed (Part 36). Next task:
+Ads fixed (Part 37). Next task:
 
-Check `MarketplaceHomepageView.tsx` — if an `adSlots` prop has no content for a slot, it must render nothing (no reserved height / blank space). Also check listing page ad slots. Find where ad slot placeholders reserve height even when empty and fix them to render `null` when no content is provided.
+Count products across all 7 franchise seed files in `appkit/src/seed/`. If total < 200, add more products. Replace any `picsum.photos` image URLs with real open-source image URLs (Wikimedia Commons, official TCG APIs, etc.). Add `videoUrl` where appropriate. Seed files: `pokemon-*-seed-data.ts`, `hot-wheels-*-seed-data.ts`, `beyblades-*-seed-data.ts`, `transformers-*-seed-data.ts`.
+
+### ✅ Completed (Part 37 — Ads: no empty placeholder space):
+- All 4 homepage `AdSlot` components return `null` — no 90px placeholder banners.
 
 ### ✅ Completed (Part 36 — Homepage carousel mobile fix):
 - `HeroCarousel`: `gridRow: auto` on mobile fixes card overlap; card 90% width + auto height; 260px min-height on mobile.
@@ -105,7 +108,7 @@ Check `MarketplaceHomepageView.tsx` — if an `adSlots` prop has no content for 
 | ~~13~~ | ~~Circular/infinite horizontal scrollers~~ | ✅ Done (Part 31) |
 | ~~14~~ | ~~Events — polls + richer seed~~ | ✅ Done (Part 33) |
 | ~~15~~ | ~~Homepage carousel~~ | ✅ Done (Part 36) |
-| 16 | **Ads — no empty space** | If `adSlots` prop has no content for a slot, render nothing (no reserved height). Fix in `MarketplaceHomepageView.tsx` and any listing page ad slots. |
+| ~~16~~ | ~~Ads — no empty space~~ | ✅ Done (Part 37) |
 | 17 | **200 products + open-source images** | Verify `allProductsSeedData` across 7 franchises reaches ~200 products. Replace any `picsum.photos` or random image URLs with proper open-source image URLs (Wikimedia Commons, official TCG image APIs, etc.). Add `videoUrl` field where appropriate. |
 | 18 | **User nav collapsible** | In user sidebar, nav groups are auto-collapsed by default. User can expand. Implement in `UserSidebar` (appkit). |
 | 19 | **Cursive font + toggle** | Add a quality cursive/display font (e.g. Playfair Display or Dancing Script from Google Fonts). Settings page: toggle below theme toggle to switch between cursive and Roboto. Store preference in localStorage. |

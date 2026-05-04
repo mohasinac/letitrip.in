@@ -2,6 +2,19 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 37 — Ads: remove empty placeholder height)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/components/homepage/AdSlots.tsx` | All 4 ad slot components return `null` — no placeholder banners, no reserved height |
+
+### Why
+Ad slots were showing "Sponsored placement available" 90px banners even though no real ads are configured. The task requires rendering nothing when no content exists.
+
+---
+
 ## Session Update — 2026-05-05 (Part 36 — Homepage carousel mobile fix + checkout coupon fields)
 
 ### What changed
