@@ -2,6 +2,41 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 39 — Multi-coupon conflict detection + cart UI)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/cart/schemas/firestore.ts` | `CartAppliedCoupon` gains `combineWithSellerCoupons?` flag; `CartDocument` uses `appliedCoupons[]` + `selectedItemIds?`; `CartItemDocument` + `AddToCartInput` gain `sellerSlug?` |
+| `appkit/src/features/orders/schemas/firestore.ts` | New `AppliedOrderDiscount` interface; `OrderDocument.appliedDiscounts?` array alongside backward-compat `couponCode`/`couponDiscount` |
+| `appkit/src/features/cart/repository/cart.repository.ts` | Replaced `setCoupon`/`clearCoupon` with `addCoupon`, `removeCoupon(code)`, `clearAllCoupons`, `setSelectedItems` |
+| `appkit/src/index.ts` | Exports `AppliedOrderDiscount` |
+| `src/app/api/cart/coupon/route.ts` | Full conflict detection: duplicate code, one-coupon-per-seller, admin `combineWithSellerCoupons=false` rule; stores `combineWithSellerCoupons` on each applied coupon so future adds can check |
+| `src/app/api/cart/selection/route.ts` | **New** — `PUT /api/cart/selection` persists which item IDs are selected for partial checkout |
+| `src/app/api/checkout/route.ts` | Respects `selectedItemIds`; iterates all applied coupons; pro-rates admin-scoped, restricts seller-scoped per order group; saves `appliedDiscounts[]` |
+| `src/app/api/payment/verify/route.ts` | Same multi-coupon + partial-checkout logic for Razorpay online flow |
+| `src/components/routing/CartRouteClient.tsx` | Seller grouping with clickable `/stores/[slug]` link; per-item selection checkboxes + select-all; multi-coupon input (add more, remove individually); applied coupon chips per seller; checkout button shows selected count |
+
+### Conflict rules enforced at `POST /api/cart/coupon`
+1. **Duplicate** — same code already applied → rejected immediately.
+2. **One per seller** — two seller-scoped coupons for the same store cannot stack; user must remove the existing one first.
+3. **Admin + seller exclusion** — if an admin coupon carries `combineWithSellerCoupons: false`, any seller coupon present blocks it (and vice-versa). The flag is persisted on each `CartAppliedCoupon` so the check works in both directions on subsequent applies.
+
+### Partial checkout flow
+- Cart stores `selectedItemIds?` (null = all items).
+- Checkboxes per item + select-all toggle in the cart UI write to `PUT /api/cart/selection`.
+- Checkout and payment/verify routes filter cart items by `selectedItemIds` before stock checks and order creation.
+- Checkout button label reflects count: "Checkout 2 items" with an "Or checkout all N items" escape hatch.
+
+### Coupon scoping at checkout
+- **Admin-scoped**: discount pro-rated across all order groups by their share of the cart subtotal.
+- **Seller-scoped** with `applicableItemIds`: discount pro-rated to only the eligible items within that seller's group.
+- **Seller-scoped** without `applicableItemIds`: full discount applied to that seller's group total.
+- Each order document records `appliedDiscounts[]` for per-coupon accounting, plus backward-compat `couponCode`/`couponDiscount` fields.
+
+---
+
 ## Session Update — 2026-05-05 (Part 37 — Ads: remove empty placeholder height)
 
 ### What changed

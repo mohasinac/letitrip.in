@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Button,
   CartItemRow,
@@ -20,6 +21,7 @@ import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
 
 interface ServerCartItem {
+  itemId?: string;
   productId: string;
   productTitle: string;
   productImage: string;
@@ -28,21 +30,34 @@ interface ServerCartItem {
   quantity: number;
   sellerId?: string;
   sellerName?: string;
+  sellerSlug?: string;
+}
+
+interface AppliedCoupon {
+  code: string;
+  discountAmount: number;
+  couponId?: string;
+  scope?: "admin" | "seller";
+  sellerId?: string;
+  applicableItemIds?: string[];
 }
 
 interface SellerGroup {
   sellerId: string;
   sellerName: string;
-  items: CartItem[];
+  sellerSlug?: string;
+  items: (CartItem & { itemId?: string })[];
 }
 
-function groupBySeller(items: CartItem[]): SellerGroup[] {
+function groupBySeller(items: (CartItem & { itemId?: string })[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
-    const sid = item.meta.sellerId ?? "unknown";
-    const sname = item.meta.attributes?.sellerName ?? "Marketplace Seller";
+    const meta = item.meta as unknown as Record<string, unknown>;
+    const sid = (meta.sellerId as string | undefined) ?? "unknown";
+    const sname = (item.meta.attributes?.sellerName as string | undefined) ?? "Marketplace Seller";
+    const sslug = meta.sellerSlug as string | undefined;
     if (!map.has(sid)) {
-      map.set(sid, { sellerId: sid, sellerName: sname, items: [] });
+      map.set(sid, { sellerId: sid, sellerName: sname, sellerSlug: sslug, items: [] });
     }
     map.get(sid)!.items.push(item);
   }
@@ -52,15 +67,17 @@ function groupBySeller(items: CartItem[]): SellerGroup[] {
 interface ServerCartResponse {
   cart: {
     items: ServerCartItem[];
-    appliedCoupon?: { code: string; discountAmount: number; couponId?: string };
+    appliedCoupons?: AppliedCoupon[];
+    selectedItemIds?: string[] | null;
   };
   subtotal: number;
   itemCount: number;
 }
 
-function serverItemsToCartItems(items: ServerCartItem[]): CartItem[] {
+function serverItemsToCartItems(items: ServerCartItem[]): (CartItem & { itemId?: string })[] {
   return items.map((item) => ({
-    id: item.productId,
+    id: item.itemId ?? item.productId,
+    itemId: item.itemId,
     productId: item.productId,
     quantity: item.quantity,
     meta: {
@@ -70,6 +87,7 @@ function serverItemsToCartItems(items: ServerCartItem[]): CartItem[] {
       price: item.price,
       currency: item.currency ?? "INR",
       sellerId: item.sellerId,
+      sellerSlug: item.sellerSlug,
       attributes: {
         sellerName: item.sellerName ?? "Marketplace Seller",
       },
@@ -79,7 +97,7 @@ function serverItemsToCartItems(items: ServerCartItem[]): CartItem[] {
 
 function guestItemsToCartItems(
   items: ReturnType<typeof useGuestCart>["items"],
-): CartItem[] {
+): (CartItem & { itemId?: string })[] {
   return items.map((item) => ({
     id: item.productId,
     productId: item.productId,
@@ -100,7 +118,7 @@ export function CartRouteClient() {
   const { showToast } = useToast();
 
   const guest = useGuestCart();
-  const { data: serverCart, isLoading: serverLoading } =
+  const { data: serverCart, isLoading: serverLoading, refetch } =
     useCartQuery<ServerCartResponse>({
       endpoint: "/api/cart",
       queryKey: ["cart", user?.uid],
@@ -113,7 +131,7 @@ export function CartRouteClient() {
   });
 
   const isAuthenticated = !!user?.uid;
-  const cartItems: CartItem[] = isAuthenticated
+  const cartItems = isAuthenticated
     ? serverItemsToCartItems(serverCart?.cart?.items ?? [])
     : guestItemsToCartItems(guest.items);
 
@@ -124,40 +142,50 @@ export function CartRouteClient() {
   const isEmpty = cartItems.length === 0;
   const isLoading = loading || (isAuthenticated && serverLoading);
   const sellerGroups = useMemo(() => groupBySeller(cartItems), [cartItems]);
-  const isMultiSeller = sellerGroups.length > 1;
 
-  const serverAppliedCoupon = serverCart?.cart?.appliedCoupon ?? null;
+  // -- Applied coupons (server is source of truth; local state for optimistic updates)
+  const serverAppliedCoupons: AppliedCoupon[] = serverCart?.cart?.appliedCoupons ?? [];
+  const [localCoupons, setLocalCoupons] = useState<AppliedCoupon[] | null>(null);
+  const effectiveCoupons = localCoupons ?? serverAppliedCoupons;
 
   const [couponCode, setCouponCode] = useState("");
-  const [localCoupon, setLocalCoupon] = useState<{
-    code: string;
-    discountAmount: number;
-  } | null>(null);
   const [couponError, setCouponError] = useState("");
   const [isCouponLoading, setIsCouponLoading] = useState(false);
-
-  const effectiveCoupon = localCoupon ?? serverAppliedCoupon;
+  const [removingCode, setRemovingCode] = useState<string | null>(null);
 
   const handleApplyCoupon = useCallback(async () => {
-    if (!couponCode.trim() || !isAuthenticated) return;
+    const code = couponCode.trim().toUpperCase();
+    if (!code || !isAuthenticated) return;
+    if (effectiveCoupons.some((c) => c.code === code)) {
+      setCouponError("This coupon is already applied.");
+      return;
+    }
     setIsCouponLoading(true);
     setCouponError("");
     try {
       const res = await fetch("/api/cart/coupon", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: couponCode.trim().toUpperCase() }),
+        body: JSON.stringify({ code }),
         credentials: "include",
       });
-      const data = await res.json() as { data?: { code: string; discountAmount: number }; error?: string };
+      const data = await res.json() as { data?: AppliedCoupon; error?: string };
       if (!res.ok) {
         const errMsg = data.error ?? "Invalid coupon code";
         setCouponError(errMsg);
         showToast(errMsg, "error");
       } else {
-        setLocalCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
+        const applied = data.data!;
+        setLocalCoupons((prev) => [
+          ...(prev ?? effectiveCoupons).filter((c) => c.code !== applied.code),
+          applied,
+        ]);
         setCouponCode("");
-        showToast(`Coupon "${data.data!.code}" applied! You saved ₹${data.data!.discountAmount.toFixed(2)}.`, "success");
+        showToast(
+          `Coupon "${applied.code}" applied! You saved ₹${applied.discountAmount.toFixed(2)}.`,
+          "success",
+        );
+        refetch?.();
       }
     } catch {
       const errMsg = "Failed to apply coupon. Please try again.";
@@ -166,19 +194,84 @@ export function CartRouteClient() {
     } finally {
       setIsCouponLoading(false);
     }
-  }, [couponCode, isAuthenticated]);
+  }, [couponCode, isAuthenticated, effectiveCoupons, showToast, refetch]);
 
-  const handleRemoveCoupon = useCallback(async () => {
-    setLocalCoupon(null);
-    setCouponError("");
+  const handleRemoveCoupon = useCallback(
+    async (code: string) => {
+      setRemovingCode(code);
+      setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
+      if (isAuthenticated) {
+        await fetch("/api/cart/coupon", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+          credentials: "include",
+        }).catch(() => {});
+        refetch?.();
+      }
+      showToast("Coupon removed.", "info");
+      setRemovingCode(null);
+    },
+    [isAuthenticated, effectiveCoupons, showToast, refetch],
+  );
+
+  // -- Item selection for partial checkout
+  const serverSelectedSet = useMemo(
+    () => new Set(serverCart?.cart?.selectedItemIds ?? []),
+    [serverCart],
+  );
+  const allItemIds = useMemo(() => cartItems.map((i) => i.itemId ?? i.id), [cartItems]);
+  const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null);
+  // null = all selected; use server state as initial fallback
+  const effectiveSelected =
+    selectedIds ??
+    (serverSelectedSet.size > 0 && serverSelectedSet.size < allItemIds.length
+      ? serverSelectedSet
+      : null);
+  const isAllSelected = effectiveSelected === null;
+  const selectedCount = effectiveSelected ? effectiveSelected.size : allItemIds.length;
+
+  const toggleItem = useCallback(
+    async (itemId: string) => {
+      const current = effectiveSelected ? new Set(effectiveSelected) : new Set(allItemIds);
+      if (current.has(itemId)) current.delete(itemId);
+      else current.add(itemId);
+      const next = current.size >= allItemIds.length ? null : current;
+      setSelectedIds(next);
+      if (isAuthenticated) {
+        await fetch("/api/cart/selection", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
+          credentials: "include",
+        }).catch(() => {});
+      }
+    },
+    [effectiveSelected, allItemIds, isAuthenticated],
+  );
+
+  const selectAll = useCallback(async () => {
+    setSelectedIds(null);
     if (isAuthenticated) {
-      await fetch("/api/cart/coupon", { method: "DELETE", credentials: "include" }).catch(() => {});
+      await fetch("/api/cart/selection", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemIds: null }),
+        credentials: "include",
+      }).catch(() => {});
     }
-    showToast("Coupon removed.", "info");
-  }, [isAuthenticated, showToast]);
+  }, [isAuthenticated]);
 
-  const discountAmount = effectiveCoupon?.discountAmount ?? 0;
-  const finalTotal = Math.max(0, subtotal - discountAmount);
+  // -- Totals for selected items
+  const selectedSubtotal = useMemo(() => {
+    if (!effectiveSelected) return subtotal;
+    return cartItems
+      .filter((i) => effectiveSelected.has(i.itemId ?? i.id))
+      .reduce((s, i) => s + i.meta.price * i.quantity, 0);
+  }, [cartItems, effectiveSelected, subtotal]);
+
+  const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
+  const finalTotal = Math.max(0, selectedSubtotal - totalDiscount);
 
   const handleQtyChange = useCallback(
     (id: string, qty: number) => {
@@ -206,26 +299,88 @@ export function CartRouteClient() {
       isEmpty={isEmpty}
       isLoading={isLoading}
       renderItems={(itemsLoading) => (
-        <Div className="space-y-4">
+        <Div className="space-y-6">
+          {/* Select-all toggle */}
+          {!isEmpty && !itemsLoading && isAuthenticated && allItemIds.length > 1 && (
+            <Div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="cart-select-all"
+                checked={isAllSelected}
+                onChange={isAllSelected ? undefined : selectAll}
+                onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
+                className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+              />
+              <label
+                htmlFor="cart-select-all"
+                className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300"
+              >
+                Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
+              </label>
+            </Div>
+          )}
+
           {itemsLoading ? (
             <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
           ) : (
             sellerGroups.map((group) => (
               <Div key={group.sellerId}>
-                {isMultiSeller && (
-                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    Sold by {group.sellerName}
+                {/* Seller header */}
+                <Div className="mb-2 flex flex-wrap items-center gap-1.5">
+                  <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    Sold by
                   </Text>
-                )}
+                  {group.sellerSlug ? (
+                    <Link
+                      href={`/stores/${group.sellerSlug}`}
+                      className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
+                    >
+                      {group.sellerName}
+                    </Link>
+                  ) : (
+                    <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
+                      {group.sellerName}
+                    </Text>
+                  )}
+                  {/* Seller-scoped coupon badges */}
+                  {effectiveCoupons
+                    .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
+                    .map((c) => (
+                      <span
+                        key={c.code}
+                        className="rounded bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-300"
+                      >
+                        {c.code}
+                      </span>
+                    ))}
+                </Div>
+
+                {/* Items */}
                 <Div className="space-y-3">
-                  {group.items.map((item) => (
-                    <CartItemRow
-                      key={item.id}
-                      item={item}
-                      onQtyChange={handleQtyChange}
-                      onRemove={handleRemove}
-                    />
-                  ))}
+                  {group.items.map((item) => {
+                    const iid = item.itemId ?? item.id;
+                    const isChecked = !effectiveSelected || effectiveSelected.has(iid);
+                    return (
+                      <Div key={item.id} className="flex items-start gap-3">
+                        {isAuthenticated && (
+                          <input
+                            type="checkbox"
+                            aria-label={`Select ${item.meta.title}`}
+                            checked={isChecked}
+                            onChange={() => toggleItem(iid)}
+                            className="mt-5 h-4 w-4 flex-shrink-0 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+                          />
+                        )}
+                        <Div className="flex-1">
+                          <CartItemRow
+                            item={item}
+                            onQtyChange={handleQtyChange}
+                            onRemove={handleRemove}
+                          />
+                        </Div>
+                      </Div>
+                    );
+                  })}
                 </Div>
               </Div>
             ))
@@ -236,94 +391,129 @@ export function CartRouteClient() {
         <CartSummary
           labels={{ title: "Summary" }}
           renderBreakdown={() => (
-            <Div className="space-y-1">
-              <Text className="text-sm text-zinc-600 dark:text-zinc-300">
-                {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
-              </Text>
+            <Div className="space-y-1.5">
+              <Div className="flex items-center justify-between">
+                <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+                  {selectedCount === allItemIds.length
+                    ? `${allItemIds.length} item${allItemIds.length !== 1 ? "s" : ""}`
+                    : `${selectedCount} of ${allItemIds.length} items selected`}
+                </Text>
+                <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+                  ₹{selectedSubtotal.toFixed(2)}
+                </Text>
+              </Div>
               <Div className="flex items-center justify-between">
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">Shipping</Text>
-                <Text className="text-sm text-zinc-500 dark:text-zinc-400">Calculated at checkout</Text>
+                <Text className="text-sm text-zinc-500 dark:text-zinc-400">At checkout</Text>
               </Div>
-              {effectiveCoupon && (
-                <Div className="flex items-center justify-between">
+
+              {/* Per-coupon discount rows */}
+              {effectiveCoupons.map((c) => (
+                <Div key={c.code} className="flex items-center justify-between">
                   <Text className="text-sm text-green-600 dark:text-green-400">
-                    Coupon ({effectiveCoupon.code})
+                    {c.code}{c.scope === "seller" ? " (seller)" : ""}
                   </Text>
                   <Text className="text-sm text-green-600 dark:text-green-400">
-                    &minus;&#x20B9;{effectiveCoupon.discountAmount.toFixed(2)}
+                    &minus;₹{c.discountAmount.toFixed(2)}
                   </Text>
                 </Div>
-              )}
+              ))}
+
+              {/* Coupon management (auth only) */}
               {isAuthenticated && !isEmpty && (
-                <Div className="mt-2">
-                  {effectiveCoupon ? (
-                    <Div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 px-3 py-2">
-                      <Text className="text-xs text-green-700 dark:text-green-300 font-medium">
-                        {effectiveCoupon.code} applied
+                <Div className="mt-3 space-y-2">
+                  {effectiveCoupons.map((c) => (
+                    <Div
+                      key={c.code}
+                      className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 px-3 py-2"
+                    >
+                      <Text className="text-xs font-medium text-green-700 dark:text-green-300">
+                        {c.code}{c.scope === "seller" ? " — this seller" : ""}
                       </Text>
                       <button
                         type="button"
-                        onClick={handleRemoveCoupon}
-                        className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-700 dark:hover:text-zinc-200"
+                        onClick={() => handleRemoveCoupon(c.code)}
+                        disabled={removingCode === c.code}
+                        className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-700 dark:hover:text-zinc-200 disabled:opacity-50"
                       >
-                        Remove
+                        {removingCode === c.code ? "…" : "Remove"}
                       </button>
                     </Div>
-                  ) : (
-                    <Div className="space-y-1">
-                      <Div className="flex gap-2">
-                        <Input
-                          type="text"
-                          placeholder="Coupon code"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                          className="flex-1 text-sm"
-                          maxLength={50}
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleApplyCoupon}
-                          disabled={isCouponLoading || !couponCode.trim()}
-                          className="text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
-                        >
-                          {isCouponLoading ? "…" : "Apply"}
-                        </Button>
-                      </Div>
-                      {couponError && (
-                        <Text className="text-xs text-red-600 dark:text-red-400">{couponError}</Text>
-                      )}
+                  ))}
+
+                  {/* Add coupon input */}
+                  <Div className="space-y-1">
+                    <Div className="flex gap-2">
+                      <Input
+                        type="text"
+                        placeholder={effectiveCoupons.length ? "Add another coupon" : "Coupon code"}
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                        className="flex-1 text-sm"
+                        maxLength={50}
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={isCouponLoading || !couponCode.trim()}
+                        className="text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+                      >
+                        {isCouponLoading ? "…" : "Apply"}
+                      </Button>
                     </Div>
-                  )}
+                    {couponError && (
+                      <Text className="text-xs text-red-600 dark:text-red-400">{couponError}</Text>
+                    )}
+                  </Div>
                 </Div>
               )}
             </Div>
           )}
           renderTotal={() => (
-            <Div>
-              {effectiveCoupon && (
-                <Div className="mb-1 flex items-center justify-between">
-                  <Text className="text-sm text-zinc-500 dark:text-zinc-400">Subtotal</Text>
-                  <Text className="text-sm text-zinc-500 dark:text-zinc-400 line-through">
-                    &#x20B9;{subtotal.toFixed(2)}
+            <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3 space-y-1">
+              {totalDiscount > 0 && (
+                <Div className="flex items-center justify-between">
+                  <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Total discount ({effectiveCoupons.length} coupon{effectiveCoupons.length !== 1 ? "s" : ""})
+                  </Text>
+                  <Text className="text-sm text-green-600 dark:text-green-400">
+                    &minus;₹{totalDiscount.toFixed(2)}
                   </Text>
                 </Div>
               )}
-              <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
-                Total: &#x20B9;{finalTotal.toFixed(2)}
-              </Text>
+              <Div className="flex items-center justify-between">
+                <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Total</Text>
+                <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
+                  ₹{finalTotal.toFixed(2)}
+                </Text>
+              </Div>
             </Div>
           )}
         />
       )}
       renderCheckoutButton={() => (
-        <Button
-          type="button"
-          onClick={() => router.push("/checkout")}
-          disabled={isEmpty}
-          className="mt-3 w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          Checkout
-        </Button>
+        <Div className="mt-3 space-y-2">
+          <Button
+            type="button"
+            onClick={() => router.push("/checkout")}
+            disabled={isEmpty || selectedCount === 0}
+            className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          >
+            {!isAllSelected && selectedCount > 0
+              ? `Checkout ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
+              : "Checkout"}
+          </Button>
+          {!isAllSelected && selectedCount > 0 && (
+            <button
+              type="button"
+              onClick={async () => { await selectAll(); router.push("/checkout"); }}
+              className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
+            >
+              Or checkout all {allItemIds.length} items
+            </button>
+          )}
+        </Div>
       )}
       renderEmpty={() => (
         <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">

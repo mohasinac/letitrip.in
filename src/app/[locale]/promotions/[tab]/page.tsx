@@ -70,9 +70,7 @@ export default async function Page({
     redirect(buildCanonicalPath(locale, activeTab));
   }
 
-  // Only fetch product data (deals/featured) — coupons are fetched client-side
-  const needsProducts = activeTab === "all" || activeTab === "deals" || activeTab === "featured";
-  const promotions = needsProducts ? await getPromotions().catch(() => null) : null;
+  const promotions = await getPromotions().catch(() => null);
   const activeCoupons = promotions?.activeCoupons ?? [];
   const promotedProducts = promotions?.promotedProducts ?? [];
   const featuredProducts = promotions?.featuredProducts ?? [];
