@@ -3,19 +3,42 @@
 import { useState } from "react";
 import { Div, Heading, Text } from "@mohasinac/appkit/ui";
 import { EventParticipateView } from "@mohasinac/appkit/client";
+import { useSession } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit";
 
 interface Props {
   event: EventDocument;
+  hasLeaderboard?: boolean;
 }
 
-export function EventParticipateClient({ event }: Props) {
+export function EventParticipateClient({ event, hasLeaderboard }: Props) {
+  const { user } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedVotes, setSelectedVotes] = useState<string[]>([]);
   const [pollComment, setPollComment] = useState("");
+
+  // Leaderboard events require login
+  if (hasLeaderboard && !user) {
+    return (
+      <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-10 text-center space-y-3">
+        <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+          Login Required
+        </Heading>
+        <Text className="text-zinc-500 dark:text-zinc-400">
+          Please log in to participate in this leaderboard event.
+        </Text>
+        <a
+          href="/login"
+          className="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
+        >
+          Log In
+        </a>
+      </Div>
+    );
+  }
 
   const handleSubmit = async () => {
     setIsLoading(true);

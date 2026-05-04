@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import {
   AdSlot,
-  CouponCard,
+  CouponsIndexListing,
   Div,
   getPromotions,
+  Heading,
   InteractiveProductCard,
-  PromotionsView,
+  PromotionsHero,
   PromotionsViewProductSection,
   ROUTES,
   Text,
@@ -18,16 +19,21 @@ export const revalidate = 120;
 const VALID_TABS = ["deals", "coupons", "featured", "all"] as const;
 type PromotionsTab = (typeof VALID_TABS)[number];
 
+const TAB_LABELS: Record<PromotionsTab, string> = {
+  deals: "Deals",
+  coupons: "Coupons",
+  featured: "Featured",
+  all: "All",
+};
+
 function normalizeTab(value: string): PromotionsTab {
-  return (VALID_TABS as readonly string[]).includes(value) ? (value as PromotionsTab) : "deals";
+  return (VALID_TABS as readonly string[]).includes(value)
+    ? (value as PromotionsTab)
+    : "deals";
 }
 
 function buildCanonicalPath(locale: string, tab: PromotionsTab): string {
   return `/${locale}/promotions/${tab}`;
-}
-
-function tabLabel(tab: PromotionsTab): string {
-  return tab.charAt(0).toUpperCase() + tab.slice(1);
 }
 
 export async function generateMetadata({
@@ -38,12 +44,17 @@ export async function generateMetadata({
   const { locale, tab } = await params;
   const activeTab = normalizeTab(tab);
 
+  const descriptions: Record<PromotionsTab, string> = {
+    deals: "Shop top deals and promoted products at special prices.",
+    coupons: "Browse and copy active discount coupons for your next order.",
+    featured: "Explore hand-picked featured products from top sellers.",
+    all: "All promotions — deals, coupons, and featured products in one place.",
+  };
+
   return {
-    title: `Promotions - ${tabLabel(activeTab)}`,
-    description: "Latest offers and campaigns across deals, coupons, and featured promotions.",
-    alternates: {
-      canonical: buildCanonicalPath(locale, activeTab),
-    },
+    title: `Promotions — ${TAB_LABELS[activeTab]} | LetItRip`,
+    description: descriptions[activeTab],
+    alternates: { canonical: buildCanonicalPath(locale, activeTab) },
   };
 }
 
@@ -59,78 +70,71 @@ export default async function Page({
     redirect(buildCanonicalPath(locale, activeTab));
   }
 
-  const promotions = await getPromotions().catch(() => null);
-  const coupons = promotions?.activeCoupons ?? [];
+  // Only fetch product data (deals/featured) — coupons are fetched client-side
+  const needsProducts = activeTab === "all" || activeTab === "deals" || activeTab === "featured";
+  const promotions = needsProducts ? await getPromotions().catch(() => null) : null;
+  const activeCoupons = promotions?.activeCoupons ?? [];
   const promotedProducts = promotions?.promotedProducts ?? [];
   const featuredProducts = promotions?.featuredProducts ?? [];
 
-  const showCoupons = activeTab === "all" || activeTab === "coupons";
-  const showDeals = activeTab === "all" || activeTab === "deals";
-  const showFeatured = activeTab === "all" || activeTab === "featured";
-
-  const hasContent =
-    (showCoupons && coupons.length > 0) ||
-    (showDeals && promotedProducts.length > 0) ||
-    (showFeatured && featuredProducts.length > 0);
-
   return (
-    <Div>
-      <Div className="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-4 sm:px-6 lg:px-8">
-        {VALID_TABS.map((tabValue) => {
-          const isActive = tabValue === activeTab;
-          return (
-            <Link
-              key={tabValue}
-              href={`/${locale}/promotions/${tabValue}`}
-              className={[
-                "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-300"
-                  : "border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:border-slate-700 dark:text-zinc-300 dark:hover:bg-slate-800",
-              ].join(" ")}
-            >
-              {tabValue[0].toUpperCase() + tabValue.slice(1)}
-            </Link>
-          );
-        })}
-      </Div>
-
-      <PromotionsView
-        hasContent={hasContent}
+    <Div className="min-h-screen bg-white dark:bg-slate-900">
+      {/* Hero */}
+      <PromotionsHero
         labels={{
           exclusiveOffersBadge: "Exclusive Offers",
           title: "Promotions",
-          subtitle: "Latest offers and campaigns",
-          emptyDeals: "No active promotions",
-          checkBack: "Please check back soon.",
-          couponsTitle: "Coupons",
-          couponsSubtitle: "Available discounts",
-          emptyCoupons: "No coupons available",
-          dealsTitle: "Deals",
-          dealsSubtitle: "Top deals",
-          featuredTitle: "Featured",
-          featuredSubtitle: "Featured promotions",
+          subtitle: "Latest deals, coupons, and featured picks",
         }}
-        couponsCount={showCoupons ? coupons.length : 0}
-        renderCoupons={() =>
-          showCoupons ? (
-            <Div className="space-y-6">
-              <Div className="grid gap-3 md:grid-cols-2">
-                {coupons.map((coupon) => (
-                  <CouponCard key={coupon.id} coupon={coupon as never} />
-                ))}
+      />
+
+      {/* Tab navigation */}
+      <Div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-zinc-200 dark:border-slate-700">
+        <Div className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 sm:px-6 lg:px-8 overflow-x-auto scrollbar-hide">
+          {VALID_TABS.map((tabValue) => {
+            const isActive = tabValue === activeTab;
+            return (
+              <Link
+                key={tabValue}
+                href={`/${locale}/promotions/${tabValue}`}
+                className={[
+                  "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
+                  isActive
+                    ? "border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-300"
+                    : "border-zinc-200 dark:border-slate-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-slate-800",
+                ].join(" ")}
+              >
+                {TAB_LABELS[tabValue]}
+              </Link>
+            );
+          })}
+        </Div>
+      </Div>
+
+      {/* Tab content */}
+      <Div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* ── COUPONS tab ──────────────────────────────────────────────── */}
+        {(activeTab === "coupons" || activeTab === "all") && (
+          <Div className={activeTab === "all" ? "mb-12" : ""}>
+            {activeTab === "all" && (
+              <Div className="mb-6">
+                <Heading level={2}>Coupons</Heading>
+                <Text variant="secondary" className="mt-1">
+                  Active discount codes you can use at checkout
+                </Text>
               </Div>
-              <AdSlot id="listing-between-rows" />
-            </Div>
-          ) : (
-            <Text variant="secondary" size="sm">Switch tabs to view coupons.</Text>
-          )
-        }
-        renderDealsSection={() =>
-          showDeals ? (
+            )}
+            <CouponsIndexListing initialCoupons={activeCoupons as any} />
+            {activeTab === "coupons" && <AdSlot id="listing-between-rows" />}
+          </Div>
+        )}
+
+        {/* ── DEALS tab ────────────────────────────────────────────────── */}
+        {(activeTab === "deals" || activeTab === "all") && (
+          <Div className={activeTab === "all" ? "mb-12" : ""}>
             <PromotionsViewProductSection
               title="Deals"
-              subtitle="Top promoted products"
+              subtitle="Top promoted products at special prices"
               hasProducts={promotedProducts.length > 0}
               renderProducts={() => (
                 <Div className="space-y-6">
@@ -139,7 +143,11 @@ export default async function Page({
                       <InteractiveProductCard
                         key={product.id}
                         product={product as never}
-                        href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id))}
+                        href={String(
+                          ROUTES.PUBLIC.PRODUCT_DETAIL(
+                            (product as any).slug ?? product.id,
+                          ),
+                        )}
                       />
                     ))}
                   </Div>
@@ -147,13 +155,22 @@ export default async function Page({
                 </Div>
               )}
             />
-          ) : null
-        }
-        renderFeaturedSection={() =>
-          showFeatured ? (
+            {promotedProducts.length === 0 && (
+              <Div className="py-12 text-center">
+                <Text className="text-zinc-400 dark:text-zinc-500">
+                  No deals available right now. Check back soon!
+                </Text>
+              </Div>
+            )}
+          </Div>
+        )}
+
+        {/* ── FEATURED tab ─────────────────────────────────────────────── */}
+        {(activeTab === "featured" || activeTab === "all") && (
+          <Div>
             <PromotionsViewProductSection
               title="Featured"
-              subtitle="Featured promotions"
+              subtitle="Hand-picked products from top sellers"
               hasProducts={featuredProducts.length > 0}
               renderProducts={() => (
                 <Div className="space-y-6">
@@ -162,7 +179,11 @@ export default async function Page({
                       <InteractiveProductCard
                         key={product.id}
                         product={product as never}
-                        href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id))}
+                        href={String(
+                          ROUTES.PUBLIC.PRODUCT_DETAIL(
+                            (product as any).slug ?? product.id,
+                          ),
+                        )}
                       />
                     ))}
                   </Div>
@@ -170,9 +191,16 @@ export default async function Page({
                 </Div>
               )}
             />
-          ) : null
-        }
-      />
+            {featuredProducts.length === 0 && activeTab === "featured" && (
+              <Div className="py-12 text-center">
+                <Text className="text-zinc-400 dark:text-zinc-500">
+                  No featured products right now. Check back soon!
+                </Text>
+              </Div>
+            )}
+          </Div>
+        )}
+      </Div>
     </Div>
   );
 }

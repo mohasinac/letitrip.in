@@ -39,9 +39,11 @@ export default async function Page({ params }: Props) {
     );
   }
 
+  const hasLeaderboard = (event as any).hasLeaderboard === true;
+
   return (
     <Div className="mx-auto max-w-xl px-4 py-10">
-      <EventParticipateClient event={event} />
+      <EventParticipateClient event={event} hasLeaderboard={hasLeaderboard} />
     </Div>
   );
 }

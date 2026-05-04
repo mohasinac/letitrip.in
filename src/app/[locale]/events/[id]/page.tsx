@@ -10,6 +10,7 @@ import {
 } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ShareEventButton } from "./ShareEventButton";
 
 export const revalidate = 60;
 
@@ -25,6 +26,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: event.title,
     description: event.description?.slice(0, 155),
   };
+}
+
+const TYPE_BADGE: Record<string, string> = {
+  sale:     "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  offer:    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  poll:     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  survey:   "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+  feedback: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+};
+
+const STATUS_BADGE: Record<string, string> = {
+  active: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  ended:  "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  draft:  "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+};
+
+function formatDate(value: unknown): string {
+  if (!value) return "";
+  try {
+    return new Date(value as unknown as string).toLocaleDateString("en-IN", {
+      dateStyle: "medium",
+    });
+  } catch {
+    return String(value);
+  }
 }
 
 export default async function Page({ params }: Props) {
@@ -59,6 +85,17 @@ export default async function Page({ params }: Props) {
     : typeof e.bannerImage === "string" ? e.bannerImage
     : null;
 
+  const eventType   = (event.type   as string | undefined) ?? "";
+  const eventStatus = (event.status as string | undefined) ?? "";
+  const typeBadgeCls   = TYPE_BADGE[eventType]   ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+  const statusBadgeCls = STATUS_BADGE[eventStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+
+  const totalEntries = (event as any).stats?.totalEntries as number | undefined;
+
+  const now      = Date.now();
+  const endsAt   = event.endsAt   ? new Date(event.endsAt as unknown as string).getTime()   : null;
+  const isActive = eventStatus === "active" || (endsAt !== null && endsAt > now);
+
   return (
     <EventDetailView
       renderCoverImage={
@@ -76,10 +113,44 @@ export default async function Page({ params }: Props) {
           : undefined
       }
       renderHeader={() => (
-        <Div className="space-y-1">
+        <Div className="space-y-3">
+          {/* Type + Status badges */}
+          <Div className="flex flex-wrap items-center gap-2">
+            {eventType ? (
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeCls}`}>
+                {eventType}
+              </span>
+            ) : null}
+            {eventStatus ? (
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${statusBadgeCls}`}>
+                {eventStatus}
+              </span>
+            ) : null}
+          </Div>
+
+          {/* Title */}
           <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             {event.title}
           </Heading>
+
+          {/* Dates */}
+          <Div className="flex flex-wrap gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+            {event.startsAt ? (
+              <span>Start: <span className="font-medium text-zinc-700 dark:text-zinc-300">{formatDate(event.startsAt)}</span></span>
+            ) : null}
+            {event.endsAt ? (
+              <span>End: <span className="font-medium text-zinc-700 dark:text-zinc-300">{formatDate(event.endsAt)}</span></span>
+            ) : null}
+            {totalEntries !== undefined ? (
+              <span>Participants: <span className="font-medium text-zinc-700 dark:text-zinc-300">{totalEntries.toLocaleString()}</span></span>
+            ) : null}
+          </Div>
+
+          {/* Share */}
+          <Div className="flex items-center gap-2 pt-1">
+            <Text className="text-sm text-zinc-500 dark:text-zinc-400">Share:</Text>
+            <ShareEventButton />
+          </Div>
         </Div>
       )}
       renderContent={
@@ -116,14 +187,20 @@ export default async function Page({ params }: Props) {
             )
           : undefined
       }
-      renderParticipateAction={() => (
-        <Link
-          href={`/${locale}${String(ROUTES.PUBLIC.EVENT_PARTICIPATE(id))}`}
-          className="inline-block rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600"
-        >
-          Participate Now
-        </Link>
-      )}
+      renderParticipateAction={() =>
+        isActive ? (
+          <Link
+            href={`/${locale}${String(ROUTES.PUBLIC.EVENT_PARTICIPATE(id))}`}
+            className="inline-block rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600"
+          >
+            Participate Now
+          </Link>
+        ) : (
+          <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-5 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+            This event has ended.
+          </Div>
+        )
+      }
     />
   );
 }

@@ -1,3 +1,43 @@
+# Change Log — Session 2026-05-03 (Latest)
+
+---
+
+## Session Update — 2026-05-03 (Seed Wiring + Store Pre-Orders Layout Fix)
+
+### 1. Store Pre-Orders Tab — Layout Fix
+
+**Problem:** `/stores/[storeSlug]/pre-orders` rendered without the store header and tab navigation because every other tab sub-route has a `layout.tsx` wrapping it in `StoreDetailLayoutView`, but `pre-orders` was missing one.
+
+**Fix:** Created `src/app/[locale]/stores/[storeSlug]/pre-orders/layout.tsx` — identical pattern to `products/layout.tsx` and `about/layout.tsx` but with `activeTab="pre-orders"`.
+
+```
+src/app/[locale]/stores/[storeSlug]/pre-orders/layout.tsx  ← NEW
+```
+
+### 2. Seed Data — Wishlist Import from Appkit
+
+**Problem:** `src/app/api/demo/seed/route.ts` defined `wishlistsSeedData` inline locally (6 items, stale user IDs). The appkit now exports a richer Pokemon-themed `wishlistsSeedData` (10+ items, aligned with the canonical user and product ID sets).
+
+**Fix:** Removed the inline local definition and imported `wishlistsSeedData` from `@mohasinac/appkit` alongside the other seed datasets.
+
+### 3. FAQ Seed Data — Full Rewrite (Previous Commit)
+
+**`appkit/src/seed/faq-seed-data.ts`** rewritten with 65 LetItRip-accurate FAQs:
+- **General** (10) — platform intro, seller verification, community events
+- **Orders & Payment** (12) — coupon/promo via Events page, auction bidding, non-payment policy, outbid alerts, UPI/card/net-banking
+- **Shipping & Delivery** (10) — shipping is seller-managed; free shipping is store-level, not platform-wide
+- **Returns & Refunds** (10) — returns are store-level policy; free returns subject to each seller; counterfeit reporting
+- **Product Information** (10) — 1st Edition, PSA/BGS/CGC grading, card conditions (Mint→Damaged), holo rares, ETBs, raw cards
+- **Account & Security** (8) — wishlist, addresses, one-account-per-person
+- **Technical Support** (5) — checkout issues, bid not registering, email alerts
+
+Key accuracy fixes over previous data:
+- Returns and free shipping are per-seller, not platform-wide
+- Platform issues site-wide coupons via the Events section
+- HTML-format answers with structured lists; `{{supportEmail}}` interpolation
+
+---
+
 # Change Log — Session 2026-05-03 (Updated)
 
 ---
@@ -1102,3 +1142,110 @@ Added `Store*` aliases for all seller management view components:
 ### Build Status
 - **appkit TypeScript**: ✅ 0 errors (`npm run build`)
 - **dist/ updated**: ✅ 108 asset files copied
+
+---
+
+## Session 2026-05-03 (Continued) — FAQ Seed, Pre-Orders Layout, Wishlist + UserSidebar Redesign
+
+### 1. FAQ Seed Data — Full Rewrite (`appkit/src/seed/faq-seed-data.ts`)
+
+Rewrote with 65 LetItRip-accurate FAQs across 7 categories:
+
+| Category | Count | Key accuracy |
+|---|---|---|
+| General | 10 | Platform intro, seller verification, community events |
+| Orders & Payment | 12 | Coupons via Events page; auction bid/outbid flow; UPI/card/net-banking |
+| Shipping & Delivery | 10 | Shipping is seller-managed; free shipping is per-store, not platform-wide |
+| Returns & Refunds | 10 | Return policy is per-seller; counterfeit reporting covered |
+| Product Information | 10 | 1st Edition, PSA/BGS/CGC grading, card conditions (Mint→Damaged), ETBs |
+| Account & Security | 8 | Wishlist, addresses, one-account-per-person |
+| Technical Support | 5 | Checkout, bid issues, email alerts |
+
+Key accuracy fixes: returns/free shipping are per-seller; platform issues site-wide coupons via Events; HTML-format answers; `{{supportEmail}}` interpolation.
+
+---
+
+### 2. Seed Data — Wishlist Import from Appkit (`src/app/api/demo/seed/route.ts`)
+
+Removed an inline local `wishlistsSeedData` definition (6 items, stale user IDs) and replaced with an import of the canonical `wishlistsSeedData` from `@mohasinac/appkit` (10+ items, aligned with Pokemon user/product IDs).
+
+---
+
+### 3. Store Pre-Orders Tab — Layout Fix
+
+**Problem:** `/stores/[storeSlug]/pre-orders` rendered without the store header and tab navigation — every other store sub-tab had a `layout.tsx` wrapping it in `StoreDetailLayoutView` but `pre-orders` was missing one.
+
+**Fix:** Created `src/app/[locale]/stores/[storeSlug]/pre-orders/layout.tsx` with `activeTab="pre-orders"`.
+
+---
+
+### 4. Wishlist — Moved to Public Route (`/wishlist`)
+
+**Before:** Wishlist lived at `/user/wishlist` inside the user dashboard layout (with sidebar + `ProtectedRoute`).
+
+**After:** Wishlist is a standalone public page at `/wishlist`, accessible to guests via `useWishlistWithGuest`.
+
+**Files changed:**
+- `appkit/src/next/routing/route-map.ts` — `ROUTES.USER.WISHLIST` changed from `/user/wishlist` → `/wishlist`; removed from `PROTECTED_ROUTES`
+- `src/app/[locale]/user/layout.tsx` — removed Wishlist nav item; removed `isWishlistPage` pathname check; removed `usePathname` import
+- `src/app/[locale]/wishlist/layout.tsx` — created (passthrough, same as cart)
+- `src/app/[locale]/wishlist/page.tsx` — created (wraps in `Main > Section > Container`, uses `useWishlistWithGuest`)
+- `src/app/[locale]/user/wishlist/` — deleted
+
+---
+
+### 5. UserSidebar Redesign — Right Side + Collapsible + Mobile Accordion
+
+**`appkit/src/features/account/components/UserSidebar.tsx`** — Full rewrite:
+
+**Desktop (md+):**
+- Moved from LEFT to RIGHT side (`border-l` instead of `border-r`)
+- Collapsible: toggle button (‹/›) at top collapses to narrow icon rail (`w-12`) or expanded sidebar (`w-56`)
+- Collapse state persisted in `localStorage` key `user-sidebar-collapsed`
+- When collapsed, link labels are hidden; icons remain with `title` tooltip
+- Smooth CSS width transition (`transition-[width] duration-200`)
+
+**Mobile:**
+- Keeps `BottomSheet` sliding up from bottom
+- NEW: accordion groups — each group has a collapsible header with toggle arrow (▾)
+- Groups open/close independently via React state (default: all open)
+- Falls back to flat list if no `groups` prop is provided
+
+**New interfaces added:**
+```typescript
+export interface UserNavGroup {
+  title: string;
+  items: UserNavItem[];
+  defaultOpen?: boolean;
+}
+```
+`UserNavGroup` exported from `appkit/src/client.ts`.
+
+---
+
+**`src/app/[locale]/user/layout.tsx`** — Updated:
+
+- Render order swapped: `{children}` BEFORE `<UserSidebar>` (puts sidebar on the RIGHT in the flex row)
+- `USER_NAV_ITEMS` flat array replaced with `USER_NAV_GROUPS`:
+  - **Shopping**: My Orders, My Offers, Addresses
+  - **Account**: My Profile, Settings, Notifications, Messages
+  - **Selling**: Open a Store
+- `ALL_NAV_ITEMS` derived from groups (flat) for `items` prop (desktop list)
+- `groups` prop passed to `UserSidebar` for mobile accordion rendering
+- Wishlist removed from nav (now a public standalone page)
+
+---
+
+### Summary Table
+
+| File | Change | Type |
+|---|---|---|
+| `appkit/src/seed/faq-seed-data.ts` | 65 LetItRip-accurate FAQs, full rewrite | Enhancement |
+| `src/app/api/demo/seed/route.ts` | Import `wishlistsSeedData` from appkit | Bug Fix |
+| `src/app/[locale]/stores/[storeSlug]/pre-orders/layout.tsx` | Created — fixes store pre-orders tab missing store header | Bug Fix |
+| `appkit/src/next/routing/route-map.ts` | `WISHLIST` route → `/wishlist`; removed from `PROTECTED_ROUTES` | Enhancement |
+| `src/app/[locale]/user/layout.tsx` | Remove wishlist nav; swap render order; add grouped nav | Enhancement |
+| `src/app/[locale]/wishlist/layout.tsx` | Created (passthrough) | Enhancement |
+| `src/app/[locale]/wishlist/page.tsx` | Created (public wishlist page) | Enhancement |
+| `appkit/src/features/account/components/UserSidebar.tsx` | Right-side + collapsible desktop + mobile accordion | Enhancement |
+| `appkit/src/client.ts` | Export `UserNavGroup` type | Enhancement |

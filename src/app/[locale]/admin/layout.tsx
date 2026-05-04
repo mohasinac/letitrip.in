@@ -22,6 +22,8 @@ const ADMIN_NAV_ITEMS = [
   { href: String(ROUTES.ADMIN.PAYOUTS), label: "Payouts" },
   { href: String(ROUTES.ADMIN.CATEGORIES), label: "Categories" },
   { href: String(ROUTES.ADMIN.COUPONS), label: "Coupons" },
+  { href: String(ROUTES.ADMIN.DEALS), label: "Deals" },
+  { href: String(ROUTES.ADMIN.FEATURED), label: "Featured" },
   { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews" },
   { href: String(ROUTES.ADMIN.BLOG), label: "Blog" },
   { href: String(ROUTES.ADMIN.BIDS), label: "Bids" },
