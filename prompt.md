@@ -9,9 +9,15 @@
 
 **Next up: Category filter — searchable dropdown**
 
-Collapsible filters is complete (Part 22). Next task:
+Offer logic is complete (Part 23). Next task from the queue:
 
 Replace the current category list/chips in `ProductFilters`, `AuctionFilters`, and `PreOrderFilters` with a searchable combobox that shows selected categories inline. The filter component already has a `searchable` prop on `FilterFacetSection` — but the search box only appears when > 8 options and the section is open. Make the search always visible when `searchable={true}` (remove the `> 8` gate from `FilterFacetSection`). Apply via "Apply Filters" only (already buffered in `pendingTable`).
+
+### ✅ Completed (Part 23 — Offer Logic):
+- `SellerOffersPanel`: interactive Accept/Decline/Counter with status filter tabs on `/store/offers`
+- `UserOffersPanel`: buyer view with Accept Counter / Withdraw / Checkout on `/user/offers`
+- `allowOffers: true` auto-set on all simple published products in all 7 franchise seed files
+- `MakeOfferButton` shows no offer amount to buyer — only "Make Offer" text
 
 ### ✅ Completed (Part 22 — Collapsible filter sections):
 - `RangeFilter` and `SwitchFilter` never collapse (`defaultCollapsed={false}`).
