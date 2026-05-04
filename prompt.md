@@ -7,14 +7,18 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Sticky toolbar fix**
+**Next up: Bottom button bar on detail pages**
 
-Searchable category filter is complete (Part 24 — already in codebase). Next task:
+Sticky toolbar + mobile toolbar + searchable category are all complete (Parts 24-26). Next task:
 
-Listing page toolbar must stick below the site header as user scrolls. Currently `ListingLayout.tsx` / `ProductsIndexListing.tsx` uses a fixed `top-14` (56px). The actual header height is set in CSS as `--header-height` (default `3.5rem = 56px`). Audit `ListingToolbar` in `appkit/src/ui/components/ListingToolbar.tsx` — change the sticky `top` to `var(--header-height, 3.5rem)` so it always tracks the real header.
+On product / auction / pre-order detail pages: a fixed bar **above the bottom nav** showing Buy Now / Add to Cart / Wishlist / Bid icons. Must always be visible on mobile without scrolling. Check `appkit/src/features/products/components/ProductDetailPageView.tsx`, `AuctionDetailPageView.tsx`, `PreOrderDetailPageView.tsx` — add a `renderBottomBar` slot or add a standard `BuyBar` component from `appkit/src/features/products/components/BuyBar.tsx`. The bar must sit above the bottom nav (`bottom-[var(--bottom-nav-height,3.5rem)]` or `bottom-16`).
+
+### ✅ Completed (Part 26 — Mobile toolbar row layout):
+- `ListingToolbar`: search on Row 1 (full width mobile); filters + sort + view toggle on Row 2.
+- `FilterFacetSection`: selected chips shown when collapsed; search always visible; auto-expands when typing.
 
 ### ✅ Completed (Part 24 — Searchable category filter verified):
-- `FilterFacetSection` search shows whenever `searchable={true}` — `> 8` gate was already removed in commit `71b1724`.
+- `FilterFacetSection` search shows whenever `searchable={true}`.
 
 ### ✅ Completed (Part 23 — Offer Logic):
 - `SellerOffersPanel`: interactive Accept/Decline/Counter with status filter tabs on `/store/offers`

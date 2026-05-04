@@ -2,6 +2,26 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 26 — Mobile toolbar row layout + sticky toolbar verified)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/components/ListingToolbar.tsx` | Search input is now Row 1 (full-width on mobile). Filters button moved to Row 2 alongside sort + view toggle. On `sm+` everything stays in a single row. |
+| `appkit/src/features/filters/FilterFacetSection.tsx` | Selected value chips shown when collapsed (up to 3 + `+N more`). Search input always visible when `searchable=true`. Typing in the search box auto-expands the section. |
+| `appkit/src/features/products/components/ProductFilters.tsx` | Category `searchable={true}`. Brand/store/tags `searchable` when `options.length > 4`. |
+| `appkit/src/features/auctions/components/AuctionFilters.tsx` | Category `searchable={true}`. |
+| `appkit/src/features/pre-orders/components/PreOrderFilters.tsx` | Category `searchable={true}`. |
+
+### Behaviour
+Mobile listing pages now show search on its own top row, and the filters/sort/view controls on the row below — matching the task spec. Sticky toolbar already tracked `--header-height` correctly.
+
+### Seed impact
+None.
+
+---
+
 ## Session Update — 2026-05-05 (Part 24 — Searchable category filter verified complete)
 
 ### What changed
