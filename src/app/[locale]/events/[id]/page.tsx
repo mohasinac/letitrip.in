@@ -11,6 +11,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShareEventButton } from "./ShareEventButton";
+import { PollInlineClient } from "./PollInlineClient";
 
 export const revalidate = 60;
 
@@ -153,16 +154,36 @@ export default async function Page({ params }: Props) {
           </Div>
         </Div>
       )}
-      renderContent={
-        event.description
-          ? () => (
+      renderContent={() => {
+        const pollCfg = (event as any).pollConfig as {
+          options: { id: string; label: string }[];
+          allowMultiSelect: boolean;
+          allowComment: boolean;
+          requireLogin?: boolean;
+        } | undefined;
+        return (
+          <div className="space-y-6">
+            {event.description ? (
               <RichText
                 html={typeof event.description === "string" ? event.description : ""}
                 className="text-zinc-600 dark:text-zinc-400"
               />
-            )
-          : undefined
-      }
+            ) : null}
+            {pollCfg?.options?.length ? (
+              <div className="space-y-3">
+                <Heading level={2} className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  Cast Your Vote
+                </Heading>
+                <PollInlineClient
+                  eventId={event.id}
+                  pollConfig={pollCfg}
+                  isActive={isActive}
+                />
+              </div>
+            ) : null}
+          </div>
+        );
+      }}
       renderLeaderboard={
         leaderboard.length > 0
           ? () => (
@@ -187,19 +208,22 @@ export default async function Page({ params }: Props) {
             )
           : undefined
       }
-      renderParticipateAction={() =>
-        isActive ? (
-          <Link
-            href={`/${locale}${String(ROUTES.PUBLIC.EVENT_PARTICIPATE(id))}`}
-            className="inline-block rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600"
-          >
-            Participate Now
-          </Link>
-        ) : (
-          <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-5 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-            This event has ended.
-          </Div>
-        )
+      renderParticipateAction={
+        eventType === "poll"
+          ? undefined
+          : () =>
+              isActive ? (
+                <Link
+                  href={`/${locale}${String(ROUTES.PUBLIC.EVENT_PARTICIPATE(id))}`}
+                  className="inline-block rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600"
+                >
+                  Participate Now
+                </Link>
+              ) : (
+                <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-5 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                  This event has ended.
+                </Div>
+              )
       }
     />
   );
