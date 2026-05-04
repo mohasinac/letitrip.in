@@ -35,6 +35,21 @@
   h1, h2, h3, h4, h5, h6 { letter-spacing: -0.02em; line-height: 1.15; }
   p { line-height: 1.7; }
 
+  /* Cursive font mode */
+  html.font-cursive body {
+    font-family: var(--font-cursive), Georgia, 'Times New Roman', serif;
+    letter-spacing: 0;
+  }
+  html.font-cursive h1,
+  html.font-cursive h2,
+  html.font-cursive h3,
+  html.font-cursive h4,
+  html.font-cursive h5,
+  html.font-cursive h6 {
+    font-family: var(--font-cursive), Georgia, 'Times New Roman', serif;
+    letter-spacing: -0.01em;
+  }
+
   /* Selection color */
   ::selection {
     background-color: rgba(101, 196, 8, 0.25);

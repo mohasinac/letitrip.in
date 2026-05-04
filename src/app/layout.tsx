@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
+import { Poppins, Inter, Cormorant_Garamond, Playfair_Display } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { initProviders } from "@/providers.config";
@@ -21,6 +21,13 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-editorial",
+  display: "swap",
+});
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cursive",
   display: "swap",
 });
 
@@ -115,7 +122,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`min-h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}`}
+      className={`min-h-full ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
     >
       <head>
         <script
@@ -136,6 +143,12 @@ export default async function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `try{var m=document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);var t=(m&&m[1])||localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
+          }}
+        />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){}`,
           }}
         />
       </head>
