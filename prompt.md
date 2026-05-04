@@ -7,11 +7,15 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Homepage carousel (Task 15)**
+**Next up: Ads — no empty space (Task 16)**
 
-Events inline polls done (Part 33). Next task:
+Homepage carousel mobile fixed (Part 36). Next task:
 
-Audit `HeroCarousel` in `appkit/src/features/homepage/components/HeroCarousel.tsx`. On mobile it should show 1 card per row and max 2 rows of slides. Check `pokemon-carousel-slides-seed-data.ts` for slide count and image dimensions. Fix any layout issues so the carousel renders correctly at 375px width.
+Check `MarketplaceHomepageView.tsx` — if an `adSlots` prop has no content for a slot, it must render nothing (no reserved height / blank space). Also check listing page ad slots. Find where ad slot placeholders reserve height even when empty and fix them to render `null` when no content is provided.
+
+### ✅ Completed (Part 36 — Homepage carousel mobile fix):
+- `HeroCarousel`: `gridRow: auto` on mobile fixes card overlap; card 90% width + auto height; 260px min-height on mobile.
+- Checkout/verify routes: `appliedCoupons[0]` instead of missing `appliedCoupon`; inline discount type.
 
 ### ✅ Completed (Part 33 — Events inline poll voting):
 - `PollInlineClient` created: inline radio/checkbox poll with login-required auth gate.
@@ -100,7 +104,7 @@ Audit `HeroCarousel` in `appkit/src/features/homepage/components/HeroCarousel.ts
 | ~~12~~ | ~~Stores seed — storeId not sellerId~~ | ✅ Done (Part 30 — already correct) |
 | ~~13~~ | ~~Circular/infinite horizontal scrollers~~ | ✅ Done (Part 31) |
 | ~~14~~ | ~~Events — polls + richer seed~~ | ✅ Done (Part 33) |
-| 15 | **Homepage carousel** | 1 card per row on mobile, max 2 rows, proper slide dimensions. Check `HeroCarousel` and `pokemon-carousel-slides-seed-data.ts`. |
+| ~~15~~ | ~~Homepage carousel~~ | ✅ Done (Part 36) |
 | 16 | **Ads — no empty space** | If `adSlots` prop has no content for a slot, render nothing (no reserved height). Fix in `MarketplaceHomepageView.tsx` and any listing page ad slots. |
 | 17 | **200 products + open-source images** | Verify `allProductsSeedData` across 7 franchises reaches ~200 products. Replace any `picsum.photos` or random image URLs with proper open-source image URLs (Wikimedia Commons, official TCG image APIs, etc.). Add `videoUrl` field where appropriate. |
 | 18 | **User nav collapsible** | In user sidebar, nav groups are auto-collapsed by default. User can expand. Implement in `UserSidebar` (appkit). |

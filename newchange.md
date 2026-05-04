@@ -2,6 +2,56 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 36 — Homepage carousel mobile fix + checkout coupon fields)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/homepage/components/HeroCarousel.tsx` | `gridRow: auto` on mobile (prevents overlap); card 90% width, auto height with 110px min; section 260px min-height on mobile |
+| `src/app/api/checkout/route.ts` | Uses `cart.appliedCoupons[0]`; inline discount type instead of missing appkit export |
+| `src/app/api/payment/verify/route.ts` | Same coupon array + inline type fix |
+
+### Root causes fixed
+- Mobile carousel: cards with `gridRow: 2` were all placed in the same cell → overlap. Now `gridRow: auto` lets CSS stack them naturally.
+- Cart coupon API: `CartDocument.appliedCoupon` field renamed to `appliedCoupons[]` in appkit; routes updated.
+- `AppliedOrderDiscount` type not exported from installed appkit dist barrel; replaced with inline equivalent.
+
+---
+
+## Session Update — 2026-05-05 (Part 35 — Coupons fix + share buttons + category/store links)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/api/coupons/route.ts` | **New** — public paginated GET endpoint for active coupons with Sieve filtering |
+| `appkit/src/constants/api-endpoints.ts` | `PROMOTION_ENDPOINTS.LIST` changed from `/api/promotions` → `/api/coupons` |
+| `src/app/[locale]/promotions/[tab]/page.tsx` | Always fetches `getPromotions()` regardless of tab (fixes "coupons" tab showing nothing) |
+| `appkit/src/features/promotions/components/CouponCard.tsx` | Redesigned copy code block: dashed-border monospace code zone + inline copy button; manages its own `copied` state |
+| `appkit/src/features/promotions/components/CouponsIndexListing.tsx` | Removed stale `copiedCode` state + `handleCopy`; simplified CouponCard labels |
+| `appkit/src/features/products/components/ShareButton.tsx` | **New** — `"use client"` component: uses `navigator.share()` (native intent) with clipboard-copy fallback |
+| `appkit/src/index.ts` | Exports `ShareButton` |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Category → `CATEGORY_DETAIL` link; seller → store/seller profile link; share button in breadcrumb row |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Category → `CATEGORY_DETAIL` link in breadcrumb; seller → store/seller profile link; share button |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Category → `CATEGORY_DETAIL` link in breadcrumb; seller → store/seller profile link; share button |
+| `appkit/src/features/stores/components/StoreHeader.tsx` | Share button added next to the Follow button |
+
+### Coupons page bug (root cause)
+- The "coupons" tab skipped calling `getPromotions()` (`needsProducts = false`), so `initialCoupons = []`.
+- Meanwhile `usePromotions` was hitting `/api/promotions` which returns `{ promotedProducts, featuredProducts, activeCoupons }` — **not** `{ items, total, totalPages }` — so `data?.items` was always `undefined`, producing an empty list on both SSR and client.
+- Fix: new `/api/coupons` public route returns the correct paginated shape; `PROMOTION_ENDPOINTS.LIST` now points there; promotions page always fetches regardless of active tab.
+
+### Share button behaviour
+- On mobile/browsers supporting Web Share API: triggers `navigator.share()` — native OS share sheet (intent).
+- On desktop or if the user cancels: copies `window.location.href` to clipboard, button shows "Link Copied!" for 2 s.
+
+### Category & store links
+- Category text in breadcrumbs and info row → `<Link href={CATEGORY_DETAIL(category)}>`.
+- "Sold by / Listed by" seller name → `<Link href={STORE_DETAIL(storeSlug)}>` if the product document carries `storeSlug`, otherwise falls back to `SELLER_DETAIL(sellerId)`.
+
+---
+
 ## Session Update — 2026-05-05 (Part 34 — HorizontalScroller circular loop refactor)
 
 ### What changed
