@@ -25,6 +25,23 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 44b — PublicProfileView data wiring + FAQPageView fix)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/about/components/PublicProfileView.tsx` | Replaced placeholder shell with live data — calls `getPublicUserProfile`, `getSellerProducts`, `getSellerReviews` in parallel; renders real displayName, avatar photo, listing count, and review count |
+| `appkit/src/features/about/components/FAQPageView.tsx` | Replaced `t.raw("categories")` / `t.raw("items")` with `getMessages()` typed access — avoids next-intl runtime errors when raw key shapes don't match |
+
+### Details
+
+- `PublicProfileView` now shows the seller's real avatar (`<img>` with `object-cover`) if `photoURL` is present, falls back to the `<User>` icon placeholder
+- Listing count and review count are now live numbers instead of `"—"`
+- `FAQPageView` change is defensive: `getMessages()` returns the full message tree as a typed record, bypassing `t.raw()` which can throw on mismatched keys
+
+---
+
 ## Session Update — 2026-05-05 (Part 44 — Franchise homepage sections + filterByBrand)
 
 ### What changed
