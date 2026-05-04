@@ -2,6 +2,39 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 12 — Server Load Fix + Toast Notifications)
+
+### Performance fix — removed server-side Firebase Admin call from root layout
+
+`getServerSessionUser()` was added to `src/app/[locale]/layout.tsx` in a previous session to hydrate `SessionProvider` with an `initialUser` on SSR. This caused two Firebase Admin SDK network calls (a `verifySessionCookie` and a Firestore `findById`) on **every page request**, making the Next.js server do work that should be on Firebase.
+
+Reverted `SessionProvider` back to `initialUser={null}`. Auth state is now resolved entirely client-side by the Firebase SDK. There is a brief (~100ms) flash of unauthenticated state during hydration, which is acceptable.
+
+**Files changed:** `src/app/[locale]/layout.tsx`
+
+### Toast notifications wired across auth and user flows
+
+Added `useToast` feedback throughout the following flows so users get visible confirmation of actions:
+
+- **Login / Register / Forgot Password / Reset Password** — success and error toasts on all auth outcomes
+- **Google sign-in** — session refresh + success toast on `onSessionSynced`
+- **Sign out** — "Signed out successfully" toast
+- **Cart** — coupon applied/removed, item removed toasts
+- **Checkout** — OTP sent, identity verified, payment successful, COD confirmed toasts
+- **User Addresses** — add/edit/delete/set-default toasts
+- **Profile** — update success/error toasts
+- **Newsletter** — subscription success/error toasts
+
+**New client components (replaced appkit placeholders with toast-enabled versions):**
+- `src/components/user/UserAddressesClient.tsx`
+- `src/components/user/AddAddressClient.tsx`
+- `src/components/user/EditAddressClient.tsx`
+- `src/components/user/ProfilePageClient.tsx`
+
+**Auth close page** (`src/app/[locale]/auth/close/page.tsx`) rewritten as a proper client component: auto-closes the popup window on success, shows a styled error state if the `?error=` param is present.
+
+---
+
 ## Session Update — 2026-05-05 (Part 11 — Product/Auction/Pre-Order Index Fixes + Filter Corrections)
 
 ### Product data model clarification
