@@ -2,6 +2,27 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 38b — Wikimedia Commons images + video fields)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/seed/hot-wheels-seed-data.ts` | `img()` replaced loremflickr → 12-item Wikimedia Commons pool; added `video` to first featured product |
+| `appkit/src/seed/beyblade-seed-data.ts` | `img()` → 9-item Wikimedia Commons pool; added `video` to first featured product |
+| `appkit/src/seed/transformers-seed-data.ts` | `img()` → 10-item Wikimedia Commons pool; added `video` to first featured product |
+| `appkit/src/seed/anime-figures-seed-data.ts` | `img()` → 10-item Wikimedia Commons pool; added `video` to Goku figure |
+| `appkit/src/seed/retro-gaming-seed-data.ts` | `img()` → 12-item Wikimedia Commons pool (NES, SNES, Game Boy, N64, Sega…); added `video` to NES listing |
+| `appkit/src/seed/cosplay-accessories-seed-data.ts` | `img()` → 10-item Wikimedia Commons pool |
+
+### Details
+- All 6 non-Pokemon franchise files now use `commons.wikimedia.org/wiki/Special:Redirect/file/FILENAME?width=640` — stable CC-licensed redirects, never random
+- Hash of product seed string selects deterministically from each franchise's pool (same product → same image)
+- `video.url` uses `commondatastorage.googleapis.com/gtv-videos-bucket/sample/` (Google's public sample MP4 library); `video.thumbnailUrl` uses Wikimedia Commons
+- TSC: 0 errors
+
+---
+
 ## Session Update — 2026-05-05 (Part 38 — 200 products verified + picsum replaced)
 
 ### What changed
