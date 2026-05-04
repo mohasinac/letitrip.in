@@ -127,6 +127,7 @@ export default function LayoutShellClient({
     () => [
       {
         title: "Browse",
+        defaultOpen: true,
         items: navItems.map((item) => ({
           href: item.href,
           label: item.label,

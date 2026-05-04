@@ -1,522 +1,221 @@
 # letitrip.in — Master Working Prompt
 
-> Use this prompt at the start of every working session.
-> Paste the full contents into Claude Code (or any AI coding assistant) as the opening message.
-> The AI will orient itself, pick up where we left off, and work through tasks incrementally.
+> Paste this entire file at the start of every session.
+> The AI reads the CURRENT TASK section at the top, starts immediately, and works down the pending queue without asking.
 
 ---
 
-## HOW TO USE THIS FILE
+## ⚡ CURRENT TASK — START HERE
 
-1. Open a new Claude Code session
-2. Paste this entire file as your first message (or use `/load prompt.md`)
-3. The AI will read the tracker, pick the next pending task, and begin
-4. At the end of every task: code committed → tracker updated → seed updated → ASCII diagrams updated
+**Next up: User Request — Navigation Overhaul**
 
----
+The main public layout (`LayoutShellClient.tsx` → `AppLayoutShell`) currently shows a top hamburger sidebar on mobile. The user wants menu items moved to a **bottom nav bar** on mobile, and a **hamburger icon below the navbar** on desktop (not inside the top bar).
 
-## Build Issues and Resolutions
+Dashboard sidebars (admin/store/user) already have a mobile FAB — those are done. This task is about the **public AppLayoutShell only**.
 
-### Root Causes of Build Failures
-- **Client Components Importing Server Code**: Client components (marked with "use client") were importing from `@mohasinac/appkit`, which includes server-side code like Firebase Admin SDK and Node.js modules (e.g., `fs`, `child_process`). This caused Next.js Turbopack to bundle server-only modules into client bundles, leading to "Can't resolve 'fs'" errors.
-- **Barrel Exports Pulling in Unintended Dependencies**: The main `appkit/src/index.ts` barrel file exported everything, including server components and providers, causing transitive imports of server code in client builds.
-- **Lack of Separate Entry Points**: No clear separation between client-safe and server-side exports, leading to incorrect imports.
+### What to do
 
-### Correct Way to Export and Import from Appkit
-- **Entry Points**:
-  - `@mohasinac/appkit/client`: For client components, hooks, UI primitives, and client-safe features. Exports are marked with "use client" and exclude server dependencies.
-  - `@mohasinac/appkit/server`: For server components, actions, and server-side logic.
-  - `@mohasinac/appkit/ui`: For UI components and layout primitives.
-  - `@mohasinac/appkit`: Main entry for general use, but avoid in client components to prevent server code inclusion.
-- **Import Guidelines**:
-  - Client components (pages with "use client"): Import from `@mohasinac/appkit/client`.
-  - Server components and actions: Import from `@mohasinac/appkit` or specific sub-paths.
-  - UI/layout: Import from `@mohasinac/appkit/ui` or `@mohasinac/appkit/client`.
-- **Export Strategy**:
-  - Client-safe items (UI, hooks, client providers) go in `client.ts`.
-  - Server items stay in `index.ts` or `server.ts`.
-  - Use `serverExternalPackages` in `next.config.js` to exclude server modules from client bundles.
-- **Resolution Applied**: Added client exports to `client.ts`, updated client page imports, and configured `serverExternalPackages` to exclude Firebase and Node.js modules.
+1. **Check if `AppLayoutShell` already supports a `bottomNav` prop** — read `appkit/src/ui/components/AppLayoutShell.tsx` (or wherever the component lives). If a `bottomNavItems` / `bottomNav` prop exists, wire it in `LayoutShellClient.tsx` with the same `navItems` array.
+
+2. **If no bottom nav prop exists**, add it to `AppLayoutShell` in appkit:
+   - On `< lg` screens: render a fixed bottom bar (`fixed bottom-0 left-0 right-0 z-40 pb-safe`) showing up to 5 icon+label items from `navItems`. The rest go in the hamburger sidebar.
+   - On `>= lg` screens: render the existing top nav bar unchanged.
+   - Rebuild appkit after changes.
+
+3. **Desktop hamburger** — user wants a hamburger icon **below** the navbar (not inside the title bar). On `>= lg` screens, add a small hamburger trigger anchored below the sticky title bar (e.g. `top-14` offset, left side) that opens the existing sidebar drawer. This replaces the inline nav links on desktop.
+
+4. **Same treatment for store and admin layouts** if they have a persistent sidebar nav — confirm or add a compact sidebar-open trigger below the top bar on desktop.
+
+5. Run `npx tsc --noEmit` — 0 errors before committing.
+
+6. Commit:
+   ```
+   feat(nav): bottom nav on mobile + below-navbar hamburger on desktop
+   ```
+
+7. Update `newchange.md` at the top with a new Part entry.
 
 ---
 
-## CONTEXT — READ THESE FIRST
+## 📋 FULL PENDING QUEUE (work in this order after navigation)
 
-You are working on **letitrip.in**, a Next.js 16 multi-vendor marketplace (India).
-Before doing anything else, read both reference files in full:
-
-```
-d:\proj\letitrip.in\INSTRUCTIONS.md       ← architecture, all bugs, gap analysis (21 sections)
-d:\proj\letitrip.in\new-tracker.md        ← every task, phase, and status (Phases 7–33)
-```
-
-Also read the memory index for persistent context across sessions:
-```
-C:\Users\mohsi\.claude\projects\d--proj-letitrip-in\memory\MEMORY.md
-```
-
-The codebase is split into two parts:
-- **`appkit/`** — the shared UI/feature library (`@mohasinac/appkit`). All bugs and
-  component-level fixes go here. After any change to appkit, run `npm run watch:appkit`
-  (or a one-off build) before testing in the Next.js dev server.
-- **`src/`** — the letitrip.in Next.js app. Page wiring, route handlers, and
-  app-level logic go here. Changes here take effect immediately on the dev server.
-
----
-
-## YOUR WORKING METHODOLOGY
-
-Follow this exact loop for **every single task** without exception:
-
-### 1. Orient
-- Read `new-tracker.md` and find the first task with status `⏳ Pending`
-- Read the relevant section of `INSTRUCTIONS.md` for full context on that bug/gap
-- Read the actual source files involved before writing a single line of code
-- State clearly: "Working on Phase X.Y — [task name]"
-
-### 2. Plan (brief)
-- In 3–5 bullet points, describe exactly what you will change and why
-- If the change touches appkit, note that a rebuild is needed after
-- If you find the task is already done or the premise is wrong, document that,
-  mark it `✅ Done` with a note, then move to the next task
-
-### 3. Implement
-- Make the smallest correct change that completes the task
-- No extra refactoring, no speculative abstractions, no cleanup beyond the task
-- Prefer editing existing files over creating new ones
-- Never skip TypeScript types or leave `any` casts unless unavoidable
-
-### 4. Verify
-- **For appkit changes:** run `npm run watch:appkit` and confirm it builds cleanly
-- **For all changes:** run `npx tsc --noEmit` and confirm 0 type errors
-- **For UI changes:** start `npm run dev` and visually confirm the fix in the browser
-- If tests exist that cover this area (`npm run test`), run them
-
-### 5. Commit
-- Stage only the files changed for this specific task
-- Use this commit format:
-  ```
-  fix(phase-X.Y): <short description of what was fixed>
-
-  - <bullet: what changed in file A>
-  - <bullet: what changed in file B>
-  - Root cause: <one sentence>
-  ```
-
-### 6. Update seed data
-After every task that adds, changes, or removes a UI feature, data field, or page:
-
-**Ask yourself: does the seed data need to reflect this change?**
-
-Seed files live in:
-```
-appkit/src/seed/                          ← appkit-level seed documents
-src/app/api/demo/seed/route.ts            ← /demo/seed endpoint (runs on local dev)
-```
-
-Rules:
-- If you **add a new homepage section type** → add at least one sample document to the homepage sections seed
-- If you **add a new Firestore field** to a product, auction, event, or store → add that field to the seed
-- If you **add a new collection** → add a minimum viable seed entry (1–3 docs)
-- If you **fix a bug that was hiding empty data** → add real data to make the fix visually verifiable
-- If no seed change is needed, write "Seed: no change needed — [reason]" in the commit
-
-### 7. Update the tracker
-After each completed task, update **both** tracker files:
-
-**`new-tracker.md`:**
-- Change status from `⏳ Pending` → `✅ Done`
-- Add a one-line implementation note if it differed from the plan
-- Update the phase progress count in the "Updated Current Status" table
-
-**`INSTRUCTIONS.md`:**
-- Find the ASCII diagram or comparison table that references the feature you just fixed
-- Update the "Current Build" column/side to reflect the new state
-- Change ❌ → ✅ (or ⚠️) in the master gap table (Section 12) for the affected row
-- If you fixed a bug from Section 13 (Regression Catalog), add a "✅ Fixed in phase X.Y" note
-
-### 8. Update newchange.md
-After **every completed task**, prepend a new entry to `newchange.md` describing what changed. Do not defer to the end.
-
-### 9. Continue
-- Move immediately to the next `⏳ Pending` task in the same phase
-- Only stop and ask when genuinely blocked
+| # | Task | Notes |
+|---|------|-------|
+| 1 | **Navigation** | ↑ described above — START HERE |
+| 2 | **Buy Now buttons** | Add for: (a) simple products, (b) auctions with `buyoutPrice`, (c) pre-orders. Wire in `ProductDetailPageView`, `AuctionDetailView`, `PreOrderDetailView`. Appkit `BuyBar` already exists — check if it has a buyout path first. |
+| 3 | **Offer logic** | Re-add for simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
+| 4 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
+| 5 | **Collapsible filters** | Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. |
+| 6 | **Category filter — searchable dropdown** | Replace the current category list/chips in `ProductFilters` with a searchable `<select>` or combobox that shows selected categories inline. Apply via "Apply Filters" only. |
+| 7 | **Sticky toolbar fix** | Listing page toolbar currently uses `top-14`. Must stick below breadcrumbs/searchbar as user scrolls. Audit `ListingLayout.tsx` or `ProductsIndexListing.tsx` — compute correct top offset based on actual header height. |
+| 8 | **Mobile toolbar row layout** | Row 1: search + confirm button. Row 2: sort + grid/list toggle. Row 3: pagination. Currently these are collapsed or in wrong order on mobile. Fix in `ListingLayout.tsx`. |
+| 9 | **Bottom button bar** | On product/auction/pre-order detail pages: a fixed bar above the bottom nav showing Buy Now / Add to Cart / Wishlist / Bid icons. Must always be visible on mobile without scrolling. |
+| 10 | **Order grouping** | Auctions → always individual orders. Simple products + pre-orders from the same store → grouped into one order. Coupons apply to group total. Update checkout flow in `CheckoutRouteClient.tsx` + order creation API. |
+| 11 | **Store reviews on auction pages** | At the bottom of auction detail: show store rating summary + up to 10 most recent store reviews. Wire `renderStoreReviews` slot if it exists in `AuctionDetailView`, otherwise add it. |
+| 12 | **Stores seed — storeId not sellerId** | Verify seed and store queries use `storeId` for ownership. Check `pokemon-stores-seed-data.ts` ownerId fields match `pokemon-users-seed-data.ts` user IDs. Fix store-not-found errors. |
+| 13 | **Circular/infinite horizontal scrollers** | `HorizontalScroller` currently stops at the last item. Add infinite-loop mode: clone first/last slides and jump seamlessly. Add `loop` prop to the component in appkit. |
+| 14 | **Events — polls + richer seed** | Add public polls (no login required) and login-required polls to `EventDetailView`. Add `pollConfig` to events seed data. Fix participate button if broken. |
+| 15 | **Homepage carousel** | 1 card per row on mobile, max 2 rows, proper slide dimensions. Check `HeroCarousel` and `pokemon-carousel-slides-seed-data.ts`. |
+| 16 | **Ads — no empty space** | If `adSlots` prop has no content for a slot, render nothing (no reserved height). Fix in `MarketplaceHomepageView.tsx` and any listing page ad slots. |
+| 17 | **200 products + open-source images** | Verify `allProductsSeedData` across 7 franchises reaches ~200 products. Replace any `picsum.photos` or random image URLs with proper open-source image URLs (Wikimedia Commons, official TCG image APIs, etc.). Add `videoUrl` field where appropriate. |
+| 18 | **User nav collapsible** | In user sidebar, nav groups are auto-collapsed by default. User can expand. Implement in `UserSidebar` (appkit). |
+| 19 | **Cursive font + toggle** | Add a quality cursive/display font (e.g. Playfair Display or Dancing Script from Google Fonts). Settings page: toggle below theme toggle to switch between cursive and Roboto. Store preference in localStorage. |
+| 20 | **Firebase logs** | Replace `console.log`/`console.error` with Firebase logging (Firebase Performance or custom structured logging). File-based logs only in local dev. |
+| 21 | **Cart & Checkout (Phase 28)** | Auth-backed cart (not just localStorage). Razorpay payment integration. Order creation API. See `CartRouteClient.tsx` and `CheckoutRouteClient.tsx`. |
+| 22 | **Admin Events CRUD (Phase 30)** | `AdminEventsView` component in appkit. Create/edit events from admin panel. |
+| 23 | **Rich Text (Phase 33)** | Store bio, return/shipping policies, category descriptions, event content — all currently plain text. Wire `RichTextEditor` in create/edit forms. |
+| 24 | **Responsive audit (Phase 22/23)** | 375px / 768px / 1024px viewport testing. Lighthouse ≥ 90. |
 
 ---
 
-## COMPONENT REUSE CHECKLIST — CRITICAL
+## HOW TO WORK (follow this loop for every task)
 
-**EVERY new page or feature must reuse existing appkit components for search, filters, and drawers.
-Do NOT create custom implementations.**
+### Each task:
+1. **Read** the relevant source files before writing a single line
+2. **Plan** in 3–5 bullets what to change and why
+3. **Implement** the smallest correct change
+4. **Verify** — `npx tsc --noEmit` must be 0 errors; visually confirm in browser
+5. **Commit** with format: `fix/feat(nav): description` — one task, one commit
+6. **Seed** — does this change need seed data? If yes, update. If no, note it.
+7. **Update `newchange.md`** — prepend a new Part entry describing what changed
+8. **Move to next task** in the queue above
 
-### Listing Pages — Always Use These
-
-| Component | Purpose | Mobile | Desktop |
-|-----------|---------|--------|---------|
-| **`<ListingLayout>`** | Full listing shell with toolbar + sidebar + mobile drawer | ✅ Bottom drawer | ✅ Sidebar |
-| **`<SlottedListingView>`** | Lightweight listing slots (no auto toolbar management) | Manual | Manual |
-| **`<FilterDrawer>`** | Slide-out mobile filter panel (already inside ListingLayout) | ✅ Yes | N/A |
-| **`<SideDrawer>`** | Generic form/edit drawer (addresses, products, etc.) | ✅ Full modal | ✅ Side panel |
-| **`<Input>`** | Search/text input | ✅ Yes | ✅ Yes |
-| **`<SortDropdown>`** | Sort selector | ✅ Yes | ✅ Yes |
-| **`usePendingFilters`** | Hook for deferred filter apply (stage → apply) | ✅ Yes | ✅ Yes |
-| **`useUrlTable`** | Hook for pagination/sort/search URL state | ✅ Yes | ✅ Yes |
-
-### ❌ ANTI-PATTERNS — DO NOT DO
-
-```tsx
-// ❌ WRONG — Custom drawer
-const [filterOpen, setFilterOpen] = useState(false);
-// ❌ WRONG — Search only on desktop
-{isDesktop && <SearchInput />}
-// ❌ WRONG — Duplicating FilterDrawer behavior
-import { FilterDrawer } from "@mohasinac/appkit";
-return <FilterDrawer isOpen={...} onClose={...}>...</FilterDrawer>
-```
-
-### ✅ CORRECT PATTERN
-
-1. Use `ListingLayout` if you need full toolbar + filters + search + sort
-2. Use `SlottedListingView` for custom toolbar assembly
-3. Use `SideDrawer` for edit/create forms
-4. Pass render functions — never create your own drawer/modal
-5. Let appkit handle mobile/desktop — no `if (isMobile)` in your code
-
----
-
-## PRIORITY ORDER
-
-Work through tasks in this exact order. Do not skip ahead.
-
-| Order | Phase / Item | Name | Status |
-|-------|-------------|------|--------|
-| 1 | **27** | Slot-Shell Page Wiring | ⏳ Next — user/seller/admin dashboards + auction/pre-order detail |
-| 2 | **User Request: Navigation** | Bottom nav mobile / hamburger desktop | ⏳ Pending |
-| 3 | **User Request: Buy Now + Offer** | Buy Now buttons + Offer logic | ⏳ Pending |
-| 4 | **User Request: Filters** | Apply-on-click + collapsible + searchable category | ⏳ Pending |
-| 5 | **User Request: Bottom Bar** | Sticky action bar above bottom nav | ⏳ Pending |
-| 6 | **User Request: Order Grouping** | By store; coupons on group | ⏳ Pending |
-| 7 | **28** | Cart & Checkout | ⏳ Auth cart, Razorpay, order creation |
-| 8 | **30** | Admin Events CRUD + Analytics | ⏳ Pending |
-| 9 | **33** | Rich Text Completeness | ⏳ Pending |
-| 10 | **22 / 23** | Responsive + Final Validation | ⏳ Partial |
-| ✅ | **24** | Appkit Core Bugs | Done |
-| ✅ | **25** | Product Detail Page | Done |
-| ✅ | **26** | Listing Page Toolbars | Done |
-
----
-
-## PHASE 27 — SLOT-SHELL PAGE WIRING (START HERE)
-
-Many pages render an appkit view component but pass no render props, leaving them blank.
-The correct reference implementations are:
-
-```
-src/app/[locale]/events/[id]/page.tsx        ← best pattern for detail pages
-src/app/[locale]/search/[slug]/.../page.tsx  ← best pattern for listing + filters
-```
-
-Pages that need render props wired:
-
-| Page | View Component | Slots to wire |
-|------|---------------|---------------|
-| `/auctions/[id]` | `AuctionDetailView` | gallery, tabs, bid history, related, store reviews |
-| `/pre-orders/[id]` | `PreOrderDetailView` | gallery, tabs, related, buy bar |
-| `/seller/products` | `SlottedListingView` | search, filters, table, pagination |
-| `/seller/orders` | `SlottedListingView` | search, filters, table, pagination |
-| `/admin/users` | `SlottedListingView` | search, filters, table, pagination |
-| `/admin/products` | `SlottedListingView` | search, filters, table, pagination |
-| `/admin/events` | `AdminEventsView` (create if missing) | search, table, create/edit drawer |
-
----
-
-## REMAINING USER REQUESTS (from mega-request 2026-05-05)
-
-Work through these after Phase 27, in the order listed:
-
-### UX — Navigation & Layout
-- **Bottom nav on mobile** — menu items move to bottom nav; hamburger replaces them on desktop (below navbar, not inside it). Same for store and admin layouts.
-- **User nav collapsible in sidebar** — auto-collapsed by default; other nav items auto-collapsed.
-- **Sticky toolbar** — must stick below breadcrumbs/searchbar, not at `top-14`. Must not disappear while scrolling.
-- **Bottom button bar** — Buy/Cart/Wishlist/Bid/Pre-Order icons always visible above bottom nav on product/auction detail pages.
-- **Pagination row** — on mobile, pagination is its own row below the sort+grid row, below the sticky toolbar.
-- **Mobile toolbar row order** — Row 1: search + confirm; Row 2: sort + grid/list; Row 3: pagination.
-
-### Filters
-- **Collapsible filters** — only collapse if there are many options. Range sliders and toggles never collapse.
-- **Apply-on-click behavior** — filter toggles/ranges buffer in pending state; only write to URL when "Apply Filters" is clicked. Sort and grid/list toggle remain on-change.
-- **Category filter** — searchable dropdown showing currently-selected categories. Same rule: applied on "Apply Filters" only.
-
-### Product Actions
-- **Buy Now buttons** — add for simple products, auctions with buyout price, and pre-orders.
-- **Offer logic** — re-add for simple products only. User gets 1 offer attempt. Seller can accept/reject from store dashboard. No direct amount displayed to buyer.
-- **Order grouping** — auctions are always individual orders. Simple products and pre-orders from the same store are grouped into one order. Coupons apply to the group total.
-
-### Store & Auction Pages
-- **Store reviews** — show store reviews and up to 10 other store products at the bottom of auction detail pages.
-- **Stores seed** — ensure seed uses `storeId` (not `sellerId`) for ownership; verify store-not-found errors are gone.
-
-### Content & Data
-- **Circular/infinite horizontal scrollers** — scrollers must loop back to start rather than stopping at the last item.
-- **Events** — richer seed data; public polls (no login) + login-required polls; fix participate button and page rendering.
-- **Homepage carousel** — 1 card per row, max 2 rows, beautiful slides.
-- **Ads** — do not reserve space if no ad content. Do not render empty sections or carousels.
-- **200 products** — verify seed reaches ~200 products across 7 franchises with proper open-source images (no unsplash/random). Add video URLs where appropriate.
-
-### Settings & Theming
-- **Cursive font + toggle** — add a better cursive font to the app. Settings page (below theme toggle) controls whether cursive or Roboto is active.
-
-### Logging
-- **Firebase logs** — replace `console.log` / file logs with Firebase logging. File-based logs only active in local dev server.
-
----
-
-## APPKIT BUILD CYCLE REMINDER
-
-Every time you change anything inside `appkit/src/`:
-
+### Build cycle for appkit changes:
 ```bash
-# Terminal 1 (keep running during development):
-npm run watch:appkit
-
-# Terminal 2:
-npm run dev
-
-# After all appkit changes for a phase:
-npm run build    # verify 0 errors
-npx tsc --noEmit # verify 0 type errors
+npm run watch:appkit   # keep running while editing appkit/src/
+npm run dev            # Next.js dev server
+npx tsc --noEmit       # must pass before commit
 ```
 
-Changes to `src/` (Next.js app) take effect immediately — no rebuild needed.
+`src/` changes take effect immediately — no rebuild needed.
 
 ---
 
-## COMMIT CONVENTIONS
+## COMPONENT REUSE — CRITICAL
 
-Every completed task produces **up to 3 commits** in this order:
+Never create custom drawers, filter panels, or listing layouts. Always use:
+
+| Component | Use for |
+|-----------|---------|
+| `ListingLayout` | Any public listing page (products, auctions, pre-orders, stores) |
+| `SlottedListingView` | Admin/seller dashboard listing tables |
+| `usePendingFilters` | Deferred filter state (stage changes, apply on click) |
+| `useUrlTable` | URL-backed pagination / sort / search state |
+| `SideDrawer` | Edit/create forms (addresses, products) |
+| `FilterDrawer` | Already inside `ListingLayout` — do not duplicate |
+
+Anti-patterns:
+```tsx
+// ❌ custom state for filter drawer
+const [filterOpen, setFilterOpen] = useState(false);
+// ❌ desktop-only search
+{isDesktop && <SearchInput />}
+```
+
+---
+
+## COMMIT FORMAT
 
 ```
-1. fix/feat/wire  — the code change
-2. seed           — seed data update (skip if no seed change needed)
-3. docs           — tracker + ASCII diagram updates
+fix(phase-X.Y): <verb> <what>
+feat(nav): <verb> <what>
+wire(phase-X.Y): <page> slot-shells
+seed(phase-X.Y): <collection> seed data
+
+- bullet: file A — what changed
+- bullet: file B — what changed
+- Root cause: one sentence
 ```
 
-Commit type prefixes:
-```
-fix(phase-X.Y):  <verb> <what>           ← bug fix in appkit or src/
-feat(phase-X.Y): <verb> <what>           ← new feature or component
-wire(phase-X.Y): <page> slot-shells      ← render-prop wiring in pages
-seed(phase-X.Y): <collection> seed data  ← Firestore seed additions/updates
-docs(phase-X.Y): tracker + diagrams      ← new-tracker.md + INSTRUCTIONS.md
-```
-
-Never commit broken TypeScript (tsc must be 0 errors).
-Never commit without updating `new-tracker.md` AND the relevant INSTRUCTIONS.md diagrams.
+Never commit with TSC errors. Never batch multiple tasks in one commit.
 
 ---
 
 ## WHAT NOT TO DO
 
-- Do not refactor code outside the scope of the current task
-- Do not add comments explaining what code does — only add comments for non-obvious WHY
-- Do not create new abstraction layers unless the task explicitly requires it
-- Do not run `git push` — local commits only unless asked
-- Do not mark a task ✅ Done if tsc has errors or the browser shows a regression
-- Do not batch multiple phase tasks into one commit — one task, one commit
-- Do not skip the tracker update — it is the shared source of truth
-- Do not skip the seed update — if a fix exposes empty data, the fix is only half done
-- Do not skip the ASCII diagram update — INSTRUCTIONS.md must stay in sync with reality
-- Do not update INSTRUCTIONS.md §12 "LIVE SITE" column — it is the reference target, never the current state
-- Do not mark seed tasks done unless the data is actually usable
+- Do not refactor beyond the current task
+- Do not add comments explaining what code does
+- Do not run `git push` unless asked
+- Do not skip `newchange.md` update — always prepend after completing a task
+- Do not update `INSTRUCTIONS.md §12 "LIVE SITE"` column — it is the reference, not current state
+- Do not skip seed data when a UI fix exposed empty data
 
 ---
 
-## BLOCKED? HERE'S HOW TO HANDLE IT
-
-| Situation | Action |
-|-----------|--------|
-| Missing exported function in appkit | Check appkit barrel (`appkit/src/index.ts`), then check if it needs to be added |
-| Type error you can't resolve | Note it with `// TODO: fix type — <reason>` and continue; do NOT use `any` silently |
-| Firestore collection doesn't exist locally | Write the seed entry for it NOW as part of this task; don't defer |
-| Appkit build fails | Fix the build error before proceeding — do not commit broken appkit |
-| Task already done | Mark ✅ Done, add note "confirmed already implemented", move on |
-| ASCII diagram location unclear | Search INSTRUCTIONS.md for the feature keyword |
-| Gap table row already shows ✅ | The fix was done before this session — verify in browser, then move on |
-| Ambiguous requirement | Check `INSTRUCTIONS.md` section for that feature; if still unclear, ask |
-
----
-
-## SEED DATA — FULL REFERENCE
-
-### Where seed files live
-
-```
-appkit/src/seed/
-  pokemon-homepage-sections-seed-data.ts   ← homepage section documents
-  pokemon-carousel-slides-seed-data.ts     ← hero carousel slides
-  pokemon-products-seed-data.ts            ← Pokémon product documents
-  hot-wheels-seed-data.ts                  ← Hot Wheels product documents
-  beyblade-seed-data.ts                    ← Beyblade product documents
-  transformers-seed-data.ts                ← Transformers product documents
-  anime-figures-seed-data.ts               ← Anime figures product documents
-  retro-gaming-seed-data.ts                ← Retro gaming product documents
-  cosplay-accessories-seed-data.ts         ← Cosplay accessories product documents
-  pokemon-bundle-seed-data.ts              ← allProductsSeedData (all 7 franchises)
-  pokemon-stores-seed-data.ts              ← 8 store documents
-  reviews-seed-data.ts                     ← review documents
-  pokemon-categories-seed-data.ts          ← category documents
-  pokemon-users-seed-data.ts               ← user documents (with roles)
-  bids-seed-data.ts                        ← bid documents
-  wishlists-seed-data.ts                   ← wishlist documents
-  cart-seed-data.ts                        ← cart documents
-  blog-posts-seed-data.ts                  ← blog post documents
-  events-seed-data.ts                      ← event + eventEntry documents
-  addresses-seed-data.ts                   ← address documents
-  store-addresses-seed-data.ts             ← store address documents
-  pokemon-coupons-seed-data.ts             ← coupon documents
-
-src/app/api/demo/seed/route.ts             ← POST /demo/seed (imports + writes all seed files)
-```
-
-### Seed upsert behavior
-All writes use `batch.set(ref, data, { merge: true })` — always upsert, never skip.
-User auth records are always upserted; custom claims are set for non-"user" roles.
-
-### Minimum viable seed per collection
-
-| Collection | Minimum | Key fields |
-|------------|---------|------------|
-| `carousel_slides` | 2 slides | `active:true`, `order`, `title`, `imageUrl`, `ctaHref` |
-| `homepage_sections` | 1 per type | `enabled:true`, `order`, `type`, all type-specific fields |
-| `site_settings/singleton` | 1 doc | `announcementText`, `announcementEnabled:true` |
-| `products` | 3–5 products | `images[]` (≥2), `specifications[]`, `categoryId`, `sellerId`, `description` |
-| `auctions` | 2 auctions | `isAuction:true`, `currentBid`, `reservePrice`, `endsAt`, 3+ bids |
-| `events` | 1 event | `title`, `description`, `startDate`, `endDate`, `pollConfig` |
-| `stores` | 1 store | `bio`, `returnPolicy`, `shippingPolicy`, `socialLinks[]` |
-| `faq_items` | 3–5 entries | `question`, `answer`, `category`, `showOnHomepage:true` |
-| `blog_posts` | 2 posts | `title`, `slug`, `content`, `coverImage`, `tags[]`, `status:"published"` |
-| `reviews` | 3 reviews | `rating`, `comment`, `productId`, `sellerId`, `status:"approved"` |
-
----
-
-## SESSION START CHECKLIST
-
-Run these before writing any code:
-
-```bash
-# 1. Confirm clean working tree
-git status
-
-# 2. Confirm tsc is clean (0 errors before you start)
-npx tsc --noEmit
-
-# 3. Confirm appkit builds (already built and synced — skip if no appkit changes pending)
-npm run watch:appkit
-
-# 4. Check what phase we're on
-# Read new-tracker.md → find first ⏳ Pending task (should be Phase 27)
-
-# 5. Check seed state
-# Read appkit/src/seed/ and src/app/api/demo/seed/route.ts
-```
-
----
-
-## QUICK REFERENCE — KEY FILE LOCATIONS
+## KEY FILE LOCATIONS
 
 | What | Where |
 |------|-------|
-| **Listing pages** | |
-| Auctions listing | `src/app/[locale]/auctions/page.tsx` |
-| Products listing | `src/app/[locale]/products/page.tsx` |
-| Pre-orders listing | `src/app/[locale]/pre-orders/page.tsx` |
-| Stores listing | `src/app/[locale]/stores/page.tsx` |
-| **Detail pages** | |
-| Auction detail (needs slot wiring) | `src/app/[locale]/auctions/[id]/page.tsx` |
-| Pre-order detail (needs slot wiring) | `src/app/[locale]/pre-orders/[id]/page.tsx` |
-| Product detail (done) | `appkit/src/features/products/components/ProductDetailPageView.tsx` |
-| **Appkit core** | |
-| HorizontalScroller | `appkit/src/ui/components/HorizontalScroller.tsx` |
-| HeroCarousel | `appkit/src/features/homepage/components/HeroCarousel.tsx` |
-| Homepage section switch | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` |
-| ShopByCategorySection (emoji fix) | `appkit/src/features/homepage/components/ShopByCategorySection.tsx` |
-| ProductGrid / ProductCard | `appkit/src/features/products/components/ProductGrid.tsx` |
-| ImageLightbox | `appkit/src/ui/components/ImageLightbox.tsx` |
-| ProductTabs | `appkit/src/features/products/components/ProductTabs.tsx` |
-| RelatedProducts | `appkit/src/features/products/components/RelatedProducts.tsx` |
-| BuyBar | `appkit/src/features/products/components/BuyBar.tsx` |
-| AuctionBidHistory | `appkit/src/features/auctions/components/AuctionBidHistory.tsx` |
-| AuctionsView | `appkit/src/features/auctions/components/AuctionsView.tsx` |
-| ProductsView | `appkit/src/features/products/components/ProductsView.tsx` |
-| ProductFilters | `appkit/src/features/products/components/ProductFilters.tsx` |
-| Pagination | `appkit/src/ui/components/Pagination.tsx` |
-| SlottedListingView | `appkit/src/ui/components/SlottedListingView.tsx` |
-| FilterPanel | `appkit/src/features/filters/FilterPanel.tsx` |
-| **Auth & layout** | |
-| Layout shell (nav, notification) | `src/app/[locale]/LayoutShellClient.tsx` |
-| Auth close page (Google OAuth) | `src/app/[locale]/auth/close/page.tsx` |
-| Login page client | `src/components/auth/LoginPageClient.tsx` |
-| Auth me route | `src/app/api/auth/me/route.ts` |
-| **API routes** | |
-| Wishlist CRUD | `src/app/api/wishlist/route.ts` |
-| Blog post + related | `src/app/api/blog/[slug]/route.ts` |
-| Seed endpoint | `src/app/api/demo/seed/route.ts` |
-| **User pages** | |
-| Addresses list | `src/components/user/UserAddressesClient.tsx` |
-| Add address | `src/components/user/AddAddressClient.tsx` |
-| Edit address | `src/components/user/EditAddressClient.tsx` |
-| Profile edit | `src/components/user/ProfilePageClient.tsx` |
-| **Firebase Functions** | |
-| Category DFS trigger | `functions/src/triggers/onCategoryWrite.ts` |
-| Nightly position reconcile | `functions/src/jobs/positionsReconcile.ts` |
-| **Cart & Checkout (stub)** | |
-| Cart (guest-only) | `src/components/routing/CartRouteClient.tsx` |
-| Checkout (explicit stub) | `src/components/routing/CheckoutRouteClient.tsx` |
-| **Dashboard pages** | |
-| User dashboard | `src/app/[locale]/user/*/page.tsx` |
-| Seller dashboard | `src/app/[locale]/seller/*/page.tsx` |
-| Admin dashboard | `src/app/[locale]/admin/*/page.tsx` |
-| **Utilities** | |
-| RichText display | `appkit/src/ui/rich-text/RichText.tsx` |
-| RichTextEditor | `appkit/src/ui/components/RichTextEditor.tsx` |
-| normalizeRichTextHtml | `appkit/src/utils/string.formatter.ts` |
-| **Reference docs** | |
-| Tracker | `d:\proj\letitrip.in\new-tracker.md` |
-| Full gap analysis | `d:\proj\letitrip.in\INSTRUCTIONS.md` |
-| This prompt | `d:\proj\letitrip.in\prompt.md` |
-| Change log | `d:\proj\letitrip.in\newchange.md` |
+| **Public layout** | `src/app/[locale]/LayoutShellClient.tsx` |
+| **Admin layout** | `src/app/[locale]/admin/layout.tsx` |
+| **Store layout** | `src/app/[locale]/store/layout.tsx` |
+| **User layout** | `src/app/[locale]/user/layout.tsx` |
+| **AppLayoutShell** | `appkit/src/ui/components/AppLayoutShell.tsx` (or similar) |
+| **HorizontalScroller** | `appkit/src/ui/components/HorizontalScroller.tsx` |
+| **HeroCarousel** | `appkit/src/features/homepage/components/HeroCarousel.tsx` |
+| **Homepage sections** | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` |
+| **ProductGrid/Card** | `appkit/src/features/products/components/ProductGrid.tsx` |
+| **ProductDetailPageView** | `appkit/src/features/products/components/ProductDetailPageView.tsx` |
+| **ProductFilters** | `appkit/src/features/products/components/ProductFilters.tsx` |
+| **AuctionsView** | `appkit/src/features/auctions/components/AuctionsView.tsx` |
+| **BuyBar** | `appkit/src/features/products/components/BuyBar.tsx` |
+| **ListingLayout** | `appkit/src/ui/components/ListingLayout.tsx` (or SlottedListingView) |
+| **FilterPanel** | `appkit/src/features/filters/FilterPanel.tsx` |
+| **UserSidebar** | `appkit/src/features/user/components/UserSidebar.tsx` |
+| **AdminSidebar** | `appkit/src/features/admin/components/AdminSidebar.tsx` |
+| **StoreSidebar** | `appkit/src/features/store/components/StoreSidebar.tsx` |
+| **Wishlist API** | `src/app/api/wishlist/route.ts` |
+| **Blog API** | `src/app/api/blog/[slug]/route.ts` |
+| **Auth me route** | `src/app/api/auth/me/route.ts` |
+| **Seed endpoint** | `src/app/api/demo/seed/route.ts` |
+| **User addresses** | `src/components/user/UserAddressesClient.tsx` |
+| **Profile page** | `src/components/user/ProfilePageClient.tsx` |
+| **Cart** | `src/components/routing/CartRouteClient.tsx` |
+| **Checkout** | `src/components/routing/CheckoutRouteClient.tsx` |
+| **Auctions listing** | `src/app/[locale]/auctions/page.tsx` |
+| **Products listing** | `src/app/[locale]/products/page.tsx` |
+| **Pre-orders listing** | `src/app/[locale]/pre-orders/page.tsx` |
+| **Tracker** | `d:\proj\letitrip.in\new-tracker.md` |
+| **Gap analysis** | `d:\proj\letitrip.in\INSTRUCTIONS.md` |
+| **Change log** | `d:\proj\letitrip.in\newchange.md` |
+| **Seed files** | `appkit/src/seed/` |
 
 ---
 
-## REFERENCE IMPLEMENTATIONS (CORRECT PATTERN TO COPY)
+## REFERENCE IMPLEMENTATIONS
 
-These pages do everything right — fetch data server-side AND wire all render props:
-
+Copy patterns from these files:
 ```
-src/app/[locale]/events/[id]/page.tsx        ← best pattern for detail pages
-src/app/[locale]/search/[slug]/.../page.tsx  ← best pattern for listing + filters
-src/app/[locale]/promotions/[tab]/page.tsx   ← best pattern for tabbed listing
+src/app/[locale]/events/[id]/page.tsx       ← detail page with all render props wired
+src/app/[locale]/search/[slug]/.../page.tsx ← listing page with filters + search + sort
 ```
-
-When wiring any slot-shell, open one of these first and follow the same structure.
 
 ---
 
-## PER-TASK COMPLETION CHECKLIST
-
-Before moving to the next task, verify all boxes are checked:
+## PER-TASK CHECKLIST
 
 ```
-□ 1. CODE    — change implemented, tsc 0 errors, browser verified
-□ 2. COMMIT  — fix/feat/wire commit made with correct format
-□ 3. SEED    — seed data updated (or "no change needed" noted in commit)
-□ 4. TRACKER — new-tracker.md status updated ⏳ → ✅, progress count updated
-□ 5. DIAGRAM — INSTRUCTIONS.md §12 gap table + §13 bug entry + relevant ASCII updated
-□ 6. NEWCHANGE — newchange.md prepended with what changed (do not defer to end of session)
+□ 1. CODE     — implemented, tsc 0 errors, browser verified
+□ 2. COMMIT   — committed with correct format, one task per commit
+□ 3. SEED     — updated or noted "no change needed" in commit
+□ 4. TRACKER  — new-tracker.md updated ⏳ → ✅ if applicable
+□ 5. NEWCHANGE — newchange.md prepended with new Part entry
 ```
-
-If any box is unchecked, the task is **not done**. Do not start the next task.
 
 ---
 
-*Last updated: 2026-05-05 — Phases 24–26 complete. Next task: Phase 27 (slot-shell wiring) then remaining user mega-request items.*
+## BUILD ISSUES & RESOLUTIONS (reference)
+
+### Import rules
+- Client components → import from `@mohasinac/appkit/client`
+- Server components/actions → import from `@mohasinac/appkit` or `@mohasinac/appkit/server`
+- UI/layout → import from `@mohasinac/appkit/ui` or `@mohasinac/appkit/client`
+- Never import server-only modules in client components
+
+### Seed upsert behavior
+All Firestore writes use `batch.set(ref, data, { merge: true })` — always upsert.
+User auth records are always upserted; custom claims set for non-"user" roles.
+
+---
+
+*Last updated: 2026-05-05 — Phases 24–27 done. Navigation overhaul is next.*

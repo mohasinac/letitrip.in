@@ -2,6 +2,35 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 16 — Detail Pages: Bids, Descriptions, Buy Now, Add to Cart)
+
+### What changed
+
+| Area | File | Change |
+|------|------|--------|
+| BidHistory table | `src/features/products/components/BidHistory.tsx` | Title header now renders; amounts formatted with `formatCurrency`; `placedAt` shown as `May 3, 10:30 AM` |
+| Auction description tabs | `src/features/products/components/AuctionDetailView.tsx` | Added `renderTabs` slot (belowFold, before bid history) |
+| Auction description tabs | `src/features/auctions/components/AuctionDetailPageView.tsx` | Wires `ProductTabsShell` with Description + Specifications; passes `currency` to `BidHistory` |
+| Pre-order description tabs | `src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Wires `renderTabs` with Description + Specifications; adds "Add to Cart" button (desktop sidebar + mobile BuyBar) |
+| Product Buy Now | `src/features/products/components/ProductDetailPageView.tsx` | Buy Now is primary action; Add to Cart secondary; Add to Wishlist ghost; both in mobile BuyBar |
+
+### Navigation / dashboard sidebar changes (navigation overhaul)
+
+| Area | File | Change |
+|------|------|--------|
+| Public sidebar | `src/app/[locale]/LayoutShellClient.tsx` | Browse nav group opens by default (`defaultOpen: true`) |
+| Admin FAB | `src/app/[locale]/admin/layout.tsx` | FAB repositioned above bottom nav using CSS var `--appkit-bottom-nav-height` |
+| Store sidebar | `src/app/[locale]/store/layout.tsx` | Flat nav items converted to grouped (`StoreNavGroup`); FAB uses `createPortal` + sits above bottom nav |
+| User sidebar | `src/app/[locale]/user/layout.tsx` | Removed `defaultOpen: true` from all groups; FAB uses `createPortal` + sits above bottom nav |
+
+---
+
+## Session Update — 2026-05-05 (Part 15 — Auth Role Fix)
+
+- `fix(auth): admin role shown as user in navigation sidebars` — committed separately.
+
+---
+
 ## Session Update — 2026-05-05 (Part 14 — Mega-Request Status Review)
 
 Complete status of the 35-point user request submitted at start of this session.

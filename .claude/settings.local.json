@@ -25,7 +25,8 @@
       "Bash(Select-Object Name)",
       "Bash(xargs grep *)",
       "Bash(xargs ls *)",
-      "Bash(git diff *)"
+      "Bash(git diff *)",
+      "PowerShell(npx tsc --noEmit 2>&1)"
     ],
     "defaultMode": "bypassPermissions"
   }

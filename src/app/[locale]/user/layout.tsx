@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
@@ -16,7 +17,6 @@ import {
 const USER_NAV_GROUPS: UserNavGroup[] = [
   {
     title: "Shopping",
-    defaultOpen: true,
     items: [
       { href: String(ROUTES.USER.ORDERS), label: "My Orders" },
       { href: String(ROUTES.USER.OFFERS), label: "My Offers" },
@@ -25,7 +25,6 @@ const USER_NAV_GROUPS: UserNavGroup[] = [
   },
   {
     title: "Account",
-    defaultOpen: true,
     items: [
       { href: String(ROUTES.USER.PROFILE), label: "My Profile" },
       { href: String(ROUTES.USER.SETTINGS), label: "Settings" },
@@ -35,7 +34,6 @@ const USER_NAV_GROUPS: UserNavGroup[] = [
   },
   {
     title: "Selling",
-    defaultOpen: true,
     items: [
       { href: String(ROUTES.USER.BECOME_SELLER), label: "Open a Store" },
     ],
@@ -48,19 +46,18 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();
   const router = useRouter();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const openMobile = useCallback(() => setMobileOpen(true), []);
-  const closeMobile = useCallback(() => setMobileOpen(false), []);
-  const toggleMobile = useCallback(
-    () => setMobileOpen((prev) => !prev),
-    [],
-  );
+  const openNav = useCallback(() => setOpen(true), []);
+  const closeNav = useCallback(() => setOpen(false), []);
+  const toggleNav = useCallback(() => setOpen((prev) => !prev), []);
 
   useEffect(() => {
-    registerNav({ open: openMobile, close: closeMobile, toggle: toggleMobile });
+    setMounted(true);
+    registerNav({ open: openNav, close: closeNav, toggle: toggleNav });
     return () => unregisterNav();
-  }, [registerNav, unregisterNav, openMobile, closeMobile, toggleMobile]);
+  }, [registerNav, unregisterNav, openNav, closeNav, toggleNav]);
 
   return (
     <ProtectedRoute
@@ -77,9 +74,24 @@ export default function UserLayout({ children }: { children: ReactNode }) {
       <UserSidebar
         items={ALL_NAV_ITEMS}
         groups={USER_NAV_GROUPS}
-        mobileOpen={mobileOpen}
-        onCloseMobile={closeMobile}
+        mobileOpen={open}
+        onCloseMobile={closeNav}
       />
+
+      {/* Mobile FAB — always visible above bottom nav on mobile */}
+      {mounted && createPortal(
+        <button
+          type="button"
+          onClick={toggleNav}
+          aria-label="Toggle account navigation"
+          className="fixed bottom-[calc(var(--appkit-bottom-nav-height,3.5rem)+0.375rem)] left-3 z-30 md:hidden flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-slate-900 shadow-lg border border-zinc-200 dark:border-slate-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>,
+        document.body
+      )}
     </ProtectedRoute>
   );
 }
