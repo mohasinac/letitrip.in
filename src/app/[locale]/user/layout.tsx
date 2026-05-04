@@ -70,13 +70,19 @@ export default function UserLayout({ children }: { children: ReactNode }) {
         unauthorizedPath: String(ROUTES.ERRORS.UNAUTHORIZED),
       }}
     >
-      {children}
-      <UserSidebar
-        items={ALL_NAV_ITEMS}
-        groups={USER_NAV_GROUPS}
-        mobileOpen={open}
-        onCloseMobile={closeNav}
-      />
+      {/* Two-column layout on desktop: persistent sidebar + content */}
+      <div className="md:flex md:items-start">
+        <UserSidebar
+          variant="sidebar"
+          items={ALL_NAV_ITEMS}
+          groups={USER_NAV_GROUPS}
+          mobileOpen={open}
+          onCloseMobile={closeNav}
+        />
+        <main className="flex-1 min-w-0">
+          {children}
+        </main>
+      </div>
 
       {/* Mobile FAB — always visible above bottom nav on mobile */}
       {mounted && createPortal(

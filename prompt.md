@@ -7,11 +7,11 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: 200 products + open-source images (Task 17)**
+**Next up: User nav collapsible in sidebar (Task 18)**
 
-Ads fixed (Part 37). Next task:
+Task 17 done (Part 38). Next task:
 
-Count products across all 7 franchise seed files in `appkit/src/seed/`. If total < 200, add more products. Replace any `picsum.photos` image URLs with real open-source image URLs (Wikimedia Commons, official TCG APIs, etc.). Add `videoUrl` where appropriate. Seed files: `pokemon-*-seed-data.ts`, `hot-wheels-*-seed-data.ts`, `beyblades-*-seed-data.ts`, `transformers-*-seed-data.ts`.
+In the user sidebar (`appkit/src/features/user/components/UserSidebar.tsx` or similar), nav group sections (e.g. "Account", "Orders", "Settings") should be **auto-collapsed by default**. Users can click to expand individual sections. The active section (containing the current page link) should be auto-expanded on mount.
 
 ### ✅ Completed (Part 37 — Ads: no empty placeholder space):
 - All 4 homepage `AdSlot` components return `null` — no 90px placeholder banners.
