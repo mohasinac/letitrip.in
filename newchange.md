@@ -2,6 +2,25 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 20 — Offer Logic: MakeOfferButton + Product Detail Slot)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/MakeOfferButton.tsx` | New client component. Single-click offer flow — no price shown to buyer. States: idle → confirm → sending → success / pending. Auto-computes offer at ≥85% of listed price. Accepts `onMakeOffer(productId, amount)` server action callback. |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Added `renderOfferAction` render prop. Rendered inside `renderActions` after Wishlist button, only when `allowOffers === true && type === "simple"`. |
+| `appkit/src/client.ts` + `index.ts` | Exports `MakeOfferButton`, `MakeOfferButtonProps`, `ProductDetailPageViewProps`. |
+| `src/app/[locale]/products/[slug]/page.tsx` | Passes `renderOfferAction` wired to `makeOfferAction` server action via `submitOffer` wrapper. |
+
+### Behaviour
+Simple products with `allowOffers: true` show "Make Offer" → confirm step → success ("Offer sent!") or pending banner. No price shown to buyer. 1 attempt enforced by domain layer. Seller manages offers via existing `/store/offers` dashboard.
+
+### Seed impact
+Add `allowOffers: true` to any product seed document to enable the button.
+
+---
+
 ## Session Update — 2026-05-05 (Part 22 — Slug = ID everywhere: cards, schema, seed runner, repositories + seed panel live counts)
 
 ### What changed

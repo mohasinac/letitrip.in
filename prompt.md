@@ -7,12 +7,23 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Buy Now button verification + Offer logic**
+**Next up: Filters — apply on click**
 
-Navigation overhaul is complete (Part 19). Next tasks:
+Offer logic is complete (Part 20). Next task:
 
-1. **Verify Buy Now buttons in browser** — Product detail, auction buyout, pre-order Add to Cart were wired in Part 16. Confirm they work end-to-end (click → cart/checkout flow).
-2. **Offer logic** — Simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components.
+All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`.
+
+### ✅ Completed (Part 21 — Dark Mode Theming):
+- **`prefers-color-scheme` → `.dark` class** — 13 CSS files fixed: Toast, Card, Dropdown, Toggle, Checkbox, Radio, Tabs, Avatar, EmptyState, Slider, DashboardStatsCard, SideModal, ListingLayout.
+- **CSS variable tokens** — Button, Modal, Drawer close buttons + panel surfaces now use `var(--appkit-color-*)` tokens instead of hardcoded hex values.
+
+### ✅ Completed (Part 20 — Titlebar/Dashboard Nav Icons):
+- Titlebar hamburger visible on all screen sizes. Dashboard FABs + nav toggle use panel icon.
+
+### ✅ Completed (Part 20 — Offer Logic):
+- `MakeOfferButton` client component — single-click, no price shown, confirm step, success/pending states
+- `renderOfferAction` slot added to `ProductDetailPageView` — shown for `allowOffers=true, type=simple` products
+- Wired in `src/app/[locale]/products/[slug]/page.tsx` via `makeOfferAction` server action
 
 ### ✅ Completed (Part 19 — Navigation):
 - **Mobile bottom nav** — `BottomNavbar` now accepts `navItems` prop; shows first 4 nav items (Home, Products, Auctions, Pre-Orders) + "More" button that opens sidebar.
@@ -31,9 +42,8 @@ Navigation overhaul is complete (Part 19). Next tasks:
 | # | Task | Notes |
 |---|------|-------|
 | 1 | **Buy Now buttons** | ⚠️ Verify in browser — Product detail, auction buyout, pre-order Add to Cart wired in Part 16 |
-| 2 | **Offer logic** | Re-add for simple products only. 1 attempt per user. Check `appkit/src/features/offers/` |
-| 3 | **Offer logic** | Re-add for simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
-| 4 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
+| 2 | **Offer logic** | Simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
+| 3 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
 | 5 | **Collapsible filters** | Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. |
 | 6 | **Category filter — searchable dropdown** | Replace the current category list/chips in `ProductFilters` with a searchable `<select>` or combobox that shows selected categories inline. Apply via "Apply Filters" only. |
 | 7 | **Sticky toolbar fix** | Listing page toolbar currently uses `top-14`. Must stick below breadcrumbs/searchbar as user scrolls. Audit `ListingLayout.tsx` or `ProductsIndexListing.tsx` — compute correct top offset based on actual header height. |
