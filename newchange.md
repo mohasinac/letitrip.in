@@ -2,6 +2,49 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 29 — Store reviews on auction pages)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Calls `listReviewsBySeller(sellerId)` server-side. Shows store rating summary (average score, stars, count) and up to 10 most recent store reviews below the main auction content. Section is hidden when no reviews exist. |
+
+### Behaviour
+At the bottom of each auction detail page, buyers can see the store's rating average and recent reviews from other buyers. This helps build trust before bidding.
+
+### Seed impact
+None — reviews are fetched from existing Firestore data.
+
+---
+
+## Session Update — 2026-05-05 (Part 28 — Filter search polish + sticky toolbar CSS fix)
+
+### What changed
+
+**`appkit/src/ui/components/ListingLayout.style.css`**
+- `.appkit-listing-layout__toolbar--page`: `top` changed from hardcoded `3.5rem` (mobile) / `7.5rem` (md) to `var(--header-height, 3.5rem)` on all breakpoints
+- Removed the redundant `@media (min-width: 768px)` override — `--header-height` is already set to the measured header height by `AppLayoutShell`
+
+**`appkit/src/features/filters/FilterFacetSection.tsx`** (incremental)
+- Search input now outside the `!isCollapsed` block — always renders when `searchable={true}`
+- Typing in the search box auto-expands the section via `setInternalCollapsed(false)`
+- Selected value chips shown in collapsed header (up to 3, then `+N more`)
+
+**`appkit/src/features/auctions/components/AuctionFilters.tsx`**
+- Category: `searchable={true}` unconditionally
+- Store: `searchable` when `> 4` options (was `> 6`)
+
+**`appkit/src/features/products/components/ProductFilters.tsx`**
+- Category: `searchable={true}` unconditionally
+- Brand/store/tags: `searchable` when `> 4` options (was `> 6`)
+
+**`appkit/src/features/pre-orders/components/PreOrderFilters.tsx`**
+- Category: `searchable={true}` unconditionally
+- Store: `searchable` when `> 4` options (was `> 6`)
+
+---
+
 ## Session Update — 2026-05-05 (Part 27 — Bottom button bar verified complete)
 
 ### What changed

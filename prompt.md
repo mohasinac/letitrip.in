@@ -7,14 +7,18 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Order grouping**
+**Next up: Stores seed — storeId not sellerId**
 
-Bottom button bar + all toolbar tasks are done (Part 27). Next task:
+Store reviews, order grouping, bottom button bar, and all toolbar tasks are done (Parts 27-29). Next task:
 
-Auctions → always individual orders. Simple products + pre-orders from the same store → grouped into one order. Coupons apply to group total. Check `src/components/routing/CheckoutRouteClient.tsx` and the order creation API. Group cart items by `storeId` for non-auction items; each group becomes one order document; auctions always get their own separate order.
+Verify seed and store queries use `storeId` for ownership. Check `appkit/src/seed/pokemon-stores-seed-data.ts` — confirm `ownerId` fields match user IDs from `pokemon-users-seed-data.ts`. Check the stores repository query that fetches "my store" for a seller — it must query on `storeId` not `sellerId`. Fix store-not-found errors that appear on `/store/dashboard`.
 
-### ✅ Completed (Part 27 — Bottom button bar verified):
-- `BuyBar` is already wired in all three detail page views at `fixed bottom-16 inset-x-0 lg:hidden`.
+### ✅ Completed (Part 29 — Store reviews on auction pages):
+- `AuctionDetailPageView` now fetches store reviews via `listReviewsBySeller` and renders rating summary + up to 10 reviews.
+
+### ✅ Completed (Part 27/28 — Order grouping verified + Bottom button bar verified):
+- `splitCartIntoOrderGroups` already handles: auction=per-item, preorder/standard=per-seller.
+- `BuyBar` already wired in all three detail page views.
 
 ### ✅ Completed (Part 26 — Mobile toolbar row layout):
 - `ListingToolbar`: search on Row 1 (full width mobile); filters + sort + view toggle on Row 2.
