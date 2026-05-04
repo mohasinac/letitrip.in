@@ -107,8 +107,14 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
 
     // Apply buyer exclusions (items they chose to skip after the preflight warning)
     const excludedSet = new Set(excludedProductIds);
+    // Honour selectedItemIds — user may be checking out a subset of their cart
+    const selectedSet = cart.selectedItemIds?.length
+      ? new Set(cart.selectedItemIds)
+      : null;
     const cartItems = cart.items.filter(
-      (item) => !excludedSet.has(item.productId),
+      (item) =>
+        !excludedSet.has(item.productId) &&
+        (!selectedSet || selectedSet.has(item.itemId)),
     );
     if (cartItems.length === 0) {
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.CART_EMPTY);
@@ -229,7 +235,12 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
             const cartRef = db.collection(CART_COLLECTION).doc(uid);
             tx.set(
               cartRef,
-              { items: remainingCartItems, updatedAt: new Date() },
+              {
+                items: remainingCartItems,
+                appliedCoupons: [],
+                selectedItemIds: null,
+                updatedAt: new Date(),
+              },
               { merge: true },
             );
             // Atomically consume the consent OTP so a concurrent request cannot reuse it
@@ -283,11 +294,18 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       "Unknown User";
     const userEmail = user!.email ?? "";
 
+    const appliedCoupons = cart.appliedCoupons ?? [];
     const orderGroups = splitCartIntoOrderGroups(available);
 
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
+
+    // Cart-wide subtotal used to pro-rate admin-scoped coupons
+    const cartSubtotal = orderGroups.reduce(
+      (s, { items: g }) => s + g.reduce((gs, { item }) => gs + item.price * item.quantity, 0),
+      0,
+    );
 
     for (const { items: group, orderType } of orderGroups) {
       const firstItem = group[0].item;
@@ -340,7 +358,60 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
         ? Math.round((groupTotal - (depositAmount ?? 0)) * 100) / 100
         : undefined;
 
-      const orderTotal = groupTotal + shippingFee;
+      // -- Multi-coupon discount per group ------------------------------------
+      // Admin-scoped: pro-rated by this group's share of the cart subtotal.
+      // Seller-scoped: applied only when coupon.sellerId matches group seller.
+      const groupItemIds = new Set(group.map(({ item }) => item.itemId));
+      let couponDiscount = 0;
+      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; sellerId?: string }[] = [];
+
+      for (const coupon of appliedCoupons) {
+        let couponGroupDiscount = 0;
+        const isSellerScoped = coupon.scope === "seller" && coupon.sellerId;
+
+        if (isSellerScoped) {
+          // Apply only if this order group belongs to the coupon's seller
+          if (coupon.sellerId !== firstItem.sellerId) continue;
+          // If applicableItemIds recorded, restrict to those items' subtotal
+          if (coupon.applicableItemIds?.length) {
+            const eligibleTotal = group
+              .filter(({ item }) => coupon.applicableItemIds!.includes(item.itemId))
+              .reduce((s, { item }) => s + item.price * item.quantity, 0);
+            couponGroupDiscount =
+              eligibleTotal > 0
+                ? Math.min(
+                    Math.round((eligibleTotal / groupTotal) * coupon.discountAmount * 100) / 100,
+                    eligibleTotal,
+                  )
+                : 0;
+          } else {
+            couponGroupDiscount = Math.min(coupon.discountAmount, groupTotal);
+          }
+        } else {
+          // Admin-scoped: pro-rate by group share
+          if (cartSubtotal > 0) {
+            couponGroupDiscount = Math.min(
+              Math.round((groupTotal / cartSubtotal) * coupon.discountAmount * 100) / 100,
+              groupTotal,
+            );
+          }
+        }
+
+        if (couponGroupDiscount > 0) {
+          couponDiscount += couponGroupDiscount;
+          appliedDiscounts.push({
+            code: coupon.code,
+            couponId: coupon.couponId,
+            type: "coupon",
+            discountAmount: couponGroupDiscount,
+            scope: coupon.scope,
+            sellerId: coupon.sellerId,
+          });
+        }
+      }
+
+      couponDiscount = Math.min(couponDiscount, groupTotal);
+      const orderTotal = Math.max(0, groupTotal - couponDiscount) + shippingFee;
 
       // -- Collect deduplicated main images for order display convenience ----
       const imageUrls = [
@@ -374,6 +445,9 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
         shippingFee: shippingFee > 0 ? shippingFee : undefined,
         depositAmount,
         codRemainingAmount,
+        couponCode: appliedDiscounts[0]?.code,
+        couponDiscount: couponDiscount > 0 ? couponDiscount : undefined,
+        appliedDiscounts: appliedDiscounts.length > 0 ? appliedDiscounts : undefined,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
       });
 

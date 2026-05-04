@@ -247,11 +247,17 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
       "Unknown User";
     const userEmail = user!.email ?? "";
 
+    const appliedCoupons = cart.appliedCoupons ?? [];
     const orderGroups = splitCartIntoOrderGroups(productChecks);
 
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
+
+    const cartSubtotal = orderGroups.reduce(
+      (s, { items: g }) => s + g.reduce((gs, { item, product }) => gs + product!.price * item.quantity, 0),
+      0,
+    );
 
     for (const { items: group, orderType } of orderGroups) {
       const firstItem = group[0].item;
@@ -280,10 +286,56 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
         }
       }
 
+      // -- Multi-coupon discount per group -----------------------------------
+      let couponDiscount = 0;
+      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; sellerId?: string }[] = [];
+
+      for (const coupon of appliedCoupons) {
+        let couponGroupDiscount = 0;
+        const isSellerScoped = coupon.scope === "seller" && coupon.sellerId;
+
+        if (isSellerScoped) {
+          if (coupon.sellerId !== firstItem.sellerId) continue;
+          if (coupon.applicableItemIds?.length) {
+            const eligibleTotal = group
+              .filter(({ item }) => coupon.applicableItemIds!.includes(item.itemId))
+              .reduce((s, { item, product }) => s + product!.price * item.quantity, 0);
+            couponGroupDiscount =
+              eligibleTotal > 0
+                ? Math.min(
+                    Math.round((eligibleTotal / groupTotal) * coupon.discountAmount * 100) / 100,
+                    eligibleTotal,
+                  )
+                : 0;
+          } else {
+            couponGroupDiscount = Math.min(coupon.discountAmount, groupTotal);
+          }
+        } else if (cartSubtotal > 0) {
+          couponGroupDiscount = Math.min(
+            Math.round((groupTotal / cartSubtotal) * coupon.discountAmount * 100) / 100,
+            groupTotal,
+          );
+        }
+
+        if (couponGroupDiscount > 0) {
+          couponDiscount += couponGroupDiscount;
+          appliedDiscounts.push({
+            code: coupon.code,
+            couponId: coupon.couponId,
+            type: "coupon",
+            discountAmount: couponGroupDiscount,
+            scope: coupon.scope,
+            sellerId: coupon.sellerId,
+          });
+        }
+      }
+
+      couponDiscount = Math.min(couponDiscount, groupTotal);
+
       // -- Razorpay platform fee --------------------------------------------
       const platformFee =
         Math.round(groupTotal * (razorpayFeePercent / 100) * 100) / 100;
-      const orderTotal = groupTotal + shippingFee;
+      const orderTotal = Math.max(0, groupTotal - couponDiscount) + shippingFee;
 
       total += orderTotal;
 
@@ -331,6 +383,9 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
         notes,
         platformFee,
         shippingFee: shippingFee > 0 ? shippingFee : undefined,
+        couponCode: appliedDiscounts[0]?.code,
+        couponDiscount: couponDiscount > 0 ? couponDiscount : undefined,
+        appliedDiscounts: appliedDiscounts.length > 0 ? appliedDiscounts : undefined,
         imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
       });
 
@@ -364,7 +419,11 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
           availableQuantity: product.availableQuantity - item.quantity,
         } as any);
       }
-      unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
+      unitOfWork.carts.updateInBatch(batch, user!.uid, {
+        items: [],
+        appliedCoupons: [],
+        selectedItemIds: null,
+      } as any);
     });
     // Delete the consent OTP doc — fire-and-forget (single-use; expired anyway)
     otpRef.delete().catch(() => {});
