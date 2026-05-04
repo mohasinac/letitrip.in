@@ -1,96 +1,349 @@
-# Change Log — Session 2026-05-04 (Latest)
+# Change Log — Session 2026-05-05 (Latest)
 
 ---
 
-## Session Update — 2026-05-04 (Part 8 — Firebase-Side Query Processing)
+## Session Update — 2026-05-05 (Part 3 — Blog Crash Fix + Wishlist Stuck Skeleton Fix)
+
+### Fix blog detail page crash (`BlogPostView.tsx` missing `"use client"`)
+
+**Root cause:** `BlogPostView.tsx` uses `useBlogPost` → `useQuery` (React hooks) but had no `"use client"` directive. Next.js App Router tries to render it as a server component and throws when encountering hooks.
+
+**Fix:** Added `"use client"` as the first line of `appkit/src/features/blog/components/BlogPostView.tsx`.
+
+### Fix wishlist page stuck loading skeleton
+
+**Root cause:** `src/app/[locale]/wishlist/page.tsx` only pulled `user` from `useSession`, not `loading`. During the initial session resolution window, `user = null` → guest path (resolves in a tick). When session finishes and `user` becomes defined → authenticated path fires an API call. If that call is slow or fails, `isLoading` stays `true` indefinitely due to React Query's default retry-3 policy.
+
+**Fixes:**
+- `src/app/[locale]/wishlist/page.tsx`: Also destructures `loading: sessionLoading` from `useSession()`. Passes `undefined` (not `null`) to `useWishlistWithGuest` while session is loading, which keeps it on the fast-initializing guest path. Loading condition updated to `sessionLoading || wl.isLoading`.
+- `appkit/src/features/wishlist/hooks/useWishlist.ts`: Added `retry: 1, staleTime: 30_000` to the React Query config — failed wishlist calls now give up after 1 retry instead of holding `isLoading` for ~30s.
+
+Appkit rebuilt and synced to `node_modules/@mohasinac/appkit/dist/`.
+
+---
+
+## Session Update — 2026-05-05 (Part 2 — /undefined 404 Calls + All Listing Filters + Toast Feedback)
+
+### Fix `/undefined` and `/null` 404 calls from missing slugs
+
+**`appkit/src/features/products/components/ProductGrid.tsx`**
+- Added `safeHref()` helper — drops any generated href containing `/undefined` or `/null`
+- Applied at all 3 `getProductHref(p)` call sites (card, fluid, list modes)
+
+**`appkit/src/features/homepage/components/FeaturedProductsSection.tsx`**
+- Falls back to `""` via `slug ?? id ?? ""` — prevents `/products/undefined`
+
+**`appkit/src/features/products/components/RelatedProductsCarousel.tsx`**
+- Guards href build: only calls ROUTES when `item.slug || item.id` is truthy
+
+**`appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx`**
+- `resolveHref()` returns `undefined` when `product.id` is falsy
+- `handleNavigate` returns early when `auctionHref` is undefined
+- `TextLink` falls back to `"#"` when href is undefined
+
+### Pending filter state applied to all listing layouts
+
+All 6 listing components now buffer filter changes in local state until "Apply Filters" is clicked:
+
+| Component | Filter keys buffered |
+|---|---|
+| `ProductsIndexListing` | category, condition, minPrice, maxPrice, brand, storeId, freeShipping, tags |
+| `AuctionsIndexListing` | category, minBid, maxBid, storeId, dateFrom, dateTo |
+| `PreOrdersIndexListing` | category, minPrice, maxPrice, storeId, preOrderStatus, dateFrom, dateTo |
+| `StoresIndexListing` | category, rating, minProductCount, maxProductCount, featured |
+| `StoreProductsListing` | condition, brand, minPrice, maxPrice |
+| `StoreAuctionsListing` | minPrice, maxPrice |
+
+All use: `pendingFilters` state, `pendingTable` shim, `openFilters`/`applyFilters`/`clearFilters`, active count badge, "Clear all" in drawer header.
+
+### Toast feedback wired to all wishlist + cart actions
+
+`showToast("Added/Removed from wishlist", "success"/"info")` and cart success/error toasts added to all 5 listing components.
+
+Zod v4 `z.record()` migration: `z.record(z.string())` → `z.record(z.string(), z.string())` in cart, orders, products schemas.
+
+Appkit rebuilt and synced to `node_modules/@mohasinac/appkit/dist/`.
+
+---
+
+## Session Update — 2026-05-05 (Part 1 — Sticky Toolbar Offset: All Pages)
 
 ### Problem
 
-Three Vercel API routes were performing meaningful computation inside the Vercel serverless runtime:
+All listing toolbars and dashboard tab/section bars used `sticky top-0`, causing them to slide under the fixed header (TitleBar + MainNavbar + optional search bar). On mobile the overlap was the full title bar height; on desktop it also swallowed the navbar row.
 
-| Route | Work done on Vercel | Max data pulled to Vercel |
+### Root cause
+
+`--header-height` was already consumed by `HeroBanner` and `TestimonialsCarousel` as a CSS variable, but it was never actually *set* anywhere — both fell back to the `4rem` hardcoded default.
+
+### Fix — measure and broadcast header height
+
+**`appkit/src/features/layout/AppLayoutShell.tsx`**
+- Added `useRef<HTMLDivElement>` + `useEffect` with `ResizeObserver` on the sticky header wrapper (`z-50` div that contains TitleBar + MainNavbar + search slot).
+- On every resize (search open/close, mobile nav show/hide, promo strip) the observer sets `document.documentElement.style.setProperty("--header-height", <px>)`.
+- Initial value is set synchronously on mount so there is no flash before first paint.
+
+### Fix — consume the variable everywhere
+
+**Public listing toolbars (13 files)** — `sticky top-0 z-20` → `sticky top-[var(--header-height,0px)] z-20`:
+- `ProductsIndexListing.tsx`, `AuctionsIndexListing.tsx`, `PreOrdersIndexListing.tsx`
+- `StoresIndexListing.tsx`, `StoreProductsListing.tsx`, `StoreAuctionsListing.tsx`, `StorePreOrdersListing.tsx`
+- `CategoriesIndexListing.tsx`, `CategoryProductsListing.tsx`
+- `EventsIndexListing.tsx`, `BlogIndexListing.tsx`, `ReviewsIndexListing.tsx`
+- `CouponsIndexListing.tsx`
+- `src/app/[locale]/promotions/[tab]/page.tsx` (tab nav bar)
+
+**`appkit/src/features/layout/ListingLayout.tsx`** — sidebar panel:
+- Was: `isDashboard ? "sticky top-[176px]" : "sticky top-[176px]"` (two hardcoded magic numbers)
+- Now: `"sticky top-[var(--header-height,0px)]"` for both cases
+
+**Dashboard / admin / store / user pages:**
+- `appkit/src/features/layout/ListingLayout.tsx` toolbar row — removed `isDashboard ? "top-0" : "top-14 md:top-[120px]"` conditional; both use `top-[var(--header-height,0px)]`
+- `appkit/src/ui/components/ListingLayout.style.css` — merged `--page` and `--dashboard` sidebar rules; both use `top: var(--header-height, 0px)`
+- `appkit/src/ui/components/SectionTabs.style.css` — added `top: var(--header-height, 0px)` to `.appkit-section-tabs` (admin/user/store profile tab bars)
+- `appkit/src/ui/components/SectionTabs.tsx` — updated default `stickyTopClassName` from `"top-12 md:top-[108px]"` to `"top-[var(--header-height,0px)]"`
+
+**Not changed:** `DataTable` thead sticky (`top: 0`) — it sticks within its own `overflow-y: auto` scroll container, not the page viewport, so `top: 0` is correct.
+
+---
+
+## Session Update — 2026-05-04 (Part 14 — Card Size Consistency, Category/Store Page Fixes, Firebase-Side Calculations)
+
+### Card size consistency across all listing types
+
+**Problem:** Auction cards used a 3-column grid with square images; product cards used a 5-column grid with 4:3 images — much smaller. Pre-order cards used a fixed `h-56` height.
+
+**Fixes:**
+- `ProductGrid.tsx` — `GRID_CLASSES.card`: changed from `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4` → `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6` (max 4 columns, wider gutters)
+- `ProductGrid.tsx` — `ProductCard` image area: changed from `style={{ aspectRatio: "4/3" }}` → `aspect-square` class (matches auction card proportions)
+- `PreorderCard.tsx` — image div: changed `h-56 w-full` → `aspect-square w-full`
+- Skeleton loaders in `CategoryProductsListing.tsx` and `StoreProductsListing.tsx` updated to match new grid (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6`, 8 placeholders)
+
+### Category detail page — product filter was broken
+
+**Root cause:** `CategoryDetailPageView` filtered products by `categorySlug==${slug}` — a field that does not exist on product documents in Firestore. The Sieve processor silently dropped the clause, returning the first 24 published products from ALL categories. The client-side `CategoryProductsListing` made the same mistake, passing `categorySlug` to `useProducts` which sent `?categorySlug=` to the API (also ignored).
+
+**Fixes:**
+- `CategoryDetailPageView.tsx`: switched from `categoriesRepository.findBy("slug", slug)` (no `.limit()`) to `getCategoryBySlug(slug)` (uses `.limit(1)` in Firestore). Product query now uses `category==${category.id}` — the correct Firestore field.
+- `CategoryDetailPageView.tsx`: parallelized the product + children fetches with `Promise.all()` after resolving the category.
+- `CategoryDetailTabs.tsx`: added `categoryId?: string` prop and threads it down to `CategoryProductsListing`.
+- `CategoryProductsListing.tsx`: added `categoryId?: string` prop; `useProducts` params now use `category: categoryId` (maps to `?category=` in the API route, which filters on `category==${value}` in Firestore — the correct field).
+
+### Store detail pages — duplicate Firebase reads eliminated
+
+**Root cause:** `StoreDetailLayoutView` (rendered by the layout) AND `StoreProductsPageView` / `StoreAuctionsPageView` / `StorePreOrdersPageView` (rendered by each tab's page.tsx) all independently called `storeRepository.findBySlug(storeSlug)`. In Next.js App Router, layout and page run in the same request tree but without automatic deduplication — resulting in 2× DB reads for every store page visit.
+
+**Fix:** Extracted `getStoreBySlug = cache(slug => storeRepository.findBySlug(slug))` in `StoreDetailLayoutView.tsx` (using React's `cache()` for per-request deduplication). All three page views now import and call `getStoreBySlug` instead of calling the repository directly.
+
+### categories.repository.ts — unbounded queries capped
+
+- `getChildren()`: removed a redundant second DB call (`findById(parentId)` was used only to guard against missing parent but that guard is unreliable at scale). Added `.limit(100)` to the `array-contains` query.
+- `getLeafCategories()`: added `.limit(500)` guard.
+
+### Firebase-side calculations (confirmed correct)
+
+All product-count and store-stat counters are maintained by Cloud Function triggers — NOT computed at query time on Vercel:
+- `onProductWrite` trigger: increments/decrements `category.metrics.productCount`, `category.metrics.auctionCount`, and all ancestor totals via `updateMetricsInBatch()`; also calls `storeRepository.incrementTotalProducts()`.
+- `CategoryDetailPageView` reads `category.metrics.productCount` from Firestore (pre-computed) for the badge display — no aggregation query needed.
+- Pagination total counts use Firestore's native `COUNT()` aggregation (server-side, zero document reads).
+
+Appkit rebuilt and synced to `node_modules/@mohasinac/appkit/dist/`.
+
+---
+
+## Session Update — 2026-05-04 (Part 13 — Seed: Replace-on-Load for Homepage Sections & Carousel Slides)
+
+**`src/app/api/demo/seed/route.ts`**
+
+- Added `purgeCollection()` helper — deletes all documents in a Firestore collection in batches of 500
+- `homepageSections` and `carouselSlides` now use a **replace** strategy on load: the entire collection is purged before the new seed docs are inserted
+- Fixes multiple welcome/hero sections appearing on the homepage caused by old seed data (`section-welcome-1707300000001`, etc.) coexisting with new pokemon seed data (`section-carousel-multifranchise-1`, etc.) — they had different doc IDs so the delete action never removed the stale ones
+
+---
+
+## Session Update — 2026-05-04 (Part 12 — Pending Filters Applied to All Listing Layouts)
+
+All 5 remaining listing components now use the same pending-filter pattern as `ProductsIndexListing`:
+
+| Component | Filter keys buffered |
+|---|---|
+| `AuctionsIndexListing` | category, minBid, maxBid, storeId, dateFrom, dateTo |
+| `PreOrdersIndexListing` | category, minPrice, maxPrice, storeId, preOrderStatus, dateFrom, dateTo |
+| `StoresIndexListing` | category, rating, minProductCount, maxProductCount, featured |
+| `StoreProductsListing` | condition, brand, minPrice, maxPrice |
+| `StoreAuctionsListing` | minPrice, maxPrice |
+
+Changes applied uniformly to all:
+- `pendingFilters` state + `pendingTable` shim passed to filter panel instead of live `table`
+- Drawer open syncs pending state from current URL params
+- Apply button flushes all pending filters to URL + closes drawer
+- "Clear all" link in drawer header when any filter is active
+- Active filter count badge on the Filters button
+- Sort dropdown and grid/list toggle remain immediate (on-change)
+- `useToast` + `showToast` added for wishlist/cart actions in `StoreProductsListing` and `StoreAuctionsListing`
+- `StoreProductsListing` now wires `onWishlistToggle`, `wishlistedIds`, and `onAddToCart` to `ProductGrid` (was missing before)
+
+Appkit rebuilt and synced to `node_modules/@mohasinac/appkit/dist/`.
+
+---
+
+## Session Update — 2026-05-04 (Part 11 — Pending Filters + Toast Feedback + Zod v4 Fix)
+
+### Filter: apply on button click only (not on change)
+
+**`appkit/src/features/products/components/ProductsIndexListing.tsx`**
+
+- Added `pendingFilters` state — all filter changes are buffered in local React state
+- Created `pendingTable` shim (matches `useUrlTable` interface) passed to `<ProductFilters>`
+- Drawer open (`openFilters`) resets pending state from current URL params
+- "Apply Filters" button flushes `pendingFilters` → URL via `table.setMany()` and closes drawer
+- "Clear All" link visible in drawer header when filters are active; resets both pending and URL
+- Sort dropdown and grid/list toggle remain on-change (not buffered)
+- Active filter count badge shown on the Filters button
+
+### Toast feedback for wishlist + cart actions
+
+- All wishlist toggle actions show `showToast("Added/Removed from wishlist", "success"/"info")`
+- Add to cart shows `showToast("Added to cart", "success")` on success, `"error"` on failure
+- Buy Now shows error toast on cart failure and aborts navigation; success navigates to `/cart`
+
+### Zod v4 compatibility fixes
+
+Fixed 4 pre-existing build errors caused by Zod v4's stricter `z.record()` signature (now requires 2 args):
+- `appkit/src/features/cart/schemas/index.ts` — `z.record(z.string())` → `z.record(z.string(), z.string())`
+- `appkit/src/features/orders/schemas/index.ts` — same fix for `attributes` and `address`
+- `appkit/src/features/products/schemas/index.ts` — same fix for `attributes`
+
+Appkit rebuilt and synced to `node_modules/@mohasinac/appkit/dist/`.
+
+---
+
+## Session Update — 2026-05-04 (Part 10 — Homepage Sections Seed Data Fix)
+
+### Changes to `appkit/src/seed/pokemon-homepage-sections-seed-data.ts`
+
+**Welcome section removed — replaced by Carousel**
+
+- Removed `section-welcome-multifranchise-1` (type `"welcome"`) — the welcome/hero is already provided by the application and would duplicate on the homepage.
+- Added `section-carousel-multifranchise-1` (type `"carousel"`, order 1) — seeds the `HeroCarousel` slot; the component reads slides from `carouselRepository` so no config is needed on the section document.
+
+**Pre-existing type errors fixed across remaining sections**
+
+| Section | Fix |
+|---|---|
+| `categories` | Added required `maxCategories: 4`, `autoScroll`, `scrollInterval`; removed non-existent `subtitle` |
+| `stores` | Added missing `autoScroll`, `scrollInterval` |
+| `reviews` | Replaced non-existent `subtitle` with required `maxReviews`, `itemsPerView`, `mobileItemsPerView`, `autoScroll`, `scrollInterval` |
+| `faq` | Replaced `maxItems` with required `displayCount`, `expandedByDefault`, `linkToFullPage`, `categories` |
+| `newsletter` | Added required `placeholder`, `buttonText`, `privacyText`, `privacyLink` |
+| `blog-articles` | Renamed `maxPosts` → `maxArticles: 4`; added `showReadTime`, `showAuthor`, `showThumbnails` |
+
+---
+
+## Session Update — 2026-05-04 (Part 9 — Full Firebase Functions Deploy + Env Sync)
+
+### What was deployed
+
+First-ever full deployment of all 23 Firebase Functions to `letitrip-in-app` / `asia-south1`. Previously none had been deployed.
+
+| Group | Count | Functions |
 |---|---|---|
-| `GET /api/admin/analytics` | Fetched up to 5 000 order docs, aggregated revenue + monthly breakdown + top-5 products | ~5 000 OrderDocument JSON objects |
-| `GET /api/store/analytics` | Fetched up to 1 500 seller order docs, same aggregation | ~1 500 OrderDocument JSON objects |
-| `GET /api/promotions` | Fetched ≤50 coupons, applied in-memory start-date guard | 50 coupon docs |
+| Scheduled jobs | 14 | auctionSettlement, pendingOrderTimeout, couponExpiry, offerExpiry, productStatsSync, dailyDataCleanup, countersReconcile, payoutBatch, cartPrune, notificationPrune, weeklyPayoutEligibility, autoPayoutEligibility, cleanupRtdbEvents, mediaTmpCleanup |
+| Firestore triggers | 6 | onBidPlaced, onOrderStatusChange, onProductWrite, onReviewWrite, onCategoryWrite, onStoreWrite |
+| HTTPS endpoints | 3 | adminAnalytics, storeAnalytics, promotionsApi |
 
-On the free Vercel plan every ms of CPU and every MB of RAM counts. Pulling thousands of Firestore documents across the internet to Vercel just to sum `totalPrice` is wasteful in both compute and network. Firebase Functions running in `asia-south1` (same region as Firestore) query the database over Google's internal network — no internet hop, sub-millisecond reads, no Vercel billing impact.
+### Bug fixed — ESM build had always been broken
 
-### Solution — Firebase HTTPS Functions + Thin Proxy
-
-**Pattern:**
-1. All Firestore querying, Sieve DSL filtering/sorting/pagination, and in-memory aggregation moves into Firebase HTTPS functions (`onRequest`) secured by a shared internal secret (`x-internal-secret` header).
-2. The Vercel API routes become thin proxies: verify the Firebase session cookie (minimal CPU), then `fetch()` the Firebase Function and return the result.
-3. Result: Vercel only handles auth + one HTTP hop. All data processing stays at Firebase.
-
-### Files Created
+The functions package used `"type": "module"` + `tsup format: ["esm"]`. The Firebase Functions CLI failed to load the ESM bundle at deploy time with:
 
 ```
-functions/src/callable/adminAnalytics.ts   ← NEW  admin analytics — all aggregation on Firebase
-functions/src/callable/storeAnalytics.ts   ← NEW  seller analytics — all aggregation on Firebase
-functions/src/callable/promotions.ts       ← NEW  promotions data + coupon start-date guard
+Error: Dynamic require of "util" is not supported
+    at file:///…/functions/lib/chunk-7XGENKH2.js
 ```
 
-#### `adminAnalytics` Firebase Function
-- Accepts `POST` with `x-internal-secret` header
-- Runs `loadPast12MonthsOrders()` and `loadCurrentMonthOrders()` via `orderRepository.listAll()` with Sieve date filters — Firestore-native, paginated
-- Aggregates monthly breakdown (last 12 months) and top-5 products by revenue entirely on Firebase servers
-- Returns `{ summary, ordersByMonth, topProducts }`
-- `memory: "512MiB"`, `timeoutSeconds: 120`, `maxInstances: 10`
+**Root cause:** `appkit` is bundled into the functions output. Appkit's transitive deps include CJS modules (e.g. `faye-websocket` via firebase-admin's RTDB module) that use dynamic `require()`. In strict ESM those calls throw at import time — before the function even starts.
 
-#### `storeAnalytics` Firebase Function
-- Accepts `POST` with `x-internal-secret` + `{ sellerId }` body (seller uid forwarded from Vercel after session verification)
-- Runs `loadSeller6MonthOrders(sellerId)` with Sieve `sellerId==X,createdAt>=Y` filter
-- Aggregates monthly breakdown (last 6 months) and top-5 products on Firebase servers
-- Returns `{ summary, revenueByMonth, topProducts }`
-- `memory: "256MiB"`, `timeoutSeconds: 120`, `maxInstances: 20`
+**Fix:**
+- `functions/tsup.config.ts` — changed `format: ["esm"]` → `format: ["cjs"]`; removed `shims: true` (only needed for ESM)
+- `functions/package.json` — removed `"type": "module"` so Node treats `lib/index.js` as CJS
 
-#### `promotions` Firebase Function
-- Accepts `POST` with `x-internal-secret` header
-- Fetches promoted products, featured products, and active coupons via Sieve — all Firestore-native
-- Coupon start-date guard (`!startDate || startDate <= now`) runs here on Firebase servers; Firestore cannot express "null OR ≤ value" as a single compound query, so this minimal in-memory filter (≤50 items) is correct on Firebase rather than Vercel
-- Returns `{ promotedProducts, featuredProducts, activeCoupons }`
-- `memory: "256MiB"`, `timeoutSeconds: 30`, `maxInstances: 20`
+### Part 8 — Firebase-Side Query Processing (context for the 3 new HTTPS functions)
 
-### Files Updated
+**Problem:** Three Vercel API routes were doing heavy computation inside the Vercel serverless runtime — burning free-tier CPU and pulling large Firestore datasets across the internet to Vercel:
+
+| Route | Work done on Vercel | Peak data transfer |
+|---|---|---|
+| `GET /api/admin/analytics` | Fetch up to 5 000 order docs, aggregate revenue + monthly + top-5 | ~5 000 OrderDocument JSON blobs |
+| `GET /api/store/analytics` | Fetch up to 1 500 seller order docs, same aggregation | ~1 500 OrderDocument JSON blobs |
+| `GET /api/promotions` | Fetch ≤50 coupons, apply in-memory start-date guard | 50 coupon docs |
+
+Firebase Functions in `asia-south1` (same region as Firestore) query over Google's internal network — no internet hop, near-zero latency, no Vercel billing impact.
+
+**Pattern:** Firebase HTTPS functions (`onRequest`) secured by a shared secret (`x-internal-secret` header). Vercel API routes become thin proxies: verify session cookie (minimal CPU) → `fetch()` Firebase Function → return result.
+
+**Files created:**
 
 ```
-functions/src/lib/appkit.ts                ← add formatMonthYear + OrderDocument type exports
+functions/src/callable/adminAnalytics.ts   ← all order aggregation on Firebase servers
+functions/src/callable/storeAnalytics.ts   ← seller analytics on Firebase servers
+functions/src/callable/promotions.ts       ← promotions fetch + coupon start-date guard on Firebase
+```
+
+**Files updated:**
+
+```
+functions/src/lib/appkit.ts                ← add formatMonthYear + OrderDocument exports
 functions/src/index.ts                     ← export adminAnalytics, storeAnalytics, promotionsApi
-src/app/api/admin/analytics/route.ts       ← thin proxy (auth check → Firebase Function)
-src/app/api/store/analytics/route.ts       ← thin proxy (auth check → Firebase Function)
-src/app/api/promotions/route.ts            ← thin proxy (→ Firebase Function)
+src/app/api/admin/analytics/route.ts       ← thin proxy (role-checked → Firebase Function)
+src/app/api/store/analytics/route.ts       ← thin proxy (auth-checked, passes sellerId → Firebase Function)
+src/app/api/promotions/route.ts            ← thin proxy (public → Firebase Function)
 ```
 
-### Env Vars Required
+### Secret naming — `FIREBASE_` prefix is reserved
 
-Add these to **Vercel** project settings (Settings → Environment Variables):
+`firebase functions:secrets:set FIREBASE_INTERNAL_SECRET` was rejected by Firebase Secrets Manager:
+
+```
+Error: Key FIREBASE_INTERNAL_SECRET starts with a reserved prefix (X_GOOGLE_ FIREBASE_ EXT_)
+```
+
+Renamed to `LETITRIP_INTERNAL_SECRET` everywhere — all 3 Firebase functions, all 3 Vercel proxy routes, and `.env.local`.
+
+### Sync script fix — `--yes` → `--force`
+
+`appkit/scripts/sync-env-to-vercel.ps1` used `vercel env add --yes` which was removed in Vercel CLI v48. Updated to `--force` (the current equivalent for non-interactive overwrite).
+
+### Env vars — live on Vercel production
+
+All 41 variables from `.env.local` synced to Vercel production via `sync-env-to-vercel.ps1`. Key new entries:
 
 | Variable | Value |
 |---|---|
-| `FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL` | Cloud Run URL of `adminAnalytics` (available after `firebase deploy --only functions`) |
-| `FIREBASE_FUNCTION_STORE_ANALYTICS_URL` | Cloud Run URL of `storeAnalytics` |
-| `FIREBASE_FUNCTION_PROMOTIONS_URL` | Cloud Run URL of `promotionsApi` |
-| `FIREBASE_INTERNAL_SECRET` | Strong random secret (e.g. `openssl rand -hex 32`) |
+| `FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL` | `https://adminanalytics-nkzuprfdya-el.a.run.app` |
+| `FIREBASE_FUNCTION_STORE_ANALYTICS_URL` | `https://storeanalytics-nkzuprfdya-el.a.run.app` |
+| `FIREBASE_FUNCTION_PROMOTIONS_URL` | `https://promotionsapi-nkzuprfdya-el.a.run.app` |
+| `LETITRIP_INTERNAL_SECRET` | set (64-char hex, stored in Firebase Secrets Manager v1 + Vercel) |
 
-Add the **same** `FIREBASE_INTERNAL_SECRET` to Firebase Functions:
-```bash
-firebase functions:secrets:set FIREBASE_INTERNAL_SECRET
-# or for local emulator:
-echo 'FIREBASE_INTERNAL_SECRET=<same-value>' >> functions/.env
+### Secret — live in Firebase Secrets Manager
+
+```
+projects/949266230223/secrets/LETITRIP_INTERNAL_SECRET/versions/1
 ```
 
-### Deployment Sequence
+The 3 HTTPS functions read it from `process.env.LETITRIP_INTERNAL_SECRET` at runtime.
 
-1. `cd functions && npm run build` — confirm zero TypeScript errors ✅
-2. `firebase deploy --only functions` — deploys all 3 new functions, note their Cloud Run URLs from the output
-3. Add the 4 env vars to Vercel (URLs from step 2 + the shared secret)
-4. `vercel deploy` — redeploy consumer app with new env vars
+### Remaining step
 
-### TypeScript Verification
+Redeploy Vercel so the consumer app picks up the new env vars:
 
-- **Firebase Functions**: ✅ 0 errors (`npx tsc --noEmit`)
-- **Consumer app**: ✅ 0 errors (`npx tsc --noEmit`)
+```bash
+vercel deploy --prod
+```
+
+### TypeScript verification
+
+- **Firebase Functions**: ✅ 0 errors
+- **Consumer app**: ✅ 0 errors
 
 ---
 

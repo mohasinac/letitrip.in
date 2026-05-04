@@ -20,7 +20,9 @@
       "PowerShell(cd d:\\\\proj\\\\letitrip.in; npm run build 2>&1 | Out-File -Encoding utf8 \"$env:TEMP\\\\build.txt\"; Get-Content \"$env:TEMP\\\\build.txt\" | Select-Object -First 200)",
       "PowerShell(taskkill /F /IM node.exe; Write-Host \"Exit: $LASTEXITCODE\")",
       "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/newsletter\")",
-      "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/contact\")"
+      "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/contact\")",
+      "Bash(Get-ChildItem -Path \"d:\\\\proj\\\\letitrip.in\" -Directory)",
+      "Bash(Select-Object Name)"
     ],
     "defaultMode": "bypassPermissions"
   }

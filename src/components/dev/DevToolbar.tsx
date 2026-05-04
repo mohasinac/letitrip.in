@@ -15,7 +15,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "letitrip_dev_prefs";
-const IS_DEV =
+const IS_DEV = false &&
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1" ||

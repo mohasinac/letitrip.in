@@ -160,6 +160,22 @@ const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
   "eventEntries",
 ]);
 
+/** Delete every document in a Firestore collection (in batches of 500). */
+async function purgeCollection(
+  db: ReturnType<typeof getAdminDb>,
+  collectionPath: string,
+): Promise<void> {
+  const BATCH_LIMIT = 500;
+  let snapshot = await db.collection(collectionPath).limit(BATCH_LIMIT).get();
+  while (!snapshot.empty) {
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+    if (snapshot.docs.length < BATCH_LIMIT) break;
+    snapshot = await db.collection(collectionPath).limit(BATCH_LIMIT).get();
+  }
+}
+
 /** Recursively remove keys whose value is `undefined` so Firestore doesn't reject them. */
 function stripUndefined(obj: any): any {
   if (Array.isArray(obj)) return obj.map(stripUndefined);
@@ -511,13 +527,8 @@ export async function POST(request: NextRequest) {
                   disabled,
                 } = userData as any;
 
-                // Check if Firestore document already exists — skip if so
+                // Always upsert Firestore user doc (merge so existing fields are preserved)
                 const docRef = db.collection(firestoreCollection).doc(uid);
-                const docSnapshot = await docRef.get();
-                if (docSnapshot.exists) {
-                  totalSkipped++;
-                  continue;
-                }
 
                 // Check if Auth user exists
                 let userExists = false;
@@ -561,6 +572,12 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
+                // Always sync role as custom claim so auth/me returns correct role
+                const seedRole = (userData as any).role;
+                if (seedRole && seedRole !== "user") {
+                  await auth.setCustomUserClaims(uid, { role: seedRole });
+                }
+
                 // Write new Firestore document — encrypt PII fields
                 let docData = stripUndefined({ ...userData });
                 // Add blind indices from plaintext BEFORE encrypting
@@ -576,7 +593,7 @@ export async function POST(request: NextRequest) {
                     docData.shippingConfig,
                   );
                 }
-                await docRef.set(docData);
+                await docRef.set(docData, { merge: true });
                 totalCreated++;
               } catch (err) {
                 serverLogger.error(`Error seeding user ${userData.uid}:`, err);
@@ -601,16 +618,12 @@ export async function POST(request: NextRequest) {
                   .doc(userId)
                   .collection(ADDRESS_SUBCOLLECTION)
                   .doc(id);
-                const docSnapshot = await docRef.get();
-                if (docSnapshot.exists) {
-                  totalSkipped++;
-                  continue;
-                }
 
                 await docRef.set(
                   encryptPiiFields(stripUndefined(data), [
                     ...ADDRESS_PII_FIELDS,
                   ]),
+                  { merge: true },
                 );
                 totalCreated++;
               } catch (err) {
@@ -635,16 +648,12 @@ export async function POST(request: NextRequest) {
                   .doc(storeSlug)
                   .collection(STORE_ADDRESS_SUBCOLLECTION)
                   .doc(id);
-                const docSnapshot = await docRef.get();
-                if (docSnapshot.exists) {
-                  totalSkipped++;
-                  continue;
-                }
 
                 await docRef.set(
                   encryptPiiFields(stripUndefined(data), [
                     ...ADDRESS_PII_FIELDS,
                   ]),
+                  { merge: true },
                 );
                 totalCreated++;
               } catch (err) {
@@ -669,11 +678,6 @@ export async function POST(request: NextRequest) {
                   .doc(userId)
                   .collection("wishlist")
                   .doc(productId);
-                const docSnapshot = await docRef.get();
-                if (docSnapshot.exists) {
-                  totalSkipped++;
-                  continue;
-                }
 
                 await docRef.set(
                   stripUndefined({
@@ -681,6 +685,7 @@ export async function POST(request: NextRequest) {
                     ...data,
                     addedAt: data.addedAt ?? new Date(),
                   }),
+                  { merge: true },
                 );
                 totalCreated++;
               } catch (err) {
@@ -689,20 +694,25 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "siteSettings") {
-            // Site settings is a singleton document
+            // Site settings is a singleton document — always upsert
             const settingsData = seedData[0];
             if (settingsData) {
               const docRef = db.collection(firestoreCollection).doc("global");
-              const docSnapshot = await docRef.get();
-              if (docSnapshot.exists) {
-                totalSkipped++;
-              } else {
-                await docRef.set(stripUndefined(settingsData));
-                totalCreated++;
-              }
+              await docRef.set(stripUndefined(settingsData), { merge: true });
+              totalCreated++;
             }
           } else {
-            // Regular collections — bulk-check existence then batch write (500 per batch)
+            // Config-only collections are fully replaced on every seed load so
+            // stale docs from prior seed runs (different IDs) don't accumulate.
+            const REPLACE_COLLECTIONS: CollectionName[] = [
+              "homepageSections",
+              "carouselSlides",
+            ];
+            if (REPLACE_COLLECTIONS.includes(collectionName)) {
+              await purgeCollection(db, firestoreCollection);
+            }
+
+            // Regular collections — upsert (merge) all seed docs in batches of 500
             type WriteItem = {
               docRef: FirebaseFirestore.DocumentReference;
               data: Record<string, any>;
@@ -743,18 +753,13 @@ export async function POST(request: NextRequest) {
             }
 
             if (items.length > 0) {
-              // Phase 2: bulk existence check
-              const snaps = await db.getAll(...items.map((i) => i.docRef));
-              const toWrite = items.filter((_, idx) => !snaps[idx].exists);
-              totalSkipped += items.length - toWrite.length;
-
-              // Phase 3: batch write in chunks of 500
+              // Upsert (merge) in chunks of 500
               const BATCH_LIMIT = 500;
-              for (let i = 0; i < toWrite.length; i += BATCH_LIMIT) {
-                const chunk = toWrite.slice(i, i + BATCH_LIMIT);
+              for (let i = 0; i < items.length; i += BATCH_LIMIT) {
+                const chunk = items.slice(i, i + BATCH_LIMIT);
                 const batch = db.batch();
                 for (const { docRef, data } of chunk) {
-                  batch.set(docRef, data);
+                  batch.set(docRef, data, { merge: true });
                 }
                 await batch.commit();
                 totalCreated += chunk.length;
@@ -785,214 +790,98 @@ export async function POST(request: NextRequest) {
         },
       });
     } else if (action === "delete") {
-      // Delete seed data by ID
+      // Delete seed data — purge entire collections so stale docs with old IDs
+      // (from previous seed runs) are also removed.
       for (const collectionName of collectionsToProcess) {
         try {
           const firestoreCollection = COLLECTION_MAP[collectionName];
           const seedData = SEED_DATA_MAP[collectionName];
 
-          if (!seedData || seedData.length === 0) {
-            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
-            continue;
-          }
-
-          // Handle users collection (Auth + Firestore)
           if (collectionName === "users") {
+            // Auth + Firestore — delete each seed user's auth account then Firestore doc.
             for (const userData of seedData) {
               try {
                 const { uid } = userData as any;
-
-                // Check if Auth user exists before deleting
-                let authUserExists = false;
                 try {
-                  await auth.getUser(uid);
-                  authUserExists = true;
+                  await auth.deleteUser(uid);
                 } catch (err: any) {
-                  if (err.code !== "auth/user-not-found") {
-                    serverLogger.error(`Error checking auth user ${uid}:`, err);
+                  if (err?.code !== "auth/user-not-found") {
+                    serverLogger.error(`Error deleting auth user ${uid}`, { error: err instanceof Error ? err.message : String(err) });
                   }
                 }
-
-                // Delete Auth user if exists
-                if (authUserExists) {
-                  try {
-                    await auth.deleteUser(uid);
-                  } catch (err: any) {
-                    serverLogger.error(`Error deleting auth user ${uid}:`, err);
-                  }
-                }
-
-                // Check if Firestore document exists before deleting
                 const docRef = db.collection(firestoreCollection).doc(uid);
-                const docSnapshot = await docRef.get();
-
-                if (docSnapshot.exists) {
+                if ((await docRef.get()).exists) {
                   await docRef.delete();
                   totalDeleted++;
                 } else {
                   totalSkipped++;
                 }
               } catch (err) {
-                serverLogger.error(`Error deleting user ${userData.uid}:`, err);
+                serverLogger.error(`Error deleting user`, { uid: (userData as any).uid, error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
             }
           } else if (collectionName === "addresses") {
-            // Addresses are subcollection under users
-            for (const addressData of seedData) {
+            // Purge the entire addresses subcollection for every seed user.
+            const userIds = [...new Set((seedData as any[]).map((d) => d.userId).filter(Boolean))] as string[];
+            for (const userId of userIds) {
               try {
-                const { userId, id } = addressData as any;
-
-                if (!userId || !id) {
-                  serverLogger.error("Address missing userId or id");
-                  totalErrors++;
-                  continue;
-                }
-
-                // Check if document exists before deleting
-                const docRef = db
-                  .collection(USER_COLLECTION)
-                  .doc(userId)
-                  .collection(ADDRESS_SUBCOLLECTION)
-                  .doc(id);
-                const docSnapshot = await docRef.get();
-
-                if (docSnapshot.exists) {
-                  await docRef.delete();
-                  totalDeleted++;
-                } else {
-                  totalSkipped++;
-                }
+                await purgeCollection(db, `${USER_COLLECTION}/${userId}/${ADDRESS_SUBCOLLECTION}`);
+                totalDeleted++;
               } catch (err) {
-                serverLogger.error(`Error deleting address:`, err);
+                serverLogger.error(`Error purging addresses for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
             }
           } else if (collectionName === "storeAddresses") {
-            // Store addresses are subcollection under stores
-            for (const addressData of seedData) {
+            // Purge the entire store-addresses subcollection for every seed store.
+            const storeSlugs = [...new Set((seedData as any[]).map((d) => d.storeSlug).filter(Boolean))] as string[];
+            for (const storeSlug of storeSlugs) {
               try {
-                const { storeSlug, id } = addressData as any;
-
-                if (!storeSlug || !id) {
-                  serverLogger.error("Store address missing storeSlug or id");
-                  totalErrors++;
-                  continue;
-                }
-
-                const docRef = db
-                  .collection(STORE_COLLECTION)
-                  .doc(storeSlug)
-                  .collection(STORE_ADDRESS_SUBCOLLECTION)
-                  .doc(id);
-                const docSnapshot = await docRef.get();
-
-                if (docSnapshot.exists) {
-                  await docRef.delete();
-                  totalDeleted++;
-                } else {
-                  totalSkipped++;
-                }
+                await purgeCollection(db, `${STORE_COLLECTION}/${storeSlug}/${STORE_ADDRESS_SUBCOLLECTION}`);
+                totalDeleted++;
               } catch (err) {
-                serverLogger.error(`Error deleting store address:`, err);
+                serverLogger.error(`Error purging store addresses for ${storeSlug}`, { error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
             }
-            } else if (collectionName === "wishlists") {
-              // Wishlists are subcollection under users; doc id is productId
-              for (const wishlistData of seedData) {
-                try {
-                  const { userId, productId } = wishlistData as any;
-
-                  if (!userId || !productId) {
-                    serverLogger.error("Wishlist item missing userId or productId");
-                    totalErrors++;
-                    continue;
-                  }
-
-                  const docRef = db
-                    .collection(USER_COLLECTION)
-                    .doc(userId)
-                    .collection("wishlist")
-                    .doc(productId);
-                  const docSnapshot = await docRef.get();
-
-                  if (docSnapshot.exists) {
-                    await docRef.delete();
-                    totalDeleted++;
-                  } else {
-                    totalSkipped++;
-                  }
-                } catch (err) {
-                  serverLogger.error(`Error deleting wishlist item:`, err);
-                  totalErrors++;
-                }
+          } else if (collectionName === "wishlists") {
+            // Purge the wishlist subcollection for every seed user.
+            const userIds = [...new Set((seedData as any[]).map((d) => d.userId).filter(Boolean))] as string[];
+            for (const userId of userIds) {
+              try {
+                await purgeCollection(db, `${USER_COLLECTION}/${userId}/wishlist`);
+                totalDeleted++;
+              } catch (err) {
+                serverLogger.error(`Error purging wishlists for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
+                totalErrors++;
               }
+            }
           } else if (collectionName === "siteSettings") {
-            // Delete singleton document
+            // Singleton document — delete by known ID.
             const docRef = db.collection(firestoreCollection).doc("global");
-            const docSnapshot = await docRef.get();
-
-            if (docSnapshot.exists) {
+            if ((await docRef.get()).exists) {
               await docRef.delete();
               totalDeleted++;
             } else {
               totalSkipped++;
             }
           } else {
-            // Regular collections - delete by ID only
-            for (const docData of seedData) {
-              try {
-                let { id } = docData as any;
-
-                // Special handling for FAQs - generate ID if missing
-                if (!id && collectionName === "faqs") {
-                  const { generateFAQId } = await import("@mohasinac/appkit");
-                  id = generateFAQId({
-                    category: (docData as any).category,
-                    question: (docData as any).question,
-                  });
-                  if (!id) {
-                    serverLogger.error(
-                      `Failed to generate ID for FAQ: ${(docData as any).question}`,
-                    );
-                    totalErrors++;
-                    continue;
-                  }
-                } else if (!id) {
-                  serverLogger.error(
-                    `Document missing ID in ${collectionName}`,
-                  );
-                  totalErrors++;
-                  continue;
-                }
-
-                // Check if document exists before deleting
-                const docRef = db.collection(firestoreCollection).doc(id);
-                const docSnapshot = await docRef.get();
-
-                if (docSnapshot.exists) {
-                  await docRef.delete();
-                  totalDeleted++;
-                } else {
-                  totalSkipped++;
-                }
-              } catch (err) {
-                serverLogger.error(
-                  `Error deleting document ${docData.id} in ${collectionName}:`,
-                  err,
-                );
-                totalErrors++;
-              }
+            // All other top-level collections — purge the whole collection so
+            // docs with IDs that differ from the current seed data are also removed.
+            const countSnap = await db.collection(firestoreCollection).count().get();
+            const count = countSnap.data().count;
+            if (count > 0) {
+              await purgeCollection(db, firestoreCollection);
+              totalDeleted += count;
+            } else {
+              totalSkipped++;
             }
           }
 
           processedCollections.push(collectionName);
         } catch (err) {
-          serverLogger.error(
-            `Error processing collection ${collectionName}:`,
-            err,
-          );
+          serverLogger.error(`Error processing collection ${collectionName}`, { error: err instanceof Error ? err.message : String(err) });
           totalErrors++;
         }
       }

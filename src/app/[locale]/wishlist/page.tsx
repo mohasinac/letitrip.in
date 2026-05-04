@@ -11,8 +11,8 @@ import {
 } from "@mohasinac/appkit/client";
 
 export default function Page() {
-  const { user } = useSession();
-  const wl = useWishlistWithGuest(user?.uid ?? null);
+  const { user, loading: sessionLoading } = useSession();
+  const wl = useWishlistWithGuest(sessionLoading ? undefined : user?.uid ?? null);
 
   return (
     <Main>
@@ -22,7 +22,7 @@ export default function Page() {
             My Wishlist
           </Heading>
 
-          {wl.isLoading ? (
+          {sessionLoading || wl.isLoading ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
