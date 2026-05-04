@@ -2,6 +2,27 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 40 — Cursive font + settings toggle)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/layout.tsx` | Import `Playfair_Display`; add `--font-cursive` CSS variable; add inline script to apply `font-cursive` class on `<html>` from `localStorage['font-style']` before React hydrates |
+| `src/app/globals.css` | `html.font-cursive body` + headings: override `font-family` to `var(--font-cursive)` |
+| `appkit/src/features/account/components/UserSettingsView.tsx` | Add `renderAppearance?: () => React.ReactNode` render prop; rendered between `renderMessage` and `renderAccountInfo` |
+| `src/components/user/FontToggleClient.tsx` | New client component — toggle switch; reads initial state from `html.font-cursive` class; writes `localStorage['font-style']` and toggles the class on change |
+| `src/app/[locale]/user/settings/page.tsx` | Wire `<FontToggleClient />` via `renderAppearance` |
+
+### Details
+- Font: **Playfair Display** (Google Fonts, weights 400–700, normal + italic) — a quality serif/display font
+- Flash-free: inline script runs before React hydrates, so the font applies immediately on page load
+- Toggle appears in Settings under a card labelled "Cursive font" with a pill switch
+- No preference = Inter (default sans-serif); toggled on = Playfair Display
+- TSC: 0 errors
+
+---
+
 ## Session Update — 2026-05-05 (Part 39 — User nav collapsible sidebar)
 
 ### appkit — `UserSidebar` persistent sidebar variant
@@ -61,7 +82,7 @@
 
 ---
 
-## Session Update — 2026-05-05 (Part 39 — Multi-coupon conflict detection + cart UI)
+## Session Update — 2026-05-05 (Part 37b — Multi-coupon conflict detection + cart UI)
 
 ### What changed
 

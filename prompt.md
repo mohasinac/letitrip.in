@@ -7,11 +7,31 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: User nav collapsible in sidebar (Task 18)**
+**Next up: Firebase logs (Task 20)**
 
-Task 17 done (Part 38). Next task:
+Tasks 17, 18, 19 done (Parts 38/38b, 39, 40). Next task:
 
-In the user sidebar (`appkit/src/features/user/components/UserSidebar.tsx` or similar), nav group sections (e.g. "Account", "Orders", "Settings") should be **auto-collapsed by default**. Users can click to expand individual sections. The active section (containing the current page link) should be auto-expanded on mount.
+Replace `console.log`/`console.error` with Firebase logging (Firebase Performance or custom structured logging). File-based logs only in local dev.
+
+### ✅ Completed (Part 40 — Cursive font + toggle):
+- `Playfair_Display` added to `src/app/layout.tsx` as `--font-cursive`; inline script applies `font-cursive` class on `<html>` from localStorage on load.
+- `src/app/globals.css`: `html.font-cursive` overrides body + heading `font-family` to Playfair Display.
+- `UserSettingsView`: new `renderAppearance` render prop added (appkit).
+- `FontToggleClient`: toggle switch reads/writes `localStorage['font-style']` and toggles `html.font-cursive` class.
+- Settings page wires `FontToggleClient` via `renderAppearance`.
+
+### ✅ Completed (Part 39 — User nav collapsible sidebar):
+- `UserSidebar` gains `variant="sidebar"` — persistent inline aside on desktop (`md+`), BottomSheet on mobile.
+- Nav groups start collapsed; active group auto-expands on mount. `defaultOpen: true` forces group open.
+- `src/app/[locale]/user/layout.tsx`: two-column layout — inline sidebar + `<main>`.
+
+### ✅ Completed (Part 37b — Multi-coupon conflict detection + cart UI):
+- `CartDocument` uses `appliedCoupons[]` + `selectedItemIds?`; `CartItemDocument` gains `sellerSlug?`.
+- `addCoupon`/`removeCoupon(code)`/`clearAllCoupons`/`setSelectedItems` on `CartRepository`.
+- `POST /api/cart/coupon`: conflict rules (duplicate, one-per-seller, admin+seller exclusion).
+- `PUT /api/cart/selection`: new route — persists selected item IDs for partial checkout.
+- Checkout + payment/verify: partial checkout + multi-coupon pro-rating; saves `appliedDiscounts[]`.
+- `CartRouteClient`: seller grouping, per-item checkboxes, multi-coupon chips, partial checkout button.
 
 ### ✅ Completed (Part 37 — Ads: no empty placeholder space):
 - All 4 homepage `AdSlot` components return `null` — no 90px placeholder banners.
@@ -109,11 +129,11 @@ In the user sidebar (`appkit/src/features/user/components/UserSidebar.tsx` or si
 | ~~14~~ | ~~Events — polls + richer seed~~ | ✅ Done (Part 33) |
 | ~~15~~ | ~~Homepage carousel~~ | ✅ Done (Part 36) |
 | ~~16~~ | ~~Ads — no empty space~~ | ✅ Done (Part 37) |
-| 17 | **200 products + open-source images** | Verify `allProductsSeedData` across 7 franchises reaches ~200 products. Replace any `picsum.photos` or random image URLs with proper open-source image URLs (Wikimedia Commons, official TCG image APIs, etc.). Add `videoUrl` field where appropriate. |
-| 18 | **User nav collapsible** | In user sidebar, nav groups are auto-collapsed by default. User can expand. Implement in `UserSidebar` (appkit). |
-| 19 | **Cursive font + toggle** | Add a quality cursive/display font (e.g. Playfair Display or Dancing Script from Google Fonts). Settings page: toggle below theme toggle to switch between cursive and Roboto. Store preference in localStorage. |
+| ~~17~~ | ~~200 products + open-source images~~ | ✅ Done (Part 38/38b) |
+| ~~18~~ | ~~User nav collapsible~~ | ✅ Done (Part 39) |
+| ~~19~~ | ~~Cursive font + toggle~~ | ✅ Done (Part 40) |
 | 20 | **Firebase logs** | Replace `console.log`/`console.error` with Firebase logging (Firebase Performance or custom structured logging). File-based logs only in local dev. |
-| 21 | **Cart & Checkout (Phase 28)** | Auth-backed cart (not just localStorage). Razorpay payment integration. Order creation API. See `CartRouteClient.tsx` and `CheckoutRouteClient.tsx`. |
+| 21 | **Cart & Checkout (Phase 28)** | Multi-coupon + partial checkout done (Part 37b). Remaining: auth-backed cart (Firestore sync), Razorpay payment flow end-to-end verification. See `CartRouteClient.tsx` and `CheckoutRouteClient.tsx`. |
 | 22 | **Admin Events CRUD (Phase 30)** | `AdminEventsView` component in appkit. Create/edit events from admin panel. |
 | 23 | **Rich Text (Phase 33)** | Store bio, return/shipping policies, category descriptions, event content — all currently plain text. Wire `RichTextEditor` in create/edit forms. |
 | 24 | **Responsive audit (Phase 22/23)** | 375px / 768px / 1024px viewport testing. Lighthouse ≥ 90. |
