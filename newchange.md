@@ -2,6 +2,36 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 31 — HorizontalScroller infinite loop mode)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/components/HorizontalScroller.tsx` | Added `loop?: boolean` prop; clones first N items to end; instant-jump at boundaries for seamless wrap |
+| `src/app/api/cart/coupon/route.ts` | Cast `result.coupon` to `{ id?: string }` to fix TSC error |
+| `src/components/routing/CartRouteClient.tsx` | Renamed `effectiveCoupon` state to `localCoupon`; derived `effectiveCoupon = localCoupon ?? serverAppliedCoupon` |
+
+### Loop mode details
+- `loop=true` appends `loopCloneCount` cloned items to the end of `loopItems`
+- Arrow navigation: at the end, instantly jumps `scrollLeft` to `0`; at the start, jumps to `scrollWidth - clientWidth`
+- Auto-scroll: at the end, instant-jumps rather than visible scroll-back
+- Cloned items have `aria-hidden` for accessibility
+- TSC passes 0 errors after fixes.
+
+---
+
+## Session Update — 2026-05-05 (Part 30 — Stores seed storeId verified correct)
+
+### What changed
+No code changes — stores seed and queries are already consistent:
+- Store documents use `ownerId` (user UID) — matches `uid` fields in users seed
+- All queries: `storeRepository.findByOwnerId(userId)` — correct
+- Products filtered by `sellerId` (user UID) — matches store `ownerId`
+- No field mismatch found.
+
+---
+
 ## Session Update — 2026-05-05 (Part 29 — Store reviews on auction pages)
 
 ### What changed

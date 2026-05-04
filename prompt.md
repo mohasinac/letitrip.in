@@ -7,11 +7,18 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Stores seed — storeId not sellerId**
+**Next up: Events — polls + richer seed (Task 14)**
 
-Store reviews, order grouping, bottom button bar, and all toolbar tasks are done (Parts 27-29). Next task:
+Stores, HorizontalScroller loop, toolbar, filters, offers all done (Parts 22-31). Next task:
 
-Verify seed and store queries use `storeId` for ownership. Check `appkit/src/seed/pokemon-stores-seed-data.ts` — confirm `ownerId` fields match user IDs from `pokemon-users-seed-data.ts`. Check the stores repository query that fetches "my store" for a seller — it must query on `storeId` not `sellerId`. Fix store-not-found errors that appear on `/store/dashboard`.
+Add public polls (no login required) and login-required polls to `EventDetailView`. Check `appkit/src/features/events/` for existing poll components or hooks. Add `pollConfig` to events seed data in `appkit/src/seed/`. Fix participate button if broken. Check if `EventDetailView` has a `renderPoll` or similar slot prop.
+
+### ✅ Completed (Part 31 — HorizontalScroller infinite loop):
+- `loop` prop added; clones first N items to end; instant-jump at boundaries for seamless wrap.
+- TSC fixes: `cart/coupon/route.ts` coupon cast, `CartRouteClient.tsx` state rename.
+
+### ✅ Completed (Part 30 — Stores seed storeId verified correct):
+- No issues found: `ownerId`, `sellerId`, and query on `findByOwnerId` all consistent.
 
 ### ✅ Completed (Part 29 — Store reviews on auction pages):
 - `AuctionDetailPageView` now fetches store reviews via `listReviewsBySeller` and renders rating summary + up to 10 reviews.
@@ -70,16 +77,16 @@ Verify seed and store queries use `storeId` for ownership. Check `appkit/src/see
 |---|------|-------|
 | 1 | **Buy Now buttons** | ⚠️ Verify in browser — Product detail, auction buyout, pre-order Add to Cart wired in Part 16 |
 | 2 | **Offer logic** | Simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
-| 3 | **Filters — apply on click** | All filter toggles/ranges must buffer in `usePendingFilters` state. Only write to URL on "Apply Filters" click. Sort dropdown and grid/list toggle remain on-change. Check `ProductFilters.tsx`, `AuctionFilters.tsx`, `PreOrderFilters.tsx` — each must use `usePendingFilters`. |
-| 5 | **Collapsible filters** | Only collapse filter groups that have many options (> 6 items). Range sliders and boolean toggles never collapse. Add collapse toggle to `FilterPanel.tsx`. |
-| 6 | **Category filter — searchable dropdown** | Replace the current category list/chips in `ProductFilters` with a searchable `<select>` or combobox that shows selected categories inline. Apply via "Apply Filters" only. |
-| 7 | **Sticky toolbar fix** | Listing page toolbar currently uses `top-14`. Must stick below breadcrumbs/searchbar as user scrolls. Audit `ListingLayout.tsx` or `ProductsIndexListing.tsx` — compute correct top offset based on actual header height. |
-| 8 | **Mobile toolbar row layout** | Row 1: search + confirm button. Row 2: sort + grid/list toggle. Row 3: pagination. Currently these are collapsed or in wrong order on mobile. Fix in `ListingLayout.tsx`. |
-| 9 | **Bottom button bar** | On product/auction/pre-order detail pages: a fixed bar above the bottom nav showing Buy Now / Add to Cart / Wishlist / Bid icons. Must always be visible on mobile without scrolling. |
-| 10 | **Order grouping** | Auctions → always individual orders. Simple products + pre-orders from the same store → grouped into one order. Coupons apply to group total. Update checkout flow in `CheckoutRouteClient.tsx` + order creation API. |
-| 11 | **Store reviews on auction pages** | At the bottom of auction detail: show store rating summary + up to 10 most recent store reviews. Wire `renderStoreReviews` slot if it exists in `AuctionDetailView`, otherwise add it. |
-| 12 | **Stores seed — storeId not sellerId** | Verify seed and store queries use `storeId` for ownership. Check `pokemon-stores-seed-data.ts` ownerId fields match `pokemon-users-seed-data.ts` user IDs. Fix store-not-found errors. |
-| 13 | **Circular/infinite horizontal scrollers** | `HorizontalScroller` currently stops at the last item. Add infinite-loop mode: clone first/last slides and jump seamlessly. Add `loop` prop to the component in appkit. |
+| ~~3~~ | ~~Filters — apply on click~~ | ✅ Done (Part 21) |
+| ~~5~~ | ~~Collapsible filters~~ | ✅ Done (Part 22) |
+| ~~6~~ | ~~Category filter — searchable dropdown~~ | ✅ Done (Part 24) |
+| ~~7~~ | ~~Sticky toolbar fix~~ | ✅ Done (already correct) |
+| ~~8~~ | ~~Mobile toolbar row layout~~ | ✅ Done (Part 26) |
+| ~~9~~ | ~~Bottom button bar~~ | ✅ Done (Part 27) |
+| ~~10~~ | ~~Order grouping~~ | ✅ Done (Part 28 — already correct) |
+| ~~11~~ | ~~Store reviews on auction pages~~ | ✅ Done (Part 29) |
+| ~~12~~ | ~~Stores seed — storeId not sellerId~~ | ✅ Done (Part 30 — already correct) |
+| ~~13~~ | ~~Circular/infinite horizontal scrollers~~ | ✅ Done (Part 31) |
 | 14 | **Events — polls + richer seed** | Add public polls (no login required) and login-required polls to `EventDetailView`. Add `pollConfig` to events seed data. Fix participate button if broken. |
 | 15 | **Homepage carousel** | 1 card per row on mobile, max 2 rows, proper slide dimensions. Check `HeroCarousel` and `pokemon-carousel-slides-seed-data.ts`. |
 | 16 | **Ads — no empty space** | If `adSlots` prop has no content for a slot, render nothing (no reserved height). Fix in `MarketplaceHomepageView.tsx` and any listing page ad slots. |
