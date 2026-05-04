@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Div, Heading, Text } from "@mohasinac/appkit/ui";
-import { EventParticipateView } from "@mohasinac/appkit/client";
-import { useSession } from "@mohasinac/appkit/client";
+import { EventParticipateView, useSession, useToast } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit";
 
@@ -14,6 +13,7 @@ interface Props {
 
 export function EventParticipateClient({ event, hasLeaderboard }: Props) {
   const { user } = useSession();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,8 +59,11 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
         throw new Error((data as Record<string, string>)?.error ?? "Failed to submit entry");
       }
       setIsSubmitted(true);
+      showToast("Your entry has been submitted!", "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setError(msg);
+      showToast(msg, "error");
     } finally {
       setIsLoading(false);
     }

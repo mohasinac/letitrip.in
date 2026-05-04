@@ -16,7 +16,6 @@ import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 import { DevToolbar } from "@/components/dev/DevToolbar";
-import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 type Props = {
   children: ReactNode;
@@ -28,7 +27,6 @@ export default async function Layout({ children, params }: Props) {
   const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const messages = await getMessages();
-  const initialUser = await getServerSessionUser();
 
   return (
     <NextIntlClientProvider
@@ -40,7 +38,7 @@ export default async function Layout({ children, params }: Props) {
       <ClientProviderInitializer />
       <ZodSetup />
       <ThemeProvider>
-        <SessionProvider initialUser={initialUser}>
+        <SessionProvider initialUser={null}>
           <ToastProvider position="top-right">
             <BottomActionsProvider>
               <DashboardNavProvider>

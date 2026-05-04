@@ -16,6 +16,7 @@ import {
   Button,
   Search,
   useSession,
+  useToast,
   type AppLayoutShellProps,
   type MainNavbarItem,
   type SearchLabels,
@@ -34,6 +35,7 @@ export default function LayoutShellClient({
   const pathname = usePathname();
   const locale = useLocale();
   const { user } = useSession();
+  const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
 
   const searchLabels: SearchLabels = useMemo(() => ({
@@ -53,11 +55,13 @@ export default function LayoutShellClient({
         method: "POST",
         credentials: "include",
       });
+      showToast("Signed out successfully", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
     } catch {
+      showToast("Signed out", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
     }
-  }, [router]);
+  }, [router, showToast]);
 
   const navItems = useMemo<MainNavbarItem[]>(
     () => [

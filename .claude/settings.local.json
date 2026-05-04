@@ -24,7 +24,8 @@
       "Bash(Get-ChildItem -Path \"d:\\\\proj\\\\letitrip.in\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(xargs grep *)",
-      "Bash(xargs ls *)"
+      "Bash(xargs ls *)",
+      "Bash(git diff *)"
     ],
     "defaultMode": "bypassPermissions"
   }

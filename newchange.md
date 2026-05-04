@@ -2,6 +2,170 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 11 — Product/Auction/Pre-Order Index Fixes + Filter Corrections)
+
+### Product data model clarification
+
+Products, auctions, and pre-orders share a single `products` Firestore collection differentiated by `isAuction` / `isPreOrder` boolean flags — not separate collections. Auctions and pre-orders are specialisations of the base product document. All three share the same `useProducts` hook and repository; listings filter by flag at query time.
+
+### Firestore indexes — category + production status
+
+Added 8 missing composite indexes to both `firestore.indexes.json` and `appkit/firebase/base/firestore.indexes.json`:
+
+**Auctions (new `isAuction` + `category` indexes):**
+- `isAuction + category + createdAt DESC`
+- `isAuction + status + category + createdAt DESC`
+- `isAuction + category + auctionEndDate ASC` — "ending soonest within a category"
+
+**Pre-orders (new `isPreOrder` + `category` indexes):**
+- `isPreOrder + category + createdAt DESC`
+- `isPreOrder + status + category + createdAt DESC`
+- `isPreOrder + category + preOrderDeliveryDate ASC` — "shipping soonest within a category"
+
+**Pre-orders (production status with sort):**
+- `isPreOrder + preOrderProductionStatus + createdAt DESC`
+- `isPreOrder + status + preOrderProductionStatus + createdAt DESC`
+
+### Bug fix — pre-orders visible in regular products listing
+
+`ProductsIndexListing` was passing `isAuction: false` to `useProducts` but not `isPreOrder: false`, so pre-orders leaked into the `/products` page. Fixed by adding `isPreOrder: false` to the query params.
+
+### Bug fix — pre-order production status filter broken end-to-end
+
+The `preOrderStatus` URL param and filter were mapped to the wrong Firestore field throughout the stack. Full fix:
+
+- **`ProductListParams` type** — renamed `preOrderStatus?: string` → `preOrderProductionStatus?: "upcoming" | "in_production" | "ready_to_ship"` with a proper union type
+- **`useProducts.ts`** — sends `preOrderProductionStatus` query param instead of `preOrderStatus`
+- **`api/products/route.ts`** — reads `preOrderProductionStatus` param (falls back to `preOrderStatus` for backward compat), maps to Sieve `preOrderProductionStatus==` filter
+- **`PreOrderFilters.tsx`** — URL key corrected to `preOrderProductionStatus`; removed invalid `"shipped"` option (not in Firestore schema: only `upcoming | in_production | ready_to_ship`); label updated to `t("productionStatus")`
+- **`PreOrdersIndexListing.tsx`** — `FILTER_KEYS` and params updated to `preOrderProductionStatus`
+- **`PreOrdersListView.tsx`** — SSR Sieve filter corrected from `preOrderStatus==` to `preOrderProductionStatus==`
+
+### i18n
+
+Added `"productionStatus": "Production Status"` to the `filters` namespace in `messages/en.json`.
+
+---
+
+## Session Update — 2026-05-05 (Part 10 — Toast Notifications + Address Pages + Listing Toolbars)
+
+### Toast notifications on every user action
+
+Added `showToast` calls to every button/handler that was missing feedback:
+
+- **EventParticipateClient** — success ("Your entry has been submitted!") and error toasts in `handleSubmit`
+- **CheckoutRouteClient** — toasts for: OTP sent, OTP verified, payment success, payment error, COD order placed, COD order error
+- **CartRouteClient** — toasts for: coupon applied (with savings amount), coupon error, coupon removed, item removed from cart
+- **ForgotPasswordPageClient** — toast on success/error of reset email send
+- **ResetPasswordPageClient** — toast on success/error of password reset
+- **ShareEventButton** — "Link copied to clipboard!" toast
+- **ShareButtons** (blog) — "Link copied to clipboard!" toast
+- **HomepageNewsletterForm** — toast on subscribe success/error
+
+### Address CRUD pages — fully wired (were blank before)
+
+Pages `/user/addresses`, `/user/addresses/add`, `/user/addresses/edit/[id]` rendered blank `<UserAddressesView />` shells. Replaced with functional client wrappers:
+
+- **`src/components/user/UserAddressesClient.tsx`** — lists addresses with delete + navigate to add/edit; uses `useDeleteAddress` + `useSetDefaultAddress` with toasts
+- **`src/components/user/AddAddressClient.tsx`** — `AddressForm` wired to `useCreateAddress` with toast on success/error
+- **`src/components/user/EditAddressClient.tsx`** — loads address by ID, `AddressForm` wired to `useUpdateAddress` with toast on success/error
+
+### Profile page — functional edit form (was blank shell)
+
+`/user/profile` rendered blank `<ProfileView />` shell. Replaced with:
+
+- **`src/components/user/ProfilePageClient.tsx`** — shows avatar, display name, email, phone; inline edit form using `useUpdateProfile` with toast feedback
+
+### appkit exports added (`client.ts`)
+
+New exports added so the above client components can import from `@mohasinac/appkit/client`:
+- `useCreateAddress`, `useUpdateAddress`, `useDeleteAddress`, `useSetDefaultAddress`, `useAddress`
+- `AddressBook`, `AddressCard`, `AddressForm`
+- `useProfile`, `useUpdateProfile`
+
+**appkit rebuilt** (0 TSC errors), synced to `node_modules/@mohasinac/appkit`. Next.js TSC also 0 errors.
+
+---
+
+## Session Update — 2026-05-05 (Part 9 — Google OAuth Fix)
+
+### Google OAuth popup flow — 3 crash fixes
+
+**Problem:** Google sign-in crashed silently. Three independent bugs:
+
+1. **`/auth/close` page showed "Account closed"** — pointed at the account-deletion `AuthStatusPanel`. The popup never closed and the main window's RTDB listener timed out.
+   - **Fix:** Replaced with a client component (`"use client"`) that calls `window.close()` after 200 ms. Handles `?error=` query param by rendering the error message and a "Close window" button.
+   - File: `src/app/[locale]/auth/close/page.tsx`
+
+2. **Google button not visible** — `LoginForm` renders social buttons only via the `renderSocialButtons` render prop. `LoginPageClient` only passed `onGoogleLogin` (no render prop), so no button appeared.
+   - **Fix:** `LoginForm` now auto-renders a built-in `SocialAuthButtons` (Google button + divider) when `onGoogleLogin` is provided and `renderSocialButtons` is not. Existing callers that pass `renderSocialButtons` are unaffected.
+   - File: `appkit/src/features/auth/components/LoginForm.tsx`
+
+3. **Session state not refreshed after OAuth** — After RTDB success fired, the main window's `SessionContext.user` stayed `null`. Firebase `onAuthStateChanged` never fires on the main window (no client-side sign-in), and `router.push("/")` is a soft-nav that doesn't re-run server components or re-fetch auth.
+   - **Fix:** `LoginPageClient` now passes `onSessionSynced: async () => { await refreshUser(); }` to `useGoogleLogin`. `useSession().refreshUser` re-fetches `/api/auth/me` with the freshly-set session cookie (set by the popup redirect). Also added `router.refresh()` before `router.push("/")` to force Next.js to invalidate its RSC cache.
+   - File: `src/components/auth/LoginPageClient.tsx`
+
+**appkit rebuilt** (0 TSC errors), synced to `node_modules/@mohasinac/appkit`.
+
+---
+
+## Session Update — 2026-05-05 (Part 8 — Firestore Index Cleanup + Category DFS Position Trigger)
+
+### Firestore composite index audit (`firestore.indexes.json`)
+
+Cross-referenced every index in the file against actual Firestore queries in the codebase (all repository files). Result: 5 removals, 2 additions, 1 single-field invalid entry fixed.
+
+**Removed:**
+| Collection | Fields | Reason |
+|---|---|---|
+| `categories` | `position` (single-field) | Invalid in composite index file — caused deploy error; Firestore manages single-field indexes automatically |
+| `faqs` | `isPinned + priority + order` | Exact duplicate — appeared twice |
+| `products` | `isPreOrder + sellerId + deliveryDate` | `deliveryDate` field does not exist on product documents (field is on orders) |
+| `products` | `isPreOrder + preOrderStatus + deliveryDate` | Neither `preOrderStatus` nor `deliveryDate` is used in `products.repository.ts` queries |
+| `products` | `isPreOrder + preOrderStartDate + preOrderEndDate` | Neither field exists in the products repository |
+
+**Added:**
+| Collection | Fields | Query |
+|---|---|---|
+| `bids` | `productId (ASC) + userId (ASC) + status (ASC)` | `bid.repository.ts` `findOneByProductAndUser()` — 3-field equality had no covering index |
+| `offers` | `buyerUid (ASC) + productId (ASC) + status (ASC)` | `offer.repository.ts` `hasActiveOffer()` — `in` query on status with 2 equality fields had no covering index |
+
+Deployed via `firebase deploy --only firestore:indexes --force` (also deleted 3 stale remote indexes not in the file).
+
+### Cloud Function: `onCategoryWrite` — rewritten (DFS position maintenance)
+
+Previously a no-op stub ("external search provider removed"). Now maintains two denormalized fields on every `CategoryDocument`:
+
+- **`position`** — global DFS pre-order index (1-indexed) across the full category tree, ordered by the `order` field within sibling groups
+- **`subtreeSize`** — count of self + all descendants; the half-open range `[position, position + subtreeSize)` enables O(1) subtree queries
+
+**Behaviour by event type:**
+- **CREATE** — appends new node after parent's subtree; shifts all later nodes `+1`; increments every ancestor's `subtreeSize` by 1
+- **DELETE** — shifts all nodes after the deleted subtree by `-subtreeSize`; decrements ancestor `subtreeSize`s
+- **MOVE (parent change)** — sets `positionDirty: true` on the moved document; the nightly `positionsReconcile` job heals these (real-time subtree relocation is too write-heavy for a trigger)
+- **Non-move updates** — no-op (only display fields changed)
+
+File: `functions/src/triggers/onCategoryWrite.ts`
+
+### New Cloud Function: `positionsReconcile` (scheduled 03:30 UTC)
+
+Nightly full-tree rebuild of `position` + `subtreeSize` via DFS pre-order traversal. Acts as self-healing for any trigger failures, move events flagged `positionDirty`, or schema gaps on existing documents.
+
+**Algorithm:**
+1. Load all category docs (single collection scan)
+2. Build in-memory adjacency map (parentId → children[])
+3. DFS pre-order from each root, sorted by `order` field within siblings
+4. Assign sequential 1-indexed positions; back-calculate `subtreeSize`
+5. Batch-write only changed documents (skips clean days entirely)
+6. Orphaned nodes (bad data) detected and assigned tail positions
+
+File: `functions/src/jobs/positionsReconcile.ts`  
+Schedule constant: `SCHEDULES.DAILY_0330 = "30 3 * * *"` added to `functions/src/config/constants.ts`
+
+Deployed via `firebase deploy --only functions` — all 24 functions updated, `positionsReconcile` created.
+
+---
+
 ## Session Update — 2026-05-05 (Part 7 — Admin Role Shown as User in Navigation)
 
 ### Problem

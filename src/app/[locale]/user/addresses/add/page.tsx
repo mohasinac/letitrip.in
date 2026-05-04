@@ -1,5 +1,5 @@
-﻿import { UserAddressesView } from "@mohasinac/appkit";
+import { AddAddressClient } from "@/components/user/AddAddressClient";
 
 export default function Page() {
-  return <UserAddressesView />;
+  return <AddAddressClient />;
 }

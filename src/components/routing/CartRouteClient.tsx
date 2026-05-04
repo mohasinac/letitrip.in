@@ -14,6 +14,7 @@ import {
   useCartQuery,
   useGuestCart,
   useGuestCartMerge,
+  useToast,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
@@ -93,6 +94,7 @@ function guestItemsToCartItems(
 export function CartRouteClient() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const guest = useGuestCart();
   const { data: serverCart, isLoading: serverLoading } =
@@ -143,13 +145,18 @@ export function CartRouteClient() {
       });
       const data = await res.json() as { data?: { code: string; discountAmount: number }; error?: string };
       if (!res.ok) {
-        setCouponError(data.error ?? "Invalid coupon code");
+        const errMsg = data.error ?? "Invalid coupon code";
+        setCouponError(errMsg);
+        showToast(errMsg, "error");
       } else {
         setAppliedCoupon({ code: data.data!.code, discountAmount: data.data!.discountAmount });
         setCouponCode("");
+        showToast(`Coupon "${data.data!.code}" applied! You saved ₹${data.data!.discountAmount.toFixed(2)}.`, "success");
       }
     } catch {
-      setCouponError("Failed to apply coupon. Please try again.");
+      const errMsg = "Failed to apply coupon. Please try again.";
+      setCouponError(errMsg);
+      showToast(errMsg, "error");
     } finally {
       setIsCouponLoading(false);
     }
@@ -158,7 +165,8 @@ export function CartRouteClient() {
   const handleRemoveCoupon = useCallback(() => {
     setAppliedCoupon(null);
     setCouponError("");
-  }, []);
+    showToast("Coupon removed.", "info");
+  }, [showToast]);
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const finalTotal = Math.max(0, subtotal - discountAmount);
@@ -175,9 +183,12 @@ export function CartRouteClient() {
 
   const handleRemove = useCallback(
     (id: string) => {
-      if (!isAuthenticated) guest.remove(id);
+      if (!isAuthenticated) {
+        guest.remove(id);
+        showToast("Item removed from cart.", "info");
+      }
     },
-    [isAuthenticated, guest],
+    [isAuthenticated, guest, showToast],
   );
 
   return (

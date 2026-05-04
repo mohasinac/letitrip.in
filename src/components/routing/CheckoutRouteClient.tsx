@@ -13,6 +13,7 @@ import {
   useAddresses,
   useAuth,
   useCartQuery,
+  useToast,
 } from "@mohasinac/appkit/client";
 import type { Address } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
@@ -85,6 +86,7 @@ type CheckoutStep = "address" | "otp" | "payment" | "processing";
 export function CheckoutRouteClient() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const { data: addresses, isLoading: addressesLoading } = useAddresses({
     enabled: !!user?.uid,
@@ -124,14 +126,15 @@ export function CheckoutRouteClient() {
       const result = await sendConsentOtpAction(selectedAddress.id);
       setMaskedEmail(result.maskedEmail);
       setStep("otp");
+      showToast("Verification code sent to your email.", "success");
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Failed to send OTP",
-      );
+      const msg = err instanceof Error ? err.message : "Failed to send OTP";
+      setActionError(msg);
+      showToast(msg, "error");
     } finally {
       setIsSendingOtp(false);
     }
-  }, [selectedAddress]);
+  }, [selectedAddress, showToast]);
 
   const handleVerifyOtp = useCallback(async () => {
     if (!selectedAddress || !otpCode) return;
@@ -140,14 +143,15 @@ export function CheckoutRouteClient() {
     try {
       await verifyConsentOtpAction(selectedAddress.id, otpCode);
       setStep("payment");
+      showToast("Identity verified. Choose a payment method.", "success");
     } catch (err) {
-      setOtpError(
-        err instanceof Error ? err.message : "Invalid OTP. Please try again.",
-      );
+      const msg = err instanceof Error ? err.message : "Invalid OTP. Please try again.";
+      setOtpError(msg);
+      showToast(msg, "error");
     } finally {
       setIsVerifyingOtp(false);
     }
-  }, [selectedAddress, otpCode]);
+  }, [selectedAddress, otpCode, showToast]);
 
   const handlePayOnline = useCallback(async () => {
     if (!selectedAddress || !user) return;
@@ -215,16 +219,17 @@ export function CheckoutRouteClient() {
       }
       const verifyData = await verifyRes.json().catch(() => ({}));
       const firstOrderId = (verifyData?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Payment successful! Your order has been placed.", "success");
       router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Payment failed. Please retry.",
-      );
+      const msg = err instanceof Error ? err.message : "Payment failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
       setStep("payment");
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, user, subtotal, router]);
+  }, [selectedAddress, user, subtotal, router, showToast]);
 
   const handlePlaceCodOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -249,16 +254,17 @@ export function CheckoutRouteClient() {
       }
       const codData = await res.json().catch(() => ({}));
       const firstCodOrderId = (codData?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Order placed successfully! Cash on delivery confirmed.", "success");
       router.push(firstCodOrderId ? `/checkout/success?orderId=${firstCodOrderId}` : "/checkout/success");
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Order failed. Please retry.",
-      );
+      const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
       setStep("payment");
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router]);
+  }, [selectedAddress, router, showToast]);
 
   // --- Redirect unauthenticated users ----------------------------------------
 

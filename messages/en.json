@@ -791,6 +791,7 @@
     "minBidPrice": "Min bid",
     "maxBidPrice": "Max bid",
     "preOrderStatus": "Pre-Order Status",
+    "productionStatus": "Production Status",
     "preOrderStatusActive": "Active",
     "preOrderStatusUpcoming": "Upcoming",
     "preOrderStatusClosed": "Closed",

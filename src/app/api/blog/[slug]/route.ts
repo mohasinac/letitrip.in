@@ -4,8 +4,17 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  BlogPostStatusValues,
 } from "@mohasinac/appkit";
-import { BlogPostStatusValues } from "@mohasinac/appkit";
+
+function toSerializable(doc: any) {
+  return {
+    ...doc,
+    publishedAt: doc.publishedAt?.toISOString?.() ?? doc.publishedAt ?? null,
+    createdAt: doc.createdAt?.toISOString?.() ?? doc.createdAt,
+    updatedAt: doc.updatedAt?.toISOString?.() ?? doc.updatedAt,
+  };
+}
 
 export const GET = withProviders(
   createRouteHandler({
@@ -16,7 +25,13 @@ export const GET = withProviders(
         return errorResponse("Blog post not found", 404);
       }
       blogRepository.incrementViews(post.id).catch(() => {});
-      return successResponse(post);
+      const related = await blogRepository
+        .findRelated(post.category, post.id, 3)
+        .catch(() => []);
+      return successResponse({
+        post: toSerializable(post),
+        related: related.map(toSerializable),
+      });
     },
   }),
 );

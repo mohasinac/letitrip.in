@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
 import { Text } from "@mohasinac/appkit/ui";
+import { useToast } from "@mohasinac/appkit/client";
 
 export function HomepageNewsletterForm() {
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,6 +36,7 @@ export function HomepageNewsletterForm() {
       }
 
       setSuccess("Thanks for subscribing. Check your inbox for updates.");
+      showToast("Thanks for subscribing! Check your inbox for updates.", "success");
       setEmail("");
     } catch (submissionError) {
       const message =
@@ -41,6 +44,7 @@ export function HomepageNewsletterForm() {
           ? submissionError.message
           : "Could not subscribe right now. Please try again.";
       setError(message);
+      showToast(message, "error");
     } finally {
       setPending(false);
     }

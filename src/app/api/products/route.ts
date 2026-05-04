@@ -100,8 +100,8 @@ function buildFilters(url: URL): string {
     if (dateFrom) parts.push(`preOrderDeliveryDate>=${dateFrom}`);
     if (dateTo) parts.push(`preOrderDeliveryDate<=${dateTo}`);
   }
-  const preOrderStatus = param(url, "preOrderStatus");
-  if (preOrderStatus) parts.push(`preOrderProductionStatus==${preOrderStatus}`);
+  const preOrderProductionStatus = param(url, "preOrderProductionStatus") ?? param(url, "preOrderStatus");
+  if (preOrderProductionStatus) parts.push(`preOrderProductionStatus==${preOrderProductionStatus}`);
   const freeShipping = param(url, "freeShipping");
   if (freeShipping === "true") parts.push("freeShipping==true");
   const raw = param(url, "filters");

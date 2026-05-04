@@ -1,5 +1,5 @@
-﻿import { ProfileView } from "@mohasinac/appkit";
+import { ProfilePageClient } from "@/components/user/ProfilePageClient";
 
 export default function Page() {
-  return <ProfileView />;
+  return <ProfilePageClient />;
 }

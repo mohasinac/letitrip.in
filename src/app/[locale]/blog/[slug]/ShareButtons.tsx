@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@mohasinac/appkit/client";
 
 interface ShareButtonsProps {
   title: string;
@@ -8,10 +9,12 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ title }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
+      showToast("Link copied to clipboard!", "success");
       setTimeout(() => setCopied(false), 2000);
     });
   };
