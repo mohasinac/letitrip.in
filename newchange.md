@@ -2,6 +2,19 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 18 — Slug URL Fix for Auctions, Pre-orders & Products Seed)
+
+### What changed
+- **`MarketplaceAuctionCard`** — `resolveHref` now uses `product.slug ?? product.id`; auction detail URLs are now slug-based (e.g. `/auctions/fate-saber-alter-wedding-1-7`) instead of the raw document ID
+- **`MarketplacePreorderCard`** — same fix; pre-order URLs use slug when present
+- **`products-seed-data.ts`** — added `slugify()` helper that strips status suffixes ("SOLD OUT", "AUCTION", "[DRAFT]", etc.) then lowercases and hyphenates the title; final export now maps every product to `slug = slug ?? slugify(title)`, auto-filling slugs for all ~100 products that previously had none
+- **`pokemon-homepage-sections-seed-data.ts`** — removed `secondaryCtaText`/`secondaryCtaLink` (not in `SectionConfig` type); added required `subtitle` field to `WelcomeSectionConfig` — fixes pre-existing appkit build error
+
+### Seed impact
+Re-seed required: all products in `products-seed-data.ts` now get proper slug fields written to Firestore. Hit `/api/demo/seed` to apply.
+
+---
+
 ## Session Update — 2026-05-05 (Part 17 — FAQ Page Fix + Homepage Welcome Section + Seed Updates)
 
 ### FAQ page crash fixed
