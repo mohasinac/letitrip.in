@@ -80,6 +80,9 @@ export const SCHEDULES = {
   /** Category metrics + store stats reconciliation — 03:00 UTC */
   DAILY_0300: "0 3 * * *",
 
+  /** Category tree positions reconciliation — 03:30 UTC (after countersReconcile) */
+  DAILY_0330: "30 3 * * *",
+
   /** Offer expiry sweep — 00:15 UTC (just after coupon expiry at 00:05) */
   DAILY_0015: "15 0 * * *",
 } as const;

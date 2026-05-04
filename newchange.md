@@ -2,6 +2,126 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 5 — Local-first Cart/Wishlist + Login/Logout Speed + Card Consistency)
+
+### Local-first cart & wishlist architecture
+
+All listing pages now write cart and wishlist changes to **localStorage first** and sync to the DB every 30 seconds in the background (only when logged in). No more 401 errors or loading delays for cart/wishlist actions.
+
+**New files:**
+
+`appkit/src/features/cart/utils/pending-ops.ts`
+- `CartOp` and `WishlistOp` interfaces
+- `pushCartOp()` — collapses add+remove pairs, merges duplicate adds
+- `pushWishlistOp()` — deduplicates by `(itemId, type)` key
+- `getCartOps()`, `clearCartOps()`, `getWishlistOps()`, `clearWishlistOps()`
+
+`appkit/src/core/hooks/useSyncManager.ts`
+- Replays pending ops against `/api/cart` and `/api/user/wishlist` every 30 s
+- Syncs immediately on login, then starts the interval
+- No-op when `userId` is null (guest)
+
+**Updated listing components** (all now use `useGuestCart` + `useGuestWishlist` + pending ops instead of direct `apiClient` calls):
+
+| File | Type |
+|---|---|
+| `StoreProductsListing.tsx` | Products |
+| `ProductsIndexListing.tsx` | Products |
+| `CategoryProductsListing.tsx` | Products (added cart+wishlist support) |
+| `AuctionsIndexListing.tsx` | Auctions |
+| `StoreAuctionsListing.tsx` | Auctions |
+| `PreOrdersIndexListing.tsx` | Pre-orders |
+
+Card layout for reference:
+```
+┌──────────────────────────────┐
+│                              │
+│         [  IMAGE  ]          │  aspect-square
+│                              │
+├──────────────────────────────┤
+│  Title                       │
+│  ₹ Price                     │
+│  [Add to Cart] [♡ Wishlist]  │
+└──────────────────────────────┘
+  grid: 2 cols → 3 cols → 4 cols
+  gap: 6
+```
+
+Auction card:
+```
+┌──────────────────────────────┐
+│         [  IMAGE  ]          │  aspect-square
+├──────────────────────────────┤
+│  Title                       │
+│  Current Bid: ₹ X            │
+│  Ends: 2h 34m                │
+│  [Bid Now]  [♡]              │
+└──────────────────────────────┘
+  grid: 2 cols → 3 cols → 3 cols
+```
+
+Pre-order card:
+```
+┌──────────────────────────────┐
+│         [  IMAGE  ]          │  aspect-square
+├──────────────────────────────┤
+│  Title                       │
+│  ₹ Price  (Pre-order)        │
+│  Delivery: Jun 2026          │
+│  [Pre-order]  [♡]            │
+└──────────────────────────────┘
+  grid: 2 cols → 3 cols → 4 cols
+```
+
+### Faster logout (instant)
+
+`appkit/src/react/contexts/SessionContext.tsx` — `signOut()`:
+- UI state (`user`, `sessionId`, cookies, interval) cleared **synchronously** before any awaits
+- Server revocation (`POST /api/auth/logout`) and Firebase `adapter.signOut()` fire-and-forget in background
+- Net effect: logout feels instant; token remains valid for at most its remaining TTL
+
+### Faster login (server-side parallelization)
+
+`src/app/api/auth/login/route.ts`:
+- `setCustomUserClaims`, `updateLoginMetadata`, `createSessionCookie`, `sessionRepository.createSession` now run in `Promise.all()` instead of sequentially
+- Removes ~3 sequential Firestore/Firebase round-trips from the login hot path
+
+### Card image consistency (Part 14 carry-over)
+
+- `ProductCard` image: `style={{ aspectRatio: "4/3" }}` → `className="... aspect-square"`
+- `PreorderCard` image: `h-56 w-full` → `aspect-square w-full`
+- `ProductGrid` columns: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6` (was 5 cols)
+- `AuctionGrid` columns: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4` (capped at 3)
+
+---
+
+## Session Update — 2026-05-05 (Part 4 — Card Size Consistency + Store/Category Page Fixes)
+
+### Card size consistency
+
+All product, auction, and pre-order cards now use `aspect-square` images and consistent grid layouts. Previously auction cards appeared oversized (3-col grid) while product cards were undersized (5-col grid with 4:3 ratio).
+
+### Category detail page fixes
+
+**Root cause 1 — Unbounded Firestore scan:**
+`categoriesRepository.findBy("slug", slug)` loads all documents without `.limit()`. Fixed with `getCategoryBySlug(slug)` which adds `.limit(1)`.
+
+**Root cause 2 — Wrong product filter field:**
+`categorySlug==${slug}` Sieve filter was silently dropped because `categorySlug` doesn't exist on product documents. Fixed to `category==${category.id}`.
+
+**Root cause 3 — Sequential child category + product fetches:**
+`getChildren()` made a redundant `findById(parentId)` call. Fixed with `Promise.all([getChildren, getProducts])` and `.limit(100)` on children, `.limit(500)` on leaf categories.
+
+Files changed: `CategoryDetailPageView.tsx`, `CategoryDetailTabs.tsx`, `CategoryProductsListing.tsx`, `categories.repository.ts`
+
+### Store detail page — React.cache() deduplication
+
+`StoreDetailLayoutView.tsx`, `StoreProductsPageView.tsx`, `StoreAuctionsPageView.tsx`, `StorePreOrdersPageView.tsx`:
+- `getStoreBySlug` exported from `StoreDetailLayoutView.tsx` using `React.cache()` for per-request deduplication
+- Layout and tab pages now share one Firestore read instead of 2–4
+
+---
+
 ## Session Update — 2026-05-05 (Part 3 — Blog Crash Fix + Wishlist Stuck Skeleton Fix)
 
 ### Fix blog detail page crash (`BlogPostView.tsx` missing `"use client"`)

@@ -22,7 +22,9 @@
       "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/newsletter\")",
       "Bash(mkdir \"d:/proj/letitrip.in/src/app/[locale]/admin/contact\")",
       "Bash(Get-ChildItem -Path \"d:\\\\proj\\\\letitrip.in\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep *)",
+      "Bash(xargs ls *)"
     ],
     "defaultMode": "bypassPermissions"
   }

@@ -109,39 +109,24 @@ export async function POST(request: NextRequest) {
     const verifyData = await verifyResponse.json();
     const idToken = verifyData.idToken;
 
-    // Get user data from Firestore
+    // Get user data from Firestore (needed for role)
     const userData = await userRepository.findById(userRecord.uid);
 
-    // Sync Firestore role to Firebase custom claims so JWT carries correct role on next token refresh
     const currentRole = userData?.role ?? SCHEMA_DEFAULTS.USER_ROLE;
-    await auth.setCustomUserClaims(userRecord.uid, { role: currentRole });
 
-    // Update login metadata
-    await userRepository.updateLoginMetadata(userRecord.uid);
-
-    // Create session cookie
-    const sessionCookie = await createSessionCookie(idToken);
-
-    // Create session in Firestore for tracking
-    let session;
-    try {
-      session = await sessionRepository.createSession(userRecord.uid, {
+    // Run all independent post-auth operations in parallel
+    const [sessionCookie, session] = await Promise.all([
+      createSessionCookie(idToken),
+      sessionRepository.createSession(userRecord.uid, {
         deviceInfo: parseUserAgent(
-          request.headers.get("user-agent") ||
-            SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT,
+          request.headers.get("user-agent") || SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT,
         ),
-      });
-      serverLogger.info("Session created successfully", {
-        sessionId: session.id,
-      });
-    } catch (sessionError: any) {
-      serverLogger.error("Session creation failed", {
-        error: sessionError.message,
-        code: sessionError.code,
-        details: sessionError.details || sessionError,
-      });
-      throw sessionError;
-    }
+      }),
+      auth.setCustomUserClaims(userRecord.uid, { role: currentRole }),
+      userRepository.updateLoginMetadata(userRecord.uid),
+    ]);
+
+    serverLogger.info("Session created successfully", { sessionId: session.id });
 
     // Return success with session
     const response = NextResponse.json(

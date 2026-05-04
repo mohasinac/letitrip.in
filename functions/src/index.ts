@@ -22,6 +22,7 @@
  * │  productStatsSync       — 01:00 UTC       recompute product avg ratings  │
  * │  dailyDataCleanup       — 02:00 UTC       purge sessions + tokens        │
  * │  countersReconcile      — 03:00 UTC       rebuild category & store stats │
+ * │  positionsReconcile     — 03:30 UTC       rebuild DFS positions + subtreeSizes│
  * │  payoutBatch            — 06:00 UTC       dispatch seller payouts        │
  * │  cartPrune              — Sun 04:00 UTC   remove stale carts             │
  * │  notificationPrune      — Mon 01:00 UTC   remove old read notifications  │
@@ -42,7 +43,7 @@
  * │                       → product avgRating / reviewCount                 │
  * │                       → store totalReviews / averageRating              │
  * │  onCategoryWrite    — categories/{id} onWrite                           │
- * │                       → external category index sync (disabled)         │
+ * │                       → DFS position + subtreeSize maintenance           │
  * │  onStoreWrite       — stores/{id} onWrite                               │
  * │                       → external store index sync (disabled)            │
  * └─────────────────────────────────────────────────────────────────────────┘
@@ -56,6 +57,7 @@ export { offerExpiry } from "./jobs/offerExpiry";
 export { productStatsSync } from "./jobs/productStatsSync";
 export { dailyDataCleanup } from "./jobs/dailyDataCleanup";
 export { countersReconcile } from "./jobs/countersReconcile";
+export { positionsReconcile } from "./jobs/positionsReconcile";
 export { payoutBatch } from "./jobs/payoutBatch";
 export { cartPrune } from "./jobs/cartPrune";
 export { notificationPrune } from "./jobs/notificationPrune";
