@@ -18,6 +18,38 @@
 
 ---
 
+## Tier 0-pre — Slug Format Enforcement *(foundational, do before seed data and forms)*
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| SL1 | Standardize all slug fields in seed data to use resource-type prefix | M | ⏳ | | `product-`, `auction-`, `preorder-`, `store-`, `category-`, `brand-`, `event-`, `blog-`, `faq-`, `user-`, `review-`, `coupon-`, `section-`, `nav-`. Utility: `slugify()` at `appkit/src/utils/string.formatter.ts`. Fix ALL seed files |
+| SL2 | Auto-generate prefixed slugs in all create/edit forms | S | ⏳ | | Every form with a slug field must auto-generate from title using the prefix for its resource type; show live preview of the resulting URL |
+| SL3 | Update repository findBySlug methods to use prefixed slugs | S | ⏳ | | Products, stores, categories, brands, blog, events all have findBySlug — confirm they query the `slug` field directly (prefix is stored in the slug, no transformation needed) |
+| SL4 | Update generateMetadata in all detail pages for SEO | S | ⏳ | | Canonical URL uses prefixed slug; title + description use entity-specific metadata; `openGraph.url` reflects the full canonical path |
+| SL5 | Backend API route slug params — no transformation needed | S | ⏳ | | Route params (`[slug]`) receive the prefixed slug as-is from the URL; pass directly to repository; no stripping or re-prefixing |
+| SL6 | Enforce id === slug for all resources (no separate id field where slug is used as route param) | M | ⏳ | | Firestore document ID must equal the slug field. Already done for products via `generateProductId()`. Confirm and enforce for: stores, categories, brands, blog posts, events, FAQs, sections, nav items. Eliminates [id] vs [slug] route confusion in Next.js |
+
+### Slug prefix table (enforced everywhere):
+
+| Resource | Prefix | Example |
+|----------|--------|---------|
+| Product | `product-` | `product-hot-wheels-redline-vintage` |
+| Auction | `auction-` | `auction-pokemon-charizard-1st-edition` |
+| Pre-order | `preorder-` | `preorder-dbz-goku-ultra-ego` |
+| Store | `store-` | `store-mistys-water-cards` |
+| Category | `category-` | `category-action-figures` |
+| Brand | `brand-` | `brand-hot-wheels` |
+| Event | `event-` | `event-summer-holo-sale-2026` |
+| Blog post | `blog-` | `blog-how-to-grade-pokemon-cards` |
+| Review | `review-` | `review-[productSlug]-[userId-short]` |
+| User profile | `user-` | `user-mohsin-c` |
+| FAQ | `faq-` | `faq-how-does-bidding-work` |
+| Coupon | `coupon-` | `coupon-summer20` |
+| Section | `section-` | `section-hot-wheels-franchise` |
+| Nav item | `nav-` | `nav-new-arrivals` |
+
+---
+
 ## Tier 0 — Bug Fixes *(do these first)*
 
 | # | Task | Complexity | Status | Part | Notes |
@@ -72,11 +104,11 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| P1+P2 | Brands seed (15–20) + Categories seed (hierarchy) | S | ⏳ | | Real brand slugs; root + subcategory tree |
-| P3+P4 | Carousel slides update + Homepage sections brand/category refs | S | ⏳ | | Min 6 slides; filterByBrand uses real slugs |
-| P5 | Products seed: custom fields, pickup address, featured/promoted | M | ⏳ | | Update 200-product seed; customFields per category |
-| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails | S | ⏳ | | storeSlug consistent; pickupAddress on shippingConfig |
-| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) seed | S | ⏳ | | Raw HTML content for blog; FAQ category slugs |
+| P1+P2 | Brands seed (15–20) + Categories seed (hierarchy) | S | ⏳ | | Slugs MUST use prefixes: `brand-hot-wheels`, `category-action-figures`. id === slug. Root + subcategory tree |
+| P3+P4 | Carousel slides update + Homepage sections brand/category refs | S | ⏳ | | filterByBrand refs must match `brand-` prefixed slugs. Section ids use `section-` prefix |
+| P5 | Products seed: custom fields, pickup address, featured/promoted | M | ⏳ | | ALL product slugs → `product-` prefix; auction slugs → `auction-` prefix; preorder → `preorder-`. id === slug for all. customFields per category |
+| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails | S | ⏳ | | Store slugs MUST use `store-` prefix (e.g. `store-mistys-water-cards`). id === storeSlug. Fix inconsistent existing store seeds |
+| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) seed | S | ⏳ | | Blog slugs → `blog-` prefix; FAQ slugs → `faq-` prefix. id === slug. Raw HTML content for blog |
 
 ---
 

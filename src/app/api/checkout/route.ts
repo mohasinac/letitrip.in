@@ -160,7 +160,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
           // Validate consent OTP atomically — checked for ALL orders.
           // Two concurrent requests both seeing verified=true: only one transaction
           // commits (Firestore optimistic locking); the second finds the OTP gone.
-          const otpSnap = await tx.get(otpRef);
+          const otpSnap = await tx.get(otpRef as FirebaseFirestore.DocumentReference);
           const otpData = otpSnap.exists
             ? (otpSnap.data() as {
                 verified?: boolean;

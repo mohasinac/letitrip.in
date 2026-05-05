@@ -2,6 +2,33 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 48 — Listing page pagination + filter fixes + brands page + admin status filters)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/stores/components/StoreAuctionsListing.tsx` | Moved pagination from bottom of content to sticky bar directly below toolbar |
+| `appkit/src/features/stores/components/StorePreOrdersListing.tsx` | Added full pending filter pattern (`pendingTable`, `applyFilters`, `clearFilters`, `activeFilterCount`); sticky pagination; filter drawer now correctly applies on button click instead of closing immediately |
+| `appkit/src/features/stores/components/StoreReviewsListing.tsx` | Replaced custom prev/next pagination buttons with `Pagination` component |
+| `appkit/src/features/stores/components/StoresIndexListing.tsx` | Replaced custom inline toolbar with `ListingToolbar`; moved pagination to sticky bar below toolbar; removed bottom pagination block |
+| `appkit/src/ui/rich-text/RichText.tsx` | Now calls `normalizeRichTextHtml()` before sanitizing — plain text descriptions get `<p>` wrapping automatically across all detail pages |
+| `appkit/src/features/admin/components/AdminOrdersView.tsx` | Added Status filter group (`pending / processing / shipped / delivered / cancelled`); wired search (`q` + `onSearch`) |
+| `appkit/src/features/admin/components/AdminProductsView.tsx` | Added `"pending"` to Status filter options |
+| `src/app/[locale]/brands/page.tsx` | NEW — `/brands` page; renders `CategoriesIndexListing` with `brandsOnly` prop (filters to brand-type categories, hides tab bar) |
+
+### Details
+
+- **Pagination pattern**: all 4 store listing files now use `sticky top-[calc(var(--header-height,0px)+44px)]` for the pagination bar — consistent with `ProductsIndexListing`, `AuctionsIndexListing`, `PreOrdersIndexListing`, and `CategoriesIndexListing` fixed in the previous session.
+- **`StorePreOrdersListing` filter bug**: the filter drawer was passing `table` (live URL state) directly to `ProductFilters` and calling `closeFilters()` on "Apply" — changes were applied immediately on each input change and "Apply" just closed the drawer. Added the standard `pendingFilters` + `pendingTable` buffering pattern so changes only commit on button click.
+- **`StoresIndexListing` toolbar**: was a fully custom HTML toolbar with its own search input, filter button, and `SortDropdown`. Replaced with `ListingToolbar` to match all other listing pages.
+- **`RichText` normalization**: `normalizeRichTextHtml` handles ProseMirror JSON strings, plain text (wraps in `<p>`), and existing HTML passthrough. Moving this into `RichText` itself means all callers (event detail, blog, store about, product detail, etc.) benefit without any per-callsite changes.
+- **`AdminOrdersView`**: previously had no filter groups at all — the listing showed all orders with no way to filter by status. Now has a Status pill-filter matching the pattern used in `AdminProductsView`.
+- **Brands page**: `CategoriesIndexListing` already had `brandsOnly` prop implemented in the prior session. The new `/brands` page simply uses it — no appkit changes needed.
+- Seed: no change needed.
+
+---
+
 ## Session Update — 2026-05-05 (Part 47 — Fix "functions cannot be passed to Client Components" errors)
 
 ### What changed

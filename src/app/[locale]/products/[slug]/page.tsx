@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { ProductPageClient } from "./ProductPageClient";
+import { ProductDetailPageView } from "@mohasinac/appkit";
+import { MakeOfferButton } from "@mohasinac/appkit/client";
+import { submitProductOffer } from "./actions";
 
 export const revalidate = 60;
 
@@ -13,5 +15,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  return <ProductPageClient slug={slug} />;
+  return (
+    <ProductDetailPageView
+      slug={slug}
+      renderOfferAction={({ productId, price, minOfferPercent }) => (
+        <MakeOfferButton
+          productId={productId}
+          listedPrice={price}
+          minOfferPercent={minOfferPercent}
+          onMakeOffer={submitProductOffer}
+        />
+      )}
+    />
+  );
 }

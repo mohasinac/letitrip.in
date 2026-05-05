@@ -252,6 +252,106 @@ Never commit with TSC errors. Never batch multiple tasks in one commit.
 
 ---
 
+---
+
+## SLUG FORMAT RULES — ENFORCED EVERYWHERE
+
+All slug fields MUST start with the resource type prefix. This is the established appkit
+convention (already used in `id-generators.ts` for Firestore document IDs) and must now be
+applied consistently to all `slug` fields stored in Firestore and used in URLs.
+
+### Prefix table (never deviate):
+
+| Resource | Prefix | Example slug |
+|----------|--------|-------------|
+| Product (standard) | `product-` | `product-hot-wheels-redline-vintage` |
+| Auction | `auction-` | `auction-pokemon-charizard-1st-edition` |
+| Pre-order | `preorder-` | `preorder-dbz-goku-ultra-ego-tsume-art` |
+| Store | `store-` | `store-mistys-water-cards` |
+| Category | `category-` | `category-action-figures` |
+| Brand | `brand-` | `brand-hot-wheels` |
+| Event | `event-` | `event-summer-holo-sale-2026` |
+| Blog post | `blog-` | `blog-how-to-grade-pokemon-cards` |
+| Review | `review-` | `review-[productSlug]-[userId-short]` |
+| User (public profile) | `user-` | `user-mohsin-c` |
+| FAQ | `faq-` | `faq-how-does-bidding-work` |
+| Coupon | `coupon-` | `coupon-summer20` |
+| Section | `section-` | `section-hot-wheels-franchise` |
+| Navigation item | `nav-` | `nav-new-arrivals` |
+
+### How to generate (always use the appkit utility):
+
+```typescript
+// appkit/src/utils/string.formatter.ts
+import { slugify } from "@mohasinac/appkit";
+
+// In seed data or form save handlers:
+const slug = `product-${slugify(product.title)}`;
+const slug = `auction-${slugify(product.title)}`;
+const slug = `store-${slugify(storeName)}`;
+const slug = `category-${slugify(categoryName)}`;
+const slug = `brand-${slugify(brandName)}`;
+const slug = `blog-${slugify(post.title)}`;
+const slug = `event-${slugify(event.title)}`;
+```
+
+### Rules:
+1. **Seed data** — every document with a `slug` field must use the prefixed format. Update any
+   existing seeds that are missing the prefix (e.g., `"electronics"` → `"category-electronics"`,
+   `"mistys-water-cards"` → `"store-mistys-water-cards"`)
+2. **Forms** — slug input in create/edit forms must auto-generate from the title using the
+   prefixed format and show a preview (`/stores/store-mistys-water-cards`)
+3. **Repository findBySlug** — slug lookups in `products.repository.ts` and others must
+   query the prefixed slug field (no transformation needed — slug is stored with prefix)
+4. **API routes** — route params like `[slug]` receive the prefixed slug unchanged; pass
+   directly to the repository
+5. **Navigation / `generateMetadata`** — canonical URL for each page type is the standard
+   route path; slug prefix reinforces SEO signal (e.g., `/products/product-hot-wheels-xxx`)
+6. **Sitemap** — when building a sitemap, slug prefix confirms resource type without reading
+   the document type field
+7. **Slug uniqueness** — uniqueness is enforced across the same collection only; prefixes
+   prevent cross-collection collisions if slugs are ever shared in a global namespace
+
+### ID === Slug (critical for Next.js route stability):
+
+Firestore document IDs MUST equal the slug field. This eliminates the `[id]` vs `[slug]`
+route conflict in Next.js — there is only one identifier, which is both the doc ID and the
+URL slug.
+
+```typescript
+// ✅ correct — id and slug are the same value
+const slug = `product-${slugify(product.title)}`;
+const doc = { id: slug, slug, ...rest };
+db.collection("products").doc(slug).set(doc);
+
+// ❌ wrong — separate id and slug
+const doc = { id: firestore.doc().id, slug: "hot-wheels-vintage", ...rest };
+```
+
+Resources that MUST have id === slug:
+products, auctions, pre-orders, stores, categories, brands, blog posts, events,
+FAQs, sections, nav items.
+
+Resources where id is NOT the slug (use system-generated IDs):
+orders, bids, offers, reviews, carts, notifications, sessions, users (Firebase Auth UID).
+
+### What NOT to do:
+```typescript
+// ❌ no prefix
+slug: slugify(product.title)              // "hot-wheels-redline-vintage"
+// ❌ wrong resource prefix
+slug: `product-${slugify(auction.title)}` // auctions must use "auction-"
+// ❌ manual string (not using slugify)
+slug: "My Store Name"                     // not URL-safe
+// ❌ id ≠ slug (causes [id] vs [slug] Next.js confusion)
+{ id: "abc123", slug: "product-hot-wheels-xxx" }
+// ✅ correct
+const slug = `product-${slugify(product.title)}`;
+{ id: slug, slug, ...rest }
+```
+
+---
+
 ## IMPORT RULES
 
 - Client components → import from `@mohasinac/appkit/client`

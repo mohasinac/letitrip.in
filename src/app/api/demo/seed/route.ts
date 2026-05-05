@@ -875,7 +875,7 @@ export async function POST(request: NextRequest) {
           } else {
             // All other top-level collections — purge the whole collection so
             // docs with IDs that differ from the current seed data are also removed.
-            const countSnap = await db.collection(firestoreCollection).count().get();
+            const countSnap = await (db.collection(firestoreCollection) as any).count().get();
             const count = countSnap.data().count;
             if (count > 0) {
               await purgeCollection(db, firestoreCollection);
