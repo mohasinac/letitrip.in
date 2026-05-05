@@ -2,6 +2,37 @@
 
 ---
 
+## Part 55 — E3+E4: Field-name constants + comprehensive API route constants
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/constants/field-names.ts` | Added `CATEGORY_FIELDS`, `BLOG_FIELDS`, `USER_FIELDS` (with ROLE_VALUES); added `COUPON_FIELDS.SCOPE_VALUES` |
+| `src/constants/index.ts` | Re-exported `CATEGORY_FIELDS`, `BLOG_FIELDS`, `USER_FIELDS` |
+| `src/constants/api.ts` | Full rewrite — expanded `API_ROUTES` with ~45 ADMIN/STORE/USER route entries |
+
+---
+
+## Part 54 — E2: Missing [id] API route handlers
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/api/admin/reviews/[id]/route.ts` | NEW — GET/PATCH/DELETE (approve, reject, feature, delete reviews) |
+| `src/app/api/admin/bids/[id]/route.ts` | NEW — GET/PATCH (cancel bid) |
+| `src/app/api/admin/contact-submissions/[id]/route.ts` | NEW — GET/PATCH (mark read/resolved)/DELETE |
+| `src/app/api/admin/faqs/[id]/route.ts` | NEW — GET/PUT/DELETE |
+| `src/app/api/admin/newsletter/[id]/route.ts` | FIXED — was incorrectly using FAQ code; now correct GET + new DELETE (unsubscribe) |
+| `src/app/api/store/orders/[id]/route.ts` | NEW — GET/PATCH (seller-scoped, status+tracking update) |
+| `src/app/api/store/coupons/[id]/route.ts` | NEW — GET/PATCH/DELETE (seller-scoped with admin override) |
+| `src/app/api/user/notifications/route.ts` | NEW — GET (paginated list + unread count) |
+| `src/app/api/user/notifications/[id]/route.ts` | NEW — GET/PATCH (mark read)/DELETE |
+| `src/app/api/user/notifications/read-all/route.ts` | NEW — POST (mark all read) |
+
+---
+
 ## Part 53 — K2/K3/K4: RichTextRenderer + rich text wiring in FAQ, store bio
 
 ### What changed
