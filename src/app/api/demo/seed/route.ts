@@ -21,6 +21,7 @@ import {
   getPiiConfigError,
 } from "@mohasinac/appkit";
 import {
+  brandsSeedData,
   pokemonUsersSeedData,
   addressesSeedData,
   storeAddressesSeedData,
@@ -56,6 +57,7 @@ import { REVIEW_COLLECTION } from "@mohasinac/appkit";
 import { BID_COLLECTION } from "@mohasinac/appkit";
 import { COUPONS_COLLECTION } from "@mohasinac/appkit";
 import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+import { BRANDS_COLLECTION } from "@mohasinac/appkit";
 import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
 import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
 import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
@@ -71,6 +73,7 @@ type CollectionName =
   | "users"
   | "addresses"
   | "storeAddresses"
+  | "brands"
   | "categories"
   | "stores"
   | "products"
@@ -101,6 +104,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
   addresses: "addresses", // Subcollection under users
   storeAddresses: "storeAddresses", // Subcollection under stores
+  brands: BRANDS_COLLECTION,
   categories: CATEGORIES_COLLECTION,
   stores: STORE_COLLECTION,
   products: PRODUCT_COLLECTION,
@@ -127,6 +131,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: pokemonUsersSeedData,
   addresses: addressesSeedData,
   storeAddresses: storeAddressesSeedData,
+  brands: brandsSeedData,
   categories: pokemonCategoriesSeedData,
   stores: pokemonStoresSeedData,
   products: allProductsSeedData,
