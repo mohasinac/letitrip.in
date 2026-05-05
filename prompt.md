@@ -8,21 +8,23 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: J8 — Ad slots should render conditionally (not always null)**
+**Next up: A1 — Admin Products CRUD (3-mode: standard / auction / pre-order)**
 
-`AdSlot` currently returns null when no `manualContent` is passed and consent hasn't been granted.
-When an admin-configured ad IS available for a slot, it should render. The system needs to fetch
-the active ad for the given slot key from `/api/ads?slot=[key]` and pass it as `manualContent`.
+`AdminProductsView` already exists. Need create/edit pages with mode-selector tabs.
+A seller-facing `SellerProductEditorView` already exists in appkit — extend it with admin-only fields.
 
 Steps:
-1. Read `appkit/src/features/homepage/components/AdSlot.tsx` and `ad-registry.ts`
-2. Read `src/app/api/admin/ads/route.ts` to understand ad data shape
-3. Create a `useActiveAd(slotId)` hook in appkit that fetches from `/api/ads?slot=[id]`
-4. Update `AdSlot` to call `useActiveAd` and render the result as `manualContent` when present
-5. If no ad found (null) → return null (no reserved space). Consent gate still applies.
-6. Rebuild appkit, run `npx tsc --noEmit`, verify on homepage
+1. Read `appkit/src/features/admin/components/AdminProductsView.tsx` — check list + actionHref gap
+2. Read existing seller product editor component — understand the form pattern
+3. Read `src/app/api/admin/products/route.ts` and `[id]/route.ts` — confirm handlers
+4. Create `AdminProductEditorView` in appkit:
+   - Mode selector tab (standard / auction / preorder) at top
+   - Admin-only fields: isPromoted, featured, sellerId override
+   - On save: POST (create) or PUT (edit) to `/api/admin/products` + `/[id]`
+5. Export + pages: `/admin/products/new` and `/admin/products/[id]/edit`
+6. `npx tsc --noEmit` — 0 errors
 
-After J8: do **M2** (Admin Dashboard stats wiring), then **K2** (RichTextRenderer).
+After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admin FAQs CRUD).
 
 ---
 
@@ -41,52 +43,52 @@ After J8: do **M2** (Admin Dashboard stats wiring), then **K2** (RichTextRendere
 | SL5 | API route params pass prefixed slug unchanged |
 | SL6 | Enforce id === slug for all content resources |
 
-### Tier 0 — Bug Fixes
-| # | Task |
-|---|------|
-| J5 | Bids table missing on auction detail pages |
-| J6 | Offer amount field missing in MakeOfferButton |
-| J1 | Store not found 404 on all store sub-pages |
-| J2 | Blog page rendering broken |
-| J3 | Events page rendering broken |
-| J4 | Category pages broken listing |
-| J7 | Deals/Promotions section empty |
-| J9 | Featured contents sections empty |
-| J8 | Ad slots should render conditionally |
-| M2 | Admin Dashboard stats showing zeroes |
+### Tier 0 — Bug Fixes *(all ✅)*
+| # | Task | Status |
+|---|------|--------|
+| J5 | Bids table missing on auction detail pages | ✅ Part 48 |
+| J6 | Offer amount field missing in MakeOfferButton | ✅ Part 49 |
+| J1 | Store not found 404 on all store sub-pages | ✅ Part 49 |
+| J2 | Blog page rendering broken | ✅ Part 49 |
+| J3 | Events page rendering broken | ✅ Part 49 |
+| J4 | Category pages broken listing | ✅ Part 49 |
+| J7 | Deals/Promotions section empty | ✅ Part 49 |
+| J9 | Featured contents sections empty | ✅ Part 49 |
+| J8 | Ad slots should render conditionally | ✅ Part 51 |
+| M2 | Admin Dashboard stats showing zeroes | ✅ Part 52 |
 
-### Tier 1 — Rich Text System
-| # | Task |
-|---|------|
-| K2 | RichTextRenderer component (isomorphic-dompurify + prose) |
-| K4+L3+L4+L5 | Wire renderer in events, blog, stores, faqs |
-| K3 | RichTextEditor component (TipTap) |
+### Tier 1 — Rich Text System *(all ✅)*
+| # | Task | Status |
+|---|------|--------|
+| K2 | RichTextRenderer component | ✅ Part 53 |
+| K4+L3+L4+L5 | Wire renderer in events, blog, stores, faqs | ✅ Part 53 |
+| K3 | RichTextEditor wired in admin/seller forms | ✅ Part 53 |
 
-### Tier 2 — Product Custom Fields & Detail Sections
-| # | Task |
-|---|------|
-| L1 | Custom fields schema + CustomFieldsEditor component |
-| L2 | Custom section render in all product detail page types |
-| O3 | Product pickup address selector + inline create popup |
+### Tier 2 — Product Custom Fields & Detail Sections *(pending)*
+| # | Task | Status |
+|---|------|--------|
+| L1 | Custom fields schema + CustomFieldsEditor component | ⏳ |
+| L2 | Custom section render in all product detail page types | ⏳ |
+| O3 | Product pickup address selector + inline create popup | ⏳ |
 
-### Tier 3 — Infrastructure
-| # | Task |
-|---|------|
-| E2 | Missing API route handlers (16 PUT/DELETE endpoints) |
-| E3+E4 | Field-name constants + API route constants |
-| E1+E5 | Route constants + TypeScript input types |
-| F2 | Brands: Firestore schema + API + Admin CRUD |
-| H1 | InlineCreateSelect shared component |
-| I4 | Media Library picker modal |
+### Tier 3 — Infrastructure *(all ✅)*
+| # | Task | Status |
+|---|------|--------|
+| E2 | Missing API route handlers | ✅ Part 54 |
+| E3+E4 | Field-name constants + API route constants | ✅ Part 55 |
+| E1+E5 | Route constants + TypeScript input types | ✅ Part 56 |
+| F2 | Brands: Firestore schema + API + Admin CRUD | ✅ Part 57 |
+| H1 | InlineCreateSelect shared component | ⏳ |
+| I4 | Media Library picker modal | ⏳ |
 
-### Tier 4 — Seed Data Overhaul
-| # | Task |
-|---|------|
-| P1+P2 | Brands seed + Categories seed (hierarchy) |
-| P3+P4 | Carousel + Homepage sections update |
-| P5 | Products seed: custom fields, pickup address, featured/promoted |
-| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails |
-| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) |
+### Tier 4 — Seed Data Overhaul *(P1+P2 done)*
+| # | Task | Status |
+|---|------|--------|
+| P1+P2 | Brands seed + Categories seed | ✅ Part 58 |
+| P3+P4 | Carousel + Homepage sections update | ⏳ |
+| P5 | Products seed: custom fields, pickup address, featured/promoted | ⏳ |
+| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails | ⏳ |
+| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) | ⏳ |
 
 ### Tier 5 — Admin Core CRUD
 | # | Task |

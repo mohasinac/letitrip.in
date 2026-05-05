@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-06 03:00 — Parts 54–57 (E2+E3+E4+E1+E5+F2 ✅). 0 TS errors. Next: Tier 4 seed data (P1+P2 brands+categories).
+> **Last updated:** 2026-05-06 — Part 59 (A2 ✅). 0 TS errors. Next: A1 Admin Products CRUD (3-mode).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 20 |
+| ✅ Done | 22 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 49 |
+| ⏳ Remaining | 47 |
 
 ---
 
@@ -104,7 +104,7 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| P1+P2 | Brands seed (15–20) + Categories seed (hierarchy) | S | ⏳ | | Slugs MUST use prefixes: `brand-hot-wheels`, `category-action-figures`. id === slug. Root + subcategory tree |
+| P1+P2 | Brands seed (15–20) + Categories seed (hierarchy) | S | ✅ | Part 58 | 15 franchise brands seeded (brand- prefix, id===slug). Categories already fully seeded via pokemonCategoriesSeedData (Hot Wheels, Beyblade, Pokémon + product types) |
 | P3+P4 | Carousel slides update + Homepage sections brand/category refs | S | ⏳ | | filterByBrand refs must match `brand-` prefixed slugs. Section ids use `section-` prefix |
 | P5 | Products seed: custom fields, pickup address, featured/promoted | M | ⏳ | | ALL product slugs → `product-` prefix; auction slugs → `auction-` prefix; preorder → `preorder-`. id === slug for all. customFields per category |
 | P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails | S | ⏳ | | Store slugs MUST use `store-` prefix (e.g. `store-mistys-water-cards`). id === storeSlug. Fix inconsistent existing store seeds |
@@ -116,7 +116,7 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| A2 | Admin Categories CRUD — list + create + edit | S | ⏳ | | LIST: `AdminCategoriesView` EXISTS — add Create/Edit buttons. NEW: `AdminCategoryEditorView` in appkit. REUSE: `AdminListingScaffold`, `SideDrawer`, `Input`, `Select`, `Toggle` from ui/components |
+| A2 | Admin Categories CRUD — list + create + edit | S | ✅ | Part 59 | AdminCategoryEditorView in appkit; /admin/categories/new + [id]/edit pages; GET/POST/PUT/DELETE API routes; CATEGORY_BY_ID endpoint added; actionHref on list |
 | A1 | Admin Products CRUD — 3-mode (standard/auction/preorder) | L | ⏳ | | LIST: `AdminProductsView` EXISTS. NEW: `AdminProductEditorView`. REUSE: `ProductForm.tsx` EXISTS in products/components as seller form — extend with admin-only fields (isPromoted, featured, sellerId); use `Tabs` for mode selector |
 | A3 | Admin Coupons CRUD — complex conditional form | L | ⏳ | | LIST: `AdminCouponsView` EXISTS. NEW: `AdminCouponEditorView`. REUSE: `Select`, `Input`, `Toggle`, `Tabs`, `FormGrid`, `SideDrawer` from ui/components; conditional sections per coupon type |
 | A4 | Admin Blog CRUD — with RichTextEditor | M | ⏳ | | LIST: `AdminBlogView` EXISTS. NEW: `AdminBlogEditorView`. REUSE: `RichTextEditor` (K3 already exists), `Input`, `TagInput`, `Toggle`, `SideDrawer` from ui/components |
