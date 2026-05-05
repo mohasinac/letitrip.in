@@ -82,6 +82,8 @@ function buildFilters(url: URL): string {
   if (isPreOrder !== null) parts.push(`isPreOrder==${isPreOrder}`);
   const featured = param(url, "featured");
   if (featured === "true") parts.push("featured==true");
+  const isPromoted = param(url, "isPromoted");
+  if (isPromoted === "true") parts.push("isPromoted==true");
   const storeId = param(url, "storeId");
   if (storeId) parts.push(`storeId==${storeId}`);
   const minBid = param(url, "minBid");
