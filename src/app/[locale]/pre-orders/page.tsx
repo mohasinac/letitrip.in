@@ -1,11 +1,12 @@
-﻿import { PreOrdersListView } from "@mohasinac/appkit";
+import { PreOrdersListView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[]>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  return <PreOrdersListView searchParams={searchParams} />;
+  const resolvedSearchParams = await searchParams;
+  return <PreOrdersListView searchParams={resolvedSearchParams} />;
 }

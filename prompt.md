@@ -8,20 +8,21 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: SL1 — Standardize all slug fields in seed data to use resource-type prefix**
+**Next up: J8 — Ad slots should render conditionally (not always null)**
 
-All slug fields in every seed file must use the established type prefix (`product-`, `auction-`,
-`store-`, `category-`, `brand-`, `event-`, `blog-`, `faq-`, `section-`, `nav-`). Firestore
-document ID must equal the slug (id === slug). This is foundational — do it before any seed
-data overhaul or new CRUD forms.
+`AdSlot` currently returns null when no `manualContent` is passed and consent hasn't been granted.
+When an admin-configured ad IS available for a slot, it should render. The system needs to fetch
+the active ad for the given slot key from `/api/ads?slot=[key]` and pass it as `manualContent`.
 
 Steps:
-1. Read all files in `appkit/src/seed/` — audit current slug values
-2. Update each seed file: prefix every slug field with its resource type using `slugify()` from
-   `appkit/src/utils/string.formatter.ts`
-3. Ensure Firestore doc ID is set to the slug value for all content resources
-4. Run the seed via `/api/demo/seed`, verify URLs resolve correctly in browser
-5. Cross-check `findBySlug` calls in repositories still work with the new prefixed slugs
+1. Read `appkit/src/features/homepage/components/AdSlot.tsx` and `ad-registry.ts`
+2. Read `src/app/api/admin/ads/route.ts` to understand ad data shape
+3. Create a `useActiveAd(slotId)` hook in appkit that fetches from `/api/ads?slot=[id]`
+4. Update `AdSlot` to call `useActiveAd` and render the result as `manualContent` when present
+5. If no ad found (null) → return null (no reserved space). Consent gate still applies.
+6. Rebuild appkit, run `npx tsc --noEmit`, verify on homepage
+
+After J8: do **M2** (Admin Dashboard stats wiring), then **K2** (RichTextRenderer).
 
 ---
 

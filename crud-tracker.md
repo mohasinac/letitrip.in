@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 21:30 — J2, J3, J4 ✅ complete. J7 API fix ✅. Next: J8 (ad slots), M2 (dashboard stats), K2 (RichTextRenderer).
+> **Last updated:** 2026-05-05 23:30 — Part 51 (J8 ✅). Build 0 errors. Next: M2 (admin dashboard stats), K2 (RichTextRenderer).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 10 |
+| ✅ Done | 11 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 59 |
+| ⏳ Remaining | 58 |
 
 ---
 
@@ -62,7 +62,7 @@
 | J4 | Category pages broken listing | S | ✅ | Part 49 | Added getCategoryBySlug check + notFound() before rendering CategoryDetailPageView |
 | J7 | Deals/Promotions sections empty | S | ✅ | Part 49 | Added ?isPromoted=true direct param to buildFilters in products API; sievejs handles bool coercion correctly. Remaining: seed data needs isPromoted=true products (P5) |
 | J9 | Featured contents sections empty | S | ✅ | Part 49 | ?featured=true was already in buildFilters; sievejs coerces "true"→boolean; remaining: P5 seed data |
-| J8 | Ad slots should render conditionally (not always null) | S | ⏳ | | REUSE: existing `AdSlot` — fetch active ad for slot key, render if found, null only if none |
+| J8 | Ad slots should render conditionally (not always null) | S | ✅ | Part 51 | `/api/ads?slot=` public route + `useActiveAd` hook + ManualAdBanner; AfterHeroAdSlot wired to `<AdSlot>` |
 | M2 | Admin Dashboard stats showing zeroes | S | ⏳ | | Confirm /api/admin/dashboard returns real Firestore counts; wire to DashboardStatsGrid |
 
 ---

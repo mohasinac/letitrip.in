@@ -2,6 +2,76 @@
 
 ---
 
+## Part 51 — J8: Ad slots render conditionally from admin-configured ads
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/api/ads/route.ts` | New public GET `/api/ads?slot=<slotId>` — returns highest-priority active ad from `siteSettings.adSettings.inventory` for the given slot/placement ID |
+| `src/constants/api.ts` | Added `API_ROUTES.ADS.BY_SLOT` |
+| `src/app/api/admin/ads/validation.ts` | `defaultPlacements()` IDs aligned with `AdSlotId` values (`homepage-hero-banner` etc.) |
+| `appkit/.../hooks/useActiveAd.ts` | New `useActiveAd(slotId)` hook — fetches from `/api/ads?slot=` on client side |
+| `appkit/.../components/AdSlot.tsx` | `AdSlot` now calls `useActiveAd` when no `manualContent` prop; renders `ManualAdBanner` from ad creative if found; null if none |
+| `appkit/src/client.ts` | Exported `useActiveAd`, `ActiveAdRecord`, `ActiveAdCreative` |
+| `appkit/.../homepage/index.ts` | Exported `useActiveAd` and types |
+| `src/components/homepage/AdSlots.tsx` | `AfterHeroAdSlot` etc. now use `<AdSlot id="...">` instead of hard-returning null |
+
+### Why
+J8 bug: all 4 homepage ad slot components permanently returned null even after Part 37. The fix makes ad rendering data-driven — admin can activate any ad from the CMS and it will appear in the correct slot without a code deploy.
+
+---
+
+## Session Update — 2026-05-05 (Part 50 — Fix all TSC and Turbopack build errors)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/seed/events-seed-data.ts` | Fixed 5 extra-quote syntax errors on field IDs (tagged_friend, most_wanted, collecting_focus, most_wanted_casting, monthly_spend) |
+| `appkit/src/seed/letitrip-official-seed-data.ts` | Fixed `condition: "graded"` type error, renamed `preOrderDate` → `preOrderDeliveryDate`, renamed `auctionStartPrice` → `startingBid` |
+| `appkit/src/features/products/schemas/firestore.ts` | Added `"graded"` to `ProductDocument.condition` union type |
+| `appkit/src/client.ts` | Added exports: `BlogPostView`, `BlogCard`, `EventDetailView`, `EventDocument`, `SearchView`, `StoreAboutView`, `StoreDetail`, `UserSettingsView`, `PromotionsViewProductSection`, `RichText` — all needed by client components |
+| `src/app/[locale]/blog/[slug]/BlogPostPageClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/events/[id]/EventDetailClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx` | Changed type import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/promotions/[tab]/PromotionsProductsClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/search/SearchPageClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/search/[searchSlug]/.../SearchResultsClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/stores/[storeSlug]/about/StoreAboutClient.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/user/settings/page.tsx` | Changed import from `@mohasinac/appkit` → `@mohasinac/appkit/client` |
+| `src/app/[locale]/products/[slug]/ProductPageClient.tsx` | Deleted — dead code; page.tsx already renders ProductDetailPageView directly |
+
+### Details
+
+- **Root cause**: 8 client components imported from `@mohasinac/appkit` (main barrel) which re-exports firebase-admin, google-auth-library, fs, child_process — causing 22 Turbopack "Module not found" errors in the client bundle.
+- **Fix pattern**: Add missing component exports to `appkit/src/client.ts`; change `"use client"` file imports to `@mohasinac/appkit/client`.
+- **ProductPageClient.tsx**: Was never imported anywhere; page.tsx already does the correct pattern. Deleted to eliminate the dead reference.
+- Seed: no change needed.
+
+---
+
+## Session Update — 2026-05-05 (Part 49 — Bug fixes J1/J2/J3/J4/J6/J7/J9 + isPromoted API)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/MakeOfferButton.tsx` | Added offer amount input field, buyer note, min/max validation, error state returns to confirm dialog (J6) |
+| `src/app/[locale]/stores/[storeSlug]/layout.tsx` | Added `getStoreBySlug` check + `notFound()` — protects all store sub-pages from invalid slugs (J1) |
+| `src/app/[locale]/blog/[slug]/page.tsx` | Added `notFound()` for missing blog posts; deduplicated server-side fetch (J2) |
+| `src/app/[locale]/events/[id]/page.tsx` | Replaced inline not-found UI with `notFound()` call; removed unused imports (J3) |
+| `src/app/[locale]/categories/[slug]/.../page.tsx` | Added `getCategoryBySlug` guard + `notFound()` before rendering (J4) |
+| `src/app/api/products/route.ts` | Added `?isPromoted=true` as a direct query param to `buildFilters` (J7) |
+
+### Details
+
+- **J5 (bids table)**: Already fully wired — no code change needed; verified `renderBidHistory` slot wired in `AuctionDetailPageView`.
+- **J7/J9**: sievejs `convertValue()` already coerces `"true"` string → boolean `true`; filter logic correct. Remaining work is seed data (P5).
+- Seed: no change needed.
+
+---
+
 ## Session Update — 2026-05-05 (Part 48 — Listing page pagination + filter fixes + brands page + admin status filters)
 
 ### What changed

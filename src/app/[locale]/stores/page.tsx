@@ -2,10 +2,11 @@ import { StoresIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[]>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  return <StoresIndexPageView searchParams={searchParams} />;
+  const resolvedSearchParams = await searchParams;
+  return <StoresIndexPageView searchParams={resolvedSearchParams} />;
 }

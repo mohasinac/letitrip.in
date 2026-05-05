@@ -10,6 +10,7 @@ import {
   userRepository,
   productRepository,
   orderRepository,
+  reviewRepository,
 } from "@mohasinac/appkit";
 
 export const GET = withProviders(createRouteHandler({
@@ -18,7 +19,6 @@ export const GET = withProviders(createRouteHandler({
   handler: async () => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    // Parallel execution of all count queries for speed
     const [
       totalUsers,
       activeUsers,
@@ -27,6 +27,8 @@ export const GET = withProviders(createRouteHandler({
       adminUsers,
       totalProducts,
       totalOrders,
+      pendingOrders,
+      pendingReviews,
     ] = await Promise.all([
       userRepository.count().catch(() => 0),
       userRepository.countActive().catch(() => 0),
@@ -35,7 +37,16 @@ export const GET = withProviders(createRouteHandler({
       userRepository.countByRole("admin").catch(() => 0),
       productRepository.count().catch(() => 0),
       orderRepository.count().catch(() => 0),
+      orderRepository.findPending().then((r) => r.length).catch(() => 0),
+      reviewRepository.findPending().then((r) => r.length).catch(() => 0),
     ]);
+
+    // Sum revenue from delivered orders (capped fetch — avoids scanning full collection for large datasets)
+    const deliveredOrders = await orderRepository.findByStatus("delivered").catch(() => []);
+    const totalRevenue = deliveredOrders.reduce(
+      (sum, order) => sum + (Number((order as any).totalPrice ?? 0) || 0),
+      0,
+    );
 
     return successResponse({
       users: {
@@ -51,8 +62,14 @@ export const GET = withProviders(createRouteHandler({
       },
       orders: {
         total: totalOrders,
+        pending: pendingOrders,
+      },
+      reviews: {
+        pending: pendingReviews,
+      },
+      revenue: {
+        total: totalRevenue,
       },
     });
   },
 }));
-
