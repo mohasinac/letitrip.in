@@ -1,6 +1,6 @@
-import { CategoryDetailPageView } from "@mohasinac/appkit";
+import { CategoryDetailPageView, getCategoryBySlug } from "@mohasinac/appkit";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type CategoryTab = "products";
 type CategorySortKey = "relevance" | "newest" | "price-asc" | "price-desc";
@@ -93,6 +93,9 @@ export default async function Page({ params }: Props) {
   if (currentPath !== canonicalPath) {
     redirect(canonicalPath);
   }
+
+  const category = await getCategoryBySlug(slug).catch(() => null);
+  if (!category) notFound();
 
   return <CategoryDetailPageView slug={slug} />;
 }
