@@ -1,5 +1,5 @@
 "use client";
-import { BlogPostView, BlogCard } from "@mohasinac/appkit";
+import { BlogPostView, BlogCard } from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 type Props = { slug: string; locale: string };

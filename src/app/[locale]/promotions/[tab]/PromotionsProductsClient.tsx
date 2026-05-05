@@ -6,7 +6,7 @@ import {
   AdSlot,
   ROUTES,
   type AdSlotId,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 
 type Product = { id: string; slug?: string; [key: string]: unknown };
 

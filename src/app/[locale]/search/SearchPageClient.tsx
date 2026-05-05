@@ -1,5 +1,5 @@
 "use client";
-import { Button, Div, Input, SearchView, Text } from "@mohasinac/appkit";
+import { Button, Div, Input, SearchView, Text } from "@mohasinac/appkit/client";
 
 type Props = { locale: string; query: string };
 

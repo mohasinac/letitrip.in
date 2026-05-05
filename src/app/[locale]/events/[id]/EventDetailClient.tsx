@@ -6,7 +6,7 @@ import {
   RichText,
   Text,
   ROUTES,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import Link from "next/link";
 import { ShareEventButton } from "./ShareEventButton";
 import { PollInlineClient } from "./PollInlineClient";

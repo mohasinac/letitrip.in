@@ -1,5 +1,5 @@
 "use client";
-import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit";
+import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 
 export function StoreAboutClient({ store }: { store: StoreDetail }) {
   return (

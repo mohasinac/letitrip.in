@@ -1,5 +1,5 @@
 "use client";
-import { UserSettingsView } from "@mohasinac/appkit";
+import { UserSettingsView } from "@mohasinac/appkit/client";
 import { FontToggleClient } from "@/components/user/FontToggleClient";
 import { ProfilePageClient } from "@/components/user/ProfilePageClient";
 
