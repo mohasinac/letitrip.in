@@ -15,6 +15,9 @@ export const API_ROUTES = {
   DEMO: {
     SEED: "/api/demo/seed",
   },
+  ADS: {
+    BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
+  },
   EVENTS: {
     LIST: "/api/events",
     BY_ID: (id: string) => `/api/events/${id}`,

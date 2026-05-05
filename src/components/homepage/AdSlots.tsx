@@ -1,22 +1,19 @@
-/**
- * Homepage Ad Slot Placeholders
- *
- * Returns null when no real ad content is configured — no reserved height.
- * Wire up actual AdSense/third-party configs via the appkit ad-registry when ready.
- */
+"use client";
+
+import { AdSlot } from "@mohasinac/appkit/client";
 
 export function AfterHeroAdSlot() {
-  return null;
+  return <AdSlot id="homepage-hero-banner" />;
 }
 
 export function AfterFeaturedProductsAdSlot() {
-  return null;
+  return <AdSlot id="homepage-mid-banner" />;
 }
 
 export function AfterReviewsAdSlot() {
-  return null;
+  return <AdSlot id="homepage-bottom-banner" />;
 }
 
 export function AfterFAQAdSlot() {
-  return null;
+  return <AdSlot id="homepage-bottom-banner" />;
 }

@@ -43,16 +43,17 @@ export type PublishValidation = {
 
 export function defaultPlacements(): PlacementRecord[] {
   return [
-    { id: "home.hero.after", label: "Home Hero After", enabled: true, reservedHeight: 250 },
-    { id: "home.inline.1", label: "Home Inline 1", enabled: true, reservedHeight: 120 },
-    { id: "home.inline.2", label: "Home Inline 2", enabled: true, reservedHeight: 120 },
-    { id: "listing.inline", label: "Listing Inline", enabled: true, reservedHeight: 120 },
-    { id: "listing.sidebar.top", label: "Listing Sidebar Top", enabled: true, reservedHeight: 250 },
-    { id: "detail.inline", label: "Detail Inline", enabled: true, reservedHeight: 120 },
-    { id: "content.sidebar.top", label: "Content Sidebar Top", enabled: true, reservedHeight: 250 },
-    { id: "footer.pre", label: "Footer Pre", enabled: true, reservedHeight: 120 },
-    { id: "search.inline", label: "Search Inline", enabled: true, reservedHeight: 120 },
-    { id: "promotions.inline", label: "Promotions Inline", enabled: true, reservedHeight: 120 },
+    { id: "homepage-hero-banner", label: "Home Hero Banner", enabled: true, reservedHeight: 250 },
+    { id: "homepage-mid-banner", label: "Home Mid Banner", enabled: true, reservedHeight: 120 },
+    { id: "homepage-bottom-banner", label: "Home Bottom Banner", enabled: true, reservedHeight: 120 },
+    { id: "listing-between-rows", label: "Listing Between Rows", enabled: true, reservedHeight: 120 },
+    { id: "listing-sidebar-top", label: "Listing Sidebar Top", enabled: true, reservedHeight: 250 },
+    { id: "listing-sidebar-bottom", label: "Listing Sidebar Bottom", enabled: true, reservedHeight: 120 },
+    { id: "detail-below-gallery", label: "Detail Below Gallery", enabled: true, reservedHeight: 120 },
+    { id: "detail-below-price", label: "Detail Below Price", enabled: true, reservedHeight: 120 },
+    { id: "search-inline", label: "Search Inline", enabled: true, reservedHeight: 120 },
+    { id: "cart-upsell", label: "Cart Upsell", enabled: true, reservedHeight: 120 },
+    { id: "checkout-upsell", label: "Checkout Upsell", enabled: true, reservedHeight: 120 },
   ];
 }
 
