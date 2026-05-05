@@ -34,6 +34,7 @@ const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     title: "Catalog",
     items: [
       { href: String(ROUTES.ADMIN.CATEGORIES), label: "Categories" },
+      { href: String(ROUTES.ADMIN.BRANDS), label: "Brands" },
       { href: String(ROUTES.ADMIN.COUPONS), label: "Coupons" },
       { href: String(ROUTES.ADMIN.DEALS), label: "Deals" },
       { href: String(ROUTES.ADMIN.FEATURED), label: "Featured" },
@@ -76,7 +77,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopOpen, setDesktopOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const openNav = useCallback(() => {
@@ -127,6 +128,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         groups={ADMIN_NAV_GROUPS}
         mobileOpen={mobileOpen}
         onCloseMobile={closeNav}
+        onToggle={toggleNav}
       />
       {children}
     </ProtectedRoute>

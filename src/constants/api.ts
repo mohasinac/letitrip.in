@@ -18,6 +18,10 @@ export const API_ROUTES = {
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
   },
+  BRANDS: {
+    LIST: "/api/brands",
+    BY_ID: (id: string) => `/api/brands/${id}`,
+  },
   EVENTS: {
     LIST: "/api/events",
     BY_ID: (id: string) => `/api/events/${id}`,
@@ -30,6 +34,8 @@ export const API_ROUTES = {
     USER_BY_ID: (uid: string) => `/api/admin/users/${uid}`,
     STORES: "/api/admin/stores",
     STORE_BY_ID: (uid: string) => `/api/admin/stores/${uid}`,
+    BRANDS: "/api/admin/brands",
+    BRAND_BY_ID: (id: string) => `/api/admin/brands/${id}`,
     ORDERS: "/api/admin/orders",
     ORDER_BY_ID: (id: string) => `/api/admin/orders/${id}`,
     ORDER_REFUND: (id: string) => `/api/admin/orders/${id}/refund`,
