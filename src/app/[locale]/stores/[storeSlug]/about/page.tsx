@@ -9,9 +9,7 @@ export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
   const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);
 
-  if (!store) {
-    return null;
-  }
+  if (!store) return null;
 
   return <StoreAboutClient store={store as unknown as StoreDetail} />;
 }

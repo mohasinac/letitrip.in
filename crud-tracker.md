@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 18:30 — SL1–SL3 ✅ complete. Next: J5 (bids table fix).
+> **Last updated:** 2026-05-05 19:00 — SL1–SL3, J5, J6, J1 ✅ complete. Next: J2 (blog page rendering).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 3 |
+| ✅ Done | 6 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 66 |
+| ⏳ Remaining | 63 |
 
 ---
 
@@ -54,9 +54,9 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| J5 | Bids table missing / bid history on auction pages | S | ⏳ | | REUSE: `BidHistory.tsx` EXISTS in appkit products/components — wire `renderBidHistory` render prop in auctions/[id]/page.tsx |
-| J6 | Offer amount field missing in MakeOfferButton | S | ⏳ | | REUSE: `MakeOfferForm.tsx` EXISTS in appkit products/components — check if offerAmount input field is present or needs adding to existing form |
-| J1 | Store not found — 404 handling on all store sub-pages | S | ⏳ | | Call notFound() from next/navigation when store doc is null in all /stores/[storeSlug]/* pages |
+| J5 | Bids table missing / bid history on auction pages | S | ✅ | Part 48 | Already wired in AuctionDetailPageView; BidHistory renders via belowFold in AuctionDetailView |
+| J6 | Offer amount field missing in MakeOfferButton | S | ✅ | Part 49 | Added amount input, note field, min/max validation, error state returns to confirm |
+| J1 | Store not found — 404 handling on all store sub-pages | S | ✅ | Part 49 | Fixed in stores/[storeSlug]/layout.tsx: calls notFound() if store is null |
 | J2 | Blog page rendering broken | S | ⏳ | | Audit blog list + detail + null-safety; check API returns correct data |
 | J3 | Events page rendering broken | S | ⏳ | | Audit events list + detail + render props wiring |
 | J4 | Category pages broken listing | S | ⏳ | | Audit /categories/[slug] empty-state + API filter |
