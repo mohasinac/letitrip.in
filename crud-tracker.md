@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 19:00 — SL1–SL3, J5, J6, J1 ✅ complete. Next: J2 (blog page rendering).
+> **Last updated:** 2026-05-05 21:30 — J2, J3, J4 ✅ complete. J7 API fix ✅. Next: J8 (ad slots), M2 (dashboard stats), K2 (RichTextRenderer).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 6 |
+| ✅ Done | 10 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 63 |
+| ⏳ Remaining | 59 |
 
 ---
 
@@ -57,11 +57,11 @@
 | J5 | Bids table missing / bid history on auction pages | S | ✅ | Part 48 | Already wired in AuctionDetailPageView; BidHistory renders via belowFold in AuctionDetailView |
 | J6 | Offer amount field missing in MakeOfferButton | S | ✅ | Part 49 | Added amount input, note field, min/max validation, error state returns to confirm |
 | J1 | Store not found — 404 handling on all store sub-pages | S | ✅ | Part 49 | Fixed in stores/[storeSlug]/layout.tsx: calls notFound() if store is null |
-| J2 | Blog page rendering broken | S | ⏳ | | Audit blog list + detail + null-safety; check API returns correct data |
-| J3 | Events page rendering broken | S | ⏳ | | Audit events list + detail + render props wiring |
-| J4 | Category pages broken listing | S | ⏳ | | Audit /categories/[slug] empty-state + API filter |
-| J7 | Deals/Promotions sections empty | S | ⏳ | | Fix isPromoted=true filter in products API + homepage section data |
-| J9 | Featured contents sections empty | S | ⏳ | | Fix featured=true filter + homepage section render |
+| J2 | Blog page rendering broken | S | ✅ | Part 49 | Added notFound() for missing posts; deduplicated server fetch; ShareButtons uses post.title |
+| J3 | Events page rendering broken | S | ✅ | Part 49 | Replaced inline not-found UI with notFound(); removed unused imports |
+| J4 | Category pages broken listing | S | ✅ | Part 49 | Added getCategoryBySlug check + notFound() before rendering CategoryDetailPageView |
+| J7 | Deals/Promotions sections empty | S | ✅ | Part 49 | Added ?isPromoted=true direct param to buildFilters in products API; sievejs handles bool coercion correctly. Remaining: seed data needs isPromoted=true products (P5) |
+| J9 | Featured contents sections empty | S | ✅ | Part 49 | ?featured=true was already in buildFilters; sievejs coerces "true"→boolean; remaining: P5 seed data |
 | J8 | Ad slots should render conditionally (not always null) | S | ⏳ | | REUSE: existing `AdSlot` — fetch active ad for slot key, render if found, null only if none |
 | M2 | Admin Dashboard stats showing zeroes | S | ⏳ | | Confirm /api/admin/dashboard returns real Firestore counts; wire to DashboardStatsGrid |
 
