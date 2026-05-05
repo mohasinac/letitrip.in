@@ -1,170 +1,149 @@
 # letitrip.in — Master Working Prompt
 
 > Paste this entire file at the start of every session.
-> The AI reads the CURRENT TASK section at the top, starts immediately, and works down the pending queue without asking.
+> Read CURRENT TASK at the top, start immediately, work down the queue without asking.
+> Full task status lives in `crud-tracker.md` — check it first.
 
 ---
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: Rich Text editor (Task 23)**
+**Next up: J5 — Fix bids table missing on auction detail pages**
 
-Tasks 17–22 done (Parts 38/38b, 39, 40, 43, 45 + Task 22 already complete). Next task:
+The `BidHistoryTable` component (or the `renderBidHistory` slot wiring) is missing from auction
+product detail pages. Buyers cannot see existing bids.
 
-Store bio, return/shipping policies, category descriptions, event content are all plain text. Wire `RichTextEditor` (from appkit) into the relevant create/edit forms. Key locations:
-- Store profile edit form — bio, returnPolicy, shippingPolicy
-- Category admin create/edit — description
-- Event editor — description / content field
-Check appkit for an existing `RichTextEditor` component; if absent, use a lightweight `<textarea>` with Markdown preview as a fallback.
-
-### ✅ Completed (Part 45 — Cart merge fix + Razorpay key guard):
-- `useGuestCartMerge`: was posting bare array → now wraps as `{ items: payload }` matching route schema; fixes silent 400 on every post-login merge.
-- `create-order` route: throws `ApiErrors.internalError` when `RAZORPAY_KEY_ID` env var is unset instead of returning `""`.
-
-### ✅ Completed (Part 43 — Firebase structured logging):
-- `src/lib/logger.ts`: server-side; structured JSON to stdout in prod (Cloud Logging), writes to `logs/app.log` in dev.
-- `src/lib/client-logger.ts`: client-side; console in dev only, no-op in prod.
-- All 4 `console.log`/`console.error`/`console.warn` calls in `src/` replaced.
-- `proxy.ts`: Edge-safe — structured JSON passed to `console.error` for Cloud Logging ingestion.
-
-### ✅ Completed (Part 40 — Cursive font + toggle):
-- `Playfair_Display` added to `src/app/layout.tsx` as `--font-cursive`; inline script applies `font-cursive` class on `<html>` from localStorage on load.
-- `src/app/globals.css`: `html.font-cursive` overrides body + heading `font-family` to Playfair Display.
-- `UserSettingsView`: new `renderAppearance` render prop added (appkit).
-- `FontToggleClient`: toggle switch reads/writes `localStorage['font-style']` and toggles `html.font-cursive` class.
-- Settings page wires `FontToggleClient` via `renderAppearance`.
-
-### ✅ Completed (Part 39 — User nav collapsible sidebar):
-- `UserSidebar` gains `variant="sidebar"` — persistent inline aside on desktop (`md+`), BottomSheet on mobile.
-- Nav groups start collapsed; active group auto-expands on mount. `defaultOpen: true` forces group open.
-- `src/app/[locale]/user/layout.tsx`: two-column layout — inline sidebar + `<main>`.
-
-### ✅ Completed (Part 37b — Multi-coupon conflict detection + cart UI):
-- `CartDocument` uses `appliedCoupons[]` + `selectedItemIds?`; `CartItemDocument` gains `sellerSlug?`.
-- `addCoupon`/`removeCoupon(code)`/`clearAllCoupons`/`setSelectedItems` on `CartRepository`.
-- `POST /api/cart/coupon`: conflict rules (duplicate, one-per-seller, admin+seller exclusion).
-- `PUT /api/cart/selection`: new route — persists selected item IDs for partial checkout.
-- Checkout + payment/verify: partial checkout + multi-coupon pro-rating; saves `appliedDiscounts[]`.
-- `CartRouteClient`: seller grouping, per-item checkboxes, multi-coupon chips, partial checkout button.
-
-### ✅ Completed (Part 37 — Ads: no empty placeholder space):
-- All 4 homepage `AdSlot` components return `null` — no 90px placeholder banners.
-
-### ✅ Completed (Part 36 — Homepage carousel mobile fix):
-- `HeroCarousel`: `gridRow: auto` on mobile fixes card overlap; card 90% width + auto height; 260px min-height on mobile.
-- Checkout/verify routes: `appliedCoupons[0]` instead of missing `appliedCoupon`; inline discount type.
-
-### ✅ Completed (Part 33 — Events inline poll voting):
-- `PollInlineClient` created: inline radio/checkbox poll with login-required auth gate.
-- `EventDetailView` `renderContent` wired to show poll options for poll events.
-- `PollConfig.requireLogin` added to appkit types; PSA poll seed marked login-required.
-
-### ✅ Completed (Part 32 — Order grouping + coupon persistence):
-- `couponCode`/`couponDiscount` added to `OrderDocument`.
-- `appliedCoupon` persisted in `CartDocument` via `setCoupon()`/`clearCoupon()` on `CartRepository`.
-- `/api/cart/coupon` POST persists to Firestore; DELETE clears it.
-- Cart page reads server-persisted coupon; derives `effectiveCoupon = localCoupon ?? serverAppliedCoupon`.
-- Both checkout routes (`/api/checkout` and `/api/payment/verify`) pro-rate discount across order groups and clear coupon after successful order.
-
-### ✅ Completed (Part 31 — HorizontalScroller infinite loop):
-- `loop` prop added; clones first N items to end; instant-jump at boundaries for seamless wrap.
-- TSC fixes: `cart/coupon/route.ts` coupon cast, `CartRouteClient.tsx` state rename.
-
-### ✅ Completed (Part 30 — Stores seed storeId verified correct):
-- No issues found: `ownerId`, `sellerId`, and query on `findByOwnerId` all consistent.
-
-### ✅ Completed (Part 29 — Store reviews on auction pages):
-- `AuctionDetailPageView` now fetches store reviews via `listReviewsBySeller` and renders rating summary + up to 10 reviews.
-
-### ✅ Completed (Part 27/28 — Order grouping verified + Bottom button bar verified):
-- `splitCartIntoOrderGroups` already handles: auction=per-item, preorder/standard=per-seller.
-- `BuyBar` already wired in all three detail page views.
-
-### ✅ Completed (Part 26 — Mobile toolbar row layout):
-- `ListingToolbar`: search on Row 1 (full width mobile); filters + sort + view toggle on Row 2.
-- `FilterFacetSection`: selected chips shown when collapsed; search always visible; auto-expands when typing.
-
-### ✅ Completed (Part 24 — Searchable category filter verified):
-- `FilterFacetSection` search shows whenever `searchable={true}`.
-
-### ✅ Completed (Part 23 — Offer Logic):
-- `SellerOffersPanel`: interactive Accept/Decline/Counter with status filter tabs on `/store/offers`
-- `UserOffersPanel`: buyer view with Accept Counter / Withdraw / Checkout on `/user/offers`
-- `allowOffers: true` auto-set on all simple published products in all 7 franchise seed files
-- `MakeOfferButton` shows no offer amount to buyer — only "Make Offer" text
-
-### ✅ Completed (Part 22 — Collapsible filter sections):
-- `RangeFilter` and `SwitchFilter` never collapse (`defaultCollapsed={false}`).
-- `FilterFacetSection` collapses only when `options.length > 6`.
-
-### ✅ Completed (Part 21 — Filters apply-on-click verified):
-- All three listing components already buffer filters and only write to URL on "Apply Filters" click.
-
-### ✅ Completed (Part 21 — Dark Mode Theming):
-- **`prefers-color-scheme` → `.dark` class** — 13 CSS files fixed: Toast, Card, Dropdown, Toggle, Checkbox, Radio, Tabs, Avatar, EmptyState, Slider, DashboardStatsCard, SideModal, ListingLayout.
-- **CSS variable tokens** — Button, Modal, Drawer close buttons + panel surfaces now use `var(--appkit-color-*)` tokens instead of hardcoded hex values.
-
-### ✅ Completed (Part 20 — Titlebar/Dashboard Nav Icons):
-- Titlebar hamburger visible on all screen sizes. Dashboard FABs + nav toggle use panel icon.
-
-### ✅ Completed (Part 20 — Offer Logic):
-- `MakeOfferButton` client component — single-click, no price shown, confirm step, success/pending states
-- `renderOfferAction` slot added to `ProductDetailPageView` — shown for `allowOffers=true, type=simple` products
-- Wired in `src/app/[locale]/products/[slug]/page.tsx` via `makeOfferAction` server action
-
-### ✅ Completed (Part 19 — Navigation):
-- **Mobile bottom nav** — `BottomNavbar` now accepts `navItems` prop; shows first 4 nav items (Home, Products, Auctions, Pre-Orders) + "More" button that opens sidebar.
-- **Desktop floating hamburger** — Fixed button at `left: 0, top: calc(var(--header-height) + 6px)` on `lg+` screens. Opens/closes sidebar. `MainNavbar` (desktop nav-link bar) removed.
-- **Appkit rebuilt and synced** — `appkit/src/features/layout/BottomNavbar.tsx` + `AppLayoutShell.tsx` updated.
-
-### ✅ Previously done:
-- Part 18: Slug URL fixes for auctions/pre-orders/products seed
-- Part 17: FAQ page crash fix, welcome section re-added to seed, all 12 homepage sections
-- Part 16: Detail pages (BidHistory, auction/pre-order tabs, product Buy Now), dashboard FABs, grouped nav
+Steps:
+1. Check `src/app/[locale]/auctions/[id]/page.tsx` — confirm `renderBidHistory` render prop is wired
+2. Confirm `/api/bids?productId=[id]` route exists and returns data
+3. If `BidHistoryTable` missing from appkit, create it in `appkit/src/features/bids/`
+4. Wire the slot; verify with seed auction products that have bids
 
 ---
 
 ## 📋 FULL PENDING QUEUE
 
-| # | Task | Notes |
-|---|------|-------|
-| 1 | **Buy Now buttons** | ⚠️ Verify in browser — Product detail, auction buyout, pre-order Add to Cart wired in Part 16 |
-| 2 | **Offer logic** | Simple products only. 1 attempt per user. No amount shown to buyer. Seller accepts/rejects from store dashboard offers page. Check `appkit/src/features/offers/` for existing hooks/components. |
-| ~~3~~ | ~~Filters — apply on click~~ | ✅ Done (Part 21) |
-| ~~5~~ | ~~Collapsible filters~~ | ✅ Done (Part 22) |
-| ~~6~~ | ~~Category filter — searchable dropdown~~ | ✅ Done (Part 24) |
-| ~~7~~ | ~~Sticky toolbar fix~~ | ✅ Done (already correct) |
-| ~~8~~ | ~~Mobile toolbar row layout~~ | ✅ Done (Part 26) |
-| ~~9~~ | ~~Bottom button bar~~ | ✅ Done (Part 27) |
-| ~~10~~ | ~~Order grouping~~ | ✅ Done (Part 28 — already correct) |
-| ~~11~~ | ~~Store reviews on auction pages~~ | ✅ Done (Part 29) |
-| ~~12~~ | ~~Stores seed — storeId not sellerId~~ | ✅ Done (Part 30 — already correct) |
-| ~~13~~ | ~~Circular/infinite horizontal scrollers~~ | ✅ Done (Part 31) |
-| ~~14~~ | ~~Events — polls + richer seed~~ | ✅ Done (Part 33) |
-| ~~15~~ | ~~Homepage carousel~~ | ✅ Done (Part 36) |
-| ~~16~~ | ~~Ads — no empty space~~ | ✅ Done (Part 37) |
-| ~~17~~ | ~~200 products + open-source images~~ | ✅ Done (Part 38/38b) |
-| ~~18~~ | ~~User nav collapsible~~ | ✅ Done (Part 39) |
-| ~~19~~ | ~~Cursive font + toggle~~ | ✅ Done (Part 40) |
-| ~~20~~ | ~~Firebase logs~~ | ✅ Done (Part 43) — `src/lib/logger.ts` + `src/lib/client-logger.ts`; all 4 console calls replaced |
-| ~~21~~ | ~~Cart & Checkout (Phase 28)~~ | ✅ Done (Part 45) — cart merge payload fixed; Razorpay key guard added |
-| ~~22~~ | ~~Admin Events CRUD (Phase 30)~~ | ✅ Already done — all 4 pages + appkit components fully wired |
-| 23 | **Rich Text (Phase 33)** | Store bio, return/shipping policies, category descriptions, event content — all currently plain text. Wire `RichTextEditor` in create/edit forms. |
-| 24 | **Responsive audit (Phase 22/23)** | 375px / 768px / 1024px viewport testing. Lighthouse ≥ 90. |
+> Canonical status for every task is in **`crud-tracker.md`**. Update it after every task and
+> every 30 minutes. Below is the summary by tier.
+
+### Tier 0 — Bug Fixes *(start here)*
+| # | Task |
+|---|------|
+| J5 | Bids table missing on auction detail pages |
+| J6 | Offer amount field missing in MakeOfferButton |
+| J1 | Store not found 404 on all store sub-pages |
+| J2 | Blog page rendering broken |
+| J3 | Events page rendering broken |
+| J4 | Category pages broken listing |
+| J7 | Deals/Promotions section empty |
+| J9 | Featured contents sections empty |
+| J8 | Ad slots should render conditionally |
+| M2 | Admin Dashboard stats showing zeroes |
+
+### Tier 1 — Rich Text System
+| # | Task |
+|---|------|
+| K2 | RichTextRenderer component (isomorphic-dompurify + prose) |
+| K4+L3+L4+L5 | Wire renderer in events, blog, stores, faqs |
+| K3 | RichTextEditor component (TipTap) |
+
+### Tier 2 — Product Custom Fields & Detail Sections
+| # | Task |
+|---|------|
+| L1 | Custom fields schema + CustomFieldsEditor component |
+| L2 | Custom section render in all product detail page types |
+| O3 | Product pickup address selector + inline create popup |
+
+### Tier 3 — Infrastructure
+| # | Task |
+|---|------|
+| E2 | Missing API route handlers (16 PUT/DELETE endpoints) |
+| E3+E4 | Field-name constants + API route constants |
+| E1+E5 | Route constants + TypeScript input types |
+| F2 | Brands: Firestore schema + API + Admin CRUD |
+| H1 | InlineCreateSelect shared component |
+| I4 | Media Library picker modal |
+
+### Tier 4 — Seed Data Overhaul
+| # | Task |
+|---|------|
+| P1+P2 | Brands seed + Categories seed (hierarchy) |
+| P3+P4 | Carousel + Homepage sections update |
+| P5 | Products seed: custom fields, pickup address, featured/promoted |
+| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails |
+| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) |
+
+### Tier 5 — Admin Core CRUD
+| # | Task |
+|---|------|
+| A2 | Admin Categories CRUD |
+| A1 | Admin Products CRUD (3-mode: standard/auction/preorder) |
+| A3 | Admin Coupons CRUD |
+| A4 | Admin Blog CRUD + RichTextEditor |
+| A5 | Admin FAQs CRUD |
+| A6+F3 | Admin Carousel CRUD + reorder + preview |
+| N3 | Admin Stores full management |
+| B1 | Admin Users role/ban management |
+| B2 | Admin Orders status + refund UI |
+| N2 | Admin Reviews full moderation |
+
+### Tier 6 — Admin Finance & CMS
+| # | Task |
+|---|------|
+| M1 | Admin Analytics dashboard |
+| M3 | Admin Payouts processing + CSV export |
+| F1 | Homepage Sections CMS (all 12 section types) |
+| N1 | Site Settings full wiring (all 6 tab groups) |
+| F5 | Navigation CMS |
+| I1 | Deals/Featured inline toggles |
+| B5 | Bids cancel/void |
+| B6 | Newsletter export + unsubscribe |
+| B7 | Contact submissions mark-read + archive |
+| I3 | Sections seed reset button |
+
+### Tier 7 — Store/Seller
+| # | Task |
+|---|------|
+| O1 | Store slug management |
+| O2+C5 | Storefront full edit (bio, policies, branding) |
+| C6 | Shipping config |
+| C7 | Payout settings |
+| G1 | Product Templates CRUD |
+| G2 | Template apply in product forms |
+| C1 | Store Auctions create/edit |
+| C2 | Store Pre-Orders create/edit |
+| C3 | Store Coupons edit page |
+| C4 | Store Orders detail + status |
+| O4 | Store Analytics seller view |
+| O5 | Shiprocket auto-create on ship |
+
+### Tier 8 — User Account
+| # | Task |
+|---|------|
+| D1 | Wishlist page wiring |
+| D2 | User Profile full edit |
+| D3 | User Settings complete |
+| D4 | Notifications view + mark read + delete |
+| D5 | Messages (deferred) |
 
 ---
 
 ## HOW TO WORK (follow this loop for every task)
 
-### Each task:
-1. **Read** the relevant source files before writing a single line
-2. **Plan** in 3–5 bullets what to change and why
-3. **Implement** the smallest correct change
-4. **Verify** — `npx tsc --noEmit` must be 0 errors; visually confirm in browser
-5. **Commit** with format: `fix/feat(nav): description` — one task, one commit
-6. **Seed** — does this change need seed data? If yes, update. If no, note it.
-7. **Update `newchange.md`** — prepend a new Part entry describing what changed
-8. **Move to next task** in the queue above
+1. **Read `crud-tracker.md`** — check which task is next (⏳), mark it 🔄
+2. **Read** the relevant source files before writing a single line
+3. **Plan** in 3–5 bullets what to change and why
+4. **Implement** the smallest correct change
+5. **Verify** — `npx tsc --noEmit` must be 0 errors; visually confirm in browser
+6. **Commit** with format: `fix/feat(scope): description` — one task, one commit
+7. **Seed** — does this change need seed data? If yes, update. If no, note it.
+8. **Update `newchange.md`** — prepend a new Part entry describing what changed
+9. **Update `crud-tracker.md`** — mark task ✅, fill Part #, update Summary stats + timestamp
+10. **Move to next task** in the queue
+
+### 30-minute rule
+> If you are mid-task and 30 minutes have passed: update `crud-tracker.md` timestamp and add
+> a progress note to the 🔄 row. Do not wait until the task is done to touch the tracker.
 
 ### Build cycle for appkit changes:
 ```bash
@@ -179,23 +158,66 @@ npx tsc --noEmit       # must pass before commit
 
 ## COMPONENT REUSE — CRITICAL
 
-Never create custom drawers, filter panels, or listing layouts. Always use:
+**Before building any component, check if it already exists in appkit.**
 
-| Component | Use for |
-|-----------|---------|
-| `ListingLayout` | Any public listing page (products, auctions, pre-orders, stores) |
-| `SlottedListingView` | Admin/seller dashboard listing tables |
-| `usePendingFilters` | Deferred filter state (stage changes, apply on click) |
-| `useUrlTable` | URL-backed pagination / sort / search state |
-| `SideDrawer` | Edit/create forms (addresses, products) |
-| `FilterDrawer` | Already inside `ListingLayout` — do not duplicate |
+### Confirmed existing components (do NOT recreate):
+
+| Component | Location | Use for |
+|-----------|----------|---------|
+| `RichTextEditor` | `appkit/src/ui/components/RichTextEditor.tsx` | Editing rich content — just import and wire |
+| `BidHistory` | `appkit/src/features/products/components/BidHistory.tsx` | Bid history display on auction pages |
+| `MakeOfferForm` | `appkit/src/features/products/components/MakeOfferForm.tsx` | Offer submission form |
+| `PlaceBidForm` | `appkit/src/features/products/components/PlaceBidForm.tsx` | Auction bid form |
+| `ProductForm` | `appkit/src/features/products/components/ProductForm.tsx` | Seller product create/edit — extend for auction/preorder modes |
+| `AddressForm` | `appkit/src/features/account/components/AddressForm.tsx` | Address create/edit |
+| `AddressSelectorCreate` | `appkit/src/features/account/components/AddressSelectorCreate.tsx` | Pick or create address inline |
+| `StoreAddressSelectorCreate` | `appkit/src/features/stores/components/StoreAddressSelectorCreate.tsx` | Store pickup address pick/create |
+| `DynamicSelect` | `appkit/src/ui/components/DynamicSelect.tsx` | Async selects — base for inline-create selects |
+| `RowActionMenu` | `appkit/src/ui/components/RowActionMenu.tsx` | Per-row action menus in list views |
+| `BulkActionBar` | `appkit/src/ui/components/BulkActionsBar.tsx` | Bulk actions toolbar on lists |
+| `ConfirmDeleteModal` | `appkit/src/ui/components/ConfirmDeleteModal.tsx` | Confirm destructive actions |
+| `WishlistView` | exported from `@mohasinac/appkit/client` | User wishlist page |
+| `ProfileView` | `appkit/src/features/account/components/ProfileView.tsx` | User profile display |
+| `MessagesView` | `appkit/src/features/account/components/MessagesView.tsx` | Messaging (with ChatList + ChatWindow) |
+| `UserNotificationsView` | `appkit/src/features/account/components/UserNotificationsView.tsx` | Notifications list |
+| `ReviewModal` | `appkit/src/features/reviews/components/ReviewModal.tsx` | Full review detail modal |
+| `AdminListingScaffold` | `appkit/src/features/admin/components/AdminListingScaffold.tsx` | Admin list page template |
+| `AdminAnalyticsCharts` | `appkit/src/features/admin/components/analytics/` | Revenue/orders charts (already exist) |
+| `SideDrawer` | `appkit/src/ui/components/SideDrawer.tsx` | All create/edit side forms |
+| `ListingLayout` | `appkit/src/ui/components/ListingLayout.tsx` | Public listing pages |
+| `SlottedListingView` | `appkit/src/ui/components/SlottedListingView.tsx` | Dashboard listing tables |
+| `usePendingFilters` | `@mohasinac/appkit/client` | Deferred filter state |
+| `useUrlTable` | `@mohasinac/appkit/client` | URL-backed pagination/sort/search |
+| `FilterDrawer` | Inside `ListingLayout` | Do not duplicate |
+| `useProfile` / `useUpdateProfile` | `@mohasinac/appkit/client` | User profile hooks |
+| `useAddresses` etc. | `@mohasinac/appkit/client` | Address management hooks |
+| `useGuestWishlist` etc. | `@mohasinac/appkit/client` | Wishlist hooks |
+| `ImageCropModal` | `@mohasinac/appkit/client` | Avatar / image crop |
+
+### New components to create (confirmed do NOT exist):
+- `RichTextRenderer` — wraps DOMPurify + dangerouslySetInnerHTML with prose styling
+- `AdminCategoryEditorView` — category create/edit form
+- `AdminCouponEditorView` — coupon create/edit form (complex conditional)
+- `AdminBlogEditorView` — blog post create/edit form
+- `AdminFaqEditorView` — FAQ create/edit form
+- `AdminCarouselEditorView` — carousel slide create/edit form
+- `AdminProductEditorView` — admin product form (extends ProductForm with admin fields)
+- `AdminBrandEditorView` + `AdminBrandsView` — new brands feature
+- `MediaPickerModal` — wraps AdminMediaView in a Modal with onSelect callback
+- `CustomFieldsEditor` — key/type/value/unit row builder
 
 Anti-patterns:
 ```tsx
-// ❌ custom state for filter drawer
+// ❌ custom filter drawer state
 const [filterOpen, setFilterOpen] = useState(false);
-// ❌ desktop-only search
-{isDesktop && <SearchInput />}
+// ❌ recreating what exists
+import { MyRichTextEditor } from "./MyRichTextEditor"; // use appkit RichTextEditor
+// ❌ raw dangerouslySetInnerHTML without sanitization
+<div dangerouslySetInnerHTML={{ __html: content }} />
+// ✅ use RichTextRenderer (new) for display
+<RichTextRenderer html={content} />
+// ✅ use existing RichTextEditor for editing
+import { RichTextEditor } from "@mohasinac/appkit/client";
 ```
 
 ---
@@ -223,76 +245,15 @@ Never commit with TSC errors. Never batch multiple tasks in one commit.
 - Do not add comments explaining what code does
 - Do not run `git push` unless asked
 - Do not skip `newchange.md` update — always prepend after completing a task
+- Do not skip `crud-tracker.md` update — update after every task AND every 30 minutes
 - Do not update `INSTRUCTIONS.md §12 "LIVE SITE"` column — it is the reference, not current state
 - Do not skip seed data when a UI fix exposed empty data
+- Do not use `dangerouslySetInnerHTML` without going through `RichTextRenderer`
 
 ---
 
-## KEY FILE LOCATIONS
+## IMPORT RULES
 
-| What | Where |
-|------|-------|
-| **Public layout** | `src/app/[locale]/LayoutShellClient.tsx` |
-| **Admin layout** | `src/app/[locale]/admin/layout.tsx` |
-| **Store layout** | `src/app/[locale]/store/layout.tsx` |
-| **User layout** | `src/app/[locale]/user/layout.tsx` |
-| **AppLayoutShell** | `appkit/src/ui/components/AppLayoutShell.tsx` (or similar) |
-| **HorizontalScroller** | `appkit/src/ui/components/HorizontalScroller.tsx` |
-| **HeroCarousel** | `appkit/src/features/homepage/components/HeroCarousel.tsx` |
-| **Homepage sections** | `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` |
-| **ProductGrid/Card** | `appkit/src/features/products/components/ProductGrid.tsx` |
-| **ProductDetailPageView** | `appkit/src/features/products/components/ProductDetailPageView.tsx` |
-| **ProductFilters** | `appkit/src/features/products/components/ProductFilters.tsx` |
-| **AuctionsView** | `appkit/src/features/auctions/components/AuctionsView.tsx` |
-| **BuyBar** | `appkit/src/features/products/components/BuyBar.tsx` |
-| **ListingLayout** | `appkit/src/ui/components/ListingLayout.tsx` (or SlottedListingView) |
-| **FilterPanel** | `appkit/src/features/filters/FilterPanel.tsx` |
-| **UserSidebar** | `appkit/src/features/user/components/UserSidebar.tsx` |
-| **AdminSidebar** | `appkit/src/features/admin/components/AdminSidebar.tsx` |
-| **StoreSidebar** | `appkit/src/features/store/components/StoreSidebar.tsx` |
-| **Wishlist API** | `src/app/api/wishlist/route.ts` |
-| **Blog API** | `src/app/api/blog/[slug]/route.ts` |
-| **Auth me route** | `src/app/api/auth/me/route.ts` |
-| **Seed endpoint** | `src/app/api/demo/seed/route.ts` |
-| **User addresses** | `src/components/user/UserAddressesClient.tsx` |
-| **Profile page** | `src/components/user/ProfilePageClient.tsx` |
-| **Cart** | `src/components/routing/CartRouteClient.tsx` |
-| **Checkout** | `src/components/routing/CheckoutRouteClient.tsx` |
-| **Auctions listing** | `src/app/[locale]/auctions/page.tsx` |
-| **Products listing** | `src/app/[locale]/products/page.tsx` |
-| **Pre-orders listing** | `src/app/[locale]/pre-orders/page.tsx` |
-| **Tracker** | `d:\proj\letitrip.in\new-tracker.md` |
-| **Gap analysis** | `d:\proj\letitrip.in\INSTRUCTIONS.md` |
-| **Change log** | `d:\proj\letitrip.in\newchange.md` |
-| **Seed files** | `appkit/src/seed/` |
-
----
-
-## REFERENCE IMPLEMENTATIONS
-
-Copy patterns from these files:
-```
-src/app/[locale]/events/[id]/page.tsx       ← detail page with all render props wired
-src/app/[locale]/search/[slug]/.../page.tsx ← listing page with filters + search + sort
-```
-
----
-
-## PER-TASK CHECKLIST
-
-```
-□ 1. CODE     — implemented, tsc 0 errors, browser verified
-□ 2. COMMIT   — committed with correct format, one task per commit
-□ 3. SEED     — updated or noted "no change needed" in commit
-□ 4. TRACKER  — new-tracker.md updated ⏳ → ✅ if applicable
-□ 5. NEWCHANGE — newchange.md prepended with new Part entry
-```
-
----
-
-## BUILD ISSUES & RESOLUTIONS (reference)
-
-### Import rules
 - Client components → import from `@mohasinac/appkit/client`
 - Server components/actions → import from `@mohasinac/appkit` or `@mohasinac/appkit/server`
 - UI/layout → import from `@mohasinac/appkit/ui` or `@mohasinac/appkit/client`
@@ -304,4 +265,84 @@ User auth records are always upserted; custom claims set for non-"user" roles.
 
 ---
 
-*Last updated: 2026-05-05 — Tasks 21+22 done/verified. Task 23 (Rich Text) is next.*
+## KEY FILE LOCATIONS
+
+| What | Where |
+|------|-------|
+| **Tracker** | `d:\proj\letitrip.in\crud-tracker.md` |
+| **Change log** | `d:\proj\letitrip.in\newchange.md` |
+| **Gap analysis** | `d:\proj\letitrip.in\INSTRUCTIONS.md` |
+| **Public layout** | `src/app/[locale]/LayoutShellClient.tsx` |
+| **Admin layout** | `src/app/[locale]/admin/layout.tsx` |
+| **Store layout** | `src/app/[locale]/store/layout.tsx` |
+| **User layout** | `src/app/[locale]/user/layout.tsx` |
+| **Cart** | `src/components/routing/CartRouteClient.tsx` |
+| **Checkout** | `src/components/routing/CheckoutRouteClient.tsx` |
+| **Seed files** | `appkit/src/seed/` |
+| **Field constants** | `src/constants/field-names.ts` |
+| **API constants** | `src/constants/api.ts` |
+| **Route constants** | `@mohasinac/appkit/client` (ROUTES) |
+| **HeroCarousel** | `appkit/src/features/homepage/components/HeroCarousel.tsx` |
+| **ProductDetailPageView** | `appkit/src/features/products/components/ProductDetailPageView.tsx` |
+| **AdminSidebar** | `appkit/src/features/admin/components/AdminSidebar.tsx` |
+| **StoreSidebar** | `appkit/src/features/store/components/StoreSidebar.tsx` |
+| **UserSidebar** | `appkit/src/features/user/components/UserSidebar.tsx` |
+| **Wishlist API** | `src/app/api/wishlist/route.ts` |
+| **Auth me route** | `src/app/api/auth/me/route.ts` |
+| **Seed endpoint** | `src/app/api/demo/seed/route.ts` |
+
+---
+
+## REFERENCE IMPLEMENTATIONS
+
+Copy patterns from these files:
+```
+src/app/[locale]/events/[id]/page.tsx         ← detail page with all render props wired
+src/app/[locale]/admin/events/page.tsx        ← admin list with full CRUD links
+src/app/[locale]/admin/events/new/page.tsx    ← admin create page (AdminEventEditorView)
+src/app/[locale]/admin/ads/[id]/edit/page.tsx ← admin edit page (AdminAdEditorView)
+src/app/[locale]/store/products/new/page.tsx  ← seller create page pattern
+```
+
+---
+
+## PER-TASK CHECKLIST
+
+```
+□ 1. TRACKER  — crud-tracker.md marked 🔄 at start
+□ 2. CODE     — implemented, tsc 0 errors, browser verified
+□ 3. COMMIT   — committed with correct format, one task per commit
+□ 4. SEED     — updated or noted "no change needed" in commit
+□ 5. NEWCHANGE — newchange.md prepended with new Part entry
+□ 6. TRACKER  — marked ✅, Part# filled, Summary stats updated, timestamp refreshed
+```
+
+---
+
+## ✅ COMPLETED TASKS (archive — Parts 1–44)
+
+- **Part 44** — Franchise homepage sections + filterByBrand (9 new sections 18–26)
+- **Part 43** — Firebase structured logging (`src/lib/logger.ts` + `src/lib/client-logger.ts`)
+- **Part 42** — Bid button scroll fix + coupon product-type conflicts
+- **Part 41** — Auction bid form wired + real product images in seed
+- **Part 40** — Cursive font + settings toggle (Playfair Display, FontToggleClient)
+- **Part 39** — User nav collapsible sidebar (UserSidebar variant="sidebar")
+- **Part 37b** — Multi-coupon + partial checkout (appliedCoupons[], selectedItemIds)
+- **Part 37** — Ads: no empty placeholder space (AdSlot returns null)
+- **Part 36** — Homepage carousel mobile fix (gridRow: auto on mobile)
+- **Part 33** — Events inline poll voting (PollInlineClient)
+- **Part 32** — Order grouping + coupon persistence
+- **Part 31** — HorizontalScroller infinite loop
+- **Part 30** — Stores seed storeId verified correct
+- **Part 29** — Store reviews on auction pages
+- **Parts 27/28** — Order grouping + Bottom button bar verified
+- **Part 26** — Mobile toolbar row layout
+- **Part 24** — Searchable category filter verified
+- **Part 23** — Offer logic (SellerOffersPanel + UserOffersPanel)
+- **Part 22** — Collapsible filter sections
+- **Part 21** — Filters apply-on-click + Dark Mode Theming
+- **Part 20** — Titlebar/Dashboard Nav Icons + MakeOfferButton
+- **Part 19** — Navigation (mobile bottom nav + desktop hamburger)
+- **Parts 1–18** — Buy Now, navigation, auctions/pre-orders, seeding, slugs, filters
+
+*Last updated: 2026-05-05 — crud-tracker.md created; 63 tasks queued. Task J5 (bids table) is next.*

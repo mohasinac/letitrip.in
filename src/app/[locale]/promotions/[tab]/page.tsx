@@ -7,12 +7,10 @@ import {
   Div,
   getPromotions,
   Heading,
-  InteractiveProductCard,
   PromotionsHero,
-  PromotionsViewProductSection,
-  ROUTES,
   Text,
 } from "@mohasinac/appkit";
+import { PromotionsProductsClient } from "./PromotionsProductsClient";
 
 export const revalidate = 120;
 
@@ -72,8 +70,8 @@ export default async function Page({
 
   const promotions = await getPromotions().catch(() => null);
   const activeCoupons = promotions?.activeCoupons ?? [];
-  const promotedProducts = promotions?.promotedProducts ?? [];
-  const featuredProducts = promotions?.featuredProducts ?? [];
+  const promotedProducts = (promotions?.promotedProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
+  const featuredProducts = (promotions?.featuredProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
 
   return (
     <Div className="min-h-screen bg-white dark:bg-slate-900">
@@ -130,28 +128,11 @@ export default async function Page({
         {/* ── DEALS tab ────────────────────────────────────────────────── */}
         {(activeTab === "deals" || activeTab === "all") && (
           <Div className={activeTab === "all" ? "mb-12" : ""}>
-            <PromotionsViewProductSection
+            <PromotionsProductsClient
               title="Deals"
               subtitle="Top promoted products at special prices"
-              hasProducts={promotedProducts.length > 0}
-              renderProducts={() => (
-                <Div className="space-y-6">
-                  <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-                    {promotedProducts.map((product) => (
-                      <InteractiveProductCard
-                        key={product.id}
-                        product={product as never}
-                        href={String(
-                          ROUTES.PUBLIC.PRODUCT_DETAIL(
-                            (product as any).slug ?? product.id,
-                          ),
-                        )}
-                      />
-                    ))}
-                  </Div>
-                  <AdSlot id="search-inline" />
-                </Div>
-              )}
+              products={promotedProducts}
+              adSlotId="search-inline"
             />
             {promotedProducts.length === 0 && (
               <Div className="py-12 text-center">
@@ -166,28 +147,11 @@ export default async function Page({
         {/* ── FEATURED tab ─────────────────────────────────────────────── */}
         {(activeTab === "featured" || activeTab === "all") && (
           <Div>
-            <PromotionsViewProductSection
+            <PromotionsProductsClient
               title="Featured"
               subtitle="Hand-picked products from top sellers"
-              hasProducts={featuredProducts.length > 0}
-              renderProducts={() => (
-                <Div className="space-y-6">
-                  <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-                    {featuredProducts.map((product) => (
-                      <InteractiveProductCard
-                        key={product.id}
-                        product={product as never}
-                        href={String(
-                          ROUTES.PUBLIC.PRODUCT_DETAIL(
-                            (product as any).slug ?? product.id,
-                          ),
-                        )}
-                      />
-                    ))}
-                  </Div>
-                  <AdSlot id="listing-between-rows" />
-                </Div>
-              )}
+              products={featuredProducts}
+              adSlotId="listing-between-rows"
             />
             {featuredProducts.length === 0 && activeTab === "featured" && (
               <Div className="py-12 text-center">

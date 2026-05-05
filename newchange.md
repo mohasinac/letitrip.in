@@ -2,6 +2,40 @@
 
 ---
 
+## Session Update — 2026-05-05 (Part 47 — Fix "functions cannot be passed to Client Components" errors)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/[locale]/blog/[slug]/BlogPostPageClient.tsx` | NEW — `"use client"` wrapper; owns `renderBackButton` + `renderRelatedCard` render props |
+| `src/app/[locale]/blog/[slug]/page.tsx` | Removed render props; delegates to `BlogPostPageClient` |
+| `src/app/[locale]/products/[slug]/actions.ts` | NEW — `"use server"` file; exports `submitProductOffer` (moved out of inline) |
+| `src/app/[locale]/products/[slug]/ProductPageClient.tsx` | NEW — `"use client"` wrapper; owns `renderOfferAction` + wires `submitProductOffer` |
+| `src/app/[locale]/products/[slug]/page.tsx` | Removed render props + inline server action; delegates to `ProductPageClient` |
+| `src/app/[locale]/search/SearchPageClient.tsx` | NEW — `"use client"` wrapper; owns `renderSearchInput` + `renderResults` for the empty-state search page |
+| `src/app/[locale]/search/page.tsx` | Removed render props; delegates to `SearchPageClient` |
+| `src/app/[locale]/search/[searchSlug]/.../SearchResultsClient.tsx` | NEW — `"use client"` wrapper; owns render props for full search results page |
+| `src/app/[locale]/search/[searchSlug]/.../page.tsx` | Removed render props; delegates to `SearchResultsClient` |
+| `src/app/[locale]/stores/[storeSlug]/about/StoreAboutClient.tsx` | NEW — `"use client"` wrapper; owns `renderStats` + `renderSocialLinks` |
+| `src/app/[locale]/stores/[storeSlug]/about/page.tsx` | Removed render props; delegates to `StoreAboutClient` |
+| `src/app/[locale]/events/[id]/EventDetailClient.tsx` | NEW — `"use client"` wrapper; owns all 5 render props; receives pre-serialized event data |
+| `src/app/[locale]/events/[id]/page.tsx` | Removed render props; pre-formats dates + computes badge CSS; delegates to `EventDetailClient` |
+| `src/app/[locale]/promotions/[tab]/PromotionsProductsClient.tsx` | NEW — `"use client"` wrapper; owns `renderProducts` for deals + featured sections |
+| `src/app/[locale]/promotions/[tab]/page.tsx` | Replaced `PromotionsViewProductSection` render-prop calls with `PromotionsProductsClient` |
+| `src/app/[locale]/user/settings/page.tsx` | Added `"use client"` — no data fetching, simplest fix |
+
+### Details
+
+- **Root cause**: Appkit view components (`EventDetailView`, `BlogPostView`, `SearchView`, etc.) are Client Components. Next.js App Router forbids passing plain functions as props from Server Components to Client Components (only `"use server"` actions are allowed across the boundary).
+- **Fix pattern**: For each server page that fetches data + passes render props — extract render logic into a `*Client.tsx` sibling file marked `"use client"`; pass only serializable values (strings, numbers, plain objects) from the server page.
+- **Event page special case**: Firestore Timestamps are pre-formatted to strings in the server component before being passed to `EventDetailClient`, avoiding serialization errors.
+- **Products page**: The inline `"use server"` `submitOffer` function was moved to a proper `actions.ts` file so it can be imported by the new client wrapper.
+- **Auctions page**: No change needed — `placeBidAction` is already a proper server action (top-level `"use server"` file) and can be passed directly to Client Components.
+- Seed: no change needed.
+
+---
+
 ## Session Update — 2026-05-05 (Part 46 — Rich text for event description)
 
 ### What changed

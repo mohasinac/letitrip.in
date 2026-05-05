@@ -1,7 +1,7 @@
-import { BlogPostView, BlogCard, getBlogPostBySlug, ROUTES } from "@mohasinac/appkit";
+import { getBlogPostBySlug } from "@mohasinac/appkit";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { generateBlogMetadata } from "@/constants/seo.server";
+import { BlogPostPageClient } from "./BlogPostPageClient";
 import { ShareButtons } from "./ShareButtons";
 
 export const revalidate = 300;
@@ -33,20 +33,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <div>
-      <BlogPostView
-        slug={slug}
-        renderBackButton={() => (
-          <Link
-            href={`/${locale}/blog`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-primary transition-colors"
-          >
-            <span>←</span> Back to Blog
-          </Link>
-        )}
-        renderRelatedCard={(relatedPost) => (
-          <BlogCard post={relatedPost as any} />
-        )}
-      />
+      <BlogPostPageClient slug={slug} locale={locale} />
       <ShareButtons title={post?.title ?? ""} />
     </div>
   );

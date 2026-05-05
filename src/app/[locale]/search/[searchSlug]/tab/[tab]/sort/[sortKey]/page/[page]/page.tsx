@@ -1,16 +1,7 @@
-import {
-  AdSlot,
-  Button,
-  Div,
-  Input,
-  InteractiveProductCard,
-  ROUTES,
-  SearchView,
-  Text,
-  searchProducts,
-} from "@mohasinac/appkit";
+import { searchProducts } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { SearchResultsClient } from "./SearchResultsClient";
 
 type SearchTab = "all" | "products" | "auctions" | "pre-orders";
 type SearchSortKey = "relevance" | "newest" | "price-asc" | "price-desc";
@@ -84,29 +75,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!query) {
     return {
       title: "Search",
-      alternates: {
-        canonical: `/${locale}/search`,
-      },
+      alternates: { canonical: `/${locale}/search` },
     };
   }
 
   const normalizedTab = normalizeTab(tab);
   const normalizedSortKey = normalizeSortKey(sortKey);
   const pageNumber = normalizePage(page);
-  const canonicalPath = buildCanonicalPath(
-    locale,
-    query,
-    normalizedTab,
-    normalizedSortKey,
-    pageNumber,
-  );
+  const canonicalPath = buildCanonicalPath(locale, query, normalizedTab, normalizedSortKey, pageNumber);
 
   return {
     title: `Search - ${query}`,
     description: `Search results for ${query}.`,
-    alternates: {
-      canonical: canonicalPath,
-    },
+    alternates: { canonical: canonicalPath },
   };
 }
 
@@ -122,13 +103,7 @@ export default async function Page({ params }: Props) {
     redirect(`/${locale}/search`);
   }
 
-  const canonicalPath = buildCanonicalPath(
-    locale,
-    query,
-    normalizedTab,
-    normalizedSortKey,
-    pageNumber,
-  );
+  const canonicalPath = buildCanonicalPath(locale, query, normalizedTab, normalizedSortKey, pageNumber);
   const currentPath = `/${locale}/search/${searchSlug}/tab/${tab}/sort/${sortKey}/page/${page}`;
 
   if (currentPath !== canonicalPath) {
@@ -144,43 +119,14 @@ export default async function Page({ params }: Props) {
     isPreOrder: normalizedTab === "pre-orders" ? true : undefined,
   }).catch(() => null);
 
-  const products = result?.items ?? [];
+  const products = (result?.items ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
 
   return (
-    <SearchView
+    <SearchResultsClient
+      locale={locale}
       query={query}
       total={result?.total ?? 0}
-      isLoading={false}
-      renderSearchInput={() => (
-        <Div className="space-y-4">
-          <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
-            <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
-            <Button type="submit">Search</Button>
-          </form>
-          <AdSlot id="search-inline" />
-        </Div>
-      )}
-      renderResults={() => (
-        products.length > 0 ? (
-          <Div className="space-y-6">
-            <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-              {products.map((product) => (
-                <InteractiveProductCard
-                  key={product.id}
-                  product={product as never}
-                  href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id))}
-                />
-              ))}
-            </Div>
-            <AdSlot id="listing-between-rows" />
-          </Div>
-        ) : (
-          <Div className="rounded-xl border border-zinc-200 bg-white p-6 text-center dark:border-slate-700 dark:bg-slate-900">
-            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">No results for "{query}"</Text>
-            <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Try a different keyword or browse categories.</Text>
-          </Div>
-        )
-      )}
+      products={products}
     />
   );
 }
