@@ -1,0 +1,105 @@
+import { withProviders } from "@/providers.config";
+import { z } from "zod";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  couponsRepository,
+} from "@mohasinac/appkit";
+
+const updateCouponSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  discount: z
+    .object({
+      value: z.number().min(0),
+      maxDiscount: z.number().optional(),
+      minPurchase: z.number().optional(),
+    })
+    .optional(),
+  usage: z
+    .object({
+      totalLimit: z.number().optional(),
+      perUserLimit: z.number().optional(),
+    })
+    .optional(),
+  validity: z
+    .object({
+      startDate: z
+        .string()
+        .transform((v) => new Date(v))
+        .optional(),
+      endDate: z
+        .string()
+        .optional()
+        .transform((v) => (v ? new Date(v) : undefined)),
+      isActive: z.boolean().optional(),
+    })
+    .optional(),
+  action: z.enum(["activate", "deactivate"]).optional(),
+});
+
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["seller", "admin"],
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const coupon = await couponsRepository.findById(id);
+      if (!coupon) return errorResponse("Coupon not found", 404);
+      // Sellers can only access their own coupons
+      if (user!.role !== "admin" && coupon.sellerId !== user!.uid) {
+        return errorResponse("Coupon not found", 404);
+      }
+      return successResponse(coupon);
+    },
+  }),
+);
+
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateCouponSchema)["_output"]>({
+    auth: true,
+    roles: ["seller", "admin"],
+    schema: updateCouponSchema,
+    handler: async ({ user, body, params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await couponsRepository.findById(id);
+      if (!existing) return errorResponse("Coupon not found", 404);
+      if (user!.role !== "admin" && existing.sellerId !== user!.uid) {
+        return errorResponse("Coupon not found", 404);
+      }
+      const { action, validity, ...updateData } = body!;
+      if (action === "deactivate") {
+        await couponsRepository.deactivateCoupon(id);
+        return successResponse(null, "Coupon deactivated");
+      }
+      if (action === "activate") {
+        await couponsRepository.reactivateCoupon(id);
+        return successResponse(null, "Coupon activated");
+      }
+      const updated = await couponsRepository.update(id, {
+        ...updateData,
+        ...(validity ? { validity } : {}),
+        updatedAt: new Date(),
+      } as any);
+      return successResponse(updated, "Coupon updated");
+    },
+  }),
+);
+
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["seller", "admin"],
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await couponsRepository.findById(id);
+      if (!existing) return errorResponse("Coupon not found", 404);
+      if (user!.role !== "admin" && existing.sellerId !== user!.uid) {
+        return errorResponse("Coupon not found", 404);
+      }
+      await couponsRepository.delete(id);
+      return successResponse(null, "Coupon deleted");
+    },
+  }),
+);

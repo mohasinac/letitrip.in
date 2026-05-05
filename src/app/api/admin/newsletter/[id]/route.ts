@@ -1,49 +1,34 @@
 import { withProviders } from "@/providers.config";
-
-import { createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
 import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  newsletterRepository,
 } from "@mohasinac/appkit";
-import { faqsRepository } from "@mohasinac/appkit";
 
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  roles: ["admin", "moderator"],
-  handler: async ({ request }) => {
-    const searchParams = getSearchParams(request);
-    const category = getStringParam(searchParams, "category");
-    const search = getStringParam(searchParams, "q");
-    const isActive = getStringParam(searchParams, "isActive");
-    const sorts = getStringParam(searchParams, "sorts") || "-priority,order";
-    const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
-      min: 1,
-      max: 200,
-    });
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const subscriber = await newsletterRepository.findById(id);
+      if (!subscriber) return errorResponse("Subscriber not found", 404);
+      return successResponse(subscriber);
+    },
+  }),
+);
 
-    const filters = [getStringParam(searchParams, "filters")].filter(
-      Boolean,
-    ) as string[];
-    if (category) filters.push(`category==${category}`);
-    if (isActive === "true" || isActive === "false") {
-      filters.push(`isActive==${isActive}`);
-    }
-
-    const result = await faqsRepository.list(
-      {
-        filters: filters.length > 0 ? filters.join(",") : undefined,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      },
-      {
-        search,
-      },
-    );
-
-    return successResponse(result);
-  },
-}));
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin", "moderator"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const subscriber = await newsletterRepository.findById(id);
+      if (!subscriber) return errorResponse("Subscriber not found", 404);
+      await newsletterRepository.unsubscribe(id);
+      return successResponse(null, "Subscriber unsubscribed");
+    },
+  }),
+);
