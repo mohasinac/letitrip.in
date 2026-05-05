@@ -1,4 +1,5 @@
 import { getBlogPostBySlug } from "@mohasinac/appkit";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/constants/seo.server";
 import { BlogPostPageClient } from "./BlogPostPageClient";
@@ -8,9 +9,13 @@ export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
+async function getPost(slug: string) {
+  return getBlogPostBySlug(slug).catch(() => null);
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug).catch(() => null);
+  const post = await getPost(slug);
   if (!post) return { title: "Blog Post Not Found" };
   const coverImage =
     typeof post.coverImage === "string" ? post.coverImage : post.coverImage?.url;
@@ -29,12 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug, locale } = await params;
-  const post = await getBlogPostBySlug(slug).catch(() => null);
+  const post = await getPost(slug);
+  if (!post) notFound();
 
   return (
     <div>
       <BlogPostPageClient slug={slug} locale={locale} />
-      <ShareButtons title={post?.title ?? ""} />
+      <ShareButtons title={post.title} />
     </div>
   );
 }

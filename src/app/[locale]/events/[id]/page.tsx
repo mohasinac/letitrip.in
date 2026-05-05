@@ -1,13 +1,9 @@
 import {
   getPublicEventById,
   getEventLeaderboard,
-  Div,
-  Heading,
-  Text,
-  ROUTES,
 } from "@mohasinac/appkit";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { EventDetailClient } from "./EventDetailClient";
 
 export const revalidate = 60;
@@ -58,24 +54,7 @@ export default async function Page({ params }: Props) {
     getEventLeaderboard(id).catch(() => []),
   ]);
 
-  if (!event) {
-    return (
-      <Div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          Event Not Found
-        </Heading>
-        <Text className="mt-2 text-zinc-500 dark:text-zinc-400">
-          This event may have ended or does not exist.
-        </Text>
-        <Link
-          href={`/${locale}${String(ROUTES.PUBLIC.EVENTS)}`}
-          className="mt-6 inline-block rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary-600"
-        >
-          Browse Events
-        </Link>
-      </Div>
-    );
-  }
+  if (!event) notFound();
 
   const e = event as unknown as Record<string, unknown>;
   const coverImage =
