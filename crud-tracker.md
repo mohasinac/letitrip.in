@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 — Initial tracker created from comprehensive audit.
+> **Last updated:** 2026-05-05 18:00 — SL1 ✅ complete. Next: SL2 (slug auto-gen in forms).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -10,11 +10,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 63 |
-| ✅ Done | 0 |
+| Total tasks | 69 |
+| ✅ Done | 1 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 63 |
+| ⏳ Remaining | 68 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| SL1 | Standardize all slug fields in seed data to use resource-type prefix | M | ⏳ | | `product-`, `auction-`, `preorder-`, `store-`, `category-`, `brand-`, `event-`, `blog-`, `faq-`, `user-`, `review-`, `coupon-`, `section-`, `nav-`. Utility: `slugify()` at `appkit/src/utils/string.formatter.ts`. Fix ALL seed files |
+| SL1 | Standardize all slug fields in seed data to use resource-type prefix | M | ✅ | Part 47 | All 20 seed files updated; id===slug enforced; carousel links fixed; appkit committed |
 | SL2 | Auto-generate prefixed slugs in all create/edit forms | S | ⏳ | | Every form with a slug field must auto-generate from title using the prefix for its resource type; show live preview of the resulting URL |
 | SL3 | Update repository findBySlug methods to use prefixed slugs | S | ⏳ | | Products, stores, categories, brands, blog, events all have findBySlug — confirm they query the `slug` field directly (prefix is stored in the slug, no transformation needed) |
 | SL4 | Update generateMetadata in all detail pages for SEO | S | ⏳ | | Canonical URL uses prefixed slug; title + description use entity-specific metadata; `openGraph.url` reflects the full canonical path |

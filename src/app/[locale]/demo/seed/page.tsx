@@ -1,5 +1,5 @@
-﻿import { PokemonSeedPanel } from "@/components/dev/PokemonSeedPanel";
+import { SeedPanel } from "@/components/dev/SeedPanel";
 
 export default function Page() {
-  return <PokemonSeedPanel />;
+  return <SeedPanel />;
 }

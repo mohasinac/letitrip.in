@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * PokemonSeedPanel — Dev-only UI for loading / deleting the
- * Pokémon Base Set 151 themed seed data via the demo seed server action.
+ * SeedPanel — Dev-only UI for loading / deleting seed data via the demo seed server action.
  *
  * Route: /[locale]/demo/seed
  * Features: Builder pattern (select collections), light/dark mode, user credentials display
@@ -21,7 +20,6 @@ import {
   Stack,
   Text,
   Div,
-  MediaImage,
 } from "@mohasinac/appkit/client";
 import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
 import { Spinner } from "@mohasinac/appkit/ui";
@@ -86,19 +84,7 @@ type SeededUser = {
   userId?: string;
 };
 
-const CARD_IMG = (n: number) =>
-  `https://images.pokemontcg.io/base1/${n}_hires.png`;
-
-const FEATURED_CARDS = [
-  { num: 4, name: "Charizard #4", rarity: "Holo Rare", price: "₹89,999" },
-  { num: 2, name: "Blastoise #2", rarity: "Holo Rare", price: "₹34,999" },
-  { num: 10, name: "Mewtwo #10", rarity: "Holo Rare", price: "₹19,999" },
-  { num: 16, name: "Zapdos #16", rarity: "Holo Rare", price: "₹12,999" },
-  { num: 58, name: "Pikachu #58", rarity: "Common", price: "₹1,999" },
-  { num: 15, name: "Venusaur #15", rarity: "Holo Rare", price: "₹14,999" },
-];
-
-export function PokemonSeedPanel() {
+export function SeedPanel() {
   const [isPending, startTransition] = useTransition();
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -107,7 +93,6 @@ export function PokemonSeedPanel() {
   const [result, setResult] = useState<SeedOperationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Start / stop elapsed timer whenever a long operation is pending
   useEffect(() => {
     if (isPending) {
       setElapsedSecs(0);
@@ -117,6 +102,7 @@ export function PokemonSeedPanel() {
     }
     return () => { if (elapsedRef.current) clearInterval(elapsedRef.current); };
   }, [isPending]);
+
   const [status, setStatus] = useState<SeedCollectionStatus[]>([]);
   const [dryRun, setDryRun] = useState<boolean>(true);
   const [selectedCollections, setSelectedCollections] = useState<Set<SeedCollectionName>>(
@@ -211,13 +197,8 @@ export function PokemonSeedPanel() {
     setSelectedCollections(newSet);
   };
 
-  const selectAll = () => {
-    setSelectedCollections(new Set(ALL_COLLECTIONS));
-  };
-
-  const deselectAll = () => {
-    setSelectedCollections(new Set());
-  };
+  const selectAll = () => setSelectedCollections(new Set(ALL_COLLECTIONS));
+  const deselectAll = () => setSelectedCollections(new Set());
 
   React.useEffect(() => {
     const fetchStatus = async () => {
@@ -233,7 +214,6 @@ export function PokemonSeedPanel() {
         setIsLoadingStatus(false);
       }
     };
-
     void fetchStatus();
   }, []);
 
@@ -261,7 +241,6 @@ export function PokemonSeedPanel() {
         });
         setResult(res);
 
-        // Extract seeded users if present in result
         if (res.details && "seedDetails" in res.details) {
           const details = (res.details as Record<string, unknown>)?.seedDetails as
             | { users?: Array<{ email: string; password: string; role: string; id?: string }> }
@@ -300,7 +279,7 @@ export function PokemonSeedPanel() {
           aria-label={loadingMessage || "Loading…"}
           className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center ${THEME_CONSTANTS.spacing.gap.md}`}
           style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
-         data-section="pokemonseedpanel-div-7">
+        >
           <Spinner size="xl" variant="pokeball" label={loadingMessage || "Loading…"} />
           <Div className="text-center px-6">
             <Text className="text-white font-bold text-lg leading-snug">
@@ -327,9 +306,9 @@ export function PokemonSeedPanel() {
 
           {/* Header */}
           <Stack gap="sm" className="items-center text-center">
-            <Text className="text-5xl">🃏</Text>
-            <Heading level={1} className="text-amber-600 dark:text-[#FFCB05] text-3xl font-extrabold">
-              Pokémon Base Set 151
+            <Text className="text-5xl">🎮</Text>
+            <Heading level={1} className="text-amber-600 dark:text-amber-400 text-3xl font-extrabold">
+              LetItRip Demo Seed
             </Heading>
             <Text className="text-gray-700 dark:text-slate-300">
               Dev seed tool — builder pattern with collection selection
@@ -346,20 +325,10 @@ export function PokemonSeedPanel() {
                     📋 Select Collections to Seed
                   </Heading>
                   <Row gap="sm">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={selectAll}
-                      disabled={isPending}
-                    >
+                    <Button size="sm" variant="outline" onClick={selectAll} disabled={isPending}>
                       Select All
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={deselectAll}
-                      disabled={isPending}
-                    >
+                    <Button size="sm" variant="outline" onClick={deselectAll} disabled={isPending}>
                       Clear All
                     </Button>
                   </Row>
@@ -556,62 +525,31 @@ export function PokemonSeedPanel() {
             </Container>
           )}
 
-          {/* Featured card gallery */}
-          <Stack gap="md">
-            <Heading level={2} className="text-amber-600 dark:text-[#FFCB05] text-center mt-0">
-              📋 Seeded Cards Preview
-            </Heading>
-            <Grid cols={3} gap="md" className="sm:grid-cols-4 lg:grid-cols-6">
-              {FEATURED_CARDS.map((card, index) => (
-                <Stack
-                  key={card.num}
-                  gap="none"
-                  className="rounded-xl overflow-hidden border border-amber-600/40 dark:border-[#FFCB05]/20 bg-gray-50 dark:bg-white/5"
-                >
-                  <Div className="aspect-square w-full">
-                    <MediaImage
-                      src={CARD_IMG(card.num)}
-                      alt={card.name}
-                      size="card"
-                      className="w-full block"
-                      priority={index === 0}
-                    />
-                  </Div>
-                  <Stack gap="none" className="p-2">
-                    <Text className="text-xs font-bold text-amber-600 dark:text-[#FFCB05]">{card.name}</Text>
-                    <Text className="text-[0.65rem] text-gray-600 dark:text-slate-400">{card.rarity}</Text>
-                    <Text className="text-[0.65rem] text-green-600 dark:text-green-300 mt-1">{card.price}</Text>
-                  </Stack>
-                </Stack>
-              ))}
-            </Grid>
-
-            {/* Info Section */}
-            <Stack gap="sm" className="rounded-xl p-6 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10">
-              <Heading level={3} className="text-amber-600 dark:text-[#FFCB05] mt-0">📦 What Gets Seeded</Heading>
-              <Stack gap="xs" className="text-gray-700 dark:text-slate-400 leading-loose text-sm">
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">101 Pokémon Products</strong> — TCG singles (PSA-graded Base Set holos), figures, apparel, 8 live auctions, 5 pre-orders, and OOS/discontinued items.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">3 Stores</strong> — PokéVault Cards, Trainer's Closet, Professor Oak's Collectibles — each with products, reviews, and payout history.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">PokéFest 2026 Coupon Drop</strong> — POKEFEST15, TRAINERS-CLOSET10, and PROF-OAKS15 discount codes with event entries and notifications.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">Wishlist + Promotions Coverage</strong> — seeded wishlist items, promoted products, featured products, active coupons, and homepage-linked merchandising flows.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">Admin Ads Coverage</strong> — site settings include ad placements, consent gating, and sample ad inventory for homepage, listings, and search slots.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">Role-Based Credentials</strong> — Admin, seller, and buyer accounts are created and credentials are shown after seeding.
-                </Text>
-                <Text>
-                  <strong className="text-gray-900 dark:text-slate-200">Builder Pattern + Dry Run</strong> — Select exactly which collections to seed; preview plans without writing to the database.
-                </Text>
-              </Stack>
+          {/* What Gets Seeded */}
+          <Stack gap="sm" className="rounded-xl p-6 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10">
+            <Heading level={3} className="text-amber-600 dark:text-amber-400 mt-0">📦 What Gets Seeded</Heading>
+            <Stack gap="xs" className="text-gray-700 dark:text-slate-400 leading-loose text-sm">
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">7 Franchises</strong> — Pokémon TCG, Hot Wheels, Beyblade Burst, Transformers, Anime Figures, Retro Gaming, and Cosplay Accessories — each with dedicated stores, products, and reviews.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">8 Stores</strong> — Misty's Water Cards, Surge's Electric Emporium, Blaine's Fire Shoppe, Speed King Diecast, Bladers' Paradise, Anime Vault India, Retro Vault India, and Cosplay India Hub — each with products, reviews, and payout history.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">Live Auctions & Pre-orders</strong> — Active auction listings with bids, pre-order products, and out-of-stock/discontinued items for full lifecycle coverage.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">Wishlist + Promotions Coverage</strong> — Seeded wishlist items, promoted products, featured products, active coupons, and homepage-linked merchandising flows.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">Admin Ads Coverage</strong> — Site settings include ad placements, consent gating, and sample ad inventory for homepage, listings, and search slots.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">Role-Based Credentials</strong> — Admin, seller, and buyer accounts are created and credentials are shown after seeding.
+              </Text>
+              <Text>
+                <strong className="text-gray-900 dark:text-slate-200">Builder Pattern + Dry Run</strong> — Select exactly which collections to seed; preview plans without writing to the database.
+              </Text>
             </Stack>
           </Stack>
 

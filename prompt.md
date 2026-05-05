@@ -8,16 +8,20 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: J5 — Fix bids table missing on auction detail pages**
+**Next up: SL1 — Standardize all slug fields in seed data to use resource-type prefix**
 
-The `BidHistoryTable` component (or the `renderBidHistory` slot wiring) is missing from auction
-product detail pages. Buyers cannot see existing bids.
+All slug fields in every seed file must use the established type prefix (`product-`, `auction-`,
+`store-`, `category-`, `brand-`, `event-`, `blog-`, `faq-`, `section-`, `nav-`). Firestore
+document ID must equal the slug (id === slug). This is foundational — do it before any seed
+data overhaul or new CRUD forms.
 
 Steps:
-1. Check `src/app/[locale]/auctions/[id]/page.tsx` — confirm `renderBidHistory` render prop is wired
-2. Confirm `/api/bids?productId=[id]` route exists and returns data
-3. If `BidHistoryTable` missing from appkit, create it in `appkit/src/features/bids/`
-4. Wire the slot; verify with seed auction products that have bids
+1. Read all files in `appkit/src/seed/` — audit current slug values
+2. Update each seed file: prefix every slug field with its resource type using `slugify()` from
+   `appkit/src/utils/string.formatter.ts`
+3. Ensure Firestore doc ID is set to the slug value for all content resources
+4. Run the seed via `/api/demo/seed`, verify URLs resolve correctly in browser
+5. Cross-check `findBySlug` calls in repositories still work with the new prefixed slugs
 
 ---
 
@@ -26,7 +30,17 @@ Steps:
 > Canonical status for every task is in **`crud-tracker.md`**. Update it after every task and
 > every 30 minutes. Below is the summary by tier.
 
-### Tier 0 — Bug Fixes *(start here)*
+### Tier 0-pre — Slug Format *(do first — foundational)*
+| # | Task |
+|---|------|
+| SL1 | Standardize all seed slugs to use resource-type prefix |
+| SL2 | Auto-generate prefixed slugs in all create/edit forms |
+| SL3 | Confirm repository findBySlug works with prefixed slugs |
+| SL4 | Update generateMetadata in all detail pages (canonical SEO) |
+| SL5 | API route params pass prefixed slug unchanged |
+| SL6 | Enforce id === slug for all content resources |
+
+### Tier 0 — Bug Fixes
 | # | Task |
 |---|------|
 | J5 | Bids table missing on auction detail pages |
@@ -252,8 +266,6 @@ Never commit with TSC errors. Never batch multiple tasks in one commit.
 
 ---
 
----
-
 ## SLUG FORMAT RULES — ENFORCED EVERYWHERE
 
 All slug fields MUST start with the resource type prefix. This is the established appkit
@@ -379,6 +391,8 @@ User auth records are always upserted; custom claims set for non-"user" roles.
 | **Cart** | `src/components/routing/CartRouteClient.tsx` |
 | **Checkout** | `src/components/routing/CheckoutRouteClient.tsx` |
 | **Seed files** | `appkit/src/seed/` |
+| **Slug utility** | `appkit/src/utils/string.formatter.ts` (`slugify`) |
+| **ID generators** | `appkit/src/utils/id-generators.ts` (prefix patterns) |
 | **Field constants** | `src/constants/field-names.ts` |
 | **API constants** | `src/constants/api.ts` |
 | **Route constants** | `@mohasinac/appkit/client` (ROUTES) |
