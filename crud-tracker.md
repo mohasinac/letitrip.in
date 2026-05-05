@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 18:00 — SL1 ✅ complete. Next: SL2 (slug auto-gen in forms).
+> **Last updated:** 2026-05-05 18:30 — SL1–SL3 ✅ complete. Next: J5 (bids table fix).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 1 |
+| ✅ Done | 3 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 68 |
+| ⏳ Remaining | 66 |
 
 ---
 
@@ -23,8 +23,8 @@
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | SL1 | Standardize all slug fields in seed data to use resource-type prefix | M | ✅ | Part 47 | All 20 seed files updated; id===slug enforced; carousel links fixed; appkit committed |
-| SL2 | Auto-generate prefixed slugs in all create/edit forms | S | ⏳ | | Every form with a slug field must auto-generate from title using the prefix for its resource type; show live preview of the resulting URL |
-| SL3 | Update repository findBySlug methods to use prefixed slugs | S | ⏳ | | Products, stores, categories, brands, blog, events all have findBySlug — confirm they query the `slug` field directly (prefix is stored in the slug, no transformation needed) |
+| SL2 | Auto-generate prefixed slugs in all create/edit forms | S | ✅ | Part 48 | CategoryForm: category-/category-brand-; BlogPostForm: blog-; both use slugify() |
+| SL3 | Update repository findBySlug methods to use prefixed slugs | S | ✅ | Part 48 | All repos query slug field directly; fixed faqQueryHelpers.bySlug to use top-level slug |
 | SL4 | Update generateMetadata in all detail pages for SEO | S | ⏳ | | Canonical URL uses prefixed slug; title + description use entity-specific metadata; `openGraph.url` reflects the full canonical path |
 | SL5 | Backend API route slug params — no transformation needed | S | ⏳ | | Route params (`[slug]`) receive the prefixed slug as-is from the URL; pass directly to repository; no stripping or re-prefixing |
 | SL6 | Enforce id === slug for all resources (no separate id field where slug is used as route param) | M | ⏳ | | Firestore document ID must equal the slug field. Already done for products via `generateProductId()`. Confirm and enforce for: stores, categories, brands, blog posts, events, FAQs, sections, nav items. Eliminates [id] vs [slug] route confusion in Next.js |
