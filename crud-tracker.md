@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-05 23:30 — Part 51 (J8 ✅). Build 0 errors. Next: M2 (admin dashboard stats), K2 (RichTextRenderer).
+> **Last updated:** 2026-05-06 00:30 — Parts 51–53 (J8+M2+K2/K3/K4 ✅). Build 0 errors. Next: E2+E3+E4 (missing API handlers + constants).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 11 |
+| ✅ Done | 15 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 58 |
+| ⏳ Remaining | 54 |
 
 ---
 
@@ -63,7 +63,7 @@
 | J7 | Deals/Promotions sections empty | S | ✅ | Part 49 | Added ?isPromoted=true direct param to buildFilters in products API; sievejs handles bool coercion correctly. Remaining: seed data needs isPromoted=true products (P5) |
 | J9 | Featured contents sections empty | S | ✅ | Part 49 | ?featured=true was already in buildFilters; sievejs coerces "true"→boolean; remaining: P5 seed data |
 | J8 | Ad slots should render conditionally (not always null) | S | ✅ | Part 51 | `/api/ads?slot=` public route + `useActiveAd` hook + ManualAdBanner; AfterHeroAdSlot wired to `<AdSlot>` |
-| M2 | Admin Dashboard stats showing zeroes | S | ⏳ | | Confirm /api/admin/dashboard returns real Firestore counts; wire to DashboardStatsGrid |
+| M2 | Admin Dashboard stats showing zeroes | S | ✅ | Part 52 | API now returns totalRevenue (sum delivered), pendingOrders, pendingReviews; mapped to DashboardStatsGrid |
 
 ---
 
@@ -71,9 +71,9 @@
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| K2 | RichTextRenderer component + isomorphic-dompurify | S | ⏳ | | NEW (only this): `RichTextRenderer.tsx` in appkit/src/ui/components — DOMPurify sanitize + prose dangerouslySetInnerHTML. RichTextEditor already exists; Renderer does not |
-| K4+L3+L4+L5 | Wire renderer in events, blog, stores about, faqs | S | ⏳ | | Wire K2 RichTextRenderer via render props in events/[id], blog/[slug], stores/[storeSlug]/about, faqs/[category] |
-| K3 | Wire existing RichTextEditor in admin/seller forms | S | ⏳ | | REUSE: `RichTextEditor.tsx` EXISTS at appkit/src/ui/components/ — import and wire; DO NOT recreate |
+| K2 | RichTextRenderer component + isomorphic-dompurify | S | ✅ | Part 53 | SSR-safe `RichTextRenderer` created in appkit/src/ui/rich-text/; exported from ui/index, index, client |
+| K4+L3+L4+L5 | Wire renderer in events, blog, stores about, faqs | S | ✅ | Part 53 | Events/blog already wired; StoreAboutView bio→RichText; FAQPageView answers→RichTextRenderer |
+| K3 | Wire existing RichTextEditor in admin/seller forms | S | ✅ | Part 53 | AdminEventEditorView + ProductForm already use RichTextEditor; blog/FAQ editors in A4/A5 |
 
 ---
 

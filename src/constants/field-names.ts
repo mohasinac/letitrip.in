@@ -413,6 +413,12 @@ export const COUPON_FIELDS = {
     BUY_X_GET_Y: "buy_x_get_y",
   },
 
+  // Scope values
+  SCOPE_VALUES: {
+    ADMIN: "admin",
+    SELLER: "seller",
+  },
+
   // Nested usage fields
   USAGE_FIELDS: {
     TOTAL_LIMIT: "usage.totalLimit",
@@ -582,6 +588,75 @@ export const COMMON_FIELDS = {
   STATUS: "status",
   IS_ACTIVE: "isActive",
   ORDER: "order",
+} as const;
+
+// ============================================================================
+// CATEGORY FIELDS
+// ============================================================================
+
+export const CATEGORY_FIELDS = {
+  ID: "id",
+  NAME: "name",
+  SLUG: "slug",
+  DESCRIPTION: "description",
+  PARENT_CATEGORY: "parentCategory",
+  ICON: "icon",
+  DISPLAY_ORDER: "displayOrder",
+  IS_ACTIVE: "isActive",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+} as const;
+
+// ============================================================================
+// BLOG FIELDS
+// ============================================================================
+
+export const BLOG_FIELDS = {
+  ID: "id",
+  TITLE: "title",
+  SLUG: "slug",
+  CONTENT: "content",
+  EXCERPT: "excerpt",
+  COVER_IMAGE: "coverImage",
+  AUTHOR_NAME: "authorName",
+  TAGS: "tags",
+  CATEGORY: "category",
+  STATUS: "status",
+  IS_FEATURED: "isFeatured",
+  PUBLISH_DATE: "publishDate",
+  SEO_TITLE: "seoTitle",
+  SEO_DESCRIPTION: "seoDescription",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+
+  STATUS_VALUES: {
+    DRAFT: "draft",
+    PUBLISHED: "published",
+    ARCHIVED: "archived",
+  },
+} as const;
+
+// ============================================================================
+// USER FIELDS
+// ============================================================================
+
+export const USER_FIELDS = {
+  ID: "id",
+  EMAIL: "email",
+  DISPLAY_NAME: "displayName",
+  ROLE: "role",
+  DISABLED: "disabled",
+  STORE_STATUS: "storeStatus",
+  STORE_SLUG: "storeSlug",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+
+  ROLE_VALUES: {
+    USER: "user",
+    SELLER: "seller",
+    ADMIN: "admin",
+    MODERATOR: "moderator",
+  },
 } as const;
 
 // ============================================================================

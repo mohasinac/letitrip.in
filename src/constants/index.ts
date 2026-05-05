@@ -73,5 +73,8 @@ export {
   SITE_SETTINGS_FIELDS,
   COMMON_FIELDS,
   SCHEMA_DEFAULTS,
+  CATEGORY_FIELDS,
+  BLOG_FIELDS,
+  USER_FIELDS,
 } from "./field-names";
 

@@ -1,4 +1,36 @@
-# Change Log — Session 2026-05-05 (Latest)
+# Change Log — Session 2026-05-06 (Latest)
+
+---
+
+## Part 53 — K2/K3/K4: RichTextRenderer + rich text wiring in FAQ, store bio
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/rich-text/RichTextRenderer.tsx` | New SSR-safe component — renders HTML with prose classes via dangerouslySetInnerHTML; no "use client" so works in Server Components |
+| `appkit/src/ui/index.ts` | Exported `RichTextRenderer` + type |
+| `appkit/src/index.ts` | Exported `RichTextRenderer` + type |
+| `appkit/src/client.ts` | Exported `RichTextRenderer` + type |
+| `appkit/.../FAQPageView.tsx` | FAQ answers now render via `RichTextRenderer` instead of plain `<Text>` |
+| `appkit/.../StoreAboutView.tsx` | Store bio now renders via `RichText` instead of `<Text whitespace-pre-line>` |
+
+### Why
+K2: `RichText` is client-only; Server Component pages need an SSR-safe renderer for CMS HTML content. K4: Blog/events already used `RichText`; FAQs and store bio were plain text — now render formatted HTML.
+
+---
+
+## Part 52 — M2: Admin dashboard real revenue + pending counts
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `src/app/api/admin/dashboard/route.ts` | Adds `totalRevenue` (sum of delivered order `totalPrice`), `pendingOrders` (findPending count), `pendingReviews` (findPending count) |
+| `appkit/.../AdminDashboardView.tsx` | Maps `revenue.total`, `orders.pending`, `reviews.pending` from API into `DashboardStats` |
+
+### Why
+Dashboard stat cards showed 0 revenue and no pending counts — API only returned totals, not revenue sum or pending status breakdowns.
 
 ---
 
