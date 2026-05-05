@@ -2,6 +2,41 @@
 
 ---
 
+## Part 57 — F2: Brands entity (Firestore schema, repository, API routes, admin CRUD)
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/brands/schemas/index.ts` | NEW — BrandDocument, BrandCreateInput, BrandUpdateInput, BRAND_FIELDS |
+| `appkit/src/features/brands/repository/brands.repository.ts` | NEW — BrandsRepository with list/findBySlug/findActive/create/update/delete |
+| `appkit/src/repositories/index.ts` | Added brandsRepository export |
+| `appkit/src/index.ts` | Exported brandsRepository, BrandDocument types |
+| `appkit/src/features/admin/components/AdminBrandsView.tsx` | NEW — list page with active/inactive filter |
+| `appkit/src/features/admin/components/AdminBrandEditorView.tsx` | NEW — create/edit form with slug auto-generation |
+| `appkit/src/constants/api-endpoints.ts` | Added ADMIN_ENDPOINTS.BRANDS + BRAND_BY_ID |
+| `src/app/api/admin/brands/route.ts` | NEW — GET (list) + POST (create) |
+| `src/app/api/admin/brands/[id]/route.ts` | NEW — GET/PUT/DELETE |
+| `src/app/api/brands/route.ts` | NEW — Public GET (active brands for homepage) |
+| `src/app/[locale]/admin/brands/page.tsx` | NEW — list page |
+| `src/app/[locale]/admin/brands/new/page.tsx` | NEW — create page |
+| `src/app/[locale]/admin/brands/[id]/edit/page.tsx` | NEW — edit page |
+| `src/app/[locale]/admin/layout.tsx` | Added "Brands" to Catalog nav group |
+| `src/constants/api.ts` | Added BRANDS + ADMIN.BRANDS/BRAND_BY_ID routes |
+
+---
+
+## Part 56 — E1+E5: Route constants for new CRUD pages + TypeScript input types
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/next/routing/route-map.ts` | ADMIN: PRODUCTS/CATEGORIES/BRANDS/FAQS/COUPONS/BLOG/CAROUSEL NEW+EDIT, ORDER_DETAIL; STORE: AUCTIONS/PRE_ORDERS/COUPONS_EDIT/TEMPLATES/ORDER_DETAIL |
+| `src/types/input-types.ts` | NEW — 12 Create/Update input type interfaces for Category, Brand, Coupon, BlogPost, FAQ, CarouselSlide, User, Order, Store, Review, StoreProfile, Shipping, PayoutSettings |
+
+---
+
 ## Part 55 — E3+E4: Field-name constants + comprehensive API route constants
 
 ### What changed

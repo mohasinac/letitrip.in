@@ -1,6 +1,6 @@
 # LetItRip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-06 01:45 — Parts 54–55 (E3+E4+E2 ✅). 0 TS errors. Next: E1+E5 (route constants + input types).
+> **Last updated:** 2026-05-06 03:00 — Parts 54–57 (E2+E3+E4+E1+E5+F2 ✅). 0 TS errors. Next: Tier 4 seed data (P1+P2 brands+categories).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 69 |
-| ✅ Done | 17 |
+| ✅ Done | 20 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 52 |
+| ⏳ Remaining | 49 |
 
 ---
 
@@ -93,8 +93,8 @@
 |---|------|-----------|--------|------|-------|
 | E2 | Missing API route handlers (16 new PUT/DELETE endpoints) | M | ✅ | Part 54 | admin/reviews[id], bids[id], contact-submissions[id], faqs[id], newsletter[id] fixed+DELETE added; store/orders[id], coupons[id]; user/notifications list+[id]+read-all |
 | E3+E4 | Field-name constants + API route constants | S | ✅ | Part 55 | CATEGORY_FIELDS, BLOG_FIELDS, USER_FIELDS added; COUPON_FIELDS.SCOPE_VALUES added; API_ROUTES expanded with ~45 ADMIN/STORE/USER routes |
-| E1+E5 | Route constants for new pages + TypeScript input types | S | ⏳ | | ROUTES.ADMIN.PRODUCTS_NEW etc; CreateCategoryInput etc |
-| F2 | Brands: Firestore schema + API + Admin CRUD + nav item | M | ⏳ | | New brands collection; /admin/brands list+create+edit; add to Catalog nav group |
+| E1+E5 | Route constants for new pages + TypeScript input types | S | ✅ | Part 56 | ROUTES.ADMIN/STORE + create/edit routes; src/types/input-types.ts with 12 input type interfaces |
+| F2 | Brands: Firestore schema + API + Admin CRUD + nav item | M | ✅ | Part 57 | BrandDocument, BrandsRepository; GET/POST /api/admin/brands + [id]; public /api/brands; AdminBrandsView + AdminBrandEditorView; Brands in Catalog nav |
 | H1 | InlineCreateSelect shared component | M | ⏳ | | REUSE BASE: `DynamicSelect.tsx` EXISTS in appkit ui/components — evaluate if adding "+ Create new" option is sufficient; also reuse `SideDrawer` for the inline form popup |
 | I4 | Media Library picker modal (MediaPickerModal) | M | ⏳ | | NEW: `MediaPickerModal` — wraps existing `AdminMediaView` in a Modal; adds onSelect callback; `Modal.tsx` and `AdminMediaView.tsx` both EXIST |
 
