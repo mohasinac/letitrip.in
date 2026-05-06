@@ -33,8 +33,8 @@ const playfair = Playfair_Display({
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#4f46e5" },
-    { media: "(prefers-color-scheme: dark)", color: "#312e81" },
+    { media: "(prefers-color-scheme: light)", color: "#3570fc" },
+    { media: "(prefers-color-scheme: dark)", color: "#e91e8c" },
   ],
   width: "device-width",
   initialScale: 1,

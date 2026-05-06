@@ -69,7 +69,7 @@ interface ToggleProps {
   color?: string;
 }
 
-function Toggle({ label, description, enabled, onChange, color = "#6366f1" }: ToggleProps) {
+function Toggle({ label, description, enabled, onChange, color = "#3570fc" }: ToggleProps) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
       <button
@@ -81,7 +81,7 @@ function Toggle({ label, description, enabled, onChange, color = "#6366f1" }: To
           borderRadius: 11,
           border: "none",
           cursor: "pointer",
-          background: enabled ? color : "#374151",
+          background: enabled ? color : "#334155",
           position: "relative",
           transition: "background 0.2s",
           padding: 0,
@@ -104,8 +104,8 @@ function Toggle({ label, description, enabled, onChange, color = "#6366f1" }: To
         />
       </button>
       <div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "#f9fafb", lineHeight: 1.3 }}>{label}</div>
-        <div style={{ fontSize: 11, color: "#9ca3af", lineHeight: 1.4 }}>{description}</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "#f8fafc", lineHeight: 1.3 }}>{label}</div>
+        <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.4 }}>{description}</div>
       </div>
     </div>
   );
@@ -139,10 +139,10 @@ export function DevToolbar() {
           bottom: 16,
           right: 16,
           zIndex: 9999,
-          background: "#111827",
-          border: "1px solid #374151",
+          background: "#0f172a",
+          border: "1px solid #334155",
           borderRadius: 8,
-          color: "#9ca3af",
+          color: "#94a3b8",
           fontSize: 11,
           padding: "4px 8px",
           cursor: "pointer",
@@ -161,11 +161,11 @@ export function DevToolbar() {
         bottom: 16,
         right: 16,
         zIndex: 9999,
-        background: "#111827",
-        border: "1px solid #374151",
+        background: "#0f172a",
+        border: "1px solid #334155",
         borderRadius: 10,
         boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-        color: "#f9fafb",
+        color: "#f8fafc",
         fontFamily: "monospace",
         minWidth: 240,
         overflow: "hidden",
@@ -178,8 +178,8 @@ export function DevToolbar() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "8px 12px",
-          borderBottom: "1px solid #374151",
-          background: "#0f172a",
+          borderBottom: "1px solid #334155",
+          background: "#020617",
           cursor: "pointer",
         }}
         onClick={() => setCollapsed((c) => !c)}
@@ -193,13 +193,13 @@ export function DevToolbar() {
               fontSize: 10,
               padding: "1px 6px",
               borderRadius: 4,
-              background: "#1d4ed8",
+              background: "#1e40af",
               color: "#bfdbfe",
             }}
           >
             localhost
           </span>
-          <span style={{ fontSize: 12, color: "#6b7280" }}>
+          <span style={{ fontSize: 12, color: "#64748b" }}>
             {collapsed ? "▸" : "▾"}
           </span>
         </span>
@@ -213,10 +213,10 @@ export function DevToolbar() {
               style={{
                 marginBottom: 10,
                 padding: "4px 8px",
-                background: "#78350f",
+                background: "#92400e",
                 borderRadius: 6,
                 fontSize: 11,
-                color: "#fde68a",
+                color: "#fef3c7",
               }}
             >
               ⚠ Mock services active — payment/shipping calls go to local routes
@@ -249,7 +249,7 @@ export function DevToolbar() {
 
           <div
             style={{
-              borderTop: "1px solid #374151",
+              borderTop: "1px solid #334155",
               paddingTop: 8,
               display: "flex",
               gap: 8,
@@ -259,7 +259,7 @@ export function DevToolbar() {
               href="/api/dev/mock-razorpay"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "#60a5fa", textDecoration: "none" }}
+              style={{ fontSize: 10, color: "#93c5fd", textDecoration: "none" }}
             >
               Razorpay Docs ↗
             </a>
@@ -267,7 +267,7 @@ export function DevToolbar() {
               href="/api/dev/mock-shiprocket?action=status"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "#60a5fa", textDecoration: "none" }}
+              style={{ fontSize: 10, color: "#93c5fd", textDecoration: "none" }}
             >
               Shiprocket Status ↗
             </a>
@@ -276,7 +276,7 @@ export function DevToolbar() {
               style={{
                 marginLeft: "auto",
                 fontSize: 10,
-                color: "#6b7280",
+                color: "#64748b",
                 background: "none",
                 border: "none",
                 cursor: "pointer",

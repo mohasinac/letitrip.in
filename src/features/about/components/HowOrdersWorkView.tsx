@@ -58,9 +58,9 @@ export async function HowOrdersWorkView() {
       label: t("s6Label"),
       desc: t("s6Desc"),
       color:
-        "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-700",
+        "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
       badge:
-        "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+        "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
       icon: "🎉",
     },
   ];
@@ -141,10 +141,10 @@ export async function HowOrdersWorkView() {
     {
       emoji: "🎉",
       circleClass:
-        "bg-green-100 dark:bg-green-900/40 border-2 border-green-400 dark:border-green-600",
+        "bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600",
       badge: t("s6Label"),
       badgeClass:
-        "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+        "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
     },
   ];
 

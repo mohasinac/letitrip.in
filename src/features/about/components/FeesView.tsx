@@ -154,7 +154,7 @@ export async function FeesView() {
                   <Text
                     className={
                       row.highlight
-                        ? "font-bold text-green-700 dark:text-green-400"
+                        ? "font-bold text-emerald-700 dark:text-emerald-400"
                         : ""
                     }
                   >

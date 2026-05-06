@@ -23,17 +23,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const TYPE_BADGE: Record<string, string> = {
-  sale:     "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  offer:    "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  sale:     "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  offer:    "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
   poll:     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-  survey:   "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
-  feedback: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+  survey:   "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
+  feedback: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  active: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  ended:  "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  draft:  "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  ended:  "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  draft:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
 
 function formatDate(value: unknown): string {

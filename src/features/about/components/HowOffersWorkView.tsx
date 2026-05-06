@@ -51,11 +51,11 @@ export async function HowOffersWorkView() {
     {
       emoji: "📦",
       circleClass:
-        "bg-green-100 dark:bg-green-900/40 border-2 border-green-400 dark:border-green-600",
+        "bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600",
       title: t("step6Title"),
       badge: "DELIVERED",
       badgeClass:
-        "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+        "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
     },
   ];
 

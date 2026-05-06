@@ -12,16 +12,30 @@
 
 Seed data is the foundation — without it, every feature task is developed blind with empty screens. Build it once, verify every feature against it, then never touch it again.
 
-**Immediate next: P10 — Seeding page overhaul (`SeedPanel.tsx`)**
+**Immediate next: P10 — Seeding page overhaul (`SeedPanel.tsx` + per-resource endpoints)**
 
-Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
+Two-part task:
+
+**(A) Per-resource seed endpoints** — `src/app/api/demo/seed/[collection]/route.ts`:
+- `GET` → status/counts for that collection
+- `POST { action: "seed" | "clear", dryRun?: boolean }` → detailed results:
+  ```ts
+  { collection, action, dryRun,
+    results: Array<{ id, status: "created"|"updated"|"skipped"|"error", detail? }>,
+    summary: { created, updated, skipped, errors, durationMs } }
+  ```
+- Every Firestore write error surfaces its message in `detail` — no more "3 errors" with no context
+- Sub-collection items use composite id: `"users/user-admin/addresses/addr-1"`
+
+**(B) Enhanced `SeedPanel.tsx`**:
 1. Read `src/components/dev/SeedPanel.tsx` — understand current structure (560 lines, 4 groups)
-2. Add collapsible group sections with expand/collapse per group
-3. Add per-group status badge (✅ Fully Seeded / 🟡 Partial / ⬜ Not Seeded) using GET /api/demo/seed counts
-4. Add collapsible preview list per group using `SEED_MANIFEST` from appkit (to be created in P11)
-5. Add per-group Seed + Clear buttons alongside the global run
-6. Add dependency warning banner (Products needs Stores+Categories, Bids needs Auctions, etc.)
-7. `npx tsc --noEmit` — 0 errors
+2. Add collapsible group sections (Core / Transactional / Content / System)
+3. Per-group status badge (✅ Fully Seeded / 🟡 Partial / ⬜ Not Seeded / ❌ Error) via `GET /api/demo/seed/[collection]`
+4. Per-group preview list using `SEED_MANIFEST` (P11)
+5. Per-group "Seed Group" + "Clear Group" buttons — calls each collection endpoint sequentially, updates row live; shows failed doc IDs + detail messages inline on error
+6. Dependency warning banner (Products needs Stores+Categories, Bids needs Auctions)
+7. Global toolbar: Seed All Selected, Clear All (confirm), Refresh Status
+8. `npx tsc --noEmit` — 0 errors
 
 **After P10: P11 → P12 → P13 → P14 → P15 → P16 → P17 → P18 → P19 → P20 → P21 → P22**
 *(See Tier P — Comprehensive Seed below for full details)*
@@ -105,7 +119,7 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 |---|------|--------|
 | P1+P2 | Brands seed + Categories seed | ✅ Part 58 |
 | P3–P9 | (superseded — rolled into P10–P22) | 🚫 |
-| P10 | Seeding page overhaul — collapsible groups, per-group status/preview/seed/clear, manifest | ⏳ |
+| P10 | Seeding page overhaul — per-resource endpoints (`/api/demo/seed/[collection]`), detailed per-doc error format, live progress in SeedPanel, collapsible groups/status/preview | ⏳ |
 | P11 | Seed file restructure — delete stale pokemon-* files, add manifest.ts | ⏳ |
 | P12 | Site settings seed — full 12-group config (watermark, limits, auction config, legal) | ⏳ |
 | P13 | Brands seed — 13 real collectibles brands (Bandai, Hasbro, Takara Tomy, Mattel, Pokémon Co., Konami, Funko, NECA, McFarlane, Good Smile, Hot Wheels, Tomica, Beyblade) | ⏳ |
@@ -127,7 +141,7 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 | A3 | Admin Coupons CRUD |
 | A4 | Admin Blog CRUD + RichTextEditor |
 | A5 | Admin FAQs CRUD |
-| A6+F3 | Admin Carousel CRUD + reorder + preview |
+| A6+F3 | ~~Admin Carousel CRUD~~ (superseded by CF1) |
 | N3 | Admin Stores full management |
 | B1 | Admin Users role/ban management |
 | B2 | Admin Orders status + refund UI |
@@ -138,7 +152,7 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 |---|------|
 | M1 | Admin Analytics dashboard |
 | M3 | Admin Payouts processing + CSV export |
-| F1 | Homepage Sections CMS (all 12 section types) |
+| F1 | ~~Homepage Sections CMS~~ (superseded by HS1–HS5) |
 | N1 | Site Settings — superseded by VA8 (all 12 groups) |
 | F5 | Navigation CMS |
 | I1 | Deals/Featured inline toggles |
@@ -185,7 +199,7 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 ### Tier V-A — Admin CRUD Editor Forms
 | # | Task |
 |---|------|
-| VA1 | Admin Carousel create/edit form |
+| VA1 | ~~Admin Carousel form~~ (superseded by CF1) |
 | VA2 | Admin Products CRUD 3-mode editor (see A1) |
 | VA3 | Admin Categories CRUD editor (see A2) |
 | VA4 | Admin Blog CRUD editor (see A4) |
@@ -239,6 +253,10 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 | VD4 | Category + brand display on product cards + filters |
 | VD5 | Store profile on product detail (not user profile) |
 | VD6 | Brands listing page |
+| VD7 | Fix brand name: "LetItRip" → "LetiTrip" throughout `messages/en.json` — global search + replace; fix all `metaDescription` values too |
+| VD8 | Rewrite `about` page content in `en.json` to be collectibles-specific (Pokémon TCG, Hot Wheels, Beyblades, anime figures) — not generic marketplace boilerplate |
+| VD9 | Expand `becomeSeller` (9 keys → ~25) + rewrite `sellerGuide` to be collectibles-specific (card grading, vintage diecast photography, pricing sealed ETBs) |
+| VD10 | Expand legal policy content in `en.json`: `terms` (add India IT Act + Consumer Protection Act, collectibles-specific rules), `privacy` (DPDP Act 2023), `cookies` (categorised opt-out), `refundPolicy` (sealed/graded/auction/pre-order rules) |
 
 ### Tier R — CRUD Table UX Standard
 | # | Task |
@@ -262,6 +280,24 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 | X4 | Responsive + themed CRUD forms — global checklist (375px / 768px / dark mode / tokens) |
 | X5 | Replace skeleton `loading.tsx` files with `PageLoader` component + 15s timeout/error |
 | X6 | Media filename slug convention — pass resource slug to `generateMediaFilename()` in all upload handlers |
+| X7a | Extend CSS token system — add missing semantic palette tokens (emerald/amber/rose/sky/purple/teal/green/slate) + social brand color tokens to `globals.css` / appkit tokens |
+| X7b | Replace all hardcoded color violations — 759 hex occurrences in 60 CSS files + 13 TSX inline-style files + `DevToolbar.tsx` |
+| X8a | Extend Tailwind config + appkit tokens for layout utilities — breakpoint aliases (`@screen md`), z-index CSS vars (`--appkit-z-modal` etc.), component size tokens (`--appkit-size-input-md`), grid min tokens, shadow vars, typography vars |
+| X8b | Replace all hardcoded layout violations — 60+ raw `@media` px queries, 30 z-index integers, 106+ hardcoded px heights, 63 raw box-shadows, 18 grid minmax px, 9 font-size: 10px, 13 line-height/letter-spacing raw values |
+
+### Tier HS — Homepage Sections CMS
+| # | Task |
+|---|------|
+| HS1 | Extend section schemas — add `custom-cards` + `google-reviews` types; enhance resource configs with `sortBy`/`filterByCategory`/`maxCount`/`loop`; add Google API credentials to SiteSettings; fix `carousel` in POST validation |
+| HS2 | Complete all 11 missing admin section builders (welcome, trust-indicators, categories, brands, banner, features, reviews, whatsapp-community, faq, blog-articles, newsletter) — proper forms, no JSON editor, all image fields use `MediaUploadField` |
+| HS3 | Enhance 7 existing resource builders (products/auctions/pre-orders/stores/events/reviews/social-feed) — add sort/filter/count/loop; fix New Section modal (type-selector grid); `useToast` + `UnsavedChangesModal` |
+| HS4 | Google Business Reviews — API proxy route (`/api/social-feed/google-reviews`), `GoogleReviewsSection` RSC, builder form, credentials in VA8 ⑧Integrations |
+| HS5 | Custom Cards section — `CustomCardsSection` component (grid/row/masonry layouts, image+text+buttons+form embed per card, auto-scroll), builder form in AdminSectionsView |
+
+### Tier CF — Carousel & Feed
+| # | Task |
+|---|------|
+| CF1 | Hero Carousel full redesign — schema (`background`/`zone`/`settings`/`hover`), component (full-height, 4 bg types, configurable hover, per-slide autoplay delay, no blur), admin list (drag-reorder + RowActionMenu), admin editor form (zone picker UI, 4-tab bg, cards 0–2, button repeater, live preview), API routes (GET/POST/PUT/DELETE/reorder) |
 
 ### Tier S — Social Media Feed Sections
 | # | Task |
@@ -271,6 +307,20 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 | S3 | Admin sections builder for `social-feed` type in `AdminSectionsView` |
 | S4 | Site settings credentials — TikTok + DeviantArt fields; expose in VA8 ⑧Integrations |
 | S5 | Seed data — disabled sample `social-feed` section in homepage sections seed |
+
+### Tier GP — Grouped Listings *(standard products + pre-orders only; depth = 1)*
+| # | Task |
+|---|------|
+| GP1 | Schema (`groupId`, `isGroupParent`, `groupParentSlug`, `groupChildSlugs`, `groupTitle` on `ProductDocument`) + `ShowGroupSection` component — parent view shows children row, child view shows parent + siblings row; both collapsible; wired into `belowFold` |
+| GP2 | Edit-screen "Group settings" panel — 3 states (not in group / is parent / is child); parent state has "Add child" modal with 2 tabs: (1) minimal create-new form (title, slug, price, condition, images — rest inherited read-only), (2) link-existing searchable dropdown; "Dissolve group" + "Leave group" actions; all writes atomic batch |
+
+### Tier SC — Sub-listing Categories *(all listing types: products, auctions, pre-orders)*
+| # | Task |
+|---|------|
+| SC1 | `sublisting_categories` Firestore collection + `SublistingCategoryDocument` schema + `SublistingCategoriesRepository` + `sublistingCategoryId` field on `ProductDocument` + admin + public API routes |
+| SC2 | Admin CRUD — `AdminSublistingCategoriesView` list + `AdminSublistingCategoryEditorView` form; routes `/admin/sublisting-categories` + add to admin sidebar |
+| SC3 | `sublistingCategoryId` `DynamicSelect` on all listing forms (sole linking mechanism, works like category field, inline-create supported) + `SublistingCarouselSection` collapsible component on all detail page `belowFold` slots |
+| SC4 | Public page `src/app/[locale]/sublisting-categories/[slug]/page.tsx` — category header + paginated listing grid + `generateMetadata` + `ROUTES.PUBLIC.SUBLISTING_CATEGORIES` constant |
 
 ---
 
@@ -285,6 +335,24 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 - If a **page has no data** — render a sensible empty state (`EmptyState` component), not a blank white screen or thrown error.
 - **Spelling/naming changes** (e.g., renaming a prop or event key) are applied in one atomic commit covering both producer and consumer. Never leave a half-renamed codebase.
 - **Schema breaks are acceptable** (TypeScript will catch them) — fix them before committing. UI runtime breaks are not.
+
+### No JSON config editors for users
+- **Admin forms must always be proper form UI** — inputs, selects, toggles, repeaters, media pickers. Never expose a raw JSON textarea or a `<pre>` of config to the user.
+- Configs are saved as structured Firestore documents internally — that's fine. But the UI layer that produces them must be a real form.
+- If a section type has no builder yet, show a "Builder coming soon" placeholder — not a JSON textarea.
+- All image/media fields in admin forms use `MediaUploadField` (existing component at `appkit/src/features/media/upload/MediaUploadField.tsx`) — never a plain URL text input.
+
+### Content must be LetiTrip-specific
+- **Brand name is "LetiTrip"** (capital L, lowercase i, capital T) — never "LetItRip", "Letitrip", "letItRip". Run a grep after every content update to verify.
+- **No generic marketplace boilerplate** — every public page must reference the actual collectibles niche: Pokémon TCG, Yu-Gi-Oh!, Hot Wheels, Beyblades, anime/action figures, or the real brand names (Bandai, Mattel, Konami, etc.).
+- **No empty `sections[]` arrays** in en.json — if a policy or how-to section exists in the schema, it must have real content.
+- **Translation keys that say "coming soon"** are only acceptable for features gated behind a feature flag. Static page content must never say "coming soon" as a permanent placeholder.
+
+### No hardcoded colors or layout values
+- **Never use `#hex`, `rgb()`, or `rgba()` in component CSS files or inline `style={}` props.** All colors via `var(--appkit-color-*)` or Tailwind semantic tokens. Social brand colors: `var(--appkit-color-instagram)` etc.
+- **Never use raw pixel values for breakpoints, z-index, spacing, font sizes, border-radius, or shadows** in component CSS files or `style={}` props. Use: `@screen md {}`, `var(--appkit-z-modal)`, `var(--appkit-size-input-md)`, `var(--appkit-shadow-lg)`, `var(--appkit-font-size-2xs)`, `var(--appkit-grid-min-card)`.
+- Token definition files (`globals.css`, `tokens.css`, `tailwind.config.ts`) and SVG assets are the only exceptions.
+- Tailwind arbitrary syntax (`bg-[#ff0000]`, `p-[44px]`, `z-[50]`, `text-[10px]`) is banned — use a named token class.
 
 ### Reusability rule
 - **Before building any new component**, search appkit for an existing one that can be extended. Prefer enhancing over duplicating.
@@ -324,6 +392,7 @@ Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
 | Ad slot | `ads` | `ad-` | `ad-after-hero-homepage` |
 | Payout | `payouts` | `payout-` | `payout-store-cardgame-001` |
 | Address | subcollection | `addr-` | `addr-ravi-home` |
+| Sub-listing category | `sublisting_categories` | `sublisting-` | `sublisting-base-set-charizard-108-120` |
 
 ---
 

@@ -53,9 +53,9 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-6 py-8 text-center space-y-2">
-        <p className="text-lg font-semibold text-green-800 dark:text-green-300">Vote recorded!</p>
-        <p className="text-sm text-green-700 dark:text-green-400">
+      <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-6 py-8 text-center space-y-2">
+        <p className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Vote recorded!</p>
+        <p className="text-sm text-emerald-700 dark:text-emerald-400">
           Thank you for participating. Results will be shown after the poll closes.
         </p>
       </div>

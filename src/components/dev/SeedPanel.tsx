@@ -161,16 +161,16 @@ export function SeedPanel() {
           disabled={isPending}
           label={
             <Div className="flex items-center gap-1.5 min-w-0">
-              <Text className="text-sm text-gray-800 dark:text-slate-200 leading-snug truncate">
+              <Text className="text-sm text-zinc-800 dark:text-slate-200 leading-snug truncate">
                 {collectionLabel[col] ?? col}
               </Text>
               {isLoadingStatus ? (
-                <Text className="text-[0.65rem] text-gray-400 shrink-0">…</Text>
+                <Text className="text-[0.65rem] text-zinc-400 shrink-0">…</Text>
               ) : st ? (
                 <Text
                   className={`text-[0.65rem] font-mono shrink-0 px-1 rounded ${
                     allSeeded
-                      ? "text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30"
+                      ? "text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30"
                       : noneSeeded
                       ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30"
                       : "text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30"
@@ -277,8 +277,7 @@ export function SeedPanel() {
           role="dialog"
           aria-modal="true"
           aria-label={loadingMessage || "Loading…"}
-          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center ${THEME_CONSTANTS.spacing.gap.md}`}
-          style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
+          className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/65 backdrop-blur ${THEME_CONSTANTS.spacing.gap.md}`}
         >
           <Spinner size="xl" variant="pokeball" label={loadingMessage || "Loading…"} />
           <Div className="text-center px-6">
@@ -300,7 +299,7 @@ export function SeedPanel() {
         </div>
       )}
 
-      <Section className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-[#1a1a2e] dark:via-[#16213e] dark:to-[#0f3460] text-gray-900 dark:text-white py-8">
+      <Section className="min-h-screen bg-white dark:bg-slate-950 text-zinc-900 dark:text-white py-8">
       <Container size="2xl">
         <Stack gap="lg">
 
@@ -310,18 +309,18 @@ export function SeedPanel() {
             <Heading level={1} className="text-amber-600 dark:text-amber-400 text-3xl font-extrabold">
               LetItRip Demo Seed
             </Heading>
-            <Text className="text-gray-700 dark:text-slate-300">
+            <Text className="text-zinc-700 dark:text-slate-300">
               Dev seed tool — builder pattern with collection selection
             </Text>
             <Badge variant="danger">DEV ONLY — Not available in production</Badge>
           </Stack>
 
           {/* Collection Builder */}
-          <Div className="rounded-xl p-6 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+          <Div className="rounded-xl p-6 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10">
             <Stack gap="md">
               <Stack gap="sm">
                 <Row justify="between" className="items-center">
-                  <Heading level={2} className="text-lg font-bold text-gray-900 dark:text-white mt-0">
+                  <Heading level={2} className="text-lg font-bold text-zinc-900 dark:text-white mt-0">
                     📋 Select Collections to Seed
                   </Heading>
                   <Row gap="sm">
@@ -334,14 +333,14 @@ export function SeedPanel() {
                   </Row>
                 </Row>
                 <Div className="flex flex-wrap gap-3 items-center">
-                  <Text className="text-xs text-gray-600 dark:text-slate-300">
+                  <Text className="text-xs text-zinc-600 dark:text-slate-300">
                     {selectedCollections.size} of {ALL_COLLECTIONS.length} selected
                     {selectedCollections.size === DEFAULT_SELECTED.length && selectedCollections.size < ALL_COLLECTIONS.length
                       ? " (system excluded by default)"
                       : ""}
                   </Text>
                   {status.length > 0 && (
-                    <Text className="text-xs font-mono text-gray-500 dark:text-slate-400">
+                    <Text className="text-xs font-mono text-zinc-500 dark:text-slate-400">
                       DB:{" "}
                       {(() => {
                         const seeded = status.reduce((a, s) => a + s.existingCount, 0);
@@ -349,7 +348,7 @@ export function SeedPanel() {
                         const pct = total > 0 ? Math.round((seeded / total) * 100) : 0;
                         const allDone = seeded >= total;
                         return (
-                          <span className={allDone ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}>
+                          <span className={allDone ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}>
                             {seeded}/{total} docs ({pct}% seeded)
                           </span>
                         );
@@ -361,7 +360,7 @@ export function SeedPanel() {
 
               {/* Core Collections */}
               <Stack gap="sm">
-                <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
+                <Text className="font-semibold text-sm text-zinc-800 dark:text-slate-200">
                   🗂️ Core — users, stores, categories, products, addresses
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
@@ -371,7 +370,7 @@ export function SeedPanel() {
 
               {/* Transactional Collections */}
               <Stack gap="sm">
-                <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
+                <Text className="font-semibold text-sm text-zinc-800 dark:text-slate-200">
                   🛒 Transactional — orders, bids, carts, wishlists, coupons, reviews, payouts
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
@@ -381,7 +380,7 @@ export function SeedPanel() {
 
               {/* Content Collections */}
               <Stack gap="sm">
-                <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
+                <Text className="font-semibold text-sm text-zinc-800 dark:text-slate-200">
                   📣 Content — blog, events, carousel, homepage, FAQs
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
@@ -391,7 +390,7 @@ export function SeedPanel() {
 
               {/* System Collections */}
               <Stack gap="sm">
-                <Text className="font-semibold text-sm text-gray-800 dark:text-slate-200">
+                <Text className="font-semibold text-sm text-zinc-800 dark:text-slate-200">
                   ⚙️ System — notifications, sessions, site settings, store addresses
                 </Text>
                 <Grid cols={2} gap="sm" className={THEME_CONSTANTS.grid.cols3}>
@@ -406,7 +405,7 @@ export function SeedPanel() {
             <Row justify="center" className={`flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}>
               <Checkbox
                 label={
-                  <Text className="text-sm text-gray-800 dark:text-slate-200">
+                  <Text className="text-sm text-zinc-800 dark:text-slate-200">
                     Dry Run (preview only)
                   </Text>
                 }
@@ -450,8 +449,8 @@ export function SeedPanel() {
           {/* Result with Credentials */}
           {result && (
             <Container size="lg">
-              <Stack gap="sm" className="rounded-xl p-4 bg-green-100 dark:bg-green-500/10 border border-green-300 dark:border-green-500">
-                <Text className="font-bold text-green-700 dark:text-green-300">
+              <Stack gap="sm" className="rounded-xl p-4 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500">
+                <Text className="font-bold text-emerald-700 dark:text-emerald-300">
                   ✅ {result.success
                     ? result.details?.dryRun ? "Dry Run Complete" : "Success"
                     : "Completed with errors"}
@@ -459,38 +458,38 @@ export function SeedPanel() {
 
                 {/* Seeded Users - Credentials */}
                 {seededUsers.length > 0 && !result.details?.dryRun && (
-                  <Stack gap="sm" className="mt-4 p-4 bg-white dark:bg-slate-900/50 rounded-lg border border-green-200 dark:border-green-600/50">
-                    <Heading level={3} className="text-base font-bold text-gray-900 dark:text-white mt-0">
+                  <Stack gap="sm" className="mt-4 p-4 bg-white dark:bg-slate-900/50 rounded-lg border border-emerald-200 dark:border-emerald-600/50">
+                    <Heading level={3} className="text-base font-bold text-zinc-900 dark:text-white mt-0">
                       👥 Generated User Credentials
                     </Heading>
-                    <Text className="text-sm text-gray-600 dark:text-slate-300 mb-2">
+                    <Text className="text-sm text-zinc-600 dark:text-slate-300 mb-2">
                       Copy these credentials to test different roles:
                     </Text>
                     <Stack gap="xs">
                       {seededUsers.map((user, idx) => (
                         <Div
                           key={idx}
-                          className="p-3 bg-gray-50 dark:bg-slate-800 rounded border border-gray-200 dark:border-slate-700 font-mono text-xs"
+                          className="p-3 bg-zinc-50 dark:bg-slate-800 rounded border border-zinc-200 dark:border-slate-700 font-mono text-xs"
                         >
                           <Stack gap="xs" className="space-y-0.5">
                             <Row justify="between" className="items-start">
-                              <Text className="text-gray-600 dark:text-slate-400">Email:</Text>
-                              <Text className="text-gray-900 dark:text-white font-semibold">{user.email}</Text>
+                              <Text className="text-zinc-600 dark:text-slate-400">Email:</Text>
+                              <Text className="text-zinc-900 dark:text-white font-semibold">{user.email}</Text>
                             </Row>
                             <Row justify="between" className="items-start">
-                              <Text className="text-gray-600 dark:text-slate-400">Password:</Text>
-                              <Text className="text-gray-900 dark:text-white font-semibold select-all">{user.password}</Text>
+                              <Text className="text-zinc-600 dark:text-slate-400">Password:</Text>
+                              <Text className="text-zinc-900 dark:text-white font-semibold select-all">{user.password}</Text>
                             </Row>
                             <Row justify="between" className="items-start">
-                              <Text className="text-gray-600 dark:text-slate-400">Role:</Text>
+                              <Text className="text-zinc-600 dark:text-slate-400">Role:</Text>
                               <Badge variant={user.role === "admin" ? "danger" : user.role === "seller" ? "warning" : "success"}>
                                 {user.role.toUpperCase()}
                               </Badge>
                             </Row>
                             {user.userId && (
                               <Row justify="between" className="items-start">
-                                <Text className="text-gray-600 dark:text-slate-400">User ID:</Text>
-                                <Text className="text-gray-900 dark:text-white text-[0.7rem] truncate">{user.userId}</Text>
+                                <Text className="text-zinc-600 dark:text-slate-400">User ID:</Text>
+                                <Text className="text-zinc-900 dark:text-white text-[0.7rem] truncate">{user.userId}</Text>
                               </Row>
                             )}
                           </Stack>
@@ -503,9 +502,9 @@ export function SeedPanel() {
                 {/* Collection Plans */}
                 {result.details?.collectionPlans && (
                   <Stack gap="xs">
-                    <Text className="font-semibold text-green-700 dark:text-green-300">Collection Plans:</Text>
+                    <Text className="font-semibold text-emerald-700 dark:text-emerald-300">Collection Plans:</Text>
                     {result.details.collectionPlans.map((plan) => (
-                      <Text key={plan.name} className="text-xs text-green-600 dark:text-green-400">
+                      <Text key={plan.name} className="text-xs text-emerald-600 dark:text-emerald-400">
                         <strong>{plan.name}</strong>: seed={plan.seedCount}, existing={plan.existingCount}, wouldCreate={plan.wouldCreate ?? 0}, wouldDelete={plan.wouldDelete ?? 0}, wouldSkip={plan.wouldSkip ?? 0}
                       </Text>
                     ))}
@@ -513,11 +512,11 @@ export function SeedPanel() {
                 )}
 
                 {/* Full Result JSON */}
-                <details className="mt-4 p-3 bg-gray-50 dark:bg-slate-800 rounded border border-gray-200 dark:border-slate-700">
-                  <summary className="font-semibold text-gray-700 dark:text-slate-300 cursor-pointer hover:text-gray-900 dark:hover:text-white">
+                <details className="mt-4 p-3 bg-zinc-50 dark:bg-slate-800 rounded border border-zinc-200 dark:border-slate-700">
+                  <summary className="font-semibold text-zinc-700 dark:text-slate-300 cursor-pointer hover:text-zinc-900 dark:hover:text-white">
                     📄 Full Response JSON
                   </summary>
-                  <pre className="text-xs text-gray-600 dark:text-slate-400 whitespace-pre-wrap break-words m-2 max-h-64 overflow-auto">
+                  <pre className="text-xs text-zinc-600 dark:text-slate-400 whitespace-pre-wrap break-words m-2 max-h-64 overflow-auto">
                     {JSON.stringify(result, null, 2)}
                   </pre>
                 </details>
@@ -526,29 +525,29 @@ export function SeedPanel() {
           )}
 
           {/* What Gets Seeded */}
-          <Stack gap="sm" className="rounded-xl p-6 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10">
+          <Stack gap="sm" className="rounded-xl p-6 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
             <Heading level={3} className="text-amber-600 dark:text-amber-400 mt-0">📦 What Gets Seeded</Heading>
-            <Stack gap="xs" className="text-gray-700 dark:text-slate-400 leading-loose text-sm">
+            <Stack gap="xs" className="text-zinc-700 dark:text-slate-400 leading-loose text-sm">
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">7 Franchises</strong> — Pokémon TCG, Hot Wheels, Beyblade Burst, Transformers, Anime Figures, Retro Gaming, and Cosplay Accessories — each with dedicated stores, products, and reviews.
+                <strong className="text-zinc-900 dark:text-slate-200">7 Franchises</strong> — Pokémon TCG, Hot Wheels, Beyblade Burst, Transformers, Anime Figures, Retro Gaming, and Cosplay Accessories — each with dedicated stores, products, and reviews.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">8 Stores</strong> — Misty's Water Cards, Surge's Electric Emporium, Blaine's Fire Shoppe, Speed King Diecast, Bladers' Paradise, Anime Vault India, Retro Vault India, and Cosplay India Hub — each with products, reviews, and payout history.
+                <strong className="text-zinc-900 dark:text-slate-200">8 Stores</strong> — Misty's Water Cards, Surge's Electric Emporium, Blaine's Fire Shoppe, Speed King Diecast, Bladers' Paradise, Anime Vault India, Retro Vault India, and Cosplay India Hub — each with products, reviews, and payout history.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">Live Auctions & Pre-orders</strong> — Active auction listings with bids, pre-order products, and out-of-stock/discontinued items for full lifecycle coverage.
+                <strong className="text-zinc-900 dark:text-slate-200">Live Auctions & Pre-orders</strong> — Active auction listings with bids, pre-order products, and out-of-stock/discontinued items for full lifecycle coverage.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">Wishlist + Promotions Coverage</strong> — Seeded wishlist items, promoted products, featured products, active coupons, and homepage-linked merchandising flows.
+                <strong className="text-zinc-900 dark:text-slate-200">Wishlist + Promotions Coverage</strong> — Seeded wishlist items, promoted products, featured products, active coupons, and homepage-linked merchandising flows.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">Admin Ads Coverage</strong> — Site settings include ad placements, consent gating, and sample ad inventory for homepage, listings, and search slots.
+                <strong className="text-zinc-900 dark:text-slate-200">Admin Ads Coverage</strong> — Site settings include ad placements, consent gating, and sample ad inventory for homepage, listings, and search slots.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">Role-Based Credentials</strong> — Admin, seller, and buyer accounts are created and credentials are shown after seeding.
+                <strong className="text-zinc-900 dark:text-slate-200">Role-Based Credentials</strong> — Admin, seller, and buyer accounts are created and credentials are shown after seeding.
               </Text>
               <Text>
-                <strong className="text-gray-900 dark:text-slate-200">Builder Pattern + Dry Run</strong> — Select exactly which collections to seed; preview plans without writing to the database.
+                <strong className="text-zinc-900 dark:text-slate-200">Builder Pattern + Dry Run</strong> — Select exactly which collections to seed; preview plans without writing to the database.
               </Text>
             </Stack>
           </Stack>

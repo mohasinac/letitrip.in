@@ -348,7 +348,7 @@ export function CartRouteClient() {
                     .map((c) => (
                       <span
                         key={c.code}
-                        className="rounded bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-300"
+                        className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
                       >
                         {c.code}
                       </span>
@@ -410,10 +410,10 @@ export function CartRouteClient() {
               {/* Per-coupon discount rows */}
               {effectiveCoupons.map((c) => (
                 <Div key={c.code} className="flex items-center justify-between">
-                  <Text className="text-sm text-green-600 dark:text-green-400">
+                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
                     {c.code}{c.scope === "seller" ? " (seller)" : ""}
                   </Text>
-                  <Text className="text-sm text-green-600 dark:text-green-400">
+                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
                     &minus;₹{c.discountAmount.toFixed(2)}
                   </Text>
                 </Div>
@@ -425,9 +425,9 @@ export function CartRouteClient() {
                   {effectiveCoupons.map((c) => (
                     <Div
                       key={c.code}
-                      className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 px-3 py-2"
+                      className="flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-900/20 px-3 py-2"
                     >
-                      <Text className="text-xs font-medium text-green-700 dark:text-green-300">
+                      <Text className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                         {c.code}{c.scope === "seller" ? " — this seller" : ""}
                       </Text>
                       <button
@@ -477,7 +477,7 @@ export function CartRouteClient() {
                   <Text className="text-sm text-zinc-500 dark:text-zinc-400">
                     Total discount ({effectiveCoupons.length} coupon{effectiveCoupons.length !== 1 ? "s" : ""})
                   </Text>
-                  <Text className="text-sm text-green-600 dark:text-green-400">
+                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
                     &minus;₹{totalDiscount.toFixed(2)}
                   </Text>
                 </Div>

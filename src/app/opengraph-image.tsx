@@ -19,7 +19,7 @@ export default function OpengraphImage() {
         alignItems: "center",
         justifyContent: "center",
         background:
-          "linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%)",
+          "linear-gradient(135deg, #3570fc 0%, #65c408 50%, #e91e8c 100%)",
         fontFamily: "sans-serif",
         position: "relative",
         overflow: "hidden",

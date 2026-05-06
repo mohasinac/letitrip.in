@@ -41,7 +41,7 @@
   }
 
   /* Heading refinements */
-  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.02em; line-height: 1.15; }
+  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.02em; line-height: 1.1; }
   p { line-height: 1.7; }
 
   /* Cursive font mode */
@@ -59,16 +59,15 @@
     letter-spacing: -0.01em;
   }
 
-  /* Selection color */
+  /* Selection color — use theme primary so it doesn't clash with slide backgrounds */
   ::selection {
-    background-color: rgba(101, 196, 8, 0.30);
-    color: theme(colors.zinc.900);
+    background-color: rgba(53, 112, 252, 0.22); /* cobalt blue, light mode */
+    color: inherit;
   }
 
-  /* Dark mode: lime-green at 25% on near-black is near-invisible; use higher opacity + light text */
   .dark ::selection {
-    background-color: rgba(101, 196, 8, 0.45);
-    color: theme(colors.zinc.50);
+    background-color: rgba(233, 30, 140, 0.28); /* hot pink, dark mode */
+    color: inherit;
   }
 
   /* Remove extra spacing from root */
