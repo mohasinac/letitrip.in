@@ -8,44 +8,29 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-> **33 done, 149 remaining.** See `crud-tracker.md` for full detail on every task.
+> **38 done, 144 remaining.** See `crud-tracker.md` for full detail on every task.
 
-### Session 62 — Listings seed (P16 → P17 → P18, in strict order)
+### Session 64 — Infrastructure (E3+E4, H1, I4, I8, I5, SL4, E6, in order)
 
-| Task | What to do | Key file |
-|------|------------|----------|
-| **P16** | Standard products seed — 20 items across 5 stores | `appkit/src/seed/products-standard-seed-data.ts` (NEW) |
-| **P17** | Auctions seed — 6 auctions (all states) + bids file | `appkit/src/seed/products-auctions-seed-data.ts` (NEW) + `bids-seed-data.ts` (NEW) |
-| **P18** | Pre-orders seed — 5 pre-orders (active/upcoming/soldOut) | `appkit/src/seed/products-preorders-seed-data.ts` (NEW) |
+| Task | What to do | Key files |
+|------|------------|-----------|
+| **E3+E4** | Field-name constants + unified `API_ROUTES` object | `appkit/src/constants/` (new or extend) |
+| **H1** | `InlineCreateSelect` component — create-on-the-fly dropdown | `appkit/src/ui/InlineCreateSelect/` |
+| **I4** | `MediaPickerModal` — pick existing media from Firebase Storage | `appkit/src/ui/MediaPickerModal/` |
+| **I8** | YouTube embed support in media fields | `appkit/src/features/media/` |
+| **I5** | `MediaUploadField` audit — ensure all upload fields use proxy URL | grep for raw Firebase Storage URLs |
+| **SL4** | `generateMetadata` + full social share preview for all page types | all `app/**/page.tsx` files |
+| **E6** | `/support` page | `src/app/(public)/support/page.tsx` |
 
-**Critical:** Read `ProductDocument` schema (`appkit/src/features/products/schemas/firestore.ts`) before writing any product. Use exact field names from schema. The schema uses `category` (not `categorySlug`), `brand` (not `brandSlug`), `featured` (not `isFeatured`), `specifications: ProductSpecification[]` (not `customFields`). Condition values: `"new" | "used" | "refurbished" | "broken" | "graded"` (no `"sealed"`).
+**Critical pre-work:** Run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/` before starting. Must be 0 errors.
 
-**Store → seller mapping** (from P15 seed data):
-- `store-pokemon-palace` → sellerId: `user-aryan-kapoor`, sellerName: "Aryan Kapoor", sellerEmail: "aryan@pokemonpalace.in"
-- `store-cardgame-hub` → sellerId: `user-nisha-reddy`, sellerName: "Nisha Reddy", sellerEmail: "nisha@cardgamehub.in"
-- `store-diecast-depot` → sellerId: `user-vikram-mehta`, sellerName: "Vikram Mehta", sellerEmail: "vikram@diecastdepot.in"
-- `store-beyblade-arena` → sellerId: `user-rohit-joshi`, sellerName: "Rohit Joshi", sellerEmail: "rohit@beyladearena.in"
-- `store-letitrip-official` → sellerId: `user-admin-letitrip`, sellerName: "LetItRip Admin", sellerEmail: "admin@letitrip.in"
+**Seed data complete as of Session 63** — P11–P22 + P10 all done. All seed imports in `src/app/api/demo/seed/route.ts` use correct names. Appkit dist rebuilt and up to date.
 
-### Seed priority (Sessions 61–63 — after Session 60 complete)
+### Completed seed block (Sessions 61–63 — all done)
 
-**⚠️ CRITICAL: The existing seed data is COMPLETELY WRONG and must be replaced.**
-
-Current state of `appkit/src/seed/`:
-- Categories: generic e-commerce (Electronics, Fashion, Sports, Books) — ZERO of the 6 required collectibles categories exist
-- Brands: brand-lego, brand-marvel, brand-naruto, brand-dc, brand-star-wars — wrong content, wrong schema (missing `country`, `founded`, `websiteUrl` fields)
-- Products: reference semantically wrong categories (anime figures under audio-electronics)
-- Files: stale `pokemon-*` prefixed files need deletion
-
-**Session 61** — Seed foundation (follow P11–P15 spec exactly from crud-tracker.md):
-P11 (file restructure + delete stale files + manifest) → P12 (site settings 12-group full config) → P13 (13 real brands) → P14 (22 collectibles categories) → P15 (9 users + 5 stores)
-
-**Session 62** — Listings seed (P16–P18): 20 standard products → 6 auctions + bids → 5 pre-orders
-
-**Session 63** — Content + system seed (P19–P22, P10): 8 blog posts + 6 events + 20 FAQs → reviews + orders → coupons + notifications → carousel (6 slides) + all 19 homepage sections → SeedPanel overhaul
-
-> **Seed dependency order (strict):** P11 → P12 → P13 → P14 → P15 → P16 → P17 → P18 → P19 → P21 → P22 → P20 → P10
-> P20 (carousel seed) runs AFTER P16–P18 so it can reference real product slugs in section configs. P10 (SeedPanel) runs last so the manifest from P11 is ready.
+- **Session 61** — P11 (manifest + file restructure) → P12 (site settings) → P13 (13 brands) → P14 (22 categories) → P15 (9 users + 5 stores)
+- **Session 62** — P16 (20 standard products) → P17 (6 auctions + bids) → P18 (5 pre-orders)
+- **Session 63** — P19 (8 blog posts + 6 events + 20 FAQs) → P21 (15 reviews + 10 orders) → P22 (5 coupons + 10 notifications) → P20 (6 carousel slides + 19 homepage sections) → P10 (SeedPanel imports fixed + brands in CORE_COLLECTIONS)
 
 > **Seed-first strategy**: P11–P22 must be complete before any feature work. Seed data gives 100% feature coverage so every task can be verified against real data immediately. P10 (SeedPanel overhaul) runs last within the seed block so SEED_MANIFEST from P11 is ready.
 > **Collectibles focus**: Seed data covers 5 verticals — Pokémon TCG, Yu-Gi-Oh!, Hot Wheels/diecast, anime/action figures (Bandai/Good Smile/Funko), and Beyblades. 13 real brands (`brand-bandai`, `brand-hasbro`, `brand-takara-tomy`, `brand-mattel`, `brand-pokemon-company`, `brand-konami`, `brand-funko`, `brand-neca`, `brand-mcfarlane`, `brand-good-smile`, `brand-hot-wheels`, `brand-tomica`, `brand-beyblade`), 22 categories in 3-tier collectibles hierarchy, 20 standard products, 6 auctions, 5 pre-orders, 5 stores. Image sources: Wikimedia Commons, official brand sites, Unsplash, YouTube unboxing IDs.

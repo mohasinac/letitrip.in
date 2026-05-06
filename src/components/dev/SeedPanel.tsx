@@ -31,6 +31,7 @@ const CORE_COLLECTIONS: SeedCollectionName[] = [
   "users",
   "addresses",
   "stores",
+  "brands",
   "categories",
   "products",
 ];
