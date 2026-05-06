@@ -4,6 +4,7 @@ import {
 } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { EventDetailClient } from "./EventDetailClient";
 
 export const revalidate = 60;
@@ -16,10 +17,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const event = await getPublicEventById(id).catch(() => null);
   if (!event) return { title: "Event Not Found" };
-  return {
-    title: event.title,
-    description: event.description?.slice(0, 155),
-  };
+  const e = event as unknown as Record<string, unknown>;
+  const coverImage =
+    typeof e.imageUrl === "string" ? e.imageUrl
+    : typeof e.bannerImage === "string" ? e.bannerImage
+    : undefined;
+  return _gm({
+    title: `${event.title} — LetiTrip Events`,
+    description: (typeof event.description === "string" ? event.description : "").slice(0, 155) ||
+      `Join ${event.title} on LetiTrip.`,
+    image: coverImage,
+    path: `/events/${id}`,
+    type: "article",
+  });
 }
 
 const TYPE_BADGE: Record<string, string> = {

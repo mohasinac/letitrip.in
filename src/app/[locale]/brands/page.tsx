@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { Container, Heading, Main, Section, CategoriesIndexListing } from "@mohasinac/appkit";
+import { generateMetadata as _gm } from "@/constants/seo.server";
+
+export const metadata: Metadata = _gm({
+  title: "Collectibles Brands — LetiTrip",
+  description:
+    "Shop by brand: Bandai, Mattel, Pokémon Company, Konami, Funko, NECA, Good Smile, Takara Tomy and more on LetiTrip.",
+  path: "/brands",
+  keywords: ["bandai india", "pokemon company", "funko india", "good smile india", "mattel india", "collectibles brands"],
+});
 
 export const revalidate = 300;
 

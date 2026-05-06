@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { ProductsIndexPageView } from "@mohasinac/appkit";
+import { generateMetadata as _gm } from "@/constants/seo.server";
+
+export const metadata: Metadata = _gm({
+  title: "Collectibles for Sale — LetiTrip",
+  description:
+    "Shop Pokémon cards, Hot Wheels diecast, anime figures, Beyblades and more. New arrivals daily on LetiTrip.",
+  path: "/products",
+  keywords: ["pokemon cards", "hot wheels", "anime figures", "beyblades", "collectibles india"],
+});
 
 export const revalidate = 120;
 
