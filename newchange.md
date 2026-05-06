@@ -24,7 +24,35 @@
 
 ---
 
-# Change Log — Session 67 (continued) — 2026-05-07 (Latest)
+# Change Log — Session 68 — 2026-05-07 (Latest)
+
+## Listing toggles (Show Sold / Show Ended / Show Closed) + sort cleanup + auction winner masking
+
+### What changed
+
+| What | File |
+|------|------|
+| **Products**: `showSold` toggle in toolbar; default passes `status=published` (hides sold items); toggle ON removes status filter | `appkit/src/features/products/components/ProductsIndexListing.tsx` |
+| **Auctions**: `showEnded` toggle in toolbar; default passes `dateFrom=now` so only `auctionEndDate >= now` (live auctions); toggle ON removes dateFrom constraint | `appkit/src/features/products/components/AuctionsIndexListing.tsx` |
+| **Pre-orders**: `showClosed` toggle in toolbar; default passes `status=published` (hides archived/closed); toggle ON removes status filter | `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` |
+| **Auction sort options** replaced with symmetric pairs: Ending Soonest/Latest, Bid Low–High/High–Low, Newly Listed/Oldest Listed | `appkit/src/features/products/components/AuctionsIndexListing.tsx` |
+| **Pre-order sort options** extended: Oldest First + Delivery Furthest added | `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` |
+| **Product public sort options** extended: Oldest First + Title Z–A added | `appkit/src/features/products/components/ProductFilters.tsx` |
+| **Auction card**: "Current bid" → "Winning bid" when `isEnded && hasCurrentBid`; optional masked `winnerDisplayName` shown below winning bid | `appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx` |
+| `winningBid` + `wonBy` labels; `maskDisplayName()` util; `winnerDisplayName?` field on card data | `appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx` |
+| `winnerDisplayName?: string` added to `ProductItem` | `appkit/src/features/products/types/index.ts` |
+
+### Notes
+- `winnerDisplayName` UI wired but data not yet populated — requires repo to denormalize winning bidder name onto product document. Deferred.
+- Toggles live in toolbar `extra` slot (same row as sort dropdown), not the filter drawer.
+- Auction "ended" is time-based (`auctionEndDate >= now`), matching card-level countdown logic.
+
+### TypeScript
+`npx tsc --noEmit` → 0 errors in both `appkit/` and `letitrip.in/`.
+
+---
+
+# Change Log — Session 67 (continued) — 2026-05-07
 
 ## React Query SSR hydration fix — staleTime across all listing hooks
 

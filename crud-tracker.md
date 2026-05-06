@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-07 — Sessions 66+67 done: HS1+HS2+HS3 ✅ (section schema + 11 builders + resource enhancements); Session 67 hydration fix ✅; HS4+HS5 deferred to Session 67-b. Ready for Session 68 (X2+A1+VA2+I1). 50 done, 149 remaining.
+> **Last updated:** 2026-05-07 — Sessions 66+67 done: HS1+HS2+HS3 ✅ (section schema + 11 builders + resource enhancements); Session 67 hydration fix ✅; HS4+HS5 deferred to Session 67-b. Session 68 (2026-05-07) used for ad-hoc listing UX improvements: symmetric sort options (products/auctions/pre-orders), Show Sold/Show Ended/Show Closed toolbar toggles, auction card "Winning bid" label + `winnerDisplayName` masking — no tracked tasks completed. Planned Session 68 tasks (X2+A1+VA2+I1) remain pending for Session 69. 50 done, 149 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 

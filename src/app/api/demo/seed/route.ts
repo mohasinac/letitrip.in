@@ -501,15 +501,28 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    let totalCreated = 0;
-    let totalDeleted = 0;
-    let totalSkipped = 0;
-    let totalErrors = 0;
-    const processedCollections: string[] = [];
+    // Real execution — stream NDJSON progress events so the client can update
+    // per-collection UI without multiple round-trips.
+    const encoder = new TextEncoder();
+    const total = collectionsToProcess.length;
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        const emit = (data: object) => {
+          try { controller.enqueue(encoder.encode(JSON.stringify(data) + "\n")); } catch { /* closed */ }
+        };
+
+        let totalCreated = 0;
+        let totalDeleted = 0;
+        let totalSkipped = 0;
+        let totalErrors = 0;
+        const processedCollections: string[] = [];
+        let progressDone = 0;
 
     if (action === "load") {
       // Load seed data
       for (const collectionName of collectionsToProcess) {
+        emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
           const firestoreCollection = COLLECTION_MAP[collectionName];
           const seedData = SEED_DATA_MAP[collectionName];
@@ -780,31 +793,20 @@ export async function POST(request: NextRequest) {
           }
 
           processedCollections.push(collectionName);
+          emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
         } catch (err) {
-          serverLogger.error(
-            `Error processing collection ${collectionName}:`,
-            err,
-          );
+          serverLogger.error(`Error processing collection ${collectionName}:`, err);
           totalErrors++;
+          emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
         }
       }
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          message: `Successfully loaded seed data. Created ${totalCreated}, skipped ${totalSkipped} (already exist).`,
-          details: {
-            created: totalCreated,
-            skipped: totalSkipped,
-            errors: totalErrors,
-            collections: processedCollections,
-          },
-        },
-      });
+      emit({ type: "done", success: true, message: `Loaded seed data. Created ${totalCreated}, errors ${totalErrors}.`, totals: { created: totalCreated, skipped: totalSkipped, errors: totalErrors } });
     } else if (action === "delete") {
       // Delete seed data — purge entire collections so stale docs with old IDs
       // (from previous seed runs) are also removed.
       for (const collectionName of collectionsToProcess) {
+        emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
           const firestoreCollection = COLLECTION_MAP[collectionName];
           const seedData = SEED_DATA_MAP[collectionName];
@@ -892,30 +894,30 @@ export async function POST(request: NextRequest) {
           }
 
           processedCollections.push(collectionName);
+          emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
         } catch (err) {
           serverLogger.error(`Error processing collection ${collectionName}`, { error: err instanceof Error ? err.message : String(err) });
           totalErrors++;
+          emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
         }
       }
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          message: `Successfully deleted seed data. Removed ${totalDeleted} documents${totalSkipped > 0 ? `, skipped ${totalSkipped} (not found)` : ""}.`,
-          details: {
-            deleted: totalDeleted,
-            skipped: totalSkipped,
-            errors: totalErrors,
-            collections: processedCollections,
-          },
-        },
-      });
+      emit({ type: "done", success: true, message: `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`, totals: { deleted: totalDeleted, skipped: totalSkipped, errors: totalErrors } });
+    } else {
+      emit({ type: "done", success: false, message: "Invalid action" });
     }
 
-    return NextResponse.json(
-      { success: false, message: "Invalid action" },
-      { status: 400 },
-    );
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "application/x-ndjson",
+        "Cache-Control": "no-cache, no-store",
+        "X-Accel-Buffering": "no",
+      },
+    });
   } catch (error) {
     serverLogger.error("Seed API error:", error);
     return NextResponse.json(
