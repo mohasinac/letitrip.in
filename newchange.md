@@ -11,10 +11,11 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
-| 2026-05-07 | P10 Part A | Per-collection API endpoints (`/api/demo/seed/[collection]/route.ts`) not built — deemed over-engineering. Monolithic route handles per-collection calls correctly. | Intentionally skipped — no plan to build unless needed | — |
-| 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ⚠️ Tech debt | CF1 (Session 65) must fix carousel schema to resolve |
+| 2026-05-07 | P10 Part A | Per-collection API endpoints (`/api/demo/seed/[collection]/route.ts`) not built — monolithic route handles per-collection calls correctly via body param. | ✅ Intentionally resolved — no per-collection route needed | — |
+| 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ⚠️ Tech debt — open | CF1 (Session 65) must fix carousel schema to resolve |
 | 2026-05-07 | J7/J9 | Notes said "remaining: P5 seed data" — P5 was superseded. Notes updated to "resolved by P16" | ✅ Notes fixed — no code change needed | — |
 | 2026-05-07 | P10 Part B | Full SeedPanel UI redesign (collapsible groups, per-collection API calls, progress bar) was never built in Session 63 — task was silently marked ✅ | ✅ Fixed 2026-05-07 | — |
+| 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
 
 ---
 
@@ -23,6 +24,28 @@
 ---
 
 # Change Log — Session 2026-05-07 (Latest)
+
+---
+
+## Session 65 — Carousel (CF1)
+
+### Part 66 — CF1: Hero Carousel full redesign
+
+| What | File |
+|------|------|
+| `CarouselBackground` type (image/video/color/gradient + dimOverlay); `CarouselCard` with zone 1–6, mobileZone, hover, eyebrow, textAlign, href buttons; `settings` (height/autoplayDelayMs); `CarouselSectionConfig` fixes P20 tech debt | `appkit/src/features/homepage/schemas/firestore.ts` |
+| `CarouselSlide` + `CarouselSlideCard` types updated to match new schema; backward-compat aliases kept | `appkit/src/features/homepage/types/index.ts` |
+| `HeroCarousel`: full-height (viewport/tall/medium), unified 4-type background renderer, zone→grid mapping, per-slide autoplay delay, configurable hover, no blur | `appkit/src/features/homepage/components/HeroCarousel.tsx` |
+| `AdminCarouselView`: actionHref `/admin/carousel/new`, drag-reorder via HTML5 DnD + batch reorder API, thumbnail preview, RowActionMenu with Edit/Delete | `appkit/src/features/admin/components/AdminCarouselView.tsx` |
+| NEW `AdminCarouselEditorView`: 4 sections — Slide Info, Background (4-tab), Overlay text, Cards (0–2 with zone picker + hover) | `appkit/src/features/admin/components/AdminCarouselEditorView.tsx` |
+| `CAROUSEL`, `CAROUSEL_BY_ID`, `CAROUSEL_REORDER` added to `ADMIN_ENDPOINTS` | `appkit/src/constants/api-endpoints.ts` |
+| Carousel seed migrated to CF1 background/zone schema | `appkit/src/seed/carousel-slides-seed-data.ts` |
+| `as unknown as SectionConfig` cast removed; proper `CarouselSectionConfig` used | `appkit/src/seed/homepage-sections-seed-data.ts` |
+| GET+POST `/api/admin/carousel` | `src/app/api/admin/carousel/route.ts` |
+| GET+PUT+DELETE `/api/admin/carousel/[id]` | `src/app/api/admin/carousel/[id]/route.ts` |
+| POST `/api/admin/carousel/reorder` | `src/app/api/admin/carousel/reorder/route.ts` |
+| New slide page | `src/app/[locale]/admin/carousel/new/page.tsx` |
+| Edit slide page | `src/app/[locale]/admin/carousel/[id]/edit/page.tsx` |
 
 ---
 
