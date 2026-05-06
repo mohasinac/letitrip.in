@@ -7,20 +7,26 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 65
+## ⚡ CURRENT TASK — Session 68
 
 | Task | What to do |
 |------|------------|
-| **CF1** | Hero Carousel full redesign — schema (`background`/`zone`/`settings`/`hover`), component (full-height, 4 bg types, configurable hover, per-slide autoplay, no blur), admin list (drag-reorder + RowActionMenu), admin editor (zone picker, 4-tab bg, cards 0–2, button repeater, live preview), API GET/POST/PUT/DELETE/reorder. Also fix P20 tech debt: update `homepage-sections-seed-data.ts` carousel section (removes `as unknown as SectionConfig` cast). |
+| **X2** | Toast notification standard — replace all `alert()` / ad-hoc error divs with appkit `useToast` hook across all admin/seller/user forms |
+| **A1** | Products 3-mode editor — unified create/edit form for standard product, auction, pre-order; 3-tab or mode-switch UI; all fields per schema |
+| **VA2** | Deals/Featured toggles — admin quick-toggle for `isFeatured` + `isPromoted` + `isOnSale` on product list rows (without opening the full editor) |
+| **I1** | InlineCreateSelect integration — wire `InlineCreateSelect` into all form fields that reference categories, brands, stores (create-on-the-fly instead of navigating away) |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
+
+> ⚠️ **HS4 + HS5 deferred** — Google Reviews integration (HS4) and Custom Cards component (HS5) were planned for Session 67 but not started. They are NOT blocked by Session 68. Pick up in a dedicated session before Session 70 (VA8 credentials form exposes Google Maps key needed by HS4).
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 66 | HS1, HS2, HS3 | Section schema + 11 missing builders + enhance 7 existing |
-| 67 | HS4, HS5 | Google Reviews + Custom Cards section |
-| 68 | X2, A1, VA2, I1 | Toast standard + Products 3-mode editor |
+| 67-b | HS4, HS5 | Google Reviews API proxy + component; Custom Cards component + wiring (deferred from Session 67) |
+| 69 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor |
+| 70 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
+| 71 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
 
 ---
 
@@ -150,12 +156,11 @@ Product type matrix:
 ```
 
 ```
-Homepage section types (homepageSections collection):
-hero · featured-products · trending · new-arrivals · flash-sale
-brand-list · category-grid · ad-banner · faq-preview · blog-preview
-events-preview · social-feed · google-reviews · custom-cards
-store-spotlight · deals · pre-orders-preview · auction-countdown
-sublisting-carousel
+Homepage section types (homepageSections collection — 21 types as of HS1):
+welcome · carousel · stats · trust-indicators · categories · brands
+products · pre-orders · auctions · banner · features · reviews
+whatsapp-community · faq · blog-articles · newsletter · stores · events
+social-feed · custom-cards · google-reviews
 ```
 
 ---
@@ -304,16 +309,17 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–64 (45 tasks ✅)
-Current:       65 (CF1 — Carousel redesign)
-Next:          66 (HS1–3), 67 (HS4–5), 68 (X2+A1+VA2+I1)
+Sessions done: 60–67 (50 tasks ✅)
+Current:       68 (X2+A1+VA2+I1 — Admin-1)
+Next:          67-b (HS4+HS5 deferred), 69 (A3+VA6+A4+VA4), 70 (A5+VA5+F5+VA7+VA8)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Foundation     60–64       ✅ done (45/199 tasks)
-Carousel       65          🔄 CF1 in progress
-Sections       66–67       ⏳
+Carousel       65          ✅ done (CF1)
+Sections-1     66          ✅ done (HS1+HS2+HS3)
+Sections-2     67          ⚠️ partial — HS4+HS5 still ⏳ (hydration fix done)
 Admin CRUD     68–73       ⏳
 Store CRUD     75–76       ⏳
 User Account   77          ⏳

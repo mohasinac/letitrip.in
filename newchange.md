@@ -16,6 +16,7 @@
 | 2026-05-07 | J7/J9 | Notes said "remaining: P5 seed data" — P5 was superseded. Notes updated to "resolved by P16" | ✅ Notes fixed — no code change needed | — |
 | 2026-05-07 | P10 Part B | Full SeedPanel UI redesign (collapsible groups, per-collection API calls, progress bar) was never built in Session 63 — task was silently marked ✅ | ✅ Fixed 2026-05-07 | — |
 | 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
+| 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ⏳ Pending — pick up before Session 70 (VA8 exposes googleMapsApiKey needed by HS4) | Session 67-b |
 
 ---
 
@@ -23,7 +24,38 @@
 
 ---
 
-# Change Log — Session 66 — 2026-05-07 (Latest)
+# Change Log — Session 67 (continued) — 2026-05-07 (Latest)
+
+## React Query SSR hydration fix — staleTime across all listing hooks
+
+### Root cause
+
+React Query's default `staleTime: 0` causes an immediate background refetch on mount even when `initialData` is already present from SSR. The client-side refetch hits a different code path (API route) than the server-side `productRepository.list()` call, which can return empty data. This overwrote the SSR data, causing listings to flash content then go blank (most visible on the store auctions tab).
+
+### Fix
+
+Added `staleTime: opts?.staleTime ?? (opts?.initialData !== undefined ? Infinity : 0)` to all hooks that accept `initialData`. When the server provides data the client skips the redundant refetch on mount; when the user changes filters/sort/page the `queryKey` changes and a fresh fetch fires normally.
+
+### What changed
+
+| What | File |
+|------|------|
+| `staleTime` option + conditional in `useProducts` (list) and `useProduct` (single) | `appkit/src/features/products/hooks/useProducts.ts` |
+| `staleTime` option + conditional in `useStores` | `appkit/src/features/stores/hooks/useStores.ts` |
+| `staleTime` option + conditional in `useAuctions` (NOT `useAuctionBids` — that has intentional `refetchInterval: 15s`) | `appkit/src/features/auctions/hooks/useAuctions.ts` |
+| `staleTime` option + conditional in `useEvents` | `appkit/src/features/events/hooks/useEvents.ts` |
+| `staleTime` option + conditional in `useBlogPosts` and `useBlogPost` | `appkit/src/features/blog/hooks/useBlog.ts` |
+| `staleTime` option + conditional in `useReviews` | `appkit/src/features/reviews/hooks/useReviews.ts` |
+| `staleTime` changed from hardcoded `5 * 60 * 1000` to `Infinity` when `initialData` present | `appkit/src/features/faq/hooks/useFaqList.ts` |
+| Rule #3 added — "schema/logic changes must update older functionality in same session" | `CLAUDE.md` |
+
+### TypeScript
+
+`npx tsc --noEmit` → 0 errors in `appkit/`.
+
+---
+
+# Change Log — Session 66 — 2026-05-07
 
 ## Session 66 — HS1 + HS2 + HS3: Homepage Sections schema + all builders + resource builder enhancements
 
