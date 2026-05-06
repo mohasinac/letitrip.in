@@ -7,6 +7,7 @@ import {
   bidRepository,
 } from "@mohasinac/appkit";
 
+
 const updateBidSchema = z.object({
   status: z.enum(["cancelled"]),
   reason: z.string().optional(),
@@ -39,6 +40,20 @@ export const PATCH = withProviders(
         updatedAt: new Date(),
       } as any);
       return successResponse(null, "Bid cancelled");
+    },
+  }),
+);
+
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ["admin"],
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const bid = await bidRepository.findById(id);
+      if (!bid) return errorResponse("Bid not found", 404);
+      await bidRepository.delete(id);
+      return successResponse(null, "Bid deleted");
     },
   }),
 );
