@@ -23,7 +23,42 @@
 
 ---
 
-# Change Log — Session 2026-05-07 (Latest)
+# Change Log — Session 66 — 2026-05-07 (Latest)
+
+## Session 66 — HS1 + HS2 + HS3: Homepage Sections schema + all builders + resource builder enhancements
+
+### What changed
+
+| What | File |
+|------|------|
+| **HS1**: `custom-cards` + `google-reviews` added to `SectionType`, `SectionConfig`, `DEFAULT_SECTION_ORDER`; `CustomCardsSectionConfig` + `GoogleReviewsSectionConfig` interfaces; `sortBy/filterByCategory/maxCount/loop` added to 5 resource configs; `googleMapsApiKey/googlePlaceId` added to `SiteSettingsCredentials`; `"carousel"/"social-feed"/"custom-cards"/"google-reviews"` added to POST Zod enum | `appkit/src/features/homepage/schemas/firestore.ts`, `appkit/src/features/admin/schemas/firestore.ts`, `src/app/api/admin/sections/route.ts` |
+| **HS2**: 11 new section builders (welcome, trust-indicators, categories, brands, banner, features, reviews, whatsapp-community, faq, blog-articles, newsletter) — all with typed state, defaults, build/parse functions, and render functions; `SUPPORTED_TYPED_BUILDERS` extended to 18 types | `appkit/src/features/admin/components/AdminSectionsView.tsx` |
+| **HS3**: Unified `ResourceSortBy` + `ResourceMaxCount` type aliases; 5 resource builder interfaces (products/auctions/pre-orders/stores/events) extended with `filterByCategory/maxCount/loop`; `RESOURCE_SORT_OPTIONS` constant; sort/filter/maxCount/loop UI controls added to all 5 render functions; `useToast` replaces `Alert`+`formMessage` state; reviews builder: source radio (platform/google) + conditional placeId input; `ReviewsSectionConfig` extended with `source?` + `placeId?` | `appkit/src/features/admin/components/AdminSectionsView.tsx`, `appkit/src/features/homepage/schemas/firestore.ts` |
+
+---
+
+## Session 66 — P10 SeedPanel Phase D (style + schema metadata + search + streaming + sticky toolbar)
+
+### What changed
+
+| What | File |
+|------|------|
+| Fixed invisible card labels — replaced appkit `Text` with native `<span>`/`<p>` so Tailwind color classes aren't overridden | `src/components/dev/SeedPanel.tsx` |
+| Stats always visible — removed `status.length > 0` guard; shows `—` while loading | `src/components/dev/SeedPanel.tsx` |
+| Schema field metadata table per collection — real `FieldDef[]` from appkit Firestore schemas; type chip, searchable/filterable/sortable/PII/indexed columns; field-level search + PII-only toggle | `src/components/dev/SeedPanel.tsx` |
+| Search + filter + sort + pagination — `searchQuery`, `filterGroup`, `filterStatus`, `sortBy`; `useMemo` filtered list; PAGE_SIZE=8; flat list when filtered, grouped when not; pagination bar | `src/components/dev/SeedPanel.tsx` |
+| Single streaming POST replaces N sequential calls — `application/x-ndjson` response; NDJSON line-per-collection; client `ReadableStream.getReader()` loop; removed 15s polling interval | `src/components/dev/SeedPanel.tsx`, `src/app/api/demo/seed/route.ts` |
+| Sticky toolbar — `sticky top-[var(--header-height,0px)] z-30 backdrop-blur-md shadow-sm`; contains all interactive controls; scrollable content below; offset tracks AppLayoutShell header dynamically | `src/components/dev/SeedPanel.tsx` |
+
+### Rules reinforced
+
+- Added **"STOP AND ASK"** rule to `crud-tracker.md` Non-Negotiable Rules — Claude must ask user before making any autonomous implementation decision.
+- Added **"⚠️ done-but-verify"** status note — acknowledges that some ✅ tasks have browser regressions being fixed in parallel sessions.
+- Created `CLAUDE.md` with full project reference — seed schema, stop-and-ask rule, and appkit patterns — loaded automatically by Claude Code in every future conversation.
+
+---
+
+# Change Log — Session 2026-05-07 (Previous)
 
 ---
 
