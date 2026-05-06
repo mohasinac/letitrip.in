@@ -8,44 +8,48 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Priority shift: Comprehensive seed data (P10–P22) BEFORE all feature work.**
+> **17 done, 165 remaining.** See `crud-tracker.md` for full detail on every task.
 
-Seed data is the foundation — without it, every feature task is developed blind with empty screens. Build it once, verify every feature against it, then never touch it again.
+### Session 60 — Foundation fixes (do these before any seed work)
 
-**Immediate next: P10 — Seeding page overhaul (`SeedPanel.tsx` + per-resource endpoints)**
+Start here. These are small targeted fixes that unblock everything:
 
-Two-part task:
+| Task | What to fix | Key file |
+|------|-------------|----------|
+| **F2** | Add Brands to admin sidebar nav — not in `ADMIN_NAV_GROUPS` yet | `src/app/[locale]/admin/layout.tsx` |
+| **E2** | `admin/bids/[id]/route.ts` missing `DELETE` export — add it | `src/app/api/admin/bids/[id]/route.ts` |
+| **K4+L3+L4+L5** | Events description renders as plain string — wrap in `<RichText html={...}>` in EventDetailClient | `src/app/[locale]/events/[id]/EventDetailClient.tsx` |
+| **J10** | Auction bid productId mismatch — verify auction doc IDs match URL slugs + bid seed productIds | tracker notes |
+| **J11** | Product detail seller section must link to `/stores/[storeSlug]`, not user profile | tracker notes |
+| **J12** | Search overlay z-index/negative-margin bleed fix | `appkit/src/features/search/components/Search.tsx` |
+| **X1** | `npx tsc --noEmit` → fix all async param + `as any` violations | all pages |
+| **SL5** | API route slug params — confirm no stripping/re-prefixing anywhere | tracker notes |
+| **SL6** | Cross-reference integrity audit — every relational field points to a real doc | all seed files + repos |
+| **E7** | Footer dead link audit — confirm all `ROUTES.PUBLIC.*` resolve to existing pages | `LayoutShellClient.tsx` |
 
-**(A) Per-resource seed endpoints** — `src/app/api/demo/seed/[collection]/route.ts`:
-- `GET` → status/counts for that collection
-- `POST { action: "seed" | "clear", dryRun?: boolean }` → detailed results:
-  ```ts
-  { collection, action, dryRun,
-    results: Array<{ id, status: "created"|"updated"|"skipped"|"error", detail? }>,
-    summary: { created, updated, skipped, errors, durationMs } }
-  ```
-- Every Firestore write error surfaces its message in `detail` — no more "3 errors" with no context
-- Sub-collection items use composite id: `"users/user-admin/addresses/addr-1"`
+### Seed priority (Sessions 61–63 — after Session 60 complete)
 
-**(B) Enhanced `SeedPanel.tsx`**:
-1. Read `src/components/dev/SeedPanel.tsx` — understand current structure (560 lines, 4 groups)
-2. Add collapsible group sections (Core / Transactional / Content / System)
-3. Per-group status badge (✅ Fully Seeded / 🟡 Partial / ⬜ Not Seeded / ❌ Error) via `GET /api/demo/seed/[collection]`
-4. Per-group preview list using `SEED_MANIFEST` (P11)
-5. Per-group "Seed Group" + "Clear Group" buttons — calls each collection endpoint sequentially, updates row live; shows failed doc IDs + detail messages inline on error
-6. Dependency warning banner (Products needs Stores+Categories, Bids needs Auctions)
-7. Global toolbar: Seed All Selected, Clear All (confirm), Refresh Status
-8. `npx tsc --noEmit` — 0 errors
+**⚠️ CRITICAL: The existing seed data is COMPLETELY WRONG and must be replaced.**
 
-**After P10: P11 → P12 → P13 → P14 → P15 → P16 → P17 → P18 → P19 → P20 → P21 → P22**
-*(See Tier P — Comprehensive Seed below for full details)*
+Current state of `appkit/src/seed/`:
+- Categories: generic e-commerce (Electronics, Fashion, Sports, Books) — ZERO of the 6 required collectibles categories exist
+- Brands: brand-lego, brand-marvel, brand-naruto, brand-dc, brand-star-wars — wrong content, wrong schema (missing `country`, `founded`, `websiteUrl` fields)
+- Products: reference semantically wrong categories (anime figures under audio-electronics)
+- Files: stale `pokemon-*` prefixed files need deletion
 
-**After P22 (all seed complete): return to A1 — Admin Products CRUD (3-mode)**
+**Session 61** — Seed foundation (follow P11–P15 spec exactly from crud-tracker.md):
+P11 (file restructure + delete stale files + manifest) → P12 (site settings 12-group full config) → P13 (13 real brands) → P14 (22 collectibles categories) → P15 (9 users + 5 stores)
 
-> **Seed dependency order (strict):** site-settings → brands → categories → users → stores → products/auctions/preorders → bids → orders → reviews → blog/events/FAQs → carousel/sections → coupons → notifications
+**Session 62** — Listings seed (P16–P18): 20 standard products → 6 auctions + bids → 5 pre-orders
 
-> **Seed-first strategy**: P10–P22 must be complete before any feature work begins. Seed data gives 100% feature coverage so every task can be verified against real data immediately.
-> **Collectibles focus**: Seed data covers 5 verticals — Pokémon TCG, Yu-Gi-Oh!, Hot Wheels/diecast, anime/action figures (Bandai/Good Smile/Funko), and Beyblades. 13 real brands, 22 categories in 3-tier hierarchy, 20 standard products, 6 auctions, 5 pre-orders, 5 stores. Image sources: Wikimedia Commons, official brand sites (bandai.com, mattel.com, goodsmile.info), Unsplash, YouTube unboxing IDs.
+**Session 63** — Content + system seed (P19–P22, P10): 8 blog posts + 6 events + 20 FAQs → reviews + orders → coupons + notifications → carousel (6 slides) + all 19 homepage sections → SeedPanel overhaul
+
+> **Seed dependency order (strict):** P11 → P12 → P13 → P14 → P15 → P16 → P17 → P18 → P19 → P21 → P22 → P20 → P10
+> P20 (carousel seed) runs AFTER P16–P18 so it can reference real product slugs in section configs. P10 (SeedPanel) runs last so the manifest from P11 is ready.
+
+> **Seed-first strategy**: P11–P22 must be complete before any feature work. Seed data gives 100% feature coverage so every task can be verified against real data immediately. P10 (SeedPanel overhaul) runs last within the seed block so SEED_MANIFEST from P11 is ready.
+> **Collectibles focus**: Seed data covers 5 verticals — Pokémon TCG, Yu-Gi-Oh!, Hot Wheels/diecast, anime/action figures (Bandai/Good Smile/Funko), and Beyblades. 13 real brands (`brand-bandai`, `brand-hasbro`, `brand-takara-tomy`, `brand-mattel`, `brand-pokemon-company`, `brand-konami`, `brand-funko`, `brand-neca`, `brand-mcfarlane`, `brand-good-smile`, `brand-hot-wheels`, `brand-tomica`, `brand-beyblade`), 22 categories in 3-tier collectibles hierarchy, 20 standard products, 6 auctions, 5 pre-orders, 5 stores. Image sources: Wikimedia Commons, official brand sites, Unsplash, YouTube unboxing IDs.
+> **Seed + new features**: Seeds must be updated when new feature schemas land: P20 carousel seed must use CF1's `background`/`zone` schema (run after CF1); P16–P18 products must add `sublistingCategoryId` + `groupId` fields after SC1+GP1 schemas exist; P12 site settings seed must include all 12 VA8 groups' default values including CF1 carousel defaults, HS section defaults, and social media credential placeholders. Always read the feature task spec before updating seed data for that feature.
 > **Note:** All forms must be field-by-field UX — no JSON config editors. Products are sold by **stores**, not users; every product/auction/preorder doc needs a `storeId` field.
 > **Product** = generic term for standard / auction / pre-order / any future type. Custom fields: max 50 per product. Custom sections: max 3 per product (title + optional rich text 200KB + optional fields from customFields; at most 1 text block per section). Every CRUD table action must show a success toast or a clear error — no silent failures.
 > **id === slug** is the app convention — `[id]` and `[slug]` route params are the same value; no separate pages needed for each. Media URLs in Firestore must always use `/media/<slug>` proxy path, never raw Firebase Storage URLs.
@@ -70,7 +74,7 @@ Two-part task:
 | SL5 | API route params pass prefixed slug unchanged |
 | SL6 | Enforce id === slug for all content resources |
 
-### Tier 0 — Bug Fixes *(all ✅)*
+### Tier 0 — Bug Fixes
 | # | Task | Status |
 |---|------|--------|
 | J5 | Bids table missing on auction detail pages | ✅ Part 48 |
@@ -78,18 +82,21 @@ Two-part task:
 | J1 | Store not found 404 on all store sub-pages | ✅ Part 49 |
 | J2 | Blog page rendering broken | ✅ Part 49 |
 | J3 | Events page rendering broken | ✅ Part 49 |
-| J4 | Category pages broken listing | ✅ Part 49 |
-| J7 | Deals/Promotions section empty | ✅ Part 49 |
-| J9 | Featured contents sections empty | ✅ Part 49 |
+| J4 | Category pages broken listing | ✅ Part 59 |
+| J7 | Deals/Promotions section empty (API fix done; data needs P16) | ✅ Part 49 |
+| J9 | Featured contents sections empty (API fix done; data needs P16) | ✅ Part 49 |
 | J8 | Ad slots should render conditionally | ✅ Part 51 |
 | M2 | Admin Dashboard stats showing zeroes | ✅ Part 52 |
+| J10 | Auction bid productId mismatch — enforce SL6 | ⏳ Session 60 |
+| J11 | Product detail seller section → store page, not user profile | ⏳ Session 60 |
+| J12 | Search overlay visually overlaps hero sections (z-index / negative-margin bleed) | ⏳ Session 60 |
 
-### Tier 1 — Rich Text System *(all ✅)*
+### Tier 1 — Rich Text System
 | # | Task | Status |
 |---|------|--------|
 | K2 | RichTextRenderer component | ✅ Part 53 |
-| K4+L3+L4+L5 | Wire renderer in events, blog, stores, faqs | ✅ Part 53 |
-| K3 | RichTextEditor wired in admin/seller forms | ✅ Part 53 |
+| K4+L3+L4+L5 | Wire renderer in events, blog, stores, faqs — events detail NOT YET WIRED | ⏳ Session 60 |
+| K3 | RichTextEditor wired in admin/seller forms (EventEditor + ProductForm done; blog/FAQ in A4/A5) | ✅ Part 53 |
 
 ### Tier 2 — Product Custom Fields & Detail Sections *(pending)*
 | # | Task | Status |
@@ -101,10 +108,10 @@ Two-part task:
 ### Tier 3 — Infrastructure
 | # | Task | Status |
 |---|------|--------|
-| E2 | Missing API route handlers | ✅ Part 54 |
-| E3+E4 | Field-name constants + API route constants | ✅ Part 55 |
+| E2 | Missing API route handlers — bids[id] DELETE missing, rest verified | ⏳ Session 60 |
+| E3+E4 | Field-name constants + unified API_ROUTES — NOT DONE; CATEGORY_FIELDS etc don't exist | ⏳ Session 64 |
 | E1+E5 | Route constants + TypeScript input types | ✅ Part 56 |
-| F2 | Brands: Firestore schema + API + Admin CRUD | ✅ Part 57 |
+| F2 | Brands CRUD — all API/views exist; missing from admin nav sidebar | ⏳ Session 60 |
 | H1 | InlineCreateSelect shared component | ⏳ |
 | I4 | Media Library picker modal | ⏳ |
 | I5 | Media upload audit — wire `MediaUploadField` in all remaining CRUD forms | ⏳ |
@@ -114,24 +121,26 @@ Two-part task:
 | E6 | /support Help Centre page | ⏳ |
 | E7 | Footer dead link audit + redirect fix | ⏳ |
 
-### Tier 4 — Seed Data Overhaul *(do first — P10–P22 are the priority)*
+### Tier 4 — Seed Data Overhaul *(Sessions 61–63 — after Session 60)*
+> ⚠️ **Existing seed data is completely wrong** — categories are generic e-commerce (Electronics/Fashion/Sports), brands include brand-lego/brand-marvel/brand-naruto. ALL must be deleted and rewritten per P11–P22 specs. Do NOT build features against existing seed data.
+
 | # | Task | Status |
 |---|------|--------|
-| P1+P2 | Brands seed + Categories seed | ✅ Part 58 |
-| P3–P9 | (superseded — rolled into P10–P22) | 🚫 |
-| P10 | Seeding page overhaul — per-resource endpoints (`/api/demo/seed/[collection]`), detailed per-doc error format, live progress in SeedPanel, collapsible groups/status/preview | ⏳ |
-| P11 | Seed file restructure — delete stale pokemon-* files, add manifest.ts | ⏳ |
-| P12 | Site settings seed — full 12-group config (watermark, limits, auction config, legal) | ⏳ |
-| P13 | Brands seed — 13 real collectibles brands (Bandai, Hasbro, Takara Tomy, Mattel, Pokémon Co., Konami, Funko, NECA, McFarlane, Good Smile, Hot Wheels, Tomica, Beyblade) | ⏳ |
-| P14 | Categories seed — 22 categories, 3-tier hierarchy (action figures, trading cards, diecast, spinning tops, model kits, vintage/rare) | ⏳ |
-| P15 | Users + Stores seed — 1 admin, 4 sellers, 4 buyers; 5 stores with payoutDetails + shippingConfig | ⏳ |
-| P16 | Standard products seed — 20 products, all categories, custom fields, custom sections, Unsplash/YouTube, isPromoted/isFeatured | ⏳ |
-| P17 | Auctions seed — 6 auctions (active/upcoming/ended) + bids (4–8 per active auction) | ⏳ |
-| P18 | Pre-orders seed — 5 pre-orders (active/upcoming/soldOut states) | ⏳ |
-| P19 | Content seed — 8 blog posts + 6 events + 20 FAQs (all with rich text, Unsplash, YouTube) | ⏳ |
-| P20 | Carousel (6 slides) + all 19 homepage section types (including social-feed disabled) | ⏳ |
-| P21 | Reviews (15) + orders (10, all statuses) | ⏳ |
-| P22 | Coupons (5, all types incl. exhausted) + notifications (10, all types) | ⏳ |
+| P1+P2 | Brands seed + Categories seed (wrong content) | 🚫 superseded by P13+P14 |
+| P3–P9 + old P10–P14 | (superseded — rolled into P10–P22) | 🚫 |
+| P11 | Seed file restructure — delete stale pokemon-* files, add manifest.ts | ⏳ Session 61 |
+| P12 | Site settings seed — full 12-group config: branding, SEO, fees, auction config, limits, legal, shipping, feature flags, watermark defaults, social links, carousel defaults (CF1), section type defaults (HS), social feed credential placeholders (VA8⑧) | ⏳ Session 61 |
+| P13 | Brands seed — 13 real collectibles brands (Bandai, Hasbro, Takara Tomy, Mattel, Pokémon Co., Konami, Funko, NECA, McFarlane, Good Smile, Hot Wheels, Tomica, Beyblade) with `country`, `founded`, `websiteUrl` | ⏳ Session 61 |
+| P14 | Categories seed — 22 categories, 3-tier collectibles hierarchy (action figures, trading cards, diecast, spinning tops, model kits, vintage/rare) with Unsplash cover images | ⏳ Session 61 |
+| P15 | Users + Stores seed — 1 admin, 4 sellers, 4 buyers; 5 stores with payoutDetails + shippingConfig | ⏳ Session 61 |
+| P16 | Standard products seed — 20 products, all 5 verticals, `storeId`/`brandSlug`/`categorySlug` correct, 3+ Unsplash images, 1 YouTube ID, customFields (3–5), customSections (1–2), isPromoted/isFeatured; optional `sublistingCategoryId`+`groupId` fields added after SC1+GP1 schemas exist | ⏳ Session 62 |
+| P17 | Auctions seed — 6 auctions all states (active/ending-soon/upcoming/ended) + 4–8 bids each; optional `sublistingCategoryId` after SC1 | ⏳ Session 62 |
+| P18 | Pre-orders seed — 5 pre-orders (active/upcoming/soldOut) with deposit %, productionStatus; optional `sublistingCategoryId` after SC1 | ⏳ Session 62 |
+| P19 | Content seed — 8 blog posts + 6 events + 20 FAQs (rich text bodies, Unsplash covers, YouTube IDs) | ⏳ Session 63 |
+| P21 | Reviews (15, mixed stars) + orders (10, all statuses incl. cancelled/refunded/disputed) | ⏳ Session 63 |
+| P22 | Coupons (5 types incl. exhausted) + notifications (10 types, mixed read/unread) | ⏳ Session 63 |
+| P20 | Carousel (6 slides using CF1 `background`+`zone` schema) + all 19 homepage section types; must run AFTER CF1 schema change and AFTER P13–P18 for correct product/brand/category slugs | ⏳ Session 63 |
+| P10 | SeedPanel overhaul — per-resource `/api/demo/seed/[collection]` endpoints, detailed error format, live progress, collapsible groups, status badges, dependency warnings; runs LAST after P11 manifest exists | ⏳ Session 63 |
 
 ### Tier 5 — Admin Core CRUD
 | # | Task |
@@ -257,6 +266,7 @@ Two-part task:
 | VD8 | Rewrite `about` page content in `en.json` to be collectibles-specific (Pokémon TCG, Hot Wheels, Beyblades, anime figures) — not generic marketplace boilerplate |
 | VD9 | Expand `becomeSeller` (9 keys → ~25) + rewrite `sellerGuide` to be collectibles-specific (card grading, vintage diecast photography, pricing sealed ETBs) |
 | VD10 | Expand legal policy content in `en.json`: `terms` (add India IT Act + Consumer Protection Act, collectibles-specific rules), `privacy` (DPDP Act 2023), `cookies` (categorised opt-out), `refundPolicy` (sealed/graded/auction/pre-order rules) |
+| VD11 | Fix ALL missing `next-intl` translation keys across ALL public pages — grep every `t("key")` call in appkit view components vs `messages/en.json`, add every missing key with correct content; known: `howPayoutsWork` (infoCard1-4 Title/Text, diagramStep1-5Desc, ctaTitle, ctaText, ctaPayoutSettings, ctaFees), `howPreOrdersWork` (diagramStep5Badge); audit all other namespaces too |
 
 ### Tier R — CRUD Table UX Standard
 | # | Task |
@@ -308,6 +318,20 @@ Two-part task:
 | S4 | Site settings credentials — TikTok + DeviantArt fields; expose in VA8 ⑧Integrations |
 | S5 | Seed data — disabled sample `social-feed` section in homepage sections seed |
 
+### Tier SR — Global Search Redesign
+| # | Task |
+|---|------|
+| SR1 | Search bar: add resource type dropdown (Products/Auctions/Pre-Orders/Stores/Categories/Brands/Events/Blog/FAQs); on submit navigate to that resource's public listing page with `?q=` — no more `/search/[tab]` URL; suggestions filtered by type; default persisted to localStorage |
+| SR2 | Simplify/redirect old `/search` page — `?q=X&type=Y` → redirect to listing page; deprecate nested `[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]` segments |
+| SR3 | Verify all public listing pages (`/products`, `/auctions`, `/pre-orders`, `/stores`, `/categories`, `/brands`, `/events`, `/blog`, `/faqs`) read + pre-fill `?q=` from URL in their search toolbar |
+
+### Tier RC — Routes & Navigation Centralization
+| # | Task |
+|---|------|
+| RC1 | Create `src/config/navigation.ts` — move `ADMIN_NAV_GROUPS` (admin/layout.tsx), `STORE_NAV_GROUPS` (store/layout.tsx), `USER_NAV_GROUPS` (user/layout.tsx), footer links (LayoutShellClient.tsx) into one file; all `href` values use `ROUTES.*` constants |
+| RC2 | Audit + extend ROUTES constants (`SUBLISTING_CATEGORIES`, `SUBLISTING_CATEGORY(slug)`, `SEARCH(q,type)` helper); grep `src/` for hardcoded route strings → replace all with `ROUTES.*` |
+| RC3 | Button/Link audit: grep `src/` + `appkit/src/features/` for `onClick.*router.push` + raw `<a href=`; fix all violations using `<Link>` or `asChild` pattern |
+
 ### Tier GP — Grouped Listings *(standard products + pre-orders only; depth = 1)*
 | # | Task |
 |---|------|
@@ -328,6 +352,13 @@ Two-part task:
 
 > The app must always be in a working, deployable state. Every commit must pass `npx tsc --noEmit` and leave the UI functional. We go from current state → finished state incrementally — never through a broken intermediate state.
 
+### Quality over speed — think deeply, split sessions when needed
+- **Maximum effort on thinking first.** Before writing a single line of code, re-read all relevant source files, trace the full data flow, and understand side effects. A task started well takes half the time of one that needs rework.
+- **Do not work for the sake of finishing.** If the goal of a task is unclear, stop and ask. If the implementation feels rushed or shallow, it is not done.
+- **Session budget: 10–20 tasks maximum.** After roughly 10–20 tasks in a single session, context degrades — files blur together, earlier decisions get forgotten, and mistakes multiply. When this happens, stop, summarise what was completed in `crud-tracker.md`, and start a fresh session. Quality in a new context window beats quantity in a degraded one.
+- **If context feels fuzzy — stop.** If you are unsure what a file contains, where a function is defined, or whether a change you made is still in the right state, re-read the file rather than guessing. Never proceed on stale assumptions.
+- **One task fully done beats three tasks half done.** Mark a task ✅ only when it is verified working — not when code has been written. Verified = `npx tsc --noEmit` passes AND the UI is visually confirmed in the browser.
+
 ### UI must never break
 - If a feature is **missing** (no data, no config, no API key) — show an empty state, a placeholder, or hide the section gracefully. **Never crash the page.**
 - If a **field is renamed** or **removed from a schema** — treat it as optional with a fallback. Old data must still render without error.
@@ -347,6 +378,13 @@ Two-part task:
 - **No generic marketplace boilerplate** — every public page must reference the actual collectibles niche: Pokémon TCG, Yu-Gi-Oh!, Hot Wheels, Beyblades, anime/action figures, or the real brand names (Bandai, Mattel, Konami, etc.).
 - **No empty `sections[]` arrays** in en.json — if a policy or how-to section exists in the schema, it must have real content.
 - **Translation keys that say "coming soon"** are only acceptable for features gated behind a feature flag. Static page content must never say "coming soon" as a permanent placeholder.
+
+### Buttons are actions; links are navigation — never mix
+- **`<Button>`** (appkit) = user action: form submit, open modal, trigger mutation. **Never** navigates. Never `onClick={() => router.push(...)}`.
+- **`<Link href={ROUTES.*}>`** (Next.js) = page navigation. **Never** a mutation.
+- **`<TextLink href={ROUTES.*}>`** (appkit) = inline text-style navigation.
+- **Styled-button navigation**: use `asChild` pattern — `<Button asChild><Link href={ROUTES.*}>Label</Link></Button>`.
+- Every `href` must reference a `ROUTES.*` constant. No hardcoded strings like `href="/products"` or `router.push("/admin/users")` anywhere in `src/`.
 
 ### No hardcoded colors or layout values
 - **Never use `#hex`, `rgb()`, or `rgba()` in component CSS files or inline `style={}` props.** All colors via `var(--appkit-color-*)` or Tailwind semantic tokens. Social brand colors: `var(--appkit-color-instagram)` etc.

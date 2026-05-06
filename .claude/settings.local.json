@@ -36,7 +36,8 @@
       "PowerShell(robocopy \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\dist\" \"d:\\\\proj\\\\letitrip.in\\\\node_modules\\\\@mohasinac\\\\appkit\" /E /IS /IT /NFL /NDL /NJH /NJS)",
       "Bash(Get-Content \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\src\\\\seed\\\\faq-seed-data.ts\")",
       "Bash(Select-Object -Last 30)",
-      "Bash(Get-ChildItem -Path \"d:\\\\proj\\\\letitrip.in\\\\src\\\\messages\" -ErrorAction SilentlyContinue)"
+      "Bash(Get-ChildItem -Path \"d:\\\\proj\\\\letitrip.in\\\\src\\\\messages\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Content \"d:\\\\proj\\\\letitrip.in\\\\crud-tracker.md\" | Select-String \"⏳\" | ForEach-Object { $_.Line })"
     ],
     "defaultMode": "bypassPermissions"
   }
