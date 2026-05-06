@@ -8,19 +8,19 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-> **38 done, 144 remaining.** See `crud-tracker.md` for full detail on every task.
+> **43 done, 139 remaining.** See `crud-tracker.md` for full detail on every task.
 
 ### Session 64 — Infrastructure (E3+E4, H1, I4, I8, I5, SL4, E6, in order)
 
-| Task | What to do | Key files |
-|------|------------|-----------|
-| **E3+E4** | Field-name constants + unified `API_ROUTES` object | `appkit/src/constants/` (new or extend) |
-| **H1** | `InlineCreateSelect` component — create-on-the-fly dropdown | `appkit/src/ui/InlineCreateSelect/` |
-| **I4** | `MediaPickerModal` — pick existing media from Firebase Storage | `appkit/src/ui/MediaPickerModal/` |
-| **I8** | YouTube embed support in media fields | `appkit/src/features/media/` |
-| **I5** | `MediaUploadField` audit — ensure all upload fields use proxy URL | grep for raw Firebase Storage URLs |
-| **SL4** | `generateMetadata` + full social share preview for all page types | all `app/**/page.tsx` files |
-| **E6** | `/support` page | `src/app/(public)/support/page.tsx` |
+| Task | What to do | Status |
+|------|------------|--------|
+| **E3+E4** | Field-name constants + unified `API_ROUTES` object | ✅ Done |
+| **H1** | `InlineCreateSelect` component — create-on-the-fly dropdown | ✅ Done |
+| **I4** | `MediaPickerModal` — Upload + External URL tabs, `onSelect(url)` | ✅ Done |
+| **I8** | YouTube + external URL support in media fields | ✅ Done |
+| **I5** | `MediaUploadField` audit — `AdminBrandEditorView` logo+banner → `ImageUpload` | ✅ Done |
+| **SL4** | `generateMetadata` + full social share preview for all page types | ⏳ Next |
+| **E6** | `/support` page | ⏳ Pending |
 
 **Critical pre-work:** Run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/` before starting. Must be 0 errors.
 
