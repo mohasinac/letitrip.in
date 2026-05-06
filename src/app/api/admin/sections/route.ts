@@ -80,6 +80,7 @@ export const GET = withProviders(
 const sectionCreateSchema = z.object({
   type: z.enum([
     "welcome",
+    "carousel",
     "stats",
     "trust-indicators",
     "categories",
@@ -96,6 +97,9 @@ const sectionCreateSchema = z.object({
     "newsletter",
     "stores",
     "events",
+    "social-feed",
+    "custom-cards",
+    "google-reviews",
   ] as const),
   enabled: z.boolean().optional().default(true),
   order: z.number().optional(),
