@@ -1,4 +1,31 @@
-# Change Log — Session 2026-05-06 (Latest)
+# Change Log — Session 2026-05-07 (Latest)
+
+---
+
+## Session 64 — Infrastructure (SL4 + E6)
+
+### Part 65 — E6: /support Help Centre page
+
+| What | File |
+|------|------|
+| New `/support/page.tsx` — reuses `HelpPageView`; full og:/twitter metadata via `generateMetadata` | `src/app/[locale]/support/page.tsx` |
+| Added `ROUTES.PUBLIC.SUPPORT = "/support"` to appkit route-map | `appkit/src/next/routing/route-map.ts` |
+
+### Part 64 — SL4: generateMetadata + full social share preview for all page types
+
+| What | File |
+|------|------|
+| `LETITRIP_SEO` config + typed wrapper functions (`generateMetadata`, `generateProductMetadata`, `generateBlogMetadata`, `generateAuctionMetadata`, `generateCategoryMetadata`, `generateProfileMetadata`, `generateSearchMetadata`) | `src/constants/seo.server.ts` |
+| Static og:/twitter metadata on all 10 listing pages (home, products, auctions, pre-orders, stores, categories, brands, blog, events, faqs) | 10 page.tsx files |
+| Real-data `generateMetadata` on `products/[slug]` via `getProductById` | `products/[slug]/page.tsx` |
+| Real-data `generateMetadata` on `auctions/[id]` via `getProductById` | `auctions/[id]/page.tsx` |
+| Real-data `generateMetadata` on `pre-orders/[id]` via `getProductById` | `pre-orders/[id]/page.tsx` |
+| `generateMetadata` on store layout via `getStoreBySlug` | `stores/[storeSlug]/layout.tsx` |
+| `generateMetadata` on `categories/[slug]` via `getCategoryBySlug` + coverImage | `categories/[slug]/page.tsx` |
+| `generateMetadata` on `brands/[slug]` via `getBrandBySlug` + logoURL | `brands/[slug]/page.tsx` |
+| Enhanced event detail from title-only → full og:image + twitter:card | `events/[id]/page.tsx` |
+| `generateMetadata` on `faqs/[category]` from category param | `faqs/[category]/page.tsx` |
+| New `getBrandBySlug()` server action; `BrandsRepository.findBySlug` wrapped and exported from `@mohasinac/appkit` and `@mohasinac/appkit/server` | `appkit/src/features/brands/actions/brand-actions.ts`, `brands/server.ts`, `index.ts`, `server.ts` |
 
 ---
 

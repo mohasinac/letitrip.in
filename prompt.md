@@ -8,7 +8,7 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-> **43 done, 139 remaining.** See `crud-tracker.md` for full detail on every task.
+> **45 done, 137 remaining.** See `crud-tracker.md` for full detail on every task.
 
 ### Session 64 — Infrastructure (E3+E4, H1, I4, I8, I5, SL4, E6, in order)
 
@@ -19,8 +19,8 @@
 | **I4** | `MediaPickerModal` — Upload + External URL tabs, `onSelect(url)` | ✅ Done |
 | **I8** | YouTube + external URL support in media fields | ✅ Done |
 | **I5** | `MediaUploadField` audit — `AdminBrandEditorView` logo+banner → `ImageUpload` | ✅ Done |
-| **SL4** | `generateMetadata` + full social share preview for all page types | ⏳ Next |
-| **E6** | `/support` page | ⏳ Pending |
+| **SL4** | `generateMetadata` + full social share preview for all page types | ✅ Done |
+| **E6** | `/support` page | ✅ Done |
 
 **Critical pre-work:** Run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/` before starting. Must be 0 errors.
 
