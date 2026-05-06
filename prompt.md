@@ -8,24 +8,24 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-> **17 done, 165 remaining.** See `crud-tracker.md` for full detail on every task.
+> **33 done, 149 remaining.** See `crud-tracker.md` for full detail on every task.
 
-### Session 60 — Foundation fixes (do these before any seed work)
+### Session 62 — Listings seed (P16 → P17 → P18, in strict order)
 
-Start here. These are small targeted fixes that unblock everything:
+| Task | What to do | Key file |
+|------|------------|----------|
+| **P16** | Standard products seed — 20 items across 5 stores | `appkit/src/seed/products-standard-seed-data.ts` (NEW) |
+| **P17** | Auctions seed — 6 auctions (all states) + bids file | `appkit/src/seed/products-auctions-seed-data.ts` (NEW) + `bids-seed-data.ts` (NEW) |
+| **P18** | Pre-orders seed — 5 pre-orders (active/upcoming/soldOut) | `appkit/src/seed/products-preorders-seed-data.ts` (NEW) |
 
-| Task | What to fix | Key file |
-|------|-------------|----------|
-| **F2** | Add Brands to admin sidebar nav — not in `ADMIN_NAV_GROUPS` yet | `src/app/[locale]/admin/layout.tsx` |
-| **E2** | `admin/bids/[id]/route.ts` missing `DELETE` export — add it | `src/app/api/admin/bids/[id]/route.ts` |
-| **K4+L3+L4+L5** | Events description renders as plain string — wrap in `<RichText html={...}>` in EventDetailClient | `src/app/[locale]/events/[id]/EventDetailClient.tsx` |
-| **J10** | Auction bid productId mismatch — verify auction doc IDs match URL slugs + bid seed productIds | tracker notes |
-| **J11** | Product detail seller section must link to `/stores/[storeSlug]`, not user profile | tracker notes |
-| **J12** | Search overlay z-index/negative-margin bleed fix | `appkit/src/features/search/components/Search.tsx` |
-| **X1** | `npx tsc --noEmit` → fix all async param + `as any` violations | all pages |
-| **SL5** | API route slug params — confirm no stripping/re-prefixing anywhere | tracker notes |
-| **SL6** | Cross-reference integrity audit — every relational field points to a real doc | all seed files + repos |
-| **E7** | Footer dead link audit — confirm all `ROUTES.PUBLIC.*` resolve to existing pages | `LayoutShellClient.tsx` |
+**Critical:** Read `ProductDocument` schema (`appkit/src/features/products/schemas/firestore.ts`) before writing any product. Use exact field names from schema. The schema uses `category` (not `categorySlug`), `brand` (not `brandSlug`), `featured` (not `isFeatured`), `specifications: ProductSpecification[]` (not `customFields`). Condition values: `"new" | "used" | "refurbished" | "broken" | "graded"` (no `"sealed"`).
+
+**Store → seller mapping** (from P15 seed data):
+- `store-pokemon-palace` → sellerId: `user-aryan-kapoor`, sellerName: "Aryan Kapoor", sellerEmail: "aryan@pokemonpalace.in"
+- `store-cardgame-hub` → sellerId: `user-nisha-reddy`, sellerName: "Nisha Reddy", sellerEmail: "nisha@cardgamehub.in"
+- `store-diecast-depot` → sellerId: `user-vikram-mehta`, sellerName: "Vikram Mehta", sellerEmail: "vikram@diecastdepot.in"
+- `store-beyblade-arena` → sellerId: `user-rohit-joshi`, sellerName: "Rohit Joshi", sellerEmail: "rohit@beyladearena.in"
+- `store-letitrip-official` → sellerId: `user-admin-letitrip`, sellerName: "LetItRip Admin", sellerEmail: "admin@letitrip.in"
 
 ### Seed priority (Sessions 61–63 — after Session 60 complete)
 
