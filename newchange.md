@@ -2,6 +2,29 @@
 
 ---
 
+## Session 60 — Foundation fixes (E2, J12 + audit of F2/J10/J11/K4/X1/SL5/E7)
+
+### New commits
+
+| Task | What | File |
+|------|------|------|
+| **E2** | Added `export const DELETE` to admin bids route — admin-only, checks bid exists, calls `bidRepository.delete(id)` | `src/app/api/admin/bids/[id]/route.ts` |
+| **J12** | Added `style={{ zIndex: 'var(--appkit-z-dropdown)' }}` to the absolute-positioned inline search dropdown so it renders above hero sections | `appkit/src/features/search/components/Search.tsx` |
+
+### Confirmed already done (tracker corrected)
+
+| Task | Finding |
+|------|---------|
+| **F2** | `ADMIN_NAV_GROUPS` already has `{ href: ROUTES.ADMIN.BRANDS, label: "Brands" }` in Catalog section (Part 57 did this; tracker note was wrong) |
+| **J11** | `ProductDetailPageView` already uses `ROUTES.PUBLIC.STORE_DETAIL(storeSlug)` as the seller href — no user profile redirect |
+| **K4+L3+L4+L5** | `EventDetailClient.tsx` already renders `<RichText html={description} />` — tracker audit was incorrect |
+| **X1** | Both repos pass `npx tsc --noEmit` with 0 errors — no changes needed |
+| **J10** | `AuctionDetailPageView` correctly passes `product.id` (doc ID = slug) as `productId` — code is fine; seed data (P17) must use matching slugs |
+| **SL5** | All API route handlers pass slug params unchanged to repository — no stripping or re-prefixing found |
+| **E7** | All footer links in `LayoutShellClient.tsx` resolve to existing pages — no dead links |
+
+---
+
 ## Part 57 — F2: Brands entity (Firestore schema, repository, API routes, admin CRUD)
 
 ### What changed
