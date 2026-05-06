@@ -1,4 +1,5 @@
 import { PreOrderDetailPageView } from "@mohasinac/appkit";
+import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -13,5 +14,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <PreOrderDetailPageView id={id} />;
+  return <PreOrderDetailPageView id={id} onReserveNow={reservePreOrderAction} />;
 }

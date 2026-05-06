@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, startTransition, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
@@ -45,31 +45,37 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();
   const router = useRouter();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopOpen, setDesktopOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const openNav = useCallback(() => {
-    if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
-      setDesktopOpen(true);
-      return;
-    }
-    setMobileOpen(true);
+    startTransition(() => {
+      if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
+        setDesktopOpen(true);
+        return;
+      }
+      setMobileOpen(true);
+    });
   }, []);
 
   const closeNav = useCallback(() => {
-    if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
-      setDesktopOpen(false);
-      return;
-    }
-    setMobileOpen(false);
+    startTransition(() => {
+      if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
+        setDesktopOpen(false);
+        return;
+      }
+      setMobileOpen(false);
+    });
   }, []);
 
   const toggleNav = useCallback(() => {
-    if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
-      setDesktopOpen((prev) => !prev);
-      return;
-    }
-    setMobileOpen((prev) => !prev);
+    startTransition(() => {
+      if (typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches) {
+        setDesktopOpen((prev) => !prev);
+        return;
+      }
+      setMobileOpen((prev) => !prev);
+    });
   }, []);
 
   useEffect(() => {
@@ -88,20 +94,16 @@ export default function UserLayout({ children }: { children: ReactNode }) {
         unauthorizedPath: String(ROUTES.ERRORS.UNAUTHORIZED),
       }}
     >
-      {/* Two-column layout on desktop: persistent sidebar + content */}
-      <div className="md:flex md:items-start">
-        <UserSidebar
-          variant="sidebar"
-          desktopOpen={desktopOpen}
-          items={ALL_NAV_ITEMS}
-          groups={USER_NAV_GROUPS}
-          mobileOpen={mobileOpen}
-          onCloseMobile={closeNav}
-        />
-        <main className="flex-1 min-w-0">
-          {children}
-        </main>
-      </div>
+      <UserSidebar
+        variant="sidebar"
+        desktopOpen={desktopOpen}
+        items={ALL_NAV_ITEMS}
+        groups={USER_NAV_GROUPS}
+        mobileOpen={mobileOpen}
+        onCloseMobile={closeNav}
+        onToggle={toggleNav}
+      />
+      {children}
     </ProtectedRoute>
   );
 }

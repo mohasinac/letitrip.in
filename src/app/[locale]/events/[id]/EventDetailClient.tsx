@@ -121,7 +121,7 @@ export function EventDetailClient({
       renderContent={() => (
         <div className="space-y-6">
           {description ? (
-            <RichText html={description} className="text-zinc-600 dark:text-zinc-400" />
+            <RichText html={description} />
           ) : null}
           {pollConfig?.options?.length ? (
             <div className="space-y-3">

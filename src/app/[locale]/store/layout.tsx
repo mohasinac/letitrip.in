@@ -51,7 +51,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { registerNav, unregisterNav } = useDashboardNav();
-  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [desktopOpen, setDesktopOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const openNav = useCallback(() => {
@@ -103,6 +103,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
         activeHref={pathname}
         mobileOpen={mobileOpen}
         onCloseMobile={closeNav}
+        onToggle={toggleNav}
       />
       {children}
     </ProtectedRoute>

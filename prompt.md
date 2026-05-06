@@ -8,23 +8,36 @@
 
 ## ⚡ CURRENT TASK — START HERE
 
-**Next up: A1 — Admin Products CRUD (3-mode: standard / auction / pre-order)**
+**Priority shift: Comprehensive seed data (P10–P22) BEFORE all feature work.**
 
-`AdminProductsView` already exists. Need create/edit pages with mode-selector tabs.
-A seller-facing `SellerProductEditorView` already exists in appkit — extend it with admin-only fields.
+Seed data is the foundation — without it, every feature task is developed blind with empty screens. Build it once, verify every feature against it, then never touch it again.
 
-Steps:
-1. Read `appkit/src/features/admin/components/AdminProductsView.tsx` — check list + actionHref gap
-2. Read existing seller product editor component — understand the form pattern
-3. Read `src/app/api/admin/products/route.ts` and `[id]/route.ts` — confirm handlers
-4. Create `AdminProductEditorView` in appkit:
-   - Mode selector tab (standard / auction / preorder) at top
-   - Admin-only fields: isPromoted, featured, sellerId override
-   - On save: POST (create) or PUT (edit) to `/api/admin/products` + `/[id]`
-5. Export + pages: `/admin/products/new` and `/admin/products/[id]/edit`
-6. `npx tsc --noEmit` — 0 errors
+**Immediate next: P10 — Seeding page overhaul (`SeedPanel.tsx`)**
 
-After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admin FAQs CRUD).
+Upgrade `src/components/dev/SeedPanel.tsx` to the new design:
+1. Read `src/components/dev/SeedPanel.tsx` — understand current structure (560 lines, 4 groups)
+2. Add collapsible group sections with expand/collapse per group
+3. Add per-group status badge (✅ Fully Seeded / 🟡 Partial / ⬜ Not Seeded) using GET /api/demo/seed counts
+4. Add collapsible preview list per group using `SEED_MANIFEST` from appkit (to be created in P11)
+5. Add per-group Seed + Clear buttons alongside the global run
+6. Add dependency warning banner (Products needs Stores+Categories, Bids needs Auctions, etc.)
+7. `npx tsc --noEmit` — 0 errors
+
+**After P10: P11 → P12 → P13 → P14 → P15 → P16 → P17 → P18 → P19 → P20 → P21 → P22**
+*(See Tier P — Comprehensive Seed below for full details)*
+
+**After P22 (all seed complete): return to A1 — Admin Products CRUD (3-mode)**
+
+> **Seed dependency order (strict):** site-settings → brands → categories → users → stores → products/auctions/preorders → bids → orders → reviews → blog/events/FAQs → carousel/sections → coupons → notifications
+
+> **Seed-first strategy**: P10–P22 must be complete before any feature work begins. Seed data gives 100% feature coverage so every task can be verified against real data immediately.
+> **Collectibles focus**: Seed data covers 5 verticals — Pokémon TCG, Yu-Gi-Oh!, Hot Wheels/diecast, anime/action figures (Bandai/Good Smile/Funko), and Beyblades. 13 real brands, 22 categories in 3-tier hierarchy, 20 standard products, 6 auctions, 5 pre-orders, 5 stores. Image sources: Wikimedia Commons, official brand sites (bandai.com, mattel.com, goodsmile.info), Unsplash, YouTube unboxing IDs.
+> **Note:** All forms must be field-by-field UX — no JSON config editors. Products are sold by **stores**, not users; every product/auction/preorder doc needs a `storeId` field.
+> **Product** = generic term for standard / auction / pre-order / any future type. Custom fields: max 50 per product. Custom sections: max 3 per product (title + optional rich text 200KB + optional fields from customFields; at most 1 text block per section). Every CRUD table action must show a success toast or a clear error — no silent failures.
+> **id === slug** is the app convention — `[id]` and `[slug]` route params are the same value; no separate pages needed for each. Media URLs in Firestore must always use `/media/<slug>` proxy path, never raw Firebase Storage URLs.
+> **Social share previews** (WhatsApp, Discord, iMessage, Slack, Twitter/X) are automatic — driven by `generateMetadata` og: tags (SL4). Every page must export full `openGraph` + `twitter` metadata. og:image uses the `/media/<slug>` proxy URL as absolute URL.
+> **Media sources**: video/image fields support three types — `"upload"` (Firebase via proxy), `"youtube"` (iframe embed, thumbnail via proxy), `"external"` (third-party URL, no watermark). Seed data uses Unsplash image URLs and YouTube video IDs so media renders in dev.
+> **Social media feed sections** (Tier S): Homepage can show a live grid of posts from Instagram, Facebook, TikTok, or DeviantArt as a `social-feed` section type. Clicking a post card opens the original post in a new tab. Platform credentials (Meta page token, TikTok client key/secret/access token, DeviantArt client ID/secret) are stored in `site_settings.credentials` (encrypted, never client-exposed). API route `GET /api/social-feed` + shared fetcher in `appkit/src/features/homepage/lib/social-feed-fetcher.ts`. Components: `SocialFeedSection` (async RSC), `SocialPostCard`. Platforms: Instagram (Meta Graph API v19), Facebook (Meta Graph API v19), TikTok (TikTok for Developers v2), DeviantArt (client-credentials OAuth2). Seed data includes a disabled demo section; enable once credentials are set in VA8 ⑧Integrations.
 
 ---
 
@@ -39,7 +52,7 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 | SL1 | Standardize all seed slugs to use resource-type prefix |
 | SL2 | Auto-generate prefixed slugs in all create/edit forms |
 | SL3 | Confirm repository findBySlug works with prefixed slugs |
-| SL4 | Update generateMetadata in all detail pages (canonical SEO) |
+| SL4 | generateMetadata + full social share preview (og:title, og:description, og:image via /media/ proxy absolute URL, twitter:card="summary_large_image") for all page types |
 | SL5 | API route params pass prefixed slug unchanged |
 | SL6 | Enforce id === slug for all content resources |
 
@@ -71,7 +84,7 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 | L2 | Custom section render in all product detail page types | ⏳ |
 | O3 | Product pickup address selector + inline create popup | ⏳ |
 
-### Tier 3 — Infrastructure *(all ✅)*
+### Tier 3 — Infrastructure
 | # | Task | Status |
 |---|------|--------|
 | E2 | Missing API route handlers | ✅ Part 54 |
@@ -80,15 +93,31 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 | F2 | Brands: Firestore schema + API + Admin CRUD | ✅ Part 57 |
 | H1 | InlineCreateSelect shared component | ⏳ |
 | I4 | Media Library picker modal | ⏳ |
+| I5 | Media upload audit — wire `MediaUploadField` in all remaining CRUD forms | ⏳ |
+| I6 | PDF support in media uploader (invoices, spec sheets, payout proof) | ⏳ |
+| I7 | Media CDN proxy — server delivers all images; watermark config (text/image, 0–100% size) from site_settings; sharp; private Storage; `/media/<slug>` URLs everywhere | ⏳ |
+| I8 | YouTube + external URL support in all media fields — `{ type: "upload"\|"youtube"\|"external", url?, youtubeId? }`; tab switcher in MediaUploadField | ⏳ |
+| E6 | /support Help Centre page | ⏳ |
+| E7 | Footer dead link audit + redirect fix | ⏳ |
 
-### Tier 4 — Seed Data Overhaul *(P1+P2 done)*
+### Tier 4 — Seed Data Overhaul *(do first — P10–P22 are the priority)*
 | # | Task | Status |
 |---|------|--------|
 | P1+P2 | Brands seed + Categories seed | ✅ Part 58 |
-| P3+P4 | Carousel + Homepage sections update | ⏳ |
-| P5 | Products seed: custom fields, pickup address, featured/promoted | ⏳ |
-| P6 | Users & Stores seed: slug fix, shippingConfig, payoutDetails | ⏳ |
-| P7+P8+P9 | Blog posts (5), FAQ update, Notifications (10) | ⏳ |
+| P3–P9 | (superseded — rolled into P10–P22) | 🚫 |
+| P10 | Seeding page overhaul — collapsible groups, per-group status/preview/seed/clear, manifest | ⏳ |
+| P11 | Seed file restructure — delete stale pokemon-* files, add manifest.ts | ⏳ |
+| P12 | Site settings seed — full 12-group config (watermark, limits, auction config, legal) | ⏳ |
+| P13 | Brands seed — 13 real collectibles brands (Bandai, Hasbro, Takara Tomy, Mattel, Pokémon Co., Konami, Funko, NECA, McFarlane, Good Smile, Hot Wheels, Tomica, Beyblade) | ⏳ |
+| P14 | Categories seed — 22 categories, 3-tier hierarchy (action figures, trading cards, diecast, spinning tops, model kits, vintage/rare) | ⏳ |
+| P15 | Users + Stores seed — 1 admin, 4 sellers, 4 buyers; 5 stores with payoutDetails + shippingConfig | ⏳ |
+| P16 | Standard products seed — 20 products, all categories, custom fields, custom sections, Unsplash/YouTube, isPromoted/isFeatured | ⏳ |
+| P17 | Auctions seed — 6 auctions (active/upcoming/ended) + bids (4–8 per active auction) | ⏳ |
+| P18 | Pre-orders seed — 5 pre-orders (active/upcoming/soldOut states) | ⏳ |
+| P19 | Content seed — 8 blog posts + 6 events + 20 FAQs (all with rich text, Unsplash, YouTube) | ⏳ |
+| P20 | Carousel (6 slides) + all 19 homepage section types (including social-feed disabled) | ⏳ |
+| P21 | Reviews (15) + orders (10, all statuses) | ⏳ |
+| P22 | Coupons (5, all types incl. exhausted) + notifications (10, all types) | ⏳ |
 
 ### Tier 5 — Admin Core CRUD
 | # | Task |
@@ -110,7 +139,7 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 | M1 | Admin Analytics dashboard |
 | M3 | Admin Payouts processing + CSV export |
 | F1 | Homepage Sections CMS (all 12 section types) |
-| N1 | Site Settings full wiring (all 6 tab groups) |
+| N1 | Site Settings — superseded by VA8 (all 12 groups) |
 | F5 | Navigation CMS |
 | I1 | Deals/Featured inline toggles |
 | B5 | Bids cancel/void |
@@ -143,6 +172,159 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 | D4 | Notifications view + mark read + delete |
 | D5 | Messages (deferred) |
 
+### Tier Q — Query/Sieve via Firebase Function
+| # | Task |
+|---|------|
+| Q1 | `listingProcessor` Firebase HTTPS Function (filters→search→sort→paginate, cursor) |
+| Q2 | Standardise listing API param names (`f=`, `s=`, `p=`, `ps=`, `q=`, `cursor=`) |
+| Q3 | Delegate listing APIs to `listingProcessor` Firebase Function |
+| Q4 | Update appkit listing views for new params + cursor support |
+| Q5 | Firestore composite indexes for filter+sort combos |
+| Q6 | Infinite scroll (`useInfiniteScroll` hook + IntersectionObserver) on public listing pages |
+
+### Tier V-A — Admin CRUD Editor Forms
+| # | Task |
+|---|------|
+| VA1 | Admin Carousel create/edit form |
+| VA2 | Admin Products CRUD 3-mode editor (see A1) |
+| VA3 | Admin Categories CRUD editor (see A2) |
+| VA4 | Admin Blog CRUD editor (see A4) |
+| VA5 | Admin FAQs CRUD editor (see A5) |
+| VA6 | Admin Coupons CRUD editor (see A3) |
+| VA7 | Admin Navigation CMS editor |
+| VA8 | Admin Site Settings — 12-group comprehensive form (supersedes N1): Branding, Appearance, Announcement, SEO, Contact+Social, Watermark, Fees+Commissions, Integrations+Keys, Shipping Defaults, Auction Config, Platform Limits, Legal Policies |
+| VA9 | Admin Orders status + tracking form |
+| VA10 | Admin Users role/ban form |
+| VA11 | Admin Reviews moderation actions |
+| VA12 | Admin Stores management form |
+| VA13 | Admin Payouts mark-paid + CSV export |
+| VA14 | Admin Newsletter unsubscribe + CSV export |
+| VA15 | Admin Contact submissions mark-read + archive |
+| VA16 | Admin Bids per-auction list + cancel/void |
+| VA17 | Admin Feature Flags real UI |
+| VA18 | Admin Media Library upload + delete |
+| VA19 | Admin Analytics charts wired to real data |
+
+### Tier V-B — Store/Seller Forms
+| # | Task |
+|---|------|
+| VB1 | Store Coupon create/edit form |
+| VB2 | Store Order detail + status update |
+| VB3 | Store Payout request / withdraw form (NEW) |
+| VB4 | Store Storefront full edit |
+| VB5 | Store Shipping config form |
+| VB6 | Store Payout settings form |
+| VB7 | Store Addresses CRUD |
+| VB8 | Store Auction create/edit |
+| VB9 | Store Pre-Order create/edit |
+| VB10 | Store Analytics wired |
+
+### Tier V-C — User Account Forms & Flows
+| # | Task |
+|---|------|
+| VC1 | User Order detail full render |
+| VC2 | User Order invoice download (NEW) |
+| VC3 | User Profile full edit |
+| VC4 | User Settings password/email/privacy |
+| VC5 | User Notifications view + mark read |
+| VC6 | User Wishlist page wiring |
+| VC7 | Message system Firebase RTDB wiring |
+
+### Tier V-D — Public Pages & Navigation
+| # | Task |
+|---|------|
+| VD1 | /support Help Centre page |
+| VD2 | Footer dead link audit + fix |
+| VD3 | generateMetadata + social share preview metadata for all detail pages (see SL4) |
+| VD4 | Category + brand display on product cards + filters |
+| VD5 | Store profile on product detail (not user profile) |
+| VD6 | Brands listing page |
+
+### Tier R — CRUD Table UX Standard
+| # | Task |
+|---|------|
+| R1 | All CRUD tables: row action menus + tooltips + success/error feedback on every action |
+
+### Tier W — Cart & Wishlist Integrity
+| # | Task |
+|---|------|
+| W1 | Cart stale data validation on open (auth + localStorage) |
+| W2 | Wishlist stale data validation on open |
+| W3 | Out-of-stock section in cart (show, don't remove; disable checkout if all OOS) |
+| W4 | Cart item product link — opens product detail in new tab (all types) |
+
+### Tier X — Code Quality
+| # | Task |
+|---|------|
+| X1 | Fix all TypeScript issues: async params (Promise<>) + eliminate `as any` casts |
+| X2 | Toast standardisation — replace all `setSaveMessage`/`setSuccessMsg` with `useToast` |
+| X3 | Dark mode + responsive fixes for admin CRUD editor forms |
+| X4 | Responsive + themed CRUD forms — global checklist (375px / 768px / dark mode / tokens) |
+| X5 | Replace skeleton `loading.tsx` files with `PageLoader` component + 15s timeout/error |
+| X6 | Media filename slug convention — pass resource slug to `generateMediaFilename()` in all upload handlers |
+
+### Tier S — Social Media Feed Sections
+| # | Task |
+|---|------|
+| S1 | Social feed API route + shared fetcher (`/api/social-feed`, Instagram/Facebook/TikTok/DeviantArt) |
+| S2 | `social-feed` section type — `SocialFeedSection` RSC + `SocialPostCard` component |
+| S3 | Admin sections builder for `social-feed` type in `AdminSectionsView` |
+| S4 | Site settings credentials — TikTok + DeviantArt fields; expose in VA8 ⑧Integrations |
+| S5 | Seed data — disabled sample `social-feed` section in homepage sections seed |
+
+---
+
+## ⛔ DO NOT BREAK — GOLDEN RULES (non-negotiable, apply to every single task)
+
+> The app must always be in a working, deployable state. Every commit must pass `npx tsc --noEmit` and leave the UI functional. We go from current state → finished state incrementally — never through a broken intermediate state.
+
+### UI must never break
+- If a feature is **missing** (no data, no config, no API key) — show an empty state, a placeholder, or hide the section gracefully. **Never crash the page.**
+- If a **field is renamed** or **removed from a schema** — treat it as optional with a fallback. Old data must still render without error.
+- If a **component prop is missing** — every new prop must have a default. Components fail gracefully, not loudly.
+- If a **page has no data** — render a sensible empty state (`EmptyState` component), not a blank white screen or thrown error.
+- **Spelling/naming changes** (e.g., renaming a prop or event key) are applied in one atomic commit covering both producer and consumer. Never leave a half-renamed codebase.
+- **Schema breaks are acceptable** (TypeScript will catch them) — fix them before committing. UI runtime breaks are not.
+
+### Reusability rule
+- **Before building any new component**, search appkit for an existing one that can be extended. Prefer enhancing over duplicating.
+- Every new UI primitive (card, badge, layout wrapper, empty state, status chip) belongs in `appkit/src/ui/`. Every new feature component belongs in `appkit/src/features/[domain]/`.
+- The `src/` (Next.js app) must **only** contain page files, route handlers, and thin wrappers. All logic and UI goes in appkit.
+- If a component serves 2+ pages, it belongs in appkit, not inline in a page file.
+
+### Navigation, search, and slug system must never regress
+- The **public navigation** (navbar, mobile bottom bar, category menu, breadcrumbs) must always render correctly. Never change nav item routes without updating all links.
+- The **dashboard menus** (admin sidebar, store sidebar, user sidebar) must stay fully functional. Adding a menu item is fine; removing or renaming without updating all references is not.
+- The **search system** (search bar, query params `q=`, `f=`, `s=`, `p=`, `ps=`) must keep working. Never change param names without updating all callers.
+- The **sticky toolbars** (listing page filter bars, bulk action bars, sort controls) must remain visible and functional on scroll.
+- The **slug system** is sacred — all resource IDs equal their slugs. All cross-reference fields (`storeId`, `categorySlug`, `brandSlug`, `parentId`, `productId`) must point to real documents. Every new resource type must register its prefix in the slug table below.
+
+### Slug prefix registry (all resources, current + planned)
+
+| Resource | Firestore Collection | Prefix | Example ID/slug |
+|----------|---------------------|--------|-----------------|
+| Product (standard) | `products` | `product-` | `product-hot-wheels-redline-1969` |
+| Auction | `products` | `auction-` | `auction-pokemon-charizard-psa9` |
+| Pre-order | `products` | `preorder-` | `preorder-pokemon-sv5-booster-box` |
+| Store | `stores` | `store-` | `store-cardgame-hub` |
+| Category | `categories` | `category-` | `category-pokemon-cards` |
+| Brand | `brands` | `brand-` | `brand-bandai` |
+| Event | `events` | `event-` | `event-pokemon-tournament-june` |
+| Blog post | `blogPosts` | `blog-` | `blog-how-to-grade-pokemon-cards` |
+| Review | `reviews` | `review-` | `review-product-xxx-user-yyy` |
+| User profile | `users` | `user-` | `user-seller-cards` |
+| FAQ | `faqs` | `faq-` | `faq-how-does-bidding-work` |
+| Coupon | `coupons` | `coupon-` | `coupon-welcome10` |
+| Section | `homepageSections` | `section-` | `section-featured-products` |
+| Carousel slide | `carouselSlides` | `slide-` | `slide-hero-homepage` |
+| Nav item | `navItems` | `nav-` | `nav-new-arrivals` |
+| Order | `orders` | `order-` | `order-ravi-001` |
+| Bid | `bids` | `bid-` | `bid-charizard-auction-ravi-1` |
+| Notification | `notifications` | `notif-` | `notif-order-shipped-001` |
+| Ad slot | `ads` | `ad-` | `ad-after-hero-homepage` |
+| Payout | `payouts` | `payout-` | `payout-store-cardgame-001` |
+| Address | subcollection | `addr-` | `addr-ravi-home` |
+
 ---
 
 ## HOW TO WORK (follow this loop for every task)
@@ -150,9 +332,15 @@ After A1: do **A3** (Admin Coupons CRUD), **A4** (Admin Blog CRUD), **A5** (Admi
 1. **Read `crud-tracker.md`** — check which task is next (⏳), mark it 🔄
 2. **Read** the relevant source files before writing a single line
 3. **Plan** in 3–5 bullets what to change and why
-4. **Implement** the smallest correct change
+4. **Implement** the smallest correct change — enhance existing components rather than duplicating
 5. **Verify** — `npx tsc --noEmit` must be 0 errors; visually confirm in browser
-6. **Commit** with format: `fix/feat(scope): description` — one task, one commit
+   - All new **forms** must pass: mobile 375px ✓ | tablet 768px ✓ | dark mode ✓ | tokens only (no hardcoded hex) ✓ | focus rings ✓ | error states ✓ | submit button loading/disabled state ✓
+   - All new **actions** must show result: success → `showToast` + navigate/re-fetch | failure → `showToast(reason, "error")`. No `setSaveMessage` state divs.
+   - All new **page/layout files** that access `params`/`searchParams` must use `Promise<{...}>` + `await` (Next.js 15).
+   - All **media upload handlers** must pass `slug` to `generateMediaFilename()` so filenames include the resource slug.
+   - `id === slug` is enforced for every resource. When creating/editing, the Firestore document ID must be set to the slug value. Every cross-reference field (`storeId`, `categorySlug`, `brandSlug`, `parentId`) must point to a real document.
+   - **No page may crash** because a prop/field is missing — every optional data point must have a fallback.
+6. **Commit** with format: `fix/feat(scope): description` — one task, one commit. Both appkit and letitrip commits if both changed.
 7. **Seed** — does this change need seed data? If yes, update. If no, note it.
 8. **Update `newchange.md`** — prepend a new Part entry describing what changed
 9. **Update `crud-tracker.md`** — mark task ✅, fill Part #, update Summary stats + timestamp

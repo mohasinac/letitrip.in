@@ -2,15 +2,24 @@
 
 /* Consumer Theme Overrides */
 :root {
-  /* Colors - override appkit defaults */
-  --appkit-color-primary: #84e122; /* Lime Green */
-  --appkit-color-secondary: #e91e8c; /* Hot Pink */
+  /* Image 1 palette (light mode): Cobalt Blue body + Lime Green blades */
+  --appkit-color-primary:   #3570fc; /* Cobalt Blue */
+  --appkit-color-secondary: #65c408; /* Lime Green  */
 
-  /* Spacing - can override if needed */
-  /* --appkit-space-4: 1rem; */
+  /* Themed glow variables — consumed by .card-glow and .btn-glow */
+  --glow-color:   rgba(53, 112, 252, 0.12);  /* cobalt blue */
+  --glow-ring:    rgba(53, 112, 252, 0.08);
+  --glow-strong:  rgba(53, 112, 252, 0.18);
+}
 
-  /* Border radius - can override if needed */
-  /* --appkit-radius-card: 1rem; */
+.dark {
+  /* Image 2 palette (dark mode): Hot Pink blades + near-black body */
+  --appkit-color-primary:   #e91e8c; /* Hot Pink */
+  --appkit-color-secondary: #e91e8c; /* Hot Pink (unified dark accent) */
+
+  --glow-color:   rgba(233, 30, 140, 0.15);  /* hot pink */
+  --glow-ring:    rgba(233, 30, 140, 0.10);
+  --glow-strong:  rgba(233, 30, 140, 0.22);
 }
 
 @tailwind base;
@@ -52,8 +61,14 @@
 
   /* Selection color */
   ::selection {
-    background-color: rgba(101, 196, 8, 0.25);
+    background-color: rgba(101, 196, 8, 0.30);
     color: theme(colors.zinc.900);
+  }
+
+  /* Dark mode: lime-green at 25% on near-black is near-invisible; use higher opacity + light text */
+  .dark ::selection {
+    background-color: rgba(101, 196, 8, 0.45);
+    color: theme(colors.zinc.50);
   }
 
   /* Remove extra spacing from root */
@@ -78,7 +93,7 @@
   }
 
   .dark *:focus-visible {
-    @apply ring-secondary-400 ring-offset-slate-950;
+    @apply ring-primary-400 ring-offset-slate-950;
   }
 }
 
@@ -465,28 +480,60 @@
 .accent-divider {
   border: none;
   height: 1px;
-  background: linear-gradient(to right, transparent, #65c408, transparent);
+  background: linear-gradient(to right, transparent, #3570fc, transparent); /* primary cobalt */
   opacity: 0.35;
 }
 
-/* -- Sprint 0: Card Lift Utility --------------------------------------- */
-.card-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.dark .accent-divider {
+  background: linear-gradient(to right, transparent, #e91e8c, transparent); /* primary hot pink */
+  opacity: 0.25;
+}
+
+/* -- Sprint 0: Card Lift Utility (tighter spread — no bleed into grid neighbours) --- */
+.card-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
 .card-lift:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
+  /* Tight negative spread keeps glow contained within the card footprint */
   box-shadow:
-    0 12px 28px -6px rgba(101, 196, 8, 0.10),
-    0 4px 10px  -3px rgba(101, 196, 8, 0.06);
+    0 0 0 1px var(--glow-ring),
+    0 6px 18px -4px var(--glow-color);
+}
+
+/* -- Subtle themed card glow (hover only, no lift) ------------------- */
+.card-glow { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
+.card-glow:hover {
+  box-shadow:
+    0 0 0 1px var(--glow-ring),
+    0 4px 14px -3px var(--glow-color);
+}
+
+/* -- Subtle themed button glow (replaces large colored shadow-lg bleed) --- */
+.btn-glow {
+  box-shadow: 0 1px 6px -1px var(--glow-ring);
+  transition: box-shadow 0.2s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 2px 12px -2px var(--glow-color);
 }
 
 /* -- Sprint 0: Gradient Text Utilities --------------------------------- */
+/* Light: cobalt blue → lime green (image 1 colours) */
 .text-gradient-primary {
-  background: linear-gradient(to right, #65c408, #84e122);
+  background: linear-gradient(to right, #3570fc, #65c408);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+/* Dark: hot pink → cobalt blue */
+.dark .text-gradient-primary {
+  background: linear-gradient(to right, #e91e8c, #5992ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* Brand gradient: cobalt → lime green → hot pink (all three brand colours) */
 .text-gradient-brand {
-  background: linear-gradient(to right, #65c408, #3570fc, #e91e8c);
+  background: linear-gradient(to right, #3570fc, #65c408, #e91e8c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

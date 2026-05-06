@@ -82,13 +82,13 @@ export const THEME_CONSTANTS = {
   patterns: {
     ..._base.patterns,
     adminInput:
-      "w-full px-3 py-2.5 border border-zinc-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-secondary-400/20 focus:border-primary-500 dark:focus:border-secondary-400 focus:outline-none transition-colors" as const,
+      "w-full px-3 py-2.5 border border-zinc-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-primary-400/20 focus:border-primary-500 dark:focus:border-primary-400 focus:outline-none transition-colors" as const,
     adminSelect:
-      "w-full px-3 py-2.5 border border-zinc-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-secondary-400/20 focus:border-primary-500 dark:focus:border-secondary-400 focus:outline-none transition-colors" as const,
+      "w-full px-3 py-2.5 border border-zinc-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-primary-500/20 dark:focus:ring-primary-400/20 focus:border-primary-500 dark:focus:border-primary-400 focus:outline-none transition-colors" as const,
     badgeDefault:
       "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" as const,
     linkDefault:
-      "text-primary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-secondary-300 transition-colors underline-offset-2 hover:underline" as const,
+      "text-primary-600 dark:text-primary-300 hover:text-primary-500 dark:hover:text-primary-200 transition-colors underline-offset-2 hover:underline" as const,
     modalContent:
       "bg-white dark:bg-slate-900 rounded-2xl border border-zinc-200 dark:border-slate-700 shadow-xl max-w-lg w-full mx-4 overflow-hidden" as const,
     successState:
@@ -123,7 +123,7 @@ export const THEME_CONSTANTS = {
     active: "active:scale-95",
     minWidth: "min-w-[200px] w-full",
     ctaPrimary:
-      "bg-white text-secondary-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-secondary-50 transition-colors shadow-lg",
+      "bg-white text-secondary-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-secondary-50 transition-colors shadow-sm btn-glow",
     ctaOutline:
       "border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors bg-transparent",
   },
@@ -135,7 +135,7 @@ export const THEME_CONSTANTS = {
     ..._base.card,
     /** Chat message bubble variants */
     chatBubble: {
-      mine: "bg-primary-600 text-white dark:bg-secondary-500 dark:text-white rounded-2xl rounded-br-sm" as const,
+      mine: "bg-primary-600 text-white dark:bg-primary-500 dark:text-white rounded-2xl rounded-br-sm" as const,
       theirs:
         "bg-zinc-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm" as const,
     },
@@ -222,9 +222,9 @@ export const THEME_CONSTANTS = {
    */
   accent: {
     primary:
-      "bg-primary-600 hover:bg-primary-700 text-white dark:bg-secondary-500 dark:hover:bg-secondary-400 dark:text-white",
+      "bg-primary-600 hover:bg-primary-700 text-white dark:bg-primary-500 dark:hover:bg-primary-400 dark:text-white",
     primarySoft:
-      "bg-primary-50 text-primary-700 dark:bg-secondary-900/30 dark:text-secondary-300",
+      "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300",
     secondary: "bg-secondary-600 hover:bg-secondary-700 text-white",
     secondarySoft:
       "bg-secondary-50 text-secondary-700 dark:bg-secondary-900/30 dark:text-secondary-300",
@@ -288,13 +288,13 @@ export const THEME_CONSTANTS = {
    * Multiple card styles including gradients, glass effects, and stat cards
    */
   enhancedCard: {
-    base: "rounded-2xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all duration-200",
+    base: "rounded-2xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm card-glow",
     elevated:
-      "rounded-2xl bg-white dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-shadow duration-200",
+      "rounded-2xl bg-white dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 shadow-md card-glow",
     interactive:
-      "rounded-2xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-primary-300/60 dark:hover:border-secondary-500/60 transition-all duration-200 cursor-pointer",
+      "rounded-2xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm hover:border-primary-300/50 dark:hover:border-primary-600/40 card-glow cursor-pointer",
     glass:
-      "rounded-2xl backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border border-zinc-200/60 dark:border-slate-700/40 shadow-lg",
+      "rounded-2xl backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border border-zinc-200/60 dark:border-slate-700/40 shadow-md card-glow",
     gradient: {
       indigo:
         "rounded-2xl bg-gradient-to-br from-primary-50 via-white to-white dark:from-primary-950/30 dark:via-slate-900 dark:to-slate-900 border border-primary-100/80 dark:border-primary-900/40",
@@ -335,21 +335,21 @@ export const THEME_CONSTANTS = {
     subtle: "bg-zinc-50/80 dark:bg-slate-800/20",
     warm: "bg-gradient-to-br from-amber-50/40 to-orange-50/20 dark:from-amber-950/10 dark:to-orange-950/5",
     cool: "bg-gradient-to-br from-primary-50/40 to-sky-50/20 dark:from-primary-950/10 dark:to-sky-950/5",
-    mesh: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary-50/50 via-white to-secondary-50/20 dark:from-primary-950/20 dark:via-slate-900 dark:to-secondary-950/10",
+    mesh: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary-50/50 via-white to-secondary-50/30 dark:from-primary-950/20 dark:via-slate-900 dark:to-primary-950/10",
   },
 
   /**
    * Accent banner gradients
-   * Themed gradient banners: green→cobalt in light mode, pink→cobalt in dark mode.
+   * Themed gradient banners: cobalt-blue→lime-green in light mode, hot-pink→cobalt in dark mode.
    * Use for promo strips, newsletter boxes, CTA panels, and spotlight sections.
    */
   accentBanner: {
     // Full-width promo strip (e.g. TitleBar promo strip)
     gradient:
-      "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+      "bg-gradient-to-r from-primary to-secondary dark:from-primary-700 dark:to-cobalt",
     // Semi-transparent inset boxes (e.g. footer newsletter slot)
     gradientSubtle:
-      "bg-gradient-to-r from-primary/90 to-cobalt/80 dark:from-secondary/90 dark:to-cobalt/80",
+      "bg-gradient-to-r from-primary/90 to-secondary/80 dark:from-primary/90 dark:to-cobalt/80",
     // Spotlight section — light cobalt-tinted in light mode, deep navy in dark mode
     spotlightSection:
       "bg-gradient-to-br from-cobalt-50 via-zinc-50 to-cobalt-50 dark:from-cobalt-900 dark:via-slate-900 dark:to-cobalt-950",
@@ -372,20 +372,20 @@ export const THEME_CONSTANTS = {
     // Used on all static/info pages (contact, help, legal, how-it-works, etc.)
     // Light: dark-green → cobalt  |  Dark: hot-pink → cobalt
     pageHero:
-      "bg-gradient-to-br from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+      "bg-gradient-to-br from-primary to-secondary dark:from-primary-700 dark:to-cobalt",
     // CTA / marketing sections at bottom of feature pages (bg-gradient-to-r)
-    cta: "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
-    // Promotions page vibrant hero (rose → pink → orange; dark: secondary pink)
+    cta: "bg-gradient-to-r from-primary to-secondary dark:from-primary-700 dark:to-cobalt",
+    // Promotions page vibrant hero (rose → pink → orange; dark: hot-pink)
     promotionHero:
-      "bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 dark:from-secondary-700 dark:via-secondary-600 dark:to-rose-700",
+      "bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 dark:from-primary-700 dark:via-primary-600 dark:to-rose-700",
     // Cover strip for seller storefront / public profile (purely decorative h-48)
     coverStrip:
-      "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+      "bg-gradient-to-r from-primary to-secondary dark:from-primary-700 dark:to-cobalt",
     // WhatsApp community card — always green (on-brand), darker in dark mode
     whatsappCard:
       "bg-gradient-to-br from-green-700 to-green-800 dark:from-emerald-800 dark:to-emerald-900",
     // Solid metrics/stats bar on feature pages
-    statBarBg: "bg-primary-700 dark:bg-secondary-800",
+    statBarBg: "bg-primary-700 dark:bg-primary-800",
     // Checkbox overlay on card images (semi-transparent)
     imageCheckbox: "bg-white/80 dark:bg-slate-800/80",
   },
@@ -449,9 +449,9 @@ export const THEME_CONSTANTS = {
     // Button colors — flat design, no gradients, clean hover states
     button: {
       primary:
-        "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm focus:ring-primary-500/30 dark:bg-secondary-500 dark:text-white dark:hover:bg-secondary-400 dark:active:bg-secondary-600 dark:focus:ring-secondary-400/30",
+        "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm focus:ring-primary-500/30 dark:bg-primary-500 dark:text-white dark:hover:bg-primary-400 dark:active:bg-primary-600 dark:focus:ring-primary-400/30",
       secondary:
-        "bg-primary-700 text-white hover:bg-primary-600 active:bg-primary-800 shadow-md focus:ring-primary-500 dark:bg-secondary-700 dark:text-white dark:hover:bg-secondary-600 dark:active:bg-secondary-800 dark:focus:ring-secondary-500",
+        "bg-primary-700 text-white hover:bg-primary-600 active:bg-primary-800 shadow-md focus:ring-primary-500 dark:bg-primary-700 dark:text-white dark:hover:bg-primary-600 dark:active:bg-primary-800 dark:focus:ring-primary-500",
       outline:
         "border border-zinc-200 dark:border-slate-700 bg-white dark:bg-transparent text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-slate-800 focus:ring-zinc-400",
       ghost:
@@ -465,13 +465,13 @@ export const THEME_CONSTANTS = {
     // Form colors
     form: {
       checked:
-        "checked:bg-primary-600 checked:border-primary-600 dark:checked:bg-secondary-500 dark:checked:border-secondary-500",
+        "checked:bg-primary-600 checked:border-primary-600 dark:checked:bg-primary-500 dark:checked:border-primary-500",
       radioChecked:
-        "checked:border-primary-600 checked:border-[6px] dark:checked:border-secondary-500",
+        "checked:border-primary-600 checked:border-[6px] dark:checked:border-primary-500",
       checkmark: "text-white dark:text-white",
       required: "text-red-500",
       focusRing:
-        "focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-secondary-400 dark:focus:ring-offset-slate-900",
+        "focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-primary-400 dark:focus:ring-offset-slate-900",
     },
     // Navbar colors
     navbar: {
