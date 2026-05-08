@@ -24,7 +24,28 @@
 
 ---
 
-# Change Log — Session 68 (continued-2) — 2026-05-08 (Latest)
+# Change Log — Session 69 — 2026-05-08 (Latest)
+
+## X2 — Toast standardisation in admin editor components
+
+### What changed
+
+| What | File |
+|------|------|
+| Added `useToast`; removed `saveMessage` state + validation Alert JSX; wired `showToast` on save success/error/blocked | `appkit/src/features/admin/components/AdminAdEditorView.tsx` |
+| Added `useToast`; removed `errorMsg`/`successMsg` state + Alert JSX in sections; wired `showToast` on save/delete success+error | `appkit/src/features/admin/components/AdminBrandEditorView.tsx` |
+| Added `useToast`; removed `errorMsg`/`successMsg` state + Alert JSX in sections; wired `showToast` on save/delete success+error | `appkit/src/features/admin/components/AdminCategoryEditorView.tsx` |
+| Added `useToast`; removed `saveMessage` state + inline Alert block + `setSaveMessage(null)` calls; loading/error Alerts kept | `appkit/src/features/admin/components/AdminFeatureFlagsView.tsx` |
+| Added `useToast`; removed `saveMessage` state + inline Alert block + `setSaveMessage(null)` calls; loading/error Alerts kept | `appkit/src/features/admin/components/AdminNavigationView.tsx` |
+
+### Notes
+- `AdminSectionsView` was already using `useToast` — no change needed.
+- Loading and error `Alert` components (from `useSiteSettings`) in `AdminFeatureFlagsView` and `AdminNavigationView` were intentionally preserved.
+- `npx tsc --noEmit` in `appkit/` passes with 0 errors.
+
+---
+
+# Change Log — Session 68 (continued-2) — 2026-05-08
 
 ## Doc sync — media filename slug patterns + ID type corrections in prompt.md and CLAUDE.md
 

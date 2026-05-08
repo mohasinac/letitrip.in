@@ -7,26 +7,26 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 68
+## ⚡ CURRENT TASK — Session 69
 
-| Task | What to do |
-|------|------------|
-| **X2** | Toast notification standard — replace all `alert()` / ad-hoc error divs with appkit `useToast` hook across all admin/seller/user forms |
-| **A1** | Products 3-mode editor — unified create/edit form for standard product, auction, pre-order; 3-tab or mode-switch UI; all fields per schema |
-| **VA2** | Deals/Featured toggles — admin quick-toggle for `isFeatured` + `isPromoted` + `isOnSale` on product list rows (without opening the full editor) |
-| **I1** | InlineCreateSelect integration — wire `InlineCreateSelect` into all form fields that reference categories, brands, stores (create-on-the-fly instead of navigating away) |
+| Task | Status | What to do |
+|------|--------|------------|
+| **X2** | ✅ Session 69 | Toast standardisation — `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView` migrated to `useToast` |
+| **A1** | ⏳ | Products 3-mode editor — unified create/edit form for standard product, auction, pre-order; 3-tab or mode-switch UI; all fields per schema |
+| **VA2** | ⏳ | Deals/Featured toggles — admin quick-toggle for `isFeatured` + `isPromoted` + `isOnSale` on product list rows (without opening the full editor) |
+| **I1** | ⏳ | InlineCreateSelect integration — wire `InlineCreateSelect` into all form fields that reference categories, brands, stores (create-on-the-fly instead of navigating away) |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
 
-> ⚠️ **HS4 + HS5 deferred** — Google Reviews integration (HS4) and Custom Cards component (HS5) were planned for Session 67 but not started. They are NOT blocked by Session 68. Pick up in a dedicated session before Session 70 (VA8 credentials form exposes Google Maps key needed by HS4).
+> ⚠️ **HS4 + HS5 deferred** — Google Reviews integration (HS4) and Custom Cards component (HS5) were planned for Session 67 but not started. They are NOT blocked by Session 69. Pick up in a dedicated session before Session 70 (VA8 credentials form exposes Google Maps key needed by HS4).
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
 | 67-b | HS4, HS5 | Google Reviews API proxy + component; Custom Cards component + wiring (deferred from Session 67) |
-| 69 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor |
-| 70 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
-| 71 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
+| 70 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor |
+| 71 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
+| 72 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
 
 ---
 
@@ -80,19 +80,21 @@ Search `appkit/src/` before writing anything new.
 5. Implement smallest correct change
 6. Verify: npx tsc --noEmit + browser visual confirm
 7. Commit → fix/feat/wire/seed(scope): description
-8. newchange.md → prepend new session Part entry
-9. crud-tracker.md → mark ✅, fill Part#, update Summary + timestamp
+8. newchange.md → prepend new task entry (after EVERY task, not just end of session)
+9. prompt.md → update CURRENT TASK status + PLAN SNAPSHOT (after EVERY task)
+10. crud-tracker.md → mark ✅, fill Part#, update Summary + timestamp
 ```
 
 ### Checklist per task
 ```
-□ TRACKER   crud-tracker.md marked 🔄 at start
-□ DEFERRED  newchange.md DEFERRED table checked
-□ CODE      implemented, tsc 0 errors, browser verified
-□ COMMIT    correct format, one task, no TS errors
-□ SEED      updated or noted "no change needed"
-□ NEWCHANGE newchange.md prepended with session Part entry
-□ TRACKER   marked ✅, Part# filled, Summary + timestamp updated
+□ TRACKER    crud-tracker.md marked 🔄 at start
+□ DEFERRED   newchange.md DEFERRED table checked
+□ CODE       implemented, tsc 0 errors, browser verified
+□ COMMIT     correct format, one task, no TS errors
+□ SEED       updated or noted "no change needed"
+□ NEWCHANGE  newchange.md prepended with task entry — after EVERY task
+□ PROMPT     prompt.md CURRENT TASK + PLAN SNAPSHOT updated — after EVERY task
+□ TRACKER    marked ✅, Part# filled, Summary + timestamp updated
 ```
 
 ### Build cycle (appkit changes)
@@ -335,7 +337,8 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ✗ Add comments explaining what code does
 ✗ Run git push unless asked
 ✗ Mark ✅ if any spec bullet is unbuilt — log deferral in newchange.md DEFERRED first
-✗ Skip newchange.md update after completing a task
+✗ Skip newchange.md update after completing a task — update after EVERY task
+✗ Skip prompt.md update after completing a task — update after EVERY task
 ✗ Skip crud-tracker.md update — after every task AND every 30 minutes
 ✗ Use dangerouslySetInnerHTML without RichTextRenderer
 ✗ Use as unknown as Foo without a ⚠️ Tech debt: note in tracker
@@ -348,9 +351,9 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–67 (50 tasks ✅)
-Current:       68 (X2+A1+VA2+I1 — Admin-1)
-Next:          67-b (HS4+HS5 deferred), 69 (A3+VA6+A4+VA4), 70 (A5+VA5+F5+VA7+VA8)
+Sessions done: 60–68 (52 tasks ✅)
+Current:       69 (A1+VA2+I1 — Admin-1 continued; X2 done)
+Next:          67-b (HS4+HS5 deferred), 70 (A3+VA6+A4+VA4), 71 (A5+VA5+F5+VA7+VA8)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
