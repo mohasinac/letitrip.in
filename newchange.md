@@ -11,7 +11,7 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
-| 2026-05-08 | A3/VA6 + A4/VA4 | Session 70 added `/admin/blog/new/`, `/admin/blog/[id]/`, `/admin/coupons/new/`, `/admin/coupons/[id]/` alongside existing `[[...action]]` catch-alls — creates Next.js "same specificity" route collision error. Multiple other admin routes likely affected (products, bids, carousel, categories, orders, reviews, sections, users). | ⏳ New task RC4 added to tracker — fix deferred until Sessions 70–73 admin editors are complete | RC4 |
+| 2026-05-08 | A3/VA6 + A4/VA4 | Session 70 added `/admin/blog/new/`, `/admin/blog/[id]/`, `/admin/coupons/new/`, `/admin/coupons/[id]/` alongside existing `[[...action]]` catch-alls — creates Next.js "same specificity" route collision error. Multiple other admin routes likely affected (products, bids, carousel, categories, orders, reviews, sections, users). | ✅ Build error fixed 2026-05-09 — only `/admin/products` had an actual conflict (had both `page.tsx` and `[[...action]]/page.tsx`); all other areas use `[[...action]]` as the sole list page, no conflict. Deleted `products/[[...action]]/page.tsx`. RC4 full audit still ⏳. | RC4 |
 | 2026-05-08 | SP1/P10 | Seed data source-of-truth policy formalised: SeedPanel SP1/P10 documentation (slugPattern, mediaFields, PII fields, column metadata) is canonical for all 23 collections. Seed files must be updated in-session with any schema change. P23–P31 sessions expand counts only. | ✅ Policy adopted — no code change needed | Noted in prompt.md + crud-tracker.md |
 | 2026-05-07 | P10 Part A | Per-collection API endpoints (`/api/demo/seed/[collection]/route.ts`) not built — monolithic route handles per-collection calls correctly via body param. | ✅ Intentionally resolved — no per-collection route needed | — |
 | 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ⚠️ Tech debt — open | CF1 (Session 65) must fix carousel schema to resolve |
@@ -24,6 +24,132 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+# Session 71 — 2026-05-09 (continued)
+
+## VA8 — AdminSiteSettingsView (12-tab site settings form)
+
+**Files changed (appkit/):**
+- `src/features/admin/components/AdminSiteSettingsView.tsx` — NEW: 12-tab settings form; groups: Branding, Appearance, Announcement, SEO, Contact & Social, Watermark, Fees, Integrations, Shipping, Auction Config, Platform Limits, Legal Policies
+- `src/features/admin/components/index.ts` — exported `AdminSiteSettingsView`, `AdminSiteSettingsViewProps`
+- `src/index.ts` — exported both
+
+**Files changed (src/):**
+- `src/app/[locale]/admin/site/page.tsx` — updated to render `AdminSiteSettingsView` (was `AdminSiteView`)
+- `src/app/api/admin/site/route.ts` — NEW: GET (getSingleton + credentialsMasked) + PUT (updateSingleton with `z.record(z.string(), z.unknown())` schema)
+
+**Key implementation notes:**
+- `useSave` factory pattern — one mutation per tab; each Save button sends only that group's payload
+- `MaskedInput` helper — password field with Reveal/Hide toggle for all API keys/secrets
+- Native `<input type="color">` for color pickers; `Slider` for watermark size/opacity; plain `<textarea>` for legal HTML
+- Fees stored in paise (×100 for threshold + minBidIncrement display)
+- Watermark live preview (text only)
+- `z.record(z.string(), z.unknown())` — Zod 2-arg form required in newer Zod versions
+
+**tsc:** 0 errors both repos. **Commits:** f931bec (appkit), f1ce1d42d (main)
+
+---
+
+# RC1/RC2 — 2026-05-09
+
+## Navigation centralised + ROUTES completed
+
+### RC1 — `src/constants/navigation.tsx` extended (was: only `MAIN_NAV_ITEMS`)
+
+New exports added:
+- `ADMIN_NAV_GROUPS` — admin sidebar (6 groups: Management, Finance, Catalog, Content, Site, System)
+- `STORE_NAV_GROUPS` — store sidebar (5 groups: Overview, Listings, Orders, Finance, Store) — added "Orders" group that was previously missing
+- `USER_NAV_GROUPS` + `USER_NAV_ALL_ITEMS` — user account sidebar
+- `SIDEBAR_SUPPORT_LINKS` — public sidebar Support section (About, Contact, Help)
+- `FOOTER_LINK_GROUPS` — all 5 footer columns (Shop, Support, For Sellers, Learn, Legal)
+
+Layout files simplified:
+- `src/app/[locale]/admin/layout.tsx` — removed inline `ADMIN_NAV_GROUPS`; imports from config
+- `src/app/[locale]/store/layout.tsx` — removed inline `STORE_NAV_GROUPS`; imports from config
+- `src/app/[locale]/user/layout.tsx` — removed inline `USER_NAV_GROUPS` + `ALL_NAV_ITEMS`; imports from config
+
+`LayoutShellClient.tsx` simplified:
+- `navItems` now maps `MAIN_NAV_ITEMS` + `tNav(key)` (was 9 inline emoji items)
+- `sidebarSections` uses `SIDEBAR_SUPPORT_LINKS` from config; **fixed dep array bug** (missing `seedPanelEnabled` + `user?.role`)
+- `footer.linkGroups` uses `FOOTER_LINK_GROUPS` from config (removed ~55 inline lines)
+
+### RC2 — New ROUTES constants added to `appkit/src/next/routing/route-map.ts`
+
+| Key | Value |
+|-----|-------|
+| `ADMIN.EVENTS_NEW` | `/admin/events/new` |
+| `ADMIN.EVENTS_EDIT(id)` | `/admin/events/:id/edit` |
+| `ADMIN.ADS_NEW` | `/admin/ads/new` |
+| `ADMIN.ADS_EDIT(id)` | `/admin/ads/:id/edit` |
+| `PUBLIC.SUBLISTING_CATEGORIES` | `/sublisting-categories` |
+| `PUBLIC.SUBLISTING_CATEGORY(slug)` | `/sublisting-categories/:slug` |
+
+**0 new TS errors in both repos.**
+
+---
+
+# Session 71 — 2026-05-09
+
+## A5/VA5 — FAQ editor + list wired
+
+**What changed**:
+- `appkit/src/features/admin/components/AdminFaqEditorView.tsx` — new FAQ create/edit form: question, answer (RichTextEditor), category, tags, slug (auto from question, faq- prefix), order, priority, visibility toggles (isActive, isPinned, showOnHomepage, showInFooter); create/update/delete via API
+- `appkit/src/features/admin/components/AdminFaqsView.tsx` — added `actionHref`/`getRowHref` props
+- `src/app/[locale]/admin/faqs/page.tsx` — new dedicated list page
+- `src/app/[locale]/admin/faqs/new/page.tsx` — create page
+- `src/app/[locale]/admin/faqs/[id]/edit/page.tsx` — edit page
+- `src/app/[locale]/admin/faqs/[[...action]]/page.tsx` — deleted (converted to dedicated routes, RC4 partial)
+- `src/app/api/admin/faqs/route.ts` — added POST (create FAQ)
+- `src/app/api/admin/faqs/[id]/route.ts` — added PATCH alias for PUT
+- Seed: no change needed (FAQ seed data shape unchanged)
+
+---
+
+# RC2/RC3 partial — 2026-05-09
+
+## Hardcoded route strings replaced with ROUTES.* constants
+
+**Files changed (src/):**
+- `admin/carousel/new/page.tsx` + `[id]/edit/page.tsx` — `"/admin/carousel"` → `ROUTES.ADMIN.CAROUSEL`
+- `admin/faqs/new/page.tsx` + `[id]/edit/page.tsx` — `"/admin/faqs"` + template literal → `ROUTES.ADMIN.FAQS` / `ROUTES.ADMIN.FAQS_EDIT(id)`
+- `admin/coupons/new/page.tsx` + `[id]/edit/page.tsx` — `"/admin/coupons"` + template literal → `ROUTES.ADMIN.COUPONS` / `ROUTES.ADMIN.COUPONS_EDIT(id)`
+- `admin/blog/new/page.tsx` + `[id]/edit/page.tsx` — `"/admin/blog"` + template literal → `ROUTES.ADMIN.BLOG` / `ROUTES.ADMIN.BLOG_EDIT(id)`
+- `admin/products/new/page.tsx` + `[id]/edit/page.tsx` — `"/admin/products"` + template literal → `ROUTES.ADMIN.PRODUCTS` / `ROUTES.ADMIN.PRODUCTS_EDIT(id)`
+- `components/user/UserAddressesClient.tsx` — `"/user/addresses/add"` + template literal → `ROUTES.USER.ADDRESSES_ADD` / `ROUTES.USER.ADDRESSES_EDIT(id)`
+- `components/user/EditAddressClient.tsx` — `"/user/addresses"` → `ROUTES.USER.ADDRESSES`
+- `components/user/AddAddressClient.tsx` — `"/user/addresses"` → `ROUTES.USER.ADDRESSES`
+- `components/user/ProfilePageClient.tsx` — `"/user/addresses"` → `ROUTES.USER.ADDRESSES`
+- `components/auth/LoginPageClient.tsx` — `"/"` → `ROUTES.HOME`
+- `components/auth/RegisterPageClient.tsx` — `"/"` → `ROUTES.HOME`
+- `components/routing/CheckoutRouteClient.tsx` — `"/login?returnTo=/checkout"` → `ROUTES.AUTH.LOGIN + returnTo + ROUTES.USER.CHECKOUT`
+- `components/routing/CartRouteClient.tsx` — `"/checkout"` → `ROUTES.USER.CHECKOUT`
+- `events/[id]/PollInlineClient.tsx` — `<a href="/login">` → `<Link href={ROUTES.AUTH.LOGIN}>`
+- `events/[id]/participate/EventParticipateClient.tsx` — `<a href="/login">` → `<Link href={ROUTES.AUTH.LOGIN}>`
+
+**Files changed (appkit/):**
+- `features/events/components/EventPollWidget.tsx` — `href="/login"` → `href={ROUTES.AUTH.LOGIN}`
+
+**Remaining (not fixed here):**
+- `CartRouteClient.tsx`: `<Button onClick={() => router.push(ROUTES.USER.CHECKOUT)}>` — still a Button-navigates violation; deferred to full RC3 `asChild` sweep
+- `RC2` route-map additions (`SUBLISTING_*`, `SEARCH(q)`) — no current consumers, deferred
+
+**0 TS errors both repos after these changes.**
+
+---
+
+# Hotfix — 2026-05-09
+
+## Build error: Next.js "same specificity" route collision in `/admin/products`
+
+**Error**: `You cannot define a route with the same specificity as a optional catch-all route ("/[locale]/admin/products" and "/[locale]/admin/products[[...action]]")`
+
+**Root cause**: After Session 69 added dedicated `products/page.tsx`, `products/new/page.tsx`, and `products/[id]/edit/page.tsx`, the old stub `products/[[...action]]/page.tsx` was left in place. The `[[...action]]` can match the root path `/admin/products`, which collides with the explicit `page.tsx` at that level.
+
+**Fix**: Deleted `src/app/[locale]/admin/products/[[...action]]/page.tsx` (and its directory). The wired list page at `products/page.tsx` (`AdminProductsView` with `actionHref` + `getRowHref`) is the correct implementation.
+
+**Audit result**: Only `products` had this conflict. Other areas using `[[...action]]` (blog, coupons, carousel, categories, bids, orders, reviews, sections, users) do **not** have a sibling root `page.tsx` — they are unaffected. RC4 full audit remains ⏳.
 
 ---
 

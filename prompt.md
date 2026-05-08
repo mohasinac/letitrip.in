@@ -7,25 +7,18 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 71 (A5, VA5, F5, VA7, VA8)
+## ⚡ CURRENT TASK — Session 71 ✅ COMPLETE → Next: Session 72
 
-| Task | Status | What to do |
-|------|--------|------------|
-| **A5** | ⏳ | FAQs editor — `AdminFaqEditorView.tsx`; SideDrawer; all FAQ fields (question, answer RTE, category, tags, slugPattern, pinned, homepage/footer flags) |
-| **VA5** | ⏳ | FAQ list view — `/admin/faqs/page.tsx`; AdminListingScaffold; columns: question, category, priority, isActive, isPinned, showOnHomepage; RowActionMenu |
-| **F5** | ⏳ | Navigation CMS — `AdminNavEditorView.tsx`; drag-to-reorder nav items; label, slug, icon, isActive; nested children |
-| **VA7** | ⏳ | Nav CMS list/page — `/admin/navigation/page.tsx`; tree view of nav items with inline edit or SideDrawer |
-| **VA8** | ⏳ | Site Settings 12-group form — `/admin/site-settings/page.tsx`; tabbed by group; all siteSettings fields per CLAUDE.md schema |
-
-**Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
-
-> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page (configurable per store). Logged as task HS4-E in tracker (⏳). Not blocking Session 71.
-
-### Completed this session (70)
+### Completed this session (71)
 | Task | Status | Done |
 |------|--------|------|
-| **A3/VA6** | ✅ | Coupons editor + list wired |
-| **A4/VA4** | ✅ | Blog editor + list wired |
+| **A5** | ✅ | FAQs editor — `AdminFaqEditorView.tsx` built; all fields; create/edit/delete |
+| **VA5** | ✅ | FAQ list page wired (`/admin/faqs/page.tsx`); RC4 partial (deleted old `[[...action]]`) |
+| **F5** | ✅ | Navigation CMS API routes; nav items stored in siteSettings.navbarConfig.navItems |
+| **VA7** | ✅ | Nav CMS list page — `AdminNavigationView` rewritten; up/down reorder; inline visibility toggle; SideDrawer editor |
+| **VA8** | ✅ | Site Settings 12-tab form — `AdminSiteSettingsView`; all groups; per-tab save; masked inputs; Slider for watermark |
+
+> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page. Logged as task HS4-E in tracker (⏳).
 
 ### Next sessions
 | Session | Tasks | Goal |
@@ -391,9 +384,9 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–70, 67-b (62 tasks ✅)
-Current:       71 (A5, VA5, F5, VA7, VA8) — FAQs + Nav CMS + Site Settings
-Next:          72 (M1+VA19+M3+VA13+I3), 73 (N3+VA12+B1+VA10+B2+VA9+N2+VA11)
+Sessions done: 60–71, 67-b (68 tasks ✅)
+Current:       72 (M1, VA19, M3, VA13, I3) — Analytics charts + Payouts + seed reset
+Next:          73 (N3, VA12, B1, VA10, B2, VA9, N2, VA11)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
@@ -402,7 +395,7 @@ Foundation     60–64       ✅ done (45/199 tasks)
 Carousel       65          ✅ done (CF1)
 Sections-1     66          ✅ done (HS1+HS2+HS3)
 Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
-Admin CRUD     68–73       🔄 in progress (Sessions 68–70 done; 71–73 remaining)
+Admin CRUD     68–73       🔄 in progress (Sessions 68–71 done; 72–73 remaining)
 Store CRUD     75–76       ⏳
 User Account   77          ⏳
 Custom Fields  78          ⏳
