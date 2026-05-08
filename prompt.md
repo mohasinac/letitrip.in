@@ -7,14 +7,14 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 69
+## ⚡ CURRENT TASK — Session 69 ✅ COMPLETE → Next: Session 67-b (HS4, HS5) or Session 70 (A3, VA6)
 
 | Task | Status | What to do |
 |------|--------|------------|
 | **X2** | ✅ Session 69 | Toast standardisation — `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView` migrated to `useToast` |
 | **A1** | ✅ Session 69 | Products 3-mode editor — `AdminProductEditorView`; Tabs mode selector; storeId DynamicSelect; wraps ProductForm; /admin/products/new + /[id]/edit pages |
 | **VA2** | ✅ Session 69 | Deals/Featured toggles — 4-flag Flags column (featured/isPromoted/isOnSale/isSold) on product list rows; optimistic update + PATCH + toast; isOnSale/isSold added to schema |
-| **I1** | ⏳ | InlineCreateSelect integration — wire `InlineCreateSelect` into all form fields that reference categories, brands, stores (create-on-the-fly instead of navigating away) |
+| **I1** | ✅ Session 69 | InlineCreateSelect wired into AdminProductEditorView (category + brand via render props) and AdminCategoryEditorView (parentId). CategoryQuickCreateForm + BrandQuickCreateForm mini-forms. Store stays DynamicSelect. |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
 

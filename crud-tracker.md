@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-08 — Session 69: VA2 ✅ product flag quick-toggles + isOnSale/isSold schema. 54 done, 146 remaining.
+> **Last updated:** 2026-05-08 — Session 69: I1 ✅ InlineCreateSelect wired into product + category editors with quick-create mini-forms. 55 done, 145 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 217 |
-| ✅ Done | 54 |
+| ✅ Done | 55 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 146 |
+| ⏳ Remaining | 145 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -319,7 +319,7 @@ Rules to keep top-of-mind every task:
 | F1 | Homepage Sections CMS | L | 🚫 | | **Superseded by HS1–HS5** — see Tier HS for full redesign |
 | N1 | Site Settings full wiring | M | 🚫 | | **Superseded by VA8** which covers all 12 setting groups comprehensively. |
 | F5 | Navigation CMS — dynamic nav items in Firestore | M | ⏳ | | VIEW: `AdminNavigationView` EXISTS. Complete CRUD using `SideDrawer` + `Input` + `Toggle` + drag-reorder. API: PUT/DELETE /api/admin/navigation/[id] |
-| I1 | Deals/Featured inline toggles on admin products list | S | ⏳ | | REUSE: `RowActionMenu` (EXISTS) — add toggle actions to `AdminProductsView` rows via existing PUT /api/admin/products/[id] |
+| I1 | InlineCreateSelect wiring — category, brand, store selectors | S | ✅ | Session 69 | AdminProductEditorView: `renderCategorySelector` + `renderBrandSelector` render props → `InlineCreateSelect` with CategoryQuickCreateForm / BrandQuickCreateForm. AdminCategoryEditorView: native `<select>` parentId → `InlineCreateSelect` + CategoryQuickCreateForm. Store selector stays DynamicSelect (no store quick-create form exists yet). |
 | B5 | Bids cancel/void | S | ⏳ | | LIST: `AdminBidsView` EXISTS. ADD: cancel via `RowActionMenu`. REUSE: `ConfirmDeleteModal` (EXISTS). API: PUT /api/admin/bids/[id] |
 | B6 | Newsletter export CSV + unsubscribe | S | ⏳ | | LIST: `AdminNewsletterView` EXISTS. ADD: unsubscribe via `RowActionMenu` + export button in toolbar. API: DELETE /api/admin/newsletter/[id]; GET /api/admin/newsletter/export |
 | B7 | Contact submissions mark-read + archive | S | ⏳ | | LIST: `AdminContactView` EXISTS. ADD: status actions via `RowActionMenu` + `SideDrawer` for detail. API: PUT /api/admin/contact-submissions/[id] |

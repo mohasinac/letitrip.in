@@ -24,7 +24,28 @@
 
 ---
 
-# Change Log — Session 69 (continued-2) — 2026-05-08 (Latest)
+# Change Log — Session 69 (continued-3) — 2026-05-08 (Latest)
+
+## I1 — InlineCreateSelect wired into admin product + category editors
+
+### What changed
+
+| What | File |
+|------|------|
+| New `CategoryQuickCreateForm` — lightweight form (name, description, isActive); POSTs to `/api/admin/categories`; calls `onSaved(id, name)` | `appkit/src/features/admin/components/CategoryQuickCreateForm.tsx` |
+| New `BrandQuickCreateForm` — lightweight form (name, description, isActive); POSTs to `/api/admin/brands`; calls `onSaved(id, name)` | `appkit/src/features/admin/components/BrandQuickCreateForm.tsx` |
+| `AdminProductEditorView`: added `renderCategorySelector` + `renderBrandSelector` render props to `ProductForm` — each renders `InlineCreateSelect` with async load + quick-create mini-form in SideDrawer | `appkit/src/features/admin/components/AdminProductEditorView.tsx` |
+| `AdminCategoryEditorView`: replaced native `<select>` for parentId with `InlineCreateSelect` + `CategoryQuickCreateForm`; removed `rootCategoriesQuery` (was fetching all root categories upfront) | `appkit/src/features/admin/components/AdminCategoryEditorView.tsx` |
+| Exported `CategoryQuickCreateForm`, `BrandQuickCreateForm` + types | `appkit/src/features/admin/components/index.ts`, `appkit/src/index.ts` |
+
+### Notes
+- Store selector stays `DynamicSelect` (no store quick-create form exists yet — stores require owner assignment and store-address setup).
+- `InlineCreateSelect` injects `+ Create new <Label>` sentinel at bottom of each dropdown page; selecting it opens a `SideDrawer` with the mini-form.
+- `tsc --noEmit` passes 0 errors in both repos.
+
+---
+
+# Change Log — Session 69 (continued-2) — 2026-05-08
 
 ## VA2 — Product flag quick-toggles + isOnSale/isSold schema
 
