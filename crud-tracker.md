@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-08 — Session 69: A1 ✅ AdminProductEditorView (3-mode + storeId DynamicSelect). 53 done, 147 remaining.
+> **Last updated:** 2026-05-08 — Session 69: VA2 ✅ product flag quick-toggles + isOnSale/isSold schema. 54 done, 146 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 217 |
-| ✅ Done | 53 |
+| ✅ Done | 54 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 147 |
+| ⏳ Remaining | 146 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -392,7 +392,7 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | VA1 | Admin Carousel create/edit form | S | 🚫 | | **Superseded by CF1** — full carousel redesign covers this |
-| VA2 | Admin Products CRUD — 3-mode editor | L | ⏳ | | See A1. Ensure 3 tabs: Standard / Auction / Pre-Order. Admin-only fields: isPromoted toggle, featured toggle, sellerId override. REUSE: `ProductForm.tsx` as base. |
+| VA2 | Admin Products CRUD — 3-mode editor + quick-toggle row flags | L | ✅ | Part 69 | A1 covers editor. VA2: 4-flag Flags column (featured/isPromoted/isOnSale/isSold) on AdminProductsView rows; optimistic overrides + PATCH + toast on error; isOnSale+isSold added to ProductDocument/ProductItem/PATCH schema; isFeatured→featured bug fixed. |
 | VA3 | Admin Categories CRUD editor | S | ⏳ | | See A2. NEW `AdminCategoryEditorView`. Fields: name, slug (auto-generated), parentCategory (select), description, imageUrl, isActive toggle. |
 | VA4 | Admin Blog CRUD editor | M | ⏳ | | See A4. NEW `AdminBlogEditorView`. Fields: title, slug (auto), content (RichTextEditor), excerpt, coverImage (MediaPicker), tags (TagInput), author, publishedAt (date), status (select), featured (toggle). |
 | VA5 | Admin FAQs CRUD editor | S | ⏳ | | See A5. NEW `AdminFaqEditorView`. Fields: question, answer (RichTextEditor), category (select), order (number), isActive (toggle). |

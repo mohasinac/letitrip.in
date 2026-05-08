@@ -24,7 +24,27 @@
 
 ---
 
-# Change Log — Session 69 (continued) — 2026-05-08 (Latest)
+# Change Log — Session 69 (continued-2) — 2026-05-08 (Latest)
+
+## VA2 — Product flag quick-toggles + isOnSale/isSold schema
+
+### What changed
+
+| What | File |
+|------|------|
+| Added `isOnSale?: boolean` and `isSold?: boolean` to `ProductDocument`; added to `DEFAULT_PRODUCT_DATA`, `PRODUCT_INDEXED_FIELDS`, `PRODUCT_PUBLIC_FIELDS`, `PRODUCT_UPDATABLE_FIELDS` | `appkit/src/features/products/schemas/firestore.ts` |
+| Added `isOnSale?: boolean` and `isSold?: boolean` to `ProductItem` | `appkit/src/features/products/types/index.ts` |
+| Extended `AdminListingScaffoldRow` with 4 optional flag fields: `featured`, `isPromoted`, `isOnSale`, `isSold` | `appkit/src/features/admin/components/AdminListingScaffold.tsx` |
+| `AdminProductsView`: maps 4 flags from API; `overrides` state for optimistic updates; "Flags" column with 4 `Toggle size="sm"` per row; `stopPropagation` prevents row-nav on toggle click; `PATCH` on change with toast on error | `appkit/src/features/admin/components/AdminProductsView.tsx` |
+| Fixed PATCH schema: `isFeatured` → `featured`; added `isOnSale`, `isSold` | `src/app/api/admin/products/[id]/route.ts` |
+
+### Notes
+- Seed data unchanged — `isOnSale`/`isSold` are optional with `false` defaults; existing documents unaffected.
+- `tsc --noEmit` passes 0 errors in both repos.
+
+---
+
+# Change Log — Session 69 (continued) — 2026-05-08
 
 ## A1 — Admin Products 3-mode editor
 
