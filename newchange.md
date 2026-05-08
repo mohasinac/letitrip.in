@@ -11,6 +11,8 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
+| 2026-05-08 | A3/VA6 + A4/VA4 | Session 70 added `/admin/blog/new/`, `/admin/blog/[id]/`, `/admin/coupons/new/`, `/admin/coupons/[id]/` alongside existing `[[...action]]` catch-alls — creates Next.js "same specificity" route collision error. Multiple other admin routes likely affected (products, bids, carousel, categories, orders, reviews, sections, users). | ⏳ New task RC4 added to tracker — fix deferred until Sessions 70–73 admin editors are complete | RC4 |
+| 2026-05-08 | SP1/P10 | Seed data source-of-truth policy formalised: SeedPanel SP1/P10 documentation (slugPattern, mediaFields, PII fields, column metadata) is canonical for all 23 collections. Seed files must be updated in-session with any schema change. P23–P31 sessions expand counts only. | ✅ Policy adopted — no code change needed | Noted in prompt.md + crud-tracker.md |
 | 2026-05-07 | P10 Part A | Per-collection API endpoints (`/api/demo/seed/[collection]/route.ts`) not built — monolithic route handles per-collection calls correctly via body param. | ✅ Intentionally resolved — no per-collection route needed | — |
 | 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ⚠️ Tech debt — open | CF1 (Session 65) must fix carousel schema to resolve |
 | 2026-05-07 | J7/J9 | Notes said "remaining: P5 seed data" — P5 was superseded. Notes updated to "resolved by P16" | ✅ Notes fixed — no code change needed | — |

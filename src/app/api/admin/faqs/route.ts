@@ -8,6 +8,21 @@ import {
   getStringParam,
 } from "@mohasinac/appkit";
 import { faqsRepository } from "@mohasinac/appkit";
+import { z } from "zod";
+
+const createFaqSchema = z.object({
+  question: z.string().min(1),
+  answer: z.string().min(1),
+  category: z.string().min(1),
+  slug: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  order: z.number().int().optional(),
+  priority: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+  isPinned: z.boolean().optional(),
+  showOnHomepage: z.boolean().optional(),
+  showInFooter: z.boolean().optional(),
+});
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
@@ -48,3 +63,40 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
+export const POST = withProviders(
+  createRouteHandler<(typeof createFaqSchema)["_output"]>({
+    auth: true,
+    roles: ["admin"],
+    schema: createFaqSchema,
+    handler: async ({ body }) => {
+      const slugBase = body.slug?.trim() || body.question
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      const slug = slugBase.startsWith("faq-") ? slugBase : `faq-${slugBase}`;
+
+      const now = new Date();
+      const faq = await faqsRepository.create({
+        id: slug,
+        question: body.question,
+        answer: { text: body.answer, format: "html" as const },
+        category: body.category,
+        tags: body.tags ?? [],
+        order: body.order ?? 0,
+        priority: body.priority ?? 0,
+        isActive: body.isActive ?? true,
+        isPinned: body.isPinned ?? false,
+        showOnHomepage: body.showOnHomepage ?? false,
+        showInFooter: body.showInFooter ?? false,
+        "seo.slug": slug,
+        searchTokens: [],
+        stats: { views: 0, helpful: 0 },
+        createdAt: now,
+        updatedAt: now,
+      } as any);
+
+      return successResponse(faq, "FAQ created");
+    },
+  }),
+);

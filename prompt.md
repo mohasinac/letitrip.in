@@ -7,21 +7,29 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 70 ✅ COMPLETE → Next: Session 71 (A5, VA5, F5, VA7, VA8)
+## ⚡ CURRENT TASK — Session 71 (A5, VA5, F5, VA7, VA8)
 
 | Task | Status | What to do |
 |------|--------|------------|
-| **A3/VA6** | ✅ Session 70 | Coupons editor — `AdminCouponEditorView.tsx`; conditional fields per type; /admin/coupons/new + [id]/edit; list page wired |
-| **A4/VA4** | ✅ Session 70 | Blog editor — `AdminBlogEditorView.tsx`; RichTextEditor content; auto readTimeMinutes; /admin/blog/new + [id]/edit; list page wired |
+| **A5** | ⏳ | FAQs editor — `AdminFaqEditorView.tsx`; SideDrawer; all FAQ fields (question, answer RTE, category, tags, slugPattern, pinned, homepage/footer flags) |
+| **VA5** | ⏳ | FAQ list view — `/admin/faqs/page.tsx`; AdminListingScaffold; columns: question, category, priority, isActive, isPinned, showOnHomepage; RowActionMenu |
+| **F5** | ⏳ | Navigation CMS — `AdminNavEditorView.tsx`; drag-to-reorder nav items; label, slug, icon, isActive; nested children |
+| **VA7** | ⏳ | Nav CMS list/page — `/admin/navigation/page.tsx`; tree view of nav items with inline edit or SideDrawer |
+| **VA8** | ⏳ | Site Settings 12-group form — `/admin/site-settings/page.tsx`; tabbed by group; all siteSettings fields per CLAUDE.md schema |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
 
 > ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page (configurable per store). Logged as task HS4-E in tracker (⏳). Not blocking Session 71.
 
+### Completed this session (70)
+| Task | Status | Done |
+|------|--------|------|
+| **A3/VA6** | ✅ | Coupons editor + list wired |
+| **A4/VA4** | ✅ | Blog editor + list wired |
+
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 71 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
 | 72 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
 | 73 | N3, VA12, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms |
 
@@ -35,6 +43,41 @@ Never silently skip a spec bullet — defer with new task or do it now
 Never leave stale "remaining: old-task-ID" on ✅ tasks
 npx tsc --noEmit must pass before every commit (both repos)
 ```
+
+### Route definitions — no ambiguity
+- NEVER create a `page.tsx` at a path that also has a `[[...action]]` child folder — Next.js rejects it ("same specificity" error)
+- **Standard CRUD pattern for all new routes**: `/resource/page.tsx` (list) + `/resource/new/page.tsx` (create) + `/resource/[id]/edit/page.tsx` (edit). Do NOT use `[[...action]]` catch-alls for new CRUD routes.
+- Before creating a new page file, check: does a `[[...action]]` folder already exist at the same parent? If yes, either add inside the catch-all OR convert to dedicated routes (preferred) — never add a sibling `page.tsx`.
+- All route strings → `ROUTES.*` constants only (`appkit/src/next/routing/route-map.ts`). Zero hardcoded strings like `href="/admin/products"`. See tasks RC2 + RC4.
+
+### SeedPanel — always in sync
+- Any change to a **schema** (new field, renamed field, removed field), **collection** (new collection, renamed collection), **feature** (new feature type, new seed item type), or **user-facing config** (new slug pattern, new media field, new PII field) → update the SeedPanel source in the SAME session:
+  1. Update the `FieldDef[]` array for that collection in `SeedPanel.tsx` (or the appkit schema table source it reads from)
+  2. Update `slugPattern` chip if the ID format changed
+  3. Update `mediaFields` chips if new image/video fields were added
+  4. Update the PII label if new personally-identifiable fields were added
+  5. Update the actual seed file in `appkit/src/seed/` so new seed documents match the new shape
+- This applies to NEW features/collections being added mid-project too — add a new card to SeedPanel when a new collection is introduced
+- Never leave the SeedPanel out of date — it is the canonical documentation and is used to verify data correctness
+
+### ASCII diagrams — draw as you build
+- `asciiDiagrams.md` (root of project) is the canonical diagram file — one diagram per page/view
+- When you build or significantly change a page/view/form/modal: add or update its diagram in `asciiDiagrams.md`
+- Diagrams must show **everything**: all tabs, all columns (for tables), all form fields, all action buttons, all modals/drawers opened from that page, filter states, empty states
+- Nothing may be omitted — a tab or field missing from the diagram means it will be forgotten in future sessions
+- Format: ASCII box-drawing with label `## [Area] > [Page Name]` heading above each diagram
+
+### Component index — look before you create
+- Before writing any new component, util, or constant: check `appkit/index.md` and `src/index.md`
+- If an existing entry covers your need, reuse it — never create a same-named or same-purpose duplicate
+- After every task that adds, renames, or removes a component/util/constant: update the relevant row in `appkit/index.md` or `src/index.md`
+- Format: `| Name | Path | What it does |` — one row per export
+
+### Seed data truth
+- SeedPanel SP1/P10 documentation (slugPattern, mediaFields, PII flags, searchable/filterable/sortable column metadata) is **canonical** for all 23 collections
+- Seed files in `appkit/src/seed/` updated **in the same session** as any schema change — never defer to a later session
+- P23–P31 scale sessions expand counts only; field shapes and metadata are already correct per SP1
+- Do NOT re-derive field shapes from memory — read `appkit/src/seed/` source files + SeedPanel schema tables
 
 ### UI rules
 - Missing data → empty state, never crash/white screen
@@ -348,9 +391,9 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–69, 67-b (57 tasks ✅)
-Current:       67-b ✅ COMPLETE
-Next:          70 (A3+VA6+A4+VA4), 71 (A5+VA5+F5+VA7+VA8), 72 (M1+VA19+M3+VA13+I3)
+Sessions done: 60–70, 67-b (62 tasks ✅)
+Current:       71 (A5, VA5, F5, VA7, VA8) — FAQs + Nav CMS + Site Settings
+Next:          72 (M1+VA19+M3+VA13+I3), 73 (N3+VA12+B1+VA10+B2+VA9+N2+VA11)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
@@ -359,7 +402,7 @@ Foundation     60–64       ✅ done (45/199 tasks)
 Carousel       65          ✅ done (CF1)
 Sections-1     66          ✅ done (HS1+HS2+HS3)
 Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
-Admin CRUD     68–73       ⏳
+Admin CRUD     68–73       🔄 in progress (Sessions 68–70 done; 71–73 remaining)
 Store CRUD     75–76       ⏳
 User Account   77          ⏳
 Custom Fields  78          ⏳

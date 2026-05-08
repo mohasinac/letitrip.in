@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-08 — Session 70: A3/VA6 ✅ Coupons editor + A4/VA4 ✅ Blog editor. 61 done, 140 remaining.
+> **Last updated:** 2026-05-08 — Added Tier LL (17 tasks), Tier IX (IX1 ✅ index files), RC4 (route ambiguity audit), seed data truth policy. 62 done, 158 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -10,12 +10,18 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 218 |
-| ✅ Done | 61 |
+| Total tasks | 237 |
+| ✅ Done | 62 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 140 |
+| ⏳ Remaining | 158 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
+
+---
+
+## 🌱 Seed Data Source of Truth
+
+> **Seed data truth**: The SeedPanel documentation built in SP1/P10 — including each collection's `slugPattern`, `mediaFields`, PII field list, and the searchable/filterable/sortable column metadata table — is the **canonical reference** for all 23 collections. Seed files in `appkit/src/seed/` are updated **as we go** (same session as any schema change — never defer seed updates to a later session). The P23–P31 scale sessions expand *counts* only; the field shapes and metadata are already correct per SP1.
 
 ---
 
@@ -94,12 +100,12 @@ Rules to keep top-of-mind every task:
 | **69** | Admin-2 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor | Session 68 patterns |
 | **70** | Admin-3 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form (VA8 unblocks I7) | Session 68 patterns |
 | **71** | Admin-Finance | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button | VA8 credentials |
-| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms | Session 68 patterns |
-| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18 | Bids + Newsletter + Contact + Feature flags + Media library admin | Session 72 |
+| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11, LL11, LL12, LL13, LL14, LL15 | Stores / Users / Orders / Reviews management forms + Sessions / Event entries / Notifications / Carts / Wishlists listing views | Session 68 patterns |
+| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | Bids + Newsletter + Contact + Feature flags + Media library admin + Return requests queue + Store addresses listing | Session 72 |
 | **74** | Quality | X3, X4, X5, X6 | Dark mode + responsive + PageLoader 15s timeout + media filename convention | Sessions 68–73 forms built |
-| **75** | Store-1 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2 | Store profile + auction/pre-order forms + product templates | A1 (admin patterns) |
-| **76** | Store-2 | C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10 | Coupons/Orders/Shipping/Payout/Addresses/Analytics (store) | Session 75 |
-| **77** | User Account | D1, VC6, D2, VC3, D3, VC4, D4, VC5, VC1, VC2 | Wishlist + Profile + Settings + Notifications + Orders + Invoice | Sessions 75–76 |
+| **75** | Store-1 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates + seller products listing view | A1 (admin patterns) |
+| **76** | Store-2 | C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7, LL8, LL9, LL10 | Coupons/Orders/Shipping/Payout/Addresses/Analytics (store) + seller orders/reviews/bids/payouts listing views | Session 75 |
+| **77** | User Account | D1, VC6, D2, VC3, D3, VC4, D4, VC5, VC1, VC2, LL1, LL2, LL3, LL4, LL5 | Wishlist + Profile + Settings + Notifications + Orders + Invoice + user orders/reviews/bids/addresses/returns listing views | Sessions 75–76 |
 | **78** | Custom Fields | L1, L2, L3 | Custom fields component + render on detail pages + CRUD in forms | A1 (product form base) |
 | **79** | Public Pages | VD7, VD11, VD1, VD2, VD4, VD5, VD6 | Brand name fix + all missing keys + dead links + category/brand display + store profile on detail | Session 64 (SL4) |
 | **80** | Content | VD8, VD9, VD10 | About + becomeSeller + sellerGuide + legal policy rewrites | VD7 (brand name fixed first) |
@@ -478,6 +484,48 @@ Rules to keep top-of-mind every task:
 
 ---
 
+## Tier LL — Listing Layouts *(explicit list-view scaffold per resource; form/editor tasks stay in VA/VB/VC)*
+
+> These tasks cover the **list page** only: scaffold + columns + search/filter/sort/pagination + row actions.
+> The create/edit form for the same resource lives in the VA/VB/VC task referenced in each row's Notes.
+> All listing views reuse `AdminListingScaffold` (admin) or `SlottedListingView` (store/user) + `useUrlTable`.
+
+### User dashboard listing views *(Session 77)*
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| LL1 | `UserOrdersView` — user order history list | M | ⏳ | | Status filter tabs (all/pending/processing/shipped/delivered/cancelled/refunded/return_requested). Columns: order ID, date, items count, total (₹), status badge. Date sort, order ID search. Row click → VC1 (order detail). API: `/api/user/orders`. |
+| LL2 | `UserReviewsView` — reviews written by the logged-in user | S | ⏳ | | Columns: product thumbnail, product name, rating stars, review title, date, verified purchase badge. Actions: edit review (within edit window), delete (ConfirmDeleteModal). API: `/api/user/reviews`. |
+| LL3 | `UserBidsView` — bid history | S | ⏳ | | Columns: auction thumbnail, auction title, user's last bid amount (paise→₹), current bid (₹), status badge (active/outbid/won/lost), auction end time. Row link → auction detail page. API: `/api/user/bids`. Read-only list; no mutations. |
+| LL4 | `UserAddressesView` — address book list | S | ⏳ | | Columns: label, fullName, city, state, pincode, default badge. Actions per row: edit (→AddressForm SideDrawer), delete (ConfirmDeleteModal), set as default. "Add address" button top-right → AddressForm. API: `/api/user/addresses`. See also VC3 (profile edit). |
+| LL5 | `UserReturnsView` — return requests list | S | ⏳ | | Listing of orders where status is RETURN_REQUESTED or REFUNDED. Columns: order ID, primary product thumbnail, date requested, current status badge. Row link → VC1 (order detail). API: `/api/user/orders?status=RETURN_REQUESTED`. See also VC1. |
+
+> **Wishlist** list view is covered by VC6 (`WishlistView` + `useWishlistWithGuest`). No separate LL task needed.
+
+### Store (seller) dashboard listing views *(Sessions 75–76)*
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| LL6 | `SellerProductsView` — product listing scaffold | M | ⏳ | | `SlottedListingView` with type filter chips (all/standard/auction/pre-order), status filter (draft/published/archived), search by title. Columns: thumbnail, title, type badge, price (₹), status, stock. Bulk actions: delete (ConfirmDeleteModal), toggle featured, unpublish. Row actions: edit (→C1/C2 forms), duplicate, delete. API: `/api/store/products`. Create/edit forms → VB8 (auction) + VB9 (pre-order) + C1 (standard). |
+| LL7 | `SellerOrdersView` — orders received listing | M | ⏳ | | Status filter tabs. Columns: order ID, date, buyer display name (masked PII), items count, total (₹), carrier, tracking number, status badge. Search by order ID. Row click → VB2 (order detail + status update SideDrawer). Bulk action: mark shipped (with tracking number input). API: `/api/store/orders`. |
+| LL8 | `SellerReviewsView` — reviews received on store's products | S | ⏳ | | Columns: product thumbnail, product name, reviewer display name, rating stars, verified purchase badge, reply status badge (replied/pending). Filter: rating (1–5 star), reply status. Row action: reply (inline SideDrawer with textarea → POST /api/store/reviews/[id]/reply). API: `/api/store/reviews`. |
+| LL9 | `SellerBidsView` — bids on store's auctions | S | ⏳ | | Columns: auction thumbnail, auction title, bidder name (masked), bid amount (₹), bid time, status badge (active/outbid/won/cancelled). Filter by auction (DynamicSelect). Read-only — no mutations on this view; admin manages bids via VA16. API: `/api/store/bids`. |
+| LL10 | `SellerPayoutsView` — payout history list | S | ⏳ | | Columns: period start, period end, orders included count, amount (₹), status badge (PENDING/PROCESSING/PAID/FAILED), payment method, transaction ID (masked). "Request payout" button → VB3 form. Filter by status. API: `/api/store/payouts`. |
+
+### Admin dashboard listing views *(Sessions 72–73)*
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| LL11 | `AdminSessionsView` — all user sessions | M | ⏳ | | `AdminListingScaffold`. Columns: user display name (link to admin user detail), device type, browser, OS, IP (masked — last octet replaced with *), last activity, expires at, isActive badge. Filter: active-only toggle. Actions: revoke session (DELETE /api/admin/sessions/[id] with ConfirmDeleteModal + useToast). Add to admin nav sidebar under "System". API: `/api/admin/sessions`. |
+| LL12 | `AdminEventEntriesView` — entries across all events | M | ⏳ | | `AdminListingScaffold`. Columns: event title (link to event), user display name, status badge (CONFIRMED/WAITLISTED/CANCELLED), email (masked), created at. Filter by eventId (DynamicSelect pulling `/api/admin/events`). Actions: approve, waitlist, cancel (PUT /api/admin/event-entries/[id]). API: `/api/admin/event-entries`. Add to admin nav under "Events". |
+| LL13 | `AdminNotificationsView` — platform notifications list | S | ⏳ | | `AdminListingScaffold`. Columns: user display name, type badge (10 types), title, isRead badge, created at. Filter: type select, unread-only toggle. Actions: delete (ConfirmDeleteModal), resend (POST /api/admin/notifications/[id]/resend). API: `/api/admin/notifications`. Add to admin nav under "System". |
+| LL14 | `AdminCartsView` — abandoned carts overview | S | ⏳ | | `AdminListingScaffold`. Read-only analytics listing — no mutations. Columns: cart type (guest/auth) badge, user display name or "Guest", item count, estimated total (₹), last updated, session ID (first 8 chars). Sort by last updated desc. Filter: guest-only / auth-only toggle. API: `/api/admin/carts`. Informational only — for identifying abandoned cart patterns. |
+| LL15 | `AdminWishlistsView` — wishlist insights | S | ⏳ | | `AdminListingScaffold`. Read-only. Columns: user display name, product thumbnail, product title, price at add (₹), date added. Sortable by product (to surface most-wishlisted items) and by date. No mutations — informational only. API: `/api/admin/wishlists`. |
+| LL16 | `AdminReturnRequestsView` — return requests queue | M | ⏳ | | `AdminListingScaffold` filtered to orders with RETURN_REQUESTED status. Columns: order ID, buyer name, primary product, request date, current status badge. Actions: approve return (PUT status→REFUNDED), reject return (PUT status→DELIVERED), link to VA9 full status form. API: `/api/admin/orders?status=RETURN_REQUESTED`. Add to admin nav under "Orders". |
+| LL17 | `AdminStoreAddressesView` — store pickup locations overview | S | ⏳ | | `AdminListingScaffold`. Read-only admin overview. Columns: store name (link to store detail), address label, city, state, pincode, isPickupLocation badge. Filter by storeId (DynamicSelect). No mutations — store manages their own addresses via VB7. API: `/api/admin/store-addresses`. |
+
+---
+
 ## Tier X — Code Quality (TypeScript, Theming, Toast Standardisation)
 
 > Apply X1–X4 as a sweep pass: no new features, just quality fixes. Must run `npx tsc --noEmit` → 0 errors after X1.
@@ -494,6 +542,17 @@ Rules to keep top-of-mind every task:
 | X7b | Replace all hardcoded color violations with token references | L | ⏳ | | Depends on X7a. **(1) CSS files (60 files, 759 hex occurrences)**: Replace all raw hex values in `appkit/src/ui/components/*.style.css` with `var(--appkit-color-*)` references. Priority order: `Badge.style.css` (25), `SideDrawer.style.css` (32), `ListingLayout.style.css` (34), `Card.style.css` (45), `Radio.style.css` (28), `Select.style.css` (26), `BulkActionBar.style.css` (19), then remaining 53 files. Remove hex fallback values from `var(--appkit-color-primary, #3e7708)` patterns once tokens are defined. **(2) TSX inline styles (13 files)**: `AppLayoutShell.tsx`, `ErrorBoundary.tsx`, `GlobalError.tsx`, `CharacterHotspot.tsx`, `CharacterHotspotForm.tsx`, `HeroBanner.tsx`, `NewsletterBanner.tsx`, `PromoGrid.tsx`, `BrandDetailPageView.tsx`, `CategoryTableColumns.tsx`, `AdminAnalyticsCharts.tsx`, `SellerRevenueChart.tsx`, `RichText.tsx` — move inline hex to CSS class using token vars. **(3) `src/components/dev/DevToolbar.tsx`**: Replace ~20 hardcoded slate/blue hex values with `var(--appkit-color-slate-*)` tokens. After: `npx tsc --noEmit` + visual check in light + dark mode. |
 | X8a | Extend Tailwind config + appkit tokens for layout utilities | M | ⏳ | | **Audit found**: 60+ raw `@media (min-width: Xpx)` queries, 30 z-index integers, 106+ hardcoded px heights, 63 raw box-shadows, 18 grid `minmax(Xpx)` values. Extend `tailwind.config.ts` + `appkit/src/tokens/tokens.css`: **(1) Breakpoint aliases** — add `screens` extend with semantic names mirroring Tailwind defaults so CSS can use `@screen md {}` and eliminate raw `@media (min-width: 768px)`. **(2) Z-index CSS vars** — add `--appkit-z-base: 0`, `--appkit-z-raised: 10`, `--appkit-z-overlay: 20`, `--appkit-z-dropdown: 30`, `--appkit-z-navbar: 40`, `--appkit-z-sidebar: 50`, `--appkit-z-modal: 60`, `--appkit-z-toast: 70`, `--appkit-z-tooltip: 80`, `--appkit-z-below: -1`; wire into Tailwind `zIndex` extend so `z-modal` etc. work as classes. **(3) Component size tokens** — `--appkit-size-input-sm: 2rem`, `--appkit-size-input-md: 2.5rem` (40px), `--appkit-size-input-lg: 2.75rem` (44px), `--appkit-size-avatar-xs/sm/md/lg`; eliminates magic 44px/40px/36px. **(4) Grid column min tokens** — `--appkit-grid-min-card: 220px`, `--appkit-grid-min-card-sm: 160px`, `--appkit-grid-min-card-lg: 300px`, `--appkit-grid-min-card-xs: 130px` for `minmax()` expressions. **(5) Shadow CSS vars** — `--appkit-shadow-sm/md/lg/xl/glow` matching Tailwind config values. **(6) Typography CSS vars** — `--appkit-font-size-2xs: 0.625rem`, `--appkit-line-height-tight: 1`, `--appkit-line-height-normal: 1.5`, `--appkit-letter-spacing-tight: -0.02em`, `--appkit-letter-spacing-snug: -0.01em`. Rebuild appkit dist after. |
 | X8b | Replace all hardcoded layout/utility violations with token references | L | ⏳ | | Depends on X8a. **(1) Media queries** — `appkit/src/ui/components/Layout.style.css` (60+ raw breakpoint queries): replace `@media (min-width: 768px)` with `@screen md {}`. **(2) Z-index** (30 violations across Modal, Drawer, Dropdown, BackgroundRenderer, HorizontalScroller): replace `z-index: 50` with `z-index: var(--appkit-z-modal)` etc. **(3) Heights/min-heights** (106+ in Button, Select, Input, Avatar, EmptyState): replace `min-height: 44px` with `min-height: var(--appkit-size-input-lg)` etc. **(4) Box-shadows** (63 violations across Modal, Card, Button, Checkbox): replace raw `0 20px 45px rgba(...)` with `box-shadow: var(--appkit-shadow-lg)` or `@apply shadow-lg`. **(5) Font sizes** (9 files with `font-size: 10px`): replace with `font-size: var(--appkit-font-size-2xs)` or `@apply text-2xs`. **(6) Grid minmax** (18 in Layout.style.css): replace with `var(--appkit-grid-min-card-*)`. **(7) Line-height/letter-spacing** (13 files): replace with `var(--appkit-line-height-*)` / `var(--appkit-letter-spacing-*)`. After: full responsive + dark-mode visual check. |
+
+---
+
+## Tier IX — Component / Util / Constant Index *(living documentation — update after every task)*
+
+> `appkit/index.md` and `src/index.md` are the canonical indexes of all reusable components, utilities, and constants.
+> **Rule**: before creating any new component/util/constant, check the index. After every task that adds/renames/removes one, update the index entry.
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| IX1 | Create + maintain `appkit/index.md` + `src/index.md` component/util/constant indexes | S | ✅ | 2026-05-08 | Initial index files created. Format: `\| Name \| Path \| What it does \|`. Covers: UI primitives (82 components), feature views (admin/seller/account/auth/etc.), hooks (85+), repositories (21), utils (18), constants. `src/index.md` covers app-level constants, server actions, routing components, and dev tools. **Update rule**: after every task that adds/removes/renames a component, util, or constant — update the relevant row in the index. This prevents duplicate creation and speeds up future sessions. |
 
 ---
 
@@ -556,3 +615,4 @@ Rules to keep top-of-mind every task:
 | RC1 | Centralize all navigation configs into `src/config/navigation.ts` | M | ⏳ | | **Create** `src/config/navigation.ts`. Move out of their respective layout.tsx files: `ADMIN_NAV_GROUPS` (from `src/app/[locale]/admin/layout.tsx` lines 15–73) → centralized; `STORE_NAV_GROUPS` (from `src/app/[locale]/store/layout.tsx` lines 14–47) → centralized; `USER_NAV_GROUPS` (from `src/app/[locale]/user/layout.tsx` lines 16–40) → centralized. Also move footer link columns out of `LayoutShellClient.tsx` into `FOOTER_LINK_GROUPS`. Rules: every `href` in every nav item must use `ROUTES.*` constants — no hardcoded strings. After move: layout files just `import { ADMIN_NAV_GROUPS } from "@/config/navigation"`. Also export `PUBLIC_QUICK_LINKS` for any static public nav shortcuts. All nav item `href` values that are currently hardcoded strings must be replaced with the correct `ROUTES.*` reference in this same task. |
 | RC2 | Audit + extend `ROUTES` constants; replace all hardcoded route strings | M | ⏳ | | **Add missing routes** to `appkit/src/next/routing/route-map.ts`: `ROUTES.PUBLIC.SUBLISTING_CATEGORIES`, `ROUTES.PUBLIC.SUBLISTING_CATEGORY(slug)`, `ROUTES.PUBLIC.SEARCH(q, type?)` helper, and any other gaps found in the audit. **Audit**: grep all `*.tsx` and `*.ts` in `src/` for: hardcoded `href="/..."` strings, `router.push("/...")` strings with literal paths. Every match must be replaced with the corresponding `ROUTES.*` constant. After this task, `src/` must contain zero hardcoded route strings — all routes flow through `ROUTES`. Rebuild appkit dist if route-map.ts changed. `npx tsc --noEmit` → 0 errors. |
 | RC3 | Button vs Link convention audit + fix violations | M | ⏳ | | **Convention** (already added to Non-Negotiable Rules): `<Link href={ROUTES.*}>` (Next.js) = navigation; `<TextLink href={ROUTES.*}>` (appkit) = inline text navigation; `<Button variant="...">` = action only, never navigates. Never `<Button onClick={() => router.push(...)}>`. For styled-button navigation: use `asChild` pattern (`<Button asChild><Link href={ROUTES.*}>Label</Link></Button>`). **Audit**: grep `src/` and `appkit/src/features/` for `onClick.*router\.push` patterns and `<a href=` raw anchors (without Next `<Link>`). Fix each violation. Common fix: remove `onClick`, add `asChild` + wrap with `<Link>`. After: `npx tsc --noEmit` → 0 errors + visually verify nav still works. |
+| RC4 | Route ambiguity audit + CRUD route pattern standardisation | M | ⏳ | | **Root cause**: optional catch-all `[[...action]]/page.tsx` conflicts with a sibling static `page.tsx` at the same parent folder — Next.js rejects it with "same specificity" error (confirmed 2026-05-08). **Known violations**: `/admin/products` (page.tsx + [[...action]]), `/admin/blog` (page.tsx + [[...action]] + Session-70-added /new + /[id]), `/admin/coupons` (same as blog), and likely `/admin/bids`, `/admin/carousel`, `/admin/categories`, `/admin/orders`, `/admin/reviews`, `/admin/sections`, `/admin/users`. Also audit `/store/` and `/user/` subtrees. **Fix strategy**: for every admin route — adopt dedicated routes (`/page.tsx` list + `/new/page.tsx` create + `/[id]/edit/page.tsx` edit) and **remove** the `[[...action]]` folder; OR if dedicated routes don't exist yet, remove the orphan root `page.tsx` (keep `[[...action]]`). Be consistent across the whole admin section. **One commit per route family.** After: `next build` emits zero "same specificity" warnings. Depends on: run after all Session 70–73 admin editors are built so dedicated routes can be confirmed complete before removing catch-alls. |
