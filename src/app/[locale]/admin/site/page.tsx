@@ -1,5 +1,5 @@
-﻿import { AdminSiteView } from "@mohasinac/appkit";
+import { AdminSiteSettingsView } from "@mohasinac/appkit";
 
 export default function Page() {
-  return <AdminSiteView />;
+  return <AdminSiteSettingsView />;
 }
