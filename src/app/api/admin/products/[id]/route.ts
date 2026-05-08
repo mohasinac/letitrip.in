@@ -16,8 +16,10 @@ const updateProductSchema = z.object({
   originalPrice: z.number().min(0).optional(),
   status: z.string().optional(),
   availableQuantity: z.number().int().min(0).optional(),
-  isFeatured: z.boolean().optional(),
+  featured: z.boolean().optional(),
   isPromoted: z.boolean().optional(),
+  isOnSale: z.boolean().optional(),
+  isSold: z.boolean().optional(),
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
 }).passthrough();
