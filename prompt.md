@@ -12,7 +12,7 @@
 | Task | Status | What to do |
 |------|--------|------------|
 | **X2** | ✅ Session 69 | Toast standardisation — `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView` migrated to `useToast` |
-| **A1** | ⏳ | Products 3-mode editor — unified create/edit form for standard product, auction, pre-order; 3-tab or mode-switch UI; all fields per schema |
+| **A1** | ✅ Session 69 | Products 3-mode editor — `AdminProductEditorView`; Tabs mode selector; storeId DynamicSelect; wraps ProductForm; /admin/products/new + /[id]/edit pages |
 | **VA2** | ⏳ | Deals/Featured toggles — admin quick-toggle for `isFeatured` + `isPromoted` + `isOnSale` on product list rows (without opening the full editor) |
 | **I1** | ⏳ | InlineCreateSelect integration — wire `InlineCreateSelect` into all form fields that reference categories, brands, stores (create-on-the-fly instead of navigating away) |
 
@@ -352,7 +352,7 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 
 ```
 Sessions done: 60–68 (52 tasks ✅)
-Current:       69 (A1+VA2+I1 — Admin-1 continued; X2 done)
+Current:       69 (VA2+I1 remaining — A1+X2 done)
 Next:          67-b (HS4+HS5 deferred), 70 (A3+VA6+A4+VA4), 71 (A5+VA5+F5+VA7+VA8)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

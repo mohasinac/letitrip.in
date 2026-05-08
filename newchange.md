@@ -24,7 +24,30 @@
 
 ---
 
-# Change Log — Session 69 — 2026-05-08 (Latest)
+# Change Log — Session 69 (continued) — 2026-05-08 (Latest)
+
+## A1 — Admin Products 3-mode editor
+
+### What changed
+
+| What | File |
+|------|------|
+| New `AdminProductEditorView` — `Tabs` mode selector (Standard/Auction/Pre-order), `storeId` `DynamicSelect` searching `/api/admin/stores`, wraps `ProductForm`, `useToast`, GET+PATCH+POST via `ADMIN_ENDPOINTS` | `appkit/src/features/admin/components/AdminProductEditorView.tsx` |
+| Added `actionHref?: string` and `getRowHref?` props; passed through to `AdminListingScaffold` | `appkit/src/features/admin/components/AdminProductsView.tsx` |
+| Exported `AdminProductEditorView` + type | `appkit/src/features/admin/components/index.ts`, `appkit/src/index.ts` |
+| Replaced `[[...action]]` catch-all with dedicated list page; `actionHref=/admin/products/new`, `getRowHref` for edit links | `src/app/[locale]/admin/products/page.tsx` |
+| New create page — `AdminProductEditorView`; redirects to edit page on save | `src/app/[locale]/admin/products/new/page.tsx` |
+| New edit page — `AdminProductEditorView` with `productId`; redirects to list on save/delete | `src/app/[locale]/admin/products/[id]/edit/page.tsx` |
+
+### Notes
+- `ProductForm` is reused unchanged — no seller-side form regression possible.
+- `storeId` DynamicSelect fetches stores by name; sets `storeId` + `sellerName` from the selected store.
+- Mode tabs translate to `isAuction`/`isPreOrder` flags that `ProductForm` already consumes to show/hide auction and pre-order sections.
+- `npx tsc --noEmit` passes 0 errors in both repos.
+
+---
+
+# Change Log — Session 69 — 2026-05-08
 
 ## X2 — Toast standardisation in admin editor components
 

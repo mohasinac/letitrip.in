@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-08 — Session 69: X2 ✅ Toast standardisation complete — 5 admin editors migrated. 52 done, 148 remaining.
+> **Last updated:** 2026-05-08 — Session 69: A1 ✅ AdminProductEditorView (3-mode + storeId DynamicSelect). 53 done, 147 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 217 |
-| ✅ Done | 52 |
+| ✅ Done | 53 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 148 |
+| ⏳ Remaining | 147 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -298,7 +298,7 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | A2 | Admin Categories CRUD — list + create + edit | S | ✅ | Part 59 | AdminCategoryEditorView in appkit; /admin/categories/new + [id]/edit pages; GET/POST/PUT/DELETE API routes; CATEGORY_BY_ID endpoint added; actionHref on list |
-| A1 | Admin Products CRUD — 3-mode (standard/auction/preorder) | L | 🔄 | | LIST: `AdminProductsView` EXISTS. NEW: `AdminProductEditorView`. REUSE: `ProductForm.tsx` EXISTS in products/components as seller form — extend with admin-only fields (isPromoted, featured, storeId); use `Tabs` for mode selector |
+| A1 | Admin Products CRUD — 3-mode (standard/auction/preorder) | L | ✅ | Part 69 | `AdminProductEditorView` in appkit: Tabs mode selector (standard/auction/preorder) sets isAuction/isPreOrder; storeId DynamicSelect searching /api/admin/stores; wraps ProductForm unchanged; useToast; GET+PATCH+POST. Routing: /admin/products (list, actionHref+getRowHref), /admin/products/new, /admin/products/[id]/edit. tsc 0 errors both repos. |
 | A3 | Admin Coupons CRUD — complex conditional form | L | ⏳ | | LIST: `AdminCouponsView` EXISTS. NEW: `AdminCouponEditorView`. REUSE: `Select`, `Input`, `Toggle`, `Tabs`, `FormGrid`, `SideDrawer` from ui/components; conditional sections per coupon type |
 | A4 | Admin Blog CRUD — with RichTextEditor | M | ⏳ | | LIST: `AdminBlogView` EXISTS. NEW: `AdminBlogEditorView`. REUSE: `RichTextEditor` (K3 already exists), `Input`, `TagInput`, `Toggle`, `SideDrawer` from ui/components |
 | A5 | Admin FAQs CRUD — with rich text answer | S | ⏳ | | LIST: `AdminFaqsView` EXISTS. NEW: `AdminFaqEditorView`. REUSE: `RichTextEditor`, `Input`, `Select`, `Toggle`, `SideDrawer` |
