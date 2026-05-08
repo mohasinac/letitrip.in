@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-08 — Session 68 (continued-2): doc sync — media filename slug patterns + ID type corrections added to prompt.md and CLAUDE.md. No task count change. P10-ext ✅. 51 done, 149 remaining. Planned Session 68 tasks (X2+A1+VA2+I1) still pending for Session 69.
+> **Last updated:** 2026-05-08 — Session 69: X2 ✅ Toast standardisation complete — 5 admin editors migrated. 52 done, 148 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 217 |
-| ✅ Done | 51 |
+| ✅ Done | 52 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 149 |
+| ⏳ Remaining | 148 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -298,7 +298,7 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | A2 | Admin Categories CRUD — list + create + edit | S | ✅ | Part 59 | AdminCategoryEditorView in appkit; /admin/categories/new + [id]/edit pages; GET/POST/PUT/DELETE API routes; CATEGORY_BY_ID endpoint added; actionHref on list |
-| A1 | Admin Products CRUD — 3-mode (standard/auction/preorder) | L | ⏳ | | LIST: `AdminProductsView` EXISTS. NEW: `AdminProductEditorView`. REUSE: `ProductForm.tsx` EXISTS in products/components as seller form — extend with admin-only fields (isPromoted, featured, sellerId); use `Tabs` for mode selector |
+| A1 | Admin Products CRUD — 3-mode (standard/auction/preorder) | L | 🔄 | | LIST: `AdminProductsView` EXISTS. NEW: `AdminProductEditorView`. REUSE: `ProductForm.tsx` EXISTS in products/components as seller form — extend with admin-only fields (isPromoted, featured, storeId); use `Tabs` for mode selector |
 | A3 | Admin Coupons CRUD — complex conditional form | L | ⏳ | | LIST: `AdminCouponsView` EXISTS. NEW: `AdminCouponEditorView`. REUSE: `Select`, `Input`, `Toggle`, `Tabs`, `FormGrid`, `SideDrawer` from ui/components; conditional sections per coupon type |
 | A4 | Admin Blog CRUD — with RichTextEditor | M | ⏳ | | LIST: `AdminBlogView` EXISTS. NEW: `AdminBlogEditorView`. REUSE: `RichTextEditor` (K3 already exists), `Input`, `TagInput`, `Toggle`, `SideDrawer` from ui/components |
 | A5 | Admin FAQs CRUD — with rich text answer | S | ⏳ | | LIST: `AdminFaqsView` EXISTS. NEW: `AdminFaqEditorView`. REUSE: `RichTextEditor`, `Input`, `Select`, `Toggle`, `SideDrawer` |
@@ -484,7 +484,7 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | X1 | Fix all TypeScript issues — async params + eliminate `as any` | M | ✅ | Session 60 | Verified 2026-05-06: `npx tsc --noEmit` passes in both `letitrip.in/` and `appkit/` with 0 errors. No action needed. |
-| X2 | Toast standardisation — replace state messages with `useToast` | S | ⏳ | | Replace `setSaveMessage`/`setSuccessMsg`/`setErrorMsg` state patterns with `showToast(message, variant)` in all admin editor components: `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView`, `AdminSectionsView`. Toast auto-dismisses (5s). State message divs can be removed. |
+| X2 | Toast standardisation — replace state messages with `useToast` | S | ✅ | Session 69 | Migrated 5 admin editors: `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView`. Removed `saveMessage`/`errorMsg`/`successMsg` state + Alert JSX. `AdminSectionsView` was already using `useToast`. |
 | X3 | Dark mode + responsive fixes for admin CRUD forms | M | ⏳ | | **Missing dark mode**: `AdminBrandEditorView` (0 dark: classes), `AdminCategoryEditorView` (minimal). All form labels, inputs, textareas, sections must have `dark:` variants. **Missing responsive**: `AdminBrandEditorView`, `AdminCategoryEditorView` are full-width only — add `sm:grid-cols-2` / `md:grid-cols-3` form grids for wider screens. Apply same audit to every new VA/VB editor built in Tier V. |
 | X4 | Responsive + themed CRUD forms — global checklist | S | ⏳ | | Every form built in Tier V (VA/VB/VC) must pass this checklist before marking ✅: (1) Works on mobile 375px, (2) Works on tablet 768px, (3) Works in dark mode, (4) All inputs use design system tokens (no hardcoded hex colors), (5) Focus rings visible, (6) Error states styled, (7) Loading/disabled states on submit button. Add this checklist to the HOW TO WORK section. |
 | X5 | Replace skeleton loaders with `PageLoader` component + 15s timeout | M | ⏳ | | NEW: `PageLoader` component in appkit — shows a centred spinner with "Loading…" text (not a skeleton). 15-second client-side timeout: if the page hasn't finished loading data after 15s, replace spinner with "Something went wrong. Please refresh the page." + a Refresh button. The timeout is appropriate for first SSR load on slow connections. Update all 15 `loading.tsx` files under `src/app/[locale]/` to render `<PageLoader />` instead of inline skeletons. Keep the shared `Skeleton` component for within-page partial loading states (e.g. lazy-loaded tabs, infinite scroll batches). The `error.tsx` `ErrorView` handles hard errors; `PageLoader` timeout handles slow/stalled loads. |
