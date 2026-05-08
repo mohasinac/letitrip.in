@@ -34,7 +34,15 @@ export {
 export type { ProductSeoInput, CategorySeoInput, BlogSeoInput, AuctionSeoInput } from "./seo.server";
 
 // Navigation constants
-export { MAIN_NAV_ITEMS } from "./navigation";
+export {
+  MAIN_NAV_ITEMS,
+  SIDEBAR_SUPPORT_LINKS,
+  FOOTER_LINK_GROUPS,
+  ADMIN_NAV_GROUPS,
+  STORE_NAV_GROUPS,
+  USER_NAV_GROUPS,
+  USER_NAV_ALL_ITEMS,
+} from "./navigation";
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
 

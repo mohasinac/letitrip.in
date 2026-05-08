@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { use } from "react";
-import { AdminProductEditorView } from "@mohasinac/appkit";
+import { AdminProductEditorView, ROUTES } from "@mohasinac/appkit";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -10,8 +10,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return (
     <AdminProductEditorView
       productId={id}
-      onSaved={() => router.push("/admin/products")}
-      onDeleted={() => router.push("/admin/products")}
+      onSaved={() => router.push(String(ROUTES.ADMIN.PRODUCTS))}
+      onDeleted={() => router.push(String(ROUTES.ADMIN.PRODUCTS))}
     />
   );
 }

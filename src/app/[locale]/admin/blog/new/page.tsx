@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AdminBlogEditorView } from "@mohasinac/appkit";
+import { AdminBlogEditorView, ROUTES } from "@mohasinac/appkit";
 
 export default function Page() {
   const router = useRouter();
   return (
     <AdminBlogEditorView
-      onSaved={(id) => router.push(`/admin/blog/${id}/edit`)}
+      onSaved={(id) => router.push(String(ROUTES.ADMIN.BLOG_EDIT(id)))}
     />
   );
 }

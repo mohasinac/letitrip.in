@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { LoginForm, useLogin, useGoogleLogin, useSession, useToast } from "@mohasinac/appkit/client";
+import { LoginForm, useLogin, useGoogleLogin, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 
 export function LoginPageClient() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export function LoginPageClient() {
   const login = useLogin({
     onSuccess: () => {
       showToast("Signed in successfully", "success");
-      router.push("/");
+      router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
       showToast(err instanceof Error ? err.message : "Sign-in failed. Please try again.", "error");
@@ -24,7 +24,7 @@ export function LoginPageClient() {
     onSuccess: () => {
       showToast("Signed in with Google", "success");
       router.refresh();
-      router.push("/");
+      router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
       showToast(err instanceof Error ? err.message : "Google sign-in failed. Please try again.", "error");

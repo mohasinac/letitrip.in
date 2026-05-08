@@ -3,43 +3,14 @@
 import { useCallback, useEffect, useState, startTransition, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
-  ROUTES,
   useDashboardNav,
   ProtectedRoute,
   useSession,
   UserSidebar,
-  type UserNavItem,
-  type UserNavGroup,
   type AuthGuardUser,
 } from "@mohasinac/appkit/client";
-
-const USER_NAV_GROUPS: UserNavGroup[] = [
-  {
-    title: "Shopping",
-    items: [
-      { href: String(ROUTES.USER.ORDERS), label: "My Orders" },
-      { href: String(ROUTES.USER.OFFERS), label: "My Offers" },
-      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses" },
-    ],
-  },
-  {
-    title: "Account",
-    items: [
-      { href: String(ROUTES.USER.PROFILE), label: "My Profile" },
-      { href: String(ROUTES.USER.SETTINGS), label: "Settings" },
-      { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },
-      { href: String(ROUTES.USER.MESSAGES), label: "Messages" },
-    ],
-  },
-  {
-    title: "Selling",
-    items: [
-      { href: String(ROUTES.USER.BECOME_SELLER), label: "Open a Store" },
-    ],
-  },
-];
-
-const ALL_NAV_ITEMS: UserNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items);
+import { ROUTES } from "@/constants";
+import { USER_NAV_GROUPS, USER_NAV_ALL_ITEMS } from "@/constants/navigation";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();
@@ -97,7 +68,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
       <UserSidebar
         variant="sidebar"
         desktopOpen={desktopOpen}
-        items={ALL_NAV_ITEMS}
+        items={USER_NAV_ALL_ITEMS}
         groups={USER_NAV_GROUPS}
         mobileOpen={mobileOpen}
         onCloseMobile={closeNav}

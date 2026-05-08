@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AddressForm, useAddress, useUpdateAddress, useToast } from "@mohasinac/appkit/client";
+import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
 
 interface Props {
   addressId: string;
@@ -16,7 +16,7 @@ export function EditAddressClient({ addressId }: Props) {
   const update = useUpdateAddress(addressId, {
     onSuccess: () => {
       showToast("Address updated successfully!", "success");
-      router.push("/user/addresses");
+      router.push(String(ROUTES.USER.ADDRESSES));
     },
     onError: (err) => {
       showToast(err.message ?? "Failed to update address.", "error");
@@ -45,7 +45,7 @@ export function EditAddressClient({ addressId }: Props) {
       <AddressForm
         initialData={address}
         onSubmit={async (data) => { await update.mutateAsync(data); }}
-        onCancel={() => router.push("/user/addresses")}
+        onCancel={() => router.push(String(ROUTES.USER.ADDRESSES))}
         isLoading={update.isPending}
         submitLabel="Update Address"
         defaultCountry="India"

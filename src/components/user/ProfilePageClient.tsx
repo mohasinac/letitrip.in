@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useProfile, useUpdateProfile, useToast, useAuth } from "@mohasinac/appkit/client";
+import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES } from "@mohasinac/appkit/client";
 
 interface ProfilePageClientProps {
   /** When false, suppresses the page-level h1 (use when embedded inside another view). */
@@ -109,7 +109,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
             </button>
             <button
               type="button"
-              onClick={() => router.push("/user/addresses")}
+              onClick={() => router.push(String(ROUTES.USER.ADDRESSES))}
               className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
             >
               Manage Addresses

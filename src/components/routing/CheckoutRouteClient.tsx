@@ -14,6 +14,7 @@ import {
   useAuth,
   useCartQuery,
   useToast,
+  ROUTES,
 } from "@mohasinac/appkit/client";
 import type { Address } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
@@ -269,7 +270,7 @@ export function CheckoutRouteClient() {
   // --- Redirect unauthenticated users ----------------------------------------
 
   if (!authLoading && !user) {
-    router.push("/login?returnTo=/checkout");
+    router.push(`${String(ROUTES.AUTH.LOGIN)}?returnTo=${String(ROUTES.USER.CHECKOUT)}`);
     return null;
   }
 

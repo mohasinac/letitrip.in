@@ -3,48 +3,13 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import {
-  ROUTES,
   useDashboardNav,
   StoreSidebar,
   ProtectedRoute,
   useSession,
-  type StoreNavGroup,
 } from "@mohasinac/appkit/client";
-
-const STORE_NAV_GROUPS: StoreNavGroup[] = [
-  {
-    title: "Overview",
-    items: [
-      { href: String(ROUTES.STORE.DASHBOARD), label: "Dashboard" },
-    ],
-  },
-  {
-    title: "Listings",
-    items: [
-      { href: String(ROUTES.STORE.PRODUCTS), label: "Products" },
-      { href: String(ROUTES.STORE.AUCTIONS), label: "Auctions" },
-      { href: String(ROUTES.STORE.PRE_ORDERS), label: "Pre-Orders" },
-      { href: String(ROUTES.STORE.OFFERS), label: "Offers" },
-    ],
-  },
-  {
-    title: "Finance",
-    items: [
-      { href: String(ROUTES.STORE.ANALYTICS), label: "Analytics" },
-      { href: String(ROUTES.STORE.PAYOUTS), label: "Payouts" },
-      { href: String(ROUTES.STORE.PAYOUT_SETTINGS), label: "Payout Settings" },
-    ],
-  },
-  {
-    title: "Store",
-    items: [
-      { href: String(ROUTES.STORE.STOREFRONT), label: "Storefront" },
-      { href: String(ROUTES.STORE.SHIPPING), label: "Shipping" },
-      { href: String(ROUTES.STORE.ADDRESSES), label: "Addresses" },
-      { href: String(ROUTES.STORE.COUPONS), label: "Coupons" },
-    ],
-  },
-];
+import { ROUTES } from "@/constants";
+import { STORE_NAV_GROUPS } from "@/constants/navigation";
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();

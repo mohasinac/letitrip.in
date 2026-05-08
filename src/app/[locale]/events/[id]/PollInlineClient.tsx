@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useSession, useToast } from "@mohasinac/appkit/client";
+import Link from "next/link";
+import { useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 
 interface PollOption {
@@ -41,12 +42,12 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Please log in to cast your vote in this poll.
         </p>
-        <a
-          href="/login"
+        <Link
+          href={String(ROUTES.AUTH.LOGIN)}
           className="inline-block rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
         >
           Log In to Vote
-        </a>
+        </Link>
       </div>
     );
   }

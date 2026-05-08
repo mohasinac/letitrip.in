@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminCarouselEditorView } from "@mohasinac/appkit";
+import { AdminCarouselEditorView, ROUTES } from "@mohasinac/appkit";
 import { useRouter, useParams } from "next/navigation";
 
 export default function Page() {
@@ -9,9 +9,9 @@ export default function Page() {
   return (
     <AdminCarouselEditorView
       slideId={params.id}
-      onSaved={() => router.push("/admin/carousel")}
-      onDeleted={() => router.push("/admin/carousel")}
-      onCancel={() => router.push("/admin/carousel")}
+      onSaved={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
+      onDeleted={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
+      onCancel={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
     />
   );
 }

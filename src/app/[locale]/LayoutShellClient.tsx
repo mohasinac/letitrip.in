@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
 import { API_ROUTES } from "@/constants";
+import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants/navigation";
 
 export default function LayoutShellClient({
   children,
@@ -65,62 +66,7 @@ export default function LayoutShellClient({
   }, [router, showToast]);
 
   const navItems = useMemo<MainNavbarItem[]>(
-    () => [
-      {
-        key: "home",
-        href: String(ROUTES.HOME),
-        label: tNav("home"),
-        icon: <span aria-hidden="true">🏠</span>,
-      },
-      {
-        key: "products",
-        href: String(ROUTES.PUBLIC.PRODUCTS),
-        label: tNav("products"),
-        icon: <span aria-hidden="true">🛍️</span>,
-      },
-      {
-        key: "auctions",
-        href: String(ROUTES.PUBLIC.AUCTIONS),
-        label: tNav("auctions"),
-        icon: <span aria-hidden="true">⚡</span>,
-      },
-      {
-        key: "preOrders",
-        href: String(ROUTES.PUBLIC.PRE_ORDERS),
-        label: tNav("preOrders"),
-        icon: <span aria-hidden="true">📦</span>,
-      },
-      {
-        key: "categories",
-        href: String(ROUTES.PUBLIC.CATEGORIES),
-        label: tNav("categories"),
-        icon: <span aria-hidden="true">🧭</span>,
-      },
-      {
-        key: "stores",
-        href: String(ROUTES.PUBLIC.STORES),
-        label: tNav("stores"),
-        icon: <span aria-hidden="true">🏬</span>,
-      },
-      {
-        key: "events",
-        href: String(ROUTES.PUBLIC.EVENTS),
-        label: tNav("events"),
-        icon: <span aria-hidden="true">🎟️</span>,
-      },
-      {
-        key: "blog",
-        href: String(ROUTES.PUBLIC.BLOG),
-        label: tNav("blog"),
-        icon: <span aria-hidden="true">📝</span>,
-      },
-      {
-        key: "reviews",
-        href: String(ROUTES.PUBLIC.REVIEWS),
-        label: tNav("reviews"),
-        icon: <span aria-hidden="true">⭐</span>,
-      },
-    ],
+    () => MAIN_NAV_ITEMS.map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
     [tNav],
   );
 
@@ -130,25 +76,19 @@ export default function LayoutShellClient({
       {
         title: "Browse",
         defaultOpen: true,
-        items: navItems.map((item) => ({
-          href: item.href,
-          label: item.label,
-          icon: item.icon,
-        })),
+        items: navItems.map((item) => ({ href: item.href, label: item.label, icon: item.icon })),
       },
       {
         title: "Support",
         items: [
-          { href: String(ROUTES.PUBLIC.ABOUT), label: "About" },
-          { href: String(ROUTES.PUBLIC.CONTACT), label: "Contact" },
-          { href: String(ROUTES.PUBLIC.HELP), label: "Help" },
+          ...SIDEBAR_SUPPORT_LINKS,
           ...(seedPanelEnabled && user?.role === "admin"
             ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
             : []),
         ],
       },
     ],
-    [navItems],
+    [navItems, seedPanelEnabled, user?.role],
   );
 
   // Locale switcher for sidebar
@@ -341,59 +281,7 @@ export default function LayoutShellClient({
         </div>
       </form>
     ),
-    linkGroups: [
-      {
-        heading: "Shop",
-        links: [
-          { label: "Products", href: String(ROUTES.PUBLIC.PRODUCTS) },
-          { label: "Auctions", href: String(ROUTES.PUBLIC.AUCTIONS) },
-          { label: "Pre-Orders", href: String(ROUTES.PUBLIC.PRE_ORDERS) },
-          { label: "Promotions", href: String(ROUTES.PUBLIC.PROMOTIONS) },
-          { label: "Stores", href: String(ROUTES.PUBLIC.STORES) },
-          { label: "Categories", href: String(ROUTES.PUBLIC.CATEGORIES) },
-        ],
-      },
-      {
-        heading: "Support",
-        links: [
-          { label: "Help Centre", href: String(ROUTES.PUBLIC.HELP) },
-          { label: "FAQs", href: String(ROUTES.PUBLIC.FAQS) },
-          { label: "Contact Us", href: String(ROUTES.PUBLIC.CONTACT) },
-          { label: "Track Order", href: String(ROUTES.PUBLIC.TRACK_ORDER) },
-          { label: "About Us", href: String(ROUTES.PUBLIC.ABOUT) },
-        ],
-      },
-      {
-        heading: "For Sellers",
-        links: [
-          { label: "Become a Seller", href: String(ROUTES.USER.BECOME_SELLER) },
-          { label: "Seller Guide", href: String(ROUTES.PUBLIC.SELLER_GUIDE) },
-          { label: "Fees & Pricing", href: String(ROUTES.PUBLIC.FEES) },
-          { label: "How Payouts Work", href: String(ROUTES.PUBLIC.HOW_PAYOUTS_WORK) },
-          { label: "Store Dashboard", href: String(ROUTES.STORE.DASHBOARD) },
-        ],
-      },
-      {
-        heading: "Learn",
-        links: [
-          { label: "How Auctions Work", href: String(ROUTES.PUBLIC.HOW_AUCTIONS_WORK) },
-          { label: "How Pre-Orders Work", href: String(ROUTES.PUBLIC.HOW_PRE_ORDERS_WORK) },
-          { label: "How Offers Work", href: String(ROUTES.PUBLIC.HOW_OFFERS_WORK) },
-          { label: "Blog", href: String(ROUTES.PUBLIC.BLOG) },
-          { label: "Events", href: String(ROUTES.PUBLIC.EVENTS) },
-        ],
-      },
-      {
-        heading: "Legal",
-        links: [
-          { label: "Terms of Service", href: String(ROUTES.PUBLIC.TERMS) },
-          { label: "Privacy Policy", href: String(ROUTES.PUBLIC.PRIVACY) },
-          { label: "Cookie Policy", href: String(ROUTES.PUBLIC.COOKIE_POLICY) },
-          { label: "Refund Policy", href: String(ROUTES.PUBLIC.REFUND_POLICY) },
-          { label: "Shipping Policy", href: String(ROUTES.PUBLIC.SHIPPING_POLICY) },
-        ],
-      },
-    ],
+    linkGroups: FOOTER_LINK_GROUPS,
   }), []);
 
   return (

@@ -16,6 +16,7 @@ import {
   useGuestCart,
   useGuestCartMerge,
   useToast,
+  ROUTES,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
@@ -496,7 +497,7 @@ export function CartRouteClient() {
         <Div className="mt-3 space-y-2">
           <Button
             type="button"
-            onClick={() => router.push("/checkout")}
+            onClick={() => router.push(String(ROUTES.USER.CHECKOUT))}
             disabled={isEmpty || selectedCount === 0}
             className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
@@ -507,7 +508,7 @@ export function CartRouteClient() {
           {!isAllSelected && selectedCount > 0 && (
             <button
               type="button"
-              onClick={async () => { await selectAll(); router.push("/checkout"); }}
+              onClick={async () => { await selectAll(); router.push(String(ROUTES.USER.CHECKOUT)); }}
               className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
             >
               Or checkout all {allItemIds.length} items

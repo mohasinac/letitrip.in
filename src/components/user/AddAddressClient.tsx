@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AddressForm, useCreateAddress, useToast } from "@mohasinac/appkit/client";
+import { AddressForm, useCreateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
 
 export function AddAddressClient() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export function AddAddressClient() {
   const create = useCreateAddress({
     onSuccess: () => {
       showToast("Address saved successfully!", "success");
-      router.push("/user/addresses");
+      router.push(String(ROUTES.USER.ADDRESSES));
     },
     onError: (err) => {
       showToast(err.message ?? "Failed to save address.", "error");
@@ -22,7 +22,7 @@ export function AddAddressClient() {
       <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Add New Address</h1>
       <AddressForm
         onSubmit={async (data) => { await create.mutateAsync(data); }}
-        onCancel={() => router.push("/user/addresses")}
+        onCancel={() => router.push(String(ROUTES.USER.ADDRESSES))}
         isLoading={create.isPending}
         submitLabel="Save Address"
         defaultCountry="India"

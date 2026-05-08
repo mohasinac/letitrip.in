@@ -8,6 +8,7 @@ import {
   useDeleteAddress,
   useSetDefaultAddress,
   useToast,
+  ROUTES,
 } from "@mohasinac/appkit/client";
 
 export function UserAddressesClient() {
@@ -58,7 +59,7 @@ export function UserAddressesClient() {
         <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</h1>
         <button
           type="button"
-          onClick={() => router.push("/user/addresses/add")}
+          onClick={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
         >
           + Add Address
@@ -66,9 +67,9 @@ export function UserAddressesClient() {
       </div>
       <AddressBook
         addresses={addresses as any[]}
-        onEdit={(address) => router.push(`/user/addresses/edit/${address.id}`)}
+        onEdit={(address) => router.push(String(ROUTES.USER.ADDRESSES_EDIT(address.id)))}
         onDelete={handleDelete}
-        onAdd={() => router.push("/user/addresses/add")}
+        onAdd={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
         emptyLabel="You have no saved addresses yet."
         addLabel="Add New Address"
       />

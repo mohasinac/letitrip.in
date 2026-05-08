@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { RegisterForm, useRegister, useToast } from "@mohasinac/appkit/client";
+import { RegisterForm, useRegister, useToast, ROUTES } from "@mohasinac/appkit/client";
 
 export function RegisterPageClient() {
   const router = useRouter();
@@ -9,7 +9,7 @@ export function RegisterPageClient() {
   const register = useRegister({
     onSuccess: () => {
       showToast("Account created! Welcome to LetItRip.", "success");
-      router.push("/");
+      router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
       showToast(err instanceof Error ? err.message : "Registration failed. Please try again.", "error");

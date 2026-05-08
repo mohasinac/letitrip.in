@@ -198,6 +198,7 @@ All media files use SEO slugs via `generateMediaFilename(ctx)` in `appkit/src/ut
 | API routes | `src/app/api/[resource]/route.ts` — GET list + POST create; `[id]/route.ts` — GET/PUT/DELETE |
 | API constants | `src/constants/api.ts` — all API endpoint strings in `API_ROUTES` object |
 | Route constants | `appkit/src/next/routing/route-map.ts` — all page paths in `ROUTES` object; never hardcode strings |
+| Nav group configs | `src/constants/navigation.tsx` — `ADMIN_NAV_GROUPS`, `STORE_NAV_GROUPS`, `USER_NAV_GROUPS`, `SIDEBAR_SUPPORT_LINKS`, `FOOTER_LINK_GROUPS`, `MAIN_NAV_ITEMS`; never define inline in layout files |
 | Schema types | `appkit/src/features/[domain]/schemas/firestore.ts` — source of truth for all Firestore document shapes |
 
 ---
@@ -249,6 +250,8 @@ Other CSS variables:
 |-------------|---------------------|
 | `<Button onClick={() => router.push(...)}>` | `<Link href={ROUTES.*}>` with styled-button via `asChild` |
 | Hardcoded `href="/products"` | `href={ROUTES.PUBLIC.PRODUCTS}` |
+| `router.push("/admin/products")` hardcoded string | `router.push(String(ROUTES.ADMIN.PRODUCTS))` |
+| Inline nav groups in layout files | Import from `@/constants/navigation` — `ADMIN_NAV_GROUPS` / `STORE_NAV_GROUPS` / `USER_NAV_GROUPS` |
 | Raw hex in CSS or `style={}` | `var(--appkit-color-*)` or Tailwind semantic token |
 | `z-[50]` arbitrary Tailwind | `var(--appkit-z-modal)` CSS variable |
 | `as unknown as SomeThing` | Fix the underlying type mismatch — ask if unsure |

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Div, Heading, Text } from "@mohasinac/appkit/ui";
-import { EventParticipateView, useSession, useToast } from "@mohasinac/appkit/client";
+import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit/client";
 
@@ -30,12 +31,12 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
         <Text className="text-zinc-500 dark:text-zinc-400">
           Please log in to participate in this leaderboard event.
         </Text>
-        <a
-          href="/login"
+        <Link
+          href={String(ROUTES.AUTH.LOGIN)}
           className="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
         >
           Log In
-        </a>
+        </Link>
       </Div>
     );
   }
