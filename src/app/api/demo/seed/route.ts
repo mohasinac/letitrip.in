@@ -356,12 +356,11 @@ async function resolveAuthConflicts(
 }
 
 export async function GET(_request: NextRequest) {
-  if (process.env.NODE_ENV !== "development") {
+  const { siteSettingsRepository } = await import("@mohasinac/appkit");
+  const settings = await siteSettingsRepository.getSingleton().catch(() => null);
+  if (!settings?.featureFlags?.seedPanel) {
     return NextResponse.json(
-      {
-        success: false,
-        message: "This API is only available in development mode",
-      },
+      { success: false, message: "Seed panel is disabled." },
       { status: 403 },
     );
   }
@@ -396,13 +395,12 @@ export async function GET(_request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  // Double check environment
-  if (process.env.NODE_ENV !== "development") {
+  // Gate: seedPanel feature flag must be enabled in site settings
+  const { siteSettingsRepository } = await import("@mohasinac/appkit");
+  const settings = await siteSettingsRepository.getSingleton().catch(() => null);
+  if (!settings?.featureFlags?.seedPanel) {
     return NextResponse.json(
-      {
-        success: false,
-        message: "This API is only available in development mode",
-      },
+      { success: false, message: "Seed panel is disabled." },
       { status: 403 },
     );
   }

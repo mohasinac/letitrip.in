@@ -26,8 +26,10 @@ import { API_ROUTES } from "@/constants";
 
 export default function LayoutShellClient({
   children,
+  seedPanelEnabled = false,
 }: {
   children: ReactNode;
+  seedPanelEnabled?: boolean;
 }) {
   const tNav = useTranslations("nav");
   const router = useRouter();
@@ -140,8 +142,8 @@ export default function LayoutShellClient({
           { href: String(ROUTES.PUBLIC.ABOUT), label: "About" },
           { href: String(ROUTES.PUBLIC.CONTACT), label: "Contact" },
           { href: String(ROUTES.PUBLIC.HELP), label: "Help" },
-          ...(process.env.NODE_ENV !== "production"
-            ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed Data", icon: "🌱" }]
+          ...(seedPanelEnabled && user?.role === "admin"
+            ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
             : []),
         ],
       },
@@ -183,13 +185,13 @@ export default function LayoutShellClient({
   // Notification bell hidden per product decision — only show wishlist
   const notificationSlot = <>{wishlistIcon}</>;
 
-  // Dev/seed slot — only for admin users in non-production
+  // Seed & Docs slot — visible to admins when seedPanel feature flag is enabled
   const devSlot =
-    process.env.NODE_ENV !== "production" ? (
+    seedPanelEnabled && user?.role === "admin" ? (
       <Link
         href={String(ROUTES.DEMO.SEED)}
         className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
-        title="Seed data"
+        title="Seed & Docs"
       >
         🌱 Seed
       </Link>

@@ -326,6 +326,7 @@ export const siteSettingsUpdateSchema = z
         notifications: z.boolean(),
         sellerRegistration: z.boolean(),
         preOrders: z.boolean(),
+        seedPanel: z.boolean(),
       })
       .optional(),
     commissions: z

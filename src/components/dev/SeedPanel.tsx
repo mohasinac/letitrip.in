@@ -1,11 +1,14 @@
 "use client";
 
 /**
- * SeedPanel — Dev-only UI for loading / deleting seed data.
+ * SeedPanel — Admin data management and schema documentation panel.
  *
- * Route: /[locale]/demo/seed
- * Per-resource accordion cards: each collection has its own expandable card
- * showing seeded items, pending items, DB state, target counts and metrics.
+ * Route: /[locale]/demo/seed  (admin-only; controlled by featureFlags.seedPanel in siteSettings)
+ * Enabled/disabled from Admin → Feature Flags. Safe to run on live servers when enabled.
+ *
+ * Per-resource accordion cards: each collection has its own expandable card showing
+ * seeded items, pending items, DB state, target counts, schema fields, slug patterns,
+ * media slug patterns, and SEO filename conventions.
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";

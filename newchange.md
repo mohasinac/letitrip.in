@@ -24,7 +24,58 @@
 
 ---
 
-# Change Log — Session 68 — 2026-05-07 (Latest)
+# Change Log — Session 68 (continued-2) — 2026-05-08 (Latest)
+
+## Doc sync — media filename slug patterns + ID type corrections in prompt.md and CLAUDE.md
+
+### What changed
+
+| What | File |
+|------|------|
+| SLUG PREFIX REGISTRY: fixed wrong examples for reviews/orders/bids/payouts (were showing invented IDs, now show generator output format) | `prompt.md` |
+| "System-generated IDs" footnote replaced with correct 3-way split: pure slugs / semantic generator IDs / true Firestore auto-IDs | `prompt.md` |
+| New "MEDIA FILENAME SLUG PATTERNS" section added — 19-row table covering all `generateMediaFilename` context types with pattern + example | `prompt.md` |
+| Slug prefix table: added missing rows (carousel slides, orders, bids, payouts, notifications); fixed review example | `CLAUDE.md` |
+| `id === slug` note replaced with 3-way split matching prompt.md (pure slugs / semantic / auto-IDs) | `CLAUDE.md` |
+| New "Media Filename Slug Patterns" section added (compact 3-column table matching prompt.md) | `CLAUDE.md` |
+
+### Notes
+- Source of truth for all media patterns is `generateMediaFilename()` in `appkit/src/utils/id-generators.ts`.
+- No code changes — documentation only.
+
+---
+
+# Change Log — Session 68 (continued) — 2026-05-08
+
+## SeedPanel — featureFlag-gated live-server support + schema documentation
+
+### What changed
+
+| What | File |
+|------|------|
+| `seedPanel: boolean` added to `SiteSettingsDocument.featureFlags` type | `appkit/src/features/admin/schemas/firestore.ts` |
+| `seedPanel: false` in schema defaults, `true` in seed data | `appkit/src/seed/site-settings-seed-data.ts` |
+| `seedPanel: z.boolean()` added to featureFlags Zod update schema | `src/validation/request-schemas.ts` |
+| GET + POST `/api/demo/seed` — `NODE_ENV !== "development"` replaced with `featureFlags.seedPanel` check | `src/app/api/demo/seed/route.ts` |
+| Root layout fetches siteSettings, passes `seedPanelEnabled` to shell | `src/app/[locale]/layout.tsx` |
+| Shell — `seedPanelEnabled` prop; nav + devSlot gated on flag + admin role; label → "Seed & Docs" | `src/app/[locale]/LayoutShellClient.tsx` |
+| Demo layout upgraded to `ProtectedRoute(requireRole="admin")` | `src/app/[locale]/demo/layout.tsx` |
+| SeedPanel reframed as admin data management + documentation panel | `src/components/dev/SeedPanel.tsx` |
+| Media slug patterns table added per collection (type / pattern / example) | `src/components/dev/SeedPanel.tsx` |
+| Slug pattern fixes — bids/orders/reviews/payouts were wrong `auto-ID` | `src/components/dev/SeedPanel.tsx` |
+| SP1 task ✅; summary counts updated | `crud-tracker.md` |
+
+### Notes
+- Default `false` in schema, `true` in seed — so new installs start disabled; seeded envs get it on automatically.
+- API security: flag check server-side. Role check: page-level `ProtectedRoute` (consistent with all admin pages).
+- appkit rebuilt after type change.
+
+### TypeScript
+`npx tsc --noEmit` → 0 errors in both repos.
+
+---
+
+# Change Log — Session 68 — 2026-05-07
 
 ## Listing toggles (Show Sold / Show Ended / Show Closed) + sort cleanup + auction winner masking
 

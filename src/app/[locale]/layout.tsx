@@ -11,6 +11,7 @@ import {
   ToastProvider,
   ZodSetup,
 } from "@mohasinac/appkit/client";
+import { siteSettingsRepository } from "@mohasinac/appkit";
 import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
@@ -25,6 +26,9 @@ export default async function Layout({ children, params }: Props) {
   const locale = resolveLocale(rawLocale);
   setRequestLocale(locale);
   const messages = await getMessages();
+
+  const siteSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+  const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? false;
 
   return (
     <NextIntlClientProvider
@@ -41,7 +45,7 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient>{children}</LayoutShellClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled}>{children}</LayoutShellClient>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

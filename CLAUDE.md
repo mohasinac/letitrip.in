@@ -134,15 +134,56 @@ When implementing a new feature that changes a schema, data model, API contract,
 | Brand | `brand-` | `brand-hot-wheels` |
 | Event | `event-` | `event-summer-holo-sale-2026` |
 | Blog post | `blog-` | `blog-how-to-grade-pokemon-cards` |
-| Review | `review-` | `review-[productSlug]-[userId-short]` |
+| Review | `review-` | `review-charizard-psa9-ravi-20260508` |
 | User profile | `user-` | `user-mohsin-c` |
 | FAQ | `faq-` | `faq-how-does-bidding-work` |
 | Coupon | `coupon-` | `coupon-summer20` |
 | Section | `section-` | `section-hot-wheels-franchise` |
 | Nav item | `nav-` | `nav-new-arrivals` |
 | Sub-listing | `sublisting-` | `sublisting-base-set-charizard-108-120` |
+| Carousel slide | `slide-` | `slide-hero-homepage` |
+| Order | `order-` | `order-3-20260508-a1b2c3` |
+| Bid | `bid-` | `bid-charizard-psa9-ravi-20260508-x7y8z9` |
+| Payout | `payout-` | `payout-mistys-cards-20260508-q1w2e3` |
+| Notification | `notif-` | `notif-order-shipped-001` |
 
-**id === slug** is the app-wide convention. Every Firestore document's `id` field must equal its `slug` field.
+**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings.
+
+**Semantic generator IDs** (slug-like prefix + date + random suffix, NOT Firestore auto-IDs):
+- orders → `order-{itemCount}-{YYYYMMDD}-{rand6}`
+- bids → `bid-{productName}-{userFirstName}-{YYYYMMDD}-{rand6}`
+- reviews → `review-{productName}-{userFirstName}-{YYYYMMDD}`
+- payouts → `payout-{sellerName}-{YYYYMMDD}-{rand6}`
+
+**True Firestore auto-IDs** (no prefix, no slug): carts, wishlists, eventEntries, notifications, sessions.
+
+---
+
+## Media Filename Slug Patterns
+
+All media files use SEO slugs via `generateMediaFilename(ctx)` in `appkit/src/utils/id-generators.ts`. Files are stored in Firebase Storage (private), served via `/api/media/[...slug]` Vercel proxy. Never write raw `firebasestorage.googleapis.com` URLs into Firestore.
+
+| Context Type | Pattern | Example |
+|---|---|---|
+| `user-avatar` | `user-avatar-{name}-{YYYYMMDD}.{ext}` | `user-avatar-ravi-kumar-20260508.jpg` |
+| `store-logo` | `store-logo-{store}-{YYYYMMDD}.{ext}` | `store-logo-mistys-water-cards-20260508.png` |
+| `store-banner` | `store-banner-{store}-{YYYYMMDD}.{ext}` | `store-banner-mistys-water-cards-20260508.jpg` |
+| `category-image` | `category-image-{category}-{YYYYMMDD}.{ext}` | `category-image-action-figures-20260508.jpg` |
+| `product-image` | `product-image-{product}-{n}-{YYYYMMDD}.{ext}` | `product-image-charizard-psa9-1-20260508.jpg` |
+| `product-video` | `product-video-{product}-{YYYYMMDD}.{ext}` | `product-video-charizard-psa9-20260508.mp4` |
+| `auction-image` | `auction-image-{product}-{n}-{YYYYMMDD}.{ext}` | `auction-image-charizard-1st-edition-1-20260508.jpg` |
+| `preorder-image` | `preorder-image-{product}-{n}-{YYYYMMDD}.{ext}` | `preorder-image-goku-ultra-ego-1-20260508.jpg` |
+| `rich-text-image` | `rich-text-image-{context}-{YYYYMMDD}-{rand4}.{ext}` | `rich-text-image-blog-post-20260508-a1b2.jpg` |
+| `review-image` | `review-image-{product}-{n}-{YYYYMMDD}.{ext}` | `review-image-hot-wheels-redline-1-20260508.jpg` |
+| `review-video` | `review-video-{product}-{YYYYMMDD}.{ext}` | `review-video-hot-wheels-redline-20260508.mp4` |
+| `blog-cover` | `blog-cover-{title}-{YYYYMMDD}.{ext}` | `blog-cover-how-to-grade-pokemon-cards-20260508.jpg` |
+| `blog-content-image` | `blog-content-image-{title}-{n}-{YYYYMMDD}.{ext}` | `blog-content-image-how-to-grade-pokemon-cards-1-20260508.jpg` |
+| `event-cover` | `event-cover-{event}-{YYYYMMDD}.{ext}` | `event-cover-pokemon-tournament-june-20260508.jpg` |
+| `event-image` | `event-image-{event}-{n}-{YYYYMMDD}.{ext}` | `event-image-pokemon-tournament-june-1-20260508.jpg` |
+| `event-winner-image` | `event-winner-image-{event}-{winner}-{YYYYMMDD}.{ext}` | `event-winner-image-tournament-june-ravi-kumar-20260508.jpg` |
+| `carousel-image` | `carousel-image-{slide}-{YYYYMMDD}.{ext}` | `carousel-image-hero-homepage-20260508.jpg` |
+| `invoice` | `invoice-{orderId}-{YYYYMMDD}.pdf` | `invoice-order-3-20260508-a1b2c3-20260508.pdf` |
+| `payout-doc` | `payout-doc-{seller}-{YYYYMMDD}.pdf` | `payout-doc-mistys-water-cards-20260508.pdf` |
 
 ---
 
