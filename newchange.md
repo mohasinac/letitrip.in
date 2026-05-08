@@ -16,7 +16,8 @@
 | 2026-05-07 | J7/J9 | Notes said "remaining: P5 seed data" — P5 was superseded. Notes updated to "resolved by P16" | ✅ Notes fixed — no code change needed | — |
 | 2026-05-07 | P10 Part B | Full SeedPanel UI redesign (collapsible groups, per-collection API calls, progress bar) was never built in Session 63 — task was silently marked ✅ | ✅ Fixed 2026-05-07 | — |
 | 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
-| 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ⏳ Pending — pick up before Session 70 (VA8 exposes googleMapsApiKey needed by HS4) | Session 67-b |
+| 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ✅ Done 2026-05-08 — Session 67-b | — |
+| 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ⏳ New task needed — see tracker | New task HS4-E |
 
 ---
 
@@ -24,7 +25,34 @@
 
 ---
 
-# Change Log — Session 69 (continued-3) — 2026-05-08 (Latest)
+# Change Log — Session 67-b — 2026-05-08 (Latest)
+
+## HS5 — CustomCardsSection component + wiring
+
+**Files changed:**
+- `appkit/src/features/homepage/components/CustomCardsSection.tsx` — NEW: renders `cards[]` per layout (grid/row/masonry); `autoScroll` wraps in `SectionCarousel`; each card: image via `MediaImage`, eyebrow, title, body, buttons (variant-styled anchors), formEmbed iframe; bg/text color applied via inline style from CMS-configured CSS token values
+- `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` — add `case "custom-cards"` to renderSection switch
+
+**tsc:** 0 errors both repos. **Commit:** bc92ad8 (appkit)
+
+---
+
+## HS4 — Google Business Reviews integration
+
+**Files changed:**
+- `appkit/src/features/homepage/lib/google-reviews-fetcher.ts` — NEW: `fetchGoogleReviews(placeId, apiKey, maxReviews, minRating)` calls Google Places API v1, filters/slices reviews, `revalidate: 3600`
+- `appkit/src/features/homepage/components/GoogleReviewsSection.tsx` — NEW: async RSC; reads `googleMapsApiKey` + `googlePlaceId` from site_settings; renders review cards (avatar, star rating, date, text, Google logo badge); grid/carousel layout; not-configured empty state
+- `appkit/src/server.ts` — export `fetchGoogleReviews`, `GoogleReview`, `GoogleReviewsResult`
+- `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` — add `case "google-reviews"` to renderSection switch
+- `src/app/api/social-feed/google-reviews/route.ts` — NEW: `GET ?placeId&maxReviews&minRating`; proxy to Google Places API; returns `{ error: "not-configured" }` when key absent; `revalidate: 3600`
+
+**Note (HS4-D):** User requested GoogleReviewsSection also available per-store on store About page — logged as new task HS4-E in tracker.
+
+**tsc:** 0 errors both repos. **Commit:** cb55b7b (appkit), 12b15257f (main)
+
+---
+
+# Change Log — Session 69 (continued-3) — 2026-05-08
 
 ## I1 — InlineCreateSelect wired into admin product + category editors
 

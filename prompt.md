@@ -7,23 +7,20 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 69 ✅ COMPLETE → Next: Session 67-b (HS4, HS5) or Session 70 (A3, VA6)
+## ⚡ CURRENT TASK — Session 67-b ✅ COMPLETE → Next: Session 70 (A3, VA6, A4, VA4)
 
 | Task | Status | What to do |
 |------|--------|------------|
-| **X2** | ✅ Session 69 | Toast standardisation — `AdminAdEditorView`, `AdminBrandEditorView`, `AdminCategoryEditorView`, `AdminFeatureFlagsView`, `AdminNavigationView` migrated to `useToast` |
-| **A1** | ✅ Session 69 | Products 3-mode editor — `AdminProductEditorView`; Tabs mode selector; storeId DynamicSelect; wraps ProductForm; /admin/products/new + /[id]/edit pages |
-| **VA2** | ✅ Session 69 | Deals/Featured toggles — 4-flag Flags column (featured/isPromoted/isOnSale/isSold) on product list rows; optimistic update + PATCH + toast; isOnSale/isSold added to schema |
-| **I1** | ✅ Session 69 | InlineCreateSelect wired into AdminProductEditorView (category + brand via render props) and AdminCategoryEditorView (parentId). CategoryQuickCreateForm + BrandQuickCreateForm mini-forms. Store stays DynamicSelect. |
+| **HS5** | ✅ Session 67-b | Custom Cards section — `CustomCardsSection.tsx`; grid/row/masonry layouts; autoScroll via SectionCarousel; wired as `case "custom-cards"` in MarketplaceHomepageView |
+| **HS4** | ✅ Session 67-b | Google Business Reviews — `fetchGoogleReviews` fetcher; `GoogleReviewsSection.tsx` async RSC; `GET /api/social-feed/google-reviews` proxy; wired as `case "google-reviews"` in MarketplaceHomepageView. HS4-E (per-store) added to tracker. |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
 
-> ⚠️ **HS4 + HS5 deferred** — Google Reviews integration (HS4) and Custom Cards component (HS5) were planned for Session 67 but not started. They are NOT blocked by Session 69. Pick up in a dedicated session before Session 70 (VA8 credentials form exposes Google Maps key needed by HS4).
+> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page (configurable per store). Logged as task HS4-E in tracker (⏳). Not blocking Session 70.
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 67-b | HS4, HS5 | Google Reviews API proxy + component; Custom Cards component + wiring (deferred from Session 67) |
 | 70 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor |
 | 71 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
 | 72 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
@@ -351,9 +348,9 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–68 (52 tasks ✅)
-Current:       69 (I1 remaining — X2+A1+VA2 done)
-Next:          67-b (HS4+HS5 deferred), 70 (A3+VA6+A4+VA4), 71 (A5+VA5+F5+VA7+VA8)
+Sessions done: 60–69, 67-b (57 tasks ✅)
+Current:       67-b ✅ COMPLETE
+Next:          70 (A3+VA6+A4+VA4), 71 (A5+VA5+F5+VA7+VA8), 72 (M1+VA19+M3+VA13+I3)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
@@ -361,7 +358,7 @@ PHASE          SESSIONS    STATUS
 Foundation     60–64       ✅ done (45/199 tasks)
 Carousel       65          ✅ done (CF1)
 Sections-1     66          ✅ done (HS1+HS2+HS3)
-Sections-2     67          ⚠️ partial — HS4+HS5 still ⏳ (hydration fix done)
+Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
 Admin CRUD     68–73       ⏳
 Store CRUD     75–76       ⏳
 User Account   77          ⏳
