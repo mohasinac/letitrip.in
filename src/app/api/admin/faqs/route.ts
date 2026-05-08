@@ -69,7 +69,8 @@ export const POST = withProviders(
     roles: ["admin"],
     schema: createFaqSchema,
     handler: async ({ body }) => {
-      const slugBase = body.slug?.trim() || body.question
+      const b = body!;
+      const slugBase = b.slug?.trim() || b.question
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9]+/g, "-")
@@ -79,16 +80,16 @@ export const POST = withProviders(
       const now = new Date();
       const faq = await faqsRepository.create({
         id: slug,
-        question: body.question,
-        answer: { text: body.answer, format: "html" as const },
-        category: body.category,
-        tags: body.tags ?? [],
-        order: body.order ?? 0,
-        priority: body.priority ?? 0,
-        isActive: body.isActive ?? true,
-        isPinned: body.isPinned ?? false,
-        showOnHomepage: body.showOnHomepage ?? false,
-        showInFooter: body.showInFooter ?? false,
+        question: b.question,
+        answer: { text: b.answer, format: "html" as const },
+        category: b.category,
+        tags: b.tags ?? [],
+        order: b.order ?? 0,
+        priority: b.priority ?? 0,
+        isActive: b.isActive ?? true,
+        isPinned: b.isPinned ?? false,
+        showOnHomepage: b.showOnHomepage ?? false,
+        showInFooter: b.showInFooter ?? false,
         "seo.slug": slug,
         searchTokens: [],
         stats: { views: 0, helpful: 0 },

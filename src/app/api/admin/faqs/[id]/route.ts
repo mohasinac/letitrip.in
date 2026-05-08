@@ -28,23 +28,24 @@ export const GET = withProviders(
   }),
 );
 
-export const PUT = withProviders(
-  createRouteHandler<(typeof updateFaqSchema)["_output"]>({
-    auth: true,
-    roles: ["admin", "moderator"],
-    schema: updateFaqSchema,
-    handler: async ({ body, params }) => {
-      const id = (params as { id: string }).id;
-      const existing = await faqsRepository.findById(id);
-      if (!existing) return errorResponse("FAQ not found", 404);
-      const updated = await faqsRepository.update(id, {
-        ...body,
-        updatedAt: new Date(),
-      } as any);
-      return successResponse(updated, "FAQ updated");
-    },
-  }),
-);
+const updateHandler = createRouteHandler<(typeof updateFaqSchema)["_output"]>({
+  auth: true,
+  roles: ["admin", "moderator"],
+  schema: updateFaqSchema,
+  handler: async ({ body, params }) => {
+    const id = (params as { id: string }).id;
+    const existing = await faqsRepository.findById(id);
+    if (!existing) return errorResponse("FAQ not found", 404);
+    const updated = await faqsRepository.update(id, {
+      ...body,
+      updatedAt: new Date(),
+    } as any);
+    return successResponse(updated, "FAQ updated");
+  },
+});
+
+export const PUT = withProviders(updateHandler);
+export const PATCH = withProviders(updateHandler);
 
 export const DELETE = withProviders(
   createRouteHandler({
