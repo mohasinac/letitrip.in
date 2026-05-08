@@ -7,23 +7,23 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 67-b ✅ COMPLETE → Next: Session 70 (A3, VA6, A4, VA4)
+## ⚡ CURRENT TASK — Session 70 ✅ COMPLETE → Next: Session 71 (A5, VA5, F5, VA7, VA8)
 
 | Task | Status | What to do |
 |------|--------|------------|
-| **HS5** | ✅ Session 67-b | Custom Cards section — `CustomCardsSection.tsx`; grid/row/masonry layouts; autoScroll via SectionCarousel; wired as `case "custom-cards"` in MarketplaceHomepageView |
-| **HS4** | ✅ Session 67-b | Google Business Reviews — `fetchGoogleReviews` fetcher; `GoogleReviewsSection.tsx` async RSC; `GET /api/social-feed/google-reviews` proxy; wired as `case "google-reviews"` in MarketplaceHomepageView. HS4-E (per-store) added to tracker. |
+| **A3/VA6** | ✅ Session 70 | Coupons editor — `AdminCouponEditorView.tsx`; conditional fields per type; /admin/coupons/new + [id]/edit; list page wired |
+| **A4/VA4** | ✅ Session 70 | Blog editor — `AdminBlogEditorView.tsx`; RichTextEditor content; auto readTimeMinutes; /admin/blog/new + [id]/edit; list page wired |
 
 **Pre-work:** `npx tsc --noEmit` → 0 errors in both repos before touching anything.
 
-> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page (configurable per store). Logged as task HS4-E in tracker (⏳). Not blocking Session 70.
+> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page (configurable per store). Logged as task HS4-E in tracker (⏳). Not blocking Session 71.
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 70 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor |
 | 71 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form |
 | 72 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
+| 73 | N3, VA12, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms |
 
 ---
 

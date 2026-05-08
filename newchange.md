@@ -25,7 +25,39 @@
 
 ---
 
-# Change Log — Session 67-b — 2026-05-08 (Latest)
+# Change Log — Session 70 — 2026-05-08 (Latest)
+
+## A3/VA6 — AdminCouponEditorView
+
+**Files changed:**
+- `appkit/src/features/admin/components/AdminCouponEditorView.tsx` — NEW: create/edit coupon form; conditional discount fields per type (percentage/fixed/free_shipping/buy_x_get_y); POST/PATCH via ADMIN_ENDPOINTS.COUPONS
+- `appkit/src/features/admin/components/AdminCouponsView.tsx` — added `actionHref` + `getRowHref` props, passed through to `AdminListingScaffold`
+- `appkit/src/features/admin/components/index.ts` — exported `AdminCouponEditorView`, `AdminCouponEditorViewProps`
+- `appkit/src/index.ts` — exported both near `AdminCouponsView`
+- `src/app/[locale]/admin/coupons/[[...action]]/page.tsx` — wired `actionHref` + `getRowHref`
+- `src/app/[locale]/admin/coupons/new/page.tsx` — NEW
+- `src/app/[locale]/admin/coupons/[id]/edit/page.tsx` — NEW
+
+**tsc:** 0 errors both repos. **Commits:** bef6a00 (appkit), ae7c81824 (main)
+
+---
+
+## A4/VA4 — AdminBlogEditorView
+
+**Files changed:**
+- `appkit/src/features/admin/components/AdminBlogEditorView.tsx` — NEW: create/edit blog post form; RichTextEditor for content; auto-computed readTimeMinutes; POST/PATCH via ADMIN_ENDPOINTS.BLOG
+- `appkit/src/features/admin/components/AdminBlogView.tsx` — added `actionHref` + `getRowHref` props
+- `appkit/src/features/admin/components/index.ts` — exported `AdminBlogEditorView`, `AdminBlogEditorViewProps`
+- `appkit/src/index.ts` — exported both near `AdminBlogView`
+- `src/app/[locale]/admin/blog/[[...action]]/page.tsx` — wired `actionHref` + `getRowHref`
+- `src/app/[locale]/admin/blog/new/page.tsx` — NEW
+- `src/app/[locale]/admin/blog/[id]/edit/page.tsx` — NEW
+
+**tsc:** 0 errors both repos. **Commits:** 118e978 (appkit), 4efbfb531 (main)
+
+---
+
+# Change Log — Session 67-b — 2026-05-08
 
 ## HS5 — CustomCardsSection component + wiring
 
