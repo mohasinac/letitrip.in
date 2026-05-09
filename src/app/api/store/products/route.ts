@@ -2,17 +2,23 @@ import { withProviders } from "@/providers.config";
 /**
  * Seller Products API Route
  * GET /api/store/products — Returns the authenticated seller's products
- *                            (enforces sellerId=={uid} server-side)
+ *                            (enforces storeId=={ownerStore.id} server-side)
  *
  * Mutations use Server Action: createSellerProductAction.
  */
 import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { successResponse, ApiErrors } from "@mohasinac/appkit";
+import { productRepository, storeRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({
   roles: ["seller", "admin", "moderator"],
   handler: async ({ request, user }) => {
+    // Resolve the store owned by this user — storeId is the public-facing key on products
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) {
+      return ApiErrors.forbidden("No store found for this account");
+    }
+
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(
@@ -25,11 +31,11 @@ export const GET = withProviders(createApiHandler({
       url.searchParams.get("sort") ??
       "-createdAt";
 
-    // Server-side security: force sellerId filter so sellers can't see others' products
-    const sellerFilter = `sellerId==${user!.uid}`;
+    // Server-side security: force storeId filter so sellers can't see other stores' products
+    const storeFilter = `storeId==${store.id}`;
     const filters = clientFilters
-      ? `${sellerFilter},${clientFilters}`
-      : sellerFilter;
+      ? `${storeFilter},${clientFilters}`
+      : storeFilter;
 
     const result = await productRepository.list({
       filters,
@@ -51,4 +57,3 @@ export const GET = withProviders(createApiHandler({
     });
   },
 }));
-

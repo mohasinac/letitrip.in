@@ -8,6 +8,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { successResponse } from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import {
   getNumberParam,
@@ -21,9 +22,9 @@ import { PayoutStatusValues } from "@mohasinac/appkit";
 
 // --- Helper ---------------------------------------------------------------
 
-async function computeSellerEarnings(sellerId: string) {
+async function computeSellerEarnings(storeId: string) {
   const eligibleOrdersResult = await orderRepository.listAll({
-    filters: `sellerId==${sellerId},status==delivered,payoutStatus==eligible`,
+    filters: `storeId==${storeId},status==delivered,payoutStatus==eligible`,
     sorts: "-orderDate",
     page: "1",
     pageSize: "5000",
@@ -53,6 +54,9 @@ export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
     const uid = user!.uid;
+    const store = await storeRepository.findByOwnerId(uid);
+    const storeId = store?.id;
+
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 20, {
@@ -81,7 +85,7 @@ export const GET = withProviders(createRouteHandler({
       payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.COMPLETED),
       payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PENDING),
       payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PROCESSING),
-      computeSellerEarnings(uid),
+      storeId ? computeSellerEarnings(storeId) : Promise.resolve({ eligibleOrders: [], grossAmount: 0, platformFee: 0, netAmount: 0 }),
     ]);
 
     const totalPaidOut = completedPayouts.reduce((sum, p) => sum + p.amount, 0);

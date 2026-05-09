@@ -7,7 +7,7 @@ import { withProviders } from "@/providers.config";
  * Strategy: fetch seller's products → get product IDs → filter all orders
  */
 
-import { orderRepository, productRepository } from "@mohasinac/appkit";
+import { orderRepository, productRepository, storeRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import {
@@ -40,16 +40,24 @@ export const GET = withProviders(createRouteHandler({
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-orderDate";
 
+    const store = await storeRepository.findByOwnerId(user!.uid);
     serverLogger.info("Seller orders list requested", {
-      sellerId: user!.uid,
+      storeId: store?.id,
       filters,
       sorts,
       page,
       pageSize,
     });
 
-    // Step 1: Get only this seller's products (indexed query, not findAll)
-    const sellerProducts = await productRepository.findBySeller(user!.uid);
+    if (!store) {
+      return successResponse({
+        orders: [],
+        meta: { page, limit: pageSize, total: 0, totalPages: 0, hasMore: false },
+      });
+    }
+
+    // Step 1: Get only this store's products (indexed query, not findAll)
+    const sellerProducts = await productRepository.findByStore(store.id);
     const sellerProductIds = sellerProducts.map((p) => p.id);
 
     if (sellerProductIds.length === 0) {

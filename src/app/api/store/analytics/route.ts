@@ -30,8 +30,8 @@ export const GET = withProviders(
         return Response.json({ error: "Analytics service not configured" }, { status: 503 });
       }
 
-      const sellerId = user!.uid;
-      serverLogger.info("storeAnalytics: delegating to Firebase Function", { sellerId });
+      const uid = user!.uid;
+      serverLogger.info("storeAnalytics: delegating to Firebase Function", { uid });
 
       const upstream = await fetch(functionUrl, {
         method: "POST",
@@ -39,7 +39,7 @@ export const GET = withProviders(
           "Content-Type": "application/json",
           "x-internal-secret": secret,
         },
-        body: JSON.stringify({ sellerId }),
+        body: JSON.stringify({ uid }),
       });
 
       if (!upstream.ok) {
@@ -47,7 +47,7 @@ export const GET = withProviders(
         serverLogger.error("storeAnalytics: Firebase Function error", {
           status: upstream.status,
           body: text,
-          sellerId,
+          uid,
         });
         return Response.json(
           { error: "Analytics service error" },

@@ -29,7 +29,7 @@ function detectConflict(
   incoming: {
     code: string;
     scope: "admin" | "seller";
-    sellerId?: string;
+    storeId?: string;
     combineWithSellerCoupons?: boolean;
   },
 ): string | null {
@@ -43,7 +43,7 @@ function detectConflict(
     if (
       incoming.scope === "seller" &&
       applied.scope === "seller" &&
-      applied.sellerId === incoming.sellerId
+      applied.storeId === incoming.storeId
     ) {
       return `A coupon for this store is already applied (${applied.code}). Remove it first.`;
     }
@@ -91,7 +91,7 @@ export const POST = withProviders(
 
       const cartItems = cart.items.map((item) => ({
         productId: item.productId,
-        sellerId: item.sellerId,
+        storeId: item.storeId,
         price: item.lockedPrice ?? item.price,
         quantity: item.quantity,
         isPreOrder: item.isPreOrder ?? false,
@@ -108,7 +108,7 @@ export const POST = withProviders(
         | {
             id?: string;
             scope?: string;
-            sellerId?: string;
+            storeId?: string;
             restrictions?: { combineWithSellerCoupons?: boolean };
           }
         | undefined;
@@ -120,7 +120,7 @@ export const POST = withProviders(
       const conflict = detectConflict(existingCoupons, {
         code: normalised,
         scope: incomingScope,
-        sellerId: couponDoc?.sellerId,
+        storeId: couponDoc?.storeId,
         combineWithSellerCoupons: combineFlag,
       });
       if (conflict) {
@@ -139,7 +139,7 @@ export const POST = withProviders(
         discountAmount: result.discountAmount ?? 0,
         couponId: couponDoc?.id,
         scope: incomingScope,
-        sellerId: couponDoc?.sellerId,
+        storeId: couponDoc?.storeId,
         applicableItemIds,
         // Store the combine flag so conflict detection works for future coupons
         combineWithSellerCoupons: combineFlag,
@@ -151,7 +151,7 @@ export const POST = withProviders(
         eligibleSubtotal: result.eligibleSubtotal,
         couponId: couponDoc?.id,
         scope: incomingScope,
-        sellerId: couponDoc?.sellerId,
+        storeId: couponDoc?.storeId,
         applicableItemIds,
       });
     },

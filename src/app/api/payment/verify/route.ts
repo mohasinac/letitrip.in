@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit";
 import {
-  unitOfWork, siteSettingsRepository, offerRepository, userRepository, } from "@mohasinac/appkit";
+  unitOfWork, siteSettingsRepository, offerRepository, userRepository, storeRepository, } from "@mohasinac/appkit";
 import { failedCheckoutRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -268,9 +268,11 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
 
       // -- Shipping fee (same logic as checkout route) ----------------------
       let shippingFee = 0;
-      const sellerId = firstItem.sellerId;
-      if (sellerId) {
-        const sellerUser = await userRepository.findById(sellerId);
+      const storeId = firstItem.storeId;
+      if (storeId) {
+        const store = await storeRepository.findById(storeId);
+        const storeOwnerId = store?.ownerId;
+        const sellerUser = storeOwnerId ? await userRepository.findById(storeOwnerId) : null;
         const shippingConfig = sellerUser?.shippingConfig;
         if (shippingConfig?.isConfigured) {
           if (shippingConfig.method === "custom") {
@@ -288,14 +290,14 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
 
       // -- Multi-coupon discount per group -----------------------------------
       let couponDiscount = 0;
-      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; sellerId?: string }[] = [];
+      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; storeId?: string }[] = [];
 
       for (const coupon of appliedCoupons) {
         let couponGroupDiscount = 0;
-        const isSellerScoped = coupon.scope === "seller" && coupon.sellerId;
+        const isSellerScoped = coupon.scope === "seller" && coupon.storeId;
 
         if (isSellerScoped) {
-          if (coupon.sellerId !== firstItem.sellerId) continue;
+          if (coupon.storeId !== firstItem.storeId) continue;
           if (coupon.applicableItemIds?.length) {
             const eligibleTotal = group
               .filter(({ item }) => coupon.applicableItemIds!.includes(item.itemId))
@@ -325,7 +327,7 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
             type: "coupon",
             discountAmount: couponGroupDiscount,
             scope: coupon.scope,
-            sellerId: coupon.sellerId,
+            storeId: coupon.storeId,
           });
         }
       }
@@ -370,8 +372,8 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
         unitPrice: group[0].product!.price,
         totalPrice: orderTotal,
         currency: firstItem.currency ?? getDefaultCurrency(),
-        sellerId: firstItem.sellerId || undefined,
-        sellerName: firstItem.sellerName || undefined,
+        storeId: firstItem.storeId || undefined,
+        storeName: firstItem.storeName || undefined,
         items: orderItems,
         orderType,
         offerId: firstItem.offerId ?? undefined,

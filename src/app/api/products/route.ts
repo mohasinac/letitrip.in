@@ -19,7 +19,6 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "categorySlug",
   "brand",
   "condition",
-  "sellerId",
   "storeId",
   "title",
   "price",
@@ -62,8 +61,8 @@ function buildFilters(url: URL): string {
   if (brand) parts.push(`brand==${brand}`);
   const condition = param(url, "condition");
   if (condition) parts.push(`condition==${condition}`);
-  const sellerId = param(url, "sellerId");
-  if (sellerId) parts.push(`sellerId==${sellerId}`);
+  const storeIdParam = param(url, "storeId");
+  if (storeIdParam) parts.push(`storeId==${storeIdParam}`);
   const query = param(url, "q");
   if (query) parts.push(`title@=*${query}`);
   const minPrice = param(url, "minPrice");

@@ -4,8 +4,8 @@ import { withProviders } from "@/providers.config";
  * GET /api/store/coupons — Returns all coupons owned by the authenticated seller
  */
 import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { couponsRepository } from "@mohasinac/appkit";
+import { successResponse, ApiErrors } from "@mohasinac/appkit";
+import { couponsRepository, storeRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({
   roles: ["seller", "admin", "moderator"],
@@ -21,8 +21,11 @@ export const GET = withProviders(createApiHandler({
       url.searchParams.get("sort") ??
       "-createdAt";
 
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) return ApiErrors.forbidden("No store found for this account");
+
     const result = await couponsRepository.list({
-      filters: `sellerId==${user!.uid}`,
+      filters: `storeId==${store.id}`,
       sorts,
       page,
       pageSize,

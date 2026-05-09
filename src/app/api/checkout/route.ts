@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
-  unitOfWork, siteSettingsRepository, userRepository, couponsRepository, } from "@mohasinac/appkit";
+  unitOfWork, siteSettingsRepository, userRepository, storeRepository, couponsRepository, } from "@mohasinac/appkit";
 import { failedCheckoutRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -337,21 +337,26 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       );
 
       // -- Shipping fee ------------------------------------------------------
+      // Two-step lookup: storeId (slug) → store.ownerId (Auth UID) → user shippingConfig
       let shippingFee = 0;
-      const sellerId = firstItem.sellerId;
-      if (sellerId) {
-        const sellerUser = await userRepository.findById(sellerId);
-        const shippingConfig = sellerUser?.shippingConfig;
-        if (shippingConfig?.isConfigured) {
-          if (shippingConfig.method === "custom") {
-            shippingFee = shippingConfig.customShippingPrice ?? 0;
-          } else if (shippingConfig.method === "shiprocket") {
-            const percentFee =
-              groupTotal * (commissions.platformShippingPercent / 100);
-            shippingFee = Math.max(
-              percentFee,
-              commissions.platformShippingFixedMin,
-            );
+      const storeId = firstItem.storeId;
+      if (storeId) {
+        const store = await storeRepository.findById(storeId);
+        const storeOwnerId = store?.ownerId;
+        if (storeOwnerId) {
+          const sellerUser = await userRepository.findById(storeOwnerId);
+          const shippingConfig = sellerUser?.shippingConfig;
+          if (shippingConfig?.isConfigured) {
+            if (shippingConfig.method === "custom") {
+              shippingFee = shippingConfig.customShippingPrice ?? 0;
+            } else if (shippingConfig.method === "shiprocket") {
+              const percentFee =
+                groupTotal * (commissions.platformShippingPercent / 100);
+              shippingFee = Math.max(
+                percentFee,
+                commissions.platformShippingFixedMin,
+              );
+            }
           }
         }
       }
@@ -372,17 +377,17 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       // Seller-scoped: applied only when coupon.sellerId matches group seller.
       const groupItemIds = new Set(group.map(({ item }) => item.itemId));
       let couponDiscount = 0;
-      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; sellerId?: string }[] = [];
+      const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; storeId?: string }[] = [];
       // Codes of trackable coupons that contributed discount to THIS group only.
       const groupCouponCodes = new Set<string>();
 
       for (const coupon of appliedCoupons) {
         let couponGroupDiscount = 0;
-        const isSellerScoped = coupon.scope === "seller" && coupon.sellerId;
+        const isSellerScoped = coupon.scope === "seller" && coupon.storeId;
 
         if (isSellerScoped) {
-          // Apply only if this order group belongs to the coupon's seller
-          if (coupon.sellerId !== firstItem.sellerId) continue;
+          // Apply only if this order group belongs to the coupon's store
+          if (coupon.storeId !== firstItem.storeId) continue;
           // If applicableItemIds recorded, restrict to those items' subtotal
           if (coupon.applicableItemIds?.length) {
             const eligibleTotal = group
@@ -416,7 +421,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
             type: "coupon",
             discountAmount: couponGroupDiscount,
             scope: coupon.scope,
-            sellerId: coupon.sellerId,
+            storeId: coupon.storeId,
           });
 
           // Accumulate for post-checkout usage recording (only trackable coupons)
@@ -456,8 +461,8 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
         unitPrice: firstItem.price,
         totalPrice: orderTotal,
         currency: firstItem.currency ?? getDefaultCurrency(),
-        sellerId: firstItem.sellerId || undefined,
-        sellerName: firstItem.sellerName || undefined,
+        storeId: firstItem.storeId || undefined,
+        storeName: firstItem.storeName || undefined,
         items: orderItems,
         orderType,
         offerId: firstItem.offerId ?? undefined,

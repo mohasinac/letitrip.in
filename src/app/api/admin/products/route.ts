@@ -74,10 +74,8 @@ export const POST = withProviders(createApiHandler({
 
     const product = await productRepository.create({
       ...validation.data,
-      sellerId: body.sellerId || user?.uid,
-      sellerName:
-        body.sellerName || user?.displayName || user?.email || "Admin",
-      sellerEmail: body.sellerEmail || user?.email || "",
+      storeId: body.storeId,
+      storeName: body.storeName || "Admin",
     } as any);
 
     serverLogger.info("Admin created product", { productId: product.id });

@@ -5,6 +5,7 @@ import {
   successResponse,
   errorResponse,
   couponsRepository,
+  storeRepository,
 } from "@mohasinac/appkit";
 
 const updateCouponSchema = z.object({
@@ -47,9 +48,11 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.findById(id);
       if (!coupon) return errorResponse("Coupon not found", 404);
-      // Sellers can only access their own coupons
-      if (user!.role !== "admin" && coupon.sellerId !== user!.uid) {
-        return errorResponse("Coupon not found", 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || coupon.storeId !== store.id) {
+          return errorResponse("Coupon not found", 404);
+        }
       }
       return successResponse(coupon);
     },
@@ -65,8 +68,11 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
       if (!existing) return errorResponse("Coupon not found", 404);
-      if (user!.role !== "admin" && existing.sellerId !== user!.uid) {
-        return errorResponse("Coupon not found", 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || existing.storeId !== store.id) {
+          return errorResponse("Coupon not found", 404);
+        }
       }
       const { action, validity, ...updateData } = body!;
 
@@ -101,8 +107,11 @@ export const DELETE = withProviders(
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
       if (!existing) return errorResponse("Coupon not found", 404);
-      if (user!.role !== "admin" && existing.sellerId !== user!.uid) {
-        return errorResponse("Coupon not found", 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || existing.storeId !== store.id) {
+          return errorResponse("Coupon not found", 404);
+        }
       }
       await couponsRepository.delete(id);
       return successResponse(null, "Coupon deleted");

@@ -68,8 +68,8 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       price: product.price,
       currency: product.currency,
       quantity,
-      sellerId: product.sellerId,
-      sellerName: product.sellerName,
+      storeId: product.storeId,
+      storeName: product.storeName ?? "",
       isAuction: product.isAuction ?? false,
     });
 

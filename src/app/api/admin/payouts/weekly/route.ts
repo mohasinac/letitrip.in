@@ -29,6 +29,7 @@ import {
   userRepository,
   orderRepository,
   payoutRepository,
+  storeRepository,
 } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
@@ -65,11 +66,12 @@ export const POST = withProviders(createRouteHandler({
       });
     }
 
-    // -- 2. Group by sellerId ----------------------------------------------
-    const bySeller = shiprocketDelivered.reduce<
+    // -- 2. Group by storeId -----------------------------------------------
+    const byStore = shiprocketDelivered.reduce<
       Map<string, typeof shiprocketDelivered>
     >((map, order) => {
-      const id = order.sellerId!;
+      const id = order.storeId ?? order.storeId ?? "";
+      if (!id) return map;
       if (!map.has(id)) map.set(id, []);
       map.get(id)!.push(order);
       return map;
@@ -77,6 +79,7 @@ export const POST = withProviders(createRouteHandler({
 
     const payoutSummaries: {
       sellerId: string;
+      storeId: string;
       payoutId: string;
       orderCount: number;
       netAmount: number;
@@ -84,8 +87,17 @@ export const POST = withProviders(createRouteHandler({
       platformFee: number;
     }[] = [];
 
-    // -- 3. Create one payout per seller ------------------------------------
-    for (const [sellerId, orders] of bySeller.entries()) {
+    // -- 3. Create one payout per store/seller -----------------------------
+    for (const [storeId, orders] of byStore.entries()) {
+      const store = await storeRepository.findById(storeId);
+      if (!store) {
+        serverLogger.warn("Weekly payout: store not found, skipping", {
+          storeId,
+          orderIds: orders.map((o) => o.id),
+        });
+        continue;
+      }
+      const sellerId = store.ownerId;
       const seller = await userRepository.findById(sellerId);
       if (!seller) {
         serverLogger.warn("Weekly payout: seller not found, skipping", {
@@ -150,6 +162,7 @@ export const POST = withProviders(createRouteHandler({
 
       payoutSummaries.push({
         sellerId,
+        storeId,
         payoutId,
         orderCount: orders.length,
         netAmount,
@@ -158,6 +171,7 @@ export const POST = withProviders(createRouteHandler({
       });
 
       serverLogger.info("Weekly payout created", {
+        storeId,
         sellerId,
         payoutId,
         orderCount: orders.length,

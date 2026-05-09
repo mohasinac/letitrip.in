@@ -53,8 +53,8 @@ export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_
         price: product.price,
         currency: product.currency,
         quantity: safeQty,
-        sellerId: product.sellerId,
-        sellerName: product.sellerName,
+        storeId: product.storeId,
+        storeName: product.storeName ?? "",
         isAuction: product.isAuction ?? false,
       });
     }
