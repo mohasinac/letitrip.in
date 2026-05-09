@@ -7,7 +7,7 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 72 (catalogue release + remaining finance)
+## ⚡ CURRENT TASK — Session 72 (catalogue release + store identity architecture)
 
 | Task | Status | What to do |
 |------|--------|------------|
@@ -15,9 +15,10 @@
 | **VA19** | ✅ | Analytics charts + date range picker already wired |
 | **VA3** | ✅ | AdminCategoryEditorView fixed (loadCategoryOptions bug, getRowHref, RC4 routes) |
 | **VA12** | ✅ | AdminStoreEditorView SideDrawer built; AdminStoresView RowActionMenu wired |
-| **M3** | ⏳ | Payouts mark-paid + CSV export |
-| **VA13** | ⏳ | Same as M3 |
-| **I3** | ⏳ | Seed reset button in AdminSectionsView toolbar |
+| **M3** | 🚫 | Superseded by ARCH4 |
+| **VA13** | 🚫 | Superseded by ARCH4 |
+| **ARCH4** | ✅ | Admin payouts: storeId/storeName identity + mark-paid (Modal, 1 field) + CSV export |
+| **I3** | ✅ | Seed reset button in AdminSectionsView toolbar |
 
 ### Completed last session (71)
 | Task | Status | Done |
@@ -33,8 +34,9 @@
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 72 | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button |
-| 73 | N3, VA12, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms |
+| 73 | N3, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms |
+| 74 | ARCH1–ARCH3, ARCH5 | Public API sanitization + cart items schema + reviews schema |
+| 75 | ARCH6–ARCH9 | Product UI cards + seller profile + seed data unification |
 
 ---
 
@@ -96,6 +98,33 @@ npx tsc --noEmit must pass before every commit (both repos)
 <Button>          → action / mutation / modal open only — NEVER onClick={router.push}
 <Link href={ROUTES.*}> → navigation — ALWAYS ROUTES.* constant, no hardcoded strings
 <Button asChild><Link href={ROUTES.*}>Label</Link></Button>  → styled-button navigation
+```
+
+### SideDrawer vs Modal — pick by field count
+```
+0 fields (confirm only) → ConfirmDeleteModal
+1–2 form fields         → Modal
+3+ form fields          → SideDrawer   ← never cram 3+ inputs into a modal
+```
+
+### Store identity — public vs admin vs internal
+```
+Public routes + UI (product cards, detail pages, reviews, cart, profiles):
+  Show:  storeId / storeName / storeSlug
+  Never: sellerId / sellerName / ownerId
+
+Admin routes + UI only:
+  May additionally show: ownerId (Firebase UID of the store owner)
+
+Internal server logic only (checkout, analytics, payout calculation, auth checks):
+  sellerId (= Firebase UID) — stays as-is for auth; NEVER returned in API responses
+```
+
+### User roles — 3 public tiers
+```
+user     → basic buyer (no store)
+seller   → has ≥1 store; role assigned on store creation
+admin    → platform admin (moderator = admin sub-role, internal only)
 ```
 
 ### No hardcoded values
@@ -395,8 +424,10 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 
 ```
 Sessions done: 60–71, 67-b (73 tasks ✅)
-Current:       72 (M3, VA13, I3 remaining) — Payouts mark-paid/export + sections seed reset
-Next:          73 (N3, B1, VA10, B2, VA9, N2, VA11) — VA12 done in 72
+Current:       72 ✅ complete — ARCH4+I3 done (payouts storeId + mark-paid/CSV + seed reset)
+Next:          73 (N3, B1, VA10, B2, VA9, N2, VA11) — Stores/Users/Orders/Reviews forms
+               74 (ARCH1–ARCH3, ARCH5) — Public API sanitization + cart/reviews schema
+               75 (ARCH6–ARCH9) — Product cards + seller profile + seed data
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
@@ -406,6 +437,7 @@ Carousel       65          ✅ done (CF1)
 Sections-1     66          ✅ done (HS1+HS2+HS3)
 Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
 Admin CRUD     68–73       🔄 in progress (Sessions 68–71 done; 72–73 remaining)
+Store Identity 74–75       ⏳ ARCH1–ARCH9 (storeId/storeName public identity)
 Store CRUD     75–76       ⏳
 User Account   77          ⏳
 Custom Fields  78          ⏳

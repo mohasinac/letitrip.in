@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-09 — Session 72: M1+VA19+VA3+VA12 ✅ (analytics + categories CRUD + stores management). 73 done, 147 remaining.
+> **Last updated:** 2026-05-09 — Session 72: ARCH4+I3 ✅ (payouts mark-paid/CSV + sections seed reset). 75 done, 152 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -10,12 +10,12 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 237 |
-| ✅ Done | 73 |
+| Total tasks | 246 |
+| ✅ Done | 75 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 147 |
-| 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
+| ⏳ Remaining | 152 |
+| 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
 
@@ -322,7 +322,7 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | M1 | Admin Analytics dashboard — charts + date range | M | ✅ | Session 72 | `AdminAnalyticsClient` wires `AdminAnalyticsView` with date range picker; analytics route forwards startDate/endDate to Firebase Function. Charts + table already existed. |
-| M3 | Admin Payouts processing + export CSV | M | ⏳ | | LIST: `AdminPayoutsView` EXISTS. ADD: mark-paid action via `RowActionMenu` + `BulkActionBar`. API: PUT /api/admin/payouts/[id]; GET /api/admin/payouts/export |
+| M3 | Admin Payouts processing + export CSV | M | 🚫 | | **Superseded by ARCH4** — ARCH4 covers same spec plus store identity requirement (storeId/storeName instead of sellerId/sellerName). |
 | F1 | Homepage Sections CMS | L | 🚫 | | **Superseded by HS1–HS5** — see Tier HS for full redesign |
 | N1 | Site Settings full wiring | M | 🚫 | | **Superseded by VA8** which covers all 12 setting groups comprehensively. |
 | F5 | Navigation CMS — dynamic nav items in Firestore | M | ✅ | Session 71 | `AdminNavigationView` rewritten as CRUD list: up/down reorder, inline visibility toggle, RowActionMenu; `AdminNavEditorView` SideDrawer (label, href, icon, order, parentId, isVisible); GET/POST /api/admin/navigation + PUT/PATCH/DELETE /api/admin/navigation/[id]; items in siteSettings.navbarConfig.navItems. |
@@ -330,7 +330,7 @@ Rules to keep top-of-mind every task:
 | B5 | Bids cancel/void | S | ⏳ | | LIST: `AdminBidsView` EXISTS. ADD: cancel via `RowActionMenu`. REUSE: `ConfirmDeleteModal` (EXISTS). API: PUT /api/admin/bids/[id] |
 | B6 | Newsletter export CSV + unsubscribe | S | ⏳ | | LIST: `AdminNewsletterView` EXISTS. ADD: unsubscribe via `RowActionMenu` + export button in toolbar. API: DELETE /api/admin/newsletter/[id]; GET /api/admin/newsletter/export |
 | B7 | Contact submissions mark-read + archive | S | ⏳ | | LIST: `AdminContactView` EXISTS. ADD: status actions via `RowActionMenu` + `SideDrawer` for detail. API: PUT /api/admin/contact-submissions/[id] |
-| I3 | Sections seed reset button in admin sections toolbar | S | ⏳ | | Add a Button to `AdminSectionsView` toolbar. REUSE: `Button` + `ConfirmDeleteModal` (EXISTS). POST /api/demo/seed |
+| I3 | Sections seed reset button in admin sections toolbar | S | ✅ | Session 72 | `AdminSectionsView`: "Reset seed data" button in actionsSlot (beside "Manage Sections"); ConfirmDeleteModal confirm fires POST /api/demo/seed {action:load,collections:[homepageSections]}; invalidates sections listing query on success. |
 
 ---
 
@@ -410,7 +410,7 @@ Rules to keep top-of-mind every task:
 | VA10 | Admin Users role/ban management form | M | ⏳ | | See B1. Row action: role select (admin/seller/user), ban toggle + reason input. SideDrawer shows full user profile. API: PUT /api/admin/users/[uid]. |
 | VA11 | Admin Reviews moderation actions | M | ⏳ | | See N2. Row actions: Approve, Reject, Feature, Reply (text field). REUSE: `ReviewModal` for full view. API: PUT /api/admin/reviews/[id]. |
 | VA12 | Admin Stores management form | M | ✅ | Session 72 | `AdminStoreEditorView` SideDrawer built: storeStatus select, adminNotes textarea, isFeatured toggle. AdminStoresView wired with RowActionMenu → SideDrawer. DataTable + AdminListingScaffold: added renderRowActions prop. |
-| VA13 | Admin Payouts mark-paid + CSV export | M | ⏳ | | See M3. Row action: mark-paid (with reference number input). Export CSV button in toolbar. API: PUT /api/admin/payouts/[id], GET /api/admin/payouts/export. |
+| VA13 | Admin Payouts mark-paid + CSV export | M | 🚫 | | **Superseded by ARCH4** — see ARCH tier. |
 | VA14 | Admin Newsletter unsubscribe + CSV export | S | ⏳ | | See B6. Row action: Unsubscribe (with confirm dialog). Export CSV button. API: DELETE /api/admin/newsletter/[id], GET /api/admin/newsletter/export. |
 | VA15 | Admin Contact submissions — mark-read + archive | S | ⏳ | | See B7. SideDrawer shows full message. Actions: Mark Read, Archive, Reply (mailto link). API: PUT /api/admin/contact-submissions/[id]. |
 | VA16 | Admin Bids — per-auction list + cancel/void | S | ⏳ | | See B5. Improve `AdminBidsView`: filter by productId, show bidder name/amount/time. Row action: Cancel/Void (with confirm modal). API: PUT /api/admin/bids/[id]. |
@@ -616,3 +616,25 @@ Rules to keep top-of-mind every task:
 | RC2 | Audit + extend `ROUTES` constants; replace all hardcoded route strings | M | ✅ | 2026-05-09 | Added `ADMIN.EVENTS_NEW`, `ADMIN.EVENTS_EDIT`, `ADMIN.ADS_NEW`, `ADMIN.ADS_EDIT`, `PUBLIC.SUBLISTING_CATEGORIES`, `PUBLIC.SUBLISTING_CATEGORY(slug)` to route-map.ts. All hardcoded `/...` strings replaced with `ROUTES.*` across `src/` and `appkit/src/features/`. 0 new TS errors. `DevToolbar` `/api/dev/...` paths are intentional API endpoints — exempt. |
 | RC3 | Button vs Link convention audit + fix violations | M | ⚠️ | 2026-05-09 | Raw `<a href="/login">` → `<Link href={ROUTES.AUTH.LOGIN}>` fixed in PollInlineClient, EventParticipateClient, EventPollWidget (appkit). Remaining: `<Button onClick={() => router.push(ROUTES.USER.CHECKOUT)}>` in CartRouteClient.tsx — two instances where router.push is used inside Button; second call is async (selectAll + push), so only the first is a pure Button-navigation violation. Defer to full RC3 sweep with `asChild` pattern across all store/user pages. |
 | RC4 | Route ambiguity audit + CRUD route pattern standardisation | M | ⏳ | | **Root cause**: optional catch-all `[[...action]]/page.tsx` conflicts with a sibling static `page.tsx` at the same parent folder — Next.js rejects it with "same specificity" error (confirmed 2026-05-08). **Known violations**: `/admin/products` (page.tsx + [[...action]]), `/admin/blog` (page.tsx + [[...action]] + Session-70-added /new + /[id]), `/admin/coupons` (same as blog), and likely `/admin/bids`, `/admin/carousel`, `/admin/categories`, `/admin/orders`, `/admin/reviews`, `/admin/sections`, `/admin/users`. Also audit `/store/` and `/user/` subtrees. **Fix strategy**: for every admin route — adopt dedicated routes (`/page.tsx` list + `/new/page.tsx` create + `/[id]/edit/page.tsx` edit) and **remove** the `[[...action]]` folder; OR if dedicated routes don't exist yet, remove the orphan root `page.tsx` (keep `[[...action]]`). Be consistent across the whole admin section. **One commit per route family.** After: `next build` emits zero "same specificity" warnings. Depends on: run after all Session 70–73 admin editors are built so dedicated routes can be confirmed complete before removing catch-alls. |
+
+---
+
+## Tier ARCH — Store Identity Architecture *(storeId/storeName public; sellerId = internal auth only)*
+
+> **Core rule**: The store is the public identity on LetiTrip — not the individual seller user behind it. Public-facing APIs, UI cards, detail pages, cart items, and profiles must show `storeId` / `storeName` / `storeSlug`. The Firebase UID of the store owner (`sellerId` internally) is an auth/internal field only — it must never appear in a public API response or client-rendered prop. Admin views may additionally display `ownerId` (display alias for `sellerId` in admin context). Server-only code (checkout, analytics, payout calculation, authorization) may continue using `sellerId` for auth logic without change.
+>
+> **SideDrawer vs Modal rule** (enforced from this tier forward): 0 fields → `ConfirmDeleteModal`; 1–2 fields → `Modal`; 3+ fields → `SideDrawer`.
+>
+> **User roles** (public 3-tier): `user` (basic buyer) | `seller` (has ≥1 store) | `admin` (platform admin). `moderator` is an internal sub-role of admin.
+
+| # | Task | Complexity | Status | Part | Notes |
+|---|------|-----------|--------|------|-------|
+| ARCH1 | Public API sanitization: strip sellerId from product/review/order public responses | M | ⏳ | | `/api/products/route.ts` — delete `sellerId` key before returning items. `/api/reviews/*` public list — same. Public order listing — strip. Server-side auth code keeps `sellerId` unchanged. |
+| ARCH2 | Cart items: sellerId/sellerName → storeId/storeName | M | ⏳ | | `appkit/src/features/cart/schemas/firestore.ts` CartItem: rename `sellerId`→`storeId`, `sellerName`→`storeName`. Update `/api/cart/route.ts`, `/api/cart/merge/route.ts`, `/api/cart/coupon/route.ts` (coupon scope check: storeId not sellerId). Update `appkit/src/seed/cart-seed-data.ts`. Half-rename = one atomic commit. |
+| ARCH3 | Reviews schema: remove sellerId field | S | ⏳ | | Delete `sellerId?: string` from `appkit/src/features/reviews/schemas/firestore.ts`. Remove from `appkit/src/seed/reviews-seed-data.ts`. Update any admin review view that currently renders it. |
+| ARCH4 | Admin payouts: storeId/storeName identity + mark-paid + CSV export | M | ✅ | Session 72 | `AdminPayoutsView`: storeName/storeId identity (sellerName fallback until ARCH8); RowActionMenu "Mark paid" → Modal (1 field: transactionId); Export CSV actionsSlot button downloads via GET /api/admin/payouts/export; PATCH /api/admin/payouts/[id] for mark-paid. NEW: `src/app/api/admin/payouts/export/route.ts` — text/csv, columns: id/storeId/storeName/amount/status/transactionId/periodStart/periodEnd/createdAt. ADMIN_ENDPOINTS.PAYOUTS_EXPORT added. |
+| ARCH5 | Admin payouts weekly batch: group by storeId not sellerId | S | ⏳ | | `/api/admin/payouts/weekly/route.ts` — replace `order.sellerId` grouping key with `order.storeId`; fetch store name via `storeRepository.findById(storeId)` instead of `userRepository.findById(sellerId)`; update payout document written: `storeId`/`storeName` (keep `sellerId` as internal field for the payout record but don't group by it). |
+| ARCH6 | Public product cards + detail pages: show store identity | M | ⏳ | | Everywhere a product card or detail page shows "seller" info, switch to store: `storeName` + link to `/stores/{storeSlug}`. Affects: `ProductCard`, `AuctionCard`, `PreorderCard`, product detail page. Never show `sellerName` or `sellerId` to public users. |
+| ARCH7 | Seller profile page: store-first identity; admin view shows ownerId | M | ⏳ | | Public `/profile/{userId}` for a seller: show store card prominently (storeName, storeSlug, logo) — not user bio name. Admin `/admin/users/{id}` detail: show `ownerId` (Firebase UID) alongside `storeId` for the stores they own. |
+| ARCH8 | Seed data unification: all collections → store identity | L | ⏳ | | Update ALL seed files that carry both `sellerId`/`sellerName` AND a `storeId`: **payouts** (rename sellerName→storeName, sellerId→storeId in payout docs); **products** (strip sellerId from public shape — keep storeId); **orders** (strip sellerId from public shape — keep storeId); **cart** (covered by ARCH2); **reviews** (covered by ARCH3). Ensure every payout in `payouts-seed-data.ts` references a real `storeId` slug (e.g. `store-mistys-water-cards`) and storeName matches. |
+| ARCH9 | Chat room schema: rename sellerId → ownerId | S | ⏳ | | `appkit/src/features/admin/schemas/firestore.ts` `ChatRoomDocument`: rename `sellerId`→`ownerId`, `sellerName`→`ownerName`. Update `/api/chat/route.ts` (all references). Half-rename = one atomic commit. ownerId = Firebase UID of the store owner in the chat context. |

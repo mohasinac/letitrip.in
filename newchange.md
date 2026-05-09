@@ -27,6 +27,47 @@
 
 ---
 
+# Session 72 — 2026-05-09 (ARCH4 + I3)
+
+## ARCH4 — Admin payouts storeId identity + mark-paid + CSV export
+
+**Files changed (appkit/):**
+- `AdminPayoutsView.tsx` — stateful rewrite: storeName/storeId identity (sellerName fallback); RowActionMenu "Mark paid" → Modal (transactionId input); Export CSV actionsSlot button; PATCH + CSV fetch mutations; `useQueryClient` invalidation
+- `api-endpoints.ts` — added `PAYOUTS_EXPORT: "/api/admin/payouts/export"` to ADMIN_ENDPOINTS
+
+**Files changed (letitrip.in/):**
+- `src/app/api/admin/payouts/export/route.ts` — NEW: GET handler, auth admin/moderator, fetches up to 1000 payouts, returns text/csv (id/storeId/storeName/amount/status/transactionId/periodStart/periodEnd/createdAt); storeId/storeName fall back to sellerId/sellerName until ARCH8
+
+**Note:** Seed data still uses sellerId/sellerName. UI will show correct store name once ARCH8 re-seeds payouts with storeId/storeName. Fallback ensures no breakage before ARCH8.
+
+## I3 — Sections seed reset button
+
+**Files changed (appkit/):**
+- `AdminSectionsView.tsx` — imports ConfirmDeleteModal + DEMO_ENDPOINTS; `seedResetOpen` state; `resetSeed` mutation (POST DEMO_ENDPOINTS.SEED {action:load,collections:[homepageSections]}); "Reset seed data" outline button in actionsSlot wrapping Div; ConfirmDeleteModal at JSX root
+
+---
+
+# Session 72 — 2026-05-09 (store identity architecture decision)
+
+## ARCH tier — Store identity architecture established
+
+**Decision:** LetiTrip's public-facing identity is the **store**, not the individual seller user. This architectural rule governs all future UI, API, and schema work.
+
+**Rules adopted:**
+1. **Public identity** = `storeId` / `storeName` / `storeSlug` — shown in cards, detail pages, reviews, cart, profiles. `sellerId` / `sellerName` are banned from public API responses and client-rendered props.
+2. **Admin identity** = may additionally show `ownerId` (display alias for `sellerId`, the Firebase UID of the store owner).
+3. **Internal auth** = `sellerId` (Firebase UID) stays in server-only code (checkout, analytics, payout calculation, authorization). Never returned in API responses.
+4. **SideDrawer vs Modal rule**: 0 fields → `ConfirmDeleteModal`; 1–2 fields → `Modal`; 3+ fields → `SideDrawer`.
+5. **User roles** (public 3-tier): `user` (basic buyer) | `seller` (has ≥1 store) | `admin` (platform admin). `moderator` = internal admin sub-role.
+
+**Tasks created:** ARCH1–ARCH9 (9 new tasks in Tier ARCH of crud-tracker.md).
+**Tasks superseded:** M3 → ARCH4; VA13 → ARCH4.
+**Current session remaining:** ARCH4 (payouts mark-paid + CSV with store identity) + I3 (seed reset button).
+
+**No code changed in this entry — this is a planning/architecture session entry.**
+
+---
+
 # Session 72 — 2026-05-09 (catalogue release)
 
 ## VA3+VA12+RC4 — Categories CRUD fixed + Stores management wired
