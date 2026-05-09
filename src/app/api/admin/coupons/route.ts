@@ -52,6 +52,14 @@ const couponCreateSchema = z.object({
       combineWithSellerCoupons: false,
     }),
   createdBy: z.string().optional().default("admin"),
+}).superRefine((data, ctx) => {
+  if (data.type === "percentage" && data.discount.value > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discount", "value"],
+    });
+  }
 });
 
 /**

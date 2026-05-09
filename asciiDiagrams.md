@@ -9,8 +9,16 @@
 - [Legend](#legend)
 - **Shared Components**
   - [ListingToolbar](#shared--listingtoolbar-)
+  - [Standard Admin Listing View Pattern](#shared--standard-admin-listing-view-pattern-)
   - [MediaUploadField](#shared--mediauploadfield-)
   - [PageLoader](#shared--pageloader-)
+- **UX Patterns — Form Shells (shared across Admin / Store / User)**
+  - [FormShell](#ux--formshell--full-width-side-panel-)
+  - [QuickFormDrawer](#ux--quickformdrawer--fast-action-drawer-)
+  - [StepForm](#ux--stepform--multi-step-create-wizard-)
+  - [MediaPickerDrawer](#ux--mediapickerdrawer--fast-media-select-)
+  - [PreviewPane](#ux--previewpane--in-panel-item-preview-)
+  - [Form Assignment Reference](#ux--form-assignment-reference)
 - **Admin Area**
   - [Layout Shell](#admin--layout-shell)
   - [Dashboard](#admin--dashboard-)
@@ -29,6 +37,28 @@
   - [Carousel List](#admin--carousel-list-)
   - [Carousel Editor](#admin--carousel-editor-)
   - [Homepage Sections](#admin--homepage-sections-)
+  - [Section Editor — Shared Modal Shell](#admin--homepage-section-editor--shared-modal-shell)
+  - [Section Editor — welcome](#admin--section-editor--welcome)
+  - [Section Editor — carousel](#admin--section-editor--carousel)
+  - [Section Editor — stats](#admin--section-editor--stats)
+  - [Section Editor — trust-indicators](#admin--section-editor--trust-indicators)
+  - [Section Editor — categories](#admin--section-editor--categories)
+  - [Section Editor — brands](#admin--section-editor--brands)
+  - [Section Editor — products](#admin--section-editor--products)
+  - [Section Editor — pre-orders](#admin--section-editor--pre-orders)
+  - [Section Editor — auctions](#admin--section-editor--auctions)
+  - [Section Editor — banner](#admin--section-editor--banner)
+  - [Section Editor — features](#admin--section-editor--features)
+  - [Section Editor — reviews](#admin--section-editor--reviews)
+  - [Section Editor — whatsapp-community](#admin--section-editor--whatsapp-community)
+  - [Section Editor — faq](#admin--section-editor--faq)
+  - [Section Editor — blog-articles](#admin--section-editor--blog-articles)
+  - [Section Editor — newsletter](#admin--section-editor--newsletter)
+  - [Section Editor — stores](#admin--section-editor--stores)
+  - [Section Editor — events](#admin--section-editor--events)
+  - [Section Editor — social-feed](#admin--section-editor--social-feed)
+  - [Section Editor — custom-cards](#admin--section-editor--custom-cards)
+  - [Section Editor — google-reviews](#admin--section-editor--google-reviews)
   - [Orders List](#admin--orders-list-)
   - [Order Status/Tracking SideDrawer](#admin--order-statustracking-sidedrawer-)
   - [Users List](#admin--users-list-)
@@ -38,7 +68,7 @@
   - [Bids List](#admin--bids-list-)
   - [Payouts List](#admin--payouts-list-)
   - [Analytics](#admin--analytics-)
-  - [Site Settings](#admin--site-settings--va8--12-groups)
+  - [Site Settings](#admin--site-settings--va8--13-groups)
   - [Feature Flags](#admin--feature-flags-)
   - [Navigation CMS](#admin--navigation-cms-)
   - [Nav Editor SideDrawer](#admin--nav-editor-sidedrawer-)
@@ -77,7 +107,26 @@
   - [Settings](#user--settings-)
   - [Notifications](#user--notifications-)
 - **Public Area**
-  - [Homepage](#public--homepage-)
+  - [Homepage](#public--homepage--all-sections--overview)
+  - [Section — welcome](#public--homepage-section--welcome)
+  - [Section — carousel](#public--homepage-section--carousel)
+  - [Section — stats](#public--homepage-section--stats)
+  - [Section — trust-indicators](#public--homepage-section--trust-indicators)
+  - [Section — categories](#public--homepage-section--categories)
+  - [Section — brands](#public--homepage-section--brands)
+  - [Section — products / auctions / pre-orders](#public--homepage-section--products--auctions--pre-orders)
+  - [Section — banner](#public--homepage-section--banner)
+  - [Section — features](#public--homepage-section--features)
+  - [Section — reviews](#public--homepage-section--reviews)
+  - [Section — stores](#public--homepage-section--stores)
+  - [Section — events](#public--homepage-section--events)
+  - [Section — blog-articles](#public--homepage-section--blog-articles)
+  - [Section — whatsapp-community](#public--homepage-section--whatsapp-community)
+  - [Section — faq](#public--homepage-section--faq)
+  - [Section — newsletter](#public--homepage-section--newsletter)
+  - [Section — social-feed](#public--homepage-section--social-feed)
+  - [Section — custom-cards](#public--homepage-section--custom-cards)
+  - [Section — google-reviews](#public--homepage-section--google-reviews)
   - [Products Listing](#public--products-listing-)
   - [Auctions Listing](#public--auctions-listing-)
   - [Product Detail](#public--product-detail-)
@@ -93,6 +142,12 @@
   - [Search](#public--search-)
   - [Cart](#public--cart-)
   - [Checkout](#public--checkout-)
+  - [About](#public--about-)
+  - [Privacy Policy](#public--privacy-policy-)
+  - [Terms of Service](#public--terms-of-service-)
+  - [Cookie Policy](#public--cookie-policy-)
+  - [Refund Policy](#public--refund-policy-)
+  - [Shipping Policy](#public--shipping-policy-)
 - **Auth Pages**
   - [Login](#auth--login-)
   - [Register](#auth--register-)
@@ -127,7 +182,7 @@
 
 ```
 Component: appkit/src/ui/components/ListingToolbar.tsx
-Used by: all 11 *IndexListing + Store*Listing components
+Used by: all 11 *IndexListing + Store*Listing public/store views + all 16 Admin*View listing views
 
 Mobile layout (two rows):
 ┌─────────────────────────────────────────────────────────────────┐
@@ -172,6 +227,87 @@ Toolbar reset [↺] scope per listing:
   ReviewsIndexListing      clears: q, sort→"-createdAt",                FILTER_KEYS
   EventsIndexListing       clears: q, sort→"startsAt",                  FILTER_KEYS
   BlogIndexListing         clears: q, sort→"-publishedAt",              FILTER_KEYS
+  Admin*View               clears: q, sort→DEFAULT_SORT, all FILTER_KEYS (via resetAll)
+```
+
+---
+
+## Shared > Standard Admin Listing View Pattern ✅
+
+```
+Pattern used by all 16 AdminXxxView components (Session 76-listing migration)
+appkit/src/features/admin/components/Admin*View.tsx
+
+Views: AdminBidsView, AdminCartsView, AdminWishlistsView, AdminSessionsView,
+       AdminPayoutsView, AdminNotificationsView, AdminAllEventEntriesView,
+       AdminReturnRequestsView, AdminStoreAddressesView, AdminNewsletterView,
+       AdminContactView, AdminEventsView, AdminReviewsView, AdminProductsView,
+       AdminCarouselView, AdminSectionsView
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  sticky ListingToolbar  top-[var(--header-height,0px)]                        │
+│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [↺]  {extra: Export CSV...} │
+├───────────────────────────────────────────────────────────────────────────────┤
+│  sticky Pagination row (only when totalPages > 1)                             │
+│  backdrop-blur bg-white/95 dark:bg-slate-900/95 border-b                      │
+│                   [◀]  [1]  [2]  [3]  …  [▶]                                 │
+├───────────────────────────────────────────────────────────────────────────────┤
+│  ❌ {errorMessage}  (conditional red banner)                                  │
+├───────────────────────────────────────────────────────────────────────────────┤
+│  DataTable  (rounded-xl border overflow-hidden)                               │
+│  ┌──────────────────────────────────────────────────────────────────────────┐ │
+│  │  Name / Title      │ Secondary  │ Status  │ Updated  │     ⋮            │ │
+│  ├────────────────────┼────────────┼─────────┼──────────┼──────────────────┤ │
+│  │  Primary name      │ details    │ [badge] │ 2h ago   │     ⋮ menu       │ │
+│  │  subtitle text     │            │         │          │                   │ │
+│  ├────────────────────┼────────────┼─────────┼──────────┼──────────────────┤ │
+│  │  …                 │ …          │ …       │ …        │     ⋮            │ │
+│  └──────────────────────────────────────────────────────────────────────────┘ │
+│                                                                               │
+│  Loading: 5 skeleton rows (animate-pulse h-4 w-full rounded)                 │
+│  Empty:   "No {resource} — use 'New …' to add one"                           │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+Filter drawer (fixed left overlay, z-50, w-80):
+┌──────────────────────────────────────────────────┐
+│  Filters                        [Clear all]  [✕] │
+├──────────────────────────────────────────────────┤
+│  STATUS                                          │
+│  [All]  [Active]  [Inactive]  …                  │  ← chip buttons, PENDING only
+│                                                  │
+│  TYPE (when applicable)                          │
+│  [All]  [TypeA]  [TypeB]  …                      │
+├──────────────────────────────────────────────────┤
+│  [Apply Filters (N)]                             │  ← commits pendingFilters → URL
+└──────────────────────────────────────────────────┘
+  Clear all = clears pendingFilters ONLY (no URL touch)
+  ✕ = closes drawer, discards pending changes
+
+Row action menu (⋮):
+  [Edit]           → window.location.href = /admin/{resource}/{id}/edit
+  [View]           → opens SideDrawer or navigates
+  [Approve]        → PATCH mutation + queryClient.invalidateQueries
+  [Delete]         → opens ConfirmDeleteModal (variant=destructive)
+  [Mark paid]      → opens mark-paid Modal (transactionId input)
+  [Unsubscribe]    → opens ConfirmDeleteModal (variant=warning)
+  [Cancel bid]     → opens ConfirmDeleteModal (variant=warning), disabled when already cancelled
+
+Mutations — rendered as React.Fragment siblings AFTER <div className="min-h-screen">:
+  <>
+    <div className="min-h-screen">…toolbar + table…</div>
+    <ConfirmDeleteModal isOpen={deleteOpen} … />
+    <Modal isOpen={markPaidOpen} … />
+  </>
+
+State architecture:
+  useUrlTable({ defaults })    → URL-backed: q, sort, page, all FILTER_KEYS
+  pendingFilters               → local React state; synced from URL on drawer open; committed on Apply
+  useAdminListingData(…)       → rows, total, isLoading, errorMessage
+  (mutations)                  → useMutation + queryClient.invalidateQueries on success
+
+Views with no filter drawer (sort-only):
+  AdminWishlistsView, AdminReturnRequestsView, AdminStoreAddressesView
+  (no openFilters / filterOpen / pendingFilters — ListingToolbar has no onFiltersClick)
 ```
 
 ---
@@ -259,6 +395,372 @@ Mode B — with children (skeleton background, better Lighthouse CLS):
 
 Usage: loading.tsx files — all 15 under src/app/[locale]/ use <PageLoader />
        Pass a skeleton as children on any page where CLS matters.
+```
+
+---
+
+# UX PATTERNS — FORM SHELLS
+
+> Every create/edit interaction across admin, store, and user areas uses one of these three shells. Never navigate to a new page for a form — use a shell to keep the user in context with a fast, overlay-based experience.
+
+## UX > FormShell — Full-Width Side Panel ⏳
+
+The primary create/edit UX. A full-viewport-width overlay panel that slides in from the right. Sticky top bar + optional left section nav + scrollable body + sticky bottom bar.
+
+```
+DESKTOP (≥ 768px)
+╔══════════════════════════════════════════════════════════════════════════════════════════╗
+║ STICKY TOP BAR  (h-14, backdrop-blur-md, border-b)                                       ║
+║  [← Back to Products]   Edit Product — Charizard ETB        [👁 Preview] [Save] [Publish] ║
+╠════════════╦═════════════════════════════════════════════════════════════════════════════╣
+║ SECTION    ║  SCROLLABLE BODY  (flex-1, overflow-y: auto)                                ║
+║ NAV (200px)║                                                                              ║
+║            ║  § Basic Info                                                                ║
+║ ● Basic    ║  ┌──────────────────────────────────────────────────────────────────────┐   ║
+║ ○ Media    ║  │ Title *     [Charizard Base Set ETB — Sealed_____________________]   │   ║
+║ ○ Pricing  ║  │ Slug        [product-charizard-etb-sealed___________] [Auto ↺]      │   ║
+║ ○ Shipping ║  │ Category *  [Trading Cards ▾]   Sub  [Pokémon TCG ▾]               │   ║
+║ ○ SEO      ║  │ Brand       [Pokémon Company ▾]  Condition [Sealed ▾]              │   ║
+║            ║  │ Tags        [etb] [sealed] [base-set] [+ add tag]                   │   ║
+║ ─────────  ║  └──────────────────────────────────────────────────────────────────────┘   ║
+║ [👁 Preview]║                                                                             ║
+║ (sticky)   ║  § Media                                                                     ║
+║            ║  § Pricing & Stock                                                           ║
+║            ║  § Shipping                                                                  ║
+║            ║  § SEO & Visibility                                                          ║
+╠════════════╩═════════════════════════════════════════════════════════════════════════════╣
+║ STICKY BOTTOM BAR  (h-14, backdrop-blur-md, border-t)                                    ║
+║  [✕ Discard changes]                               [Save Draft]  [Publish / Update →]   ║
+╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+MOBILE (< 768px — left nav becomes horizontal tab strip)
+╔════════════════════════════════════════════════════╗
+║ ← Edit Product               [Save] [Publish]     ║  ← sticky top
+╠════════════════════════════════════════════════════╣
+║ [Basic] [Media] [Pricing] [Shipping] [SEO]         ║  ← tab strip (replaces left nav)
+╠════════════════════════════════════════════════════╣
+║  (scrollable body — one section at a time)         ║
+╠════════════════════════════════════════════════════╣
+║ [Discard]       [Draft]          [Publish →]       ║  ← sticky bottom
+╚════════════════════════════════════════════════════╝
+
+Behaviour:
+  - Slides in from right (transform: translateX), backdrop dims page behind
+  - Keyboard trap (Tab cycles within panel), Esc shows "Unsaved changes?" confirm
+  - Left nav items are anchor-scrolls within body — no step validation
+  - [Preview] in top bar and left nav both trigger PreviewPane (see below)
+  - [Save Draft] saves without publishing; [Publish] / [Update] saves + sets status=published
+  - Form dirty state tracked — browser unload warning if unsaved
+```
+
+---
+
+## UX > QuickFormDrawer — Fast Action Drawer ⏳
+
+Narrow (~400px) right-anchored overlay for ≤ 6 field actions. No step wizard, no section nav. Used for addresses, coupons, tag adds, status changes, price edits.
+
+```
+                 ┌────────────── QUICK FORM (400px, slides from right) ───────────────┐
+                 │ ✕  Quick: Add Coupon                                                │
+                 ├─────────────────────────────────────────────────────────────────────┤
+                 │  Code *         [SUMMER20______________________________]             │
+                 │  Type           [Percentage                          ▾]             │
+                 │  Value          [20____]  %                                         │
+                 │  Min. purchase  [₹ 999__]                                           │
+                 │  Expiry         [2026-12-31_______________]                         │
+                 │  Active         [●────────────] Yes                                 │
+                 ├─────────────────────────────────────────────────────────────────────┤
+                 │  ⚠ Code already exists — try SUMMER21                               │  ← inline error
+                 ├─────────────────────────────────────────────────────────────────────┤
+                 │              [Cancel]              [Create →]                       │
+                 └─────────────────────────────────────────────────────────────────────┘
+
+Other QuickFormDrawer uses (all the same shell, different fields):
+  Add / Edit Address    — label, full name, phone, line1, city, state, pin, [●] default
+  Quick Status Update   — [Select new status ▾]  [Reason (optional)________]  [Apply]
+  Quick Price Edit      — Price [₹_____]  Original price [₹_____]  [Update]
+  Quick Stock Update    — Current: 12  New qty [____]  [Update]
+  Add Tag / Keyword     — Tag [__________] [+ Add]
+  Edit Nav Item         — Label [____]  Href [____]  Icon [____]  Order [__]  [Save]
+  Reply to Review       — [Textarea____________]  [Submit Reply]
+```
+
+---
+
+## UX > StepForm — Multi-Step Create Wizard ⏳
+
+Rendered inside FormShell body (replaces section nav for CREATE flows). Bottom bar CTA labels change per step. Progress auto-saved to `localStorage` on each step advance.
+
+```
+STEP INDICATOR  (sticky below top bar, ~48px)
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│  ① Basic Info  ──────  ② Media  ──────  ③ Pricing  ──────  ④ Shipping  ──  ⑤ SEO   │
+│   [●]                  [●]              [◑ current]         [○]              [○]    │
+│   ✓ complete           ✓ complete       ← active             locked          locked  │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+
+STEP BODY  (scrollable, only current step visible at a time):
+
+── STEP 1: Basic Info ────────────────────────────────────────────────────────────────
+  Title *        [_____________________________________________]
+  Slug           [product-_____________________________] [Auto ↺]
+  Category *     [Trading Cards                        ▾]
+  Subcategory    [Pokémon TCG                          ▾]
+  Brand          [Pokémon Company                      ▾]
+  Condition *    [New / Sealed                         ▾]
+  Description    [— RichTextEditor, lightweight 1-row toolbar —]
+  Tags           [etb] [sealed] [charizard] [+ add]
+  Features       [High-quality holo printing] [×]   [+ add feature]
+
+── STEP 2: Media ─────────────────────────────────────────────────────────────────────
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │  ▲  Drag & drop images here, or [📂 Open Media Library]                     │
+  │  Accepts JPG PNG WEBP AVIF · max 5 MB each · up to 10 images               │
+  └──────────────────────────────────────────────────────────────────────────────┘
+  ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐                   drag to reorder
+  │ 🖼 ★  │ │ 🖼    │ │ 🖼    │ │  + Add│  ★ = set as main  × = remove
+  │ main  │ │ img-2 │ │ img-3 │ │       │
+  └───────┘ └───────┘ └───────┘ └───────┘
+  Video (opt.) [Paste YouTube URL _________________] [Link ↺]
+               Preview: [thumbnail 160×90  "Charizard ETB Unboxing"]
+
+── STEP 3: Pricing & Stock ───────────────────────────────────────────────────────────
+  Price *          [₹ 4499]   (paise: 449900 stored)
+  Original price   [₹ 5000]   → SALE badge shown if price < originalPrice
+  Stock qty *      [12]
+  Available qty    [12]  (auto-computed, = stockQty initially)
+  [ ] Featured     [ ] On Sale     [ ] Promoted
+
+── STEP 4: Shipping ──────────────────────────────────────────────────────────────────
+  Shipping paid by  ( ) Seller  (●) Buyer
+  Pickup address    [Select store address ▾]  or [+ Create address]
+  Insurance         [●────] On    Cost [₹ 50]
+  Return policy     [__________________________________]
+
+── STEP 5: SEO & Publish ─────────────────────────────────────────────────────────────
+  SEO Title       [Charizard Base Set ETB — Sealed | LetItRip] 50/60
+  SEO Description [Buy Charizard Base Set ETB sealed from CardGame Hub…] 130/155
+  SEO Keywords    [pokemon etb] [charizard] [sealed] [base set] [+ add]
+  Status          ( ) Draft   (●) Published
+  ──────────────────────────────────────────────────────────────────────────────
+  [👁 Preview how this will look to buyers]    → opens PreviewPane
+
+BOTTOM BAR (changes text per step):
+  Step 1:   [Cancel]                                [Next: Media →]
+  Step 2:   [← Back: Basic]                        [Next: Pricing →]
+  Step 3:   [← Back: Media]                        [Next: Shipping →]
+  Step 4:   [← Back: Pricing]                      [Next: SEO →]
+  Step 5:   [← Back: Shipping]   [Save Draft]      [Publish Now ✓]
+
+AUCTION extra step (Step 3 inserted):
+── STEP 3: Auction Settings ──────────────────────────────────────────────────────────
+  Starting bid *     [₹ 99999]
+  Reserve price      [₹ 200000]  (hidden from buyers, shows "Reserve: Met ✓" when exceeded)
+  Buy Now price      [₹ 350000]  (optional; enables instant win)
+  Bid increment *    [₹ 5000]
+  Auction end date * [2026-06-01  14:00 IST]
+  Auto-extend        [●────] On    Minutes [5]   (extends by N mins if bid in last N mins)
+  Shipping paid by   ( ) Seller   (●) Winner
+
+PRE-ORDER extra step (Step 3 inserted):
+── STEP 3: Pre-Order Settings ────────────────────────────────────────────────────────
+  Deposit %          [30]  %   →  Deposit amount: ₹1,349 (auto-computed)
+  Max quantity *     [50]
+  Delivery date *    [2026-09-01]
+  Production status  ( ) Upcoming  (●) In Production  ( ) Ready to Ship
+  Cancellable        [●────] On  (buyers can cancel before dispatch)
+```
+
+---
+
+## UX > MediaPickerDrawer — Fast Media Select ⏳
+
+Full-viewport overlay that opens on top of FormShell when any media upload field is triggered. Returns `string[]` of selected URLs to the calling form field.
+
+```
+╔═════════════════════════════════════════════════════════════════════════════════════════╗
+║ ✕  Media Library                          [↑ Upload New]  [2 selected]  [Done →]      ║
+╠═════════════════════════════════════════════════════════════════════════════════════════╣
+║  [🔍 Search filename…]    [Type: All ▾]    [Uploaded ▾]    [⊞ Grid]  [≡ List]         ║
+╠═════════════════════════════════════════════════════════════════════════════════════════╣
+║  ── UPLOAD ZONE  (expands on "↑ Upload New") ────────────────────────────────────── ║
+║  │  ▲  Drag files here or [Browse files…]  ·  JPG PNG WEBP AVIF MP4  ·  max 5 MB    │ ║
+║  │  Uploading:  product-image-charizard-1-20260510.jpg  ████████░░  78%  [✕]         │ ║
+║  │  ✓ Done:     product-image-charizard-0-20260510.jpg  (stored in tmp/ — unsaved)   │ ║
+║  ─────────────────────────────────────────────────────────────────────────────────── ║
+╠═════════════════════════════════════════════════════════════════════════════════════════╣
+║  IMAGE GRID  (24 per page)                                                             ║
+║  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐              ║
+║  │ [✓]🖼  │  │    🖼  │  │ [✓]🖼  │  │[tmp]🖼 │  │    🖼  │  │    🖼  │              ║
+║  │ img-1  │  │ img-2  │  │ img-3  │  │ NEW    │  │ img-5  │  │ img-6  │              ║
+║  │ 320px  │  │ 180px  │  │ 240px  │  │ 640px  │  │ 512px  │  │ 96px  │              ║
+║  └────────┘  └────────┘  └────────┘  └────────┘  └────────┘  └────────┘              ║
+║                                                                 [← Prev] 1/4 [Next →] ║
+╠═════════════════════════════════════════════════════════════════════════════════════════╣
+║  SELECTION BAR                                                                         ║
+║  Selected (2):  [⠿ img-1]  [⠿ img-3]     ← drag handles to reorder                  ║
+║  [✕ Clear all]       [🗑 Delete selected]                 [Set img-1 as main image]   ║
+╚═════════════════════════════════════════════════════════════════════════════════════════╝
+
+Notes:
+  [tmp] badge = uploaded this session; file lives at tmp/{mediaFilename}.
+               On form Submit → API moves it to products/{productId}/{mediaFilename}.
+               If form is abandoned → tmp/ files auto-deleted after 24 h by Cloud Function.
+  ⠿ drag handle = reorder the selected set (determines image order on the product page).
+  Hover/right-click tile: [★ Set as main]  [🗑 Delete]  [📋 Copy URL]  [🔍 Full-size]
+  Tile checkboxes appear on hover (desktop) or are always visible (touch).
+```
+
+---
+
+## UX > PreviewPane — In-Panel Item Preview ⏳
+
+Triggered by [👁 Preview] in FormShell top bar (any step) or StepForm step 5. Replaces the panel body with a live render of the item using current draft form values.
+
+```
+╔══════════════════════════════════════════════════════════════════════════════════════════╗
+║ STICKY TOP BAR  (same shell, new label)                                                  ║
+║  [← Back to Edit]      PREVIEW — Charizard ETB  (DRAFT)        [Open in new tab ↗]     ║
+╠══════════════════════════════════════════════════════════════════════════════════════════╣
+║  ┌────────────────────────────────────────────────────────────────────────────────────┐  ║
+║  │ 👁  DRAFT PREVIEW — not visible to buyers until published.                        │  ║
+║  │     tmp/ images are visible only to you. Buy / Cart / Bid actions are disabled.  │  ║
+║  └────────────────────────────────────────────────────────────────────────────────────┘  ║
+║                                                                                          ║
+║  [Full render of the public-facing view, using current form values]                     ║
+║  ┌ ProductDetailPageView ─────────────────────────────────────────────────────────────┐  ║
+║  │  [Gallery: draft images]   Charizard Base Set ETB — Sealed                        │  ║
+║  │                            ₹4,499  ~~₹5,000~~  [SALE]                             │  ║
+║  │                            Trading Cards · Pokémon Company                        │  ║
+║  │                            [Add to Cart — disabled]  [♡ Wishlist — disabled]     │  ║
+║  │                            ┌── Sold by ──────────────────────────────────────┐   │  ║
+║  │                            │  CardGame Hub            [Visit Store →]        │   │  ║
+║  │                            └────────────────────────────────────────────────┘   │  ║
+║  └────────────────────────────────────────────────────────────────────────────────────┘  ║
+╠══════════════════════════════════════════════════════════════════════════════════════════╣
+║ STICKY BOTTOM BAR                                                                        ║
+║  [← Back to Edit]                                    [Save Draft]  [Publish Now ✓]     ║
+╚══════════════════════════════════════════════════════════════════════════════════════════╝
+
+Implementation:
+  Inline mode (preferred): pass form values as React props to the detail view component.
+  Interactive elements (Buy/Cart/Bid/Reserve) receive disabled prop → greyed out + tooltip.
+  Open in new tab: POST draft to /api/preview → returns short-lived token → opens
+    /preview?token={token} page which renders the item in full public layout.
+```
+
+---
+
+## UX > Form Assignment Reference
+
+Which shell to use for every collection:
+
+```
+Collection / Action    Create               Edit (existing)      Quick action
+───────────────────────────────────────────────────────────────────────────────────
+Standard Product       StepForm (5 steps)   FormShell + left nav  Status, Price, Stock
+Auction                StepForm (6 steps*)  FormShell + left nav  Status, End date
+Pre-Order              StepForm (6 steps*)  FormShell + left nav  Status, Delivery date
+Blog Post              StepForm (3 steps)   FormShell + left nav  Status (publish/draft)
+Event                  StepForm (3 steps)   FormShell + left nav  Status
+FAQ                    QuickFormDrawer      QuickFormDrawer        Active toggle
+Coupon                 QuickFormDrawer      QuickFormDrawer        Active toggle, Value
+Brand (admin)          FormShell + left nav FormShell + left nav  —
+Category (admin)       FormShell + left nav FormShell + left nav  —
+Store Profile          FormShell + left nav FormShell + left nav  —
+User Profile           FormShell + left nav FormShell + left nav  Avatar, Display name
+Address (user/store)   QuickFormDrawer      QuickFormDrawer        Default toggle
+Nav Item               QuickFormDrawer      QuickFormDrawer        —
+Carousel Slide         FormShell + left nav FormShell + left nav  Active toggle
+Site Settings          FormShell (12 sects) FormShell (12 sects)  —
+Order (admin)          —                    FormShell + left nav  Status update
+Review (admin)         —                    QuickFormDrawer        Approve/Reject
+
+* 6 steps = 5 standard steps + type-specific settings step inserted as step 3
+
+LISTING TYPE SELECTOR (Seller product create button):
+  [+ New Product ▾]
+    ├─ Standard Product  → StepForm (5 steps)
+    ├─ Auction           → StepForm (6 steps, with Auction Settings)
+    └─ Pre-Order         → StepForm (6 steps, with Pre-Order Settings)
+```
+
+---
+
+## UX > InlineSelectCreate — Searchable Dropdown + Inline Quick-Create ⏳
+
+Every "select existing OR create new" field uses this pattern. A searchable combobox where the last option is always [+ Create "typed text"]. Selecting that opens a `QuickFormDrawer` scoped to that resource. After save, the new item auto-selects in the dropdown.
+
+```
+SEARCHABLE DROPDOWN — Open state:
+
+  Brand *   [Pok___________________________ ▾]  ← user typed "Pok"
+            ┌──────────────────────────────────┐
+            │ 🔍 Pok                           │
+            │ ──────────────────────────────── │
+            │  Pokémon Company    (brand-poke…) │
+            │  Pokémon USA        (brand-poke…) │  ← matching results
+            │ ──────────────────────────────── │
+            │  [+ Create "Pok"]               │  ← always last, triggers QuickFormDrawer
+            └──────────────────────────────────┘
+
+INLINE CREATION FLOW (UX9):
+
+  1. User types "Kotobukiya" in Brand field → no match found
+  2. User clicks [+ Create "Kotobukiya"]
+  3. QuickFormDrawer opens (on top of FormShell):
+     ┌──── Quick: New Brand ────────────────────┐
+     │ ✕  Create Brand                          │
+     ├──────────────────────────────────────────┤
+     │  Name *    [Kotobukiya______________]    │
+     │  Slug      [brand-kotobukiya________]    │
+     │  Country   [Japan___________________]    │
+     │  Website   [kotobukiya.co.jp_______]     │
+     ├──────────────────────────────────────────┤
+     │       [Cancel]      [Create Brand →]     │
+     └──────────────────────────────────────────┘
+  4. User fills name → clicks [Create Brand →]
+  5. Brand saved to Firestore → QuickFormDrawer closes
+  6. "Kotobukiya" auto-selected in Brand dropdown → form continues
+
+WHERE THIS PATTERN APPLIES (all alpha forms):
+
+Field                    Host Form            Create opens…
+─────────────────────────────────────────────────────────────────────────
+Category *               Product create/edit  Category QuickForm
+                                              (name, parent, slug-auto)
+Subcategory              Product create/edit  Category QuickForm
+                                              (parent auto-set to selected category)
+Brand                    Product create/edit  Brand QuickForm
+                                              (name, country, website)
+Delivery Address *       Checkout             Address QuickForm
+                                              (label, name, phone, line1, city, state, pin)
+Pickup Address           Product shipping     Store Address QuickForm
+                                              (label, name, phone, line1, city)
+Checkout Address         Checkout flow        Address QuickForm (same as above)
+Profile Address          User profile         Address QuickForm (same as above)
+Parent Category          Admin category edit  Category QuickForm (parent only)
+Coupon (checkout)        Checkout / cart      Coupon QuickForm (code, type, value, expiry)
+                                              — admin/store only, not public buyers
+
+NON-DRAWER INLINE ADDS (no QuickFormDrawer needed — simpler):
+  Tags               — multi-select chip input: type tag name → press Enter or [+ Add]
+                       saves inline without drawer (tag is a plain string)
+  Product Features   — bulleted list: [+ Add feature] → text input inline → Enter saves
+  Specifications     — key-value rows: [+ Add spec] → [key____] [value____] [unit] → saves
+  Custom field keys  — same as specs pattern
+
+COMPONENT API (appkit/src/ui/components/InlineSelectCreate.tsx — extends H1):
+  <InlineSelectCreate
+    label="Brand"
+    value={selectedBrand}
+    onChange={setSelectedBrand}
+    options={brands}          // { value, label } array
+    onSearch={searchBrands}   // async search fn
+    createLabel="Brand"       // → "+ Create {typed}"
+    createForm={<BrandQuickForm />}  // QuickFormDrawer content
+    onCreate={handleBrandCreate}     // called after QuickFormDrawer save
+  />
 ```
 
 ---
@@ -751,6 +1253,872 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 
 ---
 
+## Admin > Homepage Section Editor — Shared Modal Shell
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  Edit Homepage Section                                           [✕] │
+├──────────────────────────────────────────────────────────────────────┤
+│  Section Type                                                        │
+│  ┌────────────────────────────────────────────────┐                 │
+│  │ products                                     ▾ │                 │
+│  └────────────────────────────────────────────────┘                 │
+│  ☑ Enabled                                                          │
+│  Display Order                                                       │
+│  ┌────────┐                                                          │
+│  │  7     │                                                          │
+│  └────────┘                                                          │
+│  ──────────────── TYPE-SPECIFIC FIELDS ─────────────────────────── │
+│  [see per-type diagrams below]                                       │
+│  ──────────────────── JSON PREVIEW ──────────────────────────────── │
+│  Config JSON (auto-generated — edit only to override)               │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ {                                                              │ │
+│  │   "title": "Featured Collectibles",                            │ │
+│  │   ...                                                          │ │
+│  │ }                                                              │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+├──────────────────────────────────────────────────────────────────────┤
+│  [Cancel]                                          [Save Section]   │
+└──────────────────────────────────────────────────────────────────────┘
+
+  → POST /api/admin/sections   (create)
+  → PATCH /api/admin/sections/[id]   (edit)
+```
+
+---
+
+## Admin > Section Editor — welcome
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Welcome Section ─────────────────────────────────────────────── │
+│                                                                      │
+│  H1 Heading                                                          │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ India's #1 Collectibles Marketplace                            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle                                                            │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Buy, Sell & Auction with Verified Sellers                      │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Description                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Discover Pokémon TCG cards, Hot Wheels diecast, Beyblade X     │ │
+│  │ tops, anime figures and Gunpla kits from verified sellers...   │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☑ Show CTA button                                                  │
+│  CTA Label                          CTA Link                        │
+│  ┌───────────────────────┐          ┌───────────────────────┐       │
+│  │ Shop Now              │          │ /products             │       │
+│  └───────────────────────┘          └───────────────────────┘       │
+└──────────────────────────────────────────────────────────────────────┘
+  Note: trust chips (Fast Delivery / Secure Payments / 4.8+ Rated /
+  Easy Returns) and pill label are hardcoded in the component.
+```
+
+---
+
+## Admin > Section Editor — carousel
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Carousel Section ────────────────────────────────────────────── │
+│                                                                      │
+│  Internal Title (optional)                                           │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Hero Carousel                                                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Default Slide Height                                                │
+│  ◯ viewport  (min-h-screen — full browser height)                   │
+│  ◉ tall      (min-h-[80vh] — 80 % of viewport)                      │
+│  ◯ medium    (min-h-[60vh] — 60 % of viewport)                      │
+│                                                                      │
+│  Default Autoplay Delay (ms)                                         │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+│  ☑ Pause on hover                                                   │
+│  ☑ Show dot indicators                                              │
+│  ☑ Show prev / next arrows                                          │
+└──────────────────────────────────────────────────────────────────────┘
+  Individual slides (background, overlay text, zone cards) are
+  managed separately under Admin > Carousel.
+```
+
+---
+
+## Admin > Section Editor — stats
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Stats Section ───────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ LetItRip by the Numbers                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Stat 1 ──────────────────────────────────────────────────────┐ │
+│  │  Key          Label                    Value                   │ │
+│  │  ┌──────────┐ ┌───────────────────┐   ┌──────────┐            │ │
+│  │  │ products │ │ Listings          │   │ 5,000+   │            │ │
+│  │  └──────────┘ └───────────────────┘   └──────────┘            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Stat 2 ──────────────────────────────────────────────────────┐ │
+│  │  Key          Label                    Value                   │ │
+│  │  ┌──────────┐ ┌───────────────────┐   ┌──────────┐            │ │
+│  │  │ sellers  │ │ Verified Sellers  │   │ 200+     │            │ │
+│  │  └──────────┘ └───────────────────┘   └──────────┘            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Stat 3 ──────────────────────────────────────────────────────┐ │
+│  │  ┌──────────┐ ┌───────────────────┐   ┌──────────┐            │ │
+│  │  │ buyers   │ │ Happy Buyers      │   │ 12,000+  │            │ │
+│  │  └──────────┘ └───────────────────┘   └──────────┘            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Stat 4 ──────────────────────────────────────────────────────┐ │
+│  │  ┌──────────┐ ┌───────────────────┐   ┌──────────┐            │ │
+│  │  │ rating   │ │ Platform Rating   │   │ 4.8★     │            │ │
+│  │  └──────────┘ └───────────────────┘   └──────────┘            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — trust-indicators
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Trust Indicators Section ────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Why Collectors Trust LetItRip                                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Indicator 1 ─────────────────────────────────────────────────┐ │
+│  │  ID                          Icon (name or emoji)              │ │
+│  │  ┌───────────────────────┐   ┌───────────────────────┐         │ │
+│  │  │ trust-verified        │   │ shield-check          │         │ │
+│  │  └───────────────────────┘   └───────────────────────┘         │ │
+│  │  Title                                                          │ │
+│  │  ┌────────────────────────────────────────────────────────┐    │ │
+│  │  │ Verified Sellers                                       │    │ │
+│  │  └────────────────────────────────────────────────────────┘    │ │
+│  │  Description                                                    │ │
+│  │  ┌────────────────────────────────────────────────────────┐    │ │
+│  │  │ Every seller is manually verified. Listings reviewed   │    │ │
+│  │  │ for authenticity before going live.                    │    │ │
+│  │  └────────────────────────────────────────────────────────┘    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Indicator 2 ─────────────────────────────────────────────────┐ │
+│  │  ID: trust-escrow   Icon: lock   Title: Escrow Payment         │ │
+│  │  Description: [textarea]                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Indicator 3 ─────────────────────────────────────────────────┐ │
+│  │  ID: trust-returns   Icon: arrow-path   Title: Easy Returns    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Indicator 4 ─────────────────────────────────────────────────┐ │
+│  │  ID: trust-authentic   Icon: badge-check   Title: Authenticity │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — categories
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Categories Section ──────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Shop by Category                                               │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Categories to Show                                              │
+│  ┌────────┐                                                          │
+│  │  4     │                                                          │
+│  └────────┘                                                          │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)  ← active when auto-scroll is on              │
+│  ┌────────┐                                                          │
+│  │  4000  │                                                          │
+│  └────────┘                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+  Categories fetched from Firestore. Use isFeatured / showOnHomepage
+  flags on category documents to control which ones appear here.
+```
+
+---
+
+## Admin > Section Editor — brands
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Brands Section ──────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Top Collectibles Brands                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Authentic products from the world's leading manufacturers      │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Brands to Show                                                  │
+│  ┌────────┐                                                          │
+│  │  13    │                                                          │
+│  └────────┘                                                          │
+│  ☑ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  3000  │                                                          │
+│  └────────┘                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+  Brands fetched from Firestore ordered by displayOrder ascending.
+```
+
+---
+
+## Admin > Section Editor — products
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Products Section ────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Featured Collectibles                                          │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Hand-picked by our team — fresh stock, verified authentic      │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Products (1–50)     Max Items to Show                           │
+│  ┌────────┐              ◉ 5   ◯ 10   ◯ 20                          │
+│  │  18    │                                                          │
+│  └────────┘                                                          │
+│  Status Filter                                                       │
+│  ◉ All   ◯ Published   ◯ Draft                                       │
+│                                                                      │
+│  Sort By                                                             │
+│  ◉ Latest   ◯ Oldest   ◯ Price: Low→High   ◯ Price: High→Low        │
+│  ◯ Featured   ◯ On Sale   ◯ Popular                                  │
+│                                                                      │
+│  Filter by Category Slug                                             │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ category-pokemon-cards                                         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Featured products only                                           │
+│  ☐ In-stock only                                                    │
+│  ☐ Loop carousel                                                    │
+│                                                                      │
+│  Resource Mode                                                       │
+│  ◉ Automatic (by filters above)                                      │
+│  ◯ Manual — enter product IDs                                        │
+│                                                                      │
+│  Category Filter Checkboxes (fetched from Firestore)                 │
+│  ☑ Action Figures      ☐ Trading Cards     ☑ Diecast Vehicles       │
+│  ☐ Spinning Tops       ☑ Model Kits        ☐ Vintage & Rare         │
+│                                                                      │
+│  Manual Product IDs  ↳ shown only when Resource Mode = Manual        │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ product-charizard-etb, product-hot-wheels-rlc-nissan,          │ │
+│  │ product-beyblade-x-bx01                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — pre-orders
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Pre-Orders Section ──────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Reserve Before It Ships                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Secure upcoming releases with a deposit                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Items (1–50)        Max Items to Show                           │
+│  ┌────────┐              ◉ 5   ◯ 10   ◯ 20                          │
+│  │  18    │                                                          │
+│  └────────┘                                                          │
+│  Status Filter                                                       │
+│  ◉ All   ◯ Active   ◯ Upcoming   ◯ Closed                           │
+│                                                                      │
+│  Sort By                                                             │
+│  ◉ Latest   ◯ Oldest   ◯ Price: Low→High   ◯ Price: High→Low        │
+│  ◯ Featured   ◯ On Sale   ◯ Popular                                  │
+│                                                                      │
+│  Filter by Category Slug                                             │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ category-pokemon-cards                                         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Loop carousel                                                    │
+│                                                                      │
+│  Resource Mode                                                       │
+│  ◉ Automatic (by filters above)                                      │
+│  ◯ Manual — enter pre-order IDs                                      │
+│                                                                      │
+│  Category Filter Checkboxes                                          │
+│  ☑ Action Figures   ☐ Trading Cards   ☐ Diecast   ☑ Model Kits     │
+│                                                                      │
+│  Manual Pre-Order IDs  ↳ shown only when Resource Mode = Manual      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ preorder-pokemon-sv5-booster-box, preorder-dbz-goku-ultra-ego  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — auctions
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Auctions Section ────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Live Auctions                                                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Bid on rare collectibles — auctions ending soon                │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Auctions (1–50)     Max Items to Show                           │
+│  ┌────────┐              ◉ 5   ◯ 10   ◯ 20                          │
+│  │  18    │                                                          │
+│  └────────┘                                                          │
+│  Status Filter                                                       │
+│  ◉ All   ◯ Active   ◯ Scheduled   ◯ Ended                           │
+│                                                                      │
+│  Sort By                                                             │
+│  ◉ Latest   ◯ Oldest   ◯ Price: Low→High   ◯ Price: High→Low        │
+│  ◯ Featured   ◯ On Sale   ◯ Popular                                  │
+│                                                                      │
+│  Filter by Category Slug                                             │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ category-trading-cards                                         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Loop carousel                                                    │
+│                                                                      │
+│  Resource Mode                                                       │
+│  ◉ Automatic (by filters above)                                      │
+│  ◯ Manual — enter auction IDs                                        │
+│                                                                      │
+│  Category Filter Checkboxes                                          │
+│  ☑ Trading Cards   ☐ Action Figures   ☐ Diecast   ☐ Spinning Tops  │
+│                                                                      │
+│  Manual Auction IDs  ↳ shown only when Resource Mode = Manual        │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ auction-pokemon-charizard-psa9, auction-exodia-lob-psa8        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — banner
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Banner Section ──────────────────────────────────────────────── │
+│                                                                      │
+│  Height                                                              │
+│  ◯ sm (200 px)   ◯ md (300 px)   ◉ lg (400 px)   ◯ xl (500 px)     │
+│                                                                      │
+│  Background Image URL                                                │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ https://images.unsplash.com/photo-1551698618...w=1920&h=400    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Background Color (fallback if no image)   Gradient From → To        │
+│  ┌──────────────────────┐   ┌──────────────┐  ┌──────────────┐     │
+│  │ #1a1a2e              │   │ #0f3460      │  │ #e94560      │     │
+│  └──────────────────────┘   └──────────────┘  └──────────────┘     │
+│                                                                      │
+│  ── Content ─────────────────────────────────────────────────────── │
+│  Title                                                               │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Beyblade X is Here                                             │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Official Takara Tomy Import — BX-01, BX-05, BX-10 and more    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Description (optional)                                              │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ India's best selection of Beyblade X tops, launchers...        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ── Buttons ─────────────────────────────────────────────────────── │
+│  ┌── Button 1 ────────────────────────────────────────────────────┐ │
+│  │  Text                         Link                             │ │
+│  │  ┌───────────────────────┐    ┌───────────────────────────┐    │ │
+│  │  │ Shop Beyblade X       │    │ /categories/category-...  │    │ │
+│  │  └───────────────────────┘    └───────────────────────────┘    │ │
+│  │  Style: ◉ primary   ◯ secondary   ◯ outline                    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  ┌── Button 2 ────────────────────────────────────────────────────┐ │
+│  │  Text                         Link                             │ │
+│  │  ┌───────────────────────┐    ┌───────────────────────────┐    │ │
+│  │  │ Beginner's Guide      │    │ /blog/blog-beyblade-x-... │    │ │
+│  │  └───────────────────────┘    └───────────────────────────┘    │ │
+│  │  Style: ◯ primary   ◯ secondary   ◉ outline                    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  [+ Add Button]                                                      │
+│                                                                      │
+│  ☐ Make entire banner clickable                                     │
+│  Click Link  ↳ shown when clickable is checked                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ /categories/category-beyblade-tops                             │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — features
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Features / Platform Highlights Section ──────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Everything a Collector Needs                                   │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Pill Label (shown above title)                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Built for trust                                                │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Feature Bullets (one per line)                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Verified authentic listings — every item reviewed before live  │ │
+│  │ Escrow payment protection — money held until delivery confirmed│ │
+│  │ Graded slab support — PSA, BGS, CGC with certificate verify   │ │
+│  │ Live auctions with auto-extend — no last-second sniping       │ │
+│  │ Pre-orders with deposit — secure releases with 20-30% down    │ │
+│  │ Make-an-offer on any listing — negotiate your price           │ │
+│  │ 5-star store review system on every seller                    │ │
+│  │ Fast India-wide delivery — 3–7 business days standard         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Learn More Link (optional)                                          │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ /security                                                      │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — reviews
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Reviews Section ─────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ What Collectors Are Saying                                     │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Reviews          Items per View (desktop)                       │
+│  ┌────────┐           ┌────────┐                                     │
+│  │  18    │           │  3     │                                     │
+│  └────────┘           └────────┘                                     │
+│  ☑ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+│  Review Source                                                       │
+│  ◉ Platform reviews (from Firestore)                                 │
+│  ◯ Google Business reviews                                           │
+│                                                                      │
+│  Google Place ID  ↳ shown only when Source = Google                  │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ ChIJ...                                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — whatsapp-community
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── WhatsApp Community Section ──────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Join the LetItRip Collectors Community                         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Description                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Connect with 4,000+ Indian collectors on WhatsApp. Share       │ │
+│  │ pulls, get authentication help, trade advice, and be first     │ │
+│  │ to know about new drops.                                       │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  WhatsApp Group Link                    Member Count                 │
+│  ┌───────────────────────────────────┐  ┌────────┐                  │
+│  │ https://chat.whatsapp.com/...     │  │  4200  │                  │
+│  └───────────────────────────────────┘  └────────┘                  │
+│  Benefits (one per line)                                             │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ First look at rare listings before they go live                │ │
+│  │ Authentication help from experienced collectors                │ │
+│  │ Live auction alerts for Charizard, Redlines & signed tops      │ │
+│  │ Free giveaways and community events                            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Button Text                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Join WhatsApp Community                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Testimonial Quote (optional — shown as pull quote)                  │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ "The LetItRip WhatsApp group helped me authenticate a PSA slab │ │
+│  │  within 10 minutes." — Rahul S., Bengaluru                     │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — faq
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── FAQ Section ─────────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Frequently Asked Questions                                     │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Quick answers about buying, selling, and collecting            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Display Count (how many FAQs to show)                               │
+│  ┌────────┐                                                          │
+│  │  5     │                                                          │
+│  └────────┘                                                          │
+│  ☑ Show on homepage  (FAQs also need showOnHomepage:true in DB)     │
+│  ☐ Expand all by default                                            │
+│  ☑ Show "View all FAQs" link                                        │
+│                                                                      │
+│  FAQ Categories to include                                           │
+│  ☑ General    ☑ Payment    ☑ Shipping                               │
+│  ☐ Returns    ☐ Account    ☐ Products    ☐ Sellers                  │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — blog-articles
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Blog Articles Section ───────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Collector's Corner                                             │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Articles to Show                                                │
+│  ┌────────┐                                                          │
+│  │  4     │                                                          │
+│  └────────┘                                                          │
+│  ☑ Show read time                                                   │
+│  ☑ Show author name                                                 │
+│  ☑ Show cover thumbnails                                            │
+└──────────────────────────────────────────────────────────────────────┘
+  Articles fetched from Firestore (status=published, publishedAt desc).
+```
+
+---
+
+## Admin > Section Editor — newsletter
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Newsletter Section ──────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Get New Drop Alerts                                            │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Description                                                         │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Be first to know about rare Pokémon listings, Hot Wheels STH   │ │
+│  │ drops, Beyblade X imports, and LetItRip-exclusive auctions.    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Email Input Placeholder     Subscribe Button Text                   │
+│  ┌───────────────────────┐   ┌───────────────────────┐              │
+│  │ Enter your email...   │   │ Subscribe             │              │
+│  └───────────────────────┘   └───────────────────────┘              │
+│  Privacy Notice Text                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ We respect your privacy. Unsubscribe anytime.                  │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Privacy Policy Link                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ /privacy                                                       │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+  The actual subscribe action is wired via the newsletterFormSlot
+  render prop on the page — this form controls copy only.
+```
+
+---
+
+## Admin > Section Editor — stores
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Stores Section ──────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Top Collectibles Stores                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Browse our verified seller stores                              │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Stores (1–50)       Max Items to Show                           │
+│  ┌────────┐              ◉ 5   ◯ 10   ◯ 20                          │
+│  │  5     │                                                          │
+│  └────────┘                                                          │
+│  Status Filter                                                       │
+│  ◉ All   ◯ Active   ◯ Pending   ◯ Suspended                         │
+│                                                                      │
+│  Sort By                                                             │
+│  ◯ Latest   ◉ Popular   ◯ Featured   ◯ Oldest                       │
+│                                                                      │
+│  ☑ Verified stores only                                             │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+│  Resource Mode                                                       │
+│  ◉ Automatic (by filters above)                                      │
+│  ◯ Manual — enter store IDs                                          │
+│                                                                      │
+│  Category Filter Checkboxes                                          │
+│  ☐ Action Figures   ☑ Trading Cards   ☐ Diecast   ☑ Spinning Tops  │
+│                                                                      │
+│  Manual Store IDs  ↳ shown only when Resource Mode = Manual          │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ store-mistys-water-cards, store-diecast-garage                 │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — events
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Events Section ──────────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Tournaments & Community Events                                 │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Sales, polls, and collector meetups — stay in the loop         │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Events (1–50)       Max Items to Show                           │
+│  ┌────────┐              ◉ 5   ◯ 10   ◯ 20                          │
+│  │  6     │                                                          │
+│  └────────┘                                                          │
+│  Status Filter                                                       │
+│  ◉ All   ◯ Active   ◯ Upcoming   ◯ Closed                           │
+│                                                                      │
+│  Sort By                                                             │
+│  ◉ Latest   ◯ Oldest   ◯ Featured   ◯ Popular                       │
+│                                                                      │
+│  ☐ Featured events only                                             │
+│  ☐ Auto-scroll                                                      │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  5000  │                                                          │
+│  └────────┘                                                          │
+│  Resource Mode                                                       │
+│  ◉ Automatic (by filters above)                                      │
+│  ◯ Manual — enter event IDs                                          │
+│                                                                      │
+│  Category Filter Checkboxes                                          │
+│  ☑ Tournament   ☑ Convention   ☐ Meetup   ☐ Sale                   │
+│                                                                      │
+│  Manual Event IDs  ↳ shown only when Resource Mode = Manual          │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ event-pokemon-tournament-june, event-summer-holo-sale-2026     │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — social-feed
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Social Feed Section ─────────────────────────────────────────── │
+│                                                                      │
+│  Section Title                                                       │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ LetItRip on Instagram                                          │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Subtitle (optional)                                                 │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ Follow @letitrip for daily collection showcases                │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Platform                                                            │
+│  ◉ Instagram   ◯ Facebook   ◯ TikTok   ◯ DeviantArt                │
+│                                                                      │
+│  Account Handle (no @ prefix)                                        │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ letitrip                                                       │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Post Type to Show                                                   │
+│  ◉ All   ◯ Images only   ◯ Videos only   ◯ Reels only               │
+│                                                                      │
+│  Number of Posts (4–12)                                              │
+│  ┌────────┐                                                          │
+│  │  9     │                                                          │
+│  └────────┘                                                          │
+│  Layout                                                              │
+│  ◉ Grid   ◯ Masonry   ◯ Carousel                                    │
+│                                                                      │
+│  ☑ Show captions                                                    │
+│  ☐ Show stats (likes / views / comments)                            │
+└──────────────────────────────────────────────────────────────────────┘
+  API keys configured under Admin > Site Settings > ⑩ Integrations.
+  Section disabled by default until credentials are set.
+```
+
+---
+
+## Admin > Section Editor — custom-cards
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Custom Cards Section ────────────────────────────────────────── │
+│                                                                      │
+│  Section Title (optional)                                            │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                                                                │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Layout                                                              │
+│  ◉ Grid   ◯ Row (horizontal scroll)   ◯ Masonry                     │
+│                                                                      │
+│  Columns  ↳ active when Layout = Grid or Masonry                     │
+│  ◯ 1   ◉ 2   ◯ 3   ◯ 4                                             │
+│                                                                      │
+│  ☐ Auto-scroll  ↳ active when Layout = Row                          │
+│  Scroll Interval (ms)                                                │
+│  ┌────────┐                                                          │
+│  │  4000  │                                                          │
+│  └────────┘                                                          │
+│                                                                      │
+│  ── Cards ───────────────────────────────────────────────────────── │
+│  ┌── Card 1 ──────────────────────────────────────────────────────┐ │
+│  │  Image URL                                                      │ │
+│  │  ┌──────────────────────────────────────────────────────────┐  │ │
+│  │  │ /media/carousel-image-hero-homepage-20260508.jpg          │  │ │
+│  │  └──────────────────────────────────────────────────────────┘  │ │
+│  │  Image Alt Text                                                 │ │
+│  │  ┌──────────────────────────────────────────────────────────┐  │ │
+│  │  │ Pokémon Charizard ETB sealed box                         │  │ │
+│  │  └──────────────────────────────────────────────────────────┘  │ │
+│  │  Eyebrow (small label)    Title                                 │ │
+│  │  ┌───────────────────┐    ┌──────────────────────────────────┐ │ │
+│  │  │ FEATURED          │    │ Card Title                       │ │ │
+│  │  └───────────────────┘    └──────────────────────────────────┘ │ │
+│  │  Body Text                                                      │ │
+│  │  ┌──────────────────────────────────────────────────────────┐  │ │
+│  │  │ Card body description text                               │  │ │
+│  │  └──────────────────────────────────────────────────────────┘  │ │
+│  │  Background Color         Text Color                            │ │
+│  │  ┌───────────────────┐    ┌───────────────────┐               │ │
+│  │  │ #ffffff            │    │ #000000            │               │ │
+│  │  └───────────────────┘    └───────────────────┘               │ │
+│  │  Corner Radius                                                  │ │
+│  │  ◯ none  ◯ sm  ◉ md  ◯ lg  ◯ xl  ◯ full                        │ │
+│  │  Shadow                                                         │ │
+│  │  ◯ none  ◉ sm  ◯ md  ◯ lg                                       │ │
+│  │  ── Button 1 ──────────────────────────────────────────────── │ │
+│  │  │ Label            Link           Style                      │ │
+│  │  │ ┌────────────┐   ┌───────────┐  ◉primary ◯secondary ◯ghost │ │
+│  │  │ │ Shop Now   │   │ /products │                             │ │
+│  │  │ └────────────┘   └───────────┘                             │ │
+│  │  │ Target: ◉ Same tab  ◯ New tab                              │ │
+│  │  ─────────────────────────────────────────────────────────── │ │
+│  │  [+ Add Button]                                                 │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  [+ Add Card]                                                        │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Section Editor — google-reviews
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  ── Google Reviews Section ──────────────────────────────────────── │
+│                                                                      │
+│  Google Place ID                                                     │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ ChIJ...                                                        │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+│  Max Reviews to Show      Minimum Star Rating (0 = show all)         │
+│  ┌────────┐               ◉ 0★  ◯ 3★  ◯ 4★  ◯ 5★ only             │
+│  │  6     │                                                          │
+│  └────────┘                                                          │
+│  Layout                                                              │
+│  ◉ Grid   ◯ Carousel                                                │
+│                                                                      │
+│  ☑ Show star rating on each card                                    │
+│  ☑ Show review date                                                 │
+│  ☑ Link cards to Google Maps                                        │
+│                                                                      │
+│  Google Maps URL (for "Open on Maps" link)                           │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │ https://maps.google.com/?cid=...                               │ │
+│  └────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+  Google Places API key: Admin > Site Settings > ⑩ Integrations
+  (integrations.googlePlacesApiKey).
+```
+
+---
+
 ## Admin > Orders List ✅ (list view)
 
 ```
@@ -959,15 +2327,23 @@ SideDrawer (3+ fields → SideDrawer rule):
 
 ---
 
-## Admin > Site Settings ✅ (VA8) — 12 groups
+## Admin > Site Settings ✅ (VA8) — 13 groups
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Site Settings                                                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [① Branding] [② Appearance] [③ Announcement] [④ SEO] [⑤ Contact+Social]  │
-│  [⑥ Watermark] [⑦ Fees] [⑧ Integrations] [⑨ Shipping] [⑩ Auctions]       │
-│  [⑪ Limits] [⑫ Legal]                                                       │
+│  [⓪ About] [① Branding] [② Appearance] [③ Announcement] [④ SEO]           │
+│  [⑤ Contact+Social] [⑥ Watermark] [⑦ Fees] [⑧ Integrations]               │
+│  [⑨ Shipping] [⑩ Auctions] [⑪ Limits] [⑫ Legal]                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  TAB ⓪ About Page                                         [Save About]     │
+│    Hero Title    [input — default: "About LetItRip"]                        │
+│    Hero Subtitle [input — default: "Connecting buyers, sellers, bidders…"]  │
+│    Mission Title [input — default: "Our Mission"]                           │
+│    Mission Text  [textarea]                                                  │
+│    CTA Title     [input — default: "Ready to get started?"]                 │
+│    Note: leave blank to fall back to platform defaults (i18n)               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB ① Branding                                          [Save Branding]    │
 │    Site Name    [input: "LetiTrip"]                                          │
@@ -1032,11 +2408,12 @@ SideDrawer (3+ fields → SideDrawer rule):
 │    Max custom sections [input]   Order cancel window hrs [input]            │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB ⑫ Legal Policies                                   [Save Legal]        │
-│    Terms of Service    [RichTextEditor]                                      │
-│    Privacy Policy      [RichTextEditor]                                      │
-│    Refund Policy       [RichTextEditor]                                      │
-│    Shipping Policy     [RichTextEditor]                                      │
-│    Cookie Policy       [RichTextEditor]                                      │
+│    Note: HTML pasted here overrides i18n fallback on public policy pages    │
+│    Terms of Service    [HTML textarea — saved to siteSettings.legalPages]   │
+│    Privacy Policy      [HTML textarea]                                       │
+│    Refund Policy       [HTML textarea]                                       │
+│    Shipping Policy     [HTML textarea]                                       │
+│    Cookie Policy       [HTML textarea]                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1814,41 +3191,516 @@ SideDrawer:
 
 # PUBLIC PAGES
 
-## Public > Homepage ✅ (all sections)
+## Public > Homepage ✅ (all sections — overview)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  HEADER: [Logo] [🔍 Search [type ▾] [Search btn]] [Cart 3] [♡] [👤] [🔔]  │
 │  NAVBAR: [Products] [Auctions] [Pre-Orders] [Brands] [Events] [Blog] [FAQs]│
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [§ Announcement Banner: "🎉 Free shipping ₹999+ · Use code WELCOME10"]    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  § HERO CAROUSEL (CF1 ✅)                                                    │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │  [Background: image/video/gradient]                                 │   │
-│  │  ← Card1  Card2  Card3 →                                            │   │
-│  │  ● ● ○ ○ ○                                                          │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│  § STATS (trust-indicators ✅): [X Sellers] [X Products] [X Happy Buyers]  │
-│  § CATEGORIES GRID ✅: Browse by: Action Figures / Trading Cards / ...     │
-│  § FEATURED PRODUCTS ✅: 10 product cards [View All →]                     │
-│  § LIVE AUCTIONS ✅: 6 auction cards with countdown [View All Auctions →]  │
-│  § TOP BRANDS ✅: brand logo grid                                           │
-│  § PRE-ORDERS ✅: pre-order cards                                           │
-│  § BANNER ✅: promo banner with CTA                                         │
-│  § GOOGLE REVIEWS ✅ (HS4): ★★★★★ fetched from Google Business            │
-│  § CUSTOMER REVIEWS ✅: review cards                                        │
-│  § BLOG ARTICLES ✅: 3 blog post cards                                     │
-│  § EVENTS ✅: upcoming event cards                                          │
-│  § FEATURED STORES ✅: store cards                                          │
-│  § FAQ ✅: 5 homepage FAQs                                                  │
-│  § CUSTOM CARDS ✅ (HS5): configurable card grid/row/masonry               │
-│  § NEWSLETTER ✅: email subscribe form                                      │
-│  § WHATSAPP CTA ✅                                                          │
-│  § SOCIAL FEED ⏳ (S1-S5): Instagram/Facebook/TikTok posts                 │
+│  [§ Announcement Bar: "🎉 Up to 15% Off Pokémon TCG · Use code SAVE15"]    │
+│  § 1  welcome           — H1 + trust chips + CTA buttons                   │
+│  § 2  carousel          — full-height hero slide with bg + zone cards       │
+│  § 3  stats             — animated counter strip (4 stats)                  │
+│  § 4  trust-indicators  — 4-column icon + title + description               │
+│  § 5  categories        — horizontal category card scroller                 │
+│  § 6  brands            — auto-scroll logo strip                            │
+│  § 7  products          — featured product card carousel [View all →]       │
+│  § 8  auctions          — auction card carousel with countdown [View all →] │
+│  § 9  pre-orders        — pre-order card carousel [View all →]              │
+│  § 10 banner            — full-width promo banner with CTA buttons          │
+│  § 11 features          — platform highlights checklist/grid                │
+│  § 12 reviews           — customer review card carousel [See all →]         │
+│  § 13 stores            — featured store card carousel [View all →]         │
+│  § 14 events            — upcoming event cards [View all →]                 │
+│  § 15 blog-articles     — 3–4 blog post cards [View all posts →]            │
+│  § 16 whatsapp-community — WhatsApp group join card                         │
+│  § 17 faq               — accordion FAQ (5 items) [View all FAQs →]         │
+│  § 18 newsletter        — email subscribe form                               │
+│  § 19 social-feed       — Instagram/social post grid (⏳ disabled by default)│
+│  § 20 custom-cards      — configurable card grid/row/masonry                │
+│  § 21 google-reviews    — Google Business review cards                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  FOOTER: Shop | Support | Sellers | Learn | Legal | Social icons            │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Section rendering: driven by homepageSections Firestore collection.
+Order = section.order ascending. enabled=false → not rendered.
+Ad slots injected after: carousel(afterHero), products(afterFeaturedProducts),
+reviews(afterReviews), faq(afterFAQ).
+```
+
+---
+
+## Public > Homepage Section — welcome
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ● India's #1 Marketplace                                 │
+│                                                                             │
+│           India's #1 Collectibles Marketplace                               │
+│           Buy, Sell & Auction with Verified Sellers                         │
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │  🚀 Fast Delivery   🔒 Secure Payments   ⭐ 4.8+ Rated   ↩️ Easy Returns│
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│                    [Shop Now]   [Browse All]                                │
+│                    ─────── LIR ───────                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: WelcomeSection
+Config fields: h1 · subtitle · description · showCTA · ctaText · ctaLink
+```
+
+---
+
+## Public > Homepage Section — carousel
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ╔═══════════════════════════════════════════════════════════════════════╗  │
+│  ║  [Background: image / video / color / gradient]                     ║  │
+│  ║  [dimOverlay: rgba(0,0,0,0.25–0.50)]                                ║  │
+│  ║                                                                     ║  │
+│  ║  ── OVERLAY MODE (cards=[]) ─────────────────────────────────────  ║  │
+│  ║  │  SUBTITLE (uppercase, tracking-widest)                         │ ║  │
+│  ║  │  H1 TITLE (font-display, text-4xl–8xl, white)                  │ ║  │
+│  ║  │  Description paragraph (text-lg, white/90)                     │ ║  │
+│  ║  │  [Shop Now]                                                     │ ║  │
+│  ║                                                                     ║  │
+│  ║  ── CARDS MODE (cards.length > 0) ──────────────────────────────  ║  │
+│  ║  ┌──────────────────────────────────────────────────────────────┐ ║  │
+│  ║  │  Zone grid: 2 rows × 3 columns (up to 6 cards)               │ ║  │
+│  ║  │  Row 1: zone 1  │  zone 2  │  zone 3                         │ ║  │
+│  ║  │  Row 2: zone 4  │  zone 5  │  zone 6                         │ ║  │
+│  ║  │                                                               │ ║  │
+│  ║  │  Each card: [background img/color/gradient]                   │ ║  │
+│  ║  │             [eyebrow · title · subtitle · description]        │ ║  │
+│  ║  │             [buttons]  hover: scale|glow|color|none           │ ║  │
+│  ║  │  Cards MUST use different rows (row1 ≠ row2 per card pair)    │ ║  │
+│  ║  └──────────────────────────────────────────────────────────────┘ ║  │
+│  ║                                                                     ║  │
+│  ║  Mobile: single-column; mobileZone 2=row1-center 5=row2-center    ║  │
+│  ║  ← [◁]          ● ● ○ ○ ○            [▷] →                       ║  │
+│  ╚═══════════════════════════════════════════════════════════════════════╝  │
+└─────────────────────────────────────────────────────────────────────────────┘
+Heights: viewport=min-h-screen · tall=min-h-[80vh] · medium=min-h-[60vh]
+         (applied on ALL screen sizes — no md: gating)
+Slides: up to 5 active (MAX_ACTIVE_SLIDES=5), sorted by order, autoplay
+Component: HeroCarousel · hook: useHeroCarousel · source: carouselSlides
+```
+
+---
+
+## Public > Homepage Section — stats
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│   │   5,000+     │  │    200+      │  │   12,000+    │  │    4.8★      │ │
+│   │   Listings   │  │  Verified    │  │   Happy      │  │  Platform    │ │
+│   │              │  │   Sellers    │  │   Buyers     │  │   Rating     │ │
+│   └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: StatsCounterSection
+Config fields: title · stats[]{key, label, value}
+```
+
+---
+
+## Public > Homepage Section — trust-indicators
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│              Why Collectors Trust LetItRip                                  │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐  ┌──────────┐ │
+│  │  🛡 Verified   │  │  🔒 Escrow     │  │  ↩️ Easy       │  │  ✓ Auth  │ │
+│  │  Sellers       │  │  Payment       │  │  Returns       │  │  Guarantee│ │
+│  │                │  │                │  │                │  │          │ │
+│  │  Every seller  │  │  Payment held  │  │  Seller return │  │  Counter- │ │
+│  │  is manually   │  │  until you     │  │  policies      │  │  feit =  │ │
+│  │  verified...   │  │  confirm...    │  │  cover all...  │  │  refund  │ │
+│  └────────────────┘  └────────────────┘  └────────────────┘  └──────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: TrustFeaturesSection
+Config fields: title · indicators[]{id, icon, title, description}
+```
+
+---
+
+## Public > Homepage Section — categories
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Shop by Category                              [All categories →]           │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ← ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  peek → →      │
+│     │  [cover] │  │  [cover] │  │  [cover] │  │  [cover] │                 │
+│     │          │  │          │  │          │  │          │                 │
+│     │  Action  │  │  Trading │  │  Diecast │  │  Spinning│                 │
+│     │  Figures │  │  Cards   │  │  Vehicles│  │  Tops    │                 │
+│     └──────────┘  └──────────┘  └──────────┘  └──────────┘                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: ShopByCategorySection → SectionCarousel
+Config fields: title · maxCategories · autoScroll · scrollInterval
+Source: categories Firestore (isFeatured=true OR showOnHomepage=true)
+```
+
+---
+
+## Public > Homepage Section — brands
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Top Collectibles Brands                                                    │
+│  Authentic products from the world's leading manufacturers                  │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ← [Bandai] [Hasbro] [Takara-Tomy] [Mattel] [Pokémon Co] [Konami] [Funko]→│
+│     [NECA]  [McFarlane] [Good Smile] [Hot Wheels] [Tomica] [Beyblade]  →  │
+│                     (auto-scrolling logo strip)                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: BrandsSection → SectionCarousel
+Config fields: title · subtitle · maxBrands · autoScroll · scrollInterval
+Source: brands Firestore ordered by displayOrder
+```
+
+---
+
+## Public > Homepage Section — products / auctions / pre-orders
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Featured Collectibles ✶                     [View all products →]          │
+│   ─ ✶ ─                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ←  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  peek  →      │
+│      │  [🖼]   │  │  [🖼]   │  │  [🖼]   │  │  [🖼]   │                 │
+│      │ Product  │  │ Product  │  │ Product  │  │ Product  │                 │
+│      │ Name     │  │ Name     │  │ Name     │  │ Name     │                 │
+│      │ ₹4,499   │  │ ₹6,999   │  │ ₹1,999   │  │ ₹2,999   │                 │
+│      │ ★★★★☆   │  │ [NEW]    │  │ [SALE]   │  │ [AUCTION]│                 │
+│      │ CardGame │  │ Diecast  │  │ Bladers  │  │ TokyoToy │                 │
+│      │ Hub      │  │ Garage   │  │ Paradise │  │ Store    │                 │
+│      │[🛒 Add] │  │[🛒 Add] │  │ [Bid Now]│  │[Reserve] │                 │
+│      │[♡]      │  │[♡]      │  │ ⏱ 12h   │  │[♡]      │                 │
+│      └──────────┘  └──────────┘  └──────────┘  └──────────┘                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+Components:
+  products   → FeaturedProductsSection → SectionCarousel → InteractiveProductCard
+  auctions   → FeaturedAuctionsSection → SectionCarousel (cards show countdown)
+  pre-orders → FeaturedPreOrdersSection → SectionCarousel
+Shared config fields: title · subtitle · maxItems · sortBy · filterByBrand ·
+  filterByCategory · autoScroll · scrollInterval · loop · maxCount
+Resource mode: automatic (Firestore query) OR manual (explicit IDs)
+```
+
+---
+
+## Public > Homepage Section — banner
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │  [background image / color / gradient — height: sm|md|lg|xl]         │  │
+│  │                                                                       │  │
+│  │           Beyblade X is Here                                          │  │
+│  │           Official Takara Tomy Import — BX-01, BX-05, BX-10          │  │
+│  │           India's best selection of Beyblade X tops, launchers        │  │
+│  │                                                                       │  │
+│  │           [Shop Beyblade X]   [Beginner's Guide]                      │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: CTABannerSection
+Heights: sm=200px · md=300px · lg=400px · xl=500px
+Config fields: height · backgroundImage · backgroundColor · gradient ·
+  content{title, subtitle, description} · buttons[]{text,link,variant} ·
+  clickable · clickLink
+```
+
+---
+
+## Public > Homepage Section — features
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ● Built for trust                                                          │
+│                                                                             │
+│  Everything a Collector Needs                                               │
+│   ─ ✶ ─                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ✓  Verified authentic listings — every item reviewed before going live     │
+│  ✓  Escrow payment protection — money held until you confirm delivery       │
+│  ✓  Graded slab support — PSA, BGS, CGC with certificate verification      │
+│  ✓  Live auctions with auto-extend — no last-second sniping                │
+│  ✓  Pre-orders with deposit — secure releases with 20-30% down             │
+│  ✓  Make-an-offer on any listing — negotiate your price                    │
+│  ✓  5-star store review system on every seller                             │
+│  ✓  Fast India-wide delivery — 3–7 business days standard                  │
+│                                                                             │
+│                    [Learn about our security →]                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: SecurityHighlightsSection
+Config fields: title · features[] (one string per feature bullet)
+```
+
+---
+
+## Public > Homepage Section — reviews
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  What Collectors Are Saying                  [See all reviews →]            │
+│   ─ ✶ ─                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ← ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  →   │
+│     │  ★★★★★           │  │  ★★★★☆           │  │  ★★★★★           │      │
+│     │  "Amazing deal   │  │  "Fast shipping  │  │  "PSA slab was   │      │
+│     │  on the Charizard│  │  and well packed │  │  exactly as      │      │
+│     │  ETB. Sealed and │  │  Pokémon booster │  │  described. 100% │      │
+│     │  exactly as      │  │  arrived in 4    │  │  authentic."     │      │
+│     │  described."     │  │  days."          │  │                  │      │
+│     │  — Ravi K.       │  │  — Priya S.      │  │  — Arjun M.      │      │
+│     │  Charizard ETB   │  │  SV5 Booster     │  │  Charizard PSA9  │      │
+│     │  Verified ✓      │  │  Verified ✓      │  │  Verified ✓      │      │
+│     └──────────────────┘  └──────────────────┘  └──────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: HomepageCustomerReviewsSection → SectionCarousel
+Config fields: title · maxReviews · itemsPerView · autoScroll · scrollInterval ·
+  source(platform|google) · placeId(if google)
+```
+
+---
+
+## Public > Homepage Section — stores
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Top Collectibles Stores                     [View all stores →]            │
+│  Browse our verified seller stores                                          │
+│   ─ ✶ ─                                                                     │
+│  ← ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐  → │
+│     │  [banner]         │  │  [banner]         │  │  [banner]         │    │
+│     │  [logo] CardGame  │  │  [logo] Diecast   │  │  [logo] Bladers   │    │
+│     │  Hub         ✓   │  │  Garage       ✓  │  │  Paradise     ✓  │    │
+│     │  Pokémon TCG      │  │  Hot Wheels       │  │  Beyblade X       │    │
+│     │  47 products      │  │  32 products      │  │  15 products      │    │
+│     │  ★★★★★ (24)      │  │  ★★★★☆ (18)      │  │  ★★★★★ (9)       │    │
+│     │  [Visit Store →]  │  │  [Visit Store →]  │  │  [Visit Store →]  │    │
+│     └───────────────────┘  └───────────────────┘  └───────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: FeaturedStoresSection → SectionCarousel
+Config fields: title · subtitle · maxStores · autoScroll · scrollInterval
+Note: storeName/storeId shown publicly; ownerId/sellerId never exposed
+```
+
+---
+
+## Public > Homepage Section — events
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Tournaments & Community Events              [View all events →]            │
+│  Sales, polls, and collector meetups                                        │
+│   ─ ✶ ─                                                                     │
+│  ← ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  →   │
+│     │  [cover]         │  │  [cover]         │  │  [cover]         │      │
+│     │  TOURNAMENT      │  │  SALE            │  │  MEETUP          │      │
+│     │  Pokémon India   │  │  Summer Holo     │  │  Collector Meet  │      │
+│     │  Championship    │  │  Sale 2026       │  │  Mumbai          │      │
+│     │  Jun 15 – Jun 16 │  │  May 20 – Jun 20 │  │  Jun 10          │      │
+│     │  [Join / View →] │  │  [View →]        │  │  [Join / View →] │      │
+│     └──────────────────┘  └──────────────────┘  └──────────────────┘      │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: EventsSection → SectionCarousel
+Config fields: title · subtitle · maxEvents · autoScroll · scrollInterval
+Source: events Firestore (status=active by default)
+```
+
+---
+
+## Public > Homepage Section — blog-articles
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Collector's Corner                          [View all posts →]             │
+│   ─ ✶ ─                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐   │
+│  │  [cover image]     │  │  [cover image]     │  │  [cover image]     │   │
+│  │  TRADING CARDS     │  │  HOT WHEELS        │  │  BEYBLADE X        │   │
+│  │  How to Grade      │  │  Complete Guide    │  │  Beginner's Guide  │   │
+│  │  Pokémon Cards     │  │  to Hot Wheels     │  │  2026              │   │
+│  │  Ravi K. · 8 min   │  │  Priya S. · 12 min │  │  Admin · 6 min     │   │
+│  │  [Read More →]     │  │  [Read More →]     │  │  [Read More →]     │   │
+│  └────────────────────┘  └────────────────────┘  └────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: BlogArticlesSection
+Config fields: title · maxArticles · showReadTime · showAuthor · showThumbnails
+Source: blogPosts Firestore (status=published, ordered by publishedAt desc)
+```
+
+---
+
+## Public > Homepage Section — whatsapp-community
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  [WhatsApp green background]                                        │   │
+│  │                                                                     │   │
+│  │  Join the LetItRip Collectors Community                             │   │
+│  │  4,200 members                                                      │   │
+│  │                                                                     │   │
+│  │  ✓  First look at rare listings before they go live                │   │
+│  │  ✓  Authentication help from experienced collectors                 │   │
+│  │  ✓  Live auction alerts for Charizard, Redlines & signed tops       │   │
+│  │  ✓  Free giveaways and community events                            │   │
+│  │                                                                     │   │
+│  │  "The LetItRip WhatsApp group helped me authenticate a PSA slab    │   │
+│  │   within 10 minutes." — Rahul S., Bengaluru                        │   │
+│  │                                                                     │   │
+│  │  [Join WhatsApp Community]                                          │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: WhatsAppCommunitySection
+Config fields: title · description · groupLink · memberCount ·
+  benefits[] · buttonText · testimonial
+```
+
+---
+
+## Public > Homepage Section — faq
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Frequently Asked Questions                  [View all FAQs →]              │
+│  Quick answers about buying, selling, and collecting on LetItRip            │
+│   ─ ✶ ─                                                                     │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ▶  How does bidding work on LetItRip?                                      │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ▼  Is my payment safe? What is escrow?                                     │
+│     Payments are held in escrow and released to the seller only after       │
+│     you confirm safe delivery. If delivery fails, you get a full refund.    │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ▶  How long does shipping take?                                             │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ▶  Can I return a product?                                                  │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ▶  How do pre-orders work?                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: FAQSection
+Config fields: title · subtitle · showOnHomepage · displayCount ·
+  expandedByDefault · linkToFullPage · categories[]
+Source: faqs Firestore (showOnHomepage=true, ordered by priority)
+```
+
+---
+
+## Public > Homepage Section — newsletter
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  [gradient/dark background]                                         │   │
+│  │                                                                     │   │
+│  │           Get New Drop Alerts                                       │   │
+│  │  Be first to know about rare Pokémon listings, Hot Wheels STH       │   │
+│  │  drops, Beyblade X imports, and LetItRip-exclusive auction events.  │   │
+│  │                                                                     │   │
+│  │  ┌─────────────────────────────────┐   ┌──────────────────────┐   │   │
+│  │  │  Enter your email address       │   │     Subscribe         │   │   │
+│  │  └─────────────────────────────────┘   └──────────────────────┘   │   │
+│  │                                                                     │   │
+│  │  We respect your privacy. Unsubscribe anytime.                      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: NewsletterSection
+Config fields: title · description · placeholder · buttonText ·
+  privacyText · privacyLink
+Form rendered via newsletterFormSlot render prop (client component)
+```
+
+---
+
+## Public > Homepage Section — social-feed
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  LetItRip on Instagram    @letitrip                                         │
+│  Follow us for daily collection showcases and new drop alerts               │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  │
+│  │ [post] │  │ [post] │  │ [post] │  │ [post] │  │ [post] │  │ [post] │  │
+│  │ ♡ 234  │  │ ♡ 189  │  │ ♡ 412  │  │ ♡ 98   │  │ ♡ 320  │  │ ♡ 561  │  │
+│  └────────┘  └────────┘  └────────┘  └────────┘  └────────┘  └────────┘  │
+│  ┌────────┐  ┌────────┐  ┌────────┐                                        │
+│  │ [post] │  │ [post] │  │ [post] │                                        │
+│  └────────┘  └────────┘  └────────┘                                        │
+│                   (⏳ disabled — credentials not yet configured)             │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: SocialFeedSection
+Config fields: title · subtitle · platform(instagram|facebook|tiktok|deviantart) ·
+  handle · postType(all|images|videos|reels) · count(4–12) ·
+  layout(grid|masonry|carousel) · showCaption · showStats
+API key: integrations.instagramApiKey / integrations.facebookApiKey in siteSettings
+```
+
+---
+
+## Public > Homepage Section — custom-cards
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [Optional section heading]                                                 │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Layout: grid (3 columns)                                                   │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐         │
+│  │  [image]         │  │  [image]         │  │  [image]         │         │
+│  │  EYEBROW         │  │  EYEBROW         │  │  EYEBROW         │         │
+│  │  Card Title      │  │  Card Title      │  │  Card Title      │         │
+│  │  Body text here  │  │  Body text here  │  │  Body text here  │         │
+│  │  [Button]        │  │  [Button]        │  │  [Button]        │         │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘         │
+│                                                                             │
+│  Layout: row (horizontal scroller, 1 row)                                  │
+│  ← [card] [card] [card] [card] [card] →                                   │
+│                                                                             │
+│  Layout: masonry (unequal heights)                                         │
+│  ┌──────┐ ┌───────────┐ ┌──────┐ ┌──────────────┐                        │
+│  │short │ │tall card  │ │short │ │medium card   │                        │
+│  └──────┘ └───────────┘ └──────┘ └──────────────┘                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: CustomCardsSection
+Config fields: title · layout(grid|row|masonry) · columns(1|2|3|4) ·
+  cards[]{id,image,imageAlt,eyebrow,title,body,buttons[],backgroundColor,
+    textColor,borderRadius,shadowLevel} · autoScroll · scrollIntervalMs
+```
+
+---
+
+## Public > Homepage Section — google-reviews
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ★★★★★  4.9 · 124 reviews   [Open on Google Maps →]                        │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐         │
+│  │  Ravi Kumar       │  │  Priya Sharma    │  │  Arjun Mehta     │         │
+│  │  ★★★★★            │  │  ★★★★★            │  │  ★★★★☆            │         │
+│  │  "Great platform  │  │  "Excellent      │  │  "Good service,  │         │
+│  │  for Pokémon      │  │  condition items │  │  slight delay    │         │
+│  │  collectors..."   │  │  delivered fast" │  │  in shipping."   │         │
+│  │  May 2026         │  │  Apr 2026        │  │  Apr 2026        │         │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘         │
+└─────────────────────────────────────────────────────────────────────────────┘
+Component: GoogleReviewsSection
+Config fields: placeId · maxReviews · minRating · layout(grid|carousel) ·
+  showRating · showDate · linkToGoogleMaps · googleMapsUrl
+API key: integrations.googlePlacesApiKey in siteSettings
 ```
 
 ---
@@ -2311,6 +4163,196 @@ No more search-specific results page — listing pages handle ?q= param directly
 │  STEP ④ Confirm / Success                                                   │
 │    ✓ Order placed! #order-3-0508-a1b2c3                                     │
 │    [View Order] [Continue Shopping]                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > About ✅
+
+```
+Component: src/app/[locale]/about/page.tsx → AboutView (appkit)
+Data: getTranslations("about") + siteSettings.aboutContent.* (Firestore override)
+Admin: Site Settings → ⓪ About tab
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO BANNER (gradient violet→indigo)                                        │
+│    H1: "About LetItRip"              ← siteSettings.aboutContent.title      │
+│    Subtitle: "Connecting buyers, sellers, and bidders…"                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  OUR MISSION                                                                 │
+│    H2: "Our Mission"                 ← siteSettings.aboutContent.missionTitle│
+│    Body: "LetItRip was built to democratise commerce…"                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  HOW IT WORKS  (3-column grid)                                               │
+│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐               │
+│  │  🛒 For Buyers  │ │ 🏪 For Sellers  │ │ ⚡ For Bidders  │               │
+│  │  Browse & shop  │ │ Create & earn   │ │ Bid & win       │               │
+│  └─────────────────┘ └─────────────────┘ └─────────────────┘               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  OUR VALUES  (3-column grid)                                                 │
+│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐               │
+│  │  🛡️ Trust+Safety│ │ 🤝 Community    │ │ 🚀 Innovation   │               │
+│  └─────────────────┘ └─────────────────┘ └─────────────────┘               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  OUR JOURNEY  (timeline)                                                     │
+│    2024  Founded with a vision to simplify multi-seller commerce             │
+│    2025  Launched real-time auction engine with auto-bid support             │
+│    2026  Mobile-first redesign reaching thousands of new users               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  CTA BANNER (gradient)                                                       │
+│    H2: "Ready to get started?"       ← siteSettings.aboutContent.ctaTitle   │
+│    renderCtaButtons() slot → e.g. [Become a Seller] [Start Shopping]        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Empty state: all sections render with placeholder text (all props have defaults in AboutView)
+```
+
+---
+
+## Public > Privacy Policy ✅
+
+```
+Component: src/app/[locale]/privacy/page.tsx → PolicyPageView policy="privacy"
+Data: siteSettings.legalPages.privacy (Firestore HTML, admin-set) → i18n "privacy" namespace
+Admin: Site Settings → ⑫ Legal tab → Privacy Policy textarea
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO (gradient violet→indigo)                                               │
+│    H1: "Privacy Policy"                                                      │
+│    "Last updated: January 1, 2025"                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  IF admin HTML set → <div dangerouslySetInnerHTML> (prose styled)            │
+│  ELSE i18n sections:                                                         │
+│    Intro paragraph                                                           │
+│    1. Information We Collect                                                 │
+│    2. How We Use Your Information                                            │
+│    3. Sharing Your Information                                               │
+│    4. Data Security                                                          │
+│    5. Your Rights                                                            │
+│    6. Cookies                                                                │
+│    7. Changes to this Policy                                                 │
+│    Contact                                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  RELATED POLICIES                                                            │
+│    [Terms of Service]  [Cookie Policy]  [Refund Policy]                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Terms of Service ✅
+
+```
+Component: src/app/[locale]/terms/page.tsx → PolicyPageView policy="terms"
+Data: siteSettings.legalPages.terms (Firestore HTML) → i18n "terms" namespace
+Admin: Site Settings → ⑫ Legal tab → Terms of Service textarea
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO (gradient violet→indigo)                                               │
+│    H1: "Terms & Conditions"                                                  │
+│    "Last updated: January 1, 2025"                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  IF admin HTML set → <div dangerouslySetInnerHTML> (prose styled)            │
+│  ELSE i18n sections:                                                         │
+│    1. Acceptance of Terms                                                    │
+│    2. Use of the Platform                                                    │
+│    3. User Accounts                                                          │
+│    4. Seller Responsibilities                                                │
+│    5. Auction Rules                                                          │
+│    6. Limitation of Liability                                                │
+│    7. Changes to Terms                                                       │
+│    Questions?                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  RELATED POLICIES                                                            │
+│    [Privacy Policy]  [Cookie Policy]  [Refund Policy]                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Cookie Policy ✅
+
+```
+Component: src/app/[locale]/cookies/page.tsx → PolicyPageView policy="cookies"
+Data: siteSettings.legalPages.cookies (Firestore HTML) → i18n "cookies" namespace
+Admin: Site Settings → ⑫ Legal tab → Cookie Policy textarea
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO (gradient violet→indigo)                                               │
+│    H1: "Cookie Policy"                                                       │
+│    "Last updated: March 2, 2026"                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  IF admin HTML set → <div dangerouslySetInnerHTML>                           │
+│  ELSE i18n sections:                                                         │
+│    What Are Cookies?                                                         │
+│    Types of Cookies We Use                                                   │
+│    Essential Cookies                                                         │
+│    Analytics Cookies                                                         │
+│    Marketing Cookies                                                         │
+│    Managing Your Cookie Preferences                                          │
+│    Third-Party Cookies                                                       │
+│    Changes to This Policy                                                    │
+│    Contact Us                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  RELATED POLICIES                                                            │
+│    [Privacy Policy]  [Terms of Service]  [Refund Policy]                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Refund Policy ✅
+
+```
+Component: src/app/[locale]/refund-policy/page.tsx → PolicyPageView policy="refund"
+Data: siteSettings.legalPages.refundPolicy (Firestore HTML) → i18n "refundPolicy" namespace
+Admin: Site Settings → ⑫ Legal tab → Refund Policy textarea
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO (gradient violet→indigo)                                               │
+│    H1: "Refund Policy"                                                       │
+│    "Last updated: March 2, 2026"                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  IF admin HTML set → <div dangerouslySetInnerHTML>                           │
+│  ELSE i18n sections:                                                         │
+│    Refund Eligibility                                                        │
+│    How to Initiate a Refund                                                  │
+│    Refund Timeline                                                           │
+│    Auction Purchases                                                         │
+│    Exchanges                                                                 │
+│    Return Shipping                                                           │
+│    Non-Refundable Items                                                      │
+│    Need Help?                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  RELATED POLICIES                                                            │
+│    [Privacy Policy]  [Terms of Service]  [Cookie Policy]                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Shipping Policy ✅
+
+```
+Component: src/app/[locale]/shipping-policy/page.tsx → ShippingPolicyView (appkit)
+Data: i18n "shippingPolicy" namespace (static; no Firestore override currently)
+Note: ShippingPolicyView has its own flat-key i18n structure (not sections array)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  HERO (gradient violet→indigo)                                               │
+│    H1: "Shipping Policy"                                                     │
+│    "Last updated: March 12, 2026"                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Subtitle paragraph                                                          │
+│  FLOW DIAGRAM: Order Placed → Seller Preparing → Dispatched                 │
+│                → In Transit → Delivered                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Order Process        │  Standard Shipping    │  Express Shipping            │
+│  Free Shipping        │  Auction Shipping     │  Tracking Your Order         │
+│  International Shipping (India only)          │  Damaged or Lost Items       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Questions about shipment? → [Help Center] [Contact Us] [Refund Policy]     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

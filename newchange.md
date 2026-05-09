@@ -33,6 +33,140 @@
 
 ---
 
+# Session 78 — 2026-05-10 (Carousel height fix + Section diagrams + Admin form builders)
+
+## HeroCarousel mobile height regression (CF1)
+
+- `appkit/src/features/homepage/components/HeroCarousel.tsx`: removed `md:` prefix from 3 height class applications in the loading state, section wrapper, and per-slide div. Mobile now respects `${heightClass}` (e.g. `min-h-[80vh]` for "tall") instead of collapsing to `min-h-[260px]`.
+- Fixed `slide.cards.slice(0, 2)` → `slice(0, 6)` so all 6 zone positions can render cards.
+
+## Carousel seed card zone fix
+
+- `appkit/src/seed/carousel-slides-seed-data.ts` slide 1 "Hot Wheels" card: `zone: 2 → zone: 5` (moved from row 1, col 2 → row 2, col 2). Cards are now in different rows as the zone grid spec requires.
+
+## asciiDiagrams.md — all 21 section type diagrams
+
+- Added full public-facing layout diagrams for every homepage section type (welcome, carousel, stats, trust-indicators, categories, brands, products, auctions, pre-orders, banner, features, reviews, whatsapp-community, faq, blog-articles, newsletter, stores, events, social-feed, custom-cards, google-reviews).
+- Added Admin Section Editor shared modal shell diagram + 21 per-type admin form diagrams using proper UI notation (◉/◯ radio buttons, ☑/☐ checkboxes, `┌──┐│ │└──┘` input boxes).
+
+## AdminSectionsView typed builders (HS2/HS5 gap fix)
+
+- `appkit/src/features/admin/components/AdminSectionsView.tsx`: added typed builders for the three section types that previously fell through to raw JSON textarea:
+  - **carousel**: title, height select (viewport/tall/medium), default autoplay delay, pause-on-hover, show-dots, show-arrows
+  - **custom-cards**: title, layout select, columns select, auto-scroll + interval, dynamic card repeater (image URL, imageAlt, eyebrow, title, body, link, backgroundColor, textColor, borderRadius, shadowLevel)
+  - **google-reviews**: placeId, maxReviews, minRating (0★/3★/4★/5★), layout, showRating, showDate, linkToGoogleMaps, googleMapsUrl (conditional)
+- All three wired into: SECTION_TYPE_OPTIONS, SUPPORTED_TYPED_BUILDERS, state, typedConfig useMemo, edit-mode parse effect, create-mode reset effect, renderTypedBuilder. All 21 section types now have typed builders — zero raw JSON textarea exposed.
+- tsc 0 errors in AdminSectionsView.tsx (3 pre-existing unrelated seed data TS errors in other files unchanged).
+
+---
+
+# Session 76-listing — 2026-05-10 (Listing view migration sweep)
+
+## All 16 admin listing views migrated to ListingToolbar + useUrlTable + DataTable
+
+Migrated every admin listing view from the `AdminListingScaffold` pattern to `ListingToolbar` + `useUrlTable` + `DataTable` + filter drawer. `AdminListingScaffold` is now unused in all views; only `AdminListingScaffoldRow` type is still imported in a few places.
+
+### Standard pattern (applied to all views)
+
+```
+useUrlTable({ defaults: { pageSize, sort } })
+pendingFilters local state — buffers drawer changes until Apply
+openFilters / applyFilters / clearFilters / resetAll / commitSearch
+useAdminListingData → rows, total, isLoading, errorMessage
+<ListingToolbar search + filterCount + sortOptions + hasActiveState + extra />
+<Pagination sticky when totalPages > 1 />
+<DataTable rows columns isLoading emptyLabel getRowHref renderRowActions />
+Filter drawer: fixed left, z-50, w-80, chip filter buttons + Apply
+Mutations (ConfirmDeleteModal / Modal) rendered as fragments AFTER main div
+```
+
+### Files changed (appkit/) — Batch 1
+
+- `AdminBidsView.tsx` — status filter (All/active/outbid/won/cancelled), cancel bid ConfirmDeleteModal
+- `AdminCartsView.tsx` — type filter (All/guest/auth), server-side via `filters` param
+- `AdminWishlistsView.tsx` — sort only; no filter drawer
+- `AdminSessionsView.tsx` — isActive filter, revoke action + ConfirmDeleteModal
+- `AdminPayoutsView.tsx` — status filter, mark-paid Modal, CSV export via `extra` prop
+- `AdminNotificationsView.tsx` — type filter (10 types), resend + delete + ConfirmDeleteModal
+- `AdminAllEventEntriesView.tsx` — status filter, confirm/waitlist/cancel RowActionMenu
+- `AdminReturnRequestsView.tsx` — sort only; approve→REFUNDED + reject→DELIVERED both ConfirmDeleteModal
+- `AdminStoreAddressesView.tsx` — sort only; read-only view
+
+### Files changed (appkit/) — Batch 2
+
+- `AdminNewsletterView.tsx` — status filter, unsubscribe ConfirmDeleteModal, CSV export via `extra`
+- `AdminContactView.tsx` — status filter, AdminContactEditorView drawer preserved, delete ConfirmDeleteModal
+- `appkit/src/features/events/components/AdminEventsView.tsx` — status + type filter, `getRowHref` added
+- `AdminReviewsView.tsx` — status + rating filters, approve/reject/feature/unfeature/reply/view actions
+- `AdminProductsView.tsx` — status + type filters, isFeatured/isPromoted/isOnSale/isSold toggle columns with optimistic `overrides` state
+
+### Files changed (appkit/) — Batch 3 + Fix
+
+- `AdminCarouselView.tsx` — active filter, drag-and-drop reorder preserved (`localRows`/`draggingId` state)
+- `AdminSectionsView.tsx` — minimal targeted edit on 2800+ line file; replaced only the `AdminListingScaffold` usage; all custom section form builders preserved unchanged
+
+**DataTable columns fix:** Made `columns` prop optional (`columns?:`). Added `DEFAULT_COLUMNS` with primary/secondary combined cell, status badge (w-32), updatedAt relative date (w-32). Fixed 28 TS2741 errors across all migrated views that omit `columns`.
+
+**actionsSlot → extra:** Fixed wrong prop name `actionsSlot` to `extra` on `AdminPayoutsView` and `AdminNewsletterView` (`ListingToolbar`'s actual prop is `extra?: React.ReactNode`).
+
+Both `npx tsc --noEmit` checks (appkit/ and letitrip.in/) passed clean post-migration.
+
+---
+
+# Session 76-content — 2026-05-10 (About Us + Legal pages + Admin editing)
+
+## About page wired with real content
+
+`src/app/[locale]/about/page.tsx` — converted to async server component.
+Reads `getTranslations("about")` for default i18n content and `siteSettingsRepository.getSingleton()`
+for optional Firestore overrides (`siteSettings.aboutContent.*`). Passes fully populated `labels`,
+`howItems`, `valueItems`, `milestones` props to `AboutView`. Added SEO metadata.
+
+**Files changed:**
+- `src/app/[locale]/about/page.tsx` — async, i18n + Firestore-driven props
+
+## PolicyPageView fixed + wired to Firestore
+
+Two bugs fixed in `PolicyPageView.tsx`:
+1. Namespace map was wrong (`privacyPolicy`/`termsOfService`/`cookiePolicy` don't exist in en.json).
+   Fixed: `privacy:"privacy"`, `terms:"terms"`, `cookies:"cookies"`, `refund:"refundPolicy"`.
+2. Added Firestore fetch — if admin has set HTML in `siteSettings.legalPages.*`, it renders that HTML.
+   Otherwise falls back to i18n sections.
+
+**Files changed:**
+- `appkit/src/features/about/components/PolicyPageView.tsx` — namespace fix + Firestore override
+
+## messages/en.json — policy sections arrays added
+
+All four policy namespaces (`terms`, `privacy`, `cookies`, `refundPolicy`) now export:
+`sections` (array of `{heading, body}`), `intro`, `relatedTitle`, `relatedPrivacy`,
+`relatedTerms`, `relatedCookies`, `relatedRefund`. PolicyPageView i18n fallback now works correctly.
+
+**Files changed:**
+- `messages/en.json` — terms, privacy, cookies, refundPolicy namespaces updated
+
+## AdminSiteSettingsView — ⓪ About tab added
+
+New tab appears first in Site Settings. Fields: hero title, hero subtitle, mission title,
+mission text, CTA title. Saved to `siteSettings.aboutContent.*`. Empty = use platform defaults.
+
+**Files changed:**
+- `appkit/src/features/admin/components/AdminSiteSettingsView.tsx` — ⓪ About tab + state + mutation
+
+## Metadata added to all static pages
+
+`Metadata` exports added to: about, privacy, terms, cookies, refund-policy, shipping-policy pages.
+
+**Files changed:**
+- `src/app/[locale]/about/page.tsx`
+- `src/app/[locale]/privacy/page.tsx`
+- `src/app/[locale]/terms/page.tsx`
+- `src/app/[locale]/cookies/page.tsx`
+- `src/app/[locale]/refund-policy/page.tsx`
+- `src/app/[locale]/shipping-policy/page.tsx`
+
+---
+
 # Session 76-infra — 2026-05-10 (J13, J14, J15, INFRA1, INFRA2, Firebase reset)
 
 ## J13 — Products listing empty: missing isAuction/isPreOrder on seed docs + missing Firestore indexes

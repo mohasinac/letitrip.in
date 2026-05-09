@@ -69,6 +69,12 @@ export const PATCH = withProviders(
         return errorResponse("Coupon not found", 404);
       }
       const { action, validity, ...updateData } = body!;
+
+      // Guard: percentage coupons cannot have discount.value > 100
+      if (updateData.discount?.value !== undefined && existing.type === "percentage" && updateData.discount.value > 100) {
+        return errorResponse("Percentage discount cannot exceed 100%", 422);
+      }
+
       if (action === "deactivate") {
         await couponsRepository.deactivateCoupon(id);
         return successResponse(null, "Coupon deactivated");

@@ -7,7 +7,27 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 76 ✅ COMPLETE 2026-05-10
+## ⚡ CURRENT TASK — Session 78 ✅ COMPLETE 2026-05-10 (Carousel + Section Diagrams + Admin Form Builders)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **CF1 regression** | ✅ | HeroCarousel mobile height collapsed to 260px — removed `md:` prefix from all 3 height class applications so `${heightClass}` applies on mobile too. Fixed `slice(0,2)→slice(0,6)` to allow all 6 zone cards. |
+| **Seed fix** | ✅ | `carousel-slides-seed-data.ts` slide 1: Hot Wheels card moved from zone 2 to zone 5 (row 2) — now both cards are in different rows as required by the zone grid spec. |
+| **asciiDiagrams.md** | ✅ | Added full public-facing layout diagrams for all 21 homepage section types. Added Admin Section Editor shared modal shell + per-type form diagrams for all 21 types with proper UI notation (◉/◯ radio buttons, ☑/☐ checkboxes, boxed text inputs — no abstract shorthand). |
+| **HS2/HS5 gap** | ✅ | `AdminSectionsView.tsx`: added typed builders for `carousel` (height/autoplay/dots/arrows), `custom-cards` (layout/columns/card repeater with all fields), and `google-reviews` (placeId/maxReviews/minRating/layout/display toggles). All 21 section types now have typed form builders — zero raw JSON textarea fallback. |
+
+## ⚡ PREVIOUS TASK — Session 77 ✅ COMPLETE 2026-05-10 (Coupon Abuse Prevention)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **CU1** | ✅ | `applyCoupon()` called fire-and-forget at checkout. Accumulates per-coupon discount+orderIds across all order groups. Imported `couponsRepository` into checkout route. |
+| **CU2** | ✅ | `getUserCouponUsageCount()` fixed — reads actual `usageCount` field instead of returning 0/1. Per-user limits > 1 now work correctly. |
+| **CU3** | ✅ | `applyCoupon()` rewritten — `set({merge:true})` + `increment(usageCount)` + `arrayUnion(orderIds)`. Added `couponCode` param. Imported `arrayUnion` from field-ops. |
+| **CU4** | ✅ | `superRefine()` in admin coupon create schema — rejects `percentage` coupons with `discount.value > 100`. |
+| **CU5** | ✅ | Admin + store coupon PATCH routes — fetch coupon type, reject 422 if percentage + value > 100. |
+| **CU6** | ✅ | New `coupon-usage-seed-data.ts` + `couponUsage` collection type in seed route. 6 realistic usage records seeded under user subcollections. |
+
+## ⚡ PREVIOUS TASK — Session 76 ✅ COMPLETE 2026-05-10
 
 > **Alpha goal**: Public catalogue works correctly for all 3 product types.
 
@@ -21,7 +41,31 @@
 | **VD1** | ✅ | /support page with HelpPageView confirmed working. helpPage i18n namespace added. |
 | **VD2** | ✅ | Footer links verified. /support exists. LetItRip brand cleanup covers remaining gaps. |
 
-## 🔜 NEXT SESSION — Session 77: Alpha: Seller Products
+## ✅ Session 76-content — COMPLETE 2026-05-10 (About + Legal pages + Admin editing)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| About page | ✅ | `/about` now renders real LetItRip content. Async server component reads `getTranslations("about")` + `siteSettings.aboutContent.*` override. All sections populated: mission, how it works (buyers/sellers/bidders), values, journey milestones, CTA. |
+| PolicyPageView fix | ✅ | Fixed broken namespace map (`privacyPolicy`→`privacy`, `termsOfService`→`terms`, etc.). Added Firestore fetch: if admin HTML set in `siteSettings.legalPages.*`, renders it; otherwise i18n sections. |
+| Policy i18n | ✅ | Added `sections[]`, `intro`, `relatedTitle`, `relatedPrivacy/Terms/Cookies/Refund` to `terms`, `privacy`, `cookies`, `refundPolicy` namespaces in `messages/en.json`. All 4 policy pages now show full content. |
+| Admin editing | ✅ | New **⓪ About** tab added to `AdminSiteSettingsView` (first tab). Edits hero title/subtitle, mission title/text, CTA title → saved to `siteSettings.aboutContent.*`. Legal HTML already editable via existing ⑫ Legal tab. |
+| Metadata | ✅ | SEO `Metadata` exports added to about, privacy, terms, cookies, refund-policy, shipping-policy pages. |
+| Diagrams | ✅ | `asciiDiagrams.md` updated: Site Settings now shows 13 groups + ⓪ About tab; new diagrams for About, Privacy, Terms, Cookie, Refund, Shipping pages. |
+
+## 🔜 NEXT SESSION — Session 77-ux: UX Foundation (Form Shells)
+
+> **Must complete before Session 77.** Builds all form primitives used by Sessions 77–80.
+
+| Task | Goal |
+|------|------|
+| UX1 | **FormShell** — full-viewport slide-in panel: sticky top bar (breadcrumb, title, Preview, Save Draft, Publish), optional 200px left section nav, scrollable body, sticky bottom bar (Discard, Save Draft, Publish →). Mobile: left nav → tab strip. Esc confirm dialog. |
+| UX2 | **QuickFormDrawer** — 400px right-anchored overlay for ≤6 field simple creates/edits. Uses SideDrawer primitive. Auto-renders fields from FieldDef[]. |
+| UX3 | **StepForm** — multi-step wizard rendered inside FormShell body. Step indicator bar (●=done / ◑=current / ○=locked). Per-step validation gate. Progress auto-saved to localStorage[formId]. |
+| UX4 | **MediaPickerDrawer** — full-viewport overlay for all media fields. Grid of existing uploads (24/page), search, filter, multi-select, upload new (drag+drop, tmp/ first with progress bar), reorder, right-click menu. [tmp] badge on unsaved files. |
+| UX5 | **PreviewPane** — [👁 Preview] button in FormShell top bar. Replaces panel body with live render of item from draft values. Draft banner + disabled buy/cart/bid buttons. "← Back to Edit" restores. |
+| UX9 | **InlineSelectCreate** — Searchable combobox where last option is [+ Create "typed text"]. Opens QuickFormDrawer scoped to resource. On save → auto-selects new item. Extends existing H1 component. |
+
+### After 77-ux → Session 77: Alpha: Seller Products
 
 | Task | Goal |
 |------|------|
@@ -49,10 +93,11 @@
 | Session | Tasks | Goal |
 |---------|-------|------|
 | **76** | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | **Public Catalogue** — brand audit + translation keys + category/brand/store on cards and detail pages |
-| **77** | O1, O2+C5, C1, VB8, C2, VB9, LL6 | **Seller Lists Products** — store profile edit + all 3 product type create/edit + seller listing views |
+| **77-ux** | UX1, UX2, UX3, UX4, UX5, UX9 | **UX Foundation** — FormShell, QuickFormDrawer, StepForm, MediaPickerDrawer, PreviewPane, InlineSelectCreate primitives |
+| **77** | O1, O2+C5, C1, VB8, C2, VB9, LL6, UX6 | **Seller Lists Products** — store profile edit + all 3 product type create/edit (using UX primitives) + seller listing views |
 | **78** | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | **User Account Core** — wishlist, order history/detail, profile edit, notifications |
 | **79** | W1, W2, W3, W4, R1 | **Cart Integrity** — stale validation + out-of-stock section + product links in cart |
-| **80** | C6, C7, O3, VB3, VB10, LL8 | **Store Settings** — shipping config + payout settings + store addresses |
+| **80** | C6, C7, O3, VB3, VB10, LL8, UX7 | **Store Settings** — shipping config + payout settings + store addresses |
 
 ### 🚀 ALPHA RELEASE after Session 80
 
@@ -480,7 +525,7 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–76, 67-b, 76-infra (J13+J14+J15+INFRA1+INFRA2+Firebase reset)
+Sessions done: 60–76, 67-b, 76-infra, 76-content
 Current:       77 ⏳ next — Seller Products (O1, O2+C5, C1, VB8, C2, VB9, LL6)
 Next:          78 (D1+VC6, VC1, VC3, VC5, LL1–LL3) — User account core
                79 (W1–W4, R1) — Cart integrity
@@ -500,6 +545,7 @@ Admin CRUD          68–75       ✅ done
 ──────── ALPHA GATE ─────────────────────────────────────
 Public Catalogue    76          ✅ done (VD7+VD11+VD4+VD5+VD6+VD1+VD2)
 Infra/Hotfix        76-infra    ✅ done (J13+J14+J15+INFRA1+INFRA2; Firebase reset)
+Content pages       76-content  ✅ done (About + Legal pages + admin editing)
 Seller Products     77          ⏳
 User Account Core   78          ⏳
 Cart Integrity      79          ⏳

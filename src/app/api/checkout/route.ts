@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
-  unitOfWork, siteSettingsRepository, userRepository, } from "@mohasinac/appkit";
+  unitOfWork, siteSettingsRepository, userRepository, couponsRepository, } from "@mohasinac/appkit";
 import { failedCheckoutRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -307,6 +307,15 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       0,
     );
 
+    // Tracks coupon usage across all order groups for post-checkout recording.
+    // Keyed by coupon code; each entry accumulates order IDs + total discount.
+    const couponUsageAccumulator = new Map<string, {
+      couponId: string;
+      code: string;
+      orderIds: string[];
+      totalDiscount: number;
+    }>();
+
     for (const { items: group, orderType } of orderGroups) {
       const firstItem = group[0].item;
       const groupTotal = group.reduce(
@@ -407,6 +416,18 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
             scope: coupon.scope,
             sellerId: coupon.sellerId,
           });
+
+          // Accumulate for post-checkout usage recording (only trackable coupons)
+          if (coupon.couponId) {
+            const entry = couponUsageAccumulator.get(coupon.code) ?? {
+              couponId: coupon.couponId,
+              code: coupon.code,
+              orderIds: [],
+              totalDiscount: 0,
+            };
+            entry.totalDiscount += couponGroupDiscount;
+            couponUsageAccumulator.set(coupon.code, entry);
+          }
         }
       }
 
@@ -453,6 +474,13 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
 
       orderIds.push(order.id);
 
+      // Tag this order ID onto every coupon that contributed to this group
+      for (const entry of couponUsageAccumulator.values()) {
+        if (!entry.orderIds.includes(order.id)) {
+          entry.orderIds.push(order.id);
+        }
+      }
+
       if (userEmail) {
         emailsToSend.push({
           to: userEmail,
@@ -470,6 +498,17 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
           items: orderItems,
         });
       }
+    }
+
+    // 8a. Record coupon usage (fire-and-forget — never blocks the order response)
+    if (couponUsageAccumulator.size > 0) {
+      Promise.all(
+        [...couponUsageAccumulator.values()].map(({ couponId, code, orderIds: ids, totalDiscount }) =>
+          couponsRepository.applyCoupon(couponId, code, uid, ids, totalDiscount),
+        ),
+      ).catch((err: unknown) =>
+        serverLogger.error("Failed to record coupon usage:", err),
+      );
     }
 
     // 8. Grant a bypass credit for the EMAIL OTP cooldown if this was a partial

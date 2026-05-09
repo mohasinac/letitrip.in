@@ -36,6 +36,7 @@ import {
   cartsSeedData,
   bidsSeedData,
   couponsSeedData,
+  couponUsageSeedData,
   eventsSeedData,
   eventEntriesSeedData,
   payoutsSeedData,
@@ -46,6 +47,9 @@ import {
   siteSettingsSeedData,
   faqSeedData,
   wishlistsSeedData,
+  conversationsSeedData,
+  sublistingCategoriesSeedData,
+  groupedListingsSeedData,
 } from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
@@ -70,6 +74,9 @@ import { STORE_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
 import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
+import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
+import { SUBLISTING_CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -94,7 +101,11 @@ type CollectionName =
   | "eventEntries"
   | "sessions"
   | "carts"
-  | "wishlists";
+  | "wishlists"
+  | "conversations"
+  | "sublistingCategories"
+  | "groupedListings"
+  | "couponUsage";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -106,6 +117,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
   addresses: "addresses", // Subcollection under users
   storeAddresses: "storeAddresses", // Subcollection under stores
+  couponUsage: "couponUsage", // Subcollection under users
   brands: BRANDS_COLLECTION,
   categories: CATEGORIES_COLLECTION,
   stores: STORE_COLLECTION,
@@ -126,6 +138,9 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   sessions: SESSION_COLLECTION,
   carts: CART_COLLECTION,
   wishlists: "wishlist", // Subcollection under users
+  conversations: CONVERSATIONS_COLLECTION,
+  sublistingCategories: SUBLISTING_CATEGORIES_COLLECTION,
+  groupedListings: GROUPED_LISTINGS_COLLECTION,
 };
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
@@ -140,6 +155,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   reviews: reviewsSeedData,
   bids: bidsSeedData,
   coupons: couponsSeedData,
+  couponUsage: couponUsageSeedData,
   carouselSlides: carouselSlidesSeedData,
   homepageSections: homepageSectionsSeedData,
   siteSettings: [siteSettingsSeedData], // Wrap singleton in array
@@ -152,6 +168,9 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   sessions: sessionsSeedData,
   carts: cartsSeedData,
   wishlists: wishlistsSeedData,
+  conversations: conversationsSeedData,
+  sublistingCategories: sublistingCategoriesSeedData,
+  groupedListings: groupedListingsSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
@@ -265,6 +284,22 @@ async function countExistingForCollection(
           .doc(d.userId)
           .collection("wishlist")
           .doc(d.productId),
+      );
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "couponUsage") {
+    const refs = (seedData as any[])
+      .filter((d) => d.userId && d.couponId)
+      .map((d) =>
+        db
+          .collection(USER_COLLECTION)
+          .doc(d.userId)
+          .collection("couponUsage")
+          .doc(d.couponId),
       );
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
@@ -710,6 +745,31 @@ export async function POST(request: NextRequest) {
                 totalErrors++;
               }
             }
+          } else if (collectionName === "couponUsage") {
+            // couponUsage is a subcollection under users; doc id is couponId
+            for (const usageData of seedData) {
+              try {
+                const { userId, couponId, ...data } = usageData as any;
+
+                if (!userId || !couponId) {
+                  serverLogger.error("Coupon usage record missing userId or couponId");
+                  totalErrors++;
+                  continue;
+                }
+
+                const docRef = db
+                  .collection(USER_COLLECTION)
+                  .doc(userId)
+                  .collection("couponUsage")
+                  .doc(couponId);
+
+                await docRef.set(stripUndefined({ couponId, ...data }), { merge: true });
+                totalCreated++;
+              } catch (err) {
+                serverLogger.error("Error seeding coupon usage record:", err);
+                totalErrors++;
+              }
+            }
           } else if (collectionName === "siteSettings") {
             // Site settings is a singleton document — always upsert
             const settingsData = seedData[0];
@@ -866,6 +926,18 @@ export async function POST(request: NextRequest) {
                 totalDeleted++;
               } catch (err) {
                 serverLogger.error(`Error purging wishlists for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
+                totalErrors++;
+              }
+            }
+          } else if (collectionName === "couponUsage") {
+            // Purge the couponUsage subcollection for every seed user that has records.
+            const userIds = [...new Set((seedData as any[]).map((d) => d.userId).filter(Boolean))] as string[];
+            for (const userId of userIds) {
+              try {
+                await purgeCollection(db, `${USER_COLLECTION}/${userId}/couponUsage`);
+                totalDeleted++;
+              } catch (err) {
+                serverLogger.error(`Error purging couponUsage for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
             }

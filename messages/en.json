@@ -1952,7 +1952,22 @@
     "contactTitle": "Questions?",
     "contactText": "Contact us at legal@letitrip.in for any questions about these terms.",
     "privacyPolicy": "Privacy Policy",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "sections": [
+      {"heading": "1. Acceptance of Terms", "body": "By accessing or using the LetItRip platform, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree, please do not use our services."},
+      {"heading": "2. Use of the Platform", "body": "You may use LetItRip for lawful purposes only. You agree not to use the platform to post fraudulent listings, harass other users, or circumvent our payment and security systems."},
+      {"heading": "3. User Accounts", "body": "You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorised use of your account."},
+      {"heading": "4. Seller Responsibilities", "body": "Sellers are responsible for accurate product descriptions, timely shipping, and honouring return policies. LetItRip reserves the right to remove listings that violate these terms."},
+      {"heading": "5. Auction Rules", "body": "All bids placed in auctions are binding. Winning bidders must complete the purchase. Bid manipulation or shill bidding is strictly prohibited."},
+      {"heading": "6. Limitation of Liability", "body": "LetItRip is not liable for any indirect, incidental, or consequential damages arising from your use of the platform, including disputes between buyers and sellers."},
+      {"heading": "7. Changes to Terms", "body": "We may update these terms at any time. Continued use of the platform constitutes acceptance of the updated terms."},
+      {"heading": "Questions?", "body": "Contact us at legal@letitrip.in for any questions about these terms."}
+    ]
   },
   "privacy": {
     "metaTitle": "Privacy Policy",
@@ -1979,7 +1994,23 @@
     "contactTitle": "Contact",
     "contactText": "For privacy-related queries, contact us at privacy@letitrip.in.",
     "termsOfService": "Terms of Service",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "intro": "LetItRip (\"we\", \"our\", \"us\") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "sections": [
+      {"heading": "1. Information We Collect", "body": "We collect information you provide directly (name, email, address, payment details) and information collected automatically (device data, usage logs, cookies) to provide and improve our services."},
+      {"heading": "2. How We Use Your Information", "body": "We use your information to process orders, facilitate auctions, communicate with you, prevent fraud, and improve our platform. We do not sell your personal data to third parties."},
+      {"heading": "3. Sharing Your Information", "body": "We may share your information with sellers to fulfil orders, with payment processors, and with service providers who assist our operations — all bound by confidentiality obligations."},
+      {"heading": "4. Data Security", "body": "We implement industry-standard security measures including encryption, secure access controls, and regular security audits to protect your data."},
+      {"heading": "5. Your Rights", "body": "You have the right to access, update, or delete your personal data at any time from your account settings. You may also opt out of marketing communications."},
+      {"heading": "6. Cookies", "body": "We use cookies to maintain your session, remember preferences, and analyse site usage. You can manage cookie preferences in your browser settings."},
+      {"heading": "7. Changes to this Policy", "body": "We may update this policy periodically. We will notify you of significant changes by email or via a notice on our platform."},
+      {"heading": "Contact", "body": "For privacy-related queries, contact us at privacy@letitrip.in."}
+    ]
   },
   "securityPage": {
     "metaTitle": "Security & Data Protection",
@@ -3513,7 +3544,24 @@
     "contactTitle": "Contact Us",
     "contactText": "If you have questions about our use of cookies, please contact us via our Contact page.",
     "privacyPolicy": "Privacy Policy",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "intro": "This Cookie Policy explains how LetItRip uses cookies and similar tracking technologies when you visit our platform.",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "sections": [
+      {"heading": "What Are Cookies?", "body": "Cookies are small text files stored on your device when you visit a website. They help us remember your preferences, keep you signed in, and understand how you use our platform."},
+      {"heading": "Types of Cookies We Use", "body": "We use essential cookies (required for core functionality), preference cookies (to remember your settings and language), analytics cookies (to understand usage patterns), and marketing cookies (to show relevant promotions). You can control non-essential cookies from your browser settings."},
+      {"heading": "Essential Cookies", "body": "These cookies are necessary for the platform to function and cannot be disabled. They include session cookies for authentication, security tokens, and cart state."},
+      {"heading": "Analytics Cookies", "body": "We use analytics cookies to understand how visitors interact with our platform, which pages are most popular, and where users encounter issues. This data helps us improve your experience."},
+      {"heading": "Marketing Cookies", "body": "Marketing cookies help us show you relevant promotions and measure the effectiveness of our advertising. You may opt out of these without affecting core functionality."},
+      {"heading": "Managing Your Cookie Preferences", "body": "Most browsers allow you to refuse or delete cookies through their settings. Disabling essential cookies may affect platform functionality. Refer to your browser's help documentation for instructions."},
+      {"heading": "Third-Party Cookies", "body": "Some of our service providers (such as analytics and payment processors) may also set cookies. These are governed by their respective privacy policies."},
+      {"heading": "Changes to This Policy", "body": "We may update this Cookie Policy from time to time. Any changes will be posted on this page with an updated revision date."},
+      {"heading": "Contact Us", "body": "If you have questions about our use of cookies, please contact us via our Contact page."}
+    ]
   },
   "refundPolicy": {
     "metaTitle": "Refund Policy",
@@ -3549,7 +3597,23 @@
     "contactTitle": "Need Help?",
     "contactText": "If you have any questions about our refund policy or need assistance with a return, please reach out via our Contact page or Help Center.",
     "helpCenter": "Help Center",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "intro": "We want you to be completely satisfied with your purchase. Please read our refund policy carefully.",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "sections": [
+      {"heading": "Refund Eligibility", "body": "Items are eligible for a refund if they are returned within 7 days of delivery in their original condition, unused, and in original packaging. Certain product categories (e.g. perishables, digital goods, customised items) are excluded from returns."},
+      {"heading": "How to Initiate a Refund", "body": "Log in to your account, navigate to My Orders, select the order, and click 'Request Refund'. Provide a reason and upload supporting photos if applicable. Our team will review your request within 2 business days."},
+      {"heading": "Refund Timeline", "body": "Approved refunds are processed within 5–7 business days. The amount is credited back to your original payment method. Bank processing times may add an additional 2–3 business days."},
+      {"heading": "Auction Purchases", "body": "Auction purchases are generally final. Refunds are only available if the item received significantly differs from its description or arrives damaged. Please contact support immediately with photographic evidence."},
+      {"heading": "Exchanges", "body": "We offer exchanges for items of the same value. To request an exchange, follow the same process as a refund request and select 'Exchange' as the resolution type."},
+      {"heading": "Return Shipping", "body": "Customers are responsible for return shipping costs unless the item was defective, damaged, or incorrectly sent. We recommend using a trackable shipping method."},
+      {"heading": "Non-Refundable Items", "body": "Gift cards, downloadable software, personalised items, and items marked as final sale are not eligible for refunds."},
+      {"heading": "Need Help?", "body": "If you have any questions about our refund policy or need assistance with a return, please reach out via our Contact page or Help Center."}
+    ]
   },
   "sellerGuide": {
     "metaTitle": "Store Guide",
@@ -4298,13 +4362,19 @@
   "publicProfile": {
     "profileTitle": "Member",
     "memberSince": "Member since —",
+    "roleSeller": "Seller",
     "statListings": "Listings",
     "statReviews": "Reviews",
-    "statMessages": "Messages",
+    "statSold": "Items Sold",
+    "statAuctions": "Auctions Won",
+    "statOrders": "Orders",
     "listingsTitle": "Listings",
     "noListings": "No listings yet.",
     "reviewsTitle": "Reviews",
     "noReviews": "No reviews yet.",
+    "visitStore": "Visit Store",
+    "viewAllListings": "View all {count} listings",
+    "viewAllReviews": "View all {count} reviews",
     "backHome": "Back to Home"
   },
   "faqs": {
