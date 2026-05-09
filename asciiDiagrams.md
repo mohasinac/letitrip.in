@@ -415,11 +415,11 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 
 ---
 
-## Admin > Homepage Sections ✅
+## Admin > Homepage Sections ✅ (I3 — seed reset button added)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Homepage Sections                                     [+ New Section]       │
+│  Homepage Sections              [Reset seed data]  [Manage Sections]         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  [🔍 Search sections...]   [Type ▾]   [Enabled ▾]   [Sort by order ▾]       │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -445,7 +445,26 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 │  ⠿  trust-indicators  Trust Indicators   18      ✓         ⋮                │
 │  ⠿  whatsapp-community WhatsApp CTA      19      ✓         ⋮                │
 
-  Row ⋮: Edit (SideDrawer with type-specific builder form) | Enable/Disable | Delete
+  Row ⋮: Edit (Modal with type-specific builder form) | Enable/Disable | Delete
+
+  [Reset seed data] → ConfirmDeleteModal (0 field, danger):
+  ┌─────────────────────────────────────────────────────┐
+  │  Reset homepage sections seed data?             [✕] │
+  ├─────────────────────────────────────────────────────┤
+  │  This will reload the 19 default homepage sections  │
+  │  from seed data. Any manual changes made in         │
+  │  Firestore will be overwritten.                     │
+  ├─────────────────────────────────────────────────────┤
+  │                         [Cancel]  [Reset seed]      │
+  └─────────────────────────────────────────────────────┘
+  → POST /api/demo/seed { action:"load", collections:["homepageSections"] }
+  → invalidates sections listing query on success
+
+  [Manage Sections] → Modal: create or edit a section (type selector + typed builder
+                             or raw JSON config, order, enabled toggle)
+
+  Reorder panel (below table): drag-and-drop rows, manual order# input,
+  Up/Down buttons, [Reindex 1..N] [Undo unsaved] [Reset to server] [Save order]
 ```
 
 ---
@@ -571,20 +590,39 @@ SideDrawer:
 
 ---
 
-## Admin > Payouts List ✅ (list view)
+## Admin > Payouts List ✅ (ARCH4 — storeId identity + mark-paid + CSV)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Payouts                                         [Export CSV]                │
+│  Payout Operations                               [Export CSV]                │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [🔍 Search...]  [Store ▾]  [Status ▾]  [Date range ▾]  [Sort ▾]           │
+│  [🔍 Search stores, payout IDs, or order groups...]   [Status ▾]  [Sort ▾] │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Store           Seller     Period          Amount    Method   Status   ⋮   │
+│  Payout ID · Amount          Store (storeName)    Status      Updated    ⋮  │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  CardGame Hub    Seller-1   Apr 1–30 2026   ₹47,500   UPI      PENDING  ⋮   │
-│  Diecast Garage  Seller-2   Apr 1–30 2026   ₹28,000   Bank     PAID     ⋮   │
+│  payout-mistys-… · ₹47,500  Misty's Water Cards  PENDING     2 days ago ⋮  │
+│  payout-bladers-… · ₹28,000 Bladers Paradise     PAID        5 days ago ⋮  │
+│  payout-animev-… · ₹15,200  Anime Vault India    PROCESSING  1 day ago  ⋮  │
+│  ─────────────── Empty state: "No payouts found" ─────────────────────────  │
 
-  Row ⋮ (VA13): Mark Paid (reference # input) | Export PDF
+  [Export CSV] → GET /api/admin/payouts/export → downloads payouts-YYYY-MM-DD.csv
+                 Columns: id, storeId, storeName, amount, status, transactionId,
+                          periodStart, periodEnd, createdAt
+
+  Row ⋮ → RowActionMenu:
+    [Mark paid]  (disabled if status = paid or cancelled)
+
+  Mark paid Modal (1 field — 0-2 field rule):
+  ┌──────────────────────────────────────────┐
+  │  Mark payout as paid                 [✕] │
+  ├──────────────────────────────────────────┤
+  │  Transaction / reference ID              │
+  │  [UTR, UPI ref, or bank transfer ID      │
+  │   (optional)                          ]  │
+  ├──────────────────────────────────────────┤
+  │                    [Cancel] [Confirm paid]│
+  └──────────────────────────────────────────┘
+  → PATCH /api/admin/payouts/[id]  { status:"paid", transactionId }
 ```
 
 ---
