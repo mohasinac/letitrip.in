@@ -1,5 +1,5 @@
-import { HomepageSkeleton } from "@mohasinac/appkit";
+import { PageLoader } from "@mohasinac/appkit";
 
 export default function Loading() {
-  return <HomepageSkeleton />;
+  return <PageLoader />;
 }
