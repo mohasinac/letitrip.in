@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-09 — RC1 ✅ nav configs centralised in constants/navigation.tsx; RC2 ✅ missing ROUTES added + all hardcoded strings replaced; RC3 partial ⚠️. Session 71: A5+VA5+F5+VA7+VA8 ✅. 68 done, 152 remaining.
+> **Last updated:** 2026-05-09 — Session 72: M1+VA19 ✅ (analytics wired). 70 done, 150 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 237 |
-| ✅ Done | 68 |
+| ✅ Done | 70 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 152 |
+| ⏳ Remaining | 150 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -321,7 +321,7 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| M1 | Admin Analytics dashboard — charts + date range | M | ⏳ | | VIEW: `AdminAnalyticsView` EXISTS + `AdminRevenueChart`/`AdminOrdersChart`/`AdminTopProductsTable` all EXIST in appkit analytics/ — wire to real API; REUSE: `DashboardStatsCard`, `StatsGrid` |
+| M1 | Admin Analytics dashboard — charts + date range | M | ✅ | Session 72 | `AdminAnalyticsClient` wires `AdminAnalyticsView` with date range picker; analytics route forwards startDate/endDate to Firebase Function. Charts + table already existed. |
 | M3 | Admin Payouts processing + export CSV | M | ⏳ | | LIST: `AdminPayoutsView` EXISTS. ADD: mark-paid action via `RowActionMenu` + `BulkActionBar`. API: PUT /api/admin/payouts/[id]; GET /api/admin/payouts/export |
 | F1 | Homepage Sections CMS | L | 🚫 | | **Superseded by HS1–HS5** — see Tier HS for full redesign |
 | N1 | Site Settings full wiring | M | 🚫 | | **Superseded by VA8** which covers all 12 setting groups comprehensively. |
@@ -416,7 +416,7 @@ Rules to keep top-of-mind every task:
 | VA16 | Admin Bids — per-auction list + cancel/void | S | ⏳ | | See B5. Improve `AdminBidsView`: filter by productId, show bidder name/amount/time. Row action: Cancel/Void (with confirm modal). API: PUT /api/admin/bids/[id]. |
 | VA17 | Admin Feature Flags real UI | S | ⏳ | | NEW. `AdminFeatureFlagsView` — list of flags with enable/disable toggle + optional %-rollout number field. API: GET/PUT `/api/admin/feature-flags`. |
 | VA18 | Admin Media Library — upload + delete | M | ⏳ | | See I4. `AdminMediaView` real UI: image grid, upload dropzone, delete with confirm, copy URL button. |
-| VA19 | Admin Analytics charts — wired to real data | M | ⏳ | | See M1. Wire `AdminRevenueChart`, `AdminOrdersChart`, `AdminTopProductsTable` to `adminAnalytics` callable function. Add date range picker. |
+| VA19 | Admin Analytics charts — wired to real data | M | ✅ | Session 72 | See M1. `AdminAnalyticsClient` renders date range picker + passes endpoint with params. |
 
 ### V-B: Store/Seller Forms
 

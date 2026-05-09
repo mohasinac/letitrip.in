@@ -27,6 +27,19 @@
 
 ---
 
+# Session 72 — 2026-05-09
+
+## M1/VA19 — Analytics date range forwarding
+
+**What changed:**
+- `src/app/api/admin/analytics/route.ts` — extracts `startDate`/`endDate` from query params and forwards them in the Firebase Function POST body; `handler` signature updated to `({ request })`
+- `src/components/admin/AdminAnalyticsClient.tsx` — already existed with date range picker + endpoint wiring (no change needed)
+- `AdminAnalyticsView` + charts (`AdminRevenueChart`, `AdminOrdersChart`, `AdminTopProductsTable`) — already wired, no change
+
+**tsc:** 0 errors. **Commit:** a5b2c870f (main)
+
+---
+
 # Session 71 — 2026-05-09 (continued)
 
 ## VA8 — AdminSiteSettingsView (12-tab site settings form)

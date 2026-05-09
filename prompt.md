@@ -7,9 +7,17 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 71 ✅ COMPLETE → Next: Session 72
+## ⚡ CURRENT TASK — Session 72 (M1, VA19, M3, VA13, I3)
 
-### Completed this session (71)
+| Task | Status | What to do |
+|------|--------|------------|
+| **M1** | ✅ | Analytics date range forwarded to Firebase Function |
+| **VA19** | ✅ | Analytics charts + date range picker already wired |
+| **M3** | ⏳ | Payouts mark-paid + CSV export — AdminPayoutsView + /api/admin/payouts/export |
+| **VA13** | ⏳ | Same as M3 — SideDrawer for mark-paid, export button |
+| **I3** | ⏳ | Seed reset button in AdminSectionsView toolbar |
+
+### Completed last session (71)
 | Task | Status | Done |
 |------|--------|------|
 | **A5** | ✅ | FAQs editor — `AdminFaqEditorView.tsx` built; all fields; create/edit/delete |
@@ -384,8 +392,8 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–71, 67-b (68 tasks ✅)
-Current:       72 (M1, VA19, M3, VA13, I3) — Analytics charts + Payouts + seed reset
+Sessions done: 60–71, 67-b (70 tasks ✅)
+Current:       72 (M3, VA13, I3 remaining) — Payouts mark-paid/export + sections seed reset
 Next:          73 (N3, VA12, B1, VA10, B2, VA9, N2, VA11)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
