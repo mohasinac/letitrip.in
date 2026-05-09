@@ -256,3 +256,4 @@ Other CSS variables:
 | `z-[50]` arbitrary Tailwind | `var(--appkit-z-modal)` CSS variable |
 | `as unknown as SomeThing` | Fix the underlying type mismatch — ask if unsure |
 | Skipping `npx tsc --noEmit` | Always run in BOTH `letitrip.in/` and `appkit/` before committing |
+| `@import "@mohasinac/appkit/styles"` in `globals.css` | `import "@mohasinac/appkit/styles"` in `layout.tsx` — Turbopack inlines CSS @imports before PostCSS runs, breaking tailwindcss + autoprefixer with "Unknown AST node type 0". Always import pre-compiled node_modules CSS via JS imports, not CSS @import. |
