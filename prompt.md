@@ -7,34 +7,33 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 73 ✅ COMPLETE
+## ⚡ CURRENT TASK — Session 74 ✅ COMPLETE
 
 | Task | Status | What was done |
 |------|--------|--------------|
-| **N3** | ✅ | AdminStoreEditorView: isVerified toggle + suspensionReason textarea (conditional); API schema extended |
-| **B1/VA10** | ✅ | AdminUserEditorView SideDrawer built; AdminUsersView RowActionMenu "Manage" wired |
-| **B2/VA9** | ✅ | AdminOrderEditorView SideDrawer built; AdminOrdersView RowActionMenu "Update order" wired |
-| **N2/VA11** | ✅ | AdminReviewsView rewritten with full moderation: Approve/Reject/Feature/Reply/View |
-| **LL11** | ✅ | AdminSessionsView + /admin/sessions page + Sessions nav entry + revoke action |
-| **LL12** | ✅ | AdminAllEventEntriesView + /admin/event-entries page + All Entries nav entry + status actions |
-| **LL13** | ✅ | AdminNotificationsView + /admin/notifications page + Notifications nav entry + delete/resend |
-| **LL14** | ✅ | AdminCartsView + /admin/carts page + Carts nav entry (read-only diagnostic) |
-| **LL15** | ✅ | AdminWishlistsView + /admin/wishlists page + Wishlists nav entry (read-only, collectionGroup) |
+| **B5/VA16** | ✅ | AdminBidsView: cancel RowAction (disabled when cancelled/voided) + ConfirmDeleteModal (warning). RowActionMenu: disabled prop added. |
+| **B6/VA14** | ✅ | AdminNewsletterView: unsubscribe RowAction + Export CSV button. /api/admin/newsletter/export route (blob download). |
+| **B7/VA15** | ✅ | AdminContactEditorView SideDrawer (NEW) + AdminContactView RowActionMenu (View/Mark read/Archive/Delete). |
+| **VA17** | ✅ | AdminFeatureFlagsView: dedicated /api/admin/feature-flags GET+PUT; per-flag toggle + rollout % input. |
+| **VA18** | ⚠️ | Copy-URL button added. Browse-existing media grid deferred to I4 (needs Storage listing infra). |
+| **LL16** | ✅ | AdminReturnRequestsView: RETURN_REQUESTED queue + Approve(→REFUNDED)/Reject(→DELIVERED) actions. |
+| **LL17** | ✅ | AdminStoreAddressesView: read-only collectionGroup view + /api/admin/store-addresses route. |
 
-### Completed last session (72)
+### Completed last session (73)
 | Task | Status | Done |
 |------|--------|------|
-| **M1/VA19** | ✅ | Analytics date range forwarded to Firebase Function |
-| **VA3/VA12/RC4** | ✅ | Categories CRUD fixed + Stores management SideDrawer wired |
-| **ARCH4** | ✅ | Admin payouts: storeId/storeName identity + mark-paid + CSV export |
-| **I3** | ✅ | Seed reset button in AdminSectionsView toolbar |
+| **N3** | ✅ | AdminStoreEditorView: isVerified toggle + suspensionReason textarea (conditional) |
+| **B1/VA10** | ✅ | AdminUserEditorView SideDrawer; AdminUsersView RowActionMenu |
+| **B2/VA9** | ✅ | AdminOrderEditorView SideDrawer; AdminOrdersView RowActionMenu |
+| **N2/VA11** | ✅ | AdminReviewsView full moderation: Approve/Reject/Feature/Reply/View |
+| **LL11–LL15** | ✅ | Sessions/AllEventEntries/Notifications/Carts/Wishlists views + pages |
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 73 | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | Bids + Newsletter + Contact + Feature flags + Media library + Return requests + Store addresses |
-| 74 | X3, X4, X5, X6 | Dark mode + responsive + PageLoader + media filename convention |
-| 75 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates |
+| 75 | X3, X4, X5, X6 | Dark mode + responsive + PageLoader + media filename convention |
+| 76 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates |
+| 77 | C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7–LL10 | Store-2: Coupons/Orders/Shipping/Payout/Addresses/Analytics |
 
 ---
 
@@ -468,4 +467,4 @@ SEED DATA TARGETS (from P23+):
   New: groupedListings  0  →    8+  (GP1)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
-follow all rules and complete all end tasks, prioritize pending tasks or techdebt first
+follow all rules and complete all end tasks, prioritize pending tasks or techdebt first, also check for any tsc errors before proceeding next task or todo item. update the ascii diagrams for sure after a session.

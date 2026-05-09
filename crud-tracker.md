@@ -327,9 +327,9 @@ Rules to keep top-of-mind every task:
 | N1 | Site Settings full wiring | M | 🚫 | | **Superseded by VA8** which covers all 12 setting groups comprehensively. |
 | F5 | Navigation CMS — dynamic nav items in Firestore | M | ✅ | Session 71 | `AdminNavigationView` rewritten as CRUD list: up/down reorder, inline visibility toggle, RowActionMenu; `AdminNavEditorView` SideDrawer (label, href, icon, order, parentId, isVisible); GET/POST /api/admin/navigation + PUT/PATCH/DELETE /api/admin/navigation/[id]; items in siteSettings.navbarConfig.navItems. |
 | I1 | InlineCreateSelect wiring — category, brand, store selectors | S | ✅ | Session 69 | AdminProductEditorView: `renderCategorySelector` + `renderBrandSelector` render props → `InlineCreateSelect` with CategoryQuickCreateForm / BrandQuickCreateForm. AdminCategoryEditorView: native `<select>` parentId → `InlineCreateSelect` + CategoryQuickCreateForm. Store selector stays DynamicSelect (no store quick-create form exists yet). |
-| B5 | Bids cancel/void | S | ⏳ | | LIST: `AdminBidsView` EXISTS. ADD: cancel via `RowActionMenu`. REUSE: `ConfirmDeleteModal` (EXISTS). API: PUT /api/admin/bids/[id] |
-| B6 | Newsletter export CSV + unsubscribe | S | ⏳ | | LIST: `AdminNewsletterView` EXISTS. ADD: unsubscribe via `RowActionMenu` + export button in toolbar. API: DELETE /api/admin/newsletter/[id]; GET /api/admin/newsletter/export |
-| B7 | Contact submissions mark-read + archive | S | ⏳ | | LIST: `AdminContactView` EXISTS. ADD: status actions via `RowActionMenu` + `SideDrawer` for detail. API: PUT /api/admin/contact-submissions/[id] |
+| B5 | Bids cancel/void | S | ✅ | Session 74 | `AdminBidsView`: cancel via RowActionMenu (disabled when already cancelled/voided), ConfirmDeleteModal (variant=warning), PATCH BID_BY_ID {status:"cancelled"}. RowActionMenu.tsx: disabled prop added. |
+| B6 | Newsletter export CSV + unsubscribe | S | ✅ | Session 74 | `AdminNewsletterView`: unsubscribe RowAction (disabled when unsubscribed) + Export CSV button; blob download from /api/admin/newsletter/export. Route: GET auth admin/moderator, newsletterRepository.list() → CSV. |
+| B7 | Contact submissions mark-read + archive | S | ✅ | Session 74 | `AdminContactView`: RowActionMenu (View/Mark read/Archive/Delete). `AdminContactEditorView` (NEW): SideDrawer with status badge, scrollable message, mailto reply, PATCH action=read/resolved. |
 | I3 | Sections seed reset button in admin sections toolbar | S | ✅ | Session 72 | `AdminSectionsView`: "Reset seed data" button in actionsSlot (beside "Manage Sections"); ConfirmDeleteModal confirm fires POST /api/demo/seed {action:load,collections:[homepageSections]}; invalidates sections listing query on success. |
 
 ---
@@ -411,11 +411,11 @@ Rules to keep top-of-mind every task:
 | VA11 | Admin Reviews moderation actions | M | ✅ | Session 73 | See N2. `AdminReviewsView` rewritten with full RowActionMenu: Approve/Reject/Feature/Unfeature/Reply/View. Reply uses Modal (1 field). ViewReviewModal for full view. |
 | VA12 | Admin Stores management form | M | ✅ | Session 72 | `AdminStoreEditorView` SideDrawer built: storeStatus select, adminNotes textarea, isFeatured toggle. AdminStoresView wired with RowActionMenu → SideDrawer. DataTable + AdminListingScaffold: added renderRowActions prop. |
 | VA13 | Admin Payouts mark-paid + CSV export | M | 🚫 | | **Superseded by ARCH4** — see ARCH tier. |
-| VA14 | Admin Newsletter unsubscribe + CSV export | S | ⏳ | | See B6. Row action: Unsubscribe (with confirm dialog). Export CSV button. API: DELETE /api/admin/newsletter/[id], GET /api/admin/newsletter/export. |
-| VA15 | Admin Contact submissions — mark-read + archive | S | ⏳ | | See B7. SideDrawer shows full message. Actions: Mark Read, Archive, Reply (mailto link). API: PUT /api/admin/contact-submissions/[id]. |
-| VA16 | Admin Bids — per-auction list + cancel/void | S | ⏳ | | See B5. Improve `AdminBidsView`: filter by productId, show bidder name/amount/time. Row action: Cancel/Void (with confirm modal). API: PUT /api/admin/bids/[id]. |
-| VA17 | Admin Feature Flags real UI | S | ⏳ | | NEW. `AdminFeatureFlagsView` — list of flags with enable/disable toggle + optional %-rollout number field. API: GET/PUT `/api/admin/feature-flags`. |
-| VA18 | Admin Media Library — upload + delete | M | ⏳ | | See I4. `AdminMediaView` real UI: image grid, upload dropzone, delete with confirm, copy URL button. |
+| VA14 | Admin Newsletter unsubscribe + CSV export | S | ✅ | Session 74 | See B6. Done: unsubscribe RowAction + Export CSV button + /api/admin/newsletter/export route. |
+| VA15 | Admin Contact submissions — mark-read + archive | S | ✅ | Session 74 | See B7. Done: SideDrawer (AdminContactEditorView) + RowActionMenu View/Mark read/Archive/Delete + PATCH action route. |
+| VA16 | Admin Bids — per-auction list + cancel/void | S | ✅ | Session 74 | See B5. Done: cancel RowAction (disabled when cancelled/voided), ConfirmDeleteModal, PATCH BID_BY_ID. |
+| VA17 | Admin Feature Flags real UI | S | ✅ | Session 74 | `AdminFeatureFlagsView`: useQuery on /api/admin/feature-flags, per-flag toggle + rollout % input, Save via PUT. Route: GET/PUT on siteSettings.featureFlags + featureFlagRollouts. |
+| VA18 | Admin Media Library — upload + delete | M | ⚠️ | Session 74 | Copy-URL button added (clipboard). Browse-existing media grid deferred to I4 — requires Storage listing infrastructure not yet built. |
 | VA19 | Admin Analytics charts — wired to real data | M | ✅ | Session 72 | See M1. `AdminAnalyticsClient` renders date range picker + passes endpoint with params. |
 
 ### V-B: Store/Seller Forms
@@ -521,8 +521,8 @@ Rules to keep top-of-mind every task:
 | LL13 | `AdminNotificationsView` — platform notifications list | S | ✅ | Session 73 | Type filter select. Row actions: Resend → POST resend endpoint (marks isRead=false); Delete → ConfirmDeleteModal. Nav: System group. New API routes: GET /api/admin/notifications + DELETE [id] + POST [id]/resend. |
 | LL14 | `AdminCartsView` — abandoned carts overview | S | ✅ | Session 73 | Read-only diagnostic view. guest/auth type filter. Nav: System group. New API route: GET /api/admin/carts via cartRepository.findAll. |
 | LL15 | `AdminWishlistsView` — wishlist insights | S | ✅ | Session 73 | Read-only insights view. Wishlist is user subcollection — API uses getAdminDb().collectionGroup("wishlist") with path parsing to extract userId. Nav: System group. New API route: GET /api/admin/wishlists. |
-| LL16 | `AdminReturnRequestsView` — return requests queue | M | ⏳ | | `AdminListingScaffold` filtered to orders with RETURN_REQUESTED status. Columns: order ID, buyer name, primary product, request date, current status badge. Actions: approve return (PUT status→REFUNDED), reject return (PUT status→DELIVERED), link to VA9 full status form. API: `/api/admin/orders?status=RETURN_REQUESTED`. Add to admin nav under "Orders". |
-| LL17 | `AdminStoreAddressesView` — store pickup locations overview | S | ⏳ | | `AdminListingScaffold`. Read-only admin overview. Columns: store name (link to store detail), address label, city, state, pincode, isPickupLocation badge. Filter by storeId (DynamicSelect). No mutations — store manages their own addresses via VB7. API: `/api/admin/store-addresses`. |
+| LL16 | `AdminReturnRequestsView` — return requests queue | M | ✅ | Session 74 | `AdminListingScaffold` filtered to `?status=RETURN_REQUESTED`. RowActionMenu: Approve (→REFUNDED) + Reject (→DELIVERED) each with ConfirmDeleteModal. ROUTES.ADMIN.RETURN_REQUESTS + nav "Returns" in Management group. |
+| LL17 | `AdminStoreAddressesView` — store pickup locations overview | S | ✅ | Session 74 | Read-only `AdminListingScaffold`. API: GET /api/admin/store-addresses — collectionGroup("addresses") or per-store subcollection when storeId param set. ROUTES.ADMIN.STORE_ADDRESSES + nav "Store Addresses" in Management group. |
 
 ---
 

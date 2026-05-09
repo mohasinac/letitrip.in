@@ -806,26 +806,31 @@ SideDrawer (3+ fields → SideDrawer rule):
 
 ---
 
-## Admin > Feature Flags ✅
+## Admin > Feature Flags ✅ (VA17)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Feature Flags                                            [Save All Flags]   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Flag               Description                         Enabled   Rollout   │
+│  Flag               Enabled   Rollout % (0–100, disabled when flag off)     │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  featuredProducts   Show featured products on homepage  [tog ✓]   100%      │
-│  auctions           Enable auction listings             [tog ✓]   100%      │
-│  preOrders          Enable pre-order listings           [tog ✓]   100%      │
-│  offers             Enable make-offer on products       [tog ✓]   100%      │
-│  wishlist           Enable wishlist feature             [tog ✓]   100%      │
-│  reviews            Enable product reviews              [tog ✓]   100%      │
-│  socialFeed         Social media feed sections          [tog ✗]   0%        │
-│  googleReviews      Google Business Reviews section     [tog ✓]   100%      │
-│  shiprocket         Shiprocket shipping integration     [tog ✗]   0%        │
-│  smsVerification    SMS OTP on login/register           [tog ✗]   0%        │
-│  seedPanel          Seed & Docs panel access            [tog ✓]   admin     │
+│  featuredProducts   [tog ✓]   [____100__]                                   │
+│  auctions           [tog ✓]   [____100__]                                   │
+│  preOrders          [tog ✓]   [____100__]                                   │
+│  offers             [tog ✓]   [____100__]                                   │
+│  wishlist           [tog ✓]   [____100__]                                   │
+│  reviews            [tog ✓]   [____100__]                                   │
+│  socialFeed         [tog ✗]   [_______0_] (disabled — flag off)             │
+│  googleReviews      [tog ✓]   [____100__]                                   │
+│  shiprocket         [tog ✗]   [_______0_] (disabled — flag off)             │
+│  smsVerification    [tog ✗]   [_______0_] (disabled — flag off)             │
+│  seedPanel          [tog ✓]   [____100__]                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [Save All Flags]  — PUT /api/admin/feature-flags { flags, rollouts }       │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+  Data source: GET /api/admin/feature-flags → siteSettings.featureFlags + featureFlagRollouts
+  formatLabel: camelCase + underscore → human readable (e.g. "smsVerification" → "Sms Verification")
 ```
 
 ---
@@ -884,21 +889,221 @@ SideDrawer (6 fields → SideDrawer rule):
 
 ---
 
-## Admin > Media Library ⏳ (VA18)
+## Admin > Media Library ⚠️ (VA18 partial — browse-existing deferred to I4)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Media Library                                   [Upload Files ⊕]           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [🔍 Search files...]   [Type: All/Image/Video/PDF ▾]   [Sort ▾]           │
+│  ⚠ Note: Browse-existing grid requires Storage listing infra (task I4)      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐        │
-│  │ 🖼  │ │ 🖼  │ │ 🎬  │ │ 🖼  │ │ 📄  │ │ 🖼  │ │ 🖼  │ │ 🖼  │        │
-│  │name │ │name │ │name │ │name │ │name │ │name │ │name │ │name │        │
-│  │[📋][🗑]    [📋][🗑]  ...                                               │
-│  └─────┘ └─────┘ └─────┘                                                   │
-│  Drop files anywhere to upload                                               │
+│  UPLOAD SANDBOX                                                              │
+│  Context: [sel: product-image / store-logo / blog-cover / ...]              │
+│  Drop zone: [  Drop image or video here, or click to browse  ]              │
+│  [Upload]                                                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  heroAssetUrl: /media/product-image-charizard-psa9-1-20260510.jpg           │
+│  [Copy URL]  ← copies to clipboard, shows "Copied!" momentarily             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Gallery (uploaded in this session):                                         │
+│  product-image-charizard-psa9-1-20260510.jpg    [Copy]                      │
+│  store-logo-mistys-water-cards-20260510.png     [Copy]                      │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+  Copy URL: navigator.clipboard.writeText(assetUrl); shows "Copied!" badge for 1.5s
+  Upload: POST /api/media/upload (existing endpoint); generateMediaFilename for slug
+```
+
+---
+
+## Admin > Bids ✅ (B5/VA16)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Bids                                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search bids, products, or bidder IDs...]                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Bid ID / Product           Bidder / Amount          Status         ⋮       │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  bid-charizard-ravi-...     user-ravi-kumar          [active]       ⋮       │
+│    auction-charizard-1st    ₹ 12,500                                         │
+│  bid-hot-wheels-priya-...   user-priya-s             [outbid]       ⋮       │
+│    auction-hot-wheels-...   ₹ 3,200                                         │
+│  bid-beyblade-mohsin-...    user-mohsin-c            [cancelled]   ⋮       │
+│    auction-beyblade-b159    ₹ 1,800                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Page 1 of 3   [< Prev]  [Next >]                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  Row ⋮ → RowActionMenu:
+    [Cancel bid]  (destructive, DISABLED when status=cancelled or voided)
+      → ConfirmDeleteModal (variant=warning):
+          Title: "Cancel this bid?"
+          Message: "The bid will be marked as cancelled. The auction will proceed without this bid."
+          [Cancel bid]  [Keep bid]
+      → PATCH /api/admin/bids/[id] { status: "cancelled" }
+      → invalidates ["admin","bids","listing"]
+```
+
+---
+
+## Admin > Newsletter ✅ (B6/VA14)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Newsletter Subscribers                              [Export CSV ⬇]         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search by email or source...]                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Email                      Source      Status          Subscribed     ⋮    │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  ravi@example.com           footer      [active]        2 days ago    ⋮    │
+│  priya@example.com          checkout    [active]        5 days ago    ⋮    │
+│  mohsin@example.com         popup       [unsubscribed]  14 days ago   ⋮    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Page 1 of 2   [< Prev]  [Next >]                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  [Export CSV]:
+    GET /api/admin/newsletter/export → blob download "newsletter-subscribers-{date}.csv"
+    Columns: id, email, status, source, subscribedAt, createdAt
+
+  Row ⋮ → RowActionMenu:
+    [Unsubscribe]  (destructive, DISABLED when status=unsubscribed)
+      → ConfirmDeleteModal:
+          Title: "Unsubscribe this address?"
+          Message: "The subscriber will be marked as unsubscribed and will no longer receive emails."
+          [Unsubscribe]  [Keep subscribed]
+      → DELETE /api/admin/newsletter/[id]
+      → invalidates ["admin","newsletter","listing"]
+```
+
+---
+
+## Admin > Contact Submissions ✅ (B7/VA15)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Contact Submissions                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search by subject, name, or email...]                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Subject / Name             Email              Status        Date        ⋮  │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  Order issue — Ravi Kumar   ravi@example.com   [new]         2h ago     ⋮  │
+│  Refund query — Priya S.    priya@example.com  [read]        1d ago     ⋮  │
+│  Partnership — Acme Ltd     acme@example.com   [resolved]    5d ago     ⋮  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Page 1 of 2   [< Prev]  [Next >]                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  Row ⋮ → RowActionMenu:
+    [View]        → opens AdminContactEditorView SideDrawer (read-only + actions)
+    [Mark read]   → PATCH /api/admin/contact-submissions/[id] { action: "read" }  (disabled if status=read/resolved)
+    [Archive]     → PATCH /api/admin/contact-submissions/[id] { action: "resolved" }  (disabled if status=resolved)
+    ─────────────
+    [Delete]      → ConfirmDeleteModal → DELETE /api/admin/contact-submissions/[id]
+```
+
+---
+
+## Admin > Contact Editor SideDrawer ✅ (B7/VA15)
+
+```
+SideDrawer (read-only display + actions):
+┌──────────────────────────────────────────┐
+│  Contact Submission                  [✕] │
+├──────────────────────────────────────────┤
+│  Status: [new ●blue]                     │
+│          or [read ●zinc]                 │
+│          or [resolved ●green]            │
+│  From: Ravi Kumar                        │
+│        ravi@example.com                  │
+├──────────────────────────────────────────┤
+│  Subject: Order issue with tracking      │
+├──────────────────────────────────────────┤
+│  Message (scrollable):                   │
+│  ┌──────────────────────────────────┐    │
+│  │ Hi, I placed order-3-202605...   │    │
+│  │ but the tracking number shows... │    │
+│  │ ...                              │    │
+│  └──────────────────────────────────┘    │
+├──────────────────────────────────────────┤
+│  [Reply via email (mailto:)]             │
+│  [Close]  [Mark read]  [Archive]         │
+│  — Mark read:  PATCH { action: "read" }  │
+│  — Archive:    PATCH { action: "resolved"}│
+└──────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Return Requests ✅ (LL16)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Return Requests                                                             │
+│  Orders where the buyer requested a return. Approve or reject each request. │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search by order ID or buyer...]                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Order / Buyer                  Total        Status              Date    ⋮  │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  order-2-20260510-abc123        ₹ 3,200      [RETURN_REQUESTED]  2h ago  ⋮  │
+│    user-ravi-kumar · ₹ 3,200                                                │
+│  order-1-20260509-def456        ₹ 8,750      [RETURN_REQUESTED]  1d ago  ⋮  │
+│    user-priya-s · ₹ 8,750                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Empty state: "No return requests"                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  Data source: GET /api/admin/orders?status=RETURN_REQUESTED
+
+  Row ⋮ → RowActionMenu:
+    [Approve return]
+      → ConfirmDeleteModal (variant=primary):
+          Title: "Approve return request?"
+          Message: "Order status → REFUNDED. Buyer notified, refund process begins."
+          [Approve return]
+      → PATCH /api/admin/orders/[id] { status: "REFUNDED" }
+      → invalidates ["admin","return-requests"] + ["admin","orders"]
+
+    [Reject return]  (destructive)
+      → ConfirmDeleteModal (variant=danger):
+          Title: "Reject return request?"
+          Message: "Order status → DELIVERED. Buyer's return request declined."
+          [Reject return]
+      → PATCH /api/admin/orders/[id] { status: "DELIVERED" }
+      → invalidates ["admin","return-requests"] + ["admin","orders"]
+```
+
+---
+
+## Admin > Store Addresses ✅ (LL17)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Store Addresses                                                             │
+│  Read-only overview of store pickup locations and shipping addresses.        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search by label, city, or store ID...]                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Label / City, State            Store ID / Pincode     Type                 │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  Main Pickup, Mumbai, MH        store-mistys-cards     [pickup]             │
+│  Warehouse, Pune, MH            store-bladers-den      [standard]           │
+│  Shop Front, Delhi, DL          store-hot-wheels-hub   [pickup]             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Empty state: "No store addresses found"                                     │
+│  Total: 8 addresses                                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  Data source: GET /api/admin/store-addresses
+    — no storeId param → collectionGroup("addresses") across all stores
+    — ?storeId=store-xyz → stores/store-xyz/addresses subcollection
+  Read-only — no RowActionMenu, no mutations
+  Stores manage their own addresses via VB7 (store dashboard)
 ```
 
 ---

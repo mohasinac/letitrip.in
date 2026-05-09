@@ -27,6 +27,70 @@
 
 ---
 
+# Session 74 — 2026-05-10 (B5/VA16, B6/VA14, B7/VA15, VA17, VA18, LL16, LL17)
+
+## B5/VA16 — AdminBidsView cancel action
+
+**Files changed (appkit/):**
+- `AdminBidsView.tsx` — added `cancelMutation` (PATCH `BID_BY_ID` with `{ status: "cancelled" }`), `ConfirmDeleteModal` (variant=warning), `RowActionMenu` with "Cancel bid" (destructive, disabled when already cancelled/voided)
+- `RowActionMenu.tsx` — added `disabled` to `RowAction` interface + renders with `opacity-40 cursor-not-allowed`
+
+## B6/VA14 — AdminNewsletterView unsubscribe + CSV export
+
+**Files changed (appkit/):**
+- `AdminNewsletterView.tsx` — added `unsubscribeMutation` (DELETE `NEWSLETTER_BY_ID`), `handleExportCsv` (fetch blob download), actionsSlot "Export CSV" button, RowActionMenu "Unsubscribe" (destructive, disabled when already unsubscribed)
+- `api-endpoints.ts` — `ADMIN_ENDPOINTS.NEWSLETTER_EXPORT: "/api/admin/newsletter/export"`
+
+**Files changed (src/):**
+- `src/app/api/admin/newsletter/export/route.ts` — GET, auth admin/moderator, `newsletterRepository.list()`, streams CSV with headers: id, email, status, source, subscribedAt, createdAt
+
+## B7/VA15 — AdminContactView RowActionMenu + AdminContactEditorView SideDrawer
+
+**Files changed (appkit/):**
+- `AdminContactEditorView.tsx` — NEW: SideDrawer with status badge (blue/zinc/green), From section, scrollable message body, "Reply via email" (mailto:), "Mark read" (PATCH action=read), "Archive" (PATCH action=resolved)
+- `AdminContactView.tsx` — added RowActionMenu (View/Mark read/Archive/Delete), `deleteMutation`, `AdminContactEditorView` wiring, `ConfirmDeleteModal` for delete
+- `index.ts` — exported `AdminContactEditorView` + props type
+
+## VA17 — AdminFeatureFlagsView dedicated endpoint + rollout %
+
+**Files changed (appkit/):**
+- `AdminFeatureFlagsView.tsx` — switched from `useSiteSettings` to `useQuery` on `ADMIN_ENDPOINTS.FEATURE_FLAGS`; per-flag toggle + rollout % Input (0–100, disabled when flag off); Save via `apiClient.put`
+- `api-endpoints.ts` — `ADMIN_ENDPOINTS.FEATURE_FLAGS: "/api/admin/feature-flags"`
+
+**Files changed (src/):**
+- `src/app/api/admin/feature-flags/route.ts` — GET returns `{ flags, rollouts }` from siteSettings; PUT zod-validated, writes `featureFlags` + `featureFlagRollouts` via `updateSingleton`
+
+## VA18 — AdminMediaView copy-URL button
+
+**Files changed (appkit/):**
+- `AdminMediaView.tsx` — added `copiedUrl` state, `copyToClipboard` via `navigator.clipboard.writeText`, "Copy URL" button for heroAssetUrl + per-asset "Copy" in gallery list
+
+## LL16 — AdminReturnRequestsView
+
+**Files changed (appkit/):**
+- `AdminReturnRequestsView.tsx` — NEW: `AdminListingScaffold` filtered to `?status=RETURN_REQUESTED`, `approveMutation` (→REFUNDED), `rejectMutation` (→DELIVERED), two ConfirmDeleteModals
+- `api-endpoints.ts` — `ADMIN_ENDPOINTS.STORE_ADDRESSES: "/api/admin/store-addresses"`
+- `route-map.ts` — `ROUTES.ADMIN.RETURN_REQUESTS: "/admin/return-requests"`
+- `index.ts` — exported `AdminReturnRequestsView` + props type
+
+**Files changed (src/):**
+- `src/app/[locale]/admin/return-requests/page.tsx` — NEW: wraps `AdminReturnRequestsView`
+- `src/constants/navigation.tsx` — "Returns" link in Management group
+
+## LL17 — AdminStoreAddressesView
+
+**Files changed (appkit/):**
+- `AdminStoreAddressesView.tsx` — NEW: read-only `AdminListingScaffold`, optional `storeId` filter, no mutations
+- `route-map.ts` — `ROUTES.ADMIN.STORE_ADDRESSES: "/admin/store-addresses"`
+- `index.ts` — exported `AdminStoreAddressesView` + props type
+
+**Files changed (src/):**
+- `src/app/api/admin/store-addresses/route.ts` — GET; if `storeId` param → specific store subcollection; else → `collectionGroup("addresses")`
+- `src/app/[locale]/admin/store-addresses/page.tsx` — NEW: wraps `AdminStoreAddressesView`
+- `src/constants/navigation.tsx` — "Store Addresses" link in Management group
+
+---
+
 # Session 73 — 2026-05-09 (N3, B1/VA10, B2/VA9, N2/VA11, LL11–LL15)
 
 ## N3 — Admin Stores editor: isVerified + suspensionReason fields
