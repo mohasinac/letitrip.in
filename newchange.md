@@ -28,6 +28,38 @@
 
 ---
 
+# Session 75 — 2026-05-10 (X3, X4, X5, X6)
+
+## X3 — Dark mode + responsive grid for AdminBrandEditorView + AdminCategoryEditorView
+
+**Files changed (appkit/):**
+- `AdminBrandEditorView.tsx` — grouped name+slug, logo+banner, website+displayOrder into `sm:grid-cols-2` pairs
+- `AdminCategoryEditorView.tsx` — grouped name+slug into `sm:grid-cols-2`; `dark:text-zinc-300` on raw `<label>`, `dark:text-neutral-400` on helper `<p>`
+
+## X4 — Form quality checklist in HOW TO WORK
+
+**Files changed (src/):**
+- `prompt.md` — added "Form quality checklist" section (7 items: mobile/tablet/dark/tokens/focus/errors/loading) under HOW TO WORK
+
+## X5 — PageLoader component + replace all 15 loading.tsx skeletons
+
+**Files changed (appkit/):**
+- `appkit/src/ui/components/PageLoader.tsx` — NEW: "use client" component; centered spinner + "Loading…" text; 15s `setTimeout` → "Something went wrong. Please refresh." + Refresh button
+- `appkit/src/ui/index.ts` — exported `PageLoader`
+- `appkit/src/index.ts` — exported `PageLoader` from root
+
+**Files changed (src/):**
+- All 15 `src/app/[locale]/**/loading.tsx` — replaced inline skeletons with `<PageLoader />` from `@mohasinac/appkit`
+
+## X6 — Media filename slug convention in upload handlers
+
+**Files changed (appkit/):**
+- `appkit/src/utils/id-generators.ts` — added `brand-logo` + `brand-banner` to `MediaFilenameContext` union; added `generateBrandLogoFilename` + `generateBrandBannerFilename` generators; wired into `generateMediaFilename` switch
+- `AdminBrandEditorView.tsx` — logo/banner `onUpload` now passes `{ type: "brand-logo/banner", brand: name || slug }`
+- `AdminBlogEditorView.tsx` — cover `onUpload` now passes `{ type: "blog-cover", title, category }`
+
+---
+
 # Session 74 — 2026-05-10 (B5/VA16, B6/VA14, B7/VA15, VA17, VA18, LL16, LL17)
 
 ## B5/VA16 — AdminBidsView cancel action

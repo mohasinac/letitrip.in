@@ -28,6 +28,33 @@
 
 ---
 
+## Shared > PageLoader ✅ (X5 — replaces all 15 loading.tsx skeletons)
+
+```
+Normal state (< 15s):
+┌─────────────────────────────────────────┐
+│                                         │
+│              ◌ (spinner lg)             │
+│               Loading…                  │
+│                                         │
+└─────────────────────────────────────────┘
+  min-height: 60vh; centered flex column
+
+Timed-out state (≥ 15s):
+┌─────────────────────────────────────────┐
+│                                         │
+│  Something went wrong.                  │
+│  Please refresh the page.               │
+│                                         │
+│           [Refresh]                     │
+│                                         │
+└─────────────────────────────────────────┘
+  Refresh → window.location.reload()
+  Used in: all src/app/[locale]/**/loading.tsx (15 files)
+```
+
+---
+
 # ADMIN AREA
 
 ## Admin > Layout Shell
@@ -336,26 +363,28 @@ Page: /admin/faqs/new  or  /admin/faqs/[id]/edit
 
 ---
 
-## Admin > Brand Editor ✅
+## Admin > Brand Editor ✅ (X3 — responsive 2-col grid)
 
 ```
-SideDrawer (slides in from right):
-┌──────────────────────────────────────┐
-│  New Brand / Edit Brand          [✕] │
-├──────────────────────────────────────┤
-│  Name        [input]                 │
-│  Slug        [input auto-generated]  │
-│  Description [textarea]              │
-│  Website URL [input]                 │
-│  Country     [input]                 │
-│  Founded     [input year]            │
-│  Logo URL    [MediaUploadField]      │
-│  Banner URL  [MediaUploadField]      │
-│  Is Active   [tog]                   │
-│  Display Order [input]               │
-├──────────────────────────────────────┤
-│  [Cancel]              [Save Brand]  │
-└──────────────────────────────────────┘
+StackedViewShell (full page):
+┌─────────────────────────────────────────────────────────┐
+│  New Brand / Edit Brand                                  │
+├──────────────────────┬──────────────────────────────────┤
+│  Name   [input]      │  Slug  [input auto-generated]    │  ← sm:grid-cols-2
+├──────────────────────┴──────────────────────────────────┤
+│  Description  [input full-width]                         │
+├──────────────────────┬──────────────────────────────────┤
+│  Logo  [ImageUpload] │  Banner  [ImageUpload]            │  ← sm:grid-cols-2
+│  filename: brand-{name}-logo.webp                        │
+├──────────────────────┬──────────────────────────────────┤
+│  Website URL [input] │  Display Order  [input number]   │  ← sm:grid-cols-2
+├──────────────────────┴──────────────────────────────────┤
+│  Active  [toggle]                                        │
+├─────────────────────────────────────────────────────────┤
+│  [Save brand / Create brand]   [Delete brand] (edit)    │
+└─────────────────────────────────────────────────────────┘
+  onUpload logo  → upload(file,"brands",true,{type:"brand-logo",brand:name})
+  onUpload banner→ upload(file,"brands",true,{type:"brand-banner",brand:name})
 ```
 
 ---
@@ -392,27 +421,26 @@ SideDrawer (slides in from right):
 
 ---
 
-## Admin > Category Editor ✅
+## Admin > Category Editor ✅ (X3 — responsive 2-col, dark mode labels)
 
 ```
-SideDrawer:
-┌──────────────────────────────────────┐
-│  New Category / Edit Category    [✕] │
-├──────────────────────────────────────┤
-│  Name         [input]                │
-│  Slug         [input auto]           │
-│  Parent       [DynSelect optional]   │
-│  Icon         [input emoji/char]     │
-│  Cover Image  [MediaUploadField]     │
-│  Color        [input hex token]      │
-│  Tier         [read-only computed]   │
-│  Is Featured  [tog]                  │
-│  Show Homepage[tog]                  │
-│  Show In Menu [tog]                  │
-│  Is Active    [tog]                  │
-├──────────────────────────────────────┤
-│  [Cancel]           [Save Category]  │
-└──────────────────────────────────────┘
+StackedViewShell (full page):
+┌─────────────────────────────────────────────────────────┐
+│  New Category / Edit Category                            │
+├──────────────────────┬──────────────────────────────────┤
+│  Name   [input]      │  Slug  [input auto-generated]    │  ← sm:grid-cols-2
+├──────────────────────┴──────────────────────────────────┤
+│  Description  [input full-width]                         │
+├─────────────────────────────────────────────────────────┤
+│  Parent category  [InlineCreateSelect optional]          │
+│  label: dark:text-zinc-300; helper p: dark:text-neutral-400
+├─────────────────────────────────────────────────────────┤
+│  Display Order  [input number]                           │
+│  Active        [toggle]                                  │
+│  Show in menu  [toggle]                                  │
+├─────────────────────────────────────────────────────────┤
+│  [Save category / Create category]  [Delete] (edit)     │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---

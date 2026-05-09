@@ -7,33 +7,32 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 74 ✅ COMPLETE
+## ⚡ CURRENT TASK — Session 75 ✅ COMPLETE
 
 | Task | Status | What was done |
 |------|--------|--------------|
-| **B5/VA16** | ✅ | AdminBidsView: cancel RowAction (disabled when cancelled/voided) + ConfirmDeleteModal (warning). RowActionMenu: disabled prop added. |
-| **B6/VA14** | ✅ | AdminNewsletterView: unsubscribe RowAction + Export CSV button. /api/admin/newsletter/export route (blob download). |
-| **B7/VA15** | ✅ | AdminContactEditorView SideDrawer (NEW) + AdminContactView RowActionMenu (View/Mark read/Archive/Delete). |
-| **VA17** | ✅ | AdminFeatureFlagsView: dedicated /api/admin/feature-flags GET+PUT; per-flag toggle + rollout % input. |
-| **VA18** | ⚠️ | Copy-URL button added. Browse-existing media grid deferred to I4 (needs Storage listing infra). |
-| **LL16** | ✅ | AdminReturnRequestsView: RETURN_REQUESTED queue + Approve(→REFUNDED)/Reject(→DELIVERED) actions. |
-| **LL17** | ✅ | AdminStoreAddressesView: read-only collectionGroup view + /api/admin/store-addresses route. |
+| **X3** | ✅ | AdminBrandEditorView + AdminCategoryEditorView: sm:grid-cols-2 responsive pairs; dark:text-zinc-300/400 on raw labels/helper text. |
+| **X4** | ✅ | 7-point form quality checklist added to HOW TO WORK in prompt.md (mobile/tablet/dark/tokens/focus/errors/loading). |
+| **X5** | ✅ | PageLoader component created in appkit (spinner + 15s timeout/refresh). All 15 loading.tsx files replaced. |
+| **X6** | ✅ | brand-logo/brand-banner added to MediaFilenameContext. AdminBrandEditorView + AdminBlogEditorView wired with slug context. |
 
-### Completed last session (73)
+### Completed last session (74)
 | Task | Status | Done |
 |------|--------|------|
-| **N3** | ✅ | AdminStoreEditorView: isVerified toggle + suspensionReason textarea (conditional) |
-| **B1/VA10** | ✅ | AdminUserEditorView SideDrawer; AdminUsersView RowActionMenu |
-| **B2/VA9** | ✅ | AdminOrderEditorView SideDrawer; AdminOrdersView RowActionMenu |
-| **N2/VA11** | ✅ | AdminReviewsView full moderation: Approve/Reject/Feature/Reply/View |
-| **LL11–LL15** | ✅ | Sessions/AllEventEntries/Notifications/Carts/Wishlists views + pages |
+| **B5/VA16** | ✅ | AdminBidsView cancel RowAction + ConfirmDeleteModal (warning). RowActionMenu disabled prop. |
+| **B6/VA14** | ✅ | AdminNewsletterView unsubscribe + Export CSV. /api/admin/newsletter/export route. |
+| **B7/VA15** | ✅ | AdminContactEditorView SideDrawer + AdminContactView RowActionMenu. |
+| **VA17** | ✅ | AdminFeatureFlagsView dedicated endpoint + per-flag toggle + rollout %. |
+| **VA18** | ⚠️ | Copy-URL button added. Browse-existing media grid deferred to I4. |
+| **LL16** | ✅ | AdminReturnRequestsView RETURN_REQUESTED queue + Approve/Reject actions. |
+| **LL17** | ✅ | AdminStoreAddressesView read-only collectionGroup view + route. |
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 75 | X3, X4, X5, X6 | Dark mode + responsive + PageLoader + media filename convention |
 | 76 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates |
 | 77 | C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7–LL10 | Store-2: Coupons/Orders/Shipping/Payout/Addresses/Analytics |
+| 78 | D1, VC6, D2, VC3, D3, VC4, D4, VC5, VC1, VC2, LL1–LL5 | User Account: Wishlist/Profile/Settings/Orders/Notifications/Addresses |
 
 ---
 
@@ -432,11 +431,10 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–71, 67-b (73 tasks ✅)
-Current:       72 ✅ complete — ARCH4+I3 done (payouts storeId + mark-paid/CSV + seed reset)
-Next:          73 (N3, B1, VA10, B2, VA9, N2, VA11) — Stores/Users/Orders/Reviews forms
-               74 (ARCH1–ARCH3, ARCH5) — Public API sanitization + cart/reviews schema
-               75 (ARCH6–ARCH9) — Product cards + seller profile + seed data
+Sessions done: 60–75, 67-b (79 tasks ✅)
+Current:       75 ✅ complete — X3+X4+X5+X6 (dark mode/responsive, form checklist, PageLoader, media filenames)
+Next:          76 (O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6) — Store profile + forms + product templates
+               77 (C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7–LL10) — Store-2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
@@ -445,19 +443,18 @@ Foundation     60–64       ✅ done (45/199 tasks)
 Carousel       65          ✅ done (CF1)
 Sections-1     66          ✅ done (HS1+HS2+HS3)
 Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
-Admin CRUD     68–73       🔄 in progress (Sessions 68–71 done; 72–73 remaining)
-Store Identity 74–75       ⏳ ARCH1–ARCH9 (storeId/storeName public identity)
-Store CRUD     75–76       ⏳
-User Account   77          ⏳
-Custom Fields  78          ⏳
-Public Pages   79–80       ⏳
-Cart/Checkout  81          ⏳
-Social Feed    82          ⏳
-Query/Sieve    83          ⏳
-Grouped/Sub    84–85       ⏳
-Search+Routes  86          ⏳
-Tokens         87–88       ⏳
-Deferred       89+         ⏳
+Admin CRUD     68–75       ✅ done — Sessions 68–74 core admin; 75 quality pass (X3–X6)
+Store CRUD     76–77       ⏳
+User Account   78          ⏳
+Custom Fields  79          ⏳
+Public Pages   80–81       ⏳
+Cart/Checkout  82          ⏳
+Social Feed    83          ⏳
+Query/Sieve    84          ⏳
+Grouped/Sub    85–86       ⏳
+Search+Routes  87          ⏳
+Tokens         88–89       ⏳
+Deferred       90+         ⏳
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SEED DATA TARGETS (from P23+):
