@@ -7,7 +7,18 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 78 ✅ COMPLETE 2026-05-10 (Carousel + Section Diagrams + Admin Form Builders)
+## ⚡ CURRENT TASK — Session 79 ✅ COMPLETE 2026-05-10 (FAQ Expansion + Live Stats + Homepage View Refactor)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **FAQ seed expansion** | ✅ | `faq-seed-data.ts` rewritten: 20 → 53 FAQs across all 7 categories. Platform risk disclaimers + store-set policy language throughout. 8 with `showOnHomepage: true`, 5 with `showInFooter: true`. |
+| **FAQ section seed fix** | ✅ | Homepage FAQ section: `displayCount` 5→8, `expandedByDefault` false→true (SEO), `categories` array corrected to proper `FAQCategory` values. |
+| **Stats seed — live metrics** | ✅ | Stats section in `homepage-sections-seed-data.ts` updated with actual seed counts (31/8/10/4.7★) and `source: "live"`, `metric`, `suffix` fields. |
+| **LiveStatMetric type** | ✅ | `firestore.ts` — new `LiveStatMetric` union type (6 values). `StatsSectionConfig` extended with `source`/`metric`/`suffix` per stat. `FAQSectionConfig.categories` type fixed to correct union. |
+| **live-stats.ts** | ✅ | New `appkit/src/features/homepage/lib/live-stats.ts` — batch-fetches only needed Firestore metrics at SSR time. All errors swallowed, static `value` used as fallback. |
+| **Homepage view refactor** | ✅ | `MarketplaceHomepageView.tsx` split into 4 files: section-defaults.ts (constants), section-helpers.ts (cleanTitle/parseWelcomeDescription), section-renderer.tsx (full 21-type switch + ad slots), main view (data fetching only). |
+
+## ⚡ PREVIOUS TASK — Session 78 ✅ COMPLETE 2026-05-10 (Carousel + Section Diagrams + Admin Form Builders)
 
 | Task | Status | What was done |
 |------|--------|--------------|

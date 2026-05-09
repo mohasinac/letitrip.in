@@ -33,6 +33,47 @@
 
 ---
 
+# Session 79 — 2026-05-10 (FAQ expansion + Live stats + Homepage view refactor)
+
+## FAQ seed data — expanded to 53 FAQs
+
+- `appkit/src/seed/faq-seed-data.ts`: complete rewrite from 20 to 53 FAQs across 7 categories.
+- Platform risk disclaimer woven throughout: LetItRip is a marketplace, not the seller; shipping timelines and return policies are set by individual stores (visit store About page).
+- 8 FAQs have `showOnHomepage: true`. 5 have `showInFooter: true`.
+- New `general` category FAQs: what-is-letitrip (with platform disclaimer), is-letitrip-safe, how-does-letitrip-work.
+- Full `account_security` and `technical_support` categories added.
+- Returns/shipping FAQ messaging: "Each store on LetItRip sets its own policy — check that store's About page."
+
+## Homepage section seed fixes
+
+- `appkit/src/seed/homepage-sections-seed-data.ts`: stats section values updated with `source: "live"` + `metric` + `suffix` fields reflecting actual seed data (31 listings / 8 sellers / 10 buyers / 4.7★ rating).
+- FAQ section: `displayCount` 5→8, `expandedByDefault` false→true (SEO: answers visible to crawlers without JS), `categories` array fixed to correct `FAQCategory` union values.
+
+## Firestore schema additions
+
+- `appkit/src/features/homepage/schemas/firestore.ts`:
+  - Added exported `LiveStatMetric` type (6 values: total_listings, verified_sellers, total_buyers, platform_rating, total_orders, total_reviews).
+  - Extended `StatsSectionConfig` stat items with optional `source`, `metric`, `suffix` fields.
+  - Fixed `FAQSectionConfig.categories` array element type to use correct `FAQCategory` values (was using wrong legacy strings).
+
+## Live stats system — new file
+
+- `appkit/src/features/homepage/lib/live-stats.ts` (NEW): fetches only the Firestore metrics requested by the current stats section, in parallel. All failures silently caught — static `value` used as fallback. `reviewRepository.findAll()` called with no args, filtered in-memory for `status === "approved"` to compute platform_rating.
+
+## Homepage view refactor — split into 4 files
+
+- `MarketplaceHomepageView.tsx` now imports from 3 new focused modules. File reduced from ~570 to ~65 lines — only handles data fetching + section ordering + rendering orchestration.
+- `appkit/src/features/homepage/lib/section-defaults.ts` (NEW): `DEFAULT_TRUST_FEATURES` and `DEFAULT_SECURITY_ITEMS` constants.
+- `appkit/src/features/homepage/lib/section-helpers.ts` (NEW): `cleanTitle()` and `parseWelcomeDescription()` utility functions.
+- `appkit/src/features/homepage/lib/section-renderer.tsx` (NEW): `renderSection()` with full switch statement for all 21 section types + `MarketplaceHomepageViewAdSlots` type + `FaqItem` type + `AD_SLOT_MAP`. Single responsibility: map a `HomepageSectionDocument` to a React node.
+
+## TypeScript
+
+- `appkit/` tsc: 0 errors.
+- `letitrip.in/` tsc: 3 pre-existing errors (missing seed exports for conversations/sublisting-categories/grouped-listings — not caused by this session).
+
+---
+
 # Session 78 — 2026-05-10 (Carousel height fix + Section diagrams + Admin form builders)
 
 ## HeroCarousel mobile height regression (CF1)

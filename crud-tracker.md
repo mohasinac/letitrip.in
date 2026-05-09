@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 — Session 78: HeroCarousel mobile height regression fixed (md: prefix removed); carousel seed card zones fixed (different rows); asciiDiagrams.md updated with all 21 section type layouts + admin form diagrams; carousel/custom-cards/google-reviews typed builders added to AdminSectionsView (no JSON textarea for any section type). 90 done, 146 remaining.
+> **Last updated:** 2026-05-10 — Session 79: FAQ seed data expanded from 20 to 53 FAQs across 7 categories with platform risk disclaimers + store-set policy language; homepage section seed stats updated to live metrics (source/metric/suffix); `LiveStatMetric` type + live-stats.ts added; `MarketplaceHomepageView.tsx` refactored into 4 focused files (section-defaults.ts, section-helpers.ts, section-renderer.tsx, main view). 90 done, 146 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
