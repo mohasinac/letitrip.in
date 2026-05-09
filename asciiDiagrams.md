@@ -31,26 +31,35 @@
 ## Shared > PageLoader ✅ (X5 — replaces all 15 loading.tsx skeletons)
 
 ```
-Normal state (< 15s):
-┌─────────────────────────────────────────┐
-│                                         │
-│              ◌ (spinner lg)             │
-│               Loading…                  │
-│                                         │
-└─────────────────────────────────────────┘
-  min-height: 60vh; centered flex column
+Mode A — no children (simple spinner):
 
-Timed-out state (≥ 15s):
-┌─────────────────────────────────────────┐
-│                                         │
-│  Something went wrong.                  │
-│  Please refresh the page.               │
-│                                         │
-│           [Refresh]                     │
-│                                         │
-└─────────────────────────────────────────┘
-  Refresh → window.location.reload()
-  Used in: all src/app/[locale]/**/loading.tsx (15 files)
+  Normal (< 15s):              Timed-out (≥ 15s):
+  ┌──────────────────────┐     ┌──────────────────────────────────┐
+  │                      │     │                                  │
+  │    ◌ (spinner lg)    │     │  Something went wrong.           │
+  │     Loading…         │     │  Please refresh the page.        │
+  │                      │     │                                  │
+  └──────────────────────┘     │         [Refresh]                │
+  min-height: 60vh             │                                  │
+                               └──────────────────────────────────┘
+                                 Refresh → window.location.reload()
+
+Mode B — with children (skeleton background, better Lighthouse CLS):
+
+  ┌──────────────────────────────────────────────┐
+  │  {children} skeleton layout (aria-hidden)    │  ← preserves page shape
+  │  ░░░░░░░░░░  ░░░░░░░  ░░░░░░░░░░░░░░         │
+  │  ░░░░░░░░░░  ░░░░░░░  ░░░░░░░░░░░░░░         │
+  │  ┌────────────────────────────────────────┐  │
+  │  │  backdrop-blur overlay (fixed, z-50)   │  │
+  │  │  Normal: ◌ spinner + "Loading…"        │  │
+  │  │  Timeout: "Something went wrong…"      │  │
+  │  │           [Refresh]                    │  │
+  │  └────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────┘
+
+Usage: loading.tsx files — all 15 under src/app/[locale]/ use <PageLoader />
+       Pass a skeleton as children on any page where CLS matters.
 ```
 
 ---
@@ -1791,15 +1800,51 @@ STICKY BUY BAR (on scroll past buy box):
 ## Public > Categories Listing ✅
 
 ```
+Route: /categories  →  CategoriesIndexPageView (RSC)
+Shell: Main > Section > Container(xl) — NOT ListingLayout
+Client: CategoriesIndexListing — useUrlTable + useCategoriesFiltered
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Browse Categories                                                           │
+│  LetiTrip header (sticky, --header-height)                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐      │
-│  │ 🖼 cover     │ │ 🖼 cover     │ │ 🖼 cover     │ │ 🖼 cover     │      │
-│  │ Action Figs  │ │ Trading Cards│ │ Diecast      │ │ Spinning Tops│      │
-│  │ 4 sub-cats   │ │ 3 sub-cats   │ │ 3 sub-cats   │ │ 1 sub-cat    │      │
-│  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘      │
+│  AdSlot (listing-sidebar-top)                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [All]  [Categories]  [Brands]   ← tab bar (hidden when brandsOnly=true)    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  sticky ListingToolbar:                                                      │
+│  [🔍 Search categories…]  [⚙ Filters (N)]  [Sort: Name A–Z ▾]              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  sticky Pagination (when totalPages > 1):                                    │
+│  ← 1  2  3 →                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  grid-cols-2 sm:3 lg:4 xl:5 gap-4                                           │
+│  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐                   │
+│  │🖼 cover│ │🖼 cover│ │🖼 cover│ │🖼 cover│ │🖼 cover│                   │
+│  │Action  │ │Trading │ │Diecast │ │Tops    │ │Model   │                   │
+│  │Figures │ │Cards   │ │Vehicles│ │        │ │Kits    │                   │
+│  └────────┘ └────────┘ └────────┘ └────────┘ └────────┘                   │
+│                                                                              │
+│  Empty state: "No categories matching "…" " (search) / "No categories found"│
+│  Loading state: animate-pulse skeleton grid (same columns)                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  AdSlot (listing-sidebar-bottom)                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Filter Drawer (fixed overlay, slides from LEFT, z-50):
+┌────────────────────────────────┐
+│  Filters             [Clear all] [✕] │
+├────────────────────────────────┤
+│  CategoryFilters (variant=public):   │
+│    Featured only  [chk]              │
+│    Brands only    [chk]              │
+│    Root only      [chk]              │
+│    Tier           [sel]              │
+│    Min products   [input]            │
+│    Max products   [input]            │
+├────────────────────────────────┤
+│  [Apply Filters (N)]                 │
+└────────────────────────────────┘
+  Black overlay behind drawer (click → close)
 ```
 
 ---
