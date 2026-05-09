@@ -125,6 +125,10 @@
 | `notifications/[id]/resend/route.ts` | POST | Resend notification — marks isRead=false to simulate re-delivery (LL13) |
 | `carts/route.ts` | GET | All carts — auth: admin/moderator; limit param; via cartRepository.findAll (LL14) |
 | `wishlists/route.ts` | GET | Cross-user wishlist items — auth: admin/moderator; uses Firestore collectionGroup("wishlist") (subcollection, no cross-user repo method); userId extracted from ref path (LL15) |
+| `newsletter/export/route.ts` | GET | CSV export of newsletter subscribers — auth: admin/moderator; newsletterRepository.list({pageSize:"10000"}); columns: id, email, status, source, subscribedAt, createdAt; Content-Disposition attachment (B6/VA14) |
+| `feature-flags/route.ts` | GET | Get feature flags — auth: admin/moderator; reads siteSettings.featureFlags + featureFlagRollouts (VA17) |
+| `feature-flags/route.ts` | PUT | Update feature flags — auth: admin; zod {flags, rollouts}; writes via siteSettingsRepository.updateSingleton (VA17) |
+| `store-addresses/route.ts` | GET | All store addresses — auth: admin/moderator; optional storeId param → specific subcollection or collectionGroup("addresses"); returns id, storeId, label, city, state, pincode, isPickupLocation, createdAt (LL17) |
 
 ---
 
