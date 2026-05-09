@@ -20,7 +20,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
-    handler: async () => {
+    handler: async ({ request }) => {
       const functionUrl = process.env.FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;
 
@@ -31,7 +31,11 @@ export const GET = withProviders(
         return Response.json({ error: "Analytics service not configured" }, { status: 503 });
       }
 
-      serverLogger.info("adminAnalytics: delegating to Firebase Function");
+      const url = new URL(request.url);
+      const startDate = url.searchParams.get("startDate") ?? undefined;
+      const endDate = url.searchParams.get("endDate") ?? undefined;
+
+      serverLogger.info("adminAnalytics: delegating to Firebase Function", { startDate, endDate });
 
       const upstream = await fetch(functionUrl, {
         method: "POST",
@@ -39,7 +43,7 @@ export const GET = withProviders(
           "Content-Type": "application/json",
           "x-internal-secret": secret,
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ startDate, endDate }),
       });
 
       if (!upstream.ok) {
