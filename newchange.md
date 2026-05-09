@@ -33,6 +33,46 @@
 
 ---
 
+# Session 80 — 2026-05-10 (ARCH3 + AdminSectionsView code quality split)
+
+## ARCH3 — Reviews sellerId → storeId
+
+- `appkit/src/features/reviews/types/index.ts`: `ReviewListParams` — `sellerId` removed, replaced with `storeId`.
+- `appkit/src/features/reviews/schemas/index.ts` (Zod): `reviewSchema` — `storeSlug` + `storeName` replace `sellerId`; `reviewListParamsSchema` — `storeId` replaces `sellerId`.
+- `appkit/src/features/reviews/hooks/useReviews.ts`: `sellerId` condition → `storeId` condition.
+- `appkit/src/features/reviews/actions/review-actions.ts`: uses `storeId: product.storeId` at write time.
+- `appkit/src/seed/reviews-seed-data.ts`: exports via `SELLER_STORE` map — each review gets `{storeId, storeName}` from seller userId at seed time.
+
+## Categories seed — store identity pattern
+
+- `appkit/src/features/categories/schemas/firestore.ts`: `CategoryDocument` extended with optional `createdByType` and `createdByStoreId`.
+- `appkit/src/seed/categories-seed-data.ts`: 6 niche subcategories given seller `createdBy` user IDs; exported with `STORE_CREATOR` map converting `createdBy` userId → `{createdByStoreId}` at export time.
+  - pokemon-tcg → user-aryan-kapoor (Pokemon Palace)
+  - yugioh-tcg → user-nisha-reddy (CardGame Hub)
+  - hot-wheels → user-vikram-mehta (Diecast Depot)
+  - beyblade-x → user-rohit-joshi (Beyblade Arena)
+  - gunpla → user-amit-sharma (Gundam Galaxy)
+  - nendoroids-chibis → user-priya-singh (Tokyo Toys India)
+
+## AdminSectionsView.tsx — code quality split (3595 → 2282 lines)
+
+- `appkit/src/features/admin/components/AdminSectionsView.tsx`: reduced from 3595 → 2282 lines (-1313 lines) by extracting all type declarations, constants, defaults, and build/parse utilities into two new focused modules:
+  - **`sections/adminSectionsTypes.ts`** (571 lines): all `SectionType`, `XBuilderState` interfaces, `DEFAULT_X_BUILDER` constants, `SECTION_TYPE_OPTIONS`, `SUPPORTED_TYPED_BUILDERS`, `RESOURCE_SORT_OPTIONS`, `FAQ_CATEGORY_OPTIONS`. All 21 section builder types exported.
+  - **`sections/adminSectionsBuildParse.ts`** (751 lines): `parseCsvValues`, `toNumberValue`, `toStringValue`, `toBooleanValue`, `toStringArray` utilities. All 21 `buildXConfig()` functions and all 21 `parseXBuilder()` functions.
+- 4 if-chain blocks converted to `switch` statements in `AdminSectionsView.tsx`:
+  - `typedConfig` useMemo (21 cases)
+  - edit-mode parse effect (21 cases)
+  - create-mode reset effect (21 cases)
+  - `renderTypedBuilder()` render function (21 cases)
+- `socialFeedBuilder` state was missing from the original component — added during this refactor.
+
+## TypeScript
+
+- `appkit/` tsc: 0 errors in refactored files. 3 pre-existing unrelated errors remain (seed export missing for conversations/sublisting-categories/grouped-listings in seed/index.ts).
+- `letitrip.in/` tsc: same 3 pre-existing errors — no new errors introduced.
+
+---
+
 # Session 79 — 2026-05-10 (FAQ expansion + Live stats + Homepage view refactor)
 
 ## FAQ seed data — expanded to 53 FAQs
