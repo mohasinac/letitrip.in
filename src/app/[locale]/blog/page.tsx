@@ -3,9 +3,9 @@ import { BlogIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "Collectibles Blog — LetiTrip",
+  title: "Collectibles Blog — LetItRip",
   description:
-    "Guides, tips and news for Pokémon TCG, Hot Wheels collectors, Gundam builders, and Beyblade enthusiasts on the LetiTrip blog.",
+    "Guides, tips and news for Pokémon TCG, Hot Wheels collectors, Gundam builders, and Beyblade enthusiasts on the LetItRip blog.",
   path: "/blog",
   keywords: ["pokemon card guide", "hot wheels collector", "gundam model guide", "beyblade tips", "collectibles blog india"],
 });

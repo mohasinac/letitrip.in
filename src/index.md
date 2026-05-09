@@ -4,6 +4,18 @@
 > **Before creating anything new** — check this file AND `appkit/index.md` first.
 > Paths are relative to `d:\proj\letitrip.in\src\`.
 
+## Index
+
+- [Constants](#constants--srcconstants)
+- [Server Actions](#server-actions--srcactions)
+- [Routing / Shell Components](#routing--shell-components--srccomponentsrouting)
+- [Auth Page Clients](#auth-page-clients--srccomponentsauth)
+- [User Page Clients](#user-page-clients--srccomponentsuser)
+- [Admin Page Clients](#admin-page-clients--srccomponentsadmin)
+- [Homepage Components](#homepage-components--srccomponentshomepage)
+- [Dev Tools](#dev-tools--srccomponentsdev)
+- [Key Layout Files](#key-layout-files-not-components--do-not-duplicate)
+
 ---
 
 ## Constants — `src/constants/`

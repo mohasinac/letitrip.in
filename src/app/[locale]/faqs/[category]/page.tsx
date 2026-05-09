@@ -10,8 +10,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
   const label = category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   return _gm({
-    title: `${label} FAQs — LetiTrip Help`,
-    description: `Common questions about ${label.toLowerCase()} on LetiTrip collectibles marketplace.`,
+    title: `${label} FAQs — LetItRip Help`,
+    description: `Common questions about ${label.toLowerCase()} on LetItRip collectibles marketplace.`,
     path: `/faqs/${category}`,
   });
 }

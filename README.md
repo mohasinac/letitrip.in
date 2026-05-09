@@ -2,6 +2,20 @@
 
 Standalone Next.js marketplace application that consumes `@mohasinac/appkit` from npm registry.
 
+## Index
+
+- [Standalone Model](#standalone-model)
+- [Stack](#stack)
+- [Install](#install)
+- [Local Development — Seed Firestore](#local-development--seed-firestore)
+- [Scripts](#scripts)
+- [Smoke Tests (Pages + APIs)](#smoke-tests-pages--apis)
+- [Firebase Full Reset](#firebase-full-reset)
+- [Appkit Dependency](#appkit-dependency)
+- [Repository Layout](#repository-layout)
+
+---
+
 ## Standalone Model
 
 - `letitrip.in` is a standalone app repository.

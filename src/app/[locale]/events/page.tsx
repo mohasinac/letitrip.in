@@ -3,9 +3,9 @@ import { EventsListPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "Collectibles Events & Sales — LetiTrip",
+  title: "Collectibles Events & Sales — LetItRip",
   description:
-    "Pokémon tournaments, Hot Wheels swap meets, anime figure showcases and Yu-Gi-Oh! regionals. Discover collectibles events on LetiTrip.",
+    "Pokémon tournaments, Hot Wheels swap meets, anime figure showcases and Yu-Gi-Oh! regionals. Discover collectibles events on LetItRip.",
   path: "/events",
   keywords: ["pokemon tournament india", "collectibles event india", "hot wheels swap meet", "yugioh regional india"],
 });

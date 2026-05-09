@@ -11,10 +11,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const brand = await getBrandBySlug(slug).catch(() => null);
   if (!brand) return { title: "Brand Not Found" };
   return _gm({
-    title: `${brand.name} Collectibles — LetiTrip`,
+    title: `${brand.name} Collectibles — LetItRip`,
     description:
       brand.description?.slice(0, 155) ||
-      `Shop authentic ${brand.name} collectibles on LetiTrip India.`,
+      `Shop authentic ${brand.name} collectibles on LetItRip India.`,
     image: brand.logoURL,
     path: `/brands/${slug}`,
     type: "website",

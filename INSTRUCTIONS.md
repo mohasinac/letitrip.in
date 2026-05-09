@@ -4,6 +4,34 @@
 > Stack: Next.js 16 · TypeScript · Firebase · Tailwind CSS · @mohasinac/appkit  
 > Live site: https://www.letitrip.in
 
+## Index
+
+- [Build Issues and Resolutions](#build-issues-and-resolutions)
+- [Table of Contents](#table-of-contents) *(detailed section map — sections 0–21)*
+- [0. Work Tracker — Tasks & Status](#0-work-tracker--tasks--status)
+- [1. Project Overview](#1-project-overview)
+- [2. Architecture Diagram](#2-architecture-diagram)
+- [3. Monorepo Structure](#3-monorepo-structure)
+- [4. Package Dependencies](#4-package-dependencies)
+- [5. Environment Setup](#5-environment-setup)
+- [6. Live Site — Full Page Inventory](#6-live-site--full-page-inventory)
+- [7. Homepage Architecture — CMS-Driven Sections](#7-homepage-architecture--cms-driven-sections)
+- [8. Carousel & Horizontal Slider System](#8-carousel--horizontal-slider-system)
+- [9. Listing Pages — Filter / Search / Sort / Pagination Regression](#9-listing-pages--filter--search--sort--pagination-regression)
+- [10. Authenticated Pages — Slot-Shell Pattern & What's Empty](#10-authenticated-pages--slot-shell-pattern--whats-empty)
+- [11. Cart & Checkout — Broken Implementation](#11-cart--checkout--broken-implementation)
+- [12. Live Site vs Current Build — Master Gap Table](#12-live-site-vs-current-build--master-gap-table)
+- [13. Regression Catalog — Specific Bugs](#13-regression-catalog--specific-bugs)
+- [14. Product Detail Page — Full Breakdown](#14-product-detail-page--full-breakdown)
+- [15. Data Flow Diagrams](#15-data-flow-diagrams)
+- [16. API Routes Reference](#16-api-routes-reference)
+- [17. Authentication & Security](#17-authentication--security)
+- [18. Development Workflow](#18-development-workflow)
+- [19. Firebase & Cloud Functions](#19-firebase--cloud-functions)
+- [20. Feature Flags](#20-feature-flags)
+- [21. Remaining Pages — Detail Page Analysis](#21-remaining-pages--detail-page-analysis)
+- [Appendix: Key File Locations](#appendix-key-file-locations)
+
 ---
 
 ## Build Issues and Resolutions

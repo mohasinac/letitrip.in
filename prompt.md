@@ -7,32 +7,81 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 75 ✅ COMPLETE
+## ⚡ CURRENT TASK — Session 76 ✅ COMPLETE 2026-05-10
+
+> **Alpha goal**: Public catalogue works correctly for all 3 product types.
 
 | Task | Status | What was done |
 |------|--------|--------------|
-| **X3** | ✅ | AdminBrandEditorView + AdminCategoryEditorView: sm:grid-cols-2 responsive pairs; dark:text-zinc-300/400 on raw labels/helper text. |
-| **X4** | ✅ | 7-point form quality checklist added to HOW TO WORK in prompt.md (mobile/tablet/dark/tokens/focus/errors/loading). |
-| **X5** | ✅ | PageLoader component created in appkit (spinner + 15s timeout/refresh). All 15 loading.tsx files replaced. |
-| **X6** | ✅ | brand-logo/brand-banner added to MediaFilenameContext. AdminBrandEditorView + AdminBlogEditorView wired with slug context. |
+| **VD7** | ✅ | 32 source files updated LetiTrip→LetItRip. CLAUDE.md + prompt.md brand rule updated. |
+| **VD11** | ✅ | Added missing keys to en.json: helpPage namespace (new), howPayoutsWork infoCard*/diagramStep*/cta*, howPreOrdersWork infoCard*/diagramStep*/ctaOrders/diagramStep5Badge. |
+| **VD4** | ✅ | Category+brand chips on ProductCard. Brand link + category link on all 3 detail views. brandSlug field added to ProductDocument + ProductItem types. |
+| **VD5** | ✅ | Store card with "Visit Store →" button on all 3 detail views (standard/auction/preorder). |
+| **VD6** | ✅ | /brands page with BrandsListView confirmed working (Session 75). |
+| **VD1** | ✅ | /support page with HelpPageView confirmed working. helpPage i18n namespace added. |
+| **VD2** | ✅ | Footer links verified. /support exists. LetItRip brand cleanup covers remaining gaps. |
 
-### Completed last session (74)
+## 🔜 NEXT SESSION — Session 77: Alpha: Seller Products
+
+| Task | Goal |
+|------|------|
+| O1, O2+C5, C1, VB8, C2, VB9, LL6 | Store profile + all 3 product types create/edit (standard/auction/preorder) + seller listing views |
+
+### Completed last session (76-infra — hotfix + Firebase reset)
 | Task | Status | Done |
 |------|--------|------|
-| **B5/VA16** | ✅ | AdminBidsView cancel RowAction + ConfirmDeleteModal (warning). RowActionMenu disabled prop. |
-| **B6/VA14** | ✅ | AdminNewsletterView unsubscribe + Export CSV. /api/admin/newsletter/export route. |
-| **B7/VA15** | ✅ | AdminContactEditorView SideDrawer + AdminContactView RowActionMenu. |
-| **VA17** | ✅ | AdminFeatureFlagsView dedicated endpoint + per-flag toggle + rollout %. |
-| **VA18** | ⚠️ | Copy-URL button added. Browse-existing media grid deferred to I4. |
-| **LL16** | ✅ | AdminReturnRequestsView RETURN_REQUESTED queue + Approve/Reject actions. |
-| **LL17** | ✅ | AdminStoreAddressesView read-only collectionGroup view + route. |
+| **J13** | ✅ | Products listing empty — all 20 standard seed docs missing `isAuction: false / isPreOrder: false`. Firestore `where("isAuction", "==", false)` returns 0 when field absent. Added both fields + 2 new composite indexes to base file. |
+| **J14** | ✅ | Blog listing empty — `BlogIndexPageView` SSR passed `FirebaseSieveResult` (`.items`) as `initialData` where `BlogListResponse` (`.posts`) was expected. Fixed: transform to correct shape. |
+| **J15** | ✅ | Events listing empty — `EventsListPageView` defaulted to `status==published`; no events have that status. Changed default to `status==active`. |
+| **INFRA1** | ✅ | `firebase-reset.mjs` dry-run crash: `collectionRef.count()` is firebase-admin v11+ only. Fixed to `.get().size` (v10 compatible). |
+| **INFRA2** | ✅ | Created `appkit/scripts/firebase-delete-indexes.mjs` — OAuth2 refresh-token auth + Firestore REST API bulk index delete. Fixes 409 loop on `firebase:deploy`. |
+| **Firebase** | ✅ | Full Firebase reset (all Firestore, Auth, Functions, 205 indexes wiped) + clean redeploy (263 indexes + 24 Cloud Functions). Duplicate `faqs` indexes removed from base file. Re-seed required via `/demo/seed`. |
 
-### Next sessions
+### Completed session 76 (VD tasks — public catalogue)
+| Task | Status | Done |
+|------|--------|------|
+| **X3** | ✅ | AdminBrandEditorView + AdminCategoryEditorView: sm:grid-cols-2 responsive pairs; dark:text-zinc-300/400 on raw labels/helper text. |
+| **X4** | ✅ | 7-point form quality checklist added to HOW TO WORK. |
+| **X5** | ✅ | PageLoader component created in appkit (spinner + 15s timeout/refresh). All 15 loading.tsx files replaced. |
+| **X6** | ✅ | brand-logo/brand-banner added to MediaFilenameContext. |
+
+### Alpha-gate sessions (76–80) — complete these before any other work
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 76 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates |
-| 77 | C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7–LL10 | Store-2: Coupons/Orders/Shipping/Payout/Addresses/Analytics |
-| 78 | D1, VC6, D2, VC3, D3, VC4, D4, VC5, VC1, VC2, LL1–LL5 | User Account: Wishlist/Profile/Settings/Orders/Notifications/Addresses |
+| **76** | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | **Public Catalogue** — brand audit + translation keys + category/brand/store on cards and detail pages |
+| **77** | O1, O2+C5, C1, VB8, C2, VB9, LL6 | **Seller Lists Products** — store profile edit + all 3 product type create/edit + seller listing views |
+| **78** | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | **User Account Core** — wishlist, order history/detail, profile edit, notifications |
+| **79** | W1, W2, W3, W4, R1 | **Cart Integrity** — stale validation + out-of-stock section + product links in cart |
+| **80** | C6, C7, O3, VB3, VB10, LL8 | **Store Settings** — shipping config + payout settings + store addresses |
+
+### 🚀 ALPHA RELEASE after Session 80
+
+### Post-alpha sessions
+| Session | Tasks | Goal |
+|---------|-------|------|
+| 81 | C3, VB5, C4, VB6, VB1, VB2, VB7, O4, LL7, LL9, LL10 | Store Finance: coupons, orders, payouts, analytics |
+| 82 | ARCH4, VA19 | Admin Payouts processing + CSV export |
+| 83 | VD8, VD9, VD10 | Content rewrites: About, Seller Guide, Legal |
+| 84 | L1, L2, L3 | Custom Fields system |
+| 85 | SC1, SC2, SC3, SC4 | Sub-listing categories |
+| 86 | GP1, GP2 | Grouped listings |
+| 87 | S4, S1, S2, S3, S5 | Social feed |
+| 88 | RC2, SR1, SR2, SR3, RC1, RC3 | Search redesign + route centralisation |
+| 89 | Q5, Q1, Q2, Q3, Q4, Q6 | Query/Sieve + infinite scroll |
+| 90 | X7a, X7b | Color token audit |
+| 91 | X8a, X8b | Layout token audit |
+| 92–95 | P23–P31 | Seed scale expansion |
+| 96+ | I6, I7, D5, VC7, O5, HS4-E, VC2, VC4, D3, D4, LL4, LL5 | Deferred: PDF, watermark CDN, messages, Shiprocket |
+
+### Confirmed UX design for GP1 + SC3 (planned for Sessions 85–86)
+- **Both sections** live **between the buy-box/actions area and the TABS row** — NOT in belowFold
+- Injected via `renderGroupSection` (GP1) and `renderSublistingSection` (SC3) render props on `ProductDetailView` / `AuctionDetailView`
+- **Card style**: small **circular** thumbnail cards (~64 px) in a `HorizontalScroller`, collapsed by default
+- **Sub-listing cards**: circular image + name (2-line truncate) + price chip; click → navigate; current listing highlighted with ring
+- **Group cards**: circular image + name + price; click → navigate; current product highlighted; selectable
+- **"View whole group →"** button opens a Modal (SideDrawer if ≥5 parts): table with columns thumbnail (with image-preview toggle), name, price, condition, "View" link
+- Auctions only get the sub-listing row (SC3); group row (GP1) is standard products + pre-orders only
+- See `asciiDiagrams.md` §"Public > Product Detail" for full ASCII layout
 
 ---
 
@@ -86,7 +135,7 @@ npx tsc --noEmit must pass before every commit (both repos)
 - Half-renames are banned — rename = one atomic commit covering producer + consumer
 
 ### Content
-- Brand: **"LetiTrip"** (capital L, lowercase i, capital T) — grep after every content update
+- Brand: **"LetItRip"** — always this exact casing (not "LetiTrip", not "Letitrip"). Domain is letitrip.in but brand display name is LetItRip. Grep after every content update.
 - No generic marketplace copy — reference real collectibles niche (Pokémon TCG, Hot Wheels, Beyblades, anime figures)
 
 ### Buttons vs links — never mix
@@ -431,30 +480,44 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–75, 67-b (79 tasks ✅)
-Current:       75 ✅ complete — X3+X4+X5+X6 (dark mode/responsive, form checklist, PageLoader, media filenames)
-Next:          76 (O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6) — Store profile + forms + product templates
-               77 (C3, VB1, C4, VB2, C6, VB5, C7, VB6, VB3, VB7, O3, O4, VB10, LL7–LL10) — Store-2
+Sessions done: 60–76, 67-b, 76-infra (J13+J14+J15+INFRA1+INFRA2+Firebase reset)
+Current:       77 ⏳ next — Seller Products (O1, O2+C5, C1, VB8, C2, VB9, LL6)
+Next:          78 (D1+VC6, VC1, VC3, VC5, LL1–LL3) — User account core
+               79 (W1–W4, R1) — Cart integrity
+               80 (C6, C7, O3, VB3, VB10, LL8) — Store settings
+               🚀 ALPHA after session 80
+
+⚠️  Firebase was fully reset 2026-05-10 — re-seed all 23 collections via /demo/seed
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PHASE          SESSIONS    STATUS
+PHASE               SESSIONS    STATUS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Foundation     60–64       ✅ done (45/199 tasks)
-Carousel       65          ✅ done (CF1)
-Sections-1     66          ✅ done (HS1+HS2+HS3)
-Sections-2     67, 67-b    ✅ done — HS4+HS5 complete (Session 67-b)
-Admin CRUD     68–75       ✅ done — Sessions 68–74 core admin; 75 quality pass (X3–X6)
-Store CRUD     76–77       ⏳
-User Account   78          ⏳
-Custom Fields  79          ⏳
-Public Pages   80–81       ⏳
-Cart/Checkout  82          ⏳
-Social Feed    83          ⏳
-Query/Sieve    84          ⏳
-Grouped/Sub    85–86       ⏳
-Search+Routes  87          ⏳
-Tokens         88–89       ⏳
-Deferred       90+         ⏳
+Foundation          60–64       ✅ done
+Carousel            65          ✅ done (CF1)
+Sections-1          66          ✅ done (HS1+HS2+HS3)
+Sections-2          67, 67-b    ✅ done (HS4+HS5)
+Admin CRUD          68–75       ✅ done
+──────── ALPHA GATE ─────────────────────────────────────
+Public Catalogue    76          ✅ done (VD7+VD11+VD4+VD5+VD6+VD1+VD2)
+Infra/Hotfix        76-infra    ✅ done (J13+J14+J15+INFRA1+INFRA2; Firebase reset)
+Seller Products     77          ⏳
+User Account Core   78          ⏳
+Cart Integrity      79          ⏳
+Store Settings      80          ⏳
+─────── 🚀 ALPHA RELEASE ────────────────────────────────
+Store Finance       81          ⏳
+Admin Finance       82          ⏳
+Content             83          ⏳
+Custom Fields       84          ⏳
+Sub-listings        85          ⏳
+Grouped Listings    86          ⏳
+Social Feed         87          ⏳
+Search+Routes       88          ⏳
+Query/Sieve         89          ⏳
+Color Tokens        90          ⏳
+Layout Tokens       91          ⏳
+Seed Scale          92–95       ⏳
+Deferred            96+         ⏳
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SEED DATA TARGETS (from P23+):

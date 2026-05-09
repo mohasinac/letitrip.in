@@ -23,9 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : typeof e.bannerImage === "string" ? e.bannerImage
     : undefined;
   return _gm({
-    title: `${event.title} — LetiTrip Events`,
+    title: `${event.title} — LetItRip Events`,
     description: (typeof event.description === "string" ? event.description : "").slice(0, 155) ||
-      `Join ${event.title} on LetiTrip.`,
+      `Join ${event.title} on LetItRip.`,
     image: coverImage,
     path: `/events/${id}`,
     type: "article",

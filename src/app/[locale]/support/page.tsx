@@ -5,9 +5,9 @@ import { generateMetadata as _gm } from "@/constants/seo.server";
 export const revalidate = 3600;
 
 export const metadata: Metadata = _gm({
-  title: "Support & Help Centre — LetiTrip",
+  title: "Support & Help Centre — LetItRip",
   description:
-    "Get help with buying, shipping, payments, auctions, pre-orders and selling on LetiTrip. Browse FAQs or contact our support team.",
+    "Get help with buying, shipping, payments, auctions, pre-orders and selling on LetItRip. Browse FAQs or contact our support team.",
   path: "/support",
   keywords: ["letitrip support", "collectibles marketplace help", "contact letitrip"],
 });

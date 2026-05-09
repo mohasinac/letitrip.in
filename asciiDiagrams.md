@@ -4,6 +4,101 @@
 > Every tab, column, field, button, modal, and empty state must appear. Nothing omitted.
 > Format: `## [Area] > [Page Name]`  Status: ✅ built | ⏳ planned | ⚠️ partial
 
+## Index
+
+- [Legend](#legend)
+- **Shared Components**
+  - [ListingToolbar](#shared--listingtoolbar-)
+  - [MediaUploadField](#shared--mediauploadfield-)
+  - [PageLoader](#shared--pageloader-)
+- **Admin Area**
+  - [Layout Shell](#admin--layout-shell)
+  - [Dashboard](#admin--dashboard-)
+  - [Products List](#admin--products-list-)
+  - [Product Editor](#admin--product-editor-)
+  - [Coupons List](#admin--coupons-list-)
+  - [Coupon Editor](#admin--coupon-editor-)
+  - [Blog List](#admin--blog-list-)
+  - [Blog Editor](#admin--blog-editor-)
+  - [FAQs List](#admin--faqs-list-)
+  - [FAQ Editor](#admin--faq-editor-)
+  - [Brands List](#admin--brands-list-)
+  - [Brand Editor](#admin--brand-editor-)
+  - [Categories List](#admin--categories-list-)
+  - [Category Editor](#admin--category-editor-)
+  - [Carousel List](#admin--carousel-list-)
+  - [Carousel Editor](#admin--carousel-editor-)
+  - [Homepage Sections](#admin--homepage-sections-)
+  - [Orders List](#admin--orders-list-)
+  - [Order Status/Tracking SideDrawer](#admin--order-statustracking-sidedrawer-)
+  - [Users List](#admin--users-list-)
+  - [Stores List](#admin--stores-list-)
+  - [Store Editor SideDrawer](#admin--store-editor-sidedrawer-)
+  - [Reviews List](#admin--reviews-list-)
+  - [Bids List](#admin--bids-list-)
+  - [Payouts List](#admin--payouts-list-)
+  - [Analytics](#admin--analytics-)
+  - [Site Settings](#admin--site-settings--va8--12-groups)
+  - [Feature Flags](#admin--feature-flags-)
+  - [Navigation CMS](#admin--navigation-cms-)
+  - [Nav Editor SideDrawer](#admin--nav-editor-sidedrawer-)
+  - [Media Library](#admin--media-library-)
+  - [Newsletter](#admin--newsletter-)
+  - [Contact Submissions](#admin--contact-submissions-)
+  - [Contact Editor SideDrawer](#admin--contact-editor-sidedrawer-)
+  - [Return Requests](#admin--return-requests-)
+  - [Store Addresses](#admin--store-addresses-)
+  - [Seed & Docs Panel](#admin--seed--docs-panel-)
+  - [Sessions](#admin--sessions-adminsessionsview--ll11)
+  - [Event Entries](#admin--event-entries-adminallentryview--ll12)
+  - [Notifications](#admin--notifications-adminnotificationsview--ll13)
+  - [Carts](#admin--carts-admincartsview--ll14)
+  - [Wishlists](#admin--wishlists-adminwishlistsview--ll15)
+- **Store Area**
+  - [Layout Shell](#store--layout-shell)
+  - [Dashboard](#store--dashboard-)
+  - [Products List](#store--products-list-)
+  - [Orders List](#store--orders-list-)
+  - [Order Detail SideDrawer](#store--order-detail-sidedrawer-)
+  - [Coupons List](#store--coupons-list-)
+  - [Analytics](#store--analytics-)
+  - [Storefront Edit](#store--storefront-edit-)
+  - [Shipping Config](#store--shipping-config-)
+  - [Payout Settings](#store--payout-settings-)
+  - [Addresses (Pickup Locations)](#store--addresses-pickup-locations-)
+- **User Area**
+  - [Layout Shell](#user--layout-shell)
+  - [Account Hub](#user--account-hub-)
+  - [Orders List](#user--orders-list-)
+  - [Order Detail](#user--order-detail-)
+  - [Wishlist](#user--wishlist-)
+  - [Addresses](#user--addresses-)
+  - [Profile Edit](#user--profile-edit-)
+  - [Settings](#user--settings-)
+  - [Notifications](#user--notifications-)
+- **Public Area**
+  - [Homepage](#public--homepage-)
+  - [Products Listing](#public--products-listing-)
+  - [Auctions Listing](#public--auctions-listing-)
+  - [Product Detail](#public--product-detail-)
+  - [Auction Detail](#public--auction-detail-)
+  - [Store Detail](#public--store-detail-)
+  - [Categories Listing](#public--categories-listing-)
+  - [Category Detail](#public--category-detail-)
+  - [Brands Listing](#public--brands-listing-)
+  - [Events Listing](#public--events-listing-)
+  - [Event Detail](#public--event-detail-)
+  - [Blog Listing](#public--blog-listing-)
+  - [FAQs](#public--faqs-)
+  - [Search](#public--search-)
+  - [Cart](#public--cart-)
+  - [Checkout](#public--checkout-)
+- **Auth Pages**
+  - [Login](#auth--login-)
+  - [Register](#auth--register-)
+  - [Forgot Password](#auth--forgot-password-)
+- [SeedPanel > Collection Card](#seedpanel--collection-card-expanded)
+
 ---
 
 ## Legend
@@ -24,6 +119,110 @@
 ⊞            opens edit form
 🗑            delete action
 ⋮            row action menu
+```
+
+---
+
+## Shared > ListingToolbar ✅
+
+```
+Component: appkit/src/ui/components/ListingToolbar.tsx
+Used by: all 11 *IndexListing + Store*Listing components
+
+Mobile layout (two rows):
+┌─────────────────────────────────────────────────────────────────┐
+│  [🔍 Search…                                         [🔍]]      │  ← full-width search row
+├───────────────────────────────────────────────────────────────  │
+│  [⚙ Filters (N)]  [Sort: … ▾]  [⊞/≡]  [↺]  {extra}           │  ← controls row
+└─────────────────────────────────────────────────────────────────┘
+
+Desktop layout (single row):
+┌─────────────────────────────────────────────────────────────────┐
+│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡]  [↺]  {extra}  │
+└─────────────────────────────────────────────────────────────────┘
+
+Controls & update behaviour:
+  [🔍 Search]     input + commit button / Enter key → DEFERRED (URL updated on commit only)
+  [⚙ Filters (N)] opens filter drawer → all drawer fields DEFERRED until [Apply Filters]
+  [Sort ▾]        dropdown → INSTANT URL update (table.set "sort")
+  [⊞/≡]           grid/list view toggle → INSTANT (NON_RESETTING_KEY, no page reset)
+  [↺]             reset ALL icon (RotateCcw) → INSTANT table.setMany clears q+sort+all filters
+                  visible only when hasActiveState=true (search/sort/toggle/filter is non-default)
+  {extra}         per-listing slot — e.g. Show ended [tog], Show sold [tog], Show closed [tog]
+                  these toggles are also INSTANT (table.set with URL update)
+
+Filter drawer (fixed left overlay, z-50, slides in):
+┌────────────────────────────────────┐
+│  Filters              [Clear all] [✕] │  ← Clear all = DEFERRED (clears pendingFilters only,
+├────────────────────────────────────┤       no URL touch; Apply commits to URL)
+│  <FilterPanel fields — pending>    │
+├────────────────────────────────────┤
+│  [Apply Filters (N)]               │  ← commits pendingFilters → URL via table.setMany
+└────────────────────────────────────┘
+
+Toolbar reset [↺] scope per listing:
+  AuctionsIndexListing     clears: q, sort→"auctionEndDate", showEnded, FILTER_KEYS
+  ProductsIndexListing     clears: q, sort→"-createdAt",     showSold,  FILTER_KEYS
+  PreOrdersIndexListing    clears: q, sort→"-createdAt",     showClosed, FILTER_KEYS
+  StoresIndexListing       clears: q, sort→"-createdAt",                FILTER_KEYS
+  StoreProductsListing     clears: q, sort→"-createdAt",                FILTER_KEYS
+  StoreAuctionsListing     clears: q, sort→"auctionEndDate",            FILTER_KEYS
+  StorePreOrdersListing    clears: q, sort→"-createdAt",                FILTER_KEYS
+  CategoriesIndexListing   clears: q, sort→"name",                      FILTER_KEYS
+  ReviewsIndexListing      clears: q, sort→"-createdAt",                FILTER_KEYS
+  EventsIndexListing       clears: q, sort→"startsAt",                  FILTER_KEYS
+  BlogIndexListing         clears: q, sort→"-publishedAt",              FILTER_KEYS
+```
+
+---
+
+## Shared > MediaUploadField ✅
+
+```
+Component: appkit/src/features/media/upload/MediaUploadField.tsx
+Default: captureSource="both", captureMode="photo"
+
+Tab bar (only when showYoutube or showExternal is true):
+  [Upload]  [YouTube]  [External URL]
+
+─── Upload tab (default) ─────────────────────────────────────────────────────
+
+When captureSource="both" (default) AND isCameraSupported:
+  [📁 Upload file]  [📷 Use camera]   ← mode toggle buttons
+
+  File mode (inputMode="file"):
+  ┌──────────────────────────────────────────────────────┐
+  │  Choose file  (dashed border button)                 │  → opens hidden <input type=file>
+  └──────────────────────────────────────────────────────┘
+
+  Camera mode (inputMode="camera"):
+  ┌──────────────────────────────────────────────────────┐
+  │  <CameraCapture> live viewfinder                     │
+  │  [📷 Capture]                                        │
+  └──────────────────────────────────────────────────────┘
+
+When captureSource="file-only":   shows file picker only (no toggle)
+When captureSource="camera-only": shows camera only (no toggle)
+When isCameraSupported=false + captureSource="both":
+  fallback → hidden <input capture="environment"> triggered by button
+
+After upload / value set:
+  ┌─────────────────────────────────────────┐
+  │  [image or video preview]               │
+  │  [Edit video ▾]  [Remove]               │  ← video only: edit opens trim/thumbnail modals
+  └─────────────────────────────────────────┘
+
+─── YouTube tab ──────────────────────────────────────────────────────────────
+  [YouTube video ID or URL _______________]  [Apply]
+
+─── External URL tab ─────────────────────────────────────────────────────────
+  [https://…  ___________________________]  [Apply]
+  "External URLs are stored as-is and are not watermarked."
+
+Staged-URL cleanup:
+  Every uploaded URL is tracked in stagedUrlsRef.
+  On unmount (if not isPersisted): calls onAbort(stagedUrls[]) → parent DELETE /api/media?url=…
+  On save: parent sets isPersisted=true to suppress cleanup.
 ```
 
 ---
@@ -1660,7 +1859,7 @@ SideDrawer:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Products                                                                    │
 ├──────────────┬──────────────────────────────────────────────────────────────┤
-│  FILTERS     │  TOOLBAR: [🔍 q=...]  [Sort ▾]  [Grid/List toggle]          │
+│  FILTERS     │  TOOLBAR: [🔍 q=…  🔍]  [⚙ Filters (N)]  [Sort ▾]  [⊞/≡]  [↺]  [Show sold ○] [Select]  │
 │  ────────────│  ─────────────────────────────────────────────────────────── │
 │  Category    │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
 │  [tree]      │  │ 🖼        │ │ 🖼        │ │ 🖼        │ │ 🖼        │       │
@@ -1678,6 +1877,14 @@ SideDrawer:
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
+> **Firestore query constraint (J13):** The standard-products query filters on
+> `where("isAuction","==",false)` + `where("isPreOrder","==",false)`.
+> Every standard product document **MUST** have both `isAuction: false` and
+> `isPreOrder: false` explicitly set — Firestore `==` does NOT match absent fields.
+> Required composite indexes: `(status ASC, isAuction ASC, createdAt DESC)` and
+> `(status ASC, isAuction ASC, isPreOrder ASC, createdAt DESC)`.
+> Both are in `appkit/firebase/base/firestore.indexes.json`.
+
 ---
 
 ## Public > Auctions Listing ✅
@@ -1686,8 +1893,8 @@ SideDrawer:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Live Auctions                                                               │
 ├──────────────┬──────────────────────────────────────────────────────────────┤
-│  FILTERS     │  [All] [Ending Soon] [Just Started] [Upcoming] [Ended]       │
-│  Category    │  [🔍 q=...]  [Sort: Ending Soon ▾]  [Grid/List ▾]           │
+│  FILTERS     │  [🔍 q=…  🔍]  [⚙ Filters (N)]  [Sort: Ending Soon ▾]  [⊞/≡]  [↺]  [Show ended ○]  │
+│  Category    │                                                               │
 │  Brand       │  ─────────────────────────────────────────────────────────── │
 │  Starting bid│  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │
 │  [₹min–₹max] │  │ 🖼        │  │ 🖼        │  │ 🖼        │                  │
@@ -1721,9 +1928,55 @@ SideDrawer:
 │                           │  │            [Make Offer]  [♡ Wishlist]    │  │
 │                           │  └──────────────────────────────────────────┘  │
 │                           │                                                 │
-│                           │  Sold by: CardGame Hub [Visit Store →]          │
-│                           │  Store Rating: ★★★★★ (124 reviews)             │
+│                           │  ┌──── Sold by ──────────────────────────────┐  │
+│                           │  │  CardGame Hub          [Visit Store →]    │  │
+│                           │  └───────────────────────────────────────────┘  │
 ├───────────────────────────┴─────────────────────────────────────────────────┤
+│  SUB-LISTING SECTION (⏳ SC3) — shown if sublistingCategoryId is set        │
+│                                                                              │
+│  COLLAPSED (default):                                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  ▶  More listings like this: Base Set Charizard 108/120  (6)        │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  EXPANDED (user clicks header):                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  ▼  More listings like this: Base Set Charizard 108/120  (6)        │    │
+│  │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐           │    │
+│  │  │  ◯   │ │  ◯   │ │ ◉◉◉ │ │  ◯   │ │  ◯   │ │  ◯   │ View all→ │    │
+│  │  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘           │    │
+│  │  PSA 10   BGS 9   [THIS]   Raw      CGC 9    PSA 8                 │    │
+│  │  ₹3.2L    ₹2.8L   ₹4.5L   ₹80K     ₹2.1L    ₹1.9L                │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│  (circular ~64px cards; current highlighted with ring; click = navigate)   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  GROUP SECTION (⏳ GP1) — shown if groupId is set; products + pre-orders    │
+│                                                                              │
+│  COLLAPSED (default):                                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  ▶  Part of: Human Toy Complete Set  (5 parts)                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  EXPANDED (user clicks header):                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  ▼  Part of: Human Toy Complete Set  (5 parts)  [View whole group→] │    │
+│  │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐                    │    │
+│  │  │ ◉◉◉ │ │  ◯   │ │  ◯   │ │  ◯   │ │  ◯   │                    │    │
+│  │  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘                    │    │
+│  │  [THIS]   Legs     Arms     Torso    Cape                           │    │
+│  │  ₹4,500   ₹1,200   ₹990    ₹1,500   ₹2,100                        │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│  (circular ~64px selectable cards; current has ring highlight; click=nav)  │
+│                                                                              │
+│  "View whole group" Modal (opens on button click):                          │
+│  ┌──── GROUP: Human Toy Complete Set ─────────────────────────────────┐    │
+│  │  [🖼] Head (THIS)   New      ₹4,500   [View]                       │    │
+│  │  [🖼] Legs          Used     ₹1,200   [View] [Preview ▾]           │    │
+│  │  [🖼] Arms          New      ₹990     [View]                       │    │
+│  │  [🖼] Torso         New      ₹1,500   [View]                       │    │
+│  │  [🖼] Cape          Sealed   ₹2,100   [View]                       │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+├─────────────────────────────────────────────────────────────────────────────┤
 │  TABS: [Description] [Specifications] [Reviews (47)] [Custom Sections...]   │
 │  ────────────────────────────────────────────────────────────────────────── │
 │  TAB: Description — [RichTextRenderer]                                       │
@@ -1733,8 +1986,6 @@ SideDrawer:
 │  BELOW FOLD:                                                                 │
 │  "More from CardGame Hub" → [product carousel]                               │
 │  "Similar Products" → [product carousel]                                     │
-│  "Part of group" → ShowGroupSection (⏳ GP1)                                 │
-│  "More listings like this" → SublistingCarouselSection (⏳ SC3)              │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 STICKY BUY BAR (on scroll past buy box):
@@ -1757,19 +2008,30 @@ STICKY BUY BAR (on scroll past buy box):
 │                           │  Starting Bid: ₹99,999                           │
 │                           │  Reserve: Met ✓                                 │
 │                           │  Bid Increment: ₹5,000                          │
+│                           │  [Trading Cards] · [Pokémon Company]            │
 │                           │                                                 │
 │                           │  ┌──────────────────────────────────────────┐  │
 │                           │  │  Your Bid ₹ [input min ₹3,04,999]        │  │
 │                           │  │  [Place Bid] — opens PlaceBidForm        │  │
 │                           │  └──────────────────────────────────────────┘  │
 │                           │  [♡ Watch Auction]                              │
+│                           │                                                 │
+│                           │  ┌──── Listed by ────────────────────────────┐ │
+│                           │  │  CardGame Hub          [Visit Store →]    │ │
+│                           │  └───────────────────────────────────────────┘ │
 ├───────────────────────────┴─────────────────────────────────────────────────┤
+│  SUB-LISTING SECTION (⏳ SC3) — same collapsible section as Product Detail  │
+│  COLLAPSED: ▶  More listings like this: [category name]  (N)               │
+│  EXPANDED:  ▼  [circular ~64px card scroller + View all →]                 │
+│  (current highlighted; click = navigate; collapsed by default)             │
+├─────────────────────────────────────────────────────────────────────────────┤
 │  TABS: [Description] [Bid History] [Specifications] [Reviews]               │
 │  TAB: Bid History                                                            │
 │  Bidder*    Amount      Time           Status                                │
 │  Ravi K.    ₹2,99,999   May 08 14:32   Leading                               │
 │  Priya S.   ₹2,50,000   May 08 12:01   Outbid                               │
 │  * Masked: first name + last initial only                                   │
+│  NOTE: GP1 (group row) is NOT shown on auction detail pages                 │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1812,7 +2074,7 @@ Client: CategoriesIndexListing — useUrlTable + useCategoriesFiltered
 │  [All]  [Categories]  [Brands]   ← tab bar (hidden when brandsOnly=true)    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  sticky ListingToolbar:                                                      │
-│  [🔍 Search categories…]  [⚙ Filters (N)]  [Sort: Name A–Z ▾]              │
+│  [🔍 Search categories…  🔍]  [⚙ Filters (N)]  [Sort: Name A–Z ▾]  [↺]    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  sticky Pagination (when totalPages > 1):                                    │
 │  ← 1  2  3 →                                                                │
@@ -1866,7 +2128,7 @@ Filter Drawer (fixed overlay, slides from LEFT, z-50):
 
 ---
 
-## Public > Brands Listing ⏳ (VD6)
+## Public > Brands Listing ✅
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1900,6 +2162,11 @@ Filter Drawer (fixed overlay, slides from LEFT, z-50):
 │  └───────────────────────────────────────────────────────────────────┘      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+> **Default filter constraint (J15):** `EventsListPageView.buildEventFilters()`
+> defaults to `status==active`. Valid event statuses are DRAFT/ACTIVE/PAUSED/ENDED.
+> There is NO "published" status — using `status==published` returns 0 results and
+> `staleTime:Infinity` prevents client refetch. Default tab = Active.
 
 ---
 
@@ -1944,6 +2211,13 @@ Filter Drawer (fixed overlay, slides from LEFT, z-50):
 │  └──────────┘ └──────────┘ └──────────┘                                    │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+> **SSR → client data shape (J14):** `BlogIndexPageView` (RSC) fetches via
+> `blogRepository.listPublished()` → `FirebaseSieveResult { items, total, … }`.
+> This MUST be transformed to `BlogListResponse { posts, meta }` before passing as
+> `initialData` to `BlogIndexListing`. If passed raw, `posts` is undefined → empty
+> list → `staleTime:Infinity` locks the empty state (since `initialData !== undefined`).
+> Pass `undefined` (not `null`) when SSR fails so the client fetches fresh.
 
 ---
 
@@ -2402,4 +2676,74 @@ RowActionMenu [⋮]:
 
 ---
 
-*Last updated: 2026-05-09 — Session 73: N3 store editor (isVerified+suspensionReason), AdminUserEditorView (B1/VA10), AdminOrderEditorView (B2/VA9), AdminReviewsView moderation (N2/VA11), AdminSessionsView (LL11), AdminAllEventEntriesView (LL12), AdminNotificationsView (LL13), AdminCartsView (LL14), AdminWishlistsView (LL15).*
+---
+
+## Infra > Firebase Scripts (appkit/scripts/)
+
+Reference for future sessions that need to reset Firestore or recover from index deploy failures.
+
+### firebase-reset.mjs — full wipe + clean redeploy
+
+```
+Usage:  node appkit/scripts/firebase-reset.mjs [--dry-run]
+
+What it does:
+  1. Deletes all documents in all 23 Firestore collections
+  2. Deletes all Firebase Auth users
+  3. (Optionally) deletes Cloud Functions
+  4. Runs: firebase deploy --only firestore:indexes,functions
+
+Gotcha (INFRA1, fixed 2026-05-10):
+  Uses .get().size (firebase-admin v10 compatible)
+  NOT .count().get() — that is v11+ aggregate API only.
+
+When to use:
+  - Index deploy 409 loop (see firebase-delete-indexes.mjs first)
+  - Full environment reset for testing seed data from scratch
+  - After major schema migration that touches all documents
+  - Re-seed required via /demo/seed after running this
+```
+
+### firebase-delete-indexes.mjs — bulk delete composite indexes via REST API
+
+```
+Usage:  node appkit/scripts/firebase-delete-indexes.mjs
+
+What it does:
+  1. Reads OAuth2 refresh token from ~/.config/configstore/firebase-tools.json
+  2. Gets a fresh access token via Google OAuth2 token endpoint
+  3. Lists all composite indexes via Firestore REST API
+  4. Deletes each index by resource name (sequential, with logging)
+
+When to use:
+  - `firebase deploy --only firestore:indexes` returns 409 "already exists"
+  - Partial previous deploy left indexes in CREATING state
+  - Run this BEFORE npm run firebase:deploy to clear the stuck state
+  - Safe to run anytime — only deletes indexes, not data
+
+Source (INFRA2, created 2026-05-10):
+  appkit/scripts/firebase-delete-indexes.mjs
+  Auth: ~/.config/configstore/firebase-tools.json → client_id + client_secret + refresh_token
+```
+
+### firestore.indexes.json merge system
+
+```
+Source of truth:  appkit/firebase/base/firestore.indexes.json
+Merge script:     node appkit/scripts/firebase-merge.mjs
+Output:           firestore.indexes.json (root, deployed by Firebase CLI)
+
+Rule: NEVER edit firestore.indexes.json (root) directly.
+      Always edit appkit/firebase/base/firestore.indexes.json
+      then run firebase-merge.mjs to regenerate the root file.
+
+Duplicate index gotcha (fixed 2026-05-10):
+  faqs collection had duplicate indexes for (isPinned,priority,order)
+  and (isActive,createdAt) × 2. Firebase CLI silently skips dupes in
+  the JSON but they cause 409 on redeploy if one is CREATING.
+  Check for dupes before any index-heavy deploy.
+```
+
+---
+
+*Last updated: 2026-05-10 — Session 76/76-infra: VD4+VD5+VD6+VD7+VD11+VD1+VD2 (public catalogue), J13 (products listing isAuction/isPreOrder fix), J14 (blog initialData shape), J15 (events status filter), INFRA1 (firebase-reset .count() fix), INFRA2 (firebase-delete-indexes.mjs created), Firebase full reset + 263 indexes redeployed.*

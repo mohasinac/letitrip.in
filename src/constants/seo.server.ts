@@ -31,9 +31,9 @@ const SITE_URL =
   "https://letitrip.in";
 
 export const LETITRIP_SEO: SeoConfig = createSeoConfig({
-  siteName: "LetiTrip",
+  siteName: "LetItRip",
   siteUrl: SITE_URL,
-  defaultTitle: "LetiTrip — India's Collectibles Marketplace",
+  defaultTitle: "LetItRip — India's Collectibles Marketplace",
   defaultDescription:
     "Buy, sell & auction Pokémon TCG, Hot Wheels, anime figures, Beyblades and more. India's largest collectibles marketplace.",
   defaultImage: `${SITE_URL}/media/site-og-image`,

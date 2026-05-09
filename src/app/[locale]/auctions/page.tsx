@@ -3,9 +3,9 @@ import { AuctionsListView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "Live Collectibles Auctions — LetiTrip",
+  title: "Live Collectibles Auctions — LetItRip",
   description:
-    "Bid on rare Pokémon cards, vintage Hot Wheels, 1st edition Yu-Gi-Oh!, and premium collectibles in live auctions on LetiTrip.",
+    "Bid on rare Pokémon cards, vintage Hot Wheels, 1st edition Yu-Gi-Oh!, and premium collectibles in live auctions on LetItRip.",
   path: "/auctions",
   keywords: ["pokemon card auction india", "hot wheels auction", "yugioh 1st edition auction", "collectibles auction"],
 });

@@ -300,7 +300,7 @@ export default function LayoutShellClient({
       }
       sidebarTitle="Menu"
       user={shellUser}
-      brandName="LetiTrip"
+      brandName="LetItRip"
       brandShortName="LT"
       logoHref={String(ROUTES.HOME)}
       promotionsHref={String(ROUTES.PUBLIC.PROMOTIONS)}

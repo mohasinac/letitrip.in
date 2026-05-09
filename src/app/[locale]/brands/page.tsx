@@ -3,9 +3,9 @@ import { Container, Heading, Main, Section, CategoriesIndexListing } from "@moha
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "Collectibles Brands — LetiTrip",
+  title: "Collectibles Brands — LetItRip",
   description:
-    "Shop by brand: Bandai, Mattel, Pokémon Company, Konami, Funko, NECA, Good Smile, Takara Tomy and more on LetiTrip.",
+    "Shop by brand: Bandai, Mattel, Pokémon Company, Konami, Funko, NECA, Good Smile, Takara Tomy and more on LetItRip.",
   path: "/brands",
   keywords: ["bandai india", "pokemon company", "funko india", "good smile india", "mattel india", "collectibles brands"],
 });

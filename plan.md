@@ -1,3 +1,24 @@
+# Plan — LetiTrip
+
+## Index
+
+- [Plan: Unified Listing UX Rollout](#plan-unified-listing-ux-rollout-public--admin--seller)
+- [Build Issues and Resolutions](#build-issues-and-resolutions)
+- [Theme Color Audit](#theme-color-audit)
+- [Homepage: 18-Section Map](#homepage-18-section-map)
+- [Homepage ASCII Mock — All 18 Sections (Desktop)](#homepage-ascii-mock--all-18-sections-desktop)
+- [Steps](#steps)
+- [State Matrix — Major Page Families](#state-matrix--major-page-families)
+- [Action Priority Map — Major Page Families](#action-priority-map--major-page-families)
+- [Mock Wiring Coverage — All 110 Pages](#mock-wiring-coverage--all-110-pages)
+- [Relevant Files](#relevant-files)
+- [Verification](#verification)
+- [Decisions](#decisions)
+- [Further Considerations](#further-considerations)
+- [Post-Audit Implementation Status (2026-04-25)](#post-audit-implementation-status-2026-04-25)
+
+---
+
 ## Plan: Unified Listing UX Rollout (Public + Admin + Seller)
 
 ---

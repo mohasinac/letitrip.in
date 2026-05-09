@@ -2,6 +2,24 @@
 
 A development-only web interface for managing seed data in Firestore.
 
+## Index
+
+- [🔒 Security](#-security)
+- [📍 Access](#-access)
+- [✨ Features](#-features)
+- [🎯 Usage](#-usage)
+- [🔐 Authentication Users](#-authentication-users)
+- [📊 Data Overview](#-data-overview)
+- [🛡️ Safety Features](#️-safety-features)
+- [🚨 Error Handling](#-error-handling)
+- [🧪 Testing](#-testing)
+- [📝 Notes](#-notes)
+- [🔧 Technical Details](#-technical-details)
+- [🚀 Production](#-production)
+- [📚 Related](#-related)
+
+---
+
 ## 🔒 Security
 
 - **Development Only**: This page and API are only accessible when `NODE_ENV=development`

@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Pre-Order: ${product.title}`,
     description:
       product.seoDescription ||
-      (product.description ? product.description.slice(0, 155) : `Reserve ${product.title} on LetiTrip.`),
+      (product.description ? product.description.slice(0, 155) : `Reserve ${product.title} on LetItRip.`),
     image: product.mainImage || product.images?.[0],
     path: `/pre-orders/${product.slug ?? id}`,
     type: "website",

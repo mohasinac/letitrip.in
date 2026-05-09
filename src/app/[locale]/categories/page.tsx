@@ -3,9 +3,9 @@ import { CategoriesIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "Browse Collectibles Categories — LetiTrip",
+  title: "Browse Collectibles Categories — LetItRip",
   description:
-    "Explore action figures, trading cards, diecast vehicles, model kits, spinning tops and vintage collectibles on LetiTrip.",
+    "Explore action figures, trading cards, diecast vehicles, model kits, spinning tops and vintage collectibles on LetItRip.",
   path: "/categories",
   keywords: ["action figures", "trading cards", "diecast vehicles", "gundam", "beyblade", "collectibles categories"],
 });

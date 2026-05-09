@@ -3,6 +3,11 @@
 > **Append new session entries below the DEFERRED section, newest first.**
 > After completing a task that defers or skips any spec component, add it to DEFERRED below AND log the session entry.
 
+## Index
+
+- [⚠️ Deferred / Skipped Items](#️-deferred--skipped-items--read-before-each-session)
+- [Session Log (newest first)](#session-log-newest-first)
+
 ---
 
 ## ⚠️ DEFERRED / SKIPPED ITEMS — READ BEFORE EACH SESSION
@@ -25,6 +30,58 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+# Session 76-infra — 2026-05-10 (J13, J14, J15, INFRA1, INFRA2, Firebase reset)
+
+## J13 — Products listing empty: missing isAuction/isPreOrder on seed docs + missing Firestore indexes
+
+**Root cause 1:** All 20 standard product seed docs had no `isAuction` or `isPreOrder` field.
+Firestore `where("isAuction", "==", false)` returns 0 docs when field is absent.
+
+**Root cause 2:** Missing composite index `(status, isAuction, createdAt)` — FAILED_PRECONDITION
+silently caught as null initialData → staleTime:Infinity → no client refetch.
+
+**Files changed (appkit/):**
+- `appkit/src/seed/products-standard-seed-data.ts` — added `isAuction: false, isPreOrder: false` to all 20 standard product documents
+- `appkit/firebase/base/firestore.indexes.json` — added `(status ASC, isAuction ASC, createdAt DESC)` and `(status ASC, isAuction ASC, isPreOrder ASC, createdAt DESC)` composite indexes
+
+## J14 — Blog listing empty: SSR initialData shape mismatch
+
+`BlogIndexPageView` passed `FirebaseSieveResult` (has `.items`) directly as `initialData` to
+`BlogIndexListing` which expects `BlogListResponse` (has `.posts`). `posts` always undefined.
+
+**Files changed (appkit/):**
+- `appkit/src/features/blog/components/BlogIndexPageView.tsx` — transform SSR result to `BlogListResponse { posts, meta }` before passing; pass `undefined` on SSR failure (not null)
+
+## J15 — Events listing empty: wrong default status filter
+
+`EventsListPageView.buildEventFilters()` defaulted to `"status==published"` — no events have this status.
+
+**Files changed (appkit/):**
+- `appkit/src/features/events/components/EventsListPageView.tsx` line 24 — changed default `"status==published"` to `"status==active"`
+
+## INFRA1 — firebase-reset.mjs dry-run crash: .count() not in firebase-admin v10
+
+**Files changed (appkit/):**
+- `appkit/scripts/firebase-reset.mjs` — replaced `collectionRef.count().get()` + `.data().count` with `collectionRef.get()` + `.size`
+
+## INFRA2 — New firebase-delete-indexes.mjs utility script
+
+Fixes 409 "index already exists" when partial deploys leave indexes in CREATING state.
+Uses firebase-tools OAuth refresh token + Firestore REST API to bulk-delete all composite indexes.
+Also fixed 2 duplicate faqs entries in `appkit/firebase/base/firestore.indexes.json`:
+`isPinned,priority,order` (positions 34+38) and `isActive,createdAt` (positions 58+206).
+
+**Files changed (appkit/):**
+- `appkit/scripts/firebase-delete-indexes.mjs` — NEW utility script
+- `appkit/firebase/base/firestore.indexes.json` — removed 2 duplicate faqs index entries
+
+## Firebase full reset + redeploy
+
+Full Firebase project reset (all Firestore, Auth, 24 Cloud Functions, 205 indexes wiped + redeployed clean).
+263 composite indexes deployed. Re-seed required: go to `/demo/seed` and seed all 23 collections.
 
 ---
 

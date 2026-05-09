@@ -10,7 +10,7 @@ import {
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
-  title: "LetiTrip — India's Collectibles Marketplace",
+  title: "LetItRip — India's Collectibles Marketplace",
   description:
     "Buy, sell & auction Pokémon TCG, Hot Wheels, anime figures, Beyblades and more. India's largest collectibles marketplace.",
   path: "/",

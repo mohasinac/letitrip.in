@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ storeSlug
   const store = await getStoreBySlug(storeSlug).catch(() => null);
   if (!store) return { title: "Store Not Found" };
   return _gm({
-    title: `${store.storeName} — LetiTrip`,
+    title: `${store.storeName} — LetItRip`,
     description:
       store.storeDescription?.slice(0, 155) ||
-      `Shop collectibles from ${store.storeName} on LetiTrip.`,
+      `Shop collectibles from ${store.storeName} on LetItRip.`,
     image: store.storeLogoURL,
     path: `/stores/${storeSlug}`,
     type: "website",

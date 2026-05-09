@@ -200,7 +200,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       "Anime Vault India — Anime figures + merch, Hyderabad",
       "Retro Vault India — Retro gaming cartridges + consoles",
       "Cosplay India Hub — Cosplay accessories + props",
-      "LetiTrip Official — Platform's own curated store",
+      "LetItRip Official — Platform's own curated store",
     ],
     pendingItems: [
       "Store rating averages (computed from reviews)",
@@ -655,7 +655,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "rich-text-image",       pattern: "rich-text-{entity}-{name}-image-{n}.{ext}", example: "rich-text-blog-how-to-grade-cards-image-1.webp" },
     ],
     seededItems: [
-      "8 posts: How to Grade Pokémon Cards, Hot Wheels Treasure Hunt Guide, Beyblade Burst Meta Analysis, Top 10 Anime Figures 2025, Retro Gaming Hidden Gems, Cosplay Accessory Guide, Pokémon TCG Scarlet & Violet Set Review, Selling on LetiTrip Guide",
+      "8 posts: How to Grade Pokémon Cards, Hot Wheels Treasure Hunt Guide, Beyblade Burst Meta Analysis, Top 10 Anime Figures 2025, Retro Gaming Hidden Gems, Cosplay Accessory Guide, Pokémon TCG Scarlet & Violet Set Review, Selling on LetItRip Guide",
       "Rich HTML content (600–1200 words) with h2/h3 headings",
       "SEO: title, metaDescription, og:image per post",
       "Tags, category, author, readTime, publishedAt",
@@ -698,7 +698,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "event-additional-image", pattern: "event-{title}-image-{n}.{ext}", example: "event-pokemon-regional-tournament-mumbai-image-4.webp" },
     ],
     seededItems: [
-      "8 events: Pokémon Regional Tournament Mumbai, Hot Wheels Collector Fair Delhi, Anime Expo Bangalore, Beyblade Burst Open Chennai, TCG Trade Meet Hyderabad, Cosplay Championship Pune, Retro Gaming Fest, LetiTrip Summer Sale Event",
+      "8 events: Pokémon Regional Tournament Mumbai, Hot Wheels Collector Fair Delhi, Anime Expo Bangalore, Beyblade Burst Open Chennai, TCG Trade Meet Hyderabad, Cosplay Championship Pune, Retro Gaming Fest, LetItRip Summer Sale Event",
       "Event types: TOURNAMENT, CONVENTION, MEETUP, SALE",
       "Location + date + registration link + banner image",
       "Capacity and current registration count",
@@ -821,7 +821,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     description: "FAQ entries across Help Centre categories. Homepage-eligible FAQs shown in the FAQ section.",
     slugPattern: "faq-*  (e.g. faq-how-does-bidding-work)",
     seededItems: [
-      "21 FAQs across categories: Ordering & Checkout, Shipping & Delivery, Returns & Refunds, Auction Bidding, Selling on LetiTrip, Authenticity & Grading",
+      "21 FAQs across categories: Ordering & Checkout, Shipping & Delivery, Returns & Refunds, Auction Bidding, Selling on LetItRip, Authenticity & Grading",
       "5 FAQs marked isHomepageEligible=true",
       "Rich text answers with links",
       "sortOrder per category",
@@ -1861,7 +1861,7 @@ export function SeedPanel() {
           <div className="flex flex-col items-center text-center gap-3 pt-2">
             <span className="text-5xl leading-none">🎮</span>
             <h1 className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">
-              LetiTrip Demo Seed
+              LetItRip Demo Seed
             </h1>
             <p className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">
               Dev-only seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.

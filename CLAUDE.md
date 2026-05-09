@@ -1,6 +1,24 @@
-# CLAUDE.md — LetiTrip Project Guide
+# CLAUDE.md — LetItRip Project Guide
 
 > Read this file at the start of every session. It is the single source of truth for project context, rules, and data references that are not already in the code.
+>
+> **Brand name**: **LetItRip** — always this exact casing in UI copy, messages, and documentation. Domain is letitrip.in but the brand display name is LetItRip. Never write "LetiTrip", "Letitrip", or "Let It Rip".
+
+## Index
+
+- [🛑 Rule #1 — Stop and Ask Before Deciding](#-rule-1--stop-and-ask-before-deciding)
+- [🛑 Rule #2 — ✅ Does Not Mean Working](#-rule-2---does-not-mean-working)
+- [🛑 Rule #3 — Schema/Logic Changes Must Update Older Functionality](#-rule-3--schemalogic-changes-must-update-older-functionality)
+- [Project Summary](#project-summary)
+- [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
+- [Seed Data Reference](#seed-data-reference)
+- [Slug Prefix System](#slug-prefix-system-enforced-everywhere)
+- [Media Filename Slug Patterns](#media-filename-slug-patterns)
+- [Appkit Patterns](#appkit-patterns-re-read-before-writing-any-component)
+- [Seed API Reference](#seed-api-reference)
+- [Firebase Infra Scripts](#firebase-infra-scripts-appkitscripts)
+- [CSS Variable Reference](#css-variable-reference-sticky-positioning)
+- [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 
 ---
 
@@ -43,7 +61,7 @@ When implementing a new feature that changes a schema, data model, API contract,
 
 ## Project Summary
 
-**LetiTrip** — India's largest collectibles marketplace. Monorepo:
+**LetItRip** — India's largest collectibles marketplace. Monorepo:
 
 | Folder | Purpose |
 |--------|---------|
@@ -222,6 +240,21 @@ All media files use SEO slugs via `generateMediaFilename(ctx)` in `appkit/src/ut
 ```
 
 **Status endpoint**: `GET /api/demo/seed` → `{ data: { collections: [{ name, seedCount, existingCount }] } }`
+
+---
+
+## Firebase Infra Scripts (appkit/scripts/)
+
+> Use these when the environment needs a hard reset or index deploy is stuck.
+
+| Script | When to use |
+|--------|------------|
+| `firebase-reset.mjs [--dry-run]` | Full wipe: deletes all Firestore docs + Auth users, redeploys indexes + functions. Always re-seed via `/demo/seed` afterward. |
+| `firebase-delete-indexes.mjs` | Clears all composite indexes via REST API. Run **before** `npm run firebase:deploy` when getting 409 "already exists" errors. |
+
+**Index source of truth**: `appkit/firebase/base/firestore.indexes.json` → run `firebase-merge.mjs` → `firestore.indexes.json` (root). Never edit the root file directly.
+
+**Seed data rule (J13)**: Every standard product document MUST have `isAuction: false` and `isPreOrder: false` explicitly set. Firestore `where("isAuction", "==", false)` does NOT match documents where the field is absent.
 
 ---
 
