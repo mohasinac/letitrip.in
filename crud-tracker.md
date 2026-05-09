@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-09 — Session 72: M1+VA19 ✅ (analytics wired). 70 done, 150 remaining.
+> **Last updated:** 2026-05-09 — Session 72: M1+VA19+VA3+VA12 ✅ (analytics + categories CRUD + stores management). 73 done, 147 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -11,10 +11,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 237 |
-| ✅ Done | 70 |
+| ✅ Done | 73 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 150 |
+| ⏳ Remaining | 147 |
 | 🚫 Superseded | 17 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8) |
 
 ---
@@ -400,7 +400,7 @@ Rules to keep top-of-mind every task:
 |---|------|-----------|--------|------|-------|
 | VA1 | Admin Carousel create/edit form | S | 🚫 | | **Superseded by CF1** — full carousel redesign covers this |
 | VA2 | Admin Products CRUD — 3-mode editor + quick-toggle row flags | L | ✅ | Part 69 | A1 covers editor. VA2: 4-flag Flags column (featured/isPromoted/isOnSale/isSold) on AdminProductsView rows; optimistic overrides + PATCH + toast on error; isOnSale+isSold added to ProductDocument/ProductItem/PATCH schema; isFeatured→featured bug fixed. |
-| VA3 | Admin Categories CRUD editor | S | ⏳ | | See A2. NEW `AdminCategoryEditorView`. Fields: name, slug (auto-generated), parentCategory (select), description, imageUrl, isActive toggle. |
+| VA3 | Admin Categories CRUD editor | S | ✅ | Session 72 | `AdminCategoryEditorView` existed + fixed: loadCategoryOptions response shape bug; AdminCategoriesView: added getRowHref; RC4: deleted [[...action]], created categories/page.tsx + fixed new/[id]/edit with useRouter. |
 | VA4 | Admin Blog CRUD editor | M | ✅ | Session 70 | See A4. `AdminBlogEditorView` built. Fields: title, slug (auto), excerpt, content (RichTextEditor), coverImage (ImageUpload), category (Select), tags (TagInput), status (Select), isFeatured (Toggle), authorName, publishedAt (date), metaTitle, metaDescription. |
 | VA5 | Admin FAQs CRUD editor | S | ✅ | Session 71 | See A5. `AdminFaqEditorView` built with all fields per spec + slug, priority, isPinned, showOnHomepage, showInFooter toggles. |
 | VA6 | Admin Coupons CRUD editor | L | ✅ | Session 70 | See A3. `AdminCouponEditorView` built. Fields: code, name, description, type (Select), discountValue, maxDiscount, minPurchase, buyQty/getQty (for buy_x_get_y), totalLimit, perUserLimit, currentUsage, startDate, endDate, isActive, firstTimeOnly, combinable, appliesToAuctions. Conditional fields per type. |
@@ -409,7 +409,7 @@ Rules to keep top-of-mind every task:
 | VA9 | Admin Orders status + tracking update form | M | ⏳ | | See B2. SideDrawer on row click: status select, tracking number input, carrier select, internal note, refund amount. Action buttons: Approve, Reject, Refund. |
 | VA10 | Admin Users role/ban management form | M | ⏳ | | See B1. Row action: role select (admin/seller/user), ban toggle + reason input. SideDrawer shows full user profile. API: PUT /api/admin/users/[uid]. |
 | VA11 | Admin Reviews moderation actions | M | ⏳ | | See N2. Row actions: Approve, Reject, Feature, Reply (text field). REUSE: `ReviewModal` for full view. API: PUT /api/admin/reviews/[id]. |
-| VA12 | Admin Stores management form | M | ⏳ | | See N3. Actions: approve/reject/suspend (+ reason field), verify badge toggle. SideDrawer with store detail. API: PUT /api/admin/stores/[uid]. |
+| VA12 | Admin Stores management form | M | ✅ | Session 72 | `AdminStoreEditorView` SideDrawer built: storeStatus select, adminNotes textarea, isFeatured toggle. AdminStoresView wired with RowActionMenu → SideDrawer. DataTable + AdminListingScaffold: added renderRowActions prop. |
 | VA13 | Admin Payouts mark-paid + CSV export | M | ⏳ | | See M3. Row action: mark-paid (with reference number input). Export CSV button in toolbar. API: PUT /api/admin/payouts/[id], GET /api/admin/payouts/export. |
 | VA14 | Admin Newsletter unsubscribe + CSV export | S | ⏳ | | See B6. Row action: Unsubscribe (with confirm dialog). Export CSV button. API: DELETE /api/admin/newsletter/[id], GET /api/admin/newsletter/export. |
 | VA15 | Admin Contact submissions — mark-read + archive | S | ⏳ | | See B7. SideDrawer shows full message. Actions: Mark Read, Archive, Reply (mailto link). API: PUT /api/admin/contact-submissions/[id]. |

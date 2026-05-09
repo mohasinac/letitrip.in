@@ -27,6 +27,38 @@
 
 ---
 
+# Session 72 — 2026-05-09 (catalogue release)
+
+## VA3+VA12+RC4 — Categories CRUD fixed + Stores management wired
+
+**Root causes fixed:**
+1. `AdminCategoryEditorView.loadCategoryOptions` — was reading `.items` but API returns `.data` array inside successResponse wrapper → fixed response shape parsing
+2. `AdminCategoriesView` — no `getRowHref` prop → added, rows now navigate to edit page
+3. RC4: `categories/[[...action]]/page.tsx` + `categories/new/page.tsx` + `categories/[id]/edit/page.tsx` coexisted → Next.js "same specificity" build error → deleted `[[...action]]`, created `categories/page.tsx` list page
+4. `categories/new/page.tsx` + `[id]/edit/page.tsx` had no `onSaved`/`onDeleted` → added `useRouter` navigation callbacks
+5. `AdminStoresView` had no row actions → added `RowActionMenu` with "Manage" → opens `AdminStoreEditorView` SideDrawer
+6. `AdminStoreEditorView` didn't exist → built (storeStatus select, adminNotes textarea, isFeatured toggle, PATCH to STORE_BY_ID)
+7. `DataTable` + `AdminListingScaffold` had no `renderRowActions` prop → added; `DataTable` renders extra column with action cell (stopPropagation to prevent row navigation conflict)
+
+**Files changed (appkit/):**
+- `AdminCategoriesView.tsx` — added `getRowHref` prop
+- `AdminCategoryEditorView.tsx` — fixed `loadCategoryOptions` response parsing
+- `AdminStoresView.tsx` — added RowActionMenu + AdminStoreEditorView wiring
+- `AdminStoreEditorView.tsx` — NEW SideDrawer component
+- `DataTable.tsx` — added `renderRowActions` prop + extra column render
+- `AdminListingScaffold.tsx` — added `renderRowActions` prop + pass-through to DataTable
+- `components/index.ts` + `index.ts` — exported AdminStoreEditorView
+
+**Files changed (src/):**
+- `admin/categories/page.tsx` — NEW list page (was [[...action]])
+- `admin/categories/[[...action]]/page.tsx` — DELETED (RC4 fix)
+- `admin/categories/new/page.tsx` — added useRouter onSaved/onDeleted
+- `admin/categories/[id]/edit/page.tsx` — added useRouter + use(params)
+
+**tsc:** 0 errors both repos. **Commits:** 978e1f0 (appkit), 9bb5d3a87 (main)
+
+---
+
 # Session 72 — 2026-05-09
 
 ## M1/VA19 — Analytics date range forwarding

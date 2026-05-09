@@ -7,14 +7,16 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 72 (M1, VA19, M3, VA13, I3)
+## ⚡ CURRENT TASK — Session 72 (catalogue release + remaining finance)
 
 | Task | Status | What to do |
 |------|--------|------------|
 | **M1** | ✅ | Analytics date range forwarded to Firebase Function |
 | **VA19** | ✅ | Analytics charts + date range picker already wired |
-| **M3** | ⏳ | Payouts mark-paid + CSV export — AdminPayoutsView + /api/admin/payouts/export |
-| **VA13** | ⏳ | Same as M3 — SideDrawer for mark-paid, export button |
+| **VA3** | ✅ | AdminCategoryEditorView fixed (loadCategoryOptions bug, getRowHref, RC4 routes) |
+| **VA12** | ✅ | AdminStoreEditorView SideDrawer built; AdminStoresView RowActionMenu wired |
+| **M3** | ⏳ | Payouts mark-paid + CSV export |
+| **VA13** | ⏳ | Same as M3 |
 | **I3** | ⏳ | Seed reset button in AdminSectionsView toolbar |
 
 ### Completed last session (71)
@@ -392,9 +394,9 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–71, 67-b (70 tasks ✅)
+Sessions done: 60–71, 67-b (73 tasks ✅)
 Current:       72 (M3, VA13, I3 remaining) — Payouts mark-paid/export + sections seed reset
-Next:          73 (N3, VA12, B1, VA10, B2, VA9, N2, VA11)
+Next:          73 (N3, B1, VA10, B2, VA9, N2, VA11) — VA12 done in 72
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE          SESSIONS    STATUS
