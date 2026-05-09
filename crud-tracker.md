@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 — Session 79: FAQ seed data expanded from 20 to 53 FAQs across 7 categories with platform risk disclaimers + store-set policy language; homepage section seed stats updated to live metrics (source/metric/suffix); `LiveStatMetric` type + live-stats.ts added; `MarketplaceHomepageView.tsx` refactored into 4 focused files (section-defaults.ts, section-helpers.ts, section-renderer.tsx, main view). 90 done, 146 remaining.
+> **Last updated:** 2026-05-10 — Session 80: ARCH3 complete — reviews `sellerId` removed from types, Zod schemas, and `useReviews` hook; replaced with `storeId`/`storeSlug`. Categories seed updated: 6 subcategories now have seller `createdBy` (user-aryan-kapoor, user-nisha-reddy, user-vikram-mehta, user-rohit-joshi, user-amit-sharma, user-priya-singh). Seed expansions from Session 79 committed: 50 standard products, 11 auctions, 8 pre-orders, 35 reviews, 8 stores, 18 users, 13 store addresses, 10 coupons. 91 done, 145 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -44,10 +44,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 255 |
-| ✅ Done | 90 |
+| ✅ Done | 91 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 146 |
+| ⏳ Remaining | 145 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -144,6 +144,7 @@ Rules to keep top-of-mind every task:
 | **77** | **Alpha: Seller Products** | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | Apply UX patterns to all 3 product create/edit forms (standard/auction/pre-order) + store profile + seller listing views — G1/G2 (templates) deferred post-alpha | 77-ux patterns built |
 | **78** | **Alpha: User Account** | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | Wishlist + order history/detail + profile edit + notifications — VC2/VC4/D3/D4/LL4/LL5 deferred post-alpha | Sessions 76–77 |
 | **79** | **Alpha: Cart Integrity** | W1, W2, W3, W4, R1 | Cart stale validation + out-of-stock section + product links in cart (all 3 types) + CRUD UX standard | Sessions 76–78 |
+| **80-arch** | **Store Identity + Seed QA** ✅ Done 2026-05-10 | ARCH3 + seed QA | Reviews sellerId → storeId/storeSlug across types, Zod schemas, useReviews hook. Categories seed: 6 niche subcategories now show seller createdBy. Seed expansions committed: 50 standard products, 11 auctions, 8 pre-orders, 35 reviews, 8 stores, 18 users, 13 store addresses, 10 coupons, 53 FAQs. | Session 79 done |
 | **80** | **Alpha: Store Settings** | UX7, C6, C7, O3, VB3, VB10, LL8 | Apply FormShell to store profile/shipping/payout (UX7) + shipping config + payout settings + store addresses — sellers must be able to get paid | Session 77 (store patterns) |
 | — | **🚀 ALPHA RELEASE** | — | End-to-end: browse → add to cart → checkout → order created; seller can list; user can see orders | Sessions 76–80 complete |
 | **81** | Store Finance | C3, VB5, C4, VB6, VB1, VB2, VB7, O4, LL7, LL9, LL10 | Coupons + orders view + payouts + reviews + bids + analytics (store side) | Sessions 77–80 |
@@ -711,7 +712,7 @@ Rules to keep top-of-mind every task:
 |---|------|-----------|--------|------|-------|
 | ARCH1 | Public API sanitization: strip sellerId from product/review/order public responses | M | ⏳ | | `/api/products/route.ts` — delete `sellerId` key before returning items. `/api/reviews/*` public list — same. Public order listing — strip. Server-side auth code keeps `sellerId` unchanged. |
 | ARCH2 | Cart items: sellerId/sellerName → storeId/storeName | M | ⏳ | | `appkit/src/features/cart/schemas/firestore.ts` CartItem: rename `sellerId`→`storeId`, `sellerName`→`storeName`. Update `/api/cart/route.ts`, `/api/cart/merge/route.ts`, `/api/cart/coupon/route.ts` (coupon scope check: storeId not sellerId). Update `appkit/src/seed/cart-seed-data.ts`. Half-rename = one atomic commit. |
-| ARCH3 | Reviews schema: remove sellerId field | S | ⏳ | | Delete `sellerId?: string` from `appkit/src/features/reviews/schemas/firestore.ts`. Remove from `appkit/src/seed/reviews-seed-data.ts`. Update any admin review view that currently renders it. |
+| ARCH3 | Reviews schema: remove sellerId field | S | ✅ | Session 80 | Removed `sellerId` from `ReviewListParams` (types/index.ts), `reviewSchema` + `reviewListParamsSchema` (schemas/index.ts → replaced with `storeSlug`/`storeId`), `useReviews.ts` hook. `review-actions.ts` already used `storeId: product.storeId`. Seed data maps `sellerId` → `{storeId, storeName}` via `SELLER_STORE` lookup at export time. |
 | ARCH4 | Admin payouts: storeId/storeName identity + mark-paid + CSV export | M | ✅ | Session 72 | `AdminPayoutsView`: storeName/storeId identity (sellerName fallback until ARCH8); RowActionMenu "Mark paid" → Modal (1 field: transactionId); Export CSV actionsSlot button downloads via GET /api/admin/payouts/export; PATCH /api/admin/payouts/[id] for mark-paid. NEW: `src/app/api/admin/payouts/export/route.ts` — text/csv, columns: id/storeId/storeName/amount/status/transactionId/periodStart/periodEnd/createdAt. ADMIN_ENDPOINTS.PAYOUTS_EXPORT added. |
 | ARCH5 | Admin payouts weekly batch: group by storeId not sellerId | S | ⏳ | | `/api/admin/payouts/weekly/route.ts` — replace `order.sellerId` grouping key with `order.storeId`; fetch store name via `storeRepository.findById(storeId)` instead of `userRepository.findById(sellerId)`; update payout document written: `storeId`/`storeName` (keep `sellerId` as internal field for the payout record but don't group by it). |
 | ARCH6 | Public product cards + detail pages: show store identity | M | ⏳ | | Everywhere a product card or detail page shows "seller" info, switch to store: `storeName` + link to `/stores/{storeSlug}`. Affects: `ProductCard`, `AuctionCard`, `PreorderCard`, product detail page. Never show `sellerName` or `sellerId` to public users. |

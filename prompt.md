@@ -7,7 +7,15 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 79 ✅ COMPLETE 2026-05-10 (FAQ Expansion + Live Stats + Homepage View Refactor)
+## ⚡ CURRENT TASK — Session 80-arch ✅ COMPLETE 2026-05-10 (Store Identity Architecture + Seed QA)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **ARCH3** | ✅ | Removed `sellerId` from `ReviewListParams` (types), `reviewSchema` + `reviewListParamsSchema` (Zod schemas), `useReviews` hook condition. `review-actions.ts` uses `storeId: product.storeId`. `reviewsSeedData` strips `sellerId` at export via SELLER_STORE map → `{storeId, storeName}`. |
+| **Category seed createdBy** | ✅ | 6 niche subcategories updated with seller user IDs: pokemon-tcg→user-aryan-kapoor, yugioh-tcg→user-nisha-reddy, hot-wheels→user-vikram-mehta, beyblade-x→user-rohit-joshi, gunpla→user-amit-sharma, nendoroids-chibis→user-priya-singh. Admin can filter categories by store creator via `byCreator` query helper. |
+| **Seed expansion QA** | ✅ | Confirmed all previous session commits: 50 standard products, 11 auctions, 8 pre-orders, 35 reviews, 8 stores, 18 users, 13 store addresses, 10 coupons, 53 FAQs, conversations, sublistings, grouped listings. |
+
+## ⚡ PREVIOUS TASK — Session 79 ✅ COMPLETE 2026-05-10 (FAQ Expansion + Live Stats + Homepage View Refactor)
 
 | Task | Status | What was done |
 |------|--------|--------------|
