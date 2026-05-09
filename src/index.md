@@ -12,6 +12,12 @@
 |--------------|------|-------------|
 | `API_ROUTES` | `api.ts` | All API endpoint strings with ADMIN / STORE / USER sub-objects — use these everywhere, never hardcode `/api/...` strings |
 | `ROUTES` | `routes.ts` | Re-export of `ROUTES` from appkit route-map (all page paths) |
+| `ADMIN_NAV_GROUPS` | `navigation.tsx` | Admin sidebar nav group config (never define inline in layout) |
+| `STORE_NAV_GROUPS` | `navigation.tsx` | Seller dashboard sidebar nav group config |
+| `USER_NAV_GROUPS` | `navigation.tsx` | User account sidebar nav group config |
+| `SIDEBAR_SUPPORT_LINKS` | `navigation.tsx` | Support links shown at bottom of all sidebars |
+| `FOOTER_LINK_GROUPS` | `navigation.tsx` | Footer link column groups |
+| `MAIN_NAV_ITEMS` | `navigation.tsx` | Top navbar items (public header navigation) |
 | `SEO_CONFIG`, `generatePageMeta`, `generateProductMeta`, `generateStoreMeta`, `generateCategoryMeta`, `generateBrandMeta`, `generateEventMeta` | `seo.server.ts` | Server-side SEO metadata generators for generateMetadata() |
 | `FIELD_NAMES` | `field-names.ts` | Firestore field name constants (prevents typo bugs in queries) |
 | `HOMEPAGE_DATA` | `homepage-data.ts` | Static homepage section fallback data |
@@ -106,6 +112,19 @@
 | Name | File | What it does |
 |------|------|-------------|
 | `AdminAnalyticsClient` | `admin/AdminAnalyticsClient.tsx` | Analytics page client wrapper |
+
+## Admin API Routes — `src/app/api/admin/` (notable additions)
+
+| Route file | Method | Purpose |
+|-----------|--------|---------|
+| `payouts/export/route.ts` | GET | CSV export of payouts — auth: admin/moderator; up to 1000 rows sorted by createdAt desc; columns: id, storeId, storeName, amount, status, transactionId, periodStart, periodEnd, createdAt |
+| `event-entries/route.ts` | GET | All event entries — auth: admin/moderator; limit param; via eventEntryRepository.findAll (LL12) |
+| `event-entries/[id]/route.ts` | PATCH | Update entry status (CONFIRMED/WAITLISTED/CANCELLED) — auth: admin/moderator (LL12) |
+| `notifications/route.ts` | GET | All notifications — auth: admin/moderator; limit param; via notificationRepository.findAll (LL13) |
+| `notifications/[id]/route.ts` | DELETE | Delete notification — auth: admin/moderator (LL13) |
+| `notifications/[id]/resend/route.ts` | POST | Resend notification — marks isRead=false to simulate re-delivery (LL13) |
+| `carts/route.ts` | GET | All carts — auth: admin/moderator; limit param; via cartRepository.findAll (LL14) |
+| `wishlists/route.ts` | GET | Cross-user wishlist items — auth: admin/moderator; uses Firestore collectionGroup("wishlist") (subcollection, no cross-user repo method); userId extracted from ref path (LL15) |
 
 ---
 

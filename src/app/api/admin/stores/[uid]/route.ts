@@ -14,6 +14,8 @@ const updateStoreSchema = z.object({
   storeStatus: z.enum(Object.values(STORE_FIELDS.STATUS_VALUES) as [string, ...string[]]).optional(),
   adminNotes: z.string().optional(),
   isFeatured: z.boolean().optional(),
+  isVerified: z.boolean().optional(),
+  suspensionReason: z.string().optional(),
 });
 
 export const GET = withProviders(

@@ -7,36 +7,34 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 72 (catalogue release + store identity architecture)
+## ⚡ CURRENT TASK — Session 73 ✅ COMPLETE
 
-| Task | Status | What to do |
-|------|--------|------------|
-| **M1** | ✅ | Analytics date range forwarded to Firebase Function |
-| **VA19** | ✅ | Analytics charts + date range picker already wired |
-| **VA3** | ✅ | AdminCategoryEditorView fixed (loadCategoryOptions bug, getRowHref, RC4 routes) |
-| **VA12** | ✅ | AdminStoreEditorView SideDrawer built; AdminStoresView RowActionMenu wired |
-| **M3** | 🚫 | Superseded by ARCH4 |
-| **VA13** | 🚫 | Superseded by ARCH4 |
-| **ARCH4** | ✅ | Admin payouts: storeId/storeName identity + mark-paid (Modal, 1 field) + CSV export |
-| **I3** | ✅ | Seed reset button in AdminSectionsView toolbar |
+| Task | Status | What was done |
+|------|--------|--------------|
+| **N3** | ✅ | AdminStoreEditorView: isVerified toggle + suspensionReason textarea (conditional); API schema extended |
+| **B1/VA10** | ✅ | AdminUserEditorView SideDrawer built; AdminUsersView RowActionMenu "Manage" wired |
+| **B2/VA9** | ✅ | AdminOrderEditorView SideDrawer built; AdminOrdersView RowActionMenu "Update order" wired |
+| **N2/VA11** | ✅ | AdminReviewsView rewritten with full moderation: Approve/Reject/Feature/Reply/View |
+| **LL11** | ✅ | AdminSessionsView + /admin/sessions page + Sessions nav entry + revoke action |
+| **LL12** | ✅ | AdminAllEventEntriesView + /admin/event-entries page + All Entries nav entry + status actions |
+| **LL13** | ✅ | AdminNotificationsView + /admin/notifications page + Notifications nav entry + delete/resend |
+| **LL14** | ✅ | AdminCartsView + /admin/carts page + Carts nav entry (read-only diagnostic) |
+| **LL15** | ✅ | AdminWishlistsView + /admin/wishlists page + Wishlists nav entry (read-only, collectionGroup) |
 
-### Completed last session (71)
+### Completed last session (72)
 | Task | Status | Done |
 |------|--------|------|
-| **A5** | ✅ | FAQs editor — `AdminFaqEditorView.tsx` built; all fields; create/edit/delete |
-| **VA5** | ✅ | FAQ list page wired (`/admin/faqs/page.tsx`); RC4 partial (deleted old `[[...action]]`) |
-| **F5** | ✅ | Navigation CMS API routes; nav items stored in siteSettings.navbarConfig.navItems |
-| **VA7** | ✅ | Nav CMS list page — `AdminNavigationView` rewritten; up/down reorder; inline visibility toggle; SideDrawer editor |
-| **VA8** | ✅ | Site Settings 12-tab form — `AdminSiteSettingsView`; all groups; per-tab save; masked inputs; Slider for watermark |
-
-> ℹ️ **HS4-E new task** — User requested Google Reviews also available per-store on the store About page. Logged as task HS4-E in tracker (⏳).
+| **M1/VA19** | ✅ | Analytics date range forwarded to Firebase Function |
+| **VA3/VA12/RC4** | ✅ | Categories CRUD fixed + Stores management SideDrawer wired |
+| **ARCH4** | ✅ | Admin payouts: storeId/storeName identity + mark-paid + CSV export |
+| **I3** | ✅ | Seed reset button in AdminSectionsView toolbar |
 
 ### Next sessions
 | Session | Tasks | Goal |
 |---------|-------|------|
-| 73 | N3, B1, VA10, B2, VA9, N2, VA11 | Stores / Users / Orders / Reviews management forms |
-| 74 | ARCH1–ARCH3, ARCH5 | Public API sanitization + cart items schema + reviews schema |
-| 75 | ARCH6–ARCH9 | Product UI cards + seller profile + seed data unification |
+| 73 | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | Bids + Newsletter + Contact + Feature flags + Media library + Return requests + Store addresses |
+| 74 | X3, X4, X5, X6 | Dark mode + responsive + PageLoader + media filename convention |
+| 75 | O1, O2+C5, VB4, C1, VB8, C2, VB9, G1, G2, LL6 | Store profile + auction/pre-order forms + product templates |
 
 ---
 
@@ -470,3 +468,4 @@ SEED DATA TARGETS (from P23+):
   New: groupedListings  0  →    8+  (GP1)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+follow all rules and complete all end tasks, prioritize pending tasks or techdebt first

@@ -27,6 +27,106 @@
 
 ---
 
+# Session 73 — 2026-05-09 (N3, B1/VA10, B2/VA9, N2/VA11, LL11–LL15)
+
+## N3 — Admin Stores editor: isVerified + suspensionReason fields
+
+**Files changed (appkit/):**
+- `AdminStoreEditorView.tsx` — added `currentIsVerified` prop, `isVerified`/`suspensionReason` state, Verified toggle, conditional suspensionReason textarea (shown only when status==="suspended"), both fields included in PATCH payload
+- `AdminStoresView.tsx` — added `currentIsVerified={Boolean(selectedRow?._raw?.isVerified)}` to `AdminStoreEditorView`
+
+**Files changed (src/):**
+- `src/app/api/admin/stores/[uid]/route.ts` — extended `updateStoreSchema` with `isVerified: z.boolean().optional()` and `suspensionReason: z.string().optional()`
+
+## B1/VA10 — AdminUserEditorView SideDrawer + AdminUsersView RowActionMenu
+
+**Files changed (appkit/):**
+- `AdminUserEditorView.tsx` — NEW: SideDrawer with role select (user/seller/admin), isDisabled toggle + banReason textarea (conditional), emailVerified toggle, adminNotes textarea; "Delete user" danger button → ConfirmDeleteModal; PATCH + DELETE to ADMIN_ENDPOINTS.USER_BY_ID
+- `AdminUsersView.tsx` — added `UserRow` type with `_raw`, drawer state, RowActionMenu "Manage" action → AdminUserEditorView
+- `components/index.ts` — exported AdminUserEditorView
+- `index.ts` — exported AdminUserEditorView
+
+## B2/VA9 — AdminOrderEditorView SideDrawer + AdminOrdersView RowActionMenu
+
+**Files changed (appkit/):**
+- `AdminOrderEditorView.tsx` — NEW: SideDrawer with status select (all 7 statuses), trackingNumber input, carrier select (Delhivery/BlueDart/DTDC/Ekart/India Post/Other), refundAmount input (shown for REFUNDED/RETURN_REQUESTED), notes textarea; PATCH to ADMIN_ENDPOINTS.ORDER_BY_ID
+- `AdminOrdersView.tsx` — added `OrderRow` type with `_raw`, drawer state, RowActionMenu "Update order" action → AdminOrderEditorView; filter options updated to uppercase statuses
+- `components/index.ts` — exported AdminOrderEditorView
+- `index.ts` — exported AdminOrderEditorView
+
+## N2/VA11 — AdminReviewsView moderation actions
+
+**Files changed (appkit/):**
+- `AdminReviewsView.tsx` — full rewrite: patchMutation for approve/reject/feature; replyMutation for adminReply; RowActionMenu with Approve/Reject/Feature(Unfeature)/Reply/View actions; Reply uses Modal (1 field rule); View uses ViewReviewModal; Review object constructed from `_raw` with required typed fields
+
+## LL11 — AdminSessionsView + page + nav entry
+
+**Files changed (appkit/):**
+- `AdminSessionsView.tsx` — NEW: columns (user/device/browser/OS/IP-masked/lastActivity/expires/isActive badge); active-only filter toggle; Revoke action → ConfirmDeleteModal → DELETE ADMIN_ENDPOINTS.SESSION_BY_ID; maskIp helper (last octet → *)
+- `components/index.ts` + `index.ts` — exported AdminSessionsView
+- `next/routing/route-map.ts` — added `SESSIONS: "/admin/sessions"` to ROUTES.ADMIN
+
+**Files changed (src/):**
+- `src/app/[locale]/admin/sessions/page.tsx` — NEW thin wrapper
+
+## LL12 — AdminAllEventEntriesView + API routes + page + nav entry
+
+**Files changed (appkit/):**
+- `AdminAllEventEntriesView.tsx` — NEW: cross-event entries view; status filter (All/CONFIRMED/WAITLISTED/CANCELLED); RowActionMenu Confirm/Waitlist/Cancel actions → PATCH ADMIN_ENDPOINTS.ADMIN_EVENT_ENTRY_BY_ID
+- `api-endpoints.ts` — added `ADMIN_EVENT_ENTRIES` + `ADMIN_EVENT_ENTRY_BY_ID`
+- `components/index.ts` + `index.ts` — exported AdminAllEventEntriesView
+- `next/routing/route-map.ts` — added `ALL_EVENT_ENTRIES: "/admin/event-entries"` to ROUTES.ADMIN
+
+**Files changed (src/):**
+- `src/app/api/admin/event-entries/route.ts` — NEW: GET all entries via `eventEntryRepository.findAll(limit)`
+- `src/app/api/admin/event-entries/[id]/route.ts` — NEW: PATCH status (CONFIRMED/WAITLISTED/CANCELLED)
+- `src/app/[locale]/admin/event-entries/page.tsx` — NEW thin wrapper
+
+## LL13 — AdminNotificationsView + API routes + page + nav entry
+
+**Files changed (appkit/):**
+- `AdminNotificationsView.tsx` — NEW: type filter; delete + resend row actions; Resend → POST resend endpoint (marks isRead=false)
+- `api-endpoints.ts` — added `ADMIN_NOTIFICATIONS`, `ADMIN_NOTIFICATION_BY_ID`, `ADMIN_NOTIFICATION_RESEND`
+- `components/index.ts` + `index.ts` — exported AdminNotificationsView
+- `next/routing/route-map.ts` — added `NOTIFICATIONS: "/admin/notifications"` to ROUTES.ADMIN
+
+**Files changed (src/):**
+- `src/app/api/admin/notifications/route.ts` — NEW: GET via notificationRepository.findAll(limit)
+- `src/app/api/admin/notifications/[id]/route.ts` — NEW: DELETE
+- `src/app/api/admin/notifications/[id]/resend/route.ts` — NEW: POST (marks isRead=false)
+- `src/app/[locale]/admin/notifications/page.tsx` — NEW thin wrapper
+
+## LL14 — AdminCartsView + API route + page + nav entry
+
+**Files changed (appkit/):**
+- `AdminCartsView.tsx` — NEW: read-only diagnostic view; guest/auth type filter
+- `api-endpoints.ts` — added `ADMIN_CARTS`
+- `components/index.ts` + `index.ts` — exported AdminCartsView
+- `next/routing/route-map.ts` — added `CARTS: "/admin/carts"` to ROUTES.ADMIN
+
+**Files changed (src/):**
+- `src/app/api/admin/carts/route.ts` — NEW: GET via cartRepository.findAll(limit)
+- `src/app/[locale]/admin/carts/page.tsx` — NEW thin wrapper
+
+## LL15 — AdminWishlistsView + API route + page + nav entry
+
+**Files changed (appkit/):**
+- `AdminWishlistsView.tsx` — NEW: read-only wishlist insights view
+- `api-endpoints.ts` — added `ADMIN_WISHLISTS`
+- `components/index.ts` + `index.ts` — exported AdminWishlistsView
+- `next/routing/route-map.ts` — added `WISHLISTS: "/admin/wishlists"` to ROUTES.ADMIN
+
+**Files changed (src/):**
+- `src/app/api/admin/wishlists/route.ts` — NEW: GET via Firestore collectionGroup("wishlist") (subcollection — no repository cross-user query exists); extracts userId from ref path
+- `src/app/[locale]/admin/wishlists/page.tsx` — NEW thin wrapper
+
+**Navigation changes (src/):**
+- `src/constants/navigation.tsx` — Events moved from Content group to new dedicated Events group with "All Entries"; Sessions/Notifications/Carts/Wishlists added to System group; Feature Flags + Copilot remain in System group
+
+**tsc:** 0 errors both repos (after `npm run build` in appkit/). **Commit:** pending
+
+---
+
 # Session 72 — 2026-05-09 (ARCH4 + I3)
 
 ## ARCH4 — Admin payouts storeId identity + mark-paid + CSV export

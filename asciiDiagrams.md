@@ -263,7 +263,7 @@ Row ⋮ menu:
 
 ---
 
-## Admin > FAQs List ⏳ (A5)
+## Admin > FAQs List ✅ (VA5 — dedicated routes: /admin/faqs + /new + /[id]/edit)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -279,6 +279,40 @@ Row ⋮ menu:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  ← Prev   Page 1 of 3   Next →                              [10 ▾] per page │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+  [+ New FAQ] → /admin/faqs/new (AdminFaqEditorView, create mode)
+  Row click   → /admin/faqs/[id]/edit (AdminFaqEditorView, edit mode)
+  Row ⋮: Edit (→ edit page) | Delete (ConfirmDeleteModal)
+```
+
+---
+
+## Admin > FAQ Editor ✅ (A5/VA5 — SideDrawer-equivalent, dedicated page)
+
+```
+Page: /admin/faqs/new  or  /admin/faqs/[id]/edit
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  New FAQ  /  Edit FAQ                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Question *         [input — required]                                       │
+│  Slug               [input — auto-generated from question, must start faq-] │
+│  Answer *           [RichTextEditor — required, min 200px]                  │
+│  Category           [sel: Shipping / Returns / Payments / Auctions /        │
+│                           Pre-orders / General]                              │
+│  Tags               [TagInput — comma-separated keywords]                   │
+│  Display Order      [number input]                                           │
+│  Priority           [number input]                                           │
+│  ┌─ Visibility ─────────────────────────────────────────────────────────┐   │
+│  │  Active         [toggle]   Pinned          [toggle]                   │   │
+│  │  Show Homepage  [toggle]   Show in Footer  [toggle]                   │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [Delete FAQ]                              [Cancel]  [Save FAQ]              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  POST /api/admin/faqs         (create)
+  PATCH /api/admin/faqs/[id]   (update)
+  DELETE /api/admin/faqs/[id]  (delete — ConfirmDeleteModal before)
 ```
 
 ---
@@ -326,7 +360,7 @@ SideDrawer (slides in from right):
 
 ---
 
-## Admin > Categories List ✅
+## Admin > Categories List ✅ (RC4 — dedicated routes)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -342,6 +376,18 @@ SideDrawer (slides in from right):
 │  🃏     Trading Cards         1      —                ✓          ✓       ⋮  │
 │  🃏      ↳ Pokémon Cards      2      Trading Cards    ✓          ✓       ⋮  │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+  Routes (RC4 dedicated page pattern, not SideDrawer):
+    List:   GET  /admin/categories           → AdminCategoriesView
+    New:    GET  /admin/categories/new        → AdminCategoryEditorView (page)
+    Edit:   GET  /admin/categories/[id]/edit  → AdminCategoryEditorView (page)
+
+  Row click → navigate to /admin/categories/[id]/edit (not a modal)
+  [+ New Category] → navigate to /admin/categories/new
+
+  Row ⋮ → RowActionMenu:
+    [Edit]    → /admin/categories/[id]/edit
+    [Delete]  → ConfirmDeleteModal
 ```
 
 ---
@@ -536,7 +582,7 @@ SideDrawer:
 
 ---
 
-## Admin > Stores List ✅ (list view)
+## Admin > Stores List ✅ (VA3/VA12 — store identity + manage drawer)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -544,13 +590,40 @@ SideDrawer:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  [🔍 Search stores...]   [Status ▾]   [Verified ▾]   [Sort ▾]              │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Logo  Store Name        Owner         Status    Verified  Products  ⋮      │
+│  Logo  Store Name        Owner (admin)  Status    Verified  Products  ⋮     │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  🖼     CardGame Hub      user-seller-cards  Active  ✓         47       ⋮   │
-│  🖼     Diecast Garage    user-seller-diecast Active ✓         32       ⋮   │
-│  🖼     Bladers Paradise  user-seller-blader Pending ✗         5        ⋮   │
+│  🖼     CardGame Hub      Ravi Kumar    Active    ✓          47        ⋮    │
+│  🖼     Diecast Garage    Priya Sharma  Active    ✓          32        ⋮    │
+│  🖼     Bladers Paradise  Arjun Mehta   Pending   ✗          5         ⋮    │
 
-  Row ⋮ (VA12): Approve | Reject | Suspend | Verify Badge | View Store
+  Note: "Owner" column = ownerId display name; visible to admin only.
+        Public store cards show storeName/storeId only (no ownerId).
+
+  Row ⋮ → RowActionMenu:
+    [Manage]  → opens AdminStoreEditorView SideDrawer (3 fields, see below)
+    [View]    → /stores/[storeId]  (public store page, new tab)
+```
+
+---
+
+## Admin > Store Editor SideDrawer ✅ (VA3/VA12)
+
+```
+SideDrawer (3+ fields → SideDrawer rule):
+┌──────────────────────────────────────────┐
+│  Manage Store: CardGame Hub          [✕] │
+│  store-cardgame-hub                      │
+├──────────────────────────────────────────┤
+│  Status      [sel: active/pending/       │
+│               suspended/rejected]        │
+│  Admin Notes [textarea]                  │
+│  Is Featured [tog]                       │
+├──────────────────────────────────────────┤
+│  [Cancel]                   [Save Store] │
+└──────────────────────────────────────────┘
+
+  → PATCH /api/admin/stores/[storeId]  { status, adminNotes, isFeatured }
+  → Invalidates admin stores listing query on success
 ```
 
 ---
@@ -627,7 +700,7 @@ SideDrawer:
 
 ---
 
-## Admin > Analytics ⏳ (VA19)
+## Admin > Analytics ✅ (VA19)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -650,7 +723,7 @@ SideDrawer:
 
 ---
 
-## Admin > Site Settings ⏳ (VA8) — 12 groups
+## Admin > Site Settings ✅ (VA8) — 12 groups
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -757,21 +830,56 @@ SideDrawer:
 
 ---
 
-## Admin > Navigation CMS ⏳ (F5/VA7)
+## Admin > Navigation CMS ✅ (F5/VA7)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Navigation                                              [+ New Nav Item]    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  ⠿  Label          Href              Icon    Order  Parent   Visible  ⋮     │
+│  ⠿  Label            Href               Icon   Order  Parent    Visible  ⋮  │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  ⠿  Products       /products         🛍       1      —        ✓        ⋮     │
-│  ⠿  Auctions       /auctions         🔨       2      —        ✓        ⋮     │
-│  ⠿   ↳ Live Auctions /auctions?live  —        1      Auctions ✓        ⋮     │
-│  ⠿  Brands         /brands           🏷        3      —        ✓        ⋮     │
+│  ⠿  Products         /products          🛍      1      —         ✓       ⋮  │
+│  ⠿  Auctions         /auctions          🔨      2      —         ✓       ⋮  │
+│  ⠿   ↳ Live Auctions /auctions?live     —       1      Auctions  ✓       ⋮  │
+│  ⠿  Brands           /brands            🏷       3      —         ✓       ⋮  │
+│  ⠿  Events           /events            🎉      4      —         ✗       ⋮  │
 
-  Row ⋮: Edit (SideDrawer) | Delete
-  SideDrawer: label/href/icon/order/parentId/isVisible fields
+  Row inline controls:
+    [▲] [▼]  — reorder up/down (immediate optimistic update)
+    [👁 / 🚫] — inline visibility toggle (PATCH isVisible immediately)
+
+  Row ⋮ → RowActionMenu:
+    [Edit]    → opens AdminNavEditorView SideDrawer (6 fields, see below)
+    [Delete]  → ConfirmDeleteModal
+
+  [+ New Nav Item] → opens AdminNavEditorView SideDrawer (empty / new mode)
+
+  Reorder zone (below table):
+    Drag-and-drop rows, manual order# input, [Save order] [Reset]
+```
+
+---
+
+## Admin > Nav Editor SideDrawer ✅ (F5/VA7)
+
+```
+SideDrawer (6 fields → SideDrawer rule):
+┌──────────────────────────────────────────┐
+│  New Nav Item / Edit Nav Item        [✕] │
+├──────────────────────────────────────────┤
+│  Label      [input*]                     │
+│  Href       [input*  e.g. /products]     │
+│  Icon       [sel: emoji/icon slug opt.]  │
+│  Parent     [DynSelect optional]         │
+│  Order      [number input]               │
+│  Visible    [tog]                        │
+├──────────────────────────────────────────┤
+│  [Cancel]               [Save Nav Item]  │
+└──────────────────────────────────────────┘
+
+  New:  POST /api/admin/navigation
+  Edit: PATCH /api/admin/navigation/[id]
+  → Invalidates navigation listing query on success
 ```
 
 ---
@@ -1738,4 +1846,282 @@ No more search-specific results page — listing pages handle ?q= param directly
 
 ---
 
-*Last updated: 2026-05-08 — Initial diagram set (all existing pages mapped). Update this file whenever a page, tab, field, or modal is added, changed, or removed.*
+---
+
+## Admin > Stores > Store Editor SideDrawer (N3 additions)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ ← Manage: store-mistys-water-cards                              │
+├─────────────────────────────────────────────────────────────────┤
+│ Status        [dropdown: active ▼]                              │
+│ Featured      [toggle: off]                                     │
+│ Verified      [toggle: on]          ← NEW (N3)                  │
+│ ─────────────────────────────────────────────────────────────── │
+│ Suspension Reason (optional)        ← NEW (N3, shown when       │
+│ ┌──────────────────────────────┐      status === "suspended")   │
+│ │ e.g. Policy violations…      │                                │
+│ └──────────────────────────────┘                                │
+│ ─────────────────────────────────────────────────────────────── │
+│ Admin Notes (optional)                                          │
+│ ┌──────────────────────────────┐                                │
+│ │ Internal notes…              │                                │
+│ └──────────────────────────────┘                                │
+│                   [Delete store] [Cancel] [Save changes]        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Users (AdminUsersView + AdminUserEditorView)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > USERS                                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]                    Role [All ▼]   [Refresh]                        │
+├────────────────────┬──────────────────┬────────────┬───────────┬────────────┤
+│ Name               │ Email            │ Role       │ Status    │ Actions    │
+├────────────────────┼──────────────────┼────────────┼───────────┼────────────┤
+│ Ravi Kumar         │ ravi@…           │ seller     │ ● active  │ [⋮]        │
+│ Priya Sharma       │ priya@…          │ admin      │ ● active  │ [⋮]        │
+│ Guest User         │ guest@…          │ user       │ ✗ banned  │ [⋮]        │
+├────────────────────┴──────────────────┴────────────┴───────────┴────────────┤
+│ 15 users                                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+RowActionMenu [⋮]:
+  • Manage  → opens SideDrawer
+
+SideDrawer — Manage: Ravi Kumar
+┌─────────────────────────────────────────────────────────────────┐
+│ ← Manage: Ravi Kumar                                            │
+├─────────────────────────────────────────────────────────────────┤
+│ Role          [dropdown: seller ▼]  (user / seller / admin)    │
+│ ─────────────────────────────────────────────────────────────── │
+│ Account disabled (banned)  [toggle: off]                        │
+│   Ban reason (optional)  [shown when toggle on]                 │
+│   ┌──────────────────────────────┐                              │
+│   │ e.g. Repeated violations…   │                              │
+│   └──────────────────────────────┘                              │
+│ ─────────────────────────────────────────────────────────────── │
+│ Email verified  [toggle: on]                                    │
+│ ─────────────────────────────────────────────────────────────── │
+│ Admin notes (optional)                                          │
+│ ┌──────────────────────────────┐                                │
+│ │ Internal notes about user…   │                                │
+│ └──────────────────────────────┘                                │
+│              [Delete user] [Cancel] [Save changes]              │
+└─────────────────────────────────────────────────────────────────┘
+
+ConfirmDeleteModal — Delete Ravi Kumar?
+┌─────────────────────────────────────────────────────────────────┐
+│  Delete Ravi Kumar?                                             │
+│  This action cannot be undone. The user's account and all       │
+│  associated data will be permanently removed.                   │
+│                              [Cancel] [Delete user]             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Orders (AdminOrdersView + AdminOrderEditorView)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > ORDERS                                                               │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]           Status [All ▼]   [Refresh]                               │
+├──────────────┬──────────────┬──────────────┬──────────────┬──────────────────┤
+│ Order ID     │ Buyer        │ Store        │ Total        │ Status     │ ⋮   │
+├──────────────┼──────────────┼──────────────┼──────────────┼────────────┼─────┤
+│ order-3-…    │ Ravi Kumar   │ Misty's…     │ ₹1,499       │ SHIPPED    │ [⋮] │
+│ order-1-…    │ Priya S.     │ Goku's…      │ ₹2,200       │ DELIVERED  │ [⋮] │
+│ order-2-…    │ Amit K.      │ Retro…       │ ₹850         │ PENDING    │ [⋮] │
+└──────────────┴──────────────┴──────────────┴──────────────┴────────────┴─────┘
+
+RowActionMenu [⋮]:
+  • Update order  → opens SideDrawer
+
+SideDrawer — Update order-3-20260508-a1b2c3
+┌─────────────────────────────────────────────────────────────────┐
+│ ← Update order-3-20260508-a1b2c3                                │
+├─────────────────────────────────────────────────────────────────┤
+│ Status   [dropdown: SHIPPED ▼]                                  │
+│          (PENDING/PROCESSING/SHIPPED/DELIVERED/                 │
+│           CANCELLED/REFUNDED/RETURN_REQUESTED)                  │
+│ ─────────────────────────────────────────────────────────────── │
+│ Tracking Number                                                 │
+│ [TRK123456789…                ]                                 │
+│ Carrier  [dropdown: Delhivery ▼]                                │
+│          (Delhivery/BlueDart/DTDC/Ekart/India Post/Other)       │
+│ ─────────────────────────────────────────────────────────────── │
+│ Refund Amount (paise)   ← shown when status=REFUNDED or         │
+│ [149900               ]   RETURN_REQUESTED                      │
+│ ─────────────────────────────────────────────────────────────── │
+│ Notes (optional)                                                │
+│ ┌──────────────────────────────┐                                │
+│ │ Internal notes…              │                                │
+│ └──────────────────────────────┘                                │
+│                        [Cancel] [Save changes]                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Reviews (AdminReviewsView — with moderation)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > REVIEWS                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]       Status [All ▼]   Rating [All ▼]   [Refresh]                 │
+├──────────────┬───────────┬────────┬──────────────┬────────────┬──────────────┤
+│ Product      │ Buyer     │ Rating │ Status       │ Featured   │ Actions      │
+├──────────────┼───────────┼────────┼──────────────┼────────────┼──────────────┤
+│ Charizard… │ Ravi K.   │ ★★★★★  │ ● approved   │ ★ yes      │ [⋮]          │
+│ Hot Wheels…  │ Priya S.  │ ★★★★☆  │ ○ pending    │ —          │ [⋮]          │
+│ Beyblade…    │ Amit K.   │ ★★★☆☆  │ ✗ rejected   │ —          │ [⋮]          │
+└──────────────┴───────────┴────────┴──────────────┴────────────┴──────────────┘
+
+RowActionMenu [⋮]:
+  • Approve       → PATCH status=approved
+  • Reject        → PATCH status=rejected
+  • ─────────────
+  • Feature       → PATCH isFeatured=true  (shows "Unfeature" when already featured)
+  • Reply         → opens Reply Modal
+  • View          → opens ViewReviewModal
+
+Reply Modal (1 field → Modal, not SideDrawer)
+┌─────────────────────────────────────────────────────────────────┐
+│  Reply to review                                                │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │ Thank you for your feedback…                             │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                        [Cancel] [Post reply]    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Sessions (AdminSessionsView — LL11)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > SESSIONS                                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Active only [toggle: off]                              [Refresh]             │
+├──────────────────┬─────────────────────────┬──────────────┬──────────────────┤
+│ User             │ Device / IP             │ Last Active  │ Expires    │ ⋮  │
+├──────────────────┼─────────────────────────┼──────────────┼────────────┼────┤
+│ Ravi Kumar       │ Chrome · Win · 103.*.   │ 2 hrs ago    │ 2026-06-08 │[⋮] │
+│ Priya Sharma     │ Safari · iOS · 49.*     │ 1 day ago    │ 2026-05-15 │[⋮] │
+│ (guest)          │ Firefox · Mac · 182.*   │ 5 min ago    │ 2026-05-10 │[⋮] │
+├──────────────────┴─────────────────────────┴──────────────┴────────────┴────┤
+│ Active badge: ● active / ✗ expired                                           │
+│ IP masked: last octet replaced with *                                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+RowActionMenu [⋮]:
+  • Revoke session  (destructive) → ConfirmDeleteModal → DELETE /api/admin/sessions/{id}
+
+ConfirmDeleteModal — Revoke session?
+┌─────────────────────────────────────────────────────────────────┐
+│  Revoke session?                                                │
+│  The user will be signed out immediately.                       │
+│                              [Cancel] [Revoke]   (variant=warn) │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Admin > Event Entries (AdminAllEventEntriesView — LL12)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > ALL EVENT ENTRIES                                                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]           Status [All ▼]   [Refresh]                               │
+│                     (All / CONFIRMED / WAITLISTED / CANCELLED)               │
+├──────────────────┬──────────────────┬────────────────┬────────────┬──────────┤
+│ User             │ Email            │ Event ID       │ Status     │ Actions  │
+├──────────────────┼──────────────────┼────────────────┼────────────┼──────────┤
+│ Ravi Kumar       │ ravi@…           │ event-summer-… │ CONFIRMED  │ [⋮]      │
+│ Priya Sharma     │ priya@…          │ event-blader-… │ WAITLISTED │ [⋮]      │
+│ Amit Kumar       │ amit@…           │ event-summer-… │ CANCELLED  │ [⋮]      │
+└──────────────────┴──────────────────┴────────────────┴────────────┴──────────┘
+
+RowActionMenu [⋮]:
+  • Confirm    → PATCH status=CONFIRMED
+  • Waitlist   → PATCH status=WAITLISTED
+  • ─────────
+  • Cancel     (destructive) → PATCH status=CANCELLED
+```
+
+---
+
+## Admin > Notifications (AdminNotificationsView — LL13)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > NOTIFICATIONS                                                        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]           Type [All ▼]   [Refresh]                                 │
+│                     (All / order_shipped / bid_outbid / review_reply / …)    │
+├───────────────────┬────────────────┬──────────────┬──────────┬───────────────┤
+│ User              │ Type           │ Title        │ Read     │ Actions       │
+├───────────────────┼────────────────┼──────────────┼──────────┼───────────────┤
+│ Ravi Kumar        │ order_shipped  │ Your order…  │ ✓ read   │ [⋮]           │
+│ Priya Sharma      │ bid_outbid     │ You've been… │ ○ unread │ [⋮]           │
+│ Amit Kumar        │ review_reply   │ Seller repli…│ ○ unread │ [⋮]           │
+└───────────────────┴────────────────┴──────────────┴──────────┴───────────────┘
+
+RowActionMenu [⋮]:
+  • Resend     → POST /api/admin/notifications/{id}/resend (marks isRead=false)
+  • ─────────
+  • Delete     (destructive) → ConfirmDeleteModal → DELETE /api/admin/notifications/{id}
+```
+
+---
+
+## Admin > Carts (AdminCartsView — LL14)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > CARTS                         (read-only diagnostic view)            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]         Type [All ▼]   [Refresh]                                   │
+│                   (All / authenticated / guest)                              │
+├───────────────────┬──────────────────┬─────────────┬──────────┬──────────────┤
+│ Cart ID           │ User / Session   │ Items       │ Type     │ Updated      │
+├───────────────────┼──────────────────┼─────────────┼──────────┼──────────────┤
+│ xK9mP2…           │ Ravi Kumar       │ 3 items     │ auth     │ 2 hrs ago    │
+│ aB3nQ7…           │ (guest) sess-…   │ 1 item      │ guest    │ 5 min ago    │
+│ mL8vR4…           │ Priya Sharma     │ 5 items     │ auth     │ 1 day ago    │
+└───────────────────┴──────────────────┴─────────────┴──────────┴──────────────┘
+  No row actions — read-only view for diagnostic purposes.
+```
+
+---
+
+## Admin > Wishlists (AdminWishlistsView — LL15)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > WISHLISTS                     (read-only insights view)              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search…]                                              [Refresh]             │
+├───────────────────┬──────────────────┬──────────────┬──────────┬─────────────┤
+│ Product           │ User ID          │ Price at Add │ Added At │ Product ID  │
+├───────────────────┼──────────────────┼──────────────┼──────────┼─────────────┤
+│ Hot Wheels Redlin…│ user-ravi-kumar  │ ₹1,499       │ 3 days   │ product-hw… │
+│ Charizard PSA 9   │ user-priya-s     │ ₹24,999      │ 1 week   │ product-ch… │
+│ Beyblade Burst    │ user-amit-k      │ ₹899         │ 2 weeks  │ product-bb… │
+└───────────────────┴──────────────────┴──────────────┴──────────┴─────────────┘
+  Data source: Firestore collectionGroup("wishlist") — cross-user subcollection query.
+  No row actions — read-only insights view.
+```
+
+---
+
+*Last updated: 2026-05-09 — Session 73: N3 store editor (isVerified+suspensionReason), AdminUserEditorView (B1/VA10), AdminOrderEditorView (B2/VA9), AdminReviewsView moderation (N2/VA11), AdminSessionsView (LL11), AdminAllEventEntriesView (LL12), AdminNotificationsView (LL13), AdminCartsView (LL14), AdminWishlistsView (LL15).*

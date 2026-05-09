@@ -180,7 +180,6 @@ export const ADMIN_NAV_GROUPS: DashboardNavGroup[] = [
       { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews" },
       { href: String(ROUTES.ADMIN.BLOG),    label: "Blog"    },
       { href: String(ROUTES.ADMIN.BIDS),    label: "Bids"    },
-      { href: String(ROUTES.ADMIN.EVENTS),  label: "Events"  },
       { href: String(ROUTES.ADMIN.MEDIA),   label: "Media"   },
     ],
   },
@@ -198,8 +197,19 @@ export const ADMIN_NAV_GROUPS: DashboardNavGroup[] = [
     ],
   },
   {
+    title: "Events",
+    items: [
+      { href: String(ROUTES.ADMIN.EVENTS),            label: "Events"        },
+      { href: String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), label: "All Entries"   },
+    ],
+  },
+  {
     title: "System",
     items: [
+      { href: String(ROUTES.ADMIN.SESSIONS),      label: "Sessions"      },
+      { href: String(ROUTES.ADMIN.NOTIFICATIONS), label: "Notifications" },
+      { href: String(ROUTES.ADMIN.CARTS),         label: "Carts"         },
+      { href: String(ROUTES.ADMIN.WISHLISTS),     label: "Wishlists"     },
       { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
       { href: String(ROUTES.ADMIN.COPILOT),       label: "Copilot"       },
     ],
