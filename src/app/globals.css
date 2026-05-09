@@ -1,6 +1,7 @@
-@import "@mohasinac/appkit/styles";
-
-/* Consumer Theme Overrides */
+/* Consumer Theme Overrides
+   Note: appkit styles are imported from layout.tsx as a JS import to avoid PostCSS/Turbopack
+   "Unknown AST node type 0" — @import of pre-compiled CSS through the PostCSS pipeline breaks
+   when Turbopack inlines it before tailwindcss/autoprefixer run. */
 :root {
   /* Image 1 palette (light mode): Cobalt Blue body + Lime Green blades */
   --appkit-color-primary:   #3570fc; /* Cobalt Blue */
