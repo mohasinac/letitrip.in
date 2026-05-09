@@ -166,6 +166,18 @@ Search `appkit/src/` before writing anything new.
 □ TRACKER    marked ✅, Part# filled, Summary + timestamp updated
 ```
 
+### Form quality checklist (every VA/VB/VC editor form)
+Every form built in Tier V must pass all 7 checks before marking ✅:
+```
+□ MOBILE     Works at 375px — no overflow, no clipped inputs
+□ TABLET     Works at 768px — responsive grid kicks in (sm:grid-cols-2 where appropriate)
+□ DARK       All labels, textareas, helper text have dark: variants; no invisible text
+□ TOKENS     No hardcoded hex/rgb — all colors via var(--appkit-color-*) or Tailwind semantic class
+□ FOCUS      Focus rings visible on all interactive elements
+□ ERRORS     Error states styled (red border, error message) — not plain browser default
+□ LOADING    Submit button shows isLoading + disabled during mutation; no double-submit
+```
+
 ### Build cycle (appkit changes)
 ```bash
 npm run watch:appkit   # terminal 1
