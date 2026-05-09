@@ -150,11 +150,13 @@ export const ADMIN_NAV_GROUPS: DashboardNavGroup[] = [
   {
     title: "Management",
     items: [
-      { href: String(ROUTES.ADMIN.DASHBOARD),  label: "Dashboard" },
-      { href: String(ROUTES.ADMIN.USERS),      label: "Users"     },
-      { href: String(ROUTES.ADMIN.PRODUCTS),   label: "Products"  },
-      { href: String(ROUTES.ADMIN.ORDERS),     label: "Orders"    },
-      { href: String(ROUTES.ADMIN.STORES),     label: "Stores"    },
+      { href: String(ROUTES.ADMIN.DASHBOARD),       label: "Dashboard"       },
+      { href: String(ROUTES.ADMIN.USERS),           label: "Users"           },
+      { href: String(ROUTES.ADMIN.PRODUCTS),        label: "Products"        },
+      { href: String(ROUTES.ADMIN.ORDERS),          label: "Orders"          },
+      { href: String(ROUTES.ADMIN.RETURN_REQUESTS), label: "Returns"         },
+      { href: String(ROUTES.ADMIN.STORES),          label: "Stores"          },
+      { href: String(ROUTES.ADMIN.STORE_ADDRESSES), label: "Store Addresses" },
     ],
   },
   {
