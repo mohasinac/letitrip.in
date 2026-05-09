@@ -155,7 +155,7 @@ async function reconcileStores(): Promise<void> {
           .where("status", "==", "delivered")
           .limit(QUERY_LIMIT)
           .get(),
-        reviewRepository.getApprovedRatingAggregateBySeller(sellerId),
+        reviewRepository.getApprovedRatingAggregateByStore(storeId),
       ]);
 
       await storeRepository.setStats(

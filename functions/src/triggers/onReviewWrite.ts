@@ -9,7 +9,7 @@
  *     before deletion) triggers a re-computation of:
  *       • product.avgRating and product.reviewCount
  *       • store.stats.totalReviews and store.stats.averageRating
- *       (identified via the review's `sellerId` field)
+ *       (identified via the review's `storeId` field)
  *
  * Why re-compute instead of increment/decrement?
  *   Re-querying is idempotent and self-healing. The review counts are low
@@ -54,12 +54,12 @@ export const onReviewWrite = onDocumentWritten(
       return;
     }
 
-    // Read productId / sellerId from whichever snapshot is available
+    // Read productId / storeId from whichever snapshot is available
     const data = afterData ?? beforeData;
     if (!data) return;
 
     const productId = (data.productId as string | undefined) ?? null;
-    const sellerId = (data.sellerId as string | undefined) ?? null;
+    const storeId = (data.storeId as string | undefined) ?? null;
 
     if (!productId) {
       logError(TRIGGER, "Review has no productId — skipping", null, {
@@ -86,38 +86,29 @@ export const onReviewWrite = onDocumentWritten(
         avgRating,
       });
 
-      // ── Recompute store stats (by sellerId) ────────────────────────────
-      if (sellerId) {
-        const storeSnap = await db
-          .collection(COLLECTIONS.STORES)
-          .where("ownerId", "==", sellerId)
-          .limit(1)
-          .get();
+      // ── Recompute store stats (by storeId) ────────────────────────────
+      if (storeId) {
+        const storeStats =
+          await reviewRepository.getApprovedRatingAggregateByStore(storeId);
 
-        if (!storeSnap.empty) {
-          const storeId = storeSnap.docs[0].id;
-          const sellerStats =
-            await reviewRepository.getApprovedRatingAggregateBySeller(sellerId);
+        await storeRepository.updateReviewStats(
+          storeId,
+          storeStats.count,
+          storeStats.avgRating,
+        );
 
-          await storeRepository.updateReviewStats(
-            storeId,
-            sellerStats.count,
-            sellerStats.avgRating,
-          );
-
-          logInfo(TRIGGER, "Updated store review stats", {
-            reviewId,
-            storeId,
-            count: sellerStats.count,
-            avgRating: sellerStats.avgRating,
-          });
-        }
+        logInfo(TRIGGER, "Updated store review stats", {
+          reviewId,
+          storeId,
+          count: storeStats.count,
+          avgRating: storeStats.avgRating,
+        });
       }
     } catch (err) {
       logError(TRIGGER, "Failed to update rating stats", err, {
         reviewId,
         productId,
-        sellerId,
+        storeId,
       });
       throw err;
     }

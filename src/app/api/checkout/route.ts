@@ -373,6 +373,8 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       const groupItemIds = new Set(group.map(({ item }) => item.itemId));
       let couponDiscount = 0;
       const appliedDiscounts: { code: string; couponId?: string; type: "coupon" | "deal" | "auto"; discountAmount: number; scope?: "admin" | "seller"; sellerId?: string }[] = [];
+      // Codes of trackable coupons that contributed discount to THIS group only.
+      const groupCouponCodes = new Set<string>();
 
       for (const coupon of appliedCoupons) {
         let couponGroupDiscount = 0;
@@ -427,6 +429,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
             };
             entry.totalDiscount += couponGroupDiscount;
             couponUsageAccumulator.set(coupon.code, entry);
+            groupCouponCodes.add(coupon.code);
           }
         }
       }
@@ -474,11 +477,10 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
 
       orderIds.push(order.id);
 
-      // Tag this order ID onto every coupon that contributed to this group
-      for (const entry of couponUsageAccumulator.values()) {
-        if (!entry.orderIds.includes(order.id)) {
-          entry.orderIds.push(order.id);
-        }
+      // Tag this order ID only onto coupons that contributed to THIS group
+      for (const code of groupCouponCodes) {
+        const entry = couponUsageAccumulator.get(code);
+        if (entry) entry.orderIds.push(order.id);
       }
 
       if (userEmail) {

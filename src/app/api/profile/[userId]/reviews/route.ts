@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import {
   reviewRepository,
+  userRepository,
   createRouteHandler,
   successResponse,
   getSearchParams,
@@ -15,7 +16,14 @@ export const GET = withProviders(
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 20, { min: 1, max: 50 });
 
-      const result = await reviewRepository.listForSeller(userId, {
+      const user = await userRepository.findById(userId);
+      const storeId = user?.storeSlug ?? null;
+
+      if (!storeId) {
+        return successResponse({ items: [], total: 0, page, pageSize, totalPages: 0, hasMore: false });
+      }
+
+      const result = await reviewRepository.listForStore(storeId, {
         filters: "status==approved",
         sorts: "-createdAt",
         page,
