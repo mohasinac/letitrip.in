@@ -20,7 +20,7 @@ import {
   getUserSessions,
   getPublicUserProfile,
   getSellerReviews,
-  getSellerProducts,
+  getProfileStoreProducts,
 } from "@mohasinac/appkit";
 import type { UserDocument } from "@mohasinac/appkit";
 
@@ -97,7 +97,7 @@ export async function getSellerReviewsAction(sellerId: string) {
   return getSellerReviews(sellerId);
 }
 
-export async function getSellerProductsAction(sellerId: string) {
-  return getSellerProducts(sellerId);
+export async function getProfileStoreProductsAction(sellerId: string) {
+  return getProfileStoreProducts(sellerId);
 }
 

@@ -113,8 +113,8 @@ export const POST = withProviders(createRouteHandler({
       const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
 
       const payoutData = {
-        sellerId,
-        sellerName: (seller.displayName ?? seller.email ?? sellerId) as string,
+        storeId,
+        sellerName: (seller.displayName ?? seller.email ?? storeId) as string,
         sellerEmail: (seller.email ?? "") as string,
         orderIds: orders.map((o) => o.id!),
         amount: netAmount,

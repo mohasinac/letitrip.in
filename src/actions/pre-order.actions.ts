@@ -37,10 +37,10 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
     : typeof p.mainImage === "string"
       ? p.mainImage
       : "";
-  const sellerId = typeof p.sellerId === "string" ? p.sellerId : "";
-  const sellerName = typeof p.sellerName === "string" ? p.sellerName : "";
+  const storeId = typeof p.storeId === "string" ? p.storeId : "";
+  const storeName = typeof p.storeName === "string" ? p.storeName : "";
 
-  if (!sellerId) throw new ValidationError("Seller information missing.");
+  if (!storeId) throw new ValidationError("Store information missing.");
 
   await addItemToCart(user.uid, {
     productId: String(product.id),
@@ -49,8 +49,8 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
     price,
     currency,
     quantity: 1,
-    sellerId,
-    sellerName,
+    storeId,
+    storeName,
     isPreOrder: true,
   });
 

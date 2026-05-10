@@ -6,6 +6,7 @@ import {
   errorResponse,
   orderRepository,
   productRepository,
+  storeRepository,
 } from "@mohasinac/appkit";
 
 const updateOrderSchema = z.object({
@@ -27,7 +28,8 @@ export const GET = withProviders(
 
       // Sellers can only view orders containing their products
       if (user!.role !== "admin") {
-        const sellerProducts = await productRepository.findBySeller(user!.uid);
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        const sellerProducts = store ? await productRepository.findByStore(store.id) : [];
         const sellerProductIds = new Set(sellerProducts.map((p) => p.id));
         const hasSellerProduct = order.items?.some((item: any) =>
           sellerProductIds.has(item.productId),
@@ -52,7 +54,8 @@ export const PATCH = withProviders(
 
       // Sellers can only update orders containing their products
       if (user!.role !== "admin") {
-        const sellerProducts = await productRepository.findBySeller(user!.uid);
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        const sellerProducts = store ? await productRepository.findByStore(store.id) : [];
         const sellerProductIds = new Set(sellerProducts.map((p) => p.id));
         const hasSellerProduct = order.items?.some((item: any) =>
           sellerProductIds.has(item.productId),

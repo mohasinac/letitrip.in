@@ -17,7 +17,7 @@ import {
   getLatestPreOrders,
   listPreOrders,
   getRelatedProducts,
-  getSellerStorefrontProducts,
+  getStoreStorefrontProducts,
   type ProductListActionParams,
 } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";
@@ -94,7 +94,7 @@ export async function getRelatedProductsAction(
 }
 
 export async function getSellerStorefrontProductsAction(
-  sellerId: string,
+  storeId: string,
 ): Promise<ProductDocument[]> {
-  return getSellerStorefrontProducts(sellerId);
+  return getStoreStorefrontProducts(storeId);
 }

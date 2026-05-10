@@ -13,6 +13,7 @@ import {
   tokenRepository,
   productRepository,
   orderRepository,
+  storeRepository,
 } from "@mohasinac/appkit";
 import { getAdminAuth } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
@@ -28,7 +29,8 @@ export const DELETE = withProviders(createRouteHandler({
     await tokenRepository.password.deleteAllForUser(user!.uid);
 
     // Delete user's products and orders via repositories
-    await productRepository.deleteBySeller(user!.uid);
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (store) await productRepository.deleteByStore(store.id);
     await orderRepository.deleteByUser(user!.uid);
 
     await userRepository.delete(user!.uid);

@@ -65,9 +65,9 @@ export const GET = withProviders(createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-    const sellerFilter = `sellerId==${uid}`;
+    const storeFilter = storeId ? `storeId==${storeId}` : `storeId==__none__`;
     const effectiveFilters =
-      buildSieveFilters(["", sellerFilter], ["", filters]) || sellerFilter;
+      buildSieveFilters(["", storeFilter], ["", filters]) || storeFilter;
 
     const [
       payoutResult,
@@ -82,9 +82,9 @@ export const GET = withProviders(createRouteHandler({
         page: String(page),
         pageSize: String(pageSize),
       }),
-      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.COMPLETED),
-      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PENDING),
-      payoutRepository.findBySellerAndStatus(uid, PayoutStatusValues.PROCESSING),
+      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.COMPLETED) : Promise.resolve([]),
+      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PENDING) : Promise.resolve([]),
+      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PROCESSING) : Promise.resolve([]),
       storeId ? computeSellerEarnings(storeId) : Promise.resolve({ eligibleOrders: [], grossAmount: 0, platformFee: 0, netAmount: 0 }),
     ]);
 

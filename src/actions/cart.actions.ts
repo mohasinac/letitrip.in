@@ -33,8 +33,8 @@ const addToCartSchema = z.object({
   price: z.number().positive(),
   currency: z.string().min(1),
   quantity: z.number().int().min(1).max(99),
-  sellerId: z.string().min(1),
-  sellerName: z.string().min(1),
+  storeId: z.string().min(1),
+  storeName: z.string().min(1),
   isAuction: z.boolean().optional(),
   isPreOrder: z.boolean().optional(),
   /** Set when item originates from an accepted Make-an-Offer */

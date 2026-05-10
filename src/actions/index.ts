@@ -340,7 +340,7 @@ export {
   listMySessionsAction,
   getPublicProfileAction,
   getSellerReviewsAction,
-  getSellerProductsAction,
+  getProfileStoreProductsAction,
 } from "./profile.actions";
 
 // Seller reads (seller role required)

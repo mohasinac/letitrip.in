@@ -5,7 +5,7 @@ import { withProviders } from "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
+import { offerRepository, storeRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({
   roles: ["seller", "admin", "moderator"],
@@ -27,7 +27,11 @@ export const GET = withProviders(createApiHandler({
     const extraFilters = url.searchParams.get("filters");
     if (extraFilters) filterParts.push(extraFilters);
 
-    const result = await offerRepository.findBySeller(user!.uid, {
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) {
+      return successResponse({ items: [], total: 0, page, pageSize, totalPages: 0, hasMore: false });
+    }
+    const result = await offerRepository.findByStore(store.id, {
       filters: filterParts.join(",") || undefined,
       sorts,
       page,
