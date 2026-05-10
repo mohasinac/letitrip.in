@@ -31,25 +31,17 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 83 ⚠️ partial 2026-05-10 (SCAM3 live + SCAM5 form + VD8)
+## ⚡ LAST COMPLETED — Session 83-cont ✅ 2026-05-10 (VD9 + VD10 content)
 
 | Task | What was done |
 |------|--------------|
-| **SCAM3** | Subcollection live data wired: `listPublicIncidents()` + `listPublicComments()` + `findManyById()` in repository; `getScammerProfilePageData()` server action; `/scams/[id]/page.tsx` passes real data; ScamProfileView renders incident cards, comment cards (role/Accused/Victim badges), related scammer links. `/scams/types` import fixed. ✅ |
-| **SCAM5** | Full ScamReportForm (3 sections: identity/TagInputs, what-happened/type-helper/char-counter, privacy/agreement); POST `/api/scams/reports` (auth, Zod, paise); `API_ROUTES.SCAMS.REPORTS`. Evidence upload / ban check / rate limit / suggest deferred. ⚠️ |
-| **VD8** | `messages/en.json` `about` namespace (25 keys) rewritten — collectibles-specific mission, values, milestones. ✅ |
-| **VD9/VD10** | Deferred — user stopped session. ⏳ |
+| **VD9** | `becomeSeller` 9 → 41 keys: 8 guide sections (requirements/howItWorks/whatYouCanSell/fees/auctions/earnings/responsibilities/tiers), earnings breakdown (₹917.40 on ₹1,000 sale), 3 seller tiers. `sellerGuide` 42 keys rewritten: Pokémon grading tips, Hot Wheels casting details, Gunpla sprue photos, import pricing guide. ✅ |
+| **VD10** | `terms` 7 → 15 sections (IT Act 2000, Consumer Protection Act 2019, prohibited counterfeit Pokémon/replica Hot Wheels, Maharashtra jurisdiction). `privacy` 7 → 11 sections (DPDP Act 2023, data retention, children's privacy, DPO contact). `cookies` with specific cookie names (Firebase, GA4, Razorpay). `refundPolicy` 8 collectibles-specific sections (sealed, graded, auction, pre-order, authenticity, transit damage). ✅ |
 | **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
 
 ---
 
-## 🔜 NEXT — Session 83-cont ⏳ (VD9 + VD10 content + Session 84 Custom Fields)
-
-### Carry-over from Session 83
-| Tasks | Goal |
-|-------|------|
-| VD9 | Expand becomeSeller (~9→25 keys) + rewrite sellerGuide (42 keys) — collectibles-specific |
-| VD10 | Legal pages: terms (IT Act/Consumer Protection/collectibles rules), privacy (DPDP Act 2023), cookies (essential/analytics/marketing), refundPolicy (8+ sections) |
+## 🔜 NEXT — Session 84 ⏳ (Custom Fields L1/L2/L3)
 
 ### Session 84 — Custom Fields
 | Tasks | Goal |

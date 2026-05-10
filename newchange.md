@@ -33,6 +33,25 @@
 
 ---
 
+# Session 83-cont — 2026-05-10 (VD9 + VD10 content)
+
+## Scope
+VD9: becomeSeller expansion + sellerGuide collectibles rewrite.
+VD10: Legal pages — terms, privacy, cookies, refundPolicy.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `messages/en.json` | `becomeSeller` 9 → 41 keys (8 guide sections, earnings breakdown ₹917.40, 3 seller tiers). `sellerGuide` 42 keys rewritten collectibles-specific. `terms` 7 → 15 sections (IT Act 2000, Consumer Protection Act 2019, prohibited items, Maharashtra jurisdiction). `privacy` 7 → 11 sections (DPDP Act 2023 §5 rights, DPO, data retention, children's privacy). `cookies` with specific cookie names (Firebase, GA4, Razorpay). `refundPolicy` 8 collectibles sections (sealed, graded, auction, pre-order, authenticity, transit damage, return shipping). |
+| `scripts/update-content-vd9-vd10.mjs` | One-off patch script (atomic JSON update to avoid editing 1043-line diff manually). |
+
+## Deferred
+
+None.
+
+---
+
 # Alpha Release — 2026-05-10 (appkit publish + Vercel prod deploy)
 
 ## Scope
