@@ -32,6 +32,16 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Hotfix 87.1 ✅ 2026-05-10 (CSS display utilities safelist + dev memory)
+
+| Task | What was done |
+|------|--------------|
+| **CSS fix** | Main navbar (`hidden lg:block`) and Today's Deals pill (`hidden lg:flex`) were invisible at desktop — host Tailwind JIT doesn't scan appkit source. Added `lg:block`, `lg:flex`, `lg:hidden`, `md:*`, `xl:*`, `sm:*` display utilities to `tailwind.config.js` safelist. Verified locally (`.next/dev/static/css/app/layout.css` has all classes) and on live site. ✅ |
+| **Dev memory** | `dev:only` Node.js heap: `4096` → `2048` MB to match Vercel prod env and prevent 5 GB+ dev server bloat. ✅ |
+| **Deploy** | `vercel --prod` — build 3m 26s, status Ready. Navbar confirmed visible on `www.letitrip.in`. ✅ |
+
+---
+
 ## ⚡ LAST COMPLETED — Session 87 ✅ 2026-05-10 (Social Feed S1–S5)
 
 | Task | What was done |
