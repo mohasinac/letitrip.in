@@ -11,6 +11,24 @@ module.exports = {
     // (imported via @mohasinac/appkit/styles). No host-side scan needed.
   ],
   safelist: [
+    // Critical responsive display utilities used by AppLayoutShell (NavbarLayout + TitleBarLayout)
+    // These classes live only in appkit source — the host content scan never sees them, so JIT
+    // won't emit them. Safelisting guarantees the host build always generates them.
+    "hidden",
+    "block",
+    "flex",
+    "lg:block",
+    "lg:flex",
+    "lg:hidden",
+    "md:block",
+    "md:flex",
+    "md:hidden",
+    "xl:flex",
+    "xl:hidden",
+    "xl:block",
+    "sm:flex",
+    "sm:hidden",
+    "sm:block",
     // Zinc neutrals (light mode)
     "bg-white",
     "bg-zinc-50",

@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "concurrently --kill-others --restart-tries 0 --names \"appkit,next\" \"npm run watch:appkit\" \"npm run dev:only\"",
-        "dev:only": "cross-env NODE_OPTIONS=--max-old-space-size=4096 node scripts/dev-next.mjs",
+        "dev:only": "cross-env NODE_OPTIONS=--max-old-space-size=2048 node scripts/dev-next.mjs",
         "watch:appkit": "npm --prefix ./appkit run watch",
         "build": "next build",
         "start": "next start",
