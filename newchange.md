@@ -33,6 +33,82 @@
 
 ---
 
+# Session 84 — 2026-05-10 (Global Search Redesign — SR1+SR2+SR3)
+
+## Scope
+
+SR1: Search.tsx resource-type dropdown + navigation fix. SR2: /search redirect handler + legacy deep-URL permanentRedirect. SR3: Verified all listing pages pre-fill `?q=` from URL.
+
+## SR1 — Search.tsx
+
+- Added `SearchResourceType` union type + `SearchResourceTypeOption` interface to `appkit/src/features/search/components/Search.tsx`
+- New props: `resourceTypes`, `defaultResourceType`, `storageKey`; `onSearch` signature updated to `(query, type)`
+- Native `<select>` type picker in both inline and overlay modes; `selectedType` state with localStorage persistence
+- `handleDeferredSubmit` now calls `onSearch(query, selectedType)` (was `onChange`) — fixes navigation from inline mode
+- `useNavSuggestions` accepts `selectedType` param; dep array updated
+- Exported `SearchResourceType` + `SearchResourceTypeOption` from `client.ts`, `index.ts`, `components/index.ts`
+- `src/app/[locale]/LayoutShellClient.tsx`: removed standalone close button, added `SEARCH_RESOURCE_TYPES` + `SEARCH_ROUTE_MAP`, `onSearch` navigates `base?q=encoded`
+- `src/constants/search.ts`: placeholder → "Search collectibles…", added `resourceTypeLabel`
+
+## SR2 — /search redirect
+
+- `src/app/[locale]/search/page.tsx` rewritten: reads `?q=` + `?type=`, validates type, `redirect()` to listing page
+- `src/app/[locale]/search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]/page.tsx` → `permanentRedirect` with tab→route map (backward-compat bookmarks)
+
+## SR3 — Listing pages q-param
+
+- Confirmed all 9 index listing components (Products, Auctions, Pre-Orders, Stores, Categories, Brands, Events, Blog) read `q` from `useUrlTable`
+- FAQs: static RSC from translation messages, no toolbar search — deferred (noted in tracker)
+
+---
+
+# Session 100 — 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
+
+## Scope
+
+Completed all pending tasks from sessions 77-ux and 77: UX1 FormShell, UX2 QuickFormDrawer, UX3 StepForm, UX6/C1/VB8/C2/VB9 SellerProductShell, O2+C5 SellerStorefrontView, LL6 SellerProductsView improvements. Fixed pre-existing SearchResourceType export gap.
+
+## UX1 — FormShell (`appkit/src/features/shell/FormShell.tsx`)
+
+Full-viewport overlay with: sticky top bar (breadcrumb, title, save/publish buttons), optional left section nav (200px desktop, horizontal strip mobile), scrollable body (max-w-3xl centered), sticky bottom bar, unsaved-changes dialog (AlertTriangle icon + Stay/Leave). Keyboard trap + Esc + scroll lock. `useFormShell()` hook for dirty state (no context — standalone).
+
+## UX2 — QuickFormDrawer (`appkit/src/features/shell/QuickFormDrawer.tsx`)
+
+40% desktop / 100% mobile independent right drawer. Auto-renders `FieldDef[]` array fields (text, number, select, toggle, date, textarea, email, url). Re-initializes on `isOpen` change for edit mode. Focus trap + Esc keyboard handling. Z: `calc(var(--appkit-z-modal) + 2)`.
+
+## UX3 — StepForm (`appkit/src/features/shell/StepForm.tsx`)
+
+Multi-step wizard: `StepIndicator` (numbered circles, checkmarks for completed), `StepFormActions` (prev/next/complete bar), `StepForm<T>` (controlled step state, per-step `validate()`, localStorage persistence via `formId`). All controlled externally via `currentStep` + `onStepChange`.
+
+## UX6/C1/VB8/C2/VB9 — SellerProductShell (`appkit/src/features/seller/components/SellerProductShell.tsx`)
+
+Single component for all 3 listing types (standard/auction/pre-order). Mode=create: `FormShell` + `StepForm` (5 steps standard, 6 for auction/pre-order). Mode=edit: `FormShell` with section nav + all steps as scrollable sections. Steps: Basic, Media, [Auction|PreOrder], Pricing, Shipping, Publish/SEO. Render props for category/brand/address selectors. Paise↔rupee price helpers. Updated `SellerCreateProductView` + `SellerEditProductView` to use this shell.
+
+## C1/C2 — Auction + Pre-Order Pages (6 new pages)
+
+Created `/store/auctions/new`, `/store/auctions/[id]/edit`, `/store/pre-orders/new`, `/store/pre-orders/[id]/edit`. Updated `/store/products/new` + `/store/products/[id]/edit`. All pages wire server actions (`createSellerProductAction`, `sellerUpdateProductAction`) via inline `"use server"` functions, redirect to listing page on complete.
+
+## O2+C5/VB4 — SellerStorefrontView (complete rewrite)
+
+Full settings form: Store Profile (name, bio, logo, banner), Store Details (category, description), Policies (return, shipping), Contact & Social (website, location, twitter/instagram/facebook/linkedin), Vacation Mode (toggle + message), Visibility (isPublic). `useFormShell` dirty tracking, unsaved-changes indicator, success Alert on save. Updated storefront page to load existing store data + pass `updateStoreAction`.
+
+## LL6 — SellerProductsView (improved)
+
+Added: listing-type filter chips (All/Standard/Auction/Pre-order) with Sieve filter mapping, thumbnail column, type badges (warning=auction, secondary=pre-order, default=standard), status badges with semantic variants, price column (paise→₹), row-level edit+delete actions (via `onDeleteProduct` prop), CSS-variable-only styling (removed hardcoded `zinc-*`/`slate-*`), improved SORT_OPTIONS (+price sort). Pre-existing `SearchResourceType` export gap fixed in `appkit/src/features/search/components/index.ts`.
+
+## DEFERRED
+
+| Task | Reason | Target |
+|------|--------|--------|
+| UX4 PreviewPane | Needs token-based `/api/preview` endpoint + draft serialisation | post-alpha |
+| UX5 MediaPickerDrawer | Needs tmp/ Cloud Function + drag-reorder library | post-alpha |
+| UX9 InlineSelectCreate QuickFormDrawer wiring | UX3 pattern exists; per-field wiring is per-form work | Session 101+ |
+| O1 Store slug management | Low-impact for alpha; slug set at store creation | post-alpha |
+
+## tsc status: Both repos clean (0 errors). Appkit built + dist updated.
+
+---
+
 # Session 81-seed — 2026-05-10 (Seed Scale Expansion — P23/P26/P27 partial)
 
 ## Scope

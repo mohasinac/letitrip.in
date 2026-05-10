@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 — Session 82-ext: BK1+BK2 implemented (hover/long-press selection, useBulkSelection Set upgrade, BulkActionsBar full-width slide-up, ListingToolbar bulkMode, wired on Products/PreOrders/Stores listings). 101 done, 229 remaining (BK3 compare overlay deferred).
+> **Last updated:** 2026-05-10 — Session 84: SR1+SR2+SR3 done — search bar resource-type dropdown, ?q= navigation, /search redirect handler, legacy deep-URL permanentRedirect. 104 done, 226 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -52,10 +52,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 330 |
-| ✅ Done | 91 |
+| ✅ Done | 94 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 239 |
+| ⏳ Remaining | 236 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -503,12 +503,12 @@ Rules to keep top-of-mind every task:
 | VB1 | Store Coupon create/edit form | S | ⏳ | | See C3. NEW `SellerCouponEditorView`. Fields: code, type (percent/fixed/freeShipping), value, minOrderAmount, maxUsage, expiryDate, productScope (multi-select). |
 | VB2 | Store Order detail + status update form | M | ⏳ | | See C4. SideDrawer: order items, buyer address, payment summary. Status select + tracking number input. Actions: Mark Shipped, Mark Delivered. API: PUT /api/store/orders/[id]. |
 | VB3 | Store Payout request / withdraw form | M | ⏳ | | NEW (not previously tracked). `SellerPayoutRequestView`. Fields: amount (up to available balance), note. Pre-fill from payout-settings (bank/UPI). API: POST `/api/store/payouts/request`. |
-| VB4 | Store Storefront full edit | M | ⏳ | | See O2+C5. `SellerStorefrontView`: bio (RichTextEditor), store logo (MediaPicker), banner image (MediaPicker), vacation mode (toggle + message field), return policy (RichTextEditor). |
+| VB4 | Store Storefront full edit | M | ✅ | Session 100 | See O2+C5. `SellerStorefrontView`: bio (RichTextEditor), store logo (MediaPicker), banner image (MediaPicker), vacation mode (toggle + message field), return policy (RichTextEditor). |
 | VB5 | Store Shipping config form | M | ⏳ | | See C6. Method select (standard/express/pickup), price fields per method, free-shipping threshold toggle + amount, pickup address selector (StoreAddressSelectorCreate). |
 | VB6 | Store Payout settings form | M | ⏳ | | See C7. Radio: UPI / Bank Transfer. UPI: VPA input. Bank: account name, account number (masked on display), IFSC, bank name. API: GET/PUT /api/store/payout-settings. |
 | VB7 | Store Addresses CRUD | M | ⏳ | | See O3. List + add/edit/delete. Form: label, address lines, city, state, pincode, phone. Default billing/shipping toggles. |
-| VB8 | Store Auction create/edit | M | ⏳ | | See C1. Extend `ProductForm` with auction tab: startingBid, reservePrice, bidIncrement, auctionStartDate, auctionEndDate. |
-| VB9 | Store Pre-Order create/edit | M | ⏳ | | See C2. Extend `ProductForm` with pre-order tab: depositPercent, estimatedDeliveryDate, productionStatus select, maxQuantity. |
+| VB8 | Store Auction create/edit | M | ✅ | Session 100 | See C1. Extend `ProductForm` with auction tab: startingBid, reservePrice, bidIncrement, auctionStartDate, auctionEndDate. |
+| VB9 | Store Pre-Order create/edit | M | ✅ | Session 100 | See C2. Extend `ProductForm` with pre-order tab: depositPercent, estimatedDeliveryDate, productionStatus select, maxQuantity. |
 | VB10 | Store Analytics wired to real data | M | ⏳ | | See O4. Wire `SellerAnalyticsView` to `storeAnalytics` callable function. Revenue, orders, top products, customer count graphs. |
 
 ### V-C: User Account Forms & Flows
@@ -599,7 +599,7 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| LL6 | `SellerProductsView` — product listing scaffold | M | ⏳ | | `SlottedListingView` with type filter chips (all/standard/auction/pre-order), status filter (draft/published/archived), search by title. Columns: thumbnail, title, type badge, price (₹), status, stock. Bulk actions: delete (ConfirmDeleteModal), toggle featured, unpublish. Row actions: edit (→C1/C2 forms), duplicate, delete. API: `/api/store/products`. Create/edit forms → VB8 (auction) + VB9 (pre-order) + C1 (standard). |
+| LL6 | `SellerProductsView` — product listing scaffold | M | ✅ | Session 100 | `SlottedListingView` with type filter chips (all/standard/auction/pre-order), status filter (draft/published/archived), search by title. Columns: thumbnail, title, type badge, price (₹), status, stock. Bulk actions: delete (ConfirmDeleteModal), toggle featured, unpublish. Row actions: edit (→C1/C2 forms), duplicate, delete. API: `/api/store/products`. Create/edit forms → VB8 (auction) + VB9 (pre-order) + C1 (standard). |
 | LL7 | `SellerOrdersView` — orders received listing | M | ⏳ | | Status filter tabs. Columns: order ID, date, buyer display name (masked PII), items count, total (₹), carrier, tracking number, status badge. Search by order ID. Row click → VB2 (order detail + status update SideDrawer). Bulk action: mark shipped (with tracking number input). API: `/api/store/orders`. |
 | LL8 | `SellerReviewsView` — reviews received on store's products | S | ⏳ | | Columns: product thumbnail, product name, reviewer display name, rating stars, verified purchase badge, reply status badge (replied/pending). Filter: rating (1–5 star), reply status. Row action: reply (inline SideDrawer with textarea → POST /api/store/reviews/[id]/reply). API: `/api/store/reviews`. |
 | LL9 | `SellerBidsView` — bids on store's auctions | S | ⏳ | | Columns: auction thumbnail, auction title, bidder name (masked), bid amount (₹), bid time, status badge (active/outbid/won/cancelled). Filter by auction (DynamicSelect). Read-only — no mutations on this view; admin manages bids via VA16. API: `/api/store/bids`. |
@@ -693,9 +693,9 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| SR1 | Search bar redesign — resource type dropdown + navigate-to-listing-page | M | ⏳ | | **New layout (single row):** `[--- search input ---] [--- resource type dropdown ---] [🔍 Search]` with suggestions below. **Resource type → route**: Products→`/products?q=X`, Auctions→`/auctions?q=X`, Pre-Orders→`/pre-orders?q=X`, Stores→`/stores?q=X`, Categories→`/categories?q=X`, Brands→`/brands?q=X`, Events→`/events?q=X`, Blog→`/blog?q=X`, FAQs→`/faqs?q=X`. Default: **Products**; persisted to `localStorage("letitrip_search_type")`. **On submit / Enter:** `router.push(ROUTES.PUBLIC[TYPE] + '?q=' + encodeURIComponent(query))` — removes the old `router.push('/{locale}/search')`. **Type selector**: use appkit `Select` component; on mobile collapses to icon-only with full labels in dropdown list. **Suggestions**: pass `selectedType` to `useNavSuggestions` hook so suggestions filter by type (categories when type=categories, blog titles when type=blog, etc.); clicking a suggestion still navigates to that item's detail page. Keep existing overlay open/close, keyboard navigation (arrow keys, Enter), Escape-to-close. File: `appkit/src/features/search/components/Search.tsx` + `useNavSuggestions.ts`. Rebuild appkit dist after. `npx tsc --noEmit` → 0 errors. |
-| SR2 | Simplify / redirect the old `/search` page | S | ⏳ | | Depends on SR1. The complex `/search/[query]/tab/[tab]/sort/[sortKey]/page/[page]` URL structure is no longer the primary flow. **Convert** `src/app/[locale]/search/page.tsx` to a redirect handler: read `?q=` and `?type=` URL params → redirect to `ROUTES.PUBLIC[type]?q=X` (default type = products). The nested route segments (`[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]`) become permanent redirects to maintain backward compatibility for bookmarks. `SearchResultsClient.tsx` can be removed or kept as a minimal "no results" landing. Keep `/search?q=X&type=products` as a valid deep-link URL format (SR1's output). |
-| SR3 | Verify all public listing pages accept and pre-fill `?q=` from URL | S | ⏳ | | Depends on SR1. For each of: `/products`, `/auctions`, `/pre-orders`, `/stores`, `/categories`, `/brands`, `/events`, `/blog`, `/faqs` — confirm: (a) the page's data fetch passes `searchParams.q` into the listing query/filter; (b) the search input in the listing toolbar is **pre-filled** with the `q` value on page load (not empty). If any listing page's toolbar search input is not pre-filled from URL, wire it — the toolbar input must read from `useUrlTable`'s `q` state which is initialised from the URL param. This is the contract that makes SR1 work: the search bar navigates here and the page must reflect the query. |
+| SR1 | Search bar redesign — resource type dropdown + navigate-to-listing-page | M | ✅ | 2026-05-10 | `Search.tsx`: added `SearchResourceType` union + `SearchResourceTypeOption` interface; new props `resourceTypes`, `defaultResourceType`, `storageKey`; native `<select>` type selector in both inline + overlay modes; `selectedType` state with localStorage persistence via `storageKey="letitrip_search_type"`; `handleDeferredSubmit` now calls `onSearch(query, selectedType)` (was `onChange`); `handleOverlaySearch` passes `selectedType`. `useNavSuggestions` updated to accept `selectedType` param + dep array. `client.ts` + `index.ts` export new types. `LayoutShellClient`: `SEARCH_RESOURCE_TYPES` + `SEARCH_ROUTE_MAP` constants; `onSearch` navigates to `base?q=encoded`. Search placeholder updated to "Search collectibles…". `npx tsc --noEmit` → 0 errors both repos. |
+| SR2 | Simplify / redirect the old `/search` page | S | ✅ | 2026-05-10 | `/search/page.tsx` rewritten as pure redirect handler: reads `?q=` and `?type=`, validates type against `VALID_TYPES` set, redirects to listing page. `metadata.robots = noindex`. Legacy `/search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]/page.tsx` rewritten as `permanentRedirect` — preserves tab→route mapping (auctions→/auctions, pre-orders→/pre-orders, all/products→/products). `SearchResultsClient.tsx` is now dead code (not deleted — no destructive deletes without user confirmation). |
+| SR3 | Verify all public listing pages accept and pre-fill `?q=` from URL | S | ✅ | 2026-05-10 | All 9 index listing components (Products, Auctions, Pre-Orders, Stores, Categories, Brands/via CategoriesIndexListing, Events, Blog) already read `q` from `useUrlTable` (`useState(table.get("q") \|\| "")`); client-side hooks pass `q` to API. After SR1 nav fix (`?q=` not `?search=`), all toolbar inputs correctly pre-fill. ⚠️ FAQs: uses `FAQPageView` (static server component from translation messages) — no search toolbar; `?q=` URL param is silently accepted but has no effect. FAQ client-side search deferred to future session. |
 
 ---
 

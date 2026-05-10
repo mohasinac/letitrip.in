@@ -4177,19 +4177,44 @@ Filter Drawer (fixed overlay, slides from LEFT, z-50):
 
 ---
 
-## Public > Search ✅ (→ SR1 redesign planned)
+## Public > Search ✅ (SR1+SR2+SR3 done — 2026-05-10)
 
 ```
-Current (before SR1):
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Search: "charizard"                                                         │
-│  TABS: [Products (24)] [Auctions (6)] [Stores (2)] [Blog (3)] [Events (1)] │
-│  [product grid — same as Products listing]                                  │
-└─────────────────────────────────────────────────────────────────────────────┘
+Search Bar (inline, inside shell header):
+┌──────────────────────────────────────────────────────────────────┐
+│  [🔍  Search collectibles…            ] [Products ▾] [🔍 Search] │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │ Quick links:                                               │  │
+│  │  📂 Pokémon Cards                                         │  │
+│  │  📂 Hot Wheels                                            │  │
+│  │  ✍️  How Auctions Work                                     │  │
+│  │  ─────────────────────────────────────────────────────    │  │
+│  │  [Searching…]  /  suggestion rows (type badge on right)   │  │
+│  │  ─────────────────────────────────────────────────────    │  │
+│  │  🔍 Browse results for "charizard"   ← submit row         │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
 
-After SR1 (planned):
-Submitting search navigates to /products?q=charizard (default type=products)
-No more search-specific results page — listing pages handle ?q= param directly
+Type dropdown options:
+  Products | Auctions | Pre-Orders | Stores | Categories | Brands | Events | Blog | FAQs
+  Default: Products; persisted to localStorage("letitrip_search_type")
+
+On submit → router.push(ROUTE_MAP[type] + "?q=" + encodeURIComponent(query))
+  products   → /products?q=X
+  auctions   → /auctions?q=X
+  pre-orders → /pre-orders?q=X
+  stores     → /stores?q=X
+  categories → /categories?q=X
+  brands     → /brands?q=X
+  events     → /events?q=X
+  blog       → /blog?q=X
+  faqs       → /faqs?q=X
+
+/search?q=X&type=Y  → redirect (SR2)
+/search/[slug]/tab/[tab]/...  → permanentRedirect (SR2 legacy compat)
+
+All listing index components read ?q= from useUrlTable on mount (SR3).
+FAQs: static RSC — no toolbar, ?q= silently accepted but not filtered.
 ```
 
 ---
@@ -7001,4 +7026,161 @@ ACTION ITEMS (non-urgent — do in a cleanup session):
 ```
 
 *Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session. BK1+BK2 implemented: hover/long-press selection, Set-based useBulkSelection, full-width BulkActionsBar, ListingToolbar bulkMode, BaseListingCard + all marketplace cards updated.*
+
+---
+
+## Session 100 — Shell Primitives + Seller Forms
+
+### FormShell (UX1)
+
+```
+┌─────────────────────────────────────────── FormShell (full-viewport overlay) ─┐
+│ [×] Store / Products / New        [Save Draft]  [Publish →]   z: z-modal       │
+├──────────────┬──────────────────────────────────────────────────────────────────┤
+│ Basic Info   │                                                                  │
+│ Media        │   <children> (max-w-3xl, centered, scrollable)                  │
+│ Pricing      │                                                                  │
+│ Shipping     │   Keyboard trap: Tab stays inside. Esc → unsaved guard.          │
+│ Publish      │   Body scroll locked while open.                                 │
+│ (200px nav)  │                                                                  │
+├──────────────┴──────────────────────────────────────────────────────────────────┤
+│  [Discard]                                    [Save Draft]  [Publish →]         │
+└─────────────────────────────────────────────────────────────────────────────────┘
+ Mobile: left nav → horizontal pill strip above body (fixed, z-10)
+
+ Unsaved guard dialog (z: z-modal + 5):
+ ┌────────────────────────────────┐
+ │  ⚠  Unsaved changes            │
+ │  Leave without saving?          │
+ │          [Stay]  [Leave]        │
+ └────────────────────────────────┘
+
+ useFormShell() → { isDirty, markDirty, markClean }  (standalone — no context)
+```
+
+### QuickFormDrawer (UX2)
+
+```
+Backdrop  z: z-modal+1
+┌────────────────────── QuickFormDrawer (right panel) ─┐  z: z-modal+2
+│  Title                                          [×]  │
+├──────────────────────────────────────────────────────┤
+│  [Field: text / number / select / toggle / textarea] │
+│  [Field]                                             │
+│  [Field]                                             │
+│  renderExtra?()                                      │
+├──────────────────────────────────────────────────────┤
+│  [Cancel]                          [Save →]          │  z-sticky footer
+└──────────────────────────────────────────────────────┘
+  Width: w-full (mobile) | lg:w-[40%] (desktop)
+  Re-initializes values when isOpen changes (edit mode support).
+  Focus trap: Tab/Shift-Tab cycles inside. Esc → close.
+```
+
+### StepForm (UX3)
+
+```
+  ① Basic ──── ② Media ──── ③ Pricing ──── ④ Shipping ──── ⑤ Publish
+  [●]         [✓]           [○]            [○]             [○]
+  active      done(click)   locked
+
+  <step content renders here>
+
+  [errorMessage if validate() fails]
+
+  ─────────────────────────────────────────────────────
+  [← Back]                         2 / 5  [Next →]
+  (isFirst: Back hidden)          (isLast: Publish Now)
+
+ StepDef<T>.render({ values, onChange, errors }) → ReactNode
+ StepDef<T>.validate?(values: T) → string | null
+ formId prop → localStorage["stepform:{id}"] persists step index
+```
+
+### SellerProductShell (UX6)
+
+```
+mode="create"                        mode="edit"
+────────────────────                 ─────────────────────────────────
+FormShell (isOpen, no sections)      FormShell (sections: Basic/Media/
+  └─ StepForm<SellerProductDraft>        Pricing/Shipping/Publish +
+       steps (5 or 6):                   Auction|PreOrder if applicable)
+         1. Basic (title,desc,cat,         All sections rendered as
+            brand,tags,condition)         <section id="…"> anchors.
+         2. Media (main img,              Save/Update in top + bottom bar.
+            gallery, youtubeId)
+         3. [Auction Settings] ← if listingType=auction
+            [Pre-Order Settings] ← if listingType=pre-order
+         4. Pricing (price, compare-at, stock, featured, isNew)
+         5. Shipping (paidBy, address, insurance)
+         6. Publish (status, seoTitle, seoDesc, isOnSale)
+
+SellerProductShellProps:
+  mode: "create" | "edit"
+  listingType?: "standard" | "auction" | "pre-order"
+  initialValues?: SellerProductDraft
+  onSave(draft): void | Promise<void>          ← saves as draft
+  onPublish(draft): void | Promise<void>       ← saves as published
+  renderCategorySelector?, renderBrandSelector?, renderAddressSelector?
+
+Pages wired:
+  /store/products/new              → SellerCreateProductView listingType="standard"
+  /store/products/[id]/edit        → SellerEditProductView   listingType="standard"
+  /store/auctions/new              → SellerCreateProductView listingType="auction"
+  /store/auctions/[id]/edit        → SellerEditProductView   listingType="auction"
+  /store/pre-orders/new            → SellerCreateProductView listingType="pre-order"
+  /store/pre-orders/[id]/edit      → SellerEditProductView   listingType="pre-order"
+  All pages: inline "use server" actions → createSellerProductAction / sellerUpdateProductAction
+```
+
+### SellerStorefrontView (O2+C5)
+
+```
+StackedViewShell (portal="seller")
+  ├─ Store Profile section
+  │    storeName (text) | bio (textarea) | logo (ImageUpload) | banner (ImageUpload)
+  ├─ Store Details section
+  │    storeCategory (text) | storeDescription (textarea)
+  ├─ Policies section
+  │    returnPolicy (textarea) | shippingPolicy (textarea)
+  ├─ Contact & Social section
+  │    website, location | twitter, instagram | facebook, linkedin
+  ├─ Vacation Mode section
+  │    Toggle (isVacationMode) → vacationMessage textarea appears
+  ├─ Visibility section
+  │    Toggle (isPublic)
+  └─ [Save Changes] button (disabled when not isDirty)
+
+StorefrontDraft = { storeName, bio, storeLogoURL, storeBannerURL, storeDescription,
+  storeCategory, returnPolicy, shippingPolicy, website, location, socialLinks,
+  isVacationMode, vacationMessage, isPublic }
+Page: loads via getSellerStoreAction(); saves via updateStoreAction().
+```
+
+### SellerProductsView (LL6)
+
+```
+┌────────────────── SellerProductsView ───────────────────────────┐
+│ [ListingToolbar: search | sort | filter]                         │
+├──────────────────────────────────────────────────────────────────┤
+│ [All] [Standard] [Auction] [Pre-order]  ← TypeChips             │
+├────┬──────────────────────────┬────────┬────────┬───────────────┤
+│    │ Product                  │  Price │ Status │ Updated  [⋮] │
+├────┼──────────────────────────┼────────┼────────┼───────────────┤
+│ 🖼 │ Charizard PSA9             │        │        │        [✏][🗑]│
+│    │ [auction] · good          │ ₹4,999 │[active]│  2h ago       │
+├────┼──────────────────────────┼────────┼────────┼───────────────┤
+│ 🖼 │ Hot Wheels Twin Mill      │        │        │        [✏][🗑]│
+│    │ [standard] · mint         │ ₹1,499 │ [draft]│  1d ago       │
+└────┴──────────────────────────┴────────┴────────┴───────────────┘
+
+TypeChips Sieve filter mapping:
+  "all"      → no type filter
+  "standard" → isAuction==false,isPreOrder==false
+  "auction"  → isAuction==true
+  "pre-order"→ isPreOrder==true
+
+Row edit → routes to ROUTES.STORE.PRODUCTS_EDIT / AUCTIONS_EDIT / PRE_ORDERS_EDIT
+Row delete → calls onDeleteProduct?(id) with confirm() guard
+```
 

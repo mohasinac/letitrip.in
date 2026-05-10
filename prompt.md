@@ -8,32 +8,33 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 83 ✅ 2026-05-10 (Scam Registry — Nav Wiring + Public Pages + UI Quality Pass)
+## ⚡ LAST COMPLETED — Session 100 ✅ 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
 
 | Task | What was done |
 |------|--------------|
-| **SCAM1-REPO** | `ScammerRepository` done (`appkit/src/features/scams/repository/scammer.repository.ts`) — `listVerified`, `listAll`, `findBySeoSlug`, `create`, `adminUpdate`, `incrementViews`, `findByContactField`; Sieve fields: status/scamType/scamPlatform/views/incidentCount/createdAt. |
-| **SCAM1-ACTIONS** | `appkit/src/features/scams/actions/scam-actions.ts` — `listVerifiedScammers(searchParams)` + `getPublicScammerById(id)`. |
-| **SCAM3-LIST** | `/scams` list page + `ScamRegistryView` (appkit primitives: `Grid cols={3}`, `Stack`, `Row`, `Card variant="outlined" hover`, `Badge danger/warning/default`, `Alert warning`, `EmptyState`, `Input icon`). |
-| **SCAM3-PROFILE** | `/scams/[id]` profile page + `ScamProfileView` (appkit: `Grid cols="twoThird"`, `Card elevated/outlined`, `CardHeader`, `CardBody`, `Breadcrumb`, `Badge`, `Alert success` for verified meta). |
-| **SCAM5-PAGE** | `/scams/report` auth-gated page (`useSession` redirect, `Alert warning` awareness notice, `EmptyState` placeholder, CSS var colours). |
-| **NAV** | `MAIN_NAV_ITEMS`, `SIDEBAR_SUPPORT_LINKS`, `FOOTER_LINK_GROUPS` all wired to `ROUTES.PUBLIC.SCAMS`. `messages/en.json` "scams" key added. |
-| **ROUTES** | `ROUTES.PUBLIC.SCAMS`, `ROUTES.PUBLIC.SCAM_DETAIL`, `ROUTES.PUBLIC.SCAM_REPORT` added to `route-map.ts`. |
-| **APPKIT-EXPORTS** | `ScamRegistryView`, `ScamProfileView`, `ScamRegistryViewProps`, `ScamProfileViewProps`, `listVerifiedScammers`, `getPublicScammerById`, `ScammerListResult`, `EmptyState` (component) all added to `appkit/src/index.ts`. |
-| **TRACKER** | SCAM1 🔄→✅, SCAM3 ⏳→⚠️, SCAM5 ⏳→⚠️ |
-| **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
+| **UX1** | `FormShell` + `useFormShell` in `appkit/src/features/shell/FormShell.tsx` — full-viewport overlay, focus trap, scroll lock, dirty guard, unsaved dialog. |
+| **UX2** | `QuickFormDrawer` in `appkit/src/features/shell/QuickFormDrawer.tsx` — 40% desktop / 100% mobile, auto-renders `FieldDef[]`, re-init on isOpen. |
+| **UX3** | `StepForm`, `StepFormActions`, `StepIndicator` in `appkit/src/features/shell/StepForm.tsx` — controlled multi-step, per-step validate, localStorage. |
+| **UX6/C1/VB8/C2/VB9** | `SellerProductShell` — create (5/6-step StepForm) + edit (FormShell section nav); standard/auction/pre-order. Updated `SellerCreateProductView` + `SellerEditProductView`. |
+| **C1/C2 pages** | 6 new pages: `/store/auctions/new`, `/store/auctions/[id]/edit`, `/store/pre-orders/new`, `/store/pre-orders/[id]/edit`. `/store/products/new` + edit also wired. All pass server actions via inline `"use server"`. |
+| **O2+C5/VB4** | `SellerStorefrontView` complete rewrite — profile/details/policies/social/vacation/visibility sections, dirty tracking, save feedback. Storefront page wired to `updateStoreAction`. |
+| **LL6** | `SellerProductsView` — type filter chips (All/Standard/Auction/Pre-order), thumbnail column, type+status badges, price column, row edit/delete actions, CSS variables only. |
+| **Bug fix** | `SearchResourceType` + `SearchResourceTypeOption` not exported from `search/components/index.ts` — fixed. |
+| **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. Appkit built. |
 
-> Prior sessions done: 82-ext (footer SEO + constants refactor), 82 (SEO & Lighthouse — SSR hydration + JSON-LD + Core Web Vitals), 80-schema (RBAC+BAN+SCAM), 81 (sellerId→storeId migration).
+> Prior sessions done: 84 (Search Redesign), 83 (SCAM public pages), 82-ext (footer SEO + constants), 82 (SEO & Lighthouse), 80-schema (RBAC+BAN+SCAM), 81 (storeId migration).
 
 ---
 
-## 🔜 NEXT — Session 84: Scam Pages continued + /scams/types page
+## 🔜 NEXT — Session 101: User Account (78)
 
 | Tasks | Goal |
 |-------|------|
-| SCAM3.3 | `/scams/types` static RSC — 6 category sections, 27 scam type cards |
-| SCAM4 | `/scams/faqs` + scam_awareness FAQ category |
-| SCAM7 | SEO + JSON-LD (BreadcrumbList + FAQPage) on all scam pages |
+| D1+VC6 | Wishlist + wishlist view |
+| VC1 | User order detail (full render) |
+| VC3 | User profile edit |
+| VC5 | User notifications view |
+| LL1/LL2/LL3 | UserOrdersView / UserWishlistView / UserNotificationsView |
 
 ---
 
