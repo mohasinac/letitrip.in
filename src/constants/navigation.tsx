@@ -26,6 +26,7 @@ import {
   CalendarDays,
   BookOpen,
   Star,
+  ShieldAlert,
 } from "lucide-react";
 import { THEME_CONSTANTS } from "./theme";
 import { ROUTES } from "./routes";
@@ -72,6 +73,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
   { key: "blog",       href: String(ROUTES.PUBLIC.BLOG),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
+  { key: "scams",      href: String(ROUTES.PUBLIC.SCAMS),         icon: <ShieldAlert  className={`${iconSm} text-red-500`}            /> },
 ];
 
 // ---------------------------------------------------------------------------
@@ -79,9 +81,10 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
 // ---------------------------------------------------------------------------
 
 export const SIDEBAR_SUPPORT_LINKS: DashboardNavItem[] = [
-  { href: String(ROUTES.PUBLIC.ABOUT),   label: "About"   },
-  { href: String(ROUTES.PUBLIC.CONTACT), label: "Contact" },
-  { href: String(ROUTES.PUBLIC.HELP),    label: "Help"    },
+  { href: String(ROUTES.PUBLIC.ABOUT),   label: "About"         },
+  { href: String(ROUTES.PUBLIC.CONTACT), label: "Contact"       },
+  { href: String(ROUTES.PUBLIC.HELP),    label: "Help"          },
+  { href: String(ROUTES.PUBLIC.SCAMS),   label: "Scam Registry" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -108,6 +111,7 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Contact Us",    href: String(ROUTES.PUBLIC.CONTACT)     },
       { label: "Track Order",   href: String(ROUTES.PUBLIC.TRACK_ORDER) },
       { label: "About Us",      href: String(ROUTES.PUBLIC.ABOUT)       },
+      { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
     ],
   },
   {
