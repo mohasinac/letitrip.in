@@ -33,6 +33,30 @@
 
 ---
 
+# Session 86-hotfix — 2026-05-10 (Google Auth RTDB fault-tolerance + PII encryption fix)
+
+## Scope
+Bug fix session. Google OAuth popup flow was silently failing when Firebase RTDB was unavailable: the init route threw, the auth event node was never created, and user profiles were saved with unencrypted PII (or not saved at all). No new features — all changes are hardening existing auth + encryption paths.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `src/app/api/auth/event/init/route.ts` | RTDB write wrapped in try/catch; returns `rtdbEnabled: false` when RTDB is down so client knows to skip subscription |
+| `src/app/api/auth/google/callback/route.ts` | RTDB anti-replay check wrapped in try/catch (graceful skip when RTDB down); success redirect now passes `uid`, `role`, `isNew` params to `/auth/close` for postMessage payload |
+| `src/app/[locale]/auth/close/page.tsx` | Sends `window.opener.postMessage({ type: "letitrip_auth_close", ... })` on mount — both success (with uid/role/isNewUser) and error (with message) — as fallback when RTDB subscription is unavailable |
+| `appkit/src/features/auth/hooks/useAuth.ts` (`useGoogleLogin`) | `calledRef` prevents double-resolution when both RTDB and postMessage fire; `popupPending` state keeps `isLoading=true` while popup is open without RTDB; `postMessage` listener effect (empty deps, mounted once); RTDB FAILED no longer short-circuits to `onError` — waits for postMessage; skips RTDB subscription when `rtdbEnabled !== false` |
+| `appkit/src/features/auth/repository/user.repository.ts` | Removed `addPiiIndices` from `encryptUserData` — it was spreading original plaintext data back after `encryptPiiFields`, defeating encryption of `email`/`phoneNumber`; added `createWithId` override so Google-auth profile creation goes through `encryptUserData` (base `createWithId` bypassed encryption) |
+| `appkit/src/features/products/components/GroupSettingsPanel.tsx` | Pre-existing bug: `<SideDrawer open={…}` → `isOpen={…}` (SideDrawer prop name) |
+| `appkit/src/features/products/components/ShowGroupSection.tsx` | Same SideDrawer `open` → `isOpen` fix |
+| `appkit/package.json` | Bumped `2.4.7` → `2.4.8` |
+| `package.json` | `@mohasinac/appkit` updated to `^2.4.8` |
+
+## Deferred
+None — all changes are self-contained bug fixes.
+
+---
+
 # Session 85 — 2026-05-10 (Sub-listing Categories SC1→SC4 + Store CRUD)
 
 ## Scope

@@ -40,17 +40,26 @@ export const POST = withProviders(createRouteHandler({
     if (!rl.success) return errorResponse("Too many requests", 429);
     const eventId = randomUUID();
     const db = getAdminRealtimeDb();
-    await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).set({
-      status: RTDBPayloadStatus.PENDING,
-      createdAt: Date.now(),
-    });
+    let rtdbEnabled = true;
+    try {
+      await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).set({
+        status: RTDBPayloadStatus.PENDING,
+        createdAt: Date.now(),
+      });
+    } catch (rtdbErr) {
+      serverLogger.error("RTDB unavailable — auth event node not created; postMessage fallback will handle client signal", {
+        eventId,
+        rtdbErr,
+      });
+      rtdbEnabled = false;
+    }
     const syntheticUid = `auth_event_${eventId}`;
     const customToken = await getAdminAuth().createCustomToken(syntheticUid, {
       authEventId: eventId,
     });
     const expiresAt = Date.now() + EVENT_TTL_MS;
-    serverLogger.info("Auth event initialised", { eventId });
-    return successResponse({ eventId, customToken, expiresAt });
+    serverLogger.info("Auth event initialised", { eventId, rtdbEnabled });
+    return successResponse({ eventId, customToken, expiresAt, rtdbEnabled });
   },
 }));
 

@@ -98,6 +98,12 @@ export const API_ROUTES = {
     BIDS: "/api/store/bids",
     SUBLISTING_CATEGORIES: "/api/store/sublisting-categories",
     SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/store/sublisting-categories/${id}`,
+    PRODUCT_GROUP: (id: string) => `/api/store/products/${id}/group`,
+    PRODUCT_GROUP_CHILDREN: (id: string) => `/api/store/products/${id}/group/children`,
+    PRODUCT_GROUP_CHILD: (id: string, childId: string) => `/api/store/products/${id}/group/children/${childId}`,
+  },
+  PRODUCTS: {
+    GROUP: (groupId: string) => `/api/products/group/${groupId}`,
   },
   SCAMS: {
     REPORTS: "/api/scams/reports",

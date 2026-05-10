@@ -5,12 +5,33 @@ import { useSearchParams } from "next/navigation";
 export default function Page() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+  const uid = searchParams.get("uid");
+  const role = searchParams.get("role");
+  const isNew = searchParams.get("isNew") === "1";
 
   useEffect(() => {
+    // Always signal the opener — this is the postMessage fallback for when
+    // the RTDB signal channel is unavailable or fires after the popup closes.
+    try {
+      if (error) {
+        window.opener?.postMessage(
+          { type: "letitrip_auth_close", status: "error", error: decodeURIComponent(error) },
+          window.location.origin,
+        );
+      } else {
+        window.opener?.postMessage(
+          { type: "letitrip_auth_close", status: "success", uid, role, isNewUser: isNew },
+          window.location.origin,
+        );
+      }
+    } catch {
+      // opener may be gone or cross-origin — non-fatal
+    }
+
     if (error) return;
     const t = setTimeout(() => window.close(), 200);
     return () => clearTimeout(t);
-  }, [error]);
+  }, [error, uid, role, isNew]);
 
   if (error) {
     return (

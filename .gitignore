@@ -121,3 +121,5 @@ test-results*.txt
 .claude/settings.local.json
 GEMINI.md
 /memory-forensics-*
+.env.vercel-check
+.env.verify-check

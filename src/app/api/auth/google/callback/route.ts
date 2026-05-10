@@ -116,15 +116,24 @@ export async function GET(request: NextRequest) {
 
     const eventId = state;
 
-    // Verify the event node still exists + is pending (replays are rejected)
+    // Verify the event node still exists + is pending (replays are rejected).
+    // If RTDB is unavailable we skip the anti-replay check and rely on the
+    // OAuth state parameter (CSRF) + Google's single-use authorization code.
     const db = getAdminRealtimeDb();
-    const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
-    if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
-      serverLogger.warn("Google callback: event not found or not pending", {
-        eventId,
-      });
-      return NextResponse.redirect(
-        new URL("/auth/close?error=event_expired", origin),
+    try {
+      const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
+      if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
+        serverLogger.warn("Google callback: event not found or not pending", {
+          eventId,
+        });
+        return NextResponse.redirect(
+          new URL("/auth/close?error=event_expired", origin),
+        );
+      }
+    } catch (rtdbReadErr) {
+      serverLogger.warn(
+        "Google callback: RTDB unavailable — skipping anti-replay check, proceeding with OAuth state validation only",
+        { eventId, rtdbReadErr },
       );
     }
 
@@ -299,8 +308,16 @@ export async function GET(request: NextRequest) {
       origin,
     );
 
-    // Build the close-page redirect response and attach the session cookies
-    const closeUrl = `${origin}/auth/close`;
+    // Build the close-page redirect response and attach the session cookies.
+    // uid/role/isNew are passed as query params so /auth/close can forward
+    // them via postMessage — the primary channel is RTDB but postMessage is
+    // the fallback when RTDB is unavailable.
+    const closeParams = new URLSearchParams({
+      uid: firebaseUid,
+      role: userRole,
+      isNew: isNewUser ? "1" : "0",
+    });
+    const closeUrl = `${origin}/auth/close?${closeParams.toString()}`;
     const response = NextResponse.redirect(closeUrl);
 
     response.cookies.set("__session", sessionCookie, {
