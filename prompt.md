@@ -31,26 +31,27 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 83-cont ✅ 2026-05-10 (VD9 + VD10 content)
+## ⚡ LAST COMPLETED — Session 84 ✅ 2026-05-10 (L1 + L2 + L3 Custom Fields)
 
 | Task | What was done |
 |------|--------------|
-| **VD9** | `becomeSeller` 9 → 41 keys: 8 guide sections (requirements/howItWorks/whatYouCanSell/fees/auctions/earnings/responsibilities/tiers), earnings breakdown (₹917.40 on ₹1,000 sale), 3 seller tiers. `sellerGuide` 42 keys rewritten: Pokémon grading tips, Hot Wheels casting details, Gunpla sprue photos, import pricing guide. ✅ |
-| **VD10** | `terms` 7 → 15 sections (IT Act 2000, Consumer Protection Act 2019, prohibited counterfeit Pokémon/replica Hot Wheels, Maharashtra jurisdiction). `privacy` 7 → 11 sections (DPDP Act 2023, data retention, children's privacy, DPO contact). `cookies` with specific cookie names (Firebase, GA4, Razorpay). `refundPolicy` 8 collectibles-specific sections (sealed, graded, auction, pre-order, authenticity, transit damage). ✅ |
+| **VD9** | `becomeSeller` 9 → 41 keys (8 guide sections, earnings ₹917.40 breakdown, 3 tiers). `sellerGuide` rewritten collectibles-specific. ✅ |
+| **VD10** | `terms` 15-section (IT Act/CPA), `privacy` DPDP Act 2023, `cookies` named (Firebase/GA4/Razorpay), `refundPolicy` 8 collectibles sections. ✅ |
+| **L1** | `CustomField` + `CustomSection` types in `firestore.ts`; `CustomFieldsEditor` client component (key/type/value/unit rows, max 50). ✅ |
+| **L2** | `ProductTabsShell` extended with `customTabs`; `CustomSectionTabContent` RSC; all 3 detail page views wired. ✅ |
+| **L3** | `CustomSectionsEditor` (max 3 sections, title/text/fields); wired into `ProductForm`. ✅ |
 | **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
 
 ---
 
-## 🔜 NEXT — Session 84 ⏳ (Custom Fields L1/L2/L3)
+## 🔜 NEXT — Session 85 ⏳ (Sub-listing categories SC1→SC4)
 
-### Session 84 — Custom Fields
+### Session 85 — Sub-listing categories (moved up)
 | Tasks | Goal |
 |-------|------|
-| L1 | Custom fields schema + CustomFieldsEditor component |
-| L2 | Custom section render on product detail pages |
-| L3 | Custom sections CRUD in product create/edit forms |
+| SC1→SC4 | Schema → Admin CRUD → form field + carousel → public page |
 
-### Session 85 — Sub-listing categories
+### Session 86 — Grouped Listings (was 86)
 | Tasks | Goal |
 |-------|------|
 | SC1→SC4 | Schema → Admin CRUD → form field + carousel → public page |

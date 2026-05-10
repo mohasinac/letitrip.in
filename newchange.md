@@ -33,6 +33,36 @@
 
 ---
 
+# Session 84 — 2026-05-10 (L1 + L2 + L3 Custom Fields)
+
+## Scope
+L1: CustomField/CustomSection schema + CustomFieldsEditor component.
+L2: ProductTabsShell customTabs + CustomSectionTabContent + all 3 detail page views.
+L3: CustomSectionsEditor in ProductForm.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/schemas/firestore.ts` | Added `CustomField`, `CustomSection`, `CustomFieldType` types; `MAX_CUSTOM_FIELDS=50`, `MAX_CUSTOM_SECTIONS=3`; `ProductDocument` +`customFields?` +`customSections?`. |
+| `appkit/src/features/products/schemas/index.ts` | Added Zod schemas for `customFields` and `customSections` arrays. |
+| `appkit/src/features/products/types/index.ts` | `ProductItem` +`customFields?` +`customSections?`; re-exports from firestore types. |
+| `appkit/src/features/products/components/CustomFieldsEditor.tsx` | NEW — client component: 4-col grid rows (key/type/value/remove); boolean=Yes/No Select; URL type; add/remove; max-50 badge. |
+| `appkit/src/features/products/components/CustomSectionsEditor.tsx` | NEW — client component: up to 3 sections; title/textarea/CustomFieldsEditor per section; add/remove panels; counter. |
+| `appkit/src/features/products/components/CustomSectionTabContent.tsx` | NEW — RSC: renders section.text as RichText + fields as dl key-value; URL fields = anchor; empty state fallback. |
+| `appkit/src/features/products/components/ProductTabsShell.tsx` | Added `customTabs?: CustomTabDef[]`; dynamic tabs after static ones; active border = `var(--appkit-color-primary)`. |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Extracts `customSections` from product doc; passes as `customTabs` to `ProductTabsShell`. |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Same customSections extraction + customTabs pass-through. |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Same customSections extraction + customTabs pass-through. |
+| `appkit/src/features/products/components/ProductForm.tsx` | Added "Custom Sections" block before `shippingInfo`; renders `CustomSectionsEditor`. |
+| `appkit/src/features/products/components/index.ts` | Exported all 3 new components + `CustomTabDef` type. |
+
+## Deferred
+
+None. L1/L2/L3 fully implemented per spec.
+
+---
+
 # Session 83-cont — 2026-05-10 (VD9 + VD10 content)
 
 ## Scope
