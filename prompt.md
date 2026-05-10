@@ -31,6 +31,21 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Session 85 ✅ 2026-05-10 (Sub-listing Categories SC1→SC4 + Store CRUD)
+
+| Task | What was done |
+|------|--------------|
+| **SC1** | `SublistingCategoryDocument` schema + `SublistingCategoriesRepository` + `sublistingCategoryId` on `ProductDocument` + admin/public API routes. ✅ |
+| **SC2** | `AdminSublistingCategoriesView` + `AdminSublistingCategoryEditorView` + admin pages (list/new/edit) + nav entry in `ADMIN_NAV_GROUPS`. ✅ |
+| **SC3** | `SublistingCategorySelect` in `ProductForm`; `SublistingCarouselSection` component; `renderSublistingSection` prop on all 3 detail view shells; wired into `ProductDetailPageView`, `AuctionDetailPageView`, `PreOrderDetailPageView`. ✅ |
+| **SC4** | Public `/sublisting-categories/[slug]` page (RSC, `generateMetadata`, listing grid, breadcrumb, empty state). ✅ |
+| **Store CRUD** | `/store/sublisting-categories` browse/create/edit/delete pages + `/api/store/sublisting-categories` API + `STORE_NAV_GROUPS` nav entry. Sellers can create/edit/delete categories they own. ✅ |
+| **Firebase indexes** | Added `sublistingCategoryId+status+price` on products + `name+createdAt` and `productCount+createdAt` on sublistingCategories to `firestore.indexes.json`. ✅ |
+| **SeedPanel** | Updated `sublistingCategories` entry with correct schema fields (removed stale `parentId`/`isLeaf`). ✅ |
+| **appkit 2.4.6** | Built + published. Root updated to `^2.4.6`. Both repos tsc 0 errors. ✅ |
+
+---
+
 ## ⚡ LAST COMPLETED — Hotfix ✅ 2026-05-10 (Tailwind self-contained + SC1 type fixes)
 
 | Task | What was done |
@@ -56,17 +71,7 @@
 
 ---
 
-## 🔜 NEXT — Session 85 ⏳ (Sub-listing categories SC1→SC4)
-
-### Session 85 — Sub-listing categories (moved up)
-| Tasks | Goal |
-|-------|------|
-| SC1→SC4 | Schema → Admin CRUD → form field + carousel → public page |
-
-### Session 86 — Grouped Listings (was 86)
-| Tasks | Goal |
-|-------|------|
-| SC1→SC4 | Schema → Admin CRUD → form field + carousel → public page |
+## 🔜 NEXT — Session 86 ⏳ (Grouped Listings GP1→GP2)
 
 ### Session 86 — Grouped Listings
 | Tasks | Goal |
