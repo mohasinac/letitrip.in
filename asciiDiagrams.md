@@ -2934,23 +2934,34 @@ SideDrawer:
 
 ---
 
-## Store > Analytics ⏳ (VB10)
+## Store > Analytics ✅ (VB10 — 2026-05-10)
 
 ```
+Page: /store/analytics
+Component: SellerAnalyticsView + SellerAnalyticsStats + SellerTopProducts
+API: GET /api/store/analytics → proxies Firebase Function storeAnalytics
+     503 returned when function not configured — shows friendly message
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Store Analytics                              [Date Range: Last 30 days ▾]  │
+│  Store Analytics                                                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
-│  │ Revenue  │  │ Orders   │  │ Customers│  │ Avg Order│                   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘                   │
-│  Revenue Chart  |  Orders Chart  |  Top Products Table                      │
-│  ░░░░░░░░░░░░   |  ░░░░░░░░░░░░  |  ░░░░░░░░░░░░░░░░░░                    │
+│  ┌──────────┐  ┌──────────┐  ┌────────────┐  ┌────────────┐               │
+│  │ Revenue  │  │ Orders   │  │  Products  │  │ Published  │               │
+│  │ ₹12,400  │  │ 24       │  │ 32 total   │  │ 28 live    │               │
+│  └──────────┘  └──────────┘  └────────────┘  └────────────┘               │
+│  Top Products                                                                │
+│  # │ Product             │ Revenue     │ Orders                             │
+│  1 │ Hot Wheels Redline  │ ₹5,200      │ 8                                  │
+│  2 │ Pikachu Figure      │ ₹3,100      │ 5                                  │
+│  ─ ─ Not configured ─ ─────────────────────────────────────────────────── │
+│  Analytics service is not configured yet.                                   │
+│  Check back after your first orders.                                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Store > Storefront Edit ⏳ (VB4/O2+C5)
+## Store > Storefront Edit ✅ (VB4/O2+C5 — 2026-05-10)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -2970,44 +2981,136 @@ SideDrawer:
 
 ---
 
-## Store > Shipping Config ⏳ (VB5/C6)
+## Store > Shipping Config ✅ (C6 — 2026-05-10)
 
 ```
+Page: /store/shipping
+Component: SellerShippingView (appkit)
+API: GET/PATCH /api/store/shipping
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Shipping Configuration                                  [Save Shipping]     │
+│  Shipping Configuration           [Configured ✅] or [Not configured ⚠]     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Standard Shipping [tog]   Price ₹ [input]                                  │
-│  Express Shipping  [tog]   Price ₹ [input]                                  │
-│  Free Shipping     [tog]   Threshold ₹ [input — shown if on]               │
-│  COD               [tog]   COD Fee ₹ [input — shown if on]                 │
-│  Pickup            [tog]   Pickup Addresses [StoreAddressSelectorCreate]    │
+│  Shipping Method                                                             │
+│  (•) Custom / Manual    Set a fixed shipping fee and carrier name           │
+│  ( ) Shiprocket         Automated shipping — label generation + tracking    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Custom Shipping Details (shown if Custom selected)                          │
+│  Carrier Name     [e.g. India Post, DTDC, Delhivery]                        │
+│  Shipping Price ₹ [0 for free shipping]                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Shiprocket Account (shown if Shiprocket selected)                           │
+│  Email    [your@email.com]                                                   │
+│  Password [•••••••• — only to re-authenticate]                              │
+│  Pickup Address [StoreAddressSelectorCreate — optional]                     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Store > Payout Settings ⏳ (VB6/C7)
+## Store > Payout Settings ✅ (C7 — 2026-05-10)
 
 ```
+Page: /store/payout-settings
+Component: SellerPayoutSettingsView (appkit)
+API: GET/PATCH /api/store/payout-settings
+     GET returns masked account number. PATCH uses Zod discriminated union.
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Payout Settings                                        [Save Payout Info]   │
+│  Payout Settings       [Payout configured ✅] or [Not configured ⚠]         │
+│  ──────── Current: UPI — name@upi  or  Bank ••••1234 (savings) ──────────  │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Method: (•) UPI  ( ) Bank Transfer                                          │
-│                                                                              │
-│  UPI (shown if UPI selected):                                                │
-│    UPI VPA [input: name@upi]                                                 │
-│                                                                              │
-│  Bank (shown if Bank selected):                                              │
-│    Account Name   [input]                                                    │
-│    Account Number [masked input — shows ****1234]  [👁 reveal]              │
-│    IFSC Code      [input]                                                    │
-│    Bank Name      [input]                                                    │
+│  Payout Method                                                               │
+│  (•) UPI           Instant via UPI VPA (e.g. name@upi)                     │
+│  ( ) Bank Transfer NEFT/RTGS within 2–3 business days                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  UPI Details (shown if UPI selected)                                         │
+│  UPI ID (VPA) [yourname@upi]                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Bank Account Details (shown if Bank selected)                               │
+│  Account Holder Name  [Name as on bank account]                             │
+│  Account Number       [full digits — stored securely, shown masked]         │
+│  IFSC Code            [SBIN0001234]                                         │
+│  Bank Name            [State Bank of India]                                 │
+│  Account Type         (•) Savings  ( ) Current                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Store > Addresses (Pickup Locations) ⏳ (VB7/O3)
+## Store > Reviews ✅ (LL8 — 2026-05-10)
+
+```
+Page: /store/reviews
+Component: SellerReviewsView (appkit)
+APIs: GET /api/store/reviews?rating=&replied=&page=&pageSize=
+      POST /api/store/reviews/[id]/reply  — body: { reply: string (max 1000) }
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Reviews                                                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [All ratings ▾]  [All reply statuses ▾]                    42 reviews     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Hot Wheels Redline Vintage                                                  │
+│  ★★★★★  by Rahul Sharma  [Verified ✓]  [approved]  [Replied ✓]            │
+│  "Perfect packaging, arrived sealed…"                                       │
+│  ↳ Your reply: "Thank you so much, Rahul!…"                                │
+│                                                           [Edit Reply]       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Pikachu Figure 1/10 Scale                                                  │
+│  ★★★☆☆  by Priya Singh                [approved]   [Pending reply ⚠]      │
+│  "Good figure but delayed shipping…"                                        │
+│                                                              [Reply]         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Reply SideDrawer:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Reply to Review                                                         [✕] │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ★★★☆☆  "Good figure but delayed shipping…"                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Your reply                                                                  │
+│  ┌─────────────────────────────────────────────────────┐                   │
+│  │ We apologise for the delay — there was a courier…   │                   │
+│  └─────────────────────────────────────────────────────┘  245/1000         │
+│                                          [Cancel]  [Post Reply →]           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Store > Payout Request ✅ (VB3 — 2026-05-10)
+
+```
+Page: /store/payouts (top section above payout history)
+Component: SellerPayoutRequestView (appkit)
+APIs: GET /api/store/payouts        — fetches summary.availableEarnings, hasPendingPayout
+      GET /api/store/payout-settings — fetches payment method for display
+      POST /api/store/payouts/request — body: { paymentMethod, notes? }
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Available for Payout                  [Payout in progress ⚠] (if pending) │
+│  ₹4,250.00                                                                   │
+│  6 eligible orders                                       [Request Payout]   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Confirm Modal:
+┌──────────────────────────────────────┐
+│  Request Payout                  [✕] │
+├──────────────────────────────────────┤
+│  Amount to be paid                   │
+│  ₹4,250.00                           │
+│  Via UPI — name@upi                  │
+├──────────────────────────────────────┤
+│  Notes (optional)                    │
+│  [textarea, max 500]                 │
+│  [Cancel]  [Confirm Request →]       │
+└──────────────────────────────────────┘
+```
+
+---
+
+## Store > Addresses (Pickup Locations) ⏳ (VB7)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
