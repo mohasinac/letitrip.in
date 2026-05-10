@@ -5771,6 +5771,15 @@ SEO KEY DESIGN POINTS:
   → long-tail SEO for "XYZ scam india collectibles"
 ```
 
+### SCAM > Data Model — Collections & Subcollections
+
+```
+scammerProfiles/{id}                    ← canonical scammer identity
+  scammerProfiles/{id}/incidents/{id}   ← individual victim reports linked to this profile
+  scammerProfiles/{id}/comments/{id}    ← public discussion; accused can post here
+  scammerProfiles/{id}/contests/{id}    ← dispute submissions (accused or any user)
+```
+
 ### SCAM > ScammerDocument Key Fields
 
 ```
@@ -5783,19 +5792,156 @@ ScammerDocument
   socialMedia[]       [{ platform, handle, url? }]
   scamType            ScamType (27 values)
   scamPlatform        ScamPlatform (11 values)
-  description         reporter's narrative (max 2000 chars)
+  description         reporter's primary narrative (max 2000 chars)
   amountLost?         INR paise (optional)
   itemInvolved?       "Charizard PSA 9" (optional)
   evidence[]          /media/ proxy URLs only
-  reportedBy          uid
-  reportedByAnon      bool (shows "Anonymous" on public page if true)
+  reportedBy          uid of first reporter
+  reportedByAnon      bool
   status              pending_review | verified | rejected | removed
   verifiedBy?         admin/employee uid
   views               server-incremented counter
+  incidentCount       denormalized incident subcollection count
+  commentCount        denormalized comment subcollection count
+  contestCount        denormalized pending contest count
+  isContested?        bool — true when ≥1 pending contest exists (admin queue flag)
+  relatedScammerIds[] same person under different aliases
+  mergedFromIds[]     profiles merged into this one (old URLs redirect here)
+
+ScammerIncidentDocument (subcollection: incidents)
+  id                  Firestore auto-ID
+  scammerId           parent profile id
+  reportedBy / reportedByAnon
+  scamType, scamPlatform, description, amountLost?, itemInvolved?, evidence[]
+  matchedPhones[]     which contact fields caused the match (admin info only)
+  matchedUpiIds[]
+  matchedEmails[]
+  matchedNames[]
+  status              pending_review | verified | rejected (same workflow)
+
+ScammerCommentDocument (subcollection: comments)
+  id                  Firestore auto-ID
+  authorId / authorDisplayName / authorRole
+  isAccused           self-declared — governs "Accused" badge after isAccusedVerified
+  isAccusedVerified   admin sets true after reviewing identity claim
+  isVerifiedVictim    true if linkedOrderId confirms a transaction
+  linkedOrderId?      order used for victim verification (never shown publicly)
+  body                plain text, max 500 chars
+  upvotes             server-incremented
+  isHidden / hiddenBy / hiddenReason (admin moderation)
+
+ScammerContestDocument (subcollection: contests)
+  id                  Firestore auto-ID
+  scammerId           parent profile id
+  contestType         accused_contesting | false_report | inaccurate_details | identity_mistaken
+  contestedBy / contestedByAnon
+  explanation         plain text, max 2000 chars
+  evidence[]          /media/ proxy URLs
+  status              pending | upheld | dismissed
 
 Max pending per user: 5 (MAX_PENDING_SCAMMER_REPORTS_PER_USER)
+Max comment length: 500 chars (MAX_COMMENT_BODY_LENGTH)
 Slug prefix: scammer-
 Collection: scammerProfiles
+```
+
+### SCAM > Public Profile Page Layout (/scams/[slug])
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ ⚠ SCAM REGISTRY                                    [breadcrumb] │
+│ ─────────────────────────────────────────────────────────────── │
+│ ✓ VERIFIED    Advance Payment Ghost                  [scamType] │
+│ Rahul Sharma  /  RS Toys  /  RS Trading              [aliases]  │
+│ 📞 9876543210  📱 +919876543210                      [plaintext] │
+│ 💳 9876543210@paytm                                  [plaintext] │
+│ ✉  rs.toys.fake@gmail.com                           [plaintext] │
+│ 📸 @rs_toys_ig  (Instagram)                                      │
+│ ─────────────────────────────────────────────────────────────── │
+│ [scamPlatform: WhatsApp]  [amountLost: ₹2,000]  [item: PSA 9]  │
+│                                                                  │
+│ What happened:                                                   │
+│ [primary incident description paragraph]                         │
+│                                                                  │
+│ Evidence: [ 📷 ] [ 📷 ] [ 📷 ]  (image gallery, lightbox)       │
+│                                                                  │
+│ How to avoid Advance Payment Ghost scams:                        │
+│  • Never pay before seeing the item in person or via video call  │
+│  • Use LetItRip's escrow checkout for all purchases              │
+│  • ...                                                           │
+│ ─────────────────────────────────────────────────────────────── │
+│ Related profiles: [Rahul S Kolkata ↗]  [rstrading99 ↗]          │
+│ ─────────────────────────────────────────────────────────────── │
+│ ## Other Incidents (3 verified)                                  │
+│ ┌──────────┬──────────────────┬──────────┬──────────┬────────┐  │
+│ │ Date     │ Scam Type        │ Platform │ Amount   │ Item   │  │
+│ ├──────────┼──────────────────┼──────────┼──────────┼────────┤  │
+│ │ Apr 2026 │ Advance Payment  │ WhatsApp │ ₹1,500   │ Blader │  │
+│ │ Mar 2026 │ Bait and Switch  │ Instagram│ ₹3,200   │ PSA 10 │  │
+│ │ Feb 2026 │ Empty Box Ship   │ OLX      │ ₹800     │ —      │  │
+│ └──────────┴──────────────────┴──────────┴──────────┴────────┘  │
+│ [Load more incidents ↓]                                          │
+│ ─────────────────────────────────────────────────────────────── │
+│ ## Discussion (2 comments)                                       │
+│                                                                  │
+│ [Victim Badge] Aryan K — Apr 2026                                │
+│   "This person DM'd me on WhatsApp. Same number. Lost ₹2k."     │
+│   [👍 4]                                                         │
+│                                                                  │
+│ [Accused Badge ✓] Rahul Sharma — Mar 2026                        │
+│   "I am not this person. My number was spoofed."                 │
+│   [👍 1]                                                         │
+│                                                                  │
+│ [Leave a comment…] (requires login)                              │
+│ ─────────────────────────────────────────────────────────────── │
+│ [Report this person too →]   [⚠ Contest / Report as inaccurate] │
+│  ↑ opens scam report form      ↑ opens ContestModal              │
+└──────────────────────────────────────────────────────────────────┘
+
+ContestModal:
+┌────────────────────────────────────────────┐
+│ Contest this report                    [×] │
+│ ─────────────────────────────────────────  │
+│ Why are you contesting?                    │
+│ ◉ I am falsely accused                     │
+│ ○ This report is fabricated                │
+│ ○ Some details are wrong                   │
+│ ○ Wrong person — same name/number          │
+│ ─────────────────────────────────────────  │
+│ Explanation (required, min 50 chars)       │
+│ [                                       ]  │
+│ Evidence (optional screenshots)            │
+│ [+ Upload evidence]                        │
+│ ☐ Keep my identity anonymous               │
+│ ─────────────────────────────────────────  │
+│ [Cancel]                [Submit Contest →] │
+└────────────────────────────────────────────┘
+```
+
+### SCAM > Report Form — Suggested Scammers Panel
+
+```
+When user fills phones / UPIs / emails / name fields in ScamReportForm,
+a debounced GET /api/scams/suggest query runs and may show:
+
+┌──────────────────────────────────────────────────────────────┐
+│ ⚠ This person may already be reported                        │
+│ ──────────────────────────────────────────────────────────── │
+│ [VERIFIED] Rahul Sharma / RS Toys                            │
+│ Matched on: 📞 phone  💳 UPI                    [Strong ⚠]  │
+│ [View existing report ↗]  [Add my incident to this profile →]│
+│ ──────────────────────────────────────────────────────────── │
+│ [ℹ] Possible match] RS Trading                               │
+│ Matched on: name only                          [Weak ℹ]      │
+│ [View report ↗]  [Add incident →]                            │
+│ ──────────────────────────────────────────────────────────── │
+│ [Dismiss — create new profile instead]                       │
+└──────────────────────────────────────────────────────────────┘
+
+Strong match (phones / upiIds): shown with ⚠ icon, orange border
+Weak match (displayNames only): shown with ℹ icon, grey border
+Clicking "Add my incident": form submits to POST /api/scams/[slug]/incidents
+Clicking "Dismiss": form submits to POST /api/scams/reports (new profile)
 ```
 
 ### SCAM > 27 Types Across 6 Categories
