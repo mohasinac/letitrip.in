@@ -34,11 +34,8 @@ export const POST = withProviders(
         const status = result.value.status;
         if (status === ProductStatusValues.OUT_OF_STOCK) {
           outOfStock.push(productId);
-        } else if (
-          status !== ProductStatusValues.PUBLISHED
-        ) {
-          // SOLD, ARCHIVED, DISCONTINUED, DRAFT → stale
-          stale.push(productId);
+        } else if (status !== ProductStatusValues.PUBLISHED) {
+          stale.push(productId); // SOLD, ARCHIVED, DISCONTINUED, DRAFT
         }
       });
 
