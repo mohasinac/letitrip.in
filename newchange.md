@@ -33,6 +33,30 @@
 
 ---
 
+### Session 92 — Action URLs + FormActionBar (AX2 + AX3) — 2026-05-11
+
+**Scope**: Inline create/edit panels wired to URL params on all admin listing views; FormActionBar component.
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/react/hooks/use-panel-url-sync.ts` | New: URL-based panel state hook — reads ?panel=create/edit&id=, returns openCreatePanel/openEditPanel/closePanel/isCreateOpen/isEditOpen/editId |
+| `appkit/src/features/admin/components/DataTable.tsx` | Added `onRowClick?(row)` prop; takes precedence over `getRowHref` for panel flow |
+| `appkit/src/features/admin/components/AdminBrand/Category/Blog/Faq/CouponEditorView.tsx` | Added `embedded?: boolean` prop — when true, renders form div instead of StackedViewShell |
+| `appkit/src/features/admin/components/AdminProductEditorView.tsx` | Same `embedded` prop |
+| `appkit/src/features/events/components/AdminEventEditorView.tsx` | Same `embedded` prop; two-section pattern (alert + form) preserved |
+| `appkit/src/features/admin/components/AdminBrands/Products/Categories/Blog/Faqs/CouponsView.tsx` | usePanelUrlSync wired; Add* button via ListingToolbar `extra`; DataTable uses `onRowClick`; SideDrawer with embedded editor appended |
+| `appkit/src/features/events/components/AdminEventsView.tsx` | Same pattern |
+| `appkit/src/features/admin/components/AdminStoresView.tsx` | Replaced local drawerOpen/selectedRow with usePanelUrlSync; existing AdminStoreEditorView wired to URL state; panelRow derived from rows array |
+| `appkit/src/ui/components/FormActionBar.tsx` | New: sticky action bar — breadcrumbs, title with dirty-dot, Discard/Preview/Save Draft/Publish buttons |
+| `appkit/src/ui/components/FormActionBar.style.css` | New: sticky bottom on mobile, sticky top (below header) on desktop |
+| `appkit/src/ui/components/index.style.css` | FormActionBar.style.css imported |
+| `appkit/src/ui/index.ts` | FormActionBar + FormActionBarProps + FormActionBarBreadcrumb exported |
+| `appkit/src/index.ts` + `client.ts` | usePanelUrlSync + PanelUrlSync exported |
+
+**Deferred / skipped**: None — all AX2 + AX3 spec delivered.
+
+---
+
 ### Session 91 — Layout tokens (X8a + X8b) — 2026-05-11
 
 **Scope**: Layout utility tokenization — z-index, component sizes, grid mins, typography, shadows

@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — Sessions 89a ✅ (VD12+J16+J17+wishlist filter), 89b ✅ (FAQSection+WhatsApp redesign+@types/react dedup), 90 ✅ (AX1 complete: constants+hook+panelStore+migration). SB11 added (homepage sections: bundles, prize draws, event raffles — planning only). 108 done, 289 remaining (397 total).
+> **Last updated:** 2026-05-11 — Sessions 89a ✅ 89b ✅ 90 ✅ (AX1) 91 ✅ (X8a+X8b layout tokens) 92 ✅ (AX2+AX3: usePanelUrlSync, inline admin panels, FormActionBar). 110 done, 287 remaining (397 total).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -197,7 +197,7 @@ Rules to keep top-of-mind every task:
 | **90** | Action System ✅ Done 2026-05-11 | AX1 | Constants done: action-defs.ts with ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + META maps. Exported from client.ts + index.ts. FormShell/DrawerFormFooter labels from FORM_ACTION_META. Hook done: useActionDispatch (NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY) + Zustand panelStore (usePanelStore). Zustand v5 added to appkit deps. SellerProductsView handleEdit migrated to dispatch({ type: "NAVIGATE" }). 0 TS errors both repos, appkit build clean. | Session 77-ux FormShell done |
 | **90-colors** | Colors | X7a, X7b | Extend CSS color token system + replace all hardcoded hex violations (one file per commit). **Zero schema/API risk — safe to do first.** | AX1 complete |
 | **91** | Layout | X8a, X8b | Layout tokens + replace breakpoint/z-index/size violations. **Zero schema/API risk.** | X7a+X7b done |
-| **92** | Action URLs + Bars | AX2, AX3 | AX2: `?panel=create/edit` deep-link routing on 10 admin listing pages + `usePanelUrlSync` hook. AX3: `FormActionBar` sticky top (desktop) + bottom (mobile) bars with dirty-state tracking. | AX1 complete |
+| **92** | Action URLs + Bars ✅ Done 2026-05-11 | AX2, AX3 | AX2: `usePanelUrlSync` hook (URL-based ?panel=create/edit&id=xxx). DataTable `onRowClick` prop. All 7 AdminXxxEditorViews get `embedded` prop (skip StackedViewShell). Wired 8 admin listing views (Brands/Products/Categories/Blog/Events/FAQs/Coupons/Stores) with inline SideDrawer + embedded editor. Exported from index.ts + client.ts. AX3: FormActionBar component + CSS — sticky top desktop, sticky bottom mobile, breadcrumbs, dirty-dot, Discard/Preview/Save Draft/Publish. 0 TS errors both repos. | AX1 complete |
 | **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | Stats live queries + multi-carousel + categories/brands CTA+filter chips + products multi-row + YouTube cards in social feed. **EX5 (supersedes 8 old section types) is highest-risk sub-task — do last within session.** | Session 87 social feed base |
 | **94** | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Session 77 product forms done |
 | **95** | Bulk Actions | BK1, BK2, BK3 | Public listing selection mode + sticky bulk action bar + compare overlay (desktop table + mobile swipe) | BK3 needs infinite scroll (Q6) as nice-to-have |
