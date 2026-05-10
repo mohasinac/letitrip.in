@@ -382,15 +382,18 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT
 
 ```
-Sessions done:  60–83 (105 tasks ✅, 247 remaining)
+Sessions done:  60–83 + 81-impl (115 tasks ✅, 237 remaining)
                 ✅ Foundation → Admin CRUD → Public Catalogue → SEO
                 ✅ RBAC/BAN/SCAM schemas (80-schema)
                 ✅ sellerId migration (81)
                 ✅ Bulk selection + BulkActionsBar (82-ext)
                 ✅ UX shells + Seller product forms (77-impl)
+                ✅ User Account Core — orders, profile, notifications, reviews, bids (78-impl)
                 ✅ Cart integrity + wishlist validate (79-impl)
                 ✅ Store settings (80-impl)
                 ✅ SCAM public pages: registry, profile, types, report form (83)
+                ✅ Store Finance — coupons, orders drawer, addresses, bids, payouts (81-impl)
+                🚀 ALPHA deployed to Vercel prod 2026-05-10 (@mohasinac/appkit@2.4.3)
 Next:           VD9 + VD10 → L1/L2/L3 (Custom Fields) → SC1–SC4
 
 ⚠️  Firebase fully reset 2026-05-10 — re-seed all collections via /demo/seed
@@ -408,9 +411,11 @@ RBAC/BAN/SCAM sch.  80-schema         ✅ done
 sellerId migration  81                ✅ done
 Seller Products     77-impl           ✅ done
 Cart Integrity      79-impl           ✅ done
+User Account Core   78-impl           ✅ done
 Store Settings      80-impl           ✅ done
 SCAM public pages   83                ✅ done (⚠️ VD9/VD10 deferred)
-──────── 🚀 ALPHA ────────────────────────────────────
+──────── 🚀 ALPHA deployed to Vercel prod 2026-05-10 ────────────────
+Store Finance       81-impl           ✅ done (post-alpha)
 Content rewrites    83-cont           ⏳ VD9 + VD10
 Custom Fields       84                ⏳ L1, L2, L3
 Sub-listings        85                ⏳ SC1–SC4
