@@ -33,6 +33,49 @@
 
 ---
 
+# Session 81-seed — 2026-05-10 (Seed Scale Expansion — P23/P26/P27 partial)
+
+## Scope
+
+Completed P23 (standard products 50→100), P26 (users 18→25, brands 13→25), and partial P27 (reviews 35→60, orders 10→35). Also wired the scam registry into the seed system (SCAM1 wiring work).
+
+## SCAM Seed Wiring (completed)
+
+- Added scam registry exports to `appkit/src/index.ts`
+- Added `"scammerProfiles"` to `SeedCollectionName` union in `demo-seed-actions.ts`
+- Added manifest entry in `manifest.ts`
+- Fixed `scamType: "identity_mistaken"` → `"empty_box_ship"` (ContestType ≠ ScamType)
+- Added `scammerProfiles` COLLECTION_META entry to `SeedPanel.tsx` with new `"moderation"` GroupKey
+- Added 9 Firestore indexes for scammerProfiles collection + subcollections
+
+## P23 — Standard Products 50→100
+
+- `products-standard-seed-data.ts`: +50 products across 8 stores
+  - Pokémon Palace +8: Journey Together ETB, Surging Sparks booster box, Charizard ex SIR, Pikachu ex SIR, Paldea Evolved ETB, Obsidian Flames ETB, 151 ETB, Mewtwo ex SIR
+  - CardGame Hub +8: OP-05/06/03 booster boxes, YGO 25th anniversary tin, Blue-Eyes LOB NM, Dark Magician LOB PSA9, MTG Duskmourn box
+  - Diecast Depot +8: Car Culture German 5-car set, RLC Porsche 918 Spectraflame, Tomica LC300/Civic Type R FL5, Ultra Hots 5-pack, Matchbox Moving Parts 5-car, Corgi DB5 Bond 007
+  - Beyblade Arena +5: BX-01 Dran Sword, BX-07 Hells Chain, BX-09 Rd Dragon, BX-12 Phoenix Wing, BX-16 Sword Launcher
+  - LetItRip Official +6: figma Link TotK, Funko Gojo, Nendoroid Miku V4X, SHF Ultra Instinct Goku, Funko Tanjiro DLX, MAFEX Miles Morales
+  - Tokyo Toys India +7: figma Makima, Nendoroid Zero Two, GSC Aqua 1/7, figma Levi, Nendoroid Killua, ALTER Rem Wedding, Funko Luffy Gear5
+  - Gundam Galaxy +6: HG Aerial Rebuild, MG Nu Gundam Ver Ka, RG Eva Unit-01, PG Unleashed RX-78-2, HG Calibarn, MG Strike Freedom
+  - Vintage Vault +2: Hot Wheels Twin Mill 1970 Redline, GI Joe Hawk v1 1983 MOC
+- Fixed: `customFields` → `specifications` (schema field name), `"like_new"`/`"good"` → `"used"` (valid condition enum)
+
+## P26 — Users 18→25, Brands 13→25
+
+- `users-seed-data.ts`: +7 buyers (Buyers 11–17 — anjali-verma, rohit-verma, pooja-sharma, kiran-reddy, naman-gupta, preeti-joshi, varun-bhat)
+- `brands-seed-data.ts`: +12 brands (Kotobukiya, Alter, Max Factory, Medicom Toy, Bushiroad, Panini, Spin Master, JAKKS Pacific, Corgi, Matchbox, Mega Construx, Sideshow Collectibles)
+
+## P27 partial — Reviews 35→60, Orders 10→35
+
+- `reviews-seed-data.ts`: +25 reviews (36–60) across all stores using new buyer cohort
+- `orders-seed-data.ts`: +25 orders (11–35) covering all 7 statuses; uses new buyers 11–17 + new product IDs; fixed `payoutStatus: "pending"` → `"eligible"` (OrderPayoutStatus enum)
+- SeedPanel COLLECTION_META updated: users target 25, brands 25, products 100, orders 35, reviews 60
+
+## tsc status: Both repos clean. Commits: appkit afc1293, parent 0960cb3.
+
+---
+
 # Session 82 — 2026-05-10 (SEO & Lighthouse — SSR Hydration + JSON-LD + Core Web Vitals)
 
 ## Scope
