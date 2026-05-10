@@ -4,21 +4,31 @@ description: Current session status, appkit version, and recent session summary 
 type: project
 ---
 
-## Current Status — Session 88 ✅ (2026-05-10)
+## Current Status — Hotfix 88.1 ✅ (2026-05-11)
 
-**Session 88 complete** — RC4 + RC3 done. Next: Session 89 (Query/Sieve).
+**Hotfix 88.1 complete** — Listing pages now load items. Next: Session 89 (Query/Sieve).
+
+- appkit version: 2.4.11 (file:./appkit local, dist rebuilt + node_modules synced)
+- Both repos: 0 TS errors
+- Firestore indexes: 279 indexes deployed (sellerId stale → storeId corrected, 7 stale deleted)
+
+## Hotfix 88.1 — 2026-05-11 ✅ (Listing Page Items Bug)
+
+- Root cause: Firestore indexes not deployed + stale `sellerId` indexes (Session 81 renamed to `storeId`)
+- Fix 1: `appkit/firebase/base/firestore.indexes.json` — replaced 7 `sellerId` product indexes with `storeId`
+- Fix 2: `ProductsIndexPageView` — `sellerId==${sellerId}` filter corrected to `storeId==${storeId}`
+- Fix 3: `/api/products/route.ts` — removed duplicate `storeId` push (was added twice)
+- Fix 4: `useProducts.ts` — `null initialData` now treated as missing (`!= null` vs `!== undefined`) so client refetches instead of freezing with staleTime=Infinity
+- Ran `firebase-merge.mjs` to regenerate root `firestore.indexes.json`, deployed with `--force`
+
+## Session 88 — 2026-05-10 ✅ (RC4 + RC3)
+
+**Session 88 complete** — RC4 + RC3 done.
 
 - appkit version: 2.4.11 (file:./appkit local, dist rebuilt + node_modules synced)
 - Both repos: 0 TS errors
 
-- appkit version: 2.4.10 (file:./appkit local)
-- Both repos: 0 TS errors after Session 87
-- SR1/SR2/SR3/RC1/RC2 already done (Session 88 partial)
-- Remaining: RC4 + RC3
-
 **Why:** RC4 removes ambiguous `[[...action]]` catch-all folders that coexist with dedicated `/new` and `/[id]/edit` routes. RC3 fixes all `<Button onClick={() => router.push(...)}>` violations to use `<Link>` or `asChild` pattern.
-
-**How to apply:** After Session 88, Session 89 begins Query/Sieve work.
 
 ---
 
