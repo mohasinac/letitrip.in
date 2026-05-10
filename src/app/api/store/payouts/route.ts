@@ -55,7 +55,14 @@ export const GET = withProviders(createRouteHandler({
   handler: async ({ request, user }) => {
     const uid = user!.uid;
     const store = await storeRepository.findByOwnerId(uid);
-    const storeId = store?.id;
+    if (!store) {
+      return successResponse({
+        payouts: [],
+        summary: { availableEarnings: 0, grossEarnings: 0, platformFee: 0, totalPaidOut: 0, pendingAmount: 0, hasPendingPayout: false },
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0, hasMore: false },
+      });
+    }
+    const storeId = store.id;
 
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -65,7 +72,7 @@ export const GET = withProviders(createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
-    const storeFilter = storeId ? `storeId==${storeId}` : `storeId==__none__`;
+    const storeFilter = `storeId==${storeId}`;
     const effectiveFilters =
       buildSieveFilters(["", storeFilter], ["", filters]) || storeFilter;
 
@@ -82,10 +89,10 @@ export const GET = withProviders(createRouteHandler({
         page: String(page),
         pageSize: String(pageSize),
       }),
-      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.COMPLETED) : Promise.resolve([]),
-      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PENDING) : Promise.resolve([]),
-      storeId ? payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PROCESSING) : Promise.resolve([]),
-      storeId ? computeSellerEarnings(storeId) : Promise.resolve({ eligibleOrders: [], grossAmount: 0, platformFee: 0, netAmount: 0 }),
+      payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.COMPLETED),
+      payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PENDING),
+      payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PROCESSING),
+      computeSellerEarnings(storeId),
     ]);
 
     const totalPaidOut = completedPayouts.reduce((sum, p) => sum + p.amount, 0);

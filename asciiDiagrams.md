@@ -19,6 +19,8 @@
   - [MediaPickerDrawer](#ux--mediapickerdrawer--fast-media-select-)
   - [PreviewPane](#ux--previewpane--in-panel-item-preview-)
   - [Form Assignment Reference](#ux--form-assignment-reference)
+- **Architecture**
+  - [Store Identity Model (ARCH2/ARCH5/ARCH8)](#architecture--store-identity-arch2arch5arch8--storeid-migration)
 - **Admin Area**
   - [Layout Shell](#admin--layout-shell)
   - [Dashboard](#admin--dashboard-)
@@ -4718,6 +4720,109 @@ RowActionMenu [⋮]:
 
 ---
 
+## Architecture > Store Identity (ARCH2/ARCH5/ARCH8 — storeId migration)
+
+> Completed Session 81. Documents the canonical identity model enforced across all collections.
+
+```
+IDENTITY MODEL
+═══════════════════════════════════════════════════════════════════════
+
+  Firebase Auth UID (e.g. "UqVkpXa2mTn9…")
+      │
+      └─► StoreDocument.ownerId          ← ONLY place UID is stored
+              │                             on the store record
+              └─► StoreDocument.id = storeSlug  ← public identity
+                    (e.g. "store-pokemon-palace")
+
+  storeId === store.id === storeSlug    (always the same value)
+  ownerId === Firebase Auth UID         (internal/auth only)
+
+─────────────────────────────────────────────────────────────────────
+
+  COLLECTION FIELD RULES
+  ┌─────────────────────┬───────────────────┬─────────────────────┐
+  │ Collection          │ Public field      │ Internal only       │
+  ├─────────────────────┼───────────────────┼─────────────────────┤
+  │ products            │ storeId, storeName│ —                   │
+  │ orders              │ storeId, storeName│ —                   │
+  │ cart items          │ storeId, storeName│ —                   │
+  │ offers              │ storeId, storeName│ —                   │
+  │ payouts             │ storeId           │ sellerName (display) │
+  │ coupons             │ storeId           │ —                   │
+  │ conversations       │ storeId           │ —                   │
+  │ reviews             │ storeId, storeName│ —                   │
+  │ stores              │ id (= storeSlug)  │ ownerId (Auth UID)  │
+  └─────────────────────┴───────────────────┴─────────────────────┘
+
+─────────────────────────────────────────────────────────────────────
+
+  TWO-STEP LOOKUP PATTERN
+  (used when Auth UID → store context is needed server-side)
+
+  Seller action / API handler:
+    userId (Auth UID, from session)
+        │
+        ▼
+    storeRepository.findByOwnerId(userId)
+        │
+        ├─► store.id  ──────────────────► Firestore queries by storeId
+        │   (storeSlug)
+        │
+        └─► store.ownerId ──────────────► Authorization guard
+                                         (= same userId, confirms ownership)
+
+  Examples:
+    listSellerCoupons(userId)  →  findByOwnerId → getStoreCoupons(store.id)
+    listSellerOffers(userId)   →  findByOwnerId → findByStore(store.id)
+    listSellerMyProducts(userId) → findByOwnerId → findByStore(store.id)
+    store/offers GET           →  findByOwnerId → findByStore(store.id)
+    store/payouts GET          →  findByOwnerId → early-return if null
+    delete-account DELETE      →  findByOwnerId → deleteByStore(store.id)
+
+─────────────────────────────────────────────────────────────────────
+
+  CHECKOUT SHIPPING LOOKUP (three-step)
+
+    CartItem.storeId (e.g. "store-pokemon-palace")
+        │
+        ▼
+    storeRepository.findById(storeId)      ← step 1
+        │
+        └─► store.ownerId  (Auth UID)
+                │
+                ▼
+            userRepository.findById(ownerId)   ← step 2
+                │
+                └─► user.shippingConfig         ← used for shipping rates
+
+─────────────────────────────────────────────────────────────────────
+
+  ORDER AUTH GUARD (store/orders/[id] route — optimized)
+
+  Before (2 DB calls):
+    storeRepository.findByOwnerId(uid)          → store
+    productRepository.findByStore(store.id)     → [all products]
+    order.items.some(item → productIds.has(id)) → bool
+
+  After ARCH2 (1 DB call):
+    storeRepository.findByOwnerId(uid)          → store
+    order.storeId === store.id                  → bool  ✓
+    (orders now carry storeId directly)
+
+─────────────────────────────────────────────────────────────────────
+
+  ANTI-PATTERNS TO AVOID
+
+  ✗  product.storeId === userId           (storeId ≠ Auth UID)
+  ✗  findByStore(userId)                  (userId is not a storeId)
+  ✗  coupon.storeId === userId            (same mistake)
+  ✗  storeId==__none__ as sieve filter   (use early-return instead)
+  ✗  offer.counterAmount!                 (use null guard first)
+```
+
+---
+
 ---
 
 ## Infra > Firebase Scripts (appkit/scripts/)
@@ -4789,3 +4894,707 @@ Duplicate index gotcha (fixed 2026-05-10):
 ---
 
 *Last updated: 2026-05-10 — Session 76/76-infra: VD4+VD5+VD6+VD7+VD11+VD1+VD2 (public catalogue), J13 (products listing isAuction/isPreOrder fix), J14 (blog initialData shape), J15 (events status filter), INFRA1 (firebase-reset .count() fix), INFRA2 (firebase-delete-indexes.mjs created), Firebase full reset + 263 indexes redeployed.*
+
+
+---
+
+## New Feature Diagrams — Session 80-plan (EX / YT / AX / FI / BK Tiers)
+
+---
+
+### EX1 — Stats Section: Live Collection Query
+
+#### Admin Config (desktop)
+
+`
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [⬆] Stats Counter Section                               [🗑 Remove]    │
+│ ─────────────────────────────────────────────────────────────────────── │
+│  Title  [Platform at a Glance                                       ]   │
+│                                                                         │
+│  Stats ─────────────────────────────────────────────────────────────── │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ Stat 1                                              [✕ Remove]   │  │
+│  │  Label:  [Total Listings                        ]                │  │
+│  │  Value:  [70,000+                               ]                │  │
+│  │  Source: (●) Static  (○) Live Preset  (○) Live Collection        │  │
+│  │  Icon:   [📦 ▼]  Suffix: [+                    ]                │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ Stat 2                                              [✕ Remove]   │  │
+│  │  Label:  [Verified Sellers                      ]                │  │
+│  │  Source: (○) Static  (●) Live Preset  (○) Live Collection        │  │
+│  │  Metric: [verified_sellers ▼]  Suffix: [         ]               │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ Stat 3                                              [✕ Remove]   │  │
+│  │  Label:  [Active Auctions                       ]                │  │
+│  │  Source: (○) Static  (○) Live Preset  (●) Live Collection        │  │
+│  │  Collection: [products ▼]                                        │  │
+│  │  Filter field: [status        ]  Value: [active ]                │  │
+│  │  Suffix:       [               ]                                  │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│                                                [+ Add Stat]             │
+└─────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Desktop (4 stats in a row)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
+│  │   📦         │  │   🏪         │  │   👥         │  │   ⭐     │ │
+│  │   70,000+    │  │     8        │  │    18        │  │  4.7 ★   │ │
+│  │  Listings    │  │  Sellers     │  │   Buyers     │  │  Rating  │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Mobile (2 × 2 grid)
+
+`
+┌──────────────────────────────┐
+│  ┌──────────┐  ┌──────────┐  │
+│  │   📦     │  │   🏪     │  │
+│  │  70,000+ │  │    8     │  │
+│  │ Listings │  │ Sellers  │  │
+│  └──────────┘  └──────────┘  │
+│  ┌──────────┐  ┌──────────┐  │
+│  │   👥     │  │   ⭐     │  │
+│  │    18    │  │  4.7 ★   │  │
+│  │  Buyers  │  │  Rating  │  │
+│  └──────────┘  └──────────┘  │
+└──────────────────────────────┘
+`
+
+---
+
+### EX2 — Multi-Carousel Admin
+
+#### Carousel List (desktop)
+
+`
+┌──────────────────────────────────────────────────────────────────────────┐
+│ Carousels                                            [+ New Carousel]    │
+│ ┌────────────────────────────────────────────────────────────────────┐   │
+│ │ #  │ Name             │ Slides │ Status  │ Used in Sections │ Actions│  │
+│ │────┼──────────────────┼────────┼─────────┼──────────────────┼───────│  │
+│ │ 1  │ Hero Homepage    │ 5/5    │ Active  │ Hero Section     │[Edit]🗑│  │
+│ │ 2  │ Deals Carousel   │ 3/5    │ Active  │ Deals Section    │[Edit]🗑│  │
+│ │ 3  │ Brand Spotlight  │ 2/5    │ Draft   │ —                │[Edit]🗑│  │
+│ └────────────────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Carousel Edit — Slide List (desktop)
+
+`
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ← Carousels  /  Hero Homepage                          [+ Add Slide]     │
+│  Name:   [Hero Homepage               ]  Status: (●) Active  (○) Draft   │
+│  Slides (5 / 5 max) ─────────────────────────────────────────────────── │
+│  ┌───────────────────────────────────────────────────────────────────┐   │
+│  │ ⠿  1. Summer Deals    [🖼 image]   Cards: 3/6  [Edit] [🗑]       │   │
+│  │ ⠿  2. Hot Wheels      [🎥 video]   Cards: 2/6  [Edit] [🗑]       │   │
+│  │ ⠿  3. Pokémon TCG     [🖼 image]   Cards: 4/6  [Edit] [🗑]       │   │
+│  │ ⠿  4. Bandai Figures  [🖼 image]   Cards: 1/6  [Edit] [🗑]       │   │
+│  │ ⠿  5. Auction Live    [🎨 color]   Cards: 0/6  [Edit] [🗑]       │   │
+│  │   [+ Add Slide]  ← disabled, tooltip "Maximum 5 slides reached"  │   │
+│  └───────────────────────────────────────────────────────────────────┘   │
+│  [Save Changes]                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Carousel Edit — Mobile
+
+`
+┌──────────────────────────────┐
+│ ← Hero Homepage       [Save] │
+│ ─────────────────────────── │
+│ Name: [Hero Homepage      ]  │
+│ Status: [Active ▼]           │
+│ ─────────────────────────── │
+│ Slides (5/5 max)             │
+│ ┌────────────────────────┐   │
+│ │ ⠿ 1. Summer Deals [Edit]│  │
+│ │ ⠿ 2. Hot Wheels   [Edit]│  │
+│ │ ⠿ 3. Pokémon TCG  [Edit]│  │
+│ │ ⠿ 4. Bandai Fig   [Edit]│  │
+│ │ ⠿ 5. Auction Live [Edit]│  │
+│ └────────────────────────┘   │
+│ [+ Add Slide — disabled]     │
+└──────────────────────────────┘
+`
+
+---
+
+### EX3 — Categories & Brands: CTA + Filter Chips
+
+#### Admin Config (desktop)
+
+`
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [⬆] Shop by Category                                    [🗑 Remove]    │
+│  Title:    [Shop by Category                        ]                   │
+│  Subtitle: [Browse our collectible categories       ]                   │
+│  Limit:    [10 ▼]                                                       │
+│  Filters ──────────────────────────────────────────────────────────── │
+│   ☑ Featured only    ☐ Root categories only                            │
+│   Filter by root:  [All ▼]                                             │
+│  CTA Button ────────────────────────────────────────────────────────── │
+│   ☑ Show CTA button                                                    │
+│   Label:  [Browse All Categories            ]                          │
+│   Link:   [/categories                      ]                          │
+│   Style:  (●) Outline  (○) Filled  (○) Text link                      │
+└─────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Desktop
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│  Shop by Category                                                    │
+│  Browse our collectible categories                                   │
+│  [All] [Trading Cards] [Action Figures] [Diecast]  ← filter chips   │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
+│  ◀  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ▶          │
+│     │ [cover] │  │ [cover] │  │ [cover] │  │ [cover] │             │
+│     │ Pokémon │  │ Gunpla  │  │Hot Wheel│  │Beyblade │             │
+│     │   TCG   │  │         │  │         │  │         │             │
+│     └─────────┘  └─────────┘  └─────────┘  └─────────┘             │
+│                                 [Browse All Categories →]            │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Mobile
+
+`
+┌──────────────────────────────┐
+│ Shop by Category             │
+│ [All][Cards][Figures][+more] │  ← scrollable chip row
+│ ─────────────────────────── │
+│ ◀ ┌──────┐ ┌──────┐ ┌──────┐▶│
+│   │[img] │ │[img] │ │[img] │ │
+│   │Pokém │ │Gunpl │ │HotWh │ │
+│   └──────┘ └──────┘ └──────┘ │
+│  [Browse All Categories →]  │
+└──────────────────────────────┘
+`
+
+---
+
+### EX4 — Products Section: Multi-Row Paginated
+
+#### Admin Config (desktop)
+
+`
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [⬆] Featured Products                                   [🗑 Remove]    │
+│  Title:  [Featured Products                         ]                   │
+│  Type:   (●) Standard  (○) Auction  (○) Pre-order  (○) Mixed           │
+│  Layout ──────────────────────────────────────────────────────────── │
+│   Rows:         [2 ▼]  (1 – 4)        Items/row: 5 (fixed)            │
+│   Max Items:    [10 ▼] (5 – 20)       Initial: rows × 5 = 10 shown    │
+│   Pagination:   (●) Load More  (○) Arrows  (○) Auto-scroll            │
+│  Filters ──────────────────────────────────────────────────────────── │
+│   ☑ Featured  ☐ Promoted  Category: [All ▼]  Brand: [All ▼]           │
+│  CTA Button ───────────────────────────────────────────────────────── │
+│   ☑ CTA  Label: [View All Products]  Link: [/products]                │
+└─────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Desktop (2 rows × 5, Load More)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│  Featured Products                                                   │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐    ← row 1          │
+│  │[img] │ │[img] │ │[img] │ │[img] │ │[img] │                      │
+│  │Name  │ │Name  │ │Name  │ │Name  │ │Name  │                      │
+│  │₹1,200│ │₹3,500│ │₹800  │ │₹2,100│ │₹650  │                      │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘                      │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐    ← row 2          │
+│  │[img] │ │[img] │ │[img] │ │[img] │ │[img] │                      │
+│  │Name  │ │Name  │ │Name  │ │Name  │ │Name  │                      │
+│  │₹4,200│ │₹1,800│ │₹950  │ │₹3,200│ │₹780  │                      │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘                      │
+│              [Load More →]                [View All Products →]      │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Mobile (2 cols, scroll loads more)
+
+`
+┌──────────────────────────────┐
+│ Featured Products            │
+│ ┌──────────┐ ┌──────────┐   │
+│ │  [img]   │ │  [img]   │   │
+│ │  Name    │ │  Name    │   │
+│ │  ₹1,200  │ │  ₹3,500  │   │
+│ └──────────┘ └──────────┘   │
+│ ┌──────────┐ ┌──────────┐   │
+│ │  [img]   │ │  [img]   │   │
+│ │  Name    │ │  Name    │   │
+│ │  ₹800    │ │  ₹2,100  │   │
+│ └──────────┘ └──────────┘   │
+│    ── [Load More] ──         │
+│   [View All Products →]      │
+└──────────────────────────────┘
+`
+
+---
+
+### EX5 — Common Collection Cards Section
+
+#### Admin Config (desktop)
+
+`
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [⬆] Collection Cards                                    [🗑 Remove]    │
+│  Title:    [Discover More                           ]                   │
+│  Subtitle: [Products, Auctions & More               ]                   │
+│                                                                         │
+│  Collections (max 3) ──────────────────────────────────────────────── │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ Collection 1                                       [✕]           │  │
+│  │  Type:   [Products ▼]                                            │  │
+│  │  Filter: ☑ Featured  ☐ Promoted  Category: [All ▼]              │  │
+│  │  Limit:  [8 ▼]                                                   │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ Collection 2                                       [✕]           │  │
+│  │  Type:   [Auctions ▼]                                            │  │
+│  │  Filter: ☐ Featured  ☑ Ending Soon               Limit: [4 ▼]   │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+│  [+ Add Collection]                                                     │
+│                                                                         │
+│  Layout:      (●) Carousel  (○) Grid  (○) Mixed-row                    │
+│  Items/row:   [4 ▼]   Max items: [12 ▼]                                │
+│  ☑ Show collection tabs ([All][Products][Auctions])                    │
+│  CTA:  ☑ CTA  Label: [View All]  Link: [/products]                    │
+└─────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Desktop (carousel, mixed Products + Auctions)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│  Discover More                                                       │
+│  Products, Auctions & More                                           │
+│  [All] [Products] [Auctions]  ← collection filter tabs              │
+│  ◀  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  ▶         │
+│     │🏷 PRODUCT│ │⚡AUCTION │ │🏷 PRODUCT│ │⚡AUCTION │             │
+│     │  [image] │ │  [image] │ │  [image] │ │  [image] │             │
+│     │  Name    │ │  Name    │ │  Name    │ │  Name    │             │
+│     │  ₹1,200  │ │Bid:₹800  │ │  ₹3,500  │ │Bid:₹400  │             │
+│     │[Add Cart]│ │[Bid Now] │ │[Add Cart]│ │[Bid Now] │             │
+│     └──────────┘ └──────────┘ └──────────┘ └──────────┘             │
+│  ●○○                                            [View All →]        │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Mobile (2 cols, tab toggle)
+
+`
+┌──────────────────────────────┐
+│ Discover More                │
+│ [All] [Products] [Auctions]  │
+│ ─────────────────────────── │
+│ ┌──────────┐ ┌──────────┐   │
+│ │🏷PRODUCT │ │⚡AUCTION │   │
+│ │  [img]   │ │  [img]   │   │
+│ │  Name    │ │  Name    │   │
+│ │  ₹1,200  │ │Bid:₹800  │   │
+│ └──────────┘ └──────────┘   │
+│ ┌──────────┐ ┌──────────┐   │
+│ │🏷PRODUCT │ │⚡AUCTION │   │
+│ │  [img]   │ │  [img]   │   │
+│ └──────────┘ └──────────┘   │
+│   ●○○        [View All →]   │
+└──────────────────────────────┘
+`
+
+---
+
+### YT1 — YouTube Cards in Social Feed
+
+#### Admin Config (social feed post — YouTube type)
+
+`
+┌────────────────────────────────────────────────────────────────────────┐
+│  Social Post — YouTube                              [✕ Remove]         │
+│   Platform: [YouTube ▼]                                                │
+│   YouTube URL / ID: [https://youtu.be/dQw4w9WgXcQ         ]           │
+│   → Extracted video ID: dQw4w9WgXcQ                                   │
+│   → Thumbnail preview: img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault   │
+│   Channel name (optional): [PokeCollectorIndia               ]         │
+│   Thumbnail: (●) Auto (YouTube CDN)  (○) Custom upload                │
+└────────────────────────────────────────────────────────────────────────┘
+`
+
+#### Rendered — Desktop (social feed with YouTube card)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│  Social Feed                                                         │
+│  [Instagram] [Twitter/X] [YouTube]  ← filter tabs                   │
+│                                                                      │
+│  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐     │
+│  │ 📸 INSTAGRAM     │ │ 🎬 YOUTUBE       │ │ 🐦 TWITTER/X     │     │
+│  │  [photo]         │ │ [thumbnail]       │ │  Tweet text here │     │
+│  │                  │ │     ▶️ PLAY       │ │  …               │     │
+│  │  Caption text…   │ │ PokeCollectorIndia│ │  ❤ 124  🔁 45   │     │
+│  │  ❤ 432           │ │ "Pokémon Unboxing"│ │  [View Tweet →] │     │
+│  │  [View Post →]  │ │ [▶ Watch →]       │ │                  │     │
+│  └──────────────────┘ └──────────────────┘ └──────────────────┘     │
+│  ●○○                                              [Follow Us →]     │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### YouTube Card — Mobile
+
+`
+┌──────────────────────────────┐
+│ 🎬 YouTube                   │
+│ ┌──────────────────────────┐ │
+│ │      [thumbnail]          │ │
+│ │            ▶️             │ │
+│ └──────────────────────────┘ │
+│ Best Pokémon Unboxing 2026   │
+│ PokeCollectorIndia           │
+│ [▶ Watch on YouTube →]       │
+└──────────────────────────────┘
+`
+
+---
+
+### AX1 — ACTION Constants: Before / After
+
+`
+BEFORE (copy-pasted in every onClick):
+─────────────────────────────────────────────
+  onClick={() => {
+    router.push(ROUTES.ADMIN.PRODUCTS)
+    toast({ title: "Product saved", variant: "success" })
+  }}
+  
+  onClick={() => {
+    router.push(ROUTES.ADMIN.PRODUCTS)
+    toast({ title: "Product deleted", variant: "error" })
+  }}
+  ...repeated ~200 times across the codebase
+
+AFTER (using ACTION system):
+─────────────────────────────────────────────
+  onClick={() => dispatch(ACTION.NAVIGATE_TOAST(
+    ROUTES.ADMIN.PRODUCTS, "Product saved", "success"
+  ))}
+
+  onClick={() => dispatch(ACTION.NAVIGATE_TOAST(
+    ROUTES.ADMIN.PRODUCTS, "Product deleted", "error"
+  ))}
+
+ACTION dispatch flow:
+  Component
+    │  dispatch(ACTION.NAVIGATE_TOAST(route, msg, variant))
+    ▼
+  useActionDispatch()
+    ├── router.push(route)
+    └── toast({ title: msg, variant })
+
+  Other actions:
+    ACTION.OPEN_PANEL(id, props)   → panelStore.open(id, props)
+    ACTION.CLOSE_PANEL()           → panelStore.close()
+    ACTION.COPY(text, msg)         → clipboard.writeText + toast
+    ACTION.BULK(action, ids)       → bulkHandler(action, ids)
+    ACTION.TOAST(msg, variant)     → toast only (no navigate)
+`
+
+---
+
+### AX2 — Edit/Create URL Panel Auto-Open
+
+#### Desktop: List → URL triggers panel
+
+`
+URL: /admin/products
+┌──────────────────────────────────────────────────────────────────┐
+│ Products                    [+ New]  [Filters]  [Export]         │
+│ ┌────────────────────────────────────────────────────────────┐   │
+│ │ ID                  Name        Status   Actions           │   │
+│ │ product-hot-wheels  Hot Wheels  Active   [Edit] [🗑]       │   │
+│ │ product-charizard   Charizard   Active   [Edit] [🗑]       │   │
+│ └────────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+
+URL: /admin/products?panel=edit&id=product-hot-wheels
+┌─────────────────────────────────────────────────────────────────┐
+│ Products  [+ New]  [Filters]                                    │
+│ ┌─────────────────────┐  ┌──────────────────────────────────┐  │
+│ │ ID         Actions  │  │ ← Edit: Hot Wheels Redline Vintage│  │
+│ │ prod-hw    [Edit]   │  │ ─────────────────────────────── │  │
+│ │ prod-char  [Edit]   │  │  [form fields…]                  │  │
+│ └─────────────────────┘  │                                  │  │
+│                           │  [Share link 🔗]                │  │
+│                           │  [Discard]        [Save →]      │  │
+│                           └──────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+On close/success → router.replace('/admin/products')
+`
+
+#### Mobile: URL triggers full-screen panel
+
+`
+URL: /admin/products?panel=edit&id=product-hot-wheels
+┌──────────────────────────────┐
+│ ←  Edit: Hot Wheels Redline  │
+│ ─────────────────────────── │
+│  [form fields, full width]   │
+│                              │
+│  [Share link 🔗]             │
+│ ─────────────────────────── │
+│ [Discard]          [Save →] │  ← sticky bottom bar
+└──────────────────────────────┘
+On close → router.replace('/admin/products')
+`
+
+---
+
+### AX3 — Sticky Form Action Bar
+
+#### Desktop (sticky top bar)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ Admin / Products / Edit ● Hot Wheels Redline Vintage     ← breadcrumb │
+│                                              [👁 Preview] [Draft] [Publish →]│
+│ ─── STICKY TOP BAR (z-dropdown, top: var(--header-height)) ─────────  │
+│                                                                        │
+│  [Basic Info tab]  [Media]  [Pricing]  [Inventory]  [Features]         │
+│                                                                        │
+│  Name *                                                                │
+│  [Hot Wheels Redline Vintage                               ]           │
+│                                                                        │
+│  …scrollable form body…                                               │
+└──────────────────────────────────────────────────────────────────────┘
+Legend: ● = unsaved changes indicator on tab title
+`
+
+#### Mobile (sticky bottom bar)
+
+`
+┌──────────────────────────────┐
+│ Edit Product          [👁]   │  ← compact top bar (no breadcrumb)
+│ ─────────────────────────── │
+│ [Basic] [Media] [Pricing]   │  ← tab strip
+│                              │
+│  Name *                      │
+│  [Hot Wheels Redline …    ]  │
+│                              │
+│  …scrollable form body…      │
+│ ─────────────────────────── │
+│ [Discard]  [Draft]  [Save→] │  ← sticky bottom bar
+└──────────────────────────────┘
+`
+
+---
+
+### FI — Product Feature Icons & Badges
+
+#### Admin Feature Flags List (desktop)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ Feature Flags                                   [+ New Feature]      │
+│ [Platform] [Store Custom]  ← filter tabs                            │
+│ ┌──────────────────────────────────────────────────────────────────┐ │
+│ │ Icon │ Label             │ Category  │ Types    │ Scope    │ On  │ │
+│ │──────┼───────────────────┼───────────┼──────────┼──────────┼─────│ │
+│ │ 🚚   │ Free Shipping     │ Shipping  │ All      │ Platform │  ●  │ │
+│ │ ✓    │ Verified Seller   │ Seller    │ All      │ Platform │  ●  │ │
+│ │ ↩    │ Accepts Returns   │ Platform  │ All      │ Platform │  ●  │ │
+│ │ 🔴   │ New Condition     │ Condition │ All      │ Platform │  ●  │ │
+│ │ 🟡   │ Used Condition    │ Condition │ All      │ Platform │  ●  │ │
+│ │ ⭐   │ Featured          │ Platform  │ All      │ Platform │  ●  │ │
+│ │ 📢   │ Promoted          │ Platform  │ All      │ Platform │  ●  │ │
+│ │ 🏆   │ Auction Winner    │ Auction   │ Auction  │ Platform │  ●  │ │
+│ │ 📦   │ Limited Edition   │ Custom    │ All      │ Store    │  ●  │ │
+│ └──────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Product Card with Feature Badges (desktop)
+
+`
+┌────────────────────────────────────┐
+│          [product image]            │
+│ ┌───────────────────────────────┐  │
+│ │ 🚚 Free Shipping │ ✓ Verified │  │  ← FeatureBadgeList (max 3 visible)
+│ └───────────────────────────────┘  │
+│  Hot Wheels Redline Vintage 1968    │
+│  ₹ 1,200                          │
+│  [Add to Cart]                     │
+└────────────────────────────────────┘
+
+Feature badge pill:
+┌──────────────┐
+│ 🚚 Free Ship │   border-color: var(--feature-icon-color)
+└──────────────┘   icon: 12px, label: text-2xs
+`
+
+#### Product Card with Feature Badges (mobile, compact row)
+
+`
+┌────────────────────────────────────────────────┐
+│ [img] │ Hot Wheels Redline Vintage              │
+│       │ 🚚 Free  ✓ Verified  +1 more           │
+│       │ ₹ 1,200              [Add to Cart]     │
+└────────────────────────────────────────────────┘
+`
+
+#### Product Form — Features Tab (desktop)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ [Basic Info] [Media] [Pricing] [Inventory] [Features] [Custom]       │
+│ ─────────────── Features ───────────────── (max 10 selected)         │
+│                                                                      │
+│  Platform Features ─────────────────────────────────────────────    │
+│   ☑ 🚚 Free Shipping        ☑ ✓ Verified Seller                     │
+│   ☐ ↩ Accepts Returns       ☑ 🔴 New Condition                     │
+│   ☐ ⭐ Featured              ☐ 📢 Promoted                           │
+│                                                                      │
+│  Store Custom Features (Diecast Depot) ─────────────────────────    │
+│   ☐ 📦 Limited Edition       ☐ 💎 Collector Grade                  │
+│   [Manage custom features →]                                         │
+│                                                                      │
+│  Preview: [🚚 Free Shipping] [✓ Verified] [🔴 New]                  │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+---
+
+### BK — Public Bulk Actions
+
+#### Public Listing — Selection Mode (desktop)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ Products       [☐ Select]  [Filter ▼]  [Sort ▼]  [⊞ Grid | ≡ List]  │
+│                                                                      │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐           │
+│  │☑ [img]  │  │☐ [img]  │  │☑ [img]  │  │☐ [img]  │           │
+│  │  Name    │  │  Name    │  │  Name    │  │  Name    │           │
+│  │  ₹1,200  │  │  ₹3,500  │  │  ₹800    │  │  ₹2,100  │           │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘           │
+│                                                                      │
+│ ┌──────────────────────────────────────────────────────────────┐    │
+│ │  2 selected   [♡ Wishlist]  [⇄ Compare]  [↗ Share]   [✕]   │    │
+│ └────────────────────── STICKY BOTTOM BAR ────────────────────┘    │
+└──────────────────────────────────────────────────────────────────────┘
+Note: ☑ = checkbox overlay top-left of card; selected card has primary ring
+`
+
+#### Public Listing — Selection Mode (mobile)
+
+`
+┌──────────────────────────────┐
+│ Products  [☐ Select] [≡] [⊕]│
+│ ─────────────────────────── │
+│ ┌──────────┐ ┌──────────┐   │
+│ │☑ [img]  │ │☐ [img]  │   │
+│ │  Name    │ │  Name    │   │
+│ │  ₹1,200  │ │  ₹3,500  │   │
+│ └──────────┘ └──────────┘   │
+│ ┌──────────┐ ┌──────────┐   │
+│ │☑ [img]  │ │☐ [img]  │   │
+│ │  Name    │ │  Name    │   │
+│ └──────────┘ └──────────┘   │
+│ ─────────────────────────── │
+│ 2 selected           [✕]    │
+│ [♡Wishlist][⇄Compare][↗Share]│
+└──────────────────────────────┘
+`
+
+#### Compare Overlay (desktop, 2-column)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ Compare Products  (2 of 4 max)                                [✕]   │
+│ ┌──────────────────────────────┐ ┌──────────────────────────────┐   │
+│ │  [product image]             │ │  [product image]             │   │
+│ │  Hot Wheels Redline Vintage  │ │  Charizard PSA 9             │   │
+│ │  ₹ 1,200                    │ │  ₹ 45,000                    │   │
+│ │ ─────────────────────────── │ │ ─────────────────────────── │   │
+│ │ Condition   New              │ │ Condition   Graded (PSA 9)   │   │
+│ │ Brand       Hot Wheels       │ │ Brand       Pokémon Co.      │   │
+│ │ Category    Diecast          │ │ Category    Trading Cards    │   │
+│ │ Features  🚚 ✓ ↩            │ │ Features  ✓ ⭐ 📢           │   │
+│ │ Store       Diecast Depot    │ │ Store       Pokemon Palace   │   │
+│ │ ─────────────────────────── │ │ ─────────────────────────── │   │
+│ │ [♡ Wishlist]  [View →]      │ │ [♡ Wishlist]  [View →]      │   │
+│ │ [✕ Remove]                  │ │ [✕ Remove]                  │   │
+│ └──────────────────────────────┘ └──────────────────────────────┘   │
+│                                              [+ Add to Compare]      │
+└──────────────────────────────────────────────────────────────────────┘
+`
+
+#### Compare Overlay (mobile, swipeable single card)
+
+`
+┌──────────────────────────────┐
+│ Compare (2)            [✕]  │
+│ ── ●○ ────────────────────  │  ← dot indicator (swipe to navigate)
+│  [product image]             │
+│  Hot Wheels Redline Vintage  │
+│  ₹ 1,200                    │
+│ ─────────────────────────── │
+│ Condition   New              │
+│ Brand       Hot Wheels       │
+│ Category    Diecast          │
+│ Features    🚚 ✓ ↩           │
+│ Store       Diecast Depot    │
+│ ─────────────────────────── │
+│ [♡ Wishlist]    [View →]    │
+└──────────────────────────────┘
+← swipe left/right to compare →
+`
+
+---
+
+### A1-ext — Admin Product Create: Store Picker
+
+#### Desktop (store picker at top of form)
+
+`
+┌──────────────────────────────────────────────────────────────────────┐
+│ Create Product                                    [Admin only field]  │
+│ ─────────────────────────────────────────────────────────────────── │
+│ Store *     [🏪 Search stores…                              ▼]       │
+│             Pokemon Palace (store-pokemon-palace)   ← selected store │
+│ ─────────────────────────────────────────────────────────────────── │
+│ [Basic Info] [Media] [Pricing] [Inventory] [Features] [Custom]       │
+│  Name *                                                              │
+│  [                                                              ]     │
+│  …rest of product form…                                              │
+└──────────────────────────────────────────────────────────────────────┘
+Note: Store field only visible when userRole === 'admin'
+      Seller view: Store field hidden, storeId auto-set from auth user
+`
+
+#### Mobile (store picker at top, collapsible)
+
+`
+┌──────────────────────────────┐
+│ ← Create Product     [Save] │
+│ ─────────────────────────── │
+│ Store *              [Admin] │
+│ [🏪 Search stores… ▼]       │
+│ ─────────────────────────── │
+│ [Basic] [Media] [Pricing]   │
+│ ─────────────────────────── │
+│ Name *                       │
+│ [                         ]  │
+└──────────────────────────────┘
+`
+

@@ -7,7 +7,36 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 80-arch ✅ COMPLETE 2026-05-10 (Store Identity Architecture + Seed QA)
+## ⚡ CURRENT TASK — Session 80-plan ✅ COMPLETE 2026-05-10 (Feature Planning: EX / YT / AX / FI / BK Tiers)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **EX tier (5 tasks)** | ✅ | Stats live collection queries (EX1), multi-carousel max-5 slides (EX2), categories/brands CTA+filter chips (EX3), products multi-row max-20 paginated (EX4), common collection-cards section type replacing 8 specialized types (EX5). |
+| **YT tier (1 task)** | ✅ | YouTube video cards in SocialFeedSection (YT1). videoId stored in Firestore, thumbnail built at render time, --appkit-color-youtube token, filter tab support. |
+| **AX tier (4 tasks)** | ✅ | ACTION constants + useActionDispatch hook (AX1), edit/create URL panel routing via ?panel=create/edit query params + usePanelUrlSync hook (AX2), sticky FormActionBar desktop-top/mobile-bottom (AX3), admin product store picker dropdown (A1-ext). |
+| **FI tier (6 tasks)** | ✅ | productFeatures collection schema + repo (FI1), 10 platform seed features (FI2), admin feature flags CRUD page (FI3), store custom features CRUD (FI4), product form feature assignment via ProductFeaturesSelector (FI5), FeatureBadge + FeatureBadgeList on cards + detail pages (FI6). |
+| **BK tier (3 tasks)** | ✅ | Public listing selection mode + useProductSelection hook max-10 (BK1), sticky bulk action bar for guest+auth with Compare/Share/Wishlist (BK2), CompareOverlay desktop-table + mobile-swipe (BK3). |
+| **Documentation** | ✅ | crud-tracker.md: 302 total tasks (was 283), 5 new tiers + 4 new session rows (100-103) + updated index. prompt.md: this entry. asciiDiagrams.md: desktop + mobile diagrams for all 10 new feature areas. |
+
+## ⚡ PREVIOUS TASK — Session 81 ✅ COMPLETE 2026-05-10 (sellerId → storeId Full Migration + Code Quality Pass)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **ARCH2** | ✅ | `CartItemDocument`, `CartAppliedCoupon`, `AddToCartInput` — `sellerId/sellerName` → `storeId/storeName`. Cart repository updated. Checkout route now does two-step shipping lookup: `storeId → store.ownerId → userRepository`. Coupon scope check uses `storeId`. `src/actions/cart.actions.ts` Zod schema updated. |
+| **ARCH5** | ✅ | `/api/admin/payouts/weekly/route.ts` — payoutData key changed to `storeId`; fixed duplicate `order.storeId ?? order.storeId ?? ""` → `order.storeId ?? ""`. |
+| **ARCH8** | ✅ | All seed files migrated: cart, orders, coupons, payouts, all product seeds (letitrip-official, anime-figures, beyblade, hot-wheels, transformers, retro-gaming, cosplay-accessories). storeId prefix corrected to `store-*` throughout. Conversations seed: removed stale `sellerId`. |
+| **OfferDocument** | ✅ | `sellerId/sellerName` → `storeId/storeName`. `offer.repository.ts`: `findBySeller` → `findByStore`, `findPendingBySeller` → `findPendingByStore`. All offer actions updated; `listSellerOffers` and `acceptCounterOffer` do storeRepository lookup for notification userId. |
+| **PayoutDocument** | ✅ | `sellerId` → `storeId`. `findBySellerAndStatus` → `findByStoreAndStatus`, `findBySeller` → `findByStore`. `getPaidOutOrderIds` uses STORE_ID field. |
+| **OrderDocument** | ✅ | `sellerId/sellerName` → `storeId/storeName`. `order-splitter.ts` updated. `createFromAuction` uses `storeId`. |
+| **CouponDocument** | ✅ | `sellerId + storeSlug` → single `storeId`. `getSellerCoupons` → `getStoreCoupons`. `listSellerCoupons` does storeRepository lookup. |
+| **ProductItem type** | ✅ | Added `storeName?` field. `ProductForm`, `ProductGrid`, `ProductDetailPageView`, `productTableColumns` updated. |
+| **Exports** | ✅ | `getSellerProducts` → `getProfileStoreProducts`; `getSellerStorefrontProducts` → `getStoreStorefrontProducts`. Added missing seed exports: `conversationsSeedData`, `sublistingCategoriesSeedData`, `groupedListingsSeedData`. |
+| **API routes** | ✅ | `store/offers` → `findByStore` + storeRepository lookup. `store/orders/[id]` → replaced expensive full-product-list auth check with direct `order.storeId === store.id` comparison (1 DB call instead of 2). `store/payouts` → early return if no store, removed `storeId==__none__` hack. `delete-account` → `deleteByStore`. |
+| **SeedPanel** | ✅ | Added `COLLECTION_META` entries for `conversations`, `sublistingCategories`, `groupedListings`. |
+| **Bug fixes (quality pass)** | ✅ | `listSellerMyProducts` was passing `userId` to `findByStore` instead of `store.id` (critical bug). `offer-actions.ts` `counterAmount!` unsafe assertion → explicit null guard. `store/payouts/route.ts` early-return pattern replaces `storeId==__none__` sentinel. |
+| **TypeScript** | ✅ | Both `appkit/` and `src/` pass `npx tsc --noEmit` with 0 errors. appkit rebuilt to dist/. |
+
+## ⚡ PREVIOUS TASK — Session 80-arch ✅ COMPLETE 2026-05-10 (Store Identity Architecture + Seed QA)
 
 | Task | Status | What was done |
 |------|--------|--------------|

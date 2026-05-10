@@ -46,7 +46,7 @@
 
 | File | Key exports | What it does |
 |------|------------|-------------|
-| `product.actions.ts` | `getProducts`, `getProductById`, `getProductBySlug` | Fetch products from Firestore |
+| `product.actions.ts` | `getProducts`, `getProductById`, `getProductBySlug`, `getProfileStoreProducts`, `getStoreStorefrontProducts` | Fetch products from Firestore; `getProfileStoreProducts` + `getStoreStorefrontProducts` are store-scoped variants (renamed from `getSellerProducts`/`getSellerStorefrontProducts` in ARCH refactor) |
 | `admin.actions.ts` | `getAdminStats`, `updateProductStatus` | Admin mutations |
 | `admin-read.actions.ts` | `getAdminUsers`, `getAdminOrders`, `getAdminReviews` | Admin read-only fetches |
 | `admin-coupon.actions.ts` | `getAdminCoupons`, `createCoupon`, `updateCoupon`, `deleteCoupon` | Admin coupon CRUD |
@@ -60,7 +60,7 @@
 | `store.actions.ts` | `getStores`, `getStoreBySlug`, `createStore`, `updateStore` | Store reads/mutations |
 | `store-address.actions.ts` | `getStoreAddresses`, `createStoreAddress` | Store pickup address CRUD |
 | `seller.actions.ts` | `getSellerStore`, `updateSellerStorefront` | Seller-specific store mutations |
-| `seller-coupon.actions.ts` | `getSellerCoupons`, `createSellerCoupon` | Seller coupon CRUD |
+| `seller-coupon.actions.ts` | `getStoreCoupons`, `createSellerCoupon` | Seller coupon CRUD (`getStoreCoupons` was `getSellerCoupons` before ARCH refactor) |
 | `review.actions.ts` | `getReviews`, `createReview`, `deleteReview` | Review CRUD |
 | `bid.actions.ts` | `getBids`, `placeBid`, `cancelBid` | Bid mutations |
 | `profile.actions.ts` | `getProfile`, `updateProfile` | User profile mutations |
@@ -141,6 +141,21 @@
 | `feature-flags/route.ts` | GET | Get feature flags — auth: admin/moderator; reads siteSettings.featureFlags + featureFlagRollouts (VA17) |
 | `feature-flags/route.ts` | PUT | Update feature flags — auth: admin; zod {flags, rollouts}; writes via siteSettingsRepository.updateSingleton (VA17) |
 | `store-addresses/route.ts` | GET | All store addresses — auth: admin/moderator; optional storeId param → specific subcollection or collectionGroup("addresses"); returns id, storeId, label, city, state, pincode, isPickupLocation, createdAt (LL17) |
+
+---
+
+## Store (Seller) API Routes — `src/app/api/store/` (notable entries)
+
+| Route file | Method | Purpose |
+|-----------|--------|---------|
+| `orders/[id]/route.ts` | GET/PATCH | Seller-scoped order detail + status/tracking update — uses `storeRepository.findByOwnerId(uid)` + `productRepository.findByStore(storeId)` for auth (ARCH refactor Session 81) |
+| `payouts/route.ts` | GET | Seller payout list + stats — now filters by `storeId` (was `sellerId`); uses `findByStoreAndStatus` (ARCH refactor Session 81) |
+| `offers/route.ts` | GET/POST | Seller offers — filters by `storeId`/`storeName` (was `sellerId`/`sellerName`) (ARCH refactor Session 81) |
+| `coupons/route.ts` | GET/POST | Seller coupon list + create — scoped to store |
+| `coupons/[id]/route.ts` | GET/PATCH/DELETE | Seller coupon detail + mutations — seller-scoped with admin override; enforces percentage ≤ 100 (CU refactor Session 78) |
+| `orders/route.ts` | GET | Seller order list — scoped to store's products |
+| `analytics/route.ts` | GET | Seller analytics — forwards date range to Firebase Function, now uses `storeId` |
+| `products/route.ts` | GET/POST | Seller product list + create |
 
 ---
 

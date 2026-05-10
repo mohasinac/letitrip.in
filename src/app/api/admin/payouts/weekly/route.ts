@@ -70,7 +70,7 @@ export const POST = withProviders(createRouteHandler({
     const byStore = shiprocketDelivered.reduce<
       Map<string, typeof shiprocketDelivered>
     >((map, order) => {
-      const id = order.storeId ?? order.storeId ?? "";
+      const id = order.storeId ?? "";
       if (!id) return map;
       if (!map.has(id)) map.set(id, []);
       map.get(id)!.push(order);

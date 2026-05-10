@@ -33,6 +33,82 @@
 
 ---
 
+# Session 81 — 2026-05-10 (sellerId → storeId Full Migration — ARCH2/ARCH5/ARCH8)
+
+## Scope
+
+Complete architectural migration replacing `sellerId` (Firebase Auth UID) with `storeId` (= storeSlug = store.id, e.g. `store-pokemon-palace`) across every Firestore collection, repository, action, API route, and seed file. `ownerId` (Auth UID) is now kept ONLY on `StoreDocument.ownerId`.
+
+## Schemas changed (appkit)
+
+- `CartItemDocument` + `CartAppliedCoupon` + `AddToCartInput`: `sellerId/sellerName` → `storeId/storeName`
+- `OrderDocument` + `AppliedOrderDiscount`: `sellerId/sellerName` → `storeId/storeName`
+- `CouponDocument`: `sellerId + storeSlug` → single `storeId`
+- `OfferDocument`: `sellerId/sellerName` → `storeId/storeName`; `OFFER_FIELDS.SELLER_ID/SELLER_NAME` → `STORE_ID/STORE_NAME`
+- `PayoutDocument`: `sellerId` → `storeId`; `PAYOUT_FIELDS.SELLER_ID` → `STORE_ID`
+- `ConversationDocument`: removed redundant `sellerId` (already had `storeId`)
+- `ProductItem` type: added `storeName?` field
+
+## Repositories changed (appkit)
+
+- `offer.repository.ts`: `findBySeller` → `findByStore`, `findPendingBySeller` → `findPendingByStore` (uses `OFFER_FIELDS.STORE_ID`)
+- `payout.repository.ts`: `findBySeller` → `findByStore`, `findBySellerAndStatus` → `findByStoreAndStatus`, `getPaidOutOrderIds` field ref updated
+- `orders.repository.ts`: `createFromAuction` param `sellerId?` → `storeId?`; `ADMIN_SIEVE_FIELDS` updated
+- `products.repository.ts`: `deleteBySeller` → `deleteByStore`
+- `coupons.repository.ts`: `getSellerCoupons` → `getStoreCoupons`
+
+## Actions changed (appkit)
+
+- `seller-actions.ts`: `listSellerCoupons` → storeRepository lookup + `getStoreCoupons`; `listSellerMyProducts` **bug fix** → was calling `findByStore(userId)` (critical bug, userId ≠ storeId) → now `findByOwnerId(userId)` → `findByStore(store.id)`
+- `offer-actions.ts`: all `offer.sellerId/sellerName` → `offer.storeId/storeName`; `listSellerOffers` → storeRepository lookup; `counterOfferByBuyer` null guard added before `offer.counterAmount` use
+- `store-query-actions.ts`: `findBySeller(storeDoc.ownerId)` → `findByStore(storeDoc.id)`
+- `seller-coupon-actions.ts`: `storeId: store.id` in create, authorization compares storeId to storeId
+- `review-actions.ts`: `findBySeller` → `findByStore`
+- `bid-actions.ts`: **bug fix** — `product.storeId === userId` (wrong) → `store.ownerId === userId` via storeRepository lookup
+
+## API routes changed (src/)
+
+- `store/offers/route.ts`: `findBySeller(uid)` → storeRepository lookup → `findByStore(store.id)`; early-return empty if no store
+- `store/orders/[id]/route.ts`: **optimized** — replaced 2-DB-call auth check (fetch all store products → check item list) with 1-DB-call (`order.storeId === store.id`); extracted `resolveSellerStoreId` helper; removed unused `productRepository` import
+- `store/payouts/route.ts`: early-return if no store (replaces `storeId==__none__` sentinel hack); `storeId` now non-nullable after guard
+- `admin/payouts/weekly/route.ts`: `payoutData.sellerId` → `storeId`; fixed `order.storeId ?? order.storeId ?? ""` duplicate → `order.storeId ?? ""`
+- `profile/delete-account/route.ts`: `deleteBySeller(uid)` → storeRepository lookup → `deleteByStore(store.id)`
+
+## Seed data changed (appkit)
+
+- `cart-seed-data.ts`: rewritten with real buyer IDs, real store IDs, `storeId/storeName`
+- `orders-seed-data.ts`: all `sellerId/sellerName` pairs → `storeId/storeName`
+- `coupons-seed-data.ts`: seller-scoped coupons `sellerId+storeSlug` → `storeId`
+- `payouts-seed-data.ts`: complete rewrite with real store IDs
+- `conversations-seed-data.ts`: removed all `sellerId:` lines
+- All product seed files (letitrip-official, anime-figures, beyblade, hot-wheels, transformers, retro-gaming, cosplay-accessories): removed `sellerId/sellerEmail`, renamed `sellerName` → `storeName`, corrected storeId prefix to `store-*`
+
+## Exports changed (appkit index.ts + server.ts)
+
+- `getSellerProducts` → `getProfileStoreProducts` (avoids name clash with stores `getStoreProducts`)
+- `getSellerStorefrontProducts` → `getStoreStorefrontProducts`
+- Added missing seed data exports: `conversationsSeedData`, `sublistingCategoriesSeedData`, `groupedListingsSeedData`
+
+## UI changed
+
+- `PublicProfileView.tsx`: uses `getProfileStoreProducts`; `toProductItem` maps `storeId/storeName`
+- `ProductForm.tsx`: 5× `sellerName` → `storeName`; form field name updated
+- `ProductGrid.tsx`: `product.sellerName` → `product.storeName`
+- `ProductDetailPageView.tsx`: `sellerName` → `storeName` in document mapper
+- `productTableColumns.tsx`: column key `sellerName` → `storeName`
+- `SeedPanel.tsx`: added `COLLECTION_META` entries for `conversations`, `sublistingCategories`, `groupedListings`
+- `StoreEntity` interface (2 store API routes): added missing `id` field
+- `coupon.actions.ts` Zod schema: `sellerId` → `storeId` in cart item validator
+- `pre-order.actions.ts`: `sellerId/sellerName` → `storeId/storeName`
+- `actions/index.ts`: `getSellerProductsAction` → `getProfileStoreProductsAction`
+- `asciiDiagrams.md`: added Architecture > Store Identity section documenting identity model, two-step lookup pattern, checkout three-step, optimized order auth guard, and anti-patterns
+
+## TypeScript
+
+Both `appkit/` and `src/` pass `npx tsc --noEmit` with 0 errors after all changes. appkit rebuilt to `dist/`.
+
+---
+
 # Session 80 — 2026-05-10 (ARCH3 + AdminSectionsView code quality split)
 
 ## ARCH3 — Reviews sellerId → storeId

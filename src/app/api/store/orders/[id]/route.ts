@@ -5,7 +5,6 @@ import {
   successResponse,
   errorResponse,
   orderRepository,
-  productRepository,
   storeRepository,
 } from "@mohasinac/appkit";
 
@@ -17,6 +16,11 @@ const updateOrderSchema = z.object({
   cancellationReason: z.string().optional(),
 });
 
+async function resolveSellerStoreId(uid: string): Promise<string | null> {
+  const store = await storeRepository.findByOwnerId(uid);
+  return store?.id ?? null;
+}
+
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -26,15 +30,9 @@ export const GET = withProviders(
       const order = await orderRepository.findById(id);
       if (!order) return errorResponse("Order not found", 404);
 
-      // Sellers can only view orders containing their products
       if (user!.role !== "admin") {
-        const store = await storeRepository.findByOwnerId(user!.uid);
-        const sellerProducts = store ? await productRepository.findByStore(store.id) : [];
-        const sellerProductIds = new Set(sellerProducts.map((p) => p.id));
-        const hasSellerProduct = order.items?.some((item: any) =>
-          sellerProductIds.has(item.productId),
-        );
-        if (!hasSellerProduct) return errorResponse("Order not found", 404);
+        const storeId = await resolveSellerStoreId(user!.uid);
+        if (!storeId || order.storeId !== storeId) return errorResponse("Order not found", 404);
       }
 
       return successResponse(order);
@@ -52,15 +50,9 @@ export const PATCH = withProviders(
       const order = await orderRepository.findById(id);
       if (!order) return errorResponse("Order not found", 404);
 
-      // Sellers can only update orders containing their products
       if (user!.role !== "admin") {
-        const store = await storeRepository.findByOwnerId(user!.uid);
-        const sellerProducts = store ? await productRepository.findByStore(store.id) : [];
-        const sellerProductIds = new Set(sellerProducts.map((p) => p.id));
-        const hasSellerProduct = order.items?.some((item: any) =>
-          sellerProductIds.has(item.productId),
-        );
-        if (!hasSellerProduct) return errorResponse("Order not found", 404);
+        const storeId = await resolveSellerStoreId(user!.uid);
+        if (!storeId || order.storeId !== storeId) return errorResponse("Order not found", 404);
 
         // Sellers can only move to processing/shipped
         const allowedStatuses = ["processing", "shipped"] as const;
