@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, startTransition, type ReactNode } from "react";
+import { useCallback, useEffect, useState, startTransition, useMemo, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
   useDashboardNav,
@@ -10,7 +10,7 @@ import {
   type AuthGuardUser,
 } from "@mohasinac/appkit/client";
 import { ROUTES } from "@/constants";
-import { USER_NAV_GROUPS, USER_NAV_ALL_ITEMS } from "@/constants/navigation";
+import { USER_NAV_GROUPS } from "@/constants/navigation";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useSession();
@@ -54,6 +54,25 @@ export default function UserLayout({ children }: { children: ReactNode }) {
     return () => unregisterNav();
   }, [registerNav, unregisterNav, openNav, closeNav, toggleNav]);
 
+  const isSeller = user?.role === "seller" || user?.role === "admin";
+
+  const navGroups = useMemo(() => {
+    const sellingItem = isSeller
+      ? { href: String(ROUTES.STORE.DASHBOARD), label: "Store Dashboard" }
+      : { href: String(ROUTES.USER.BECOME_SELLER), label: "Become a Store Owner" };
+
+    return USER_NAV_GROUPS.map((group) =>
+      group.title === "Selling"
+        ? { ...group, items: [sellingItem] }
+        : group
+    );
+  }, [isSeller]);
+
+  const navItems = useMemo(
+    () => navGroups.flatMap((g) => g.items),
+    [navGroups],
+  );
+
   return (
     <ProtectedRoute
       user={user as AuthGuardUser | null}
@@ -68,8 +87,8 @@ export default function UserLayout({ children }: { children: ReactNode }) {
       <UserSidebar
         variant="sidebar"
         desktopOpen={desktopOpen}
-        items={USER_NAV_ALL_ITEMS}
-        groups={USER_NAV_GROUPS}
+        items={navItems}
+        groups={navGroups}
         mobileOpen={mobileOpen}
         onCloseMobile={closeNav}
         onToggle={toggleNav}

@@ -276,9 +276,11 @@ export const USER_NAV_GROUPS: DashboardNavGroup[] = [
   {
     title: "Shopping",
     items: [
-      { href: String(ROUTES.USER.ORDERS),    label: "My Orders"  },
-      { href: String(ROUTES.USER.OFFERS),    label: "My Offers"  },
-      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"  },
+      { href: String(ROUTES.USER.ORDERS),    label: "My Orders"   },
+      { href: String(ROUTES.USER.BIDS),      label: "My Bids"     },
+      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews"  },
+      { href: String(ROUTES.USER.OFFERS),    label: "My Offers"   },
+      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"   },
     ],
   },
   {
