@@ -40,11 +40,13 @@ export default async function Page({ params }: Props) {
       })
     : null;
 
-  const ldBreadcrumb = breadcrumbJsonLd([
-    { name: "Home", url: "/" },
-    { name: "Products", url: "/products" },
-    { name: product?.title ?? "Product", url: `/products/${slug}` },
-  ]);
+  const ldBreadcrumb = product
+    ? breadcrumbJsonLd([
+        { name: "Home", url: "/" },
+        { name: "Products", url: "/products" },
+        { name: product.title, url: `/products/${slug}` },
+      ])
+    : null;
 
   return (
     <>
@@ -54,10 +56,12 @@ export default async function Page({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ldProduct) }}
         />
       )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
-      />
+      {ldBreadcrumb && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
+        />
+      )}
       <ProductDetailPageView
         slug={slug}
         renderOfferAction={({ productId, price, minOfferPercent }) => (

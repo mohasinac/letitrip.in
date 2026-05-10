@@ -77,13 +77,11 @@ Added `export const metadata: Metadata` to 14 static pages:
 
 ## SEO6 — Resource hints in root layout
 
-Added to `src/app/layout.tsx`:
+Added to `src/app/layout.tsx` (preconnect only — dns-prefetch is redundant when preconnect is present for the same origin):
 ```html
 <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
-<link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 <link rel="preconnect" href="https://www.googletagmanager.com" />
-<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 ```
 
 ## SEO7 — Canonical / alternates metadata on listing pages
@@ -93,6 +91,15 @@ Already covered by SEO5 route changes (canonicalPath logic + alternates in gener
 ## TypeScript
 
 Both `appkit/` and `src/` pass `npx tsc --noEmit` after all changes. No new errors introduced.
+
+## Quality fixes (review pass after Session 82)
+
+| Fix | File | Issue |
+|-----|------|-------|
+| Remove redundant `dns-prefetch` alongside `preconnect` | `src/app/layout.tsx` | `preconnect` already covers DNS+TCP+TLS — the `dns-prefetch` entries were no-ops |
+| Null-guard breadcrumb JSON-LD | `[locale]/products/[slug]/page.tsx` | Breadcrumb was always rendered even when product 404s — now only rendered when product exists |
+| `revalidate = 3600` | `[locale]/track/page.tsx` | Missing revalidate — defaulted to dynamic per-request rendering; page is static HTML (client-side fetching) |
+| Null-coalesce `SectionData` fields | `appkit/.../MarketplaceHomepageView.tsx` | `?? []` defaults added so disabled section types get empty arrays instead of `undefined` |
 
 ---
 
