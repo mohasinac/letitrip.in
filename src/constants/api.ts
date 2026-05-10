@@ -96,6 +96,8 @@ export const API_ROUTES = {
     ADDRESSES: "/api/store/addresses",
     ADDRESS_BY_ID: (id: string) => `/api/store/addresses/${id}`,
     BIDS: "/api/store/bids",
+    SUBLISTING_CATEGORIES: "/api/store/sublisting-categories",
+    SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/store/sublisting-categories/${id}`,
   },
   SCAMS: {
     REPORTS: "/api/scams/reports",

@@ -237,10 +237,11 @@ export const STORE_NAV_GROUPS: DashboardNavGroup[] = [
   {
     title: "Listings",
     items: [
-      { href: String(ROUTES.STORE.PRODUCTS),   label: "Products"   },
-      { href: String(ROUTES.STORE.AUCTIONS),   label: "Auctions"   },
-      { href: String(ROUTES.STORE.PRE_ORDERS), label: "Pre-Orders" },
-      { href: String(ROUTES.STORE.OFFERS),     label: "Offers"     },
+      { href: String(ROUTES.STORE.PRODUCTS),                label: "Products"          },
+      { href: String(ROUTES.STORE.AUCTIONS),                label: "Auctions"          },
+      { href: String(ROUTES.STORE.PRE_ORDERS),              label: "Pre-Orders"        },
+      { href: String(ROUTES.STORE.OFFERS),                  label: "Offers"            },
+      { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),   label: "Sub-listing Groups"},
     ],
   },
   {
