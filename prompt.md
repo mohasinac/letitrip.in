@@ -7,26 +7,24 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 90 (2026-05-11)
+### ✅ Last completed — Session 90-colors (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| AX1 constants | `action-defs.ts` — ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + all META maps + preset groups. |
-| AX1 hook + store | `useActionDispatch` hook (NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY). Zustand `usePanelStore` (panelId, data, openPanel, closePanel, isPanelOpen). Zustand v5 added to appkit deps. |
-| AX1 migration | `SellerProductsView.tsx` `handleEdit` migrated from `router.push` → `dispatch({ type: "NAVIGATE" })`. |
+| X7a | Defined zinc/slate/emerald/amber/rose/sky/purple/teal/green palettes (50–950) + semantic tokens + social brand tokens in `appkit/src/tokens/tokens.css`. |
+| X7b | Replaced all hex violations across 77 CSS files (all `*.style.css` in appkit/src/ui/). Intentional exceptions: indigo stat-card in Card, pokéball red in Spinner, cobalt-blue in RichText links. One file per commit. |
 
-### 🔄 Current — Session 90-colors (2026-05-11)
+### 🔄 Current — Session 91 (next)
 
 | Task | Status | Notes |
 |------|--------|-------|
-| X7a | ⏳ pending | Define missing CSS color tokens |
-| X7b | ⏳ pending | Replace all hardcoded hex violations |
+| X8a | ⏳ pending | Extend Tailwind config + appkit tokens for layout utilities (z-index, spacing, breakpoints) |
+| X8b | ⏳ pending | Replace all hardcoded layout/utility violations with token references |
 
 ### 🔜 Next sessions (safe-first order)
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| 90-colors | X7a, X7b | CSS color token audit — define missing tokens, replace all hex violations | zero |
 | 91 | X8a, X8b | Layout token audit — z-index, spacing, breakpoint violations | zero |
 | 92 | AX2, AX3 | `?panel=create/edit` deep-links + `FormActionBar` sticky bars | low |
 | 93 | EX1–EX5, YT1, SB11 | Extended homepage sections + bundles/prize-draw/raffle sections | low |
@@ -44,7 +42,7 @@
 ## PLAN SNAPSHOT
 
 ```
-108 tasks ✅ done · 289 remaining · 397 total (as of Session 90 done)
+110 tasks ✅ done · 287 remaining · 397 total (as of Session 90-colors done)
 
 PHASE                   SESSIONS     STATUS
 ──────────────────────────────────────────────────
@@ -71,7 +69,7 @@ UX Polish               89a          ✅  VD12, J16, J17, wishlist filter
 FAQ + WA redesign       89b          ✅  FAQSection, WhatsApp, @types/react
 ────────── 🚀 ALPHA on Vercel prod 2026-05-10 ──────────
 Action constants        90           ✅  AX1 complete (constants+hook+store+migration)
-Color tokens            90-colors    ⏳
+Color tokens            90-colors    ✅  X7a+X7b complete (77 CSS files tokenized)
 Layout tokens           91           ⏳
 Action URLs + bars      92           ⏳
 Extended sections       93           ⏳
@@ -128,6 +126,7 @@ Deferred                111+         ⏳
 □ SIEVEJS    Sieve config updated if new filter/sort param added
 □ SEEDPANEL  SeedPanel FieldDef[], slugPattern, mediaFields, PII label updated if schema changed
 □ DIAGRAMS   asciiDiagrams.md updated/added if page or flow changed
+□ INDEX      src/index.md + appkit/index.md updated if any component/hook/repo/constant added or renamed
 □ COMMIT     Correct format, one task only, no TS errors
 □ NEWCHANGE  newchange.md prepended after every task
 □ PROMPT     This file updated (CURRENT status) after every task
@@ -136,19 +135,65 @@ Deferred                111+         ⏳
 ### End-of-session checklist (before final commit)
 
 ```
-□ TSC        npx tsc --noEmit passes in both repos — 0 errors
-□ RECHECK    Re-read every file touched this session; no half-finished implementations
-□ QUALITY    All new UI uses appkit wrappers (Div/Row/Stack/Text/Heading),
-             CSS variables (var(--appkit-color-*), var(--header-height)),
-             no hardcoded hex, no raw px breakpoints, no arbitrary Tailwind syntax
-□ TRACKER    crud-tracker.md: all tasks ✅ with notes; session row marked ✅ Done; summary count updated
-□ PROMPT     This file: move session to LAST COMPLETED (keep only 1); set CURRENT to next session; drop oldest block
-□ MEMORY     memory/project_status.md prepended with bullet summary of what changed
-□ NEWCHANGE  newchange.md prepended with session entry: scope + files table + deferred table
-□ DIAGRAMS   asciiDiagrams.md: add/update every diagram for pages or flows that changed
-□ SEED       Seed files in appkit/src/seed/ match any schema changes made this session
-□ APPKIT     npm run build in appkit/ — dist/ is up to date. Do NOT npm publish unless user asks.
-□ COMMIT     Code commit first, then separate docs commit
+□ TSC        npx tsc --noEmit passes in BOTH repos — fix every error before proceeding; never
+             commit with TS errors
+
+□ RECHECK    Scroll back through the ENTIRE session chat and every file touched — confirm that
+             every change discussed is actually present in the code. No half-finished work, no
+             discussed change left out. If something was discussed but not implemented, add a
+             ⏳ entry in crud-tracker.md before closing.
+
+□ QUALITY    Code review for maintainability on everything written this session:
+             · HTML wrappers only — Div/Row/Stack/Text/Heading; no raw <div>/<span> in feature code
+             · CSS variables only — var(--appkit-color-*), var(--header-height), var(--appkit-z-*)
+             · No hardcoded hex/rgb/hsl colors anywhere
+             · No hardcoded px breakpoints — use @screen md or Tailwind responsive prefixes
+             · No arbitrary Tailwind values (p-[44px], text-[10px]) — use named tokens
+             · No hardcoded route strings — use ROUTES.* constants
+             · Rename any unclear identifier; remove dead code introduced this session
+             · Split any function > ~40 lines into smaller focused units
+
+□ SEED       appkit/src/seed/<collection>-seed-data.ts updated to match every schema change
+             made this session. New required fields must have values in ALL seed documents.
+
+□ SEEDPANEL  src/components/dev/SeedPanel.tsx updated if any collection schema changed:
+             · FieldDef[] array for new/changed fields
+             · slugPattern chip if ID format changed
+             · mediaFields chips if new image/video fields added
+             · PII label if new personally-identifiable fields added
+
+□ FIREBASE   appkit/firebase/base/firestore.indexes.json updated for any new multi-field
+             query or orderBy added this session. Run firebase-merge.mjs after editing.
+             Never edit root firestore.indexes.json directly.
+
+□ SIEVE      Sieve/query config updated if any new filter, sort, or search param was added.
+
+□ INDEX      src/index.md AND appkit/index.md: add, update, or remove every component, hook,
+             repository, constant, or action that changed this session. Both files are living
+             documents — a reader must be able to discover any symbol from them.
+
+□ DIAGRAMS   asciiDiagrams.md: add or update every diagram for any page, flow, or data model
+             that changed this session.
+
+□ TRACKER    crud-tracker.md: every task done this session marked ✅ with a one-line note and
+             timestamp; session row marked ✅ Done; summary task count updated.
+
+□ MEMORY     memory/project_status.md prepended with a bullet summary of what changed.
+
+□ NEWCHANGE  newchange.md prepended with session entry: scope + files-changed table +
+             deferred table.
+
+□ PROMPT     This file: move session to LAST COMPLETED (keep only 1 block); set CURRENT to
+             next session; drop oldest block if more than 1 exists.
+             SKIP this step entirely if the session was a single small fix or hotfix — a
+             one-line note in newchange.md is sufficient.
+
+□ APPKIT     npm run build in appkit/ — dist/ is up to date. Do NOT npm publish unless asked.
+
+□ COMMIT     Fix all remaining TS errors first. Then:
+             · Code commit first (fix/feat/wire/seed — one logical unit per commit)
+             · Docs commit second (tracker + prompt + memory + diagrams + index files)
+             · Never batch unrelated tasks in a single commit
 ```
 
 ---

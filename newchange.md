@@ -33,6 +33,30 @@
 
 ---
 
+# Session 90-colors — 2026-05-11 (X7a + X7b complete)
+
+## Scope
+CSS color token system complete. X7a defined all missing palette scales; X7b replaced every hardcoded hex violation across all appkit CSS files.
+
+## Changes Made
+
+| File | Change |
+|------|--------|
+| `appkit/src/tokens/tokens.css` | Added zinc/slate/emerald/amber/rose/sky/purple/teal/green palettes (50–950 each) + semantic tokens (error-surface/title/text, warning/success/info-surface, text-faint/muted/on-primary, border-subtle) + social brand tokens (instagram/facebook/tiktok/deviantart/whatsapp/youtube). |
+| `appkit/src/ui/components/*.style.css` (77 files) | Replaced all hardcoded hex violations with `var(--appkit-color-*)` tokens. One file per commit. Intentional exceptions: indigo stat-card in Card (no indigo tokens), `#CC0000` pokéball in Spinner, cobalt-blue in RichText links/code (brand-specific). |
+| `appkit/src/ui/DataTable.style.css` | Tokenized all hex violations. |
+| `appkit/src/ui/rich-text/RichText.style.css` | Tokenized editor shell + table/heading/body styles. Kept cobalt-blue link/code colors + lime-green dark link as intentional brand colors. |
+| `crud-tracker.md` | X7a ✅, X7b ✅. |
+| `prompt.md` | Moved 90-colors to LAST COMPLETED, set 91 as CURRENT. |
+
+## Open Deferred Items
+| Item | Status |
+|------|--------|
+| X7b TSX inline styles (13 files) | ⏳ deferred — `AppLayoutShell.tsx`, `ErrorBoundary.tsx`, etc. have inline hex styles not yet tokenized. Low visual priority. |
+| X7b DevToolbar.tsx | ⏳ deferred — ~20 hardcoded slate/blue hex values remain. Dev-only component. |
+
+---
+
 # Sync Audit — 2026-05-11 (tracker + prompt + diagrams brought to current state)
 
 ## Scope
