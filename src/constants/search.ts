@@ -9,7 +9,7 @@
 import type { SearchLabels } from "@mohasinac/appkit";
 
 export const SEARCH_LABELS: SearchLabels = {
-  placeholder: "Search products",
+  placeholder: "Search collectibles…",
   title: "Search",
   closeAriaLabel: "Close search",
   quickLinks: "Quick links",
@@ -17,4 +17,5 @@ export const SEARCH_LABELS: SearchLabels = {
   clearAriaLabel: "Clear search",
   ariaLabel: "Search",
   browseProducts: (query) => `Browse results for "${query}"`,
+  resourceTypeLabel: "Search in",
 };

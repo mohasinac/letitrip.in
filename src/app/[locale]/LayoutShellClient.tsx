@@ -11,13 +11,38 @@ import {
   NavigationLoader,
   ROUTES,
   Div,
-  Button,
   Search,
   useSession,
   useToast,
   type AppLayoutShellProps,
   type MainNavbarItem,
+  type SearchResourceType,
+  type SearchResourceTypeOption,
 } from "@mohasinac/appkit/client";
+
+const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
+  { value: "products",    label: "Products" },
+  { value: "auctions",    label: "Auctions" },
+  { value: "pre-orders",  label: "Pre-Orders" },
+  { value: "stores",      label: "Stores" },
+  { value: "categories",  label: "Categories" },
+  { value: "brands",      label: "Brands" },
+  { value: "events",      label: "Events" },
+  { value: "blog",        label: "Blog" },
+  { value: "faqs",        label: "FAQs" },
+];
+
+const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
+  products:   "/products",
+  auctions:   "/auctions",
+  "pre-orders": "/pre-orders",
+  stores:     "/stores",
+  categories: "/categories",
+  brands:     "/brands",
+  events:     "/events",
+  blog:       "/blog",
+  faqs:       "/faqs",
+};
 import Link from "next/link";
 import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
 import { FooterNewsletterSlot } from "@/components/layout/FooterNewsletterSlot";
@@ -222,31 +247,22 @@ export default function LayoutShellClient({
             <Search
               value={searchQuery}
               onChange={setSearchQuery}
-              onSearch={(query) => {
+              onSearch={(query, type) => {
+                const base = SEARCH_ROUTE_MAP[type] ?? String(ROUTES.PUBLIC.PRODUCTS);
                 router.push(
                   query.trim()
-                    ? `${String(ROUTES.PUBLIC.PRODUCTS)}?search=${encodeURIComponent(query.trim())}`
-                    : String(ROUTES.PUBLIC.PRODUCTS),
+                    ? `${base}?q=${encodeURIComponent(query.trim())}`
+                    : base,
                 );
                 onClose();
               }}
               deferred
               router={{ push: (href) => router.push(href) }}
               labels={searchLabels}
+              resourceTypes={SEARCH_RESOURCE_TYPES}
+              storageKey="letitrip_search_type"
               className="flex-1"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-label="Close search"
-              onClick={onClose}
-              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-slate-800 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </Button>
           </Div>
         </Div>
       )}

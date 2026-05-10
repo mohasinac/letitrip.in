@@ -1,29 +1,37 @@
 import { redirect } from "next/navigation";
-import { SearchPageClient } from "./SearchPageClient";
+import type { Metadata } from "next";
+import type { SearchResourceType } from "@mohasinac/appkit";
 
-type Props = {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string; page?: string }>;
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
 };
 
-function normalizePage(page: string | undefined): number {
-  const parsed = Number(page ?? "1");
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-}
+const ROUTE_MAP: Record<SearchResourceType, string> = {
+  products:     "/products",
+  auctions:     "/auctions",
+  "pre-orders": "/pre-orders",
+  stores:       "/stores",
+  categories:   "/categories",
+  brands:       "/brands",
+  events:       "/events",
+  blog:         "/blog",
+  faqs:         "/faqs",
+};
 
-function buildCanonicalSearchPath(locale: string, query: string, page: number): string {
-  const encodedQuery = encodeURIComponent(query);
-  return `/${locale}/search/${encodedQuery}/tab/all/sort/relevance/page/${page}`;
-}
+const VALID_TYPES = new Set<string>(Object.keys(ROUTE_MAP));
 
-export default async function Page({ params, searchParams }: Props) {
-  const { locale } = await params;
-  const { q, page } = await searchParams;
-  const query = (q ?? "").trim();
+type Props = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
 
-  if (query) {
-    redirect(buildCanonicalSearchPath(locale, query, normalizePage(page)));
-  }
+export default async function SearchRedirectPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const q = Array.isArray(params.q) ? (params.q[0] ?? "") : (params.q ?? "");
+  const rawType = Array.isArray(params.type) ? (params.type[0] ?? "") : (params.type ?? "");
+  const type: SearchResourceType = VALID_TYPES.has(rawType)
+    ? (rawType as SearchResourceType)
+    : "products";
 
-  return <SearchPageClient locale={locale} query={query} />;
+  const base = ROUTE_MAP[type];
+  redirect(q.trim() ? `${base}?q=${encodeURIComponent(q.trim())}` : base);
 }

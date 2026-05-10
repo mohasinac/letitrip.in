@@ -6,19 +6,19 @@ import { redirect } from "next/navigation";
 export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({ ...draft, status: "draft" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
+    await createSellerProductAction({ ...draft, isAuction: true, isPreOrder: false, status: "draft" });
+    redirect(String(ROUTES.STORE.AUCTIONS));
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({ ...draft, status: "published" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
+    await createSellerProductAction({ ...draft, isAuction: true, isPreOrder: false, status: "published" });
+    redirect(String(ROUTES.STORE.AUCTIONS));
   }
 
   return (
     <SellerCreateProductView
-      listingType="standard"
+      listingType="auction"
       onSave={handleSave}
       onPublish={handlePublish}
     />

@@ -12,19 +12,19 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, status: "draft" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
+    await sellerUpdateProductAction(id, { ...draft, isAuction: true, isPreOrder: false, status: "draft" });
+    redirect(String(ROUTES.STORE.AUCTIONS));
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, status: "published" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
+    await sellerUpdateProductAction(id, { ...draft, isAuction: true, isPreOrder: false, status: "published" });
+    redirect(String(ROUTES.STORE.AUCTIONS));
   }
 
   return (
     <SellerEditProductView
-      listingType="standard"
+      listingType="auction"
       productId={id}
       onSave={handleSave}
       onPublish={handlePublish}
