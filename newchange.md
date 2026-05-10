@@ -33,6 +33,34 @@
 
 ---
 
+# Hotfix — 2026-05-10 (Tailwind layout broken + appkit self-contained CSS)
+
+## Scope
+Root cause: npm package only ships `dist/`, not `src/`. Tailwind content path `src/**` matched nothing → all appkit utility classes purged → complete layout failure.
+Fix 1: corrected Tailwind content path in host (immediate fix).
+Fix 2: appkit now pre-compiles its own 141 KB Tailwind utilities into `dist/tailwind-utilities.css` (long-term fix). Host no longer scans appkit.
+Also fixed: pre-existing SC1 type errors (missing exports, `sublistingCategoryId` in `ProductItem`, `slug` in create input, stray `q` param).
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/tailwind.config.js` | NEW — full shared theme config, `preflight: false`, scans `./src/**` |
+| `appkit/src/tailwind-input.css` | NEW — `@tailwind utilities;` entry for build step |
+| `appkit/src/styles.css` | Added `@import "./tailwind-utilities.css"` |
+| `appkit/package.json` | Added `tailwindcss ^3.4.0` devDep; build step adds `tailwindcss … --minify`; pinned `@types/react` to `19.1.0` to avoid React 19.2 default-import regression; bumped `2.4.3 → 2.4.5` |
+| `appkit/src/features/products/types/index.ts` | Added `sublistingCategoryId?: string` to `ProductItem` |
+| `appkit/src/features/admin/components/AdminSublistingCategoryEditorView.tsx` | Fixed `category:` → `name:` in `generateMediaFilename` call |
+| `appkit/src/index.ts` | Exported `AdminSublistingCategoriesView`, `AdminSublistingCategoryEditorView`, `AdminSublistingCategoryEditorViewProps` |
+| `tailwind.config.js` | Removed appkit dist scan (appkit self-compiles now); updated comment |
+| `package.json` | Bumped `@mohasinac/appkit` to `^2.4.5` |
+| `src/app/api/admin/sublisting-categories/route.ts` | Removed stray `q` param from `SieveModel` call; added `slug` to `create()` input |
+
+## Deferred
+None.
+
+---
+
 # Session 84 — 2026-05-10 (L1 + L2 + L3 Custom Fields)
 
 ## Scope

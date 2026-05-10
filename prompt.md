@@ -31,7 +31,19 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 84 ✅ 2026-05-10 (L1 + L2 + L3 Custom Fields)
+## ⚡ LAST COMPLETED — Hotfix ✅ 2026-05-10 (Tailwind self-contained + SC1 type fixes)
+
+| Task | What was done |
+|------|--------------|
+| **Tailwind broken** | Root cause: `node_modules/@mohasinac/appkit` only has `dist/`, not `src/`. Host content path `src/**` scanned nothing → all appkit classes purged. ✅ |
+| **appkit self-build** | `tailwind.config.js` + `tailwind-input.css` + build step added to appkit. `dist/tailwind-utilities.css` (141 KB) now ships with the package. Host no longer scans appkit. ✅ |
+| **@types/react pin** | Pinned to `19.1.0` in appkit to prevent `19.2.x` default-import regression breaking `tsc -p tsconfig.build.json`. ✅ |
+| **SC1 pre-existing TS** | `sublistingCategoryId` added to `ProductItem`; missing exports added to `index.ts`; `slug` added to create call; stray `q` removed from sieve call. ✅ |
+| **appkit published** | `@mohasinac/appkit@2.4.5` on npm. Host updated to `^2.4.5`. Both repos tsc 0 errors. ✅ |
+
+---
+
+## ⚡ LAST COMPLETED BEFORE HOTFIX — Session 84 ✅ 2026-05-10 (L1 + L2 + L3 Custom Fields)
 
 | Task | What was done |
 |------|--------------|
