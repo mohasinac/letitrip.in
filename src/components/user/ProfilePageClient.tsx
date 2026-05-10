@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES } from "@mohasinac/appkit/client";
 
 interface ProfilePageClientProps {
@@ -9,7 +9,6 @@ interface ProfilePageClientProps {
 }
 
 export function ProfilePageClient({ standalone = true }: ProfilePageClientProps) {
-  const router = useRouter();
   const { user } = useAuth();
   const { showToast } = useToast();
   const { data: profile, isLoading } = useProfile({ enabled: !!user });
@@ -131,13 +130,12 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
             >
               Edit Profile
             </button>
-            <button
-              type="button"
-              onClick={() => router.push(String(ROUTES.USER.ADDRESSES))}
+            <Link
+              href={String(ROUTES.USER.ADDRESSES)}
               className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
             >
               Manage Addresses
-            </button>
+            </Link>
           </div>
         </div>
       ) : (

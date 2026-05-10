@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ROUTES } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants/api";
 
@@ -16,7 +15,6 @@ interface CategoryRow {
 }
 
 export default function Page() {
-  const router = useRouter();
   const [rows, setRows] = useState<CategoryRow[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -159,13 +157,12 @@ export default function Page() {
                 >
                   View
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => router.push(String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id)))}
-                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:border-[var(--appkit-color-primary,#6366f1)] hover:text-[var(--appkit-color-primary,#6366f1)] transition-colors"
+                <Link
+                  href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}
+                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors"
                 >
                   Edit
-                </button>
+                </Link>
                 <button
                   type="button"
                   onClick={() => handleDelete(cat.id, cat.name)}

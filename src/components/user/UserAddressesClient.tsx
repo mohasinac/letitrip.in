@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AddressBook,
@@ -57,13 +58,12 @@ export function UserAddressesClient() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</h1>
-        <button
-          type="button"
-          onClick={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
+        <Link
+          href={String(ROUTES.USER.ADDRESSES_ADD)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
         >
           + Add Address
-        </button>
+        </Link>
       </div>
       <AddressBook
         addresses={addresses as any[]}

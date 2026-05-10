@@ -647,16 +647,25 @@ export function CartRouteClient() {
       )}
       renderCheckoutButton={() => (
         <Div className="mt-3 space-y-2">
-          <Button
-            type="button"
-            onClick={() => router.push(String(ROUTES.USER.CHECKOUT))}
-            disabled={isEmpty || selectedCount === 0 || hasOnlyOos}
-            className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {!isAllSelected && selectedCount > 0
-              ? `Checkout ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
-              : "Checkout"}
-          </Button>
+          {isEmpty || selectedCount === 0 || hasOnlyOos ? (
+            <Button
+              disabled
+              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              Checkout
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              <Link href={String(ROUTES.USER.CHECKOUT)}>
+                {!isAllSelected && selectedCount > 0
+                  ? `Checkout ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
+                  : "Checkout"}
+              </Link>
+            </Button>
+          )}
           {hasOnlyOos && (
             <Text className="text-center text-xs text-[var(--appkit-color-error)]">
               All items are out of stock. Remove them to continue.
