@@ -8,13 +8,13 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 85 ✅ 2026-05-10 (BK1+BK2 list-view redesign + quality pass)
+## ⚡ LAST COMPLETED — Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
 
 | Task | What was done |
 |------|--------------|
-| **BK1+BK2 list view** | `BaseListingCard`: list variant now `flex-row items-stretch`; Hero uses fixed `w-20 h-20 sm:w-28 sm:h-28` thumbnail (no aspect-ratio box); Info uses `justify-center` with tighter padding. `MarketplaceAuctionCard` + `MarketplacePreorderCard`: compact list branches — title+heart inline, price+countdown/ship-badge inline, single `self-start` action button; description + secondary buttons hidden in list mode. `ProductListRow`: rebuilt without hardcoded px column widths; `flex-col` content block with 2-line clamp, category·brand joined with `·`, price+discount+rating inline; `formatCurrency` + responsive thumbnail. |
-| **Quality pass** | `BulkActionsBar`: `BulkAction` interface now requires stable `key` field (no index keys); `danger` variant uses `var(--appkit-color-danger)` CSS token. `ListingToolbar`: new `labels?: ListingToolbarLabels` prop (i18n-ready); `VIEW_BTN_*` class constants extracted to module scope; `ListingToolbarLabels` exported from `ui/index.ts`. `MarketplaceAuctionCard`: `COUNTDOWN_STATUS_CLASS` module-level const with dark-mode variants. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
+| **WA3** | `sendWhatsAppBusinessMessage()` + `syncProductsToCatalog()` + `buildPurchaseAnnouncementMessage()` in appkit whatsapp-bot/helpers. GET/PUT `/api/store/whatsapp-settings` (encrypted token, capability gate). POST `/api/store/whatsapp-settings/catalog-sync` (Meta Commerce API batch). `onOrderCreate` Firebase trigger → purchase announcement to admin + store owner. `--appkit-color-warning-surface` CSS token (light + dark). `STORE.WHATSAPP` route + nav link. `whatsapp_catalog_sync` StoreCapability. |
+| **Quality** | `LayoutShellClient`: fixed misplaced `import Link` (was after constants). `FormShell`: `amber-100/900` → `var(--appkit-color-warning-surface)`. `dev-next.mjs`: stable Next.js bin path. `transpilePackages` + `tailwind.config.js` dist scan removed. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors (fixed 3 WA3 catalog-sync errors). |
 
 ---
 

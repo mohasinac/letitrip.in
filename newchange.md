@@ -33,6 +33,47 @@
 
 ---
 
+# Session 101 QA — 2026-05-10 (TypeScript fix + WA3 + quality pass)
+
+## Scope
+
+TypeScript audit + WA3 WhatsApp Cloud API implementation + code quality fixes.
+
+## TypeScript
+
+Both repos had 0 errors before session. Fixed 3 new errors introduced by WA3 work:
+- `catalog-sync/route.ts`: wrong `productRepository.findAll({filters})` call → `findByStore` + in-memory filter
+- `catalog-sync/route.ts`: `@mohasinac/appkit/features/whatsapp-bot/server` module not in exports map → added sub-path export to appkit/package.json
+- `catalog-sync/route.ts`: `.data` property missing on array result → fixed by using `findByStore`
+
+## WA3
+
+- `appkit/src/features/whatsapp-bot/types/index.ts`: WaBusinessSendInput, CatalogSyncProduct/Input/Result, PurchaseAnnouncementInput types
+- `appkit/src/features/whatsapp-bot/helpers/whatsapp.ts`: sendWhatsAppBusinessMessage(), syncProductsToCatalog(), buildPurchaseAnnouncementMessage(), buildGroupShareLink()
+- `appkit/src/features/whatsapp-bot/server.ts`: re-exports helpers + types
+- `appkit/package.json`: `./features/whatsapp-bot/server` sub-path export added
+- `appkit/src/features/auth/permissions/constants.ts`: `whatsapp_catalog_sync` StoreCapability
+- `appkit/src/next/routing/route-map.ts`: `STORE.WHATSAPP = "/store/whatsapp"`
+- `appkit/src/tokens/tokens.css`: `--appkit-color-warning-surface` (light: amber-50, dark: dark amber)
+- `appkit/src/features/shell/FormShell.tsx`: amber hardcoded classes → `var(--appkit-color-warning-surface)` / `var(--appkit-color-warning)`
+- `src/app/api/store/whatsapp-settings/route.ts`: GET/PUT — returns/saves WA Business config, token encrypted, capability gate
+- `src/app/api/store/whatsapp-settings/catalog-sync/route.ts`: POST — syncs published standard products to Meta Commerce API
+- `functions/src/triggers/onOrderCreate.ts`: Firebase trigger → purchase announcement to admin numbers + store owner
+- `src/constants/navigation.tsx`: STORE_NAV_GROUPS Settings group → WhatsApp link added
+- `src/constants/api.ts`: WHATSAPP_SETTINGS + WHATSAPP_CATALOG_SYNC routes
+
+## Quality pass
+
+- `LayoutShellClient.tsx`: moved misplaced `import Link` from after module-level constants to top of imports
+- `scripts/dev-next.mjs`: use stable `node_modules/next/dist/bin/next` path
+- `package.json`: `--restart-tries 0` on concurrently dev script
+- `next.config.js`: `transpilePackages: ["@mohasinac/appkit"]`
+- `tailwind.config.js`: removed redundant dist scan path
+- `.gitignore`: added `/memory-forensics-*`
+- `appkit/src/seed/site-settings-seed-data.ts`: whatsappPhoneNumberId / CloudApiToken / AdminNotifyNumbers seeded as empty strings
+
+---
+
 # Session 84 — 2026-05-10 (Global Search Redesign — SR1+SR2+SR3)
 
 ## Scope
