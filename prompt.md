@@ -112,13 +112,100 @@
 
 ---
 
-## 🔜 NEXT — Session 82: Admin Finance
+## 🔜 NEXT — Multi-session sweep (Sessions 83–109+) 🔄 IN PROGRESS 2026-05-10
 
+> ⚠️ **ACTIVE WORK IN PROGRESS** — Another session is actively working through all pending tasks below in order. Do NOT start any of these tasks. Check back after the sweep completes.
+
+### Already completed this sweep
+| Task | Status |
+|------|--------|
+| P27 | ✅ Payouts seed 7→25 records |
+| VB5/VB6/O4/I2 | ✅ Tracker corrections (were done in Sessions 80/72) |
+
+### Half-complete (working first)
 | Tasks | Goal |
 |-------|------|
-| VD8 | Admin orders overview |
-| VD9 | Admin payouts management |
-| VD10 | Admin coupons management |
+| SCAM3 (partial) | /scams/types page + incidents/comments/related on profile |
+| SCAM5 (partial) | ScamReportForm actual fields + POST /api/scams/reports |
+
+### Session 83 — Content pages
+| Tasks | Goal |
+|-------|------|
+| VD8 | Rewrite /about with collectibles-specific content |
+| VD9 | Expand /become-seller + /seller-guide |
+| VD10 | Legal policy pages (terms, privacy, cookies, refunds) |
+
+### Session 84 — Custom Fields
+| Tasks | Goal |
+|-------|------|
+| L1 | Custom fields schema + CustomFieldsEditor component |
+| L2 | Custom section render on product detail pages |
+| L3 | Custom sections CRUD in product create/edit forms |
+
+### Session 85 — Sub-listing categories
+| Tasks | Goal |
+|-------|------|
+| SC1→SC4 | Schema → Admin CRUD → form field + carousel → public page |
+
+### Session 86 — Grouped Listings
+| Tasks | Goal |
+|-------|------|
+| GP1→GP2 | Schema + ShowGroupSection + edit-screen group settings panel |
+
+### Session 87 — Social Feed
+| Tasks | Goal |
+|-------|------|
+| S4, S1, S2, S3, S5 | Credentials → API fetcher → section component → admin builder → seed |
+
+### Session 88 — Search + Routes (already mostly done — SR1/SR2/SR3/RC1/RC2 ✅)
+| Tasks | Goal |
+|-------|------|
+| RC4 | Route ambiguity audit + CRUD route pattern standardisation |
+| RC3 | Button-vs-Link full sweep (asChild pattern) |
+
+### Session 89 — Query/Sieve
+| Tasks | Goal |
+|-------|------|
+| Q5, Q1, Q2, Q3, Q4, Q6 | Firestore indexes → Firebase Function → param standardisation → infinite scroll |
+
+### Sessions 90–91 — Token Audits
+| Tasks | Goal |
+|-------|------|
+| X7a, X7b | Color token audit |
+| X8a, X8b | Layout token audit |
+
+### Sessions 92–95 — Seed Scale
+| Tasks | Goal |
+|-------|------|
+| P24, P25, P28, P29, P30, P31 | Auctions+pre-orders, categories, blog+events+FAQs, coupons+notifications, new collections, seed runner |
+
+### Sessions 96–98 — RBAC
+| Tasks | Goal |
+|-------|------|
+| RBAC1→RBAC10 | Permission constants → server resolver → SSR gates → API guards → Team UI |
+
+### Sessions 99–101 — BAN system
+| Tasks | Goal |
+|-------|------|
+| BAN1→BAN9 | Schema → enforcement → ticket API → admin UI → Firebase functions |
+
+### Sessions 102–108 — SCAM system
+| Tasks | Goal |
+|-------|------|
+| SCAM2, SCAM4, SCAM6, SCAM7, SCAM8 | Admin management + FAQs + acknowledgement + SEO + notifications |
+
+### Sessions 109+ — Deferred
+| Tasks | Goal |
+|-------|------|
+| EX1–EX5, YT1 | Extended homepage sections + YouTube feed |
+| FI1–FI6 | Feature icons & badges |
+| AX1–AX3 | Action system + URL routing + sticky bars |
+| BK3 | Compare overlay |
+| G1, G2 | Product templates |
+| D2, D3, VC2, VC4, LL4, LL5 | User account forms |
+| GD1–GD22 | Guide pages (store/buyer/admin) |
+| ARCH1, ARCH6, ARCH7, ARCH9 | Store identity audit |
+| SL6, UX8, I7, O5 | Misc deferred |
 
 ---
 

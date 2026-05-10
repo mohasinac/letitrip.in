@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 (Session 81-impl) — Store Finance: C3 coupons edit page, VB1 SellerCouponEditorView create/edit form, C4+VB2+LL7 SellerOrdersView enhanced columns + OrderDetailDrawer SideDrawer, VB7 SellerAddressesView full CRUD + GET/POST/PUT/DELETE /api/store/addresses, LL9 SellerBidsView + GET /api/store/bids, LL10 SellerPayoutsView (SELLER_ENDPOINTS fix), ROUTES.STORE.BIDS added. TypeScript: 0 errors both repos.
+> **Last updated:** 2026-05-10 (Multi-session sweep) — P27 payouts seed 7→25 records ✅. Tracker corrections: VB5/VB6/O4/I2 marked ✅ (were done in Sessions 80/72 but tracker not updated). Summary: 103 done, 249 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -54,10 +54,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 352 |
-| ✅ Done | 99 |
+| ✅ Done | 103 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 253 |
+| ⏳ Remaining | 249 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -428,7 +428,7 @@ Rules to keep top-of-mind every task:
 | C2 | Store Pre-Orders create/edit | M | ✅ | Session 100 | REUSE: `ProductForm.tsx` EXISTS — same as C1; extend with isPreOrder field group; wire /store/pre-orders/new and /store/pre-orders/[id]/edit |
 | C3 | Store Coupons edit page | S | ✅ | Session 81-impl | /store/coupons/[id]/edit fetches coupon, converts paise→rupees for display, renders SellerCouponEditorView with initial draft. PATCH via /api/store/coupons/[id]. |
 | C4 | Store Orders detail + status + tracking | M | ✅ | Session 81-impl | SellerOrdersView OrderDetailDrawer: fetches order, shows items/address/payment/total. Select status (processing/shipped), tracking number/carrier/URL inputs. PATCH /api/store/orders/[id]. |
-| O4 | Store Analytics seller view | M | ⏳ | | VIEW: `SellerAnalyticsView` may exist — check; if stub, REUSE `AdminRevenueChart`/`AdminOrdersChart` with seller-scoped data. API: GET /api/store/analytics |
+| O4 | Store Analytics seller view | M | ✅ | Session 80 | Done via VB10. `/store/analytics/page.tsx` wired as "use client" fetching from `API_ROUTES.STORE.ANALYTICS`. Passes to `SellerAnalyticsStats` + `SellerTopProducts` with rupee formatter. 503 handled gracefully. |
 | O5 | Shiprocket auto-create on ship | M | ⏳ | | Server-side only: extend PUT /api/store/orders/[id] to call Shiprocket API when status=shipped + method=shiprocket; deferred if complex |
 
 ---
@@ -441,7 +441,7 @@ Rules to keep top-of-mind every task:
 | D2 | User Profile full edit | S | ⏳ | | REUSE: `ProfileView` EXISTS + `useProfile`/`useUpdateProfile` hooks EXIST — check which fields are wired; add missing publicProfile fields; `ImageCropModal` EXISTS for avatar |
 | D3 | User Settings complete — password, email, privacy | M | ⏳ | | REUSE: `UserSettingsView` EXISTS — complete renderAppearance + add password change section; `Toggle` + `Input` for settings |
 | D4 | Notifications view + mark read + delete | S | ✅ | Session 78 | `UserNotificationsView` wired with tab filters (all/unread/orders/bids/system), mark-all-read (POST /read-all), delete individual. `useQuery` + `useMutation` via Tanstack Query. |
-| I2 | Admin Payout processing | M | ⏳ | | Covered in M3 (Tier 6) |
+| I2 | Admin Payout processing | M | ✅ | Session 72 | Done via ARCH4 (M3 superseded). `AdminPayoutsView`: mark-paid + CSV export + storeId/storeName identity. |
 | D5 | Messages — conversation view (deferred) | L | ⏳ | | REUSE: `MessagesView`, `ChatList`, `ChatWindow` all EXIST in account/components — wire Firebase RTDB; deferred to last |
 
 ---
@@ -506,8 +506,8 @@ Rules to keep top-of-mind every task:
 | VB2 | Store Order detail + status update form | M | ✅ | Session 81-impl | See C4. Done via SellerOrdersView OrderDetailDrawer sub-component. |
 | VB3 | Store Payout request / withdraw form | M | ✅ | Session 80 | `SellerPayoutRequestView`: fetches payouts summary + payout details, shows available earnings, modal with payment method display + optional notes. POST /api/store/payouts/request (Zod: paymentMethod enum + notes). Disabled if pending payout or no earnings. |
 | VB4 | Store Storefront full edit | M | ✅ | Session 100 | See O2+C5. `SellerStorefrontView`: bio (RichTextEditor), store logo (MediaPicker), banner image (MediaPicker), vacation mode (toggle + message field), return policy (RichTextEditor). |
-| VB5 | Store Shipping config form | M | ⏳ | | See C6. Method select (standard/express/pickup), price fields per method, free-shipping threshold toggle + amount, pickup address selector (StoreAddressSelectorCreate). |
-| VB6 | Store Payout settings form | M | ⏳ | | See C7. Radio: UPI / Bank Transfer. UPI: VPA input. Bank: account name, account number (masked on display), IFSC, bank name. API: GET/PUT /api/store/payout-settings. |
+| VB5 | Store Shipping config form | M | ✅ | Session 80 | Done via C6. `SellerShippingView` full form: method radio (custom/shiprocket), rate fields (standard/express paise), free-shipping threshold toggle + amount, StoreAddressSelectorCreate for pickup. PATCH /api/store/shipping. |
+| VB6 | Store Payout settings form | M | ✅ | Session 80 | Done via C7. `SellerPayoutSettingsView` full form: UPI/bank radio, UPI VPA input or bank form (name, masked account number, IFSC, bank name, account type). PATCH /api/store/payout-settings. |
 | VB7 | Store Addresses CRUD | M | ✅ | Session 81-impl | SellerAddressesView: list as cards with Edit/Delete per card, Add Address SideDrawer form (label, fullName, phone, addressLine1/2, landmark, city, state, postalCode, country, isDefault). GET/POST /api/store/addresses + PUT/DELETE /api/store/addresses/[id] using storeAddressRepository. |
 | VB8 | Store Auction create/edit | M | ✅ | Session 100 | See C1. Extend `ProductForm` with auction tab: startingBid, reservePrice, bidIncrement, auctionStartDate, auctionEndDate. |
 | VB9 | Store Pre-Order create/edit | M | ✅ | Session 100 | See C2. Extend `ProductForm` with pre-order tab: depositPercent, estimatedDeliveryDate, productionStatus select, maxQuantity. |
