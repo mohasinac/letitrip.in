@@ -31,37 +31,6 @@
 
 ---
 
-## Session 100 ✅ 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
-
-| Task | What was done |
-|------|--------------|
-| **UX1** | `FormShell` + `useFormShell` in `appkit/src/features/shell/FormShell.tsx` — full-viewport overlay, focus trap, scroll lock, dirty guard, unsaved dialog. |
-| **UX2** | `QuickFormDrawer` in `appkit/src/features/shell/QuickFormDrawer.tsx` — 40% desktop / 100% mobile, auto-renders `FieldDef[]`, re-init on isOpen. |
-| **UX3** | `StepForm`, `StepFormActions`, `StepIndicator` in `appkit/src/features/shell/StepForm.tsx` — controlled multi-step, per-step validate, localStorage. |
-| **UX6/C1/VB8/C2/VB9** | `SellerProductShell` — create (5/6-step StepForm) + edit (FormShell section nav); standard/auction/pre-order. Updated `SellerCreateProductView` + `SellerEditProductView`. |
-| **C1/C2 pages** | 6 new pages: `/store/auctions/new`, `/store/auctions/[id]/edit`, `/store/pre-orders/new`, `/store/pre-orders/[id]/edit`. `/store/products/new` + edit also wired. All pass server actions via inline `"use server"`. |
-| **O2+C5/VB4** | `SellerStorefrontView` complete rewrite — profile/details/policies/social/vacation/visibility sections, dirty tracking, save feedback. Storefront page wired to `updateStoreAction`. |
-| **LL6** | `SellerProductsView` — type filter chips (All/Standard/Auction/Pre-order), thumbnail column, type+status badges, price column, row edit/delete actions, CSS variables only. |
-| **Bug fix** | `SearchResourceType` + `SearchResourceTypeOption` not exported from `search/components/index.ts` — fixed. |
-| **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. Appkit built. |
-
-> Prior sessions done: 84 (Search Redesign), 83 (SCAM public pages), 82-ext (footer SEO + constants), 82 (SEO & Lighthouse), 80-schema (RBAC+BAN+SCAM), 81 (storeId migration).
-
----
-
-## Session 79 ✅ 2026-05-10 (Cart Integrity)
-
-| Task | What was done |
-|------|--------------|
-| **W1** | `POST /api/cart/validate` — accepts `{ productIds: string[] }`, returns `{ stale, outOfStock }`. No auth required. PUBLISHED → in-stock; OUT_OF_STOCK → oos; SOLD/ARCHIVED/DISCONTINUED/DRAFT/null → stale. |
-| **W2** | `POST /api/user/wishlist/validate` — auth required. Batch-checks all user wishlist items, deletes stale from Firestore, returns `{ removedCount, removedProductIds }`. Wishlist page shows info toast + refetches on stale removal. |
-| **W3** | `CartRouteClient` split cartItems into in-stock / OOS sections via useMemo. OOS section header shows item count, items grayed with badge. Checkout disabled + warning when all items OOS. |
-| **W4** | `CartItemRow` augmented with `href?: string` (title becomes link, opens in new tab) and `isOutOfStock?: boolean` (grayed + badge + locked qty). `getProductHref()` maps slug prefix → ROUTES constant (auction-/preorder-/product-). |
-| **R1** | `handleQtyChange` now calls `PATCH /api/cart/[id]` for auth cart with error toast. `handleRemove` calls `DELETE /api/cart/[id]` with success/error toast. Notifications page: mark-all-read and delete mutations show proper success/error/info toasts. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. Fixed 5 pre-existing errors: `helperText`→`helpText` in SellerPayoutSettingsView + SellerShippingView; missing appkit client.ts exports; `API_ROUTES.STORE.PAYOUTS` added; `createApiHandler`→`createRouteHandler` in payouts/request; implicit `any` in analytics page. |
-
----
-
 ## ⚡ LAST COMPLETED — Session 83 ⚠️ partial 2026-05-10 (SCAM3 live + SCAM5 form + VD8)
 
 | Task | What was done |
@@ -413,16 +382,19 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT
 
 ```
-Sessions done:  60–76 + 76-infra + 76-content + 77 (coupons) + 78 (carousel) + 79 (FAQ/stats)
-                + 80-arch + 80-plan + 80-schema + 81 (sellerId migration)
-                + 82 (SEO1–7) + 82-ext (BK1+BK2: hover/long-press bulk selection, Set-based useBulkSelection,
-                  full-width BulkActionsBar, ListingToolbar bulkMode, all marketplace cards updated)
-Next:           77-impl — Seller Products + UX primitives
-Alpha gate:     77-impl → 78-impl → 79-impl → 80-impl → 🚀 ALPHA
+Sessions done:  60–83 (105 tasks ✅, 247 remaining)
+                ✅ Foundation → Admin CRUD → Public Catalogue → SEO
+                ✅ RBAC/BAN/SCAM schemas (80-schema)
+                ✅ sellerId migration (81)
+                ✅ Bulk selection + BulkActionsBar (82-ext)
+                ✅ UX shells + Seller product forms (77-impl)
+                ✅ Cart integrity + wishlist validate (79-impl)
+                ✅ Store settings (80-impl)
+                ✅ SCAM public pages: registry, profile, types, report form (83)
+Next:           VD9 + VD10 → L1/L2/L3 (Custom Fields) → SC1–SC4
 
 ⚠️  Firebase fully reset 2026-05-10 — re-seed all collections via /demo/seed
 ⚠️  RBAC/BAN/SCAM schemas done (80-schema, additive) — UI deferred to sessions 96–104
-⚠️  SCAM seed data + indexes + SeedPanel wired (80-schema-ext) — 3 scammer profiles seeded; `scammerProfiles` in SeedPanel Trust & Safety group; 9 Firestore indexes added; all schema constants exported from @mohasinac/appkit
 
 PHASE               SESSIONS          STATUS
 ────────────────────────────────────────────────────────
@@ -430,32 +402,28 @@ Foundation          60–64             ✅ done
 Carousel            65                ✅ done
 Sections            66–67             ✅ done
 Admin CRUD          68–75             ✅ done
-──────── ALPHA GATE ──────────────────────────────────
-Public Catalogue    76                ✅ done
-Infra/Hotfix        76-infra          ✅ done
-Content pages       76-content        ✅ done
-Schema/arch prep    80-plan+schema    ✅ done (RBAC/BAN/SCAM schemas)
+Public Catalogue    76 + 76-infra     ✅ done
+SEO + Bulk          82 + 82-ext       ✅ done
+RBAC/BAN/SCAM sch.  80-schema         ✅ done
 sellerId migration  81                ✅ done
-Seller Products     77-impl           ⏳
-User Account Core   78-impl           ⏳
-Cart Integrity      79-impl           ⏳
-Store Settings      80-impl           ⏳
+Seller Products     77-impl           ✅ done
+Cart Integrity      79-impl           ✅ done
+Store Settings      80-impl           ✅ done
+SCAM public pages   83                ✅ done (⚠️ VD9/VD10 deferred)
 ──────── 🚀 ALPHA ────────────────────────────────────
-Store Finance       81-impl           ⏳
-Admin Finance       82                ⏳
-Content             83                ⏳
-Custom Fields       84                ⏳
-Sub-listings        85                ⏳
-Grouped Listings    86                ⏳
-Social Feed         87                ⏳
-Search+Routes       88                ⏳
-Query/Sieve         89                ⏳
-Token Audits        90–91             ⏳
-Seed Scale          92–95             ⏳
-RBAC UI             96–98             ⏳
-Bans UI             99–101            ⏳
-Scams UI            102–104           ⏳
-Deferred            105+              ⏳
+Content rewrites    83-cont           ⏳ VD9 + VD10
+Custom Fields       84                ⏳ L1, L2, L3
+Sub-listings        85                ⏳ SC1–SC4
+Grouped Listings    86                ⏳ GP1, GP2
+Social Feed         87                ⏳ S4, S1–S3, S5
+Search+Routes       88                ⏳ RC3, RC4
+Query/Sieve         89                ⏳ Q1–Q6
+Token Audits        90–91             ⏳ X7a/b, X8a/b
+Seed Scale          92–95             ⏳ P24–P31
+RBAC UI             96–98             ⏳ RBAC1–RBAC10
+Bans UI             99–101            ⏳ BAN1–BAN9
+Scams UI (cont.)    102–108           ⏳ SCAM2,4,6,7,8
+Deferred            109+              ⏳
 ────────────────────────────────────────────────────────
 ```
 follow all rules and complete all tasks, prioritize pending tasks or tech debt first. check for tsc errors before proceeding to next task. update ascii diagrams after every session.
