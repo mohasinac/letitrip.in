@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { Button, Div, Heading, Text, Textarea } from "@mohasinac/appkit/ui";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 import type { EventDocument } from "@mohasinac/appkit/client";
@@ -21,7 +21,6 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
   const [selectedVotes, setSelectedVotes] = useState<string[]>([]);
   const [pollComment, setPollComment] = useState("");
 
-  // Leaderboard events require login
   if (hasLeaderboard && !user) {
     return (
       <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-10 text-center space-y-3">
@@ -33,7 +32,7 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
         </Text>
         <Link
           href={String(ROUTES.AUTH.LOGIN)}
-          className="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
+          className="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
         >
           Log In
         </Link>
@@ -57,7 +56,7 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error((data as Record<string, string>)?.error ?? "Failed to submit entry");
+        throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");
       }
       setIsSubmitted(true);
       showToast("Your entry has been submitted!", "success");
@@ -83,6 +82,10 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
     }
   };
 
+  const canSubmit =
+    !isLoading &&
+    !(pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0);
+
   return (
     <EventParticipateView
       isLoading={isLoading}
@@ -97,7 +100,10 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
           ) : null}
           {event.endsAt ? (
             <Text className="text-sm text-zinc-500 dark:text-zinc-400">
-              Ends at: {new Date(event.endsAt).toLocaleDateString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+              Ends:{" "}
+              {new Date(event.endsAt).toLocaleDateString("en-IN", {
+                dateStyle: "medium",
+              })}
             </Text>
           ) : null}
         </Div>
@@ -109,29 +115,30 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
                 <Text className="font-medium text-zinc-800 dark:text-zinc-200">
                   {isMultiSelect ? "Select all that apply:" : "Choose one:"}
                 </Text>
-                {pollConfig.options.map((opt) => (
-                  <label
-                    key={opt.id}
-                    className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                  >
-                    <input
-                      type={isMultiSelect ? "checkbox" : "radio"}
-                      name="poll-option"
-                      value={opt.id}
-                      checked={selectedVotes.includes(opt.id)}
-                      onChange={() => toggleVote(opt.id)}
-                      className="accent-primary"
-                    />
-                    <Text className="text-zinc-700 dark:text-zinc-300">{opt.label}</Text>
-                  </label>
-                ))}
+                <Div className="space-y-2">
+                  {pollConfig.options.map((opt) => (
+                    <label
+                      key={opt.id}
+                      className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <input
+                        type={isMultiSelect ? "checkbox" : "radio"}
+                        name="poll-option"
+                        value={opt.id}
+                        checked={selectedVotes.includes(opt.id)}
+                        onChange={() => toggleVote(opt.id)}
+                        className="accent-primary"
+                      />
+                      <Text className="text-zinc-700 dark:text-zinc-300">{opt.label}</Text>
+                    </label>
+                  ))}
+                </Div>
                 {pollConfig.allowComment ? (
-                  <textarea
+                  <Textarea
                     value={pollComment}
                     onChange={(e) => setPollComment(e.target.value)}
                     placeholder="Add a comment (optional)"
                     rows={3}
-                    className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 ) : null}
               </Div>
@@ -141,22 +148,22 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
       renderAction={() => (
         <Div className="space-y-2">
           {error ? (
-            <Text className="text-red-500 text-sm">{error}</Text>
+            <Text className="text-red-500 dark:text-red-400 text-sm">{error}</Text>
           ) : null}
           {pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0 ? (
-            <Text className="text-sm text-zinc-500">Please select an option above.</Text>
+            <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+              Please select an option above.
+            </Text>
           ) : null}
-          <button
+          <Button
             type="button"
-            disabled={
-              isLoading ||
-              (!!pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0)
-            }
+            variant="primary"
+            disabled={!canSubmit}
             onClick={handleSubmit}
-            className="w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-60"
+            className="w-full"
           >
             {isLoading ? "Submitting…" : "Submit Participation"}
-          </button>
+          </Button>
         </Div>
       )}
       renderSuccess={() => (

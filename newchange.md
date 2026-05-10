@@ -33,6 +33,26 @@
 
 ---
 
+# Session 89 — 2026-05-11 (Detail page UX + Wishlist filters)
+
+## Scope
+VD12: De-cramp all 3 product detail pages + remove duplicate info. Wishlist filter drawer added. Store sub-page toolbars verified intact. 0 TS errors both repos.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Info column: `gap="sm"→"md"`, removed duplicate price row (now actions-sidebar only); discount row moved to sidebar with original+discount in one `Row`. Stock status retained in info column. |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Status badge (Active/Ended) moved next to auction badge in title block; bid count consolidated under current-bid price; timing inline below bid; fallback sidebar stripped of repeat current-bid/starting-bid/bid-count block (shows only starting bid + min increment + input + buttons); dropped unused `React` import. |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Removed duplicate price from info column (price lives in buy-bar panel); `gap="sm"→"md"` on info Stack; delivery date kept in info column. |
+| `src/app/[locale]/wishlist/page.tsx` | Added `filterContent` drawer to `ListingLayout`: Type filter (All/Standard/Auction/Pre-Order) + price range (min/max in ₹, converted to paise internally). Staged pending/applied filter state. `countActiveFilters()` helper. Clear-all button shown when search or filters active. |
+
+## Notes
+- Store sub-page toolbars (`StoreProductsListing`, `StoreAuctionsListing`, `StorePreOrdersListing`) verified intact — all use `ListingToolbar` + filter drawers.
+- Wishlist `filterPendingCount` prop omitted (prop is in appkit source but not yet in compiled dist; will be available after next appkit rebuild).
+
+---
+
 # Session 88 — 2026-05-10 (RC4 + RC3: Route audit + Button/Link sweep)
 
 ## Scope

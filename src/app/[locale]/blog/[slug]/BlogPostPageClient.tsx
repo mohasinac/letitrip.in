@@ -1,5 +1,5 @@
 "use client";
-import { BlogPostView, BlogCard } from "@mohasinac/appkit/client";
+import { BlogPostView, BlogCard, ROUTES } from "@mohasinac/appkit/client";
 import Link from "next/link";
 
 type Props = { slug: string; locale: string };
@@ -10,14 +10,17 @@ export function BlogPostPageClient({ slug, locale }: Props) {
       slug={slug}
       renderBackButton={() => (
         <Link
-          href={`/${locale}/blog`}
+          href={`/${locale}${String(ROUTES.PUBLIC.BLOG)}`}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-primary transition-colors"
         >
-          <span>←</span> Back to Blog
+          ← Back to Blog
         </Link>
       )}
       renderRelatedCard={(relatedPost) => (
-        <BlogCard post={relatedPost as any} />
+        <BlogCard
+          post={relatedPost}
+          href={`/${locale}${String(ROUTES.BLOG.ARTICLE(relatedPost.slug))}`}
+        />
       )}
     />
   );

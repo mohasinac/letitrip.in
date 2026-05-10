@@ -31,10 +31,43 @@ module.exports = {
     "sm:block",
     // Responsive grid column utilities used by appkit listing components
     // (EventsIndexListing, BlogIndexListing, AuctionsIndexListing, StoresIndexListing,
-    // ReviewsIndexListing, CouponsIndexListing, CategoriesIndexListing).
+    // ReviewsIndexListing, CouponsIndexListing, CategoriesIndexListing, homepage sections).
     // These live only in appkit source — host JIT must emit them to avoid cascade conflicts.
+    "sm:grid-cols-2",
+    "sm:grid-cols-3",
+    "sm:grid-cols-4",
+    "md:grid-cols-2",
+    "md:grid-cols-3",
+    "md:grid-cols-4",
+    "lg:grid-cols-2",
     "lg:grid-cols-3",
+    "lg:grid-cols-4",
+    "lg:grid-cols-5",
+    "lg:grid-cols-6",
+    "xl:grid-cols-2",
+    "xl:grid-cols-3",
+    "xl:grid-cols-4",
     "xl:grid-cols-5",
+    "2xl:grid-cols-2",
+    "2xl:grid-cols-3",
+    "2xl:grid-cols-4",
+    "2xl:grid-cols-5",
+    "2xl:grid-cols-6",
+    // Responsive col-span utilities used by homepage sections and detail layouts
+    "lg:col-span-2",
+    "lg:col-span-3",
+    "lg:col-span-4",
+    "lg:col-span-8",
+    "xl:col-span-3",
+    "xl:col-span-9",
+    // Responsive flex direction used by appkit layout and homepage components
+    "sm:flex-row",
+    "md:flex-row",
+    "lg:flex-row",
+    // Responsive align/justify used by appkit listing and card components
+    "sm:items-center",
+    "sm:justify-between",
+    "lg:justify-start",
     // Zinc neutrals (light mode)
     "bg-white",
     "bg-zinc-50",
