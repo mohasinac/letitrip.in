@@ -33,6 +33,40 @@
 
 ---
 
+# Session 78 — 2026-05-10 (User Account Core)
+
+## Scope
+
+VC1 (order detail), VC3 (profile edit), VC5/D4 (notifications), LL2 (reviews), LL3 (bids), isPublic guard on public profiles, smart sidebar CTA (Become Seller ↔ Store Dashboard), appkit client exports for new views.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `src/app/[locale]/user/orders/view/[id]/page.tsx` | Full render: renderBack, renderHeader (status + tracking), renderItems, renderAddress, renderPayment, renderActions (Track + Cancel) |
+| `src/app/[locale]/user/reviews/page.tsx` | NEW — My Reviews page with tab filter + star display + status badges |
+| `src/app/[locale]/user/bids/page.tsx` | NEW — My Bids page with tab filter + winning/status badges + auction links |
+| `src/app/[locale]/user/notifications/page.tsx` | Full UserNotificationsView: tabs (all/unread/orders/bids/system), mark-read, mark-all-read, delete |
+| `src/app/[locale]/user/notifications/[tab]/page.tsx` | Changed to `redirect("/user/notifications")` |
+| `src/app/api/user/reviews/route.ts` | NEW — GET /api/user/reviews via reviewRepository.findByUser() |
+| `src/app/api/user/bids/route.ts` | NEW — GET /api/user/bids via bidRepository.findByUser() |
+| `src/app/api/user/profile/route.ts` | Extended PATCH schema: bio (max 500), profileIsPublic (boolean); persists to publicProfile sub-object |
+| `src/components/user/ProfilePageClient.tsx` | Added bio textarea, photoURL URL input, isPublic toggle, view-mode Public/Private badge |
+| `src/app/[locale]/profile/[userId]/page.tsx` | SSR guard: publicProfile.isPublic === false → notFound() |
+| `appkit/src/client.ts` | Export OrderDetailView, UserNotificationsView, useOrder (3 new exports) |
+
+## Deferred
+
+| What | Why | Target |
+|------|-----|--------|
+| VC2 (invoice download) | Requires @react-pdf/renderer — scope for post-alpha | Session post-79 |
+| VC4 (settings: password/email/privacy) | Separate flow, not alpha-blocker | Session post-80 |
+| LL4 (address book list) | Post-alpha user account expansion | Session post-80 |
+| LL5 (returns list) | Post-alpha | Session post-80 |
+| Social links in profile edit | publicProfile.socialLinks not yet in PATCH schema | VC3 follow-up |
+
+---
+
 # Session 103b — 2026-05-10 (Sidebar fix + Wishlist rewrite)
 
 ## Scope

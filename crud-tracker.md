@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 (Session 103b) — Sidebar nav item alignment fixed (flex items-center gap-2). seedPanelEnabled defaults to true when DB returns nothing. Wishlist page rewritten: ListingLayout + search/sort toolbar, ghost items fixed (API enriched `product` field used instead of sparse WishlistItem fields), raw divs replaced with Div wrappers, new `EnrichedWishlistItem` / `WishlistProductData` types exported from appkit, Select + ListingLayout added to client.ts exports. TypeScript: 0 errors both repos.
+> **Last updated:** 2026-05-10 (Session 78) — User Account Core: VC1 OrderDetailView full render (items/address/payment/tracking/actions). VC3 profile edit (bio, photoURL, publicProfile toggle, PATCH API extended). VC5 notifications (tab filters all/unread/orders/bids/system, mark-all-read, delete). LL2 My Reviews page + API. LL3 My Bids page + API. /profile/[userId] guarded by isPublic flag (SSR notFound). appkit: OrderDetailView + UserNotificationsView + useOrder exported from client bundle. TypeScript: 0 errors both repos.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -152,7 +152,7 @@ Rules to keep top-of-mind every task:
 | **76-infra** | **Hotfix + Firebase Reset** ✅ Done 2026-05-10 | J13, J14, J15, INFRA1, INFRA2 | Products listing fix (isAuction/isPreOrder must be explicit false in seed + 2 new composite indexes) · Blog initialData shape fix · Events status filter fix (published→active) · firebase-reset.mjs .count()→.get().size · firebase-delete-indexes.mjs (new, fixes 409 loop) · Full Firebase reset + 263 indexes + 24 functions redeployed. ⚠️ Re-seed all 23 collections. | Session 76 done; any session needing index changes: run firebase-delete-indexes.mjs first |
 | **77-ux** | **UX Foundation** | UX1, UX2, UX3, UX4, UX5, UX9 | FormShell + QuickFormDrawer + StepForm + PreviewPane + MediaPickerDrawer + InlineSelectCreate — build all form-shell primitives first so Session 77 can use them | Session 76 done |
 | **77** | **Alpha: Seller Products** | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | Apply UX patterns to all 3 product create/edit forms (standard/auction/pre-order) + store profile + seller listing views — G1/G2 (templates) deferred post-alpha | 77-ux patterns built |
-| **78** | **Alpha: User Account** | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | Wishlist + order history/detail + profile edit + notifications — VC2/VC4/D3/D4/LL4/LL5 deferred post-alpha | Sessions 76–77 |
+| **78** | **Alpha: User Account** ✅ Done 2026-05-10 | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | Order detail (VC1), profile edit (VC3), notifications (VC5), Reviews page (LL2), Bids page (LL3). isPublic guard on /profile/[userId]. Sidebar smart CTA (Become Seller ↔ Store Dashboard). VC2/VC4/LL4/LL5 deferred post-alpha. | Sessions 76–77 |
 | **79** | **Alpha: Cart Integrity** | W1, W2, W3, W4, R1 | Cart stale validation + out-of-stock section + product links in cart (all 3 types) + CRUD UX standard | Sessions 76–78 |
 | **80-arch** | **Store Identity + Seed QA** ✅ Done 2026-05-10 | ARCH3 + seed QA | Reviews sellerId → storeId/storeSlug across types, Zod schemas, useReviews hook. Categories seed: 6 niche subcategories now show seller createdBy. Seed expansions committed: 50 standard products, 11 auctions, 8 pre-orders, 35 reviews, 8 stores, 18 users, 13 store addresses, 10 coupons, 53 FAQs. | Session 79 done |
 | **80** | **Alpha: Store Settings** | UX7, C6, C7, O3, VB3, VB10, LL8 | Apply FormShell to store profile/shipping/payout (UX7) + shipping config + payout settings + store addresses — sellers must be able to get paid | Session 77 (store patterns) |
@@ -440,7 +440,7 @@ Rules to keep top-of-mind every task:
 | D1 | Wishlist page wiring | S | ✅ | Session 103b | Rewired with `useWishlistWithGuest` + `ListingLayout`. Ghost items fixed — API enriched `product` field used. Search + sort toolbar. `EnrichedWishlistItem` type added. |
 | D2 | User Profile full edit | S | ⏳ | | REUSE: `ProfileView` EXISTS + `useProfile`/`useUpdateProfile` hooks EXIST — check which fields are wired; add missing publicProfile fields; `ImageCropModal` EXISTS for avatar |
 | D3 | User Settings complete — password, email, privacy | M | ⏳ | | REUSE: `UserSettingsView` EXISTS — complete renderAppearance + add password change section; `Toggle` + `Input` for settings |
-| D4 | Notifications view + mark read + delete | S | ⏳ | | REUSE: `UserNotificationsView` EXISTS + `NotificationBell` EXISTS — complete API wiring; `Tabs` (EXISTS) for tab filtering |
+| D4 | Notifications view + mark read + delete | S | ✅ | Session 78 | `UserNotificationsView` wired with tab filters (all/unread/orders/bids/system), mark-all-read (POST /read-all), delete individual. `useQuery` + `useMutation` via Tanstack Query. |
 | I2 | Admin Payout processing | M | ⏳ | | Covered in M3 (Tier 6) |
 | D5 | Messages — conversation view (deferred) | L | ⏳ | | REUSE: `MessagesView`, `ChatList`, `ChatWindow` all EXIST in account/components — wire Firebase RTDB; deferred to last |
 
@@ -517,11 +517,11 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| VC1 | User Order detail — full render (items, address, payment, tracking) | S | ⏳ | | `OrderDetailView` on `/user/orders/view/[id]` — wire renderItems, renderAddress, renderPayment, renderTracking render props. Currently shows empty shell. |
+| VC1 | User Order detail — full render (items, address, payment, tracking) | S | ✅ | Session 78 | `OrderDetailView` wired: renderBack, renderHeader (status badge + tracking), renderItems (image/title/qty/price), renderAddress, renderPayment (subtotal/shipping/discount/tax/total), renderActions (Track Shipment link + Cancel Order button). `useOrder` hook from appkit. |
 | VC2 | User Order invoice download | M | ⏳ | | NEW. "Download Invoice" button on user order detail page. Server route: GET `/api/orders/[id]/invoice`. Generate PDF via `@react-pdf/renderer` or server-side HTML→PDF. |
-| VC3 | User Profile full edit | S | ⏳ | | See D2. Wire all fields: displayName, bio, avatar (ImageCropModal), publicProfile toggle, social links. |
+| VC3 | User Profile full edit | S | ✅ | Session 78 | ProfilePageClient: bio textarea (max 500), photoURL URL input, isPublic toggle switch. View mode shows bio + Public/Private badge. PATCH /api/user/profile schema extended (bio, profileIsPublic). userRepository.update() persists to publicProfile sub-object. |
 | VC4 | User Settings — password, email, privacy tabs | M | ⏳ | | See D3. Tabs: Account (email change, password change), Privacy (data export, delete account), Appearance (dark mode, language). |
-| VC5 | User Notifications — view + mark read + delete | S | ⏳ | | See D4. Wire `UserNotificationsView`. Tab filter (all/unread/orders/system). Mark all read button. Delete individual notifications. |
+| VC5 | User Notifications — view + mark read + delete | S | ✅ | Session 78 | See D4. Fully wired — see D4 row above. |
 | VC6 | User Wishlist — fix broken wiring + stale validation | S | ✅ | Session 103b | Ghost items fixed (enriched product field), ListingLayout + search/sort wired. W2 stale validation deferred — see W2 row. |
 | VC7 | Message system — Firebase RTDB wiring | L | ⏳ | | See D5. Wire `MessagesView` → `ChatList` → `ChatWindow` to Firebase RTDB. Real-time listeners for messages. Send message action. Conversation list shows last message + unread count. |
 
@@ -589,9 +589,9 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| LL1 | `UserOrdersView` — user order history list | M | ⏳ | | Status filter tabs (all/pending/processing/shipped/delivered/cancelled/refunded/return_requested). Columns: order ID, date, items count, total (₹), status badge. Date sort, order ID search. Row click → VC1 (order detail). API: `/api/user/orders`. |
-| LL2 | `UserReviewsView` — reviews written by the logged-in user | S | ⏳ | | Columns: product thumbnail, product name, rating stars, review title, date, verified purchase badge. Actions: edit review (within edit window), delete (ConfirmDeleteModal). API: `/api/user/reviews`. |
-| LL3 | `UserBidsView` — bid history | S | ⏳ | | Columns: auction thumbnail, auction title, user's last bid amount (paise→₹), current bid (₹), status badge (active/outbid/won/lost), auction end time. Row link → auction detail page. API: `/api/user/bids`. Read-only list; no mutations. |
+| LL1 | `UserOrdersView` — user order history list | M | ✅ | Session 103 | Status filter tabs (all/pending/processing/shipped/delivered/cancelled/refunded/return_requested). Columns: order ID, date, items count, total (₹), status badge. Row click → VC1 (order detail). API: `/api/user/orders`. |
+| LL2 | `UserReviewsView` — reviews written by the logged-in user | S | ✅ | Session 78 | Tab filters (all/approved/pending/rejected). Review cards with star display, verified badge, status badge, product link, helpful count. API: GET `/api/user/reviews` via `reviewRepository.findByUser()`. |
+| LL3 | `UserBidsView` — bid history | S | ✅ | Session 78 | Tab filters (all/active/won/outbid/lost). Bid cards with auction link, bid amount (paise→₹), winning/status badges. API: GET `/api/user/bids` via `bidRepository.findByUser()`. Read-only. |
 | LL4 | `UserAddressesView` — address book list | S | ⏳ | | Columns: label, fullName, city, state, pincode, default badge. Actions per row: edit (→AddressForm SideDrawer), delete (ConfirmDeleteModal), set as default. "Add address" button top-right → AddressForm. API: `/api/user/addresses`. See also VC3 (profile edit). |
 | LL5 | `UserReturnsView` — return requests list | S | ⏳ | | Listing of orders where status is RETURN_REQUESTED or REFUNDED. Columns: order ID, primary product thumbnail, date requested, current status badge. Row link → VC1 (order detail). API: `/api/user/orders?status=RETURN_REQUESTED`. See also VC1. |
 

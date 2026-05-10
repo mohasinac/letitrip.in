@@ -8,7 +8,22 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
+## ⚡ LAST COMPLETED — Session 78 ✅ 2026-05-10 (User Account Core)
+
+| Task | What was done |
+|------|--------------|
+| **VC1** | `OrderDetailView` fully wired: renderBack, renderHeader (status badge + tracking number + carrier), renderItems (product image/title/attributes/qty/price), renderAddress, renderPayment (subtotal/shipping/discount/tax/total), renderActions (Track Shipment link, Cancel Order button). `useOrder` hook + `OrderDetailView` exported from appkit client bundle. |
+| **VC3** | `ProfilePageClient` rewritten: bio textarea (max 500 chars), photoURL URL input, isPublic toggle switch. View mode shows bio + Public/Private badge. PATCH `/api/user/profile` schema extended with `bio` + `profileIsPublic`; `userRepository.update()` persists to `publicProfile` sub-object. |
+| **VC5 / D4** | Notifications page fully wired: tab filters (all/unread/orders/bids/system), NotifCard with mark-read/delete buttons, "Mark all read" button. `useMutation` via Tanstack Query. `UserNotificationsView` + `/notifications/[tab]` → redirect. |
+| **LL2** | My Reviews page + GET `/api/user/reviews` via `reviewRepository.findByUser()`. Tab filter (all/approved/pending/rejected), star display, status/verified badges, product link, helpful count. |
+| **LL3** | My Bids page + GET `/api/user/bids` via `bidRepository.findByUser()`. Tab filter (all/active/won/outbid/lost), bid cards with auction link + paise→₹ + winning/status badges. Read-only. |
+| **isPublic guard** | `/profile/[userId]` SSR checks `publicProfile.isPublic === false` → `notFound()`. Metadata also returns "Profile Not Found" for private profiles. |
+| **Smart sidebar CTA** | User layout: "Become a Store Owner" when no store, "Store Dashboard" when seller/admin — computed via `useMemo` from `user.role`. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. Appkit rebuilt (108 assets). |
+
+---
+
+## Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
 
 | Task | What was done |
 |------|--------------|
@@ -36,15 +51,15 @@
 
 ---
 
-## 🔜 NEXT — Session 101: User Account (78)
+## 🔜 NEXT — Session 79: Cart Integrity
 
 | Tasks | Goal |
 |-------|------|
-| D1+VC6 | Wishlist + wishlist view |
-| VC1 | User order detail (full render) |
-| VC3 | User profile edit |
-| VC5 | User notifications view |
-| LL1/LL2/LL3 | UserOrdersView / UserWishlistView / UserNotificationsView |
+| W1 | Cart stale validation — remove out-of-stock items on cart open |
+| W2 | Wishlist stale validation — highlight/remove unavailable products |
+| W3 | Cart product links — all 3 listing types (standard/auction/pre-order) |
+| W4 | CRUD UX standard — cart item row actions (delete, quantity stepper) |
+| R1 | CRUD table UX standard — shared DataTable row actions pattern |
 
 ---
 
