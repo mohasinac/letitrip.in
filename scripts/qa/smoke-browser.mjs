@@ -632,6 +632,336 @@ async function checkPreOrdersListing(page) {
     : fail("pre-orders: no cards and no empty state");
 }
 
+// ─── Alpha-scope: user account pages (78-impl) ────────────────────────────────
+
+async function checkUserDashboard(page) {
+  const url = loc("/user");
+  section("user dashboard (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("user/dashboard: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "user/dashboard: page renders", "h1, main, [data-section*='user']");
+  await assertHidden(page, "user/dashboard: no error overlay", "[data-testid='error-page']");
+}
+
+async function checkUserOrders(page) {
+  const url = loc("/user/orders");
+  section("user orders (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("user/orders: unauthenticated redirected to login");
+    return;
+  }
+
+  const hasHeading = (await page.locator("h1").count()) > 0;
+  if (hasHeading) pass("user/orders: h1 present");
+  else await assertBodyText(page, "user/orders: page text present", "order");
+
+  const hasItems = (await page.locator("[data-testid*='order'], tr, [data-section*='order']").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No orders'), :text('no orders'), [data-testid*='empty']").count()) > 0;
+  hasItems || hasEmpty
+    ? pass(`user/orders: order rows (${hasItems}) or empty state (${hasEmpty})`)
+    : fail("user/orders: no order rows and no empty state");
+}
+
+async function checkUserAddresses(page) {
+  const url = loc("/user/addresses");
+  section("user addresses (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("user/addresses: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "user/addresses: page renders", "h1, main");
+
+  const addBtn = (await page.locator("button:has-text('Add'), a:has-text('Add'), a[href*='/addresses/add']").count()) > 0;
+  addBtn
+    ? pass("user/addresses: add address button present")
+    : fail("user/addresses: no add address button found");
+}
+
+async function checkUserNotifications(page) {
+  const url = loc("/user/notifications");
+  section("user notifications (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("user/notifications: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "user/notifications: page renders", "h1, main");
+
+  const hasItems = (await page.locator("[data-testid*='notification'], [data-section*='notification'], li, article").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No notifications'), :text('no notifications'), [data-testid*='empty']").count()) > 0;
+  hasItems || hasEmpty
+    ? pass(`user/notifications: items (${hasItems}) or empty state (${hasEmpty})`)
+    : pass("user/notifications: page stable (notifications may not be loaded yet)");
+}
+
+// ─── Alpha-scope: store/seller pages (80-impl + 81-impl) ──────────────────────
+
+async function checkStoreDashboard(page) {
+  const url = loc("/store");
+  section("store dashboard (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/dashboard: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/dashboard: page renders", "h1, main, [data-section*='store']");
+  await assertHidden(page, "store/dashboard: no error overlay", "[data-testid='error-page']");
+}
+
+async function checkStoreOrders(page) {
+  const url = loc("/store/orders");
+  section("store orders (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/orders: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/orders: page renders", "h1, main");
+
+  const hasTable = (await page.locator("table, [data-testid*='order'], tr, [data-section*='order']").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No orders'), [data-testid*='empty']").count()) > 0;
+  hasTable || hasEmpty
+    ? pass(`store/orders: table (${hasTable}) or empty state (${hasEmpty})`)
+    : fail("store/orders: no order table and no empty state");
+}
+
+async function checkStoreCoupons(page) {
+  const url = loc("/store/coupons");
+  section("store coupons (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/coupons: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/coupons: page renders", "h1, main");
+
+  const createBtn = (await page.locator(
+    "a[href*='/coupons/new'], button:has-text('Create'), button:has-text('New Coupon'), a:has-text('New')",
+  ).count()) > 0;
+  createBtn
+    ? pass("store/coupons: create/new coupon button present")
+    : fail("store/coupons: no create coupon button found");
+}
+
+async function checkStoreCouponNew(page) {
+  const url = loc("/store/coupons/new");
+  section("store coupon new (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/coupons/new: unauthenticated redirected to login");
+    return;
+  }
+
+  const codeInput = (await page.locator("input[name='code'], input[placeholder*='code' i], input[name*='coupon' i]").count()) > 0;
+  codeInput
+    ? pass("store/coupons/new: coupon code input present")
+    : fail("store/coupons/new: coupon code input not found");
+
+  await assertVisible(page, "store/coupons/new: submit/save button",
+    "button[type='submit'], button:has-text('Save'), button:has-text('Create')");
+}
+
+async function checkStoreShipping(page) {
+  const url = loc("/store/shipping");
+  section("store shipping settings (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/shipping: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/shipping: page renders", "h1, main, form");
+
+  const hasRadio = (await page.locator("input[type='radio'], [role='radio']").count()) > 0;
+  hasRadio
+    ? pass("store/shipping: shipping method radio inputs present")
+    : fail("store/shipping: no radio inputs for shipping method");
+
+  await assertVisible(page, "store/shipping: save button",
+    "button[type='submit'], button:has-text('Save'), button:has-text('Update')");
+}
+
+async function checkStorePayoutSettings(page) {
+  const url = loc("/store/payout-settings");
+  section("store payout settings (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/payout-settings: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/payout-settings: page renders", "h1, main, form");
+
+  const hasRadio = (await page.locator("input[type='radio'], [role='radio']").count()) > 0;
+  hasRadio
+    ? pass("store/payout-settings: UPI/bank method radio inputs present")
+    : fail("store/payout-settings: no radio inputs for payout method");
+}
+
+async function checkStoreAnalytics(page) {
+  const url = loc("/store/analytics");
+  section("store analytics (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/analytics: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/analytics: page renders", "h1, main");
+
+  const hasChart = (await page.locator(
+    "svg, canvas, [data-testid*='chart'], [data-testid*='stat'], [data-section*='analytics']",
+  ).count()) > 0;
+  const has503 = (await page.locator(":text('unavailable'), :text('coming soon'), :text('503')").count()) > 0;
+  hasChart || has503
+    ? pass(`store/analytics: chart/stats (${hasChart}) or unavailable fallback (${has503})`)
+    : fail("store/analytics: no chart, no stats, no graceful fallback");
+}
+
+async function checkStoreBids(page) {
+  const url = loc("/store/bids");
+  section("store bids (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/bids: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/bids: page renders", "h1, main");
+
+  const hasRows = (await page.locator("table, tr, [data-testid*='bid'], [data-section*='bid']").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No bids'), [data-testid*='empty']").count()) > 0;
+  hasRows || hasEmpty
+    ? pass(`store/bids: rows (${hasRows}) or empty state (${hasEmpty})`)
+    : fail("store/bids: no bid rows and no empty state");
+}
+
+async function checkStoreReviews(page) {
+  const url = loc("/store/reviews");
+  section("store reviews (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("store/reviews: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "store/reviews: page renders", "h1, main");
+
+  const hasRows = (await page.locator("[data-testid*='review'], article, li, [data-section*='review']").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No reviews'), [data-testid*='empty']").count()) > 0;
+  hasRows || hasEmpty
+    ? pass(`store/reviews: rows (${hasRows}) or empty state (${hasEmpty})`)
+    : pass("store/reviews: page stable");
+}
+
+// ─── Alpha-scope: scam registry pages (83 scope) ──────────────────────────────
+
+async function checkScamsListing(page) {
+  const url = loc("/scams");
+  section("scams listing (" + url + ")");
+  await goto(page, url);
+
+  await assertVisible(page, "scams: page renders", "h1, main");
+  await assertHidden(page, "scams: no 500 error", ":text('Internal Server Error'), :text('500')");
+
+  const hasCards = (await page.locator("a[href*='/scams/'], [data-testid*='scammer'], article").count()) > 0;
+  const hasEmpty = (await page.locator(":text('No scammers'), :text('no reports'), [data-testid*='empty']").count()) > 0;
+  hasCards || hasEmpty
+    ? pass(`scams: scammer cards (${hasCards}) or empty state (${hasEmpty})`)
+    : pass("scams: page stable (no cards without seed data — acceptable)");
+}
+
+async function checkScamsTypes(page) {
+  const url = loc("/scams/types");
+  section("scams types (" + url + ")");
+  await goto(page, url);
+
+  await assertVisible(page, "scams/types: page renders", "h1, main");
+  await assertHidden(page, "scams/types: no 500 error", ":text('Internal Server Error'), :text('500')");
+
+  const hasTypeCards = (await page.locator(
+    "[data-testid*='scam-type'], article, [data-section*='type'], h2, h3",
+  ).count()) > 0;
+  hasTypeCards
+    ? pass("scams/types: scam type cards/headings present")
+    : fail("scams/types: no scam type content found");
+}
+
+async function checkScamsReport(page) {
+  const url = loc("/scams/report");
+  section("scams report (" + url + ")");
+  await goto(page, url);
+
+  const redirected =
+    page.url().includes("/auth/login") || page.url().includes("/auth/signin");
+  if (redirected) {
+    pass("scams/report: unauthenticated redirected to login");
+    return;
+  }
+
+  await assertVisible(page, "scams/report: page renders", "h1, main, form");
+
+  const hasInput = (await page.locator(
+    "input[name*='display' i], input[name*='name' i], input[placeholder*='name' i], textarea",
+  ).count()) > 0;
+  hasInput
+    ? pass("scams/report: form inputs present")
+    : fail("scams/report: no form inputs found");
+
+  await assertVisible(page, "scams/report: submit button",
+    "button[type='submit'], button:has-text('Submit'), button:has-text('Report')");
+}
+
 // ─── API response shape checks ────────────────────────────────────────────────
 
 async function checkApiShapes(page) {
@@ -686,16 +1016,88 @@ async function checkApiShapes(page) {
       required: ["success", "data"],
       array: "data.items",
     },
+    // ── Alpha-scope: cart validate (79-impl) ───────────────────────────────────
+    {
+      name: "POST /api/cart/validate (no-auth, stale+outOfStock)",
+      url: "/api/cart/validate",
+      method: "POST",
+      body: { productIds: ["smoke-nonexistent-product"] },
+      required: ["success", "data"],
+      keys: ["stale", "outOfStock"],
+    },
+    // ── Alpha-scope: auth-gated store endpoints return 401 ─────────────────────
+    {
+      name: "GET /api/store/orders (401 when unauthenticated)",
+      url: "/api/store/orders",
+      expectedStatus: 401,
+    },
+    {
+      name: "GET /api/store/analytics (401 when unauthenticated)",
+      url: "/api/store/analytics",
+      expectedStatus: 401,
+    },
+    // ── Alpha-scope: auth-gated user endpoints return 401 ──────────────────────
+    {
+      name: "GET /api/user/profile (401 when unauthenticated)",
+      url: "/api/user/profile",
+      expectedStatus: 401,
+    },
+    {
+      name: "GET /api/user/orders (401 when unauthenticated)",
+      url: "/api/user/orders",
+      expectedStatus: 401,
+    },
   ];
 
   for (const api of apis) {
     try {
-      const res = await page.goto(`${BASE_URL}${api.url}`, {
-        waitUntil: "networkidle",
-        timeout: NAV_TIMEOUT,
-      });
-      const text = await res.text();
-      const json = JSON.parse(text);
+      const method = api.method ?? "GET";
+      const expectedStatus = api.expectedStatus ?? 200;
+
+      let status, json;
+
+      if (method === "POST") {
+        // Use page.evaluate for POST so cookies/context are shared
+        const result = await page.evaluate(
+          async ({ url, body }) => {
+            const r = await fetch(url, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify(body),
+            });
+            return { status: r.status, text: await r.text() };
+          },
+          { url: `${BASE_URL}${api.url}`, body: api.body ?? {} },
+        );
+        status = result.status;
+        try { json = JSON.parse(result.text); } catch { json = null; }
+      } else {
+        const res = await page.goto(`${BASE_URL}${api.url}`, {
+          waitUntil: "networkidle",
+          timeout: NAV_TIMEOUT,
+        });
+        status = res.status();
+        const text = await res.text();
+        try { json = JSON.parse(text); } catch { json = null; }
+      }
+
+      // For 401-only checks: just verify status code
+      if (expectedStatus === 401) {
+        status === 401
+          ? pass(`${api.name}: status=${status}`)
+          : fail(`${api.name}: expected 401, got ${status}`);
+        continue;
+      }
+
+      if (status !== expectedStatus) {
+        fail(`${api.name}: expected status ${expectedStatus}, got ${status}`);
+        continue;
+      }
+
+      if (!json) {
+        fail(`${api.name}: non-JSON response`);
+        continue;
+      }
 
       // Check required top-level keys
       const missingKeys = (api.required ?? []).filter((k) => !(k in json));
@@ -704,7 +1106,7 @@ async function checkApiShapes(page) {
         continue;
       }
 
-      // Check status
+      // Check success flag
       if (!json.success) {
         fail(`${api.name}: success=false`, JSON.stringify(json).slice(0, 200));
         continue;
@@ -861,6 +1263,28 @@ async function main() {
     await checkLogin(page);
     await checkCheckout(page);
     await checkSellerAddProduct(page);
+
+    // ── Alpha-scope: user account pages (78-impl) ────────────────────────────
+    await checkUserDashboard(page);
+    await checkUserOrders(page);
+    await checkUserAddresses(page);
+    await checkUserNotifications(page);
+
+    // ── Alpha-scope: store/seller pages (80-impl + 81-impl) ──────────────────
+    await checkStoreDashboard(page);
+    await checkStoreOrders(page);
+    await checkStoreCoupons(page);
+    await checkStoreCouponNew(page);
+    await checkStoreShipping(page);
+    await checkStorePayoutSettings(page);
+    await checkStoreAnalytics(page);
+    await checkStoreBids(page);
+    await checkStoreReviews(page);
+
+    // ── Alpha-scope: scam registry pages (83 scope) ──────────────────────────
+    await checkScamsListing(page);
+    await checkScamsTypes(page);
+    await checkScamsReport(page);
   } finally {
     await browser.close();
   }

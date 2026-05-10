@@ -326,6 +326,7 @@ async function runPageSmoke(baseUrl) {
 
 async function runApiSmoke(baseUrl) {
   const endpoints = [
+    // ── Public listing APIs ────────────────────────────────────────────────────
     { method: "GET", path: "/api/products", expected: [200] },
     { method: "GET", path: "/api/blog", expected: [200] },
     { method: "GET", path: "/api/categories", expected: [200] },
@@ -334,13 +335,38 @@ async function runApiSmoke(baseUrl) {
     { method: "GET", path: "/api/events", expected: [200] },
     { method: "GET", path: "/api/stores", expected: [200] },
     { method: "GET", path: "/api/pre-orders", expected: [200] },
-    { method: "GET", path: "/api/admin/users", expected: [401] },
     { method: "POST", path: "/api/contact", expected: [200], body: {
       name: "Smoke Runner",
       email: "smoke@example.com",
       subject: "Smoke API",
       message: "Automated API smoke test message.",
     } },
+    // ── Auth-gated: admin ──────────────────────────────────────────────────────
+    { method: "GET", path: "/api/admin/users", expected: [401] },
+    // ── Auth-gated: user account (78-impl alpha scope) ─────────────────────────
+    { method: "GET", path: "/api/user/profile", expected: [401] },
+    { method: "GET", path: "/api/user/orders", expected: [401] },
+    { method: "GET", path: "/api/user/addresses", expected: [401] },
+    { method: "GET", path: "/api/user/wishlist", expected: [401] },
+    { method: "GET", path: "/api/user/notifications", expected: [401] },
+    { method: "GET", path: "/api/user/sessions", expected: [401] },
+    { method: "GET", path: "/api/user/bids", expected: [401] },
+    { method: "GET", path: "/api/user/reviews", expected: [401] },
+    // ── Auth-gated: store/seller (80-impl + 81-impl alpha scope) ───────────────
+    { method: "GET", path: "/api/store/orders", expected: [401] },
+    { method: "GET", path: "/api/store/coupons", expected: [401] },
+    { method: "GET", path: "/api/store/addresses", expected: [401] },
+    { method: "GET", path: "/api/store/bids", expected: [401] },
+    { method: "GET", path: "/api/store/reviews", expected: [401] },
+    { method: "GET", path: "/api/store/payouts", expected: [401] },
+    { method: "GET", path: "/api/store/analytics", expected: [401] },
+    { method: "GET", path: "/api/store/shipping", expected: [401] },
+    { method: "GET", path: "/api/store/payout-settings", expected: [401] },
+    { method: "GET", path: "/api/store/products", expected: [401] },
+    // ── Auth-gated: scam report (83 alpha scope) ──────────────────────────────
+    { method: "POST", path: "/api/scams/reports", expected: [401], body: {} },
+    // ── Auth-gated: wishlist validate (79-impl) ────────────────────────────────
+    { method: "POST", path: "/api/user/wishlist/validate", expected: [401], body: {} },
   ];
 
   const results = [];
@@ -556,6 +582,37 @@ async function runApiSmoke(baseUrl) {
     results.push({
       type: "api",
       name: "POST /api/bids (try place bid)",
+      ok: false,
+      detail: String(error),
+    });
+  }
+
+  // ── Cart validate (79-impl: no auth, returns stale/outOfStock arrays) ─────────
+  try {
+    const validateAttempt = await fetch(`${baseUrl}/api/cart/validate`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        productIds: [productId ?? "smoke-nonexistent-product"],
+      }),
+    });
+    const validateText = await validateAttempt.text();
+    const validateJson = safeJsonParse(validateText);
+    const hasShape =
+      validateJson.ok &&
+      validateJson.value?.data !== undefined &&
+      Array.isArray(validateJson.value.data?.stale) &&
+      Array.isArray(validateJson.value.data?.outOfStock);
+    results.push({
+      type: "api",
+      name: "POST /api/cart/validate (no-auth, stale+outOfStock shape)",
+      ok: validateAttempt.status === 200 && hasShape,
+      detail: `status=${validateAttempt.status}, hasShape=${hasShape}`,
+    });
+  } catch (error) {
+    results.push({
+      type: "api",
+      name: "POST /api/cart/validate (no-auth, stale+outOfStock shape)",
       ok: false,
       detail: String(error),
     });
