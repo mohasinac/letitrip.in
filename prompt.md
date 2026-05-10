@@ -32,6 +32,19 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Session 87 ✅ 2026-05-10 (Social Feed S1–S5)
+
+| Task | What was done |
+|------|--------------|
+| **S1** | `GET /api/social-feed/route.ts` exists. Fetchers in `appkit/src/features/homepage/lib/social-feed-fetcher.ts` — 4 platforms (Instagram/Facebook/TikTok/DeviantArt), typed `SocialPost`, cache headers. Exported from `server.ts`. ✅ |
+| **S2** | `SocialFeedSection.tsx` (async RSC, 3 layouts, error/empty states) + `SocialPostCard.tsx` (thumbnail, platform badge, video overlay, hover stats). Wired in `section-renderer.tsx`. ✅ |
+| **S3** | `renderSocialFeedBuilder()` added to `AdminSectionsView.tsx` — platform Select, handle Input, postType Select, count Input (1–12), layout Select, showCaption/showStats Checkboxes, title/subtitle. Wired in `renderTypedBuilder()`. ✅ |
+| **S4** | 7 social credential state vars + load + mutation + UI in `AdminSiteSettingsView.tsx`: Meta (Page Access Token + ID), TikTok (Client Key/Secret/Access Token), DeviantArt (Client ID/Secret) — all MaskedInput. ✅ |
+| **S5** | Disabled instagram social-feed section pre-exists in `homepage-sections-seed-data.ts`. ✅ |
+| **appkit dist** | Built. No new TS errors. Pre-existing chart `dynamic()` errors unchanged. |
+
+---
+
 ## ⚡ LAST COMPLETED — Session 86 ✅ 2026-05-10 (Grouped Listings GP1→GP2)
 
 | Task | What was done |
@@ -84,12 +97,13 @@
 
 ---
 
-## 🔜 NEXT — Session 87 ⏳ (Social Feed)
+## 🔜 NEXT — Session 88 ⏳ (Search + Routes)
 
-### Session 87 — Social Feed
+### Session 88 — Search + Routes
 | Tasks | Goal |
 |-------|------|
-| S4, S1, S2, S3, S5 | Credentials → API fetcher → section component → admin builder → seed |
+| RC4 | Route ambiguity audit + CRUD route pattern standardisation |
+| RC3 | Button-vs-Link full sweep (asChild pattern) |
 
 ### Session 88 — Search + Routes (already mostly done — SR1/SR2/SR3/RC1/RC2 ✅)
 | Tasks | Goal |

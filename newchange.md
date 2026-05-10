@@ -33,6 +33,29 @@
 
 ---
 
+# Session 87 — 2026-05-10 (Social Feed S1–S5)
+
+## Scope
+Social Feed feature complete: API route + fetchers (S1), SocialFeedSection RSC + SocialPostCard (S2), admin sections builder UI (S3), VA8 credential fields for Meta/TikTok/DeviantArt (S4), seed data pre-existing (S5). tsc: no new errors (pre-existing chart dynamic() errors in analytics files are unchanged). appkit dist rebuilt.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/admin/components/AdminSectionsView.tsx` | Added `renderSocialFeedBuilder()` function; wired in `renderTypedBuilder()` as `case "social-feed"` |
+| `appkit/src/features/admin/components/AdminSiteSettingsView.tsx` | Added 7 social credential state vars (`metaPageAccessToken`, `metaPageId`, `tiktokClientKey`, `tiktokClientSecret`, `tiktokAccessToken`, `deviantartClientId`, `deviantartClientSecret`); load from `credentialsMasked`; include in `integrationsMutation`; 3 UI groups in ⑧ Integrations tab |
+| `crud-tracker.md` | S1–S5 marked ✅; Session 87 row marked Done |
+| `newchange.md` | This entry |
+| `prompt.md` | LAST COMPLETED updated to Session 87; NEXT updated to Session 88 |
+
+## Deferred Items
+
+| Date | Task | What was deferred | Fix target |
+|------|------|-------------------|-----------|
+| 2026-05-10 | Analytics chart tsc errors | `AdminAnalyticsCharts.tsx` + `SellerRevenueChart.tsx` have 12 pre-existing `dynamic()` type errors from next/dynamic + chart library generic mismatch — pre-date Session 87 | Deferred — separate chart audit task |
+
+---
+
 # Session 86 — 2026-05-10 (Grouped Listings GP1+GP2)
 
 ## Scope
