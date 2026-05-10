@@ -1,7 +1,6 @@
 "use client";
 import { use } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   useOrder,
   OrderDetailView,
@@ -10,7 +9,6 @@ import {
   Text,
   Row,
   Stack,
-  Button,
 } from "@mohasinac/appkit/client";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -31,7 +29,6 @@ function paise(n: number, currency = "INR") {
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const router = useRouter();
   const { order, isLoading } = useOrder(id, {
     endpoint: `/api/user/orders/${id}`,
   });
@@ -200,14 +197,12 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               </Link>
             )}
             {canCancel && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push(`/user/orders/${order.id}/cancel`)}
-                className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-900 dark:hover:bg-red-950"
+              <Link
+                href={String(ROUTES.USER.ORDER_CANCEL(order.id))}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
               >
                 Cancel Order
-              </Button>
+              </Link>
             )}
           </Row>
         );
