@@ -49,6 +49,18 @@ SCAM3 remaining pieces + SCAM5 form + API.
 ### Deferred (SCAM3)
 - Subcollection live data (incidents subcollection API, live comments, live related scammers) — requires backend subcollection queries. Deferred to post-SCAM3.
 
+### SCAM5 — ScamReportForm actual fields + POST /api/scams/reports
+- `src/app/[locale]/scams/report/page.tsx` — replaced EmptyState placeholder with full 3-section form: (1) Scammer identity: displayName + TagInput for phones/UPIs/emails; (2) What happened: scamType select with live howItHappens helper below, scamPlatform select, amountLost, itemInvolved, description textarea (min 100 chars + char counter); (3) Privacy: reportedByAnon checkbox + required agreement checkbox. Submit → POST /api/scams/reports → redirect to registry on success.
+- `src/app/api/scams/reports/route.ts` — new POST route; auth required; zod schema validates displayName/scamType/scamPlatform/description (min 100); parses comma-sep phones/upiIds/emails; converts ₹ amountLost to paise; creates pending_review doc via `scammerRepository.create()`.
+- `src/constants/api.ts` — added `API_ROUTES.SCAMS.REPORTS = "/api/scams/reports"`.
+- `appkit/src/index.ts` + `dist/index.d.ts` + `dist/index.js` — exports `scammerRepository` from repositories/index.
+
+### Deferred (SCAM5)
+- Evidence file upload to Firebase Storage — deferred to I6/post-alpha. Simple note shown in form.
+- Soft ban check (`report_scammers` ban) — deferred.
+- Rate limit enforcement (max pending reports per user) — deferred.
+- Suggested scammers (duplicate detection via `findByContactField`) — deferred to SCAM5 followup.
+
 ---
 
 # P27 Payouts Expansion — 2026-05-10
