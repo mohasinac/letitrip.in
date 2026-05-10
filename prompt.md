@@ -7,19 +7,19 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 90-colors (2026-05-11)
+### ✅ Last completed — Session 91 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| X7a | Defined zinc/slate/emerald/amber/rose/sky/purple/teal/green palettes (50–950) + semantic tokens + social brand tokens in `appkit/src/tokens/tokens.css`. |
-| X7b | Replaced all hex violations across 77 CSS files (all `*.style.css` in appkit/src/ui/). Intentional exceptions: indigo stat-card in Card, pokéball red in Spinner, cobalt-blue in RichText links. One file per commit. |
+| X8a | Added z-below/base/raised/tooltip + input/avatar size tokens + grid-min-card tokens to `tokens.css`. Updated both `tailwind.config.js` with named z-index tokens (modal/toast/overlay/tooltip/below/base/raised). |
+| X8b | Tokenized 26 CSS files: z-index → named vars, min-height 44px/40px → input-lg/md, font-size 10px → text-2xs, line-height/letter-spacing → leading/tracking vars, elevation box-shadows → shadow vars, grid minmax → grid-min-card vars. |
 
-### 🔄 Current — Session 91 (next)
+### 🔄 Current — Session 92 (next)
 
 | Task | Status | Notes |
 |------|--------|-------|
-| X8a | ⏳ pending | Extend Tailwind config + appkit tokens for layout utilities (z-index, spacing, breakpoints) |
-| X8b | ⏳ pending | Replace all hardcoded layout/utility violations with token references |
+| AX2 | ⏳ pending | `?panel=create/edit` URL deep-links for admin panels |
+| AX3 | ⏳ pending | `FormActionBar` sticky save/cancel bars |
 
 ### 🔜 Next sessions (safe-first order)
 
@@ -42,7 +42,7 @@
 ## PLAN SNAPSHOT
 
 ```
-110 tasks ✅ done · 287 remaining · 397 total (as of Session 90-colors done)
+112 tasks ✅ done · 285 remaining · 397 total (as of Session 91 done)
 
 PHASE                   SESSIONS     STATUS
 ──────────────────────────────────────────────────
@@ -70,7 +70,7 @@ FAQ + WA redesign       89b          ✅  FAQSection, WhatsApp, @types/react
 ────────── 🚀 ALPHA on Vercel prod 2026-05-10 ──────────
 Action constants        90           ✅  AX1 complete (constants+hook+store+migration)
 Color tokens            90-colors    ✅  X7a+X7b complete (77 CSS files tokenized)
-Layout tokens           91           ⏳
+Layout tokens           91           ✅  X8a+X8b complete (tokens + 26 CSS files)
 Action URLs + bars      92           ⏳
 Extended sections       93           ⏳
 Feature icons           94           ⏳

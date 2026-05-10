@@ -33,6 +33,28 @@
 
 ---
 
+### Session 91 — Layout tokens (X8a + X8b) — 2026-05-11
+
+**Scope**: Layout utility tokenization — z-index, component sizes, grid mins, typography, shadows
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/tokens/tokens.css` | Added z-below/base/raised/tooltip; component size tokens (input-sm/md/lg, avatar-xs/sm/md/lg); grid-min-card tokens (xs/sm/default/lg) |
+| `tailwind.config.js` (root) | Named z-index tokens: below/base/raised/overlay/modal/toast/tooltip replacing raw z-60/z-70 |
+| `appkit/tailwind.config.js` | Same z-index named tokens |
+| 26 `*.style.css` files | z-index→var(), min-height→size tokens, font-size 10px→text-2xs, line-height/letter-spacing→leading/tracking vars, box-shadow elevation→shadow vars, grid minmax→grid-min-card vars |
+
+**Deferred / skipped**:
+
+| What | Reason |
+|------|--------|
+| `@media (min-width: Xpx)` → `@screen md` | Raw CSS files not processed by Tailwind PostCSS at build time; `@screen` would generate invalid CSS |
+| z-20, z-39, z-100, z-9998, z-9999 | No matching token in the defined scale |
+| Focus-ring box-shadows (`0 0 0 2px rgba(...)`) | Context-specific brand colors — not elevation shadows |
+| Non-exact box-shadow matches | `0 25px 50px`, `0 20px 45px` etc. don't match standard sm/md/lg/xl shadow tokens |
+
+---
+
 # Session 90-colors — 2026-05-11 (X7a + X7b complete)
 
 ## Scope
