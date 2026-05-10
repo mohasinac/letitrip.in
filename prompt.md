@@ -8,21 +8,21 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 80-schema ✅ 2026-05-10 (RBAC + BAN + SCAM Foundation Schemas)
+## ⚡ LAST COMPLETED — Session 82 ✅ 2026-05-10 (SEO & Lighthouse — SSR Hydration + JSON-LD + Core Web Vitals)
 
 | Task | What was done |
 |------|--------------|
-| **RBAC1 schema** | `appkit/src/features/auth/permissions/constants.ts` — 85+ `Permission` strings, 18 `EmployeeGroup` presets, `PERMISSION_GROUPS` record, 37-entry `ROUTE_PERMISSION_MAP`, 18 `StoreCapability` values, helper fns `hasPermission/hasAnyPermission/hasAllPermissions/hasCapability`. |
-| **UserRole + Zod** | Added `"employee"` to `UserRole` union in `auth/types/index.ts`. Fixed pre-existing Zod mismatch (`"customer","superadmin"` → `"user","moderator","employee"`). |
-| **UserDocument fields** | Added `permissions?`, `permissionGroup?`, `softBans?`, `hardBanReason?`, `hardBannedAt?`, `hardBannedBy?`, `scamAwarenessAcknowledgedAt?`. New `UserSoftBan` interface. |
-| **StoreDocument fields** | Added `capabilities?: StoreCapability[]` + `customCommissionRate?: number`. Re-exported `StoreCapability` from `stores/schemas/firestore.ts`. |
-| **BAN1 schema** | `appkit/src/features/support/schemas/firestore.ts` — full `SupportTicketDocument`: 8 categories, 5 statuses, 4 priorities, threaded `TicketMessage[]`, limit constants. |
-| **SCAM1 constants** | `appkit/src/features/scams/constants/scam-types.ts` — 27 scam types across 6 categories, each with `howItHappens` + `howToAvoid[]`. |
-| **SCAM1 schema** | `appkit/src/features/scams/schemas/firestore.ts` — `ScammerDocument` with SEO-first plaintext phones/UPIs/emails, `ScamPlatform`, `SocialPlatform`, evidence URLs, status workflow. |
+| **SEO1** | Homepage section SSR hydration — all 8 section hooks + components accept `initialData?`/`initialItems?`; `MarketplaceHomepageView` runs `Promise.all` server-fetches for enabled sections only; `section-renderer.tsx` threads data via `SectionData` interface. Carousels now have content in initial HTML for crawlers. |
+| **SEO2** | JSON-LD structured data on product, auction, blog, and FAQ pages (`productJsonLd`, `auctionJsonLd`, `blogPostJsonLd`, `faqJsonLd`, `breadcrumbJsonLd`). |
+| **SEO3** | `next/image` in product grid (`MediaImage` replaces `background-image` CSS), category section, and brands section — WebP/AVIF, srcset, LCP eligible. |
+| **SEO4** | `metadata` exports added to 14 static content/help pages (sellers, contact, help, fees, how-auctions-work, how-checkout-works, how-offers-work, how-orders-work, how-payouts-work, how-pre-orders-work, how-reviews-work, seller-guide, security, track). |
+| **SEO5** | `robots: { index: false }` on paginated category pages (page > 1) and all search result pages. |
+| **SEO6** | `<link rel="preconnect">` + `<link rel="dns-prefetch">` for Firebase Storage, Google Fonts, and GTM in root `layout.tsx`. |
+| **SEO7** | Canonical URL logic already enforced by category + search page redirect guards. |
 | **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
-| **tracker** | `crud-tracker.md`: 3 new tiers (RBAC 10 tasks, BAN 9 tasks, SCAM 9 tasks), total 302→330 tasks. |
+| **tracker** | SEO1–SEO7 marked ✅ in `crud-tracker.md`. |
 
-> Prior sessions done: 80-plan (EX/YT/AX/FI/BK feature planning), 81 (sellerId→storeId migration), 80-arch (ARCH3 + seed QA), 79 (FAQ expansion + live stats), 78 (carousel + section form builders), 77 (coupon abuse prevention), 76–76-content (public catalogue + About/Legal).
+> Prior sessions done: 80-schema (RBAC+BAN+SCAM schemas), 80-plan (EX/YT/AX/FI/BK planning), 81 (sellerId→storeId migration), 80-arch (ARCH3 + seed QA), 79 (FAQ expansion + live stats), 78 (carousel + section form builders), 77 (coupon abuse prevention).
 
 ---
 

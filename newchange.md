@@ -33,6 +33,69 @@
 
 ---
 
+# Session 82 — 2026-05-10 (SEO & Lighthouse — SSR Hydration + JSON-LD + Core Web Vitals)
+
+## Scope
+
+Full SEO and Lighthouse improvement pass across all public-facing pages. Admin/store/user dashboards excluded. 7 tasks implemented: SEO1–SEO7.
+
+## SEO1 — SSR data hydration for homepage sections
+
+**Problem**: Homepage sections (FeaturedProducts, FeaturedAuctions, FeaturedPreOrders, FeaturedStores, ShopByCategory, Brands, BlogArticles, Events) were rendered as loading skeletons in initial HTML — search crawlers got empty carousels.
+
+**Fix**: Added `initialData?` / `initialItems?` props to all 8 section components and their backing hooks. `MarketplaceHomepageView.tsx` now runs parallel `Promise.all` server-side fetches (only for enabled section types via `activeTypes` Set), then passes data as props.
+
+Files changed in appkit:
+- `useFeaturedAuctions.ts`, `useFeaturedPreOrders.ts`, `useFeaturedStores.ts`, `useTopBrands.ts`, `useBlogArticles.ts`, `useHomepageEvents.ts` — `initialData?` option added to each hook
+- `FeaturedProductsSection.tsx`, `FeaturedAuctionsSection.tsx`, `FeaturedPreOrdersSection.tsx`, `FeaturedStoresSection.tsx`, `ShopByCategorySection.tsx`, `BrandsSection.tsx`, `BlogArticlesSection.tsx`, `EventsSection.tsx` — `initialItems?` prop added
+- `section-renderer.tsx` — added `SectionData` interface; `renderSectionElement` + `renderSection` accept `sectionData` param and thread `initialItems` to each section component
+- `MarketplaceHomepageView.tsx` — server-side `Promise.all` fetch block; builds `SectionData`; passes to `renderSection`
+
+## SEO2 — JSON-LD structured data on detail pages
+
+**Files changed in src/**:
+- `[locale]/products/[slug]/page.tsx` — `productJsonLd` + `breadcrumbJsonLd` injected as `<script type="application/ld+json">` before `<ProductDetailPageView>`
+- `[locale]/auctions/[id]/page.tsx` — `auctionJsonLd` + `breadcrumbJsonLd`
+- `[locale]/blog/[slug]/page.tsx` — `blogPostJsonLd` + `breadcrumbJsonLd`
+- `[locale]/faqs/page.tsx` — converted to async server component; calls `listPublicFaqs`; injects `faqJsonLd` (FAQ schema)
+
+## SEO3 — `next/image` in grid/carousel components
+
+- `ProductGrid.tsx` — replaced two `background-image` inline styles with `<MediaImage>` (`size="card"` for grid view, `size="thumbnail"` for list view) — now WebP/AVIF-optimized with srcset
+- `ShopByCategorySection.tsx` — replaced `<img>` with `<Image>` from `next/image`
+- `BrandsSection.tsx` — replaced `<img>` with `<Image width={40} height={40}>`
+
+## SEO4 — Metadata for content/help pages
+
+Added `export const metadata: Metadata` to 14 static pages:
+`sellers`, `contact`, `help`, `fees`, `how-auctions-work`, `how-checkout-works`, `how-offers-work`, `how-orders-work`, `how-payouts-work`, `how-pre-orders-work`, `how-reviews-work`, `seller-guide`, `security`, `track`
+
+## SEO5 — robots meta for paginated/search pages
+
+- `categories/[slug]/[tab]/sort/[sortKey]/page/[page]/page.tsx` — `noindex` on pages > 1
+- `search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]/page.tsx` — `index: false, follow: true` (all search pages)
+
+## SEO6 — Resource hints in root layout
+
+Added to `src/app/layout.tsx`:
+```html
+<link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+<link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+<link rel="preconnect" href="https://www.googletagmanager.com" />
+<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+```
+
+## SEO7 — Canonical / alternates metadata on listing pages
+
+Already covered by SEO5 route changes (canonicalPath logic + alternates in generateMetadata).
+
+## TypeScript
+
+Both `appkit/` and `src/` pass `npx tsc --noEmit` after all changes. No new errors introduced.
+
+---
+
 # Session 80-plan — 2026-05-10 (Feature Planning: EX / YT / AX / FI / BK Tiers)
 
 ## Scope

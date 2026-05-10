@@ -85,9 +85,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonicalPath = buildCanonicalPath(locale, query, normalizedTab, normalizedSortKey, pageNumber);
 
   return {
-    title: `Search - ${query}`,
-    description: `Search results for ${query}.`,
+    title: `"${query}" — Search Results | LetItRip`,
+    description: `Browse LetItRip listings matching "${query}" — collectibles, trading cards, figures, diecast and more.`,
     alternates: { canonical: canonicalPath },
+    robots: { index: false, follow: true },
   };
 }
 

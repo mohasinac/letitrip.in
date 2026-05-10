@@ -50,6 +50,7 @@ import {
   conversationsSeedData,
   sublistingCategoriesSeedData,
   groupedListingsSeedData,
+  scammersSeedData,
 } from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
@@ -77,6 +78,7 @@ import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
 import { SUBLISTING_CATEGORIES_COLLECTION } from "@mohasinac/appkit";
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
+import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -105,7 +107,8 @@ type CollectionName =
   | "conversations"
   | "sublistingCategories"
   | "groupedListings"
-  | "couponUsage";
+  | "couponUsage"
+  | "scammerProfiles";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -141,6 +144,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   conversations: CONVERSATIONS_COLLECTION,
   sublistingCategories: SUBLISTING_CATEGORIES_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
+  scammerProfiles: SCAMMER_COLLECTION,
 };
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
@@ -171,6 +175,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   conversations: conversationsSeedData,
   sublistingCategories: sublistingCategoriesSeedData,
   groupedListings: groupedListingsSeedData,
+  scammerProfiles: scammersSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([

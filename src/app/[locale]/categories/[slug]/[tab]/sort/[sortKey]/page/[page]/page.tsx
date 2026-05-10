@@ -66,11 +66,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 
   return {
-    title: `${formatSlug(slug)} - Categories`,
-    description: `Browse items in ${formatSlug(slug)} category.`,
+    title: normalizedPage > 1
+      ? `${formatSlug(slug)} — Page ${normalizedPage} | LetItRip`
+      : `${formatSlug(slug)} Collectibles | LetItRip`,
+    description: `Browse ${formatSlug(slug)} collectibles on LetItRip — India's largest marketplace for trading cards, figures, diecast and more.`,
     alternates: {
       canonical: canonicalPath,
     },
+    ...(normalizedPage > 1 && { robots: { index: false, follow: true } }),
   };
 }
 

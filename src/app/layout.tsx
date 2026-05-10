@@ -126,6 +126,12 @@ export default async function RootLayout({
       className={`min-h-full ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
     >
       <head>
+        {/* Preconnect to external origins used by media, fonts and analytics */}
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+        <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <script
           type="application/ld+json"
           suppressHydrationWarning

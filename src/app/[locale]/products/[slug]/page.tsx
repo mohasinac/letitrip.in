@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ProductDetailPageView, getProductById, productJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
 import { MakeOfferButton } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
-import { generateProductMetadata, LETITRIP_SEO } from "@/constants/seo.server";
+import { generateProductMetadata } from "@/constants/seo.server";
 
 export const revalidate = 60;
 

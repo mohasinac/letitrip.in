@@ -21,6 +21,7 @@
   - [Form Assignment Reference](#ux--form-assignment-reference)
 - **Architecture**
   - [Store Identity Model (ARCH2/ARCH5/ARCH8)](#architecture--store-identity-arch2arch5arch8--storeid-migration)
+  - [SEO & Lighthouse (SEO1–SEO7)](#architecture--seo--lighthouse-seo1seo7--session-82)
 - **Admin Area**
   - [Layout Shell](#admin--layout-shell)
   - [Dashboard](#admin--dashboard-)
@@ -5964,5 +5965,124 @@ item_authenticity_fraud   counterfeit_item, fake_grading_claim,
                           graded_case_tampering, sealed_product_repack
 logistics_fraud           empty_box_ship, fake_tracking_number,
                           return_swap_fraud
+```
+
+---
+
+## Architecture > SEO & Lighthouse (SEO1–SEO7 — Session 82)
+
+> SSR hydration pattern for homepage sections, JSON-LD placement, and image optimization.
+
+```
+HOMEPAGE SSR DATA FLOW (SEO1)
+═══════════════════════════════════════════════════════════════════════
+
+  Browser Request → Next.js RSC
+         │
+         ▼
+  MarketplaceHomepageView.tsx  ← Server Component (async)
+  ├─ fetch homepageSections from Firestore
+  ├─ build activeTypes = Set(orderedSections.map(s => s.type))
+  │
+  ├─ Promise.all (only for enabled section types):
+  │   ├─ getFeaturedProducts(12)      ← if activeTypes.has("products")
+  │   ├─ getFeaturedAuctions(12)      ← if activeTypes.has("auctions")
+  │   ├─ getFeaturedPreOrders(12)     ← if activeTypes.has("pre-orders")
+  │   ├─ listTopLevelCategories(12)   ← if activeTypes.has("categories")
+  │   ├─ listBrandCategories(12)      ← if activeTypes.has("brands")
+  │   ├─ listStores({ pageSize: 8 }) ← if activeTypes.has("stores")
+  │   ├─ getFeaturedBlogPosts(6)      ← if activeTypes.has("blog-articles")
+  │   └─ listPublicEvents({ pageSize: 6 }) ← if activeTypes.has("events")
+  │
+  ├─ builds SectionData { products, auctions, preOrders,
+  │                        categories, brands, stores, blog, events }
+  │
+  └─ passes to renderSection(section, sectionData)
+              │
+              ▼
+       section-renderer.tsx
+       renderSectionElement(section, sectionData):
+       ├─ "products"   → <FeaturedProductsSection initialItems={sectionData.products} />
+       ├─ "auctions"   → <FeaturedAuctionsSection initialItems={sectionData.auctions} />
+       ├─ "pre-orders" → <FeaturedPreOrdersSection initialItems={sectionData.preOrders} />
+       ├─ "categories" → <ShopByCategorySection initialItems={sectionData.categories} />
+       ├─ "brands"     → <BrandsSection initialItems={sectionData.brands} />
+       ├─ "stores"     → <FeaturedStoresSection initialItems={sectionData.stores} />
+       ├─ "blog-articles" → <BlogArticlesSection initialItems={sectionData.blog} />
+       └─ "events"     → <EventsSection initialItems={sectionData.events} />
+
+  Client hydration (React Query):
+  ├─ initialData already set → isLoading = false
+  ├─ content in initial HTML → crawlers see full data ✅
+  └─ staleTime = 60s → no refetch on mount for fresh data
+
+
+HOOK INITIALDATA PATTERN (per hook)
+═══════════════════════════════════════════════════════════════════════
+
+  useFeaturedAuctions(options?: { filterByBrand?, initialData?: ProductItem[] })
+  useFeaturedPreOrders(options?: { initialData?: ProductItem[] })
+  useFeaturedStores(limit, options?: { initialData?: StoreListItem[] })
+  useTopBrands(limit, options?: { initialData?: CategoryItem[] })
+  useHomepageEvents(limit, options?: { initialData?: EventItem[] })
+  useBlogArticles(options?: { initialPosts? }) → wraps in { posts, meta } shape
+
+  FeaturedProductsSection: wraps initialItems into ProductListResponse shape
+  { items, total, page, pageSize, totalPages, hasMore }
+
+
+JSON-LD PLACEMENT (SEO2)
+═══════════════════════════════════════════════════════════════════════
+
+  /products/[slug]/page.tsx
+  ├─ <script type="application/ld+json"> productJsonLd(...)    Schema: Product
+  └─ <script type="application/ld+json"> breadcrumbJsonLd(...) Schema: BreadcrumbList
+
+  /auctions/[id]/page.tsx
+  ├─ <script type="application/ld+json"> auctionJsonLd(...)
+  └─ <script type="application/ld+json"> breadcrumbJsonLd(...)
+
+  /blog/[slug]/page.tsx
+  ├─ <script type="application/ld+json"> blogPostJsonLd(...)   Schema: BlogPosting
+  └─ <script type="application/ld+json"> breadcrumbJsonLd(...)
+
+  /faqs/page.tsx (converted to async RSC)
+  └─ <script type="application/ld+json"> faqJsonLd(faqs)      Schema: FAQPage
+
+
+IMAGE OPTIMIZATION (SEO3)
+═══════════════════════════════════════════════════════════════════════
+
+  Before (no LCP eligibility):
+    <div style={{ backgroundImage: `url(${product.mainImage})` }} />
+
+  After (WebP/AVIF, srcset, LCP eligible):
+    ProductGrid  → <MediaImage src={product.mainImage} size="card|thumbnail" />
+    ShopByCategory → <Image src={cover} alt={name} fill />
+    BrandsSection  → <Image src={logo} width={40} height={40} />
+
+
+ROBOTS / CANONICAL RULES (SEO5)
+═══════════════════════════════════════════════════════════════════════
+
+  /categories/[slug]/[tab]/sort/[sortKey]/page/[page]
+  └─ page > 1 → robots: { index: false, follow: true }
+
+  /search/[searchSlug]/tab/[tab]/sort/[sortKey]/page/[page]
+  └─ always  → robots: { index: false, follow: true }
+
+  Canonical enforcement (redirect guard):
+    currentPath !== canonicalPath → redirect(canonicalPath)
+    Prevents duplicate content from non-normalized URLs
+
+
+RESOURCE HINTS (SEO6) — src/app/layout.tsx
+═══════════════════════════════════════════════════════════════════════
+
+  <link rel="preconnect"   href="https://firebasestorage.googleapis.com" />
+  <link rel="dns-prefetch" href="https://firebasestorage.googleapis.com" />
+  <link rel="preconnect"   href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+  <link rel="preconnect"   href="https://www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 ```
 
