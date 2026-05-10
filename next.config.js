@@ -35,6 +35,19 @@ const nextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "**" }, { protocol: "http", hostname: "**" }],
   },
   serverExternalPackages: SERVER_EXTERNAL,
+  // appkit uses (module as any).require("firebase-admin/database") — a pattern that intentionally
+  // escapes webpack's static analysis so the module is NOT added to the webpack module graph.
+  // Vercel's output file tracer therefore never sees this dependency and excludes
+  // lib/database/** from the Lambda bundle, causing a runtime "Cannot find module" error.
+  // outputFileTracingIncludes forces Vercel to copy these files for every API route.
+  experimental: {
+    outputFileTracingIncludes: {
+      "/api/**": [
+        "./node_modules/firebase-admin/lib/database/**",
+        "./node_modules/firebase-admin/lib/esm/database/**",
+      ],
+    },
+  },
   webpack(config, { isServer, webpack }) {
     if (isServer) {
       // serverExternalPackages only matches root node_modules/.
