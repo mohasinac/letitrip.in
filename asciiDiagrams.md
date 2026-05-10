@@ -4759,17 +4759,21 @@ Note: ShippingPolicyView has its own flat-key i18n structure (not sections array
 
 ---
 
-## Public > Scam Registry ⚠️ (list+profile done; /types pending)
+## Public > Scam Registry ✅ (Session 83 — all 3 routes + subcollection live data)
 
 ```
 Routes:
-  /scams          → ScamRegistryView (appkit, RSC, revalidate=120)
-  /scams/[id]     → ScamProfileView  (appkit, RSC, revalidate=300)
-  /scams/report   → ScamReportForm   (client, auth-gated)
+  /scams          → ScamRegistryView      (appkit, RSC, revalidate=120)
+  /scams/[id]     → ScamProfileView       (appkit, RSC, revalidate=300)
+  /scams/types    → /scams/types/page.tsx (RSC, static — 7 categories × 27 types)
+  /scams/report   → ScamReportForm        (client, auth-gated)
 
 Data:
-  listVerifiedScammers(searchParams) → ScammerRepository.listVerified(sieveModel)
-  getPublicScammerById(id)           → ScammerRepository.findById / findBySeoSlug + incrementViews
+  listVerifiedScammers(searchParams)  → ScammerRepository.listVerified(sieveModel)
+  getScammerProfilePageData(id)       → scammer + incidents[] + comments[] + relatedScammers[]
+    ├ scammerRepository.listPublicIncidents(id)   ← subcollection, status=="verified", limit 20
+    ├ scammerRepository.listPublicComments(id)    ← subcollection, isHidden==false, limit 30
+    └ scammerRepository.findManyById(relatedIds)  ← batch fetch, max 5
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  /scams — Scam Registry                                                      │
@@ -4801,29 +4805,101 @@ Data:
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  /scams/[id] — Scammer Profile                                               │
+│  /scams/[id] — Scammer Profile (Grid[twoThird])                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  BREADCRUMB — Home / Scam Registry / [Name]                                 │
+├──────────────────────────────────────────────────┬──────────────────────────┤
+│  LEFT column (2/3 width)                         │ RIGHT sidebar (1/3)      │
+│  Card[elevated]:                                 │ Card[elevated]:          │
+│   Row[between]: H1 name | Badge[status]          │  CardHeader: Actions     │
+│   Row[wrap]: Badge[warning] type                 │  CardBody:               │
+│              Badge[default] via platform         │   Link → report incident │
+│              Badge[danger] "Repeat Offender"?    │   Link → contest profile │
+│   Row[wrap]: views · victims · date · amountLost │   (or login prompts)     │
+│  Grid[2]: IdentityChip cards (Phone/UPI/Email)  │ Card[outlined]:          │
+│  Social media rows (platform: handle link)       │  CardHeader: Contest     │
+│  Item Involved (if set)                          │  CardBody:               │
+│  Card[flat]: "What Happened" description         │   Stack[ul]: types list  │
+│  Stack: "How to Avoid" numbered list             │ Alert[success]:          │
+│   (from getScamType(scamType).howToAvoid)        │  Shield icon             │
+│  Evidence image strip (if evidence[])            │  "Verified by team…"     │
+│  ── Additional Incidents ──                      │                          │
+│   EmptyState OR Stack of Card[outlined]:         │                          │
+│    Row: Badge type + Badge platform + date       │                          │
+│    Text: itemInvolved (if set)                   │                          │
+│    Text[danger]: amountLost (if set)             │                          │
+│    Text: description excerpt (200 chars)         │                          │
+│    Text: "Reported by: Anonymous | Verified…"   │                          │
+│  ── Community Discussion ──                      │                          │
+│   Row[between]: H2 + "Leave a comment" link      │                          │
+│   EmptyState OR Stack of Card[flat]:             │                          │
+│    Row[between]:                                 │                          │
+│     Row: authorName + Badge[role]?               │                          │
+│           Badge[warning] "Accused"?              │                          │
+│           Badge[success] "Verified Victim"?      │                          │
+│     Text[xs]: date                              │                          │
+│    Text: body                                    │                          │
+│  ── Related Profiles ── (only if relatedScammers)│                          │
+│   Stack of Link-wrapped Card[outlined]:          │                          │
+│    Row: name + scamType | Badge[status] + Link2  │                          │
+└──────────────────────────────────────────────────┴──────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  /scams/types — Scam Types Index (RSC, 7 categories × 27 types)              │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Grid[twoThird]:                                                             │
-│  ┌────────────────────────┐ ┌──────────────────────┐                         │
-│  │ LEFT (lg:col-span-2)   │ │ RIGHT sidebar        │                         │
-│  │ Card[elevated]:        │ │ Card[elevated]:      │                         │
-│  │  Row[between]:         │ │  CardHeader: Actions │                         │
-│  │   H1 name              │ │  CardBody:           │                         │
-│  │   Badge[status]        │ │   Link → report      │                         │
-│  │  Row[wrap]:            │ │   Link → contest     │                         │
-│  │   Badge[warning] type  │ │   (or login prompts) │                         │
-│  │   Badge[default] via   │ │ Card[outlined]:      │                         │
-│  │  Row[wrap]: stats      │ │  CardHeader: Contest │                         │
-│  │   views·victims·date   │ │  CardBody:           │                         │
-│  │   amount lost          │ │   Stack[ul]: types   │                         │
-│  │ Grid[2]: IdentityChips │ │ Alert[success]:      │                         │
-│  │  Phone/UPI/Email cards │ │  Verified by team    │                         │
-│  │ Social media rows      │ │  on [date]           │                         │
-│  │ Card[flat]: description│ │                      │                         │
-│  │ Evidence image strip   │ │                      │                         │
-│  └────────────────────────┘ └──────────────────────┘                         │
+│  BREADCRUMB — Home / Scam Registry / All Scam Types                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  H1 "Types of Collectibles Scams"                                           │
+│  Text: "27 documented scam types across 7 categories"                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  For each ScamCategory (7):                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐     │
+│  │ H2 Category label | Badge count                                     │     │
+│  │ Grid[cols=2, gap=sm]:                                                │     │
+│  │  ┌───────────────────────────┐  ┌───────────────────────────┐       │     │
+│  │  │ Card[outlined]:           │  │ Card[outlined]:           │       │     │
+│  │  │  H3 type label            │  │  H3 type label            │       │     │
+│  │  │  Text[xs] shortDescription│  │  ...                      │       │     │
+│  │  │  Text[sm] howItHappens    │  │                           │       │     │
+│  │  │   (first 150 chars)       │  │                           │       │     │
+│  │  │  Stack[ol]: howToAvoid    │  │                           │       │     │
+│  │  │   numbered list (all tips)│  │                           │       │     │
+│  │  └───────────────────────────┘  └───────────────────────────┘       │     │
+│  └─────────────────────────────────────────────────────────────────────┘     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  CTA footer: "Found a scammer?" → Button[danger] "Report a Scammer"        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  /scams/report — Report a Scammer (client component, auth-gated)             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  BREADCRUMB — Home / Scam Registry / Report a Scammer                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  H1 "Report a Scammer"                                                      │
+│  Alert[warning] — "All submissions are reviewed before publishing"          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Section 1 — Scammer Identity                                               │
+│  ┌───────────────────────────────────────────────────────────────────┐       │
+│  │ Input: Display Name (required)                                    │       │
+│  │ TagInput: Phone Numbers (enter/comma to add, X to remove)         │       │
+│  │ TagInput: UPI IDs                                                 │       │
+│  │ TagInput: Email Addresses                                         │       │
+│  └───────────────────────────────────────────────────────────────────┘       │
+│  Section 2 — What Happened                                                   │
+│  ┌───────────────────────────────────────────────────────────────────┐       │
+│  │ Select: Scam Type (required)                                      │       │
+│  │  └─ helper text: howItHappens for selected type (live update)     │       │
+│  │ Select: Platform (required)                                       │       │
+│  │ Input: Amount Lost (₹, optional)                                  │       │
+│  │ Input: Item Involved (optional)                                   │       │
+│  │ Textarea: Description (required, min 100 chars + char counter)    │       │
+│  └───────────────────────────────────────────────────────────────────┘       │
+│  Section 3 — Privacy & Agreement                                             │
+│  ┌───────────────────────────────────────────────────────────────────┐       │
+│  │ Toggle: Keep my identity anonymous on the public profile          │       │
+│  │ Checkbox: I confirm this report is truthful (required)            │       │
+│  │ [Submit Report] → POST /api/scams/reports → redirect /scams       │       │
+│  └───────────────────────────────────────────────────────────────────┘       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

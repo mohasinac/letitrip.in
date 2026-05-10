@@ -112,28 +112,25 @@
 
 ---
 
-## 🔜 NEXT — Session 83 🔄 IN PROGRESS 2026-05-10 (SCAM3/5 partials + Content)
+## ⚡ LAST COMPLETED — Session 83 ⚠️ partial 2026-05-10 (SCAM3 live + SCAM5 form + VD8)
 
-> ⚠️ **ACTIVE WORK IN PROGRESS** — Session 83 working on: SCAM3 remaining (/scams/types + profile subcollections), SCAM5 remaining (ScamReportForm + API), VD8 (about rewrite), VD9 (becomeSeller/sellerGuide), VD10 (legal policies).
+| Task | What was done |
+|------|--------------|
+| **SCAM3** | Subcollection live data wired: `listPublicIncidents()` + `listPublicComments()` + `findManyById()` in repository; `getScammerProfilePageData()` server action; `/scams/[id]/page.tsx` passes real data; ScamProfileView renders incident cards, comment cards (role/Accused/Victim badges), related scammer links. `/scams/types` import fixed. ✅ |
+| **SCAM5** | Full ScamReportForm (3 sections: identity/TagInputs, what-happened/type-helper/char-counter, privacy/agreement); POST `/api/scams/reports` (auth, Zod, paise); `API_ROUTES.SCAMS.REPORTS`. Evidence upload / ban check / rate limit / suggest deferred. ⚠️ |
+| **VD8** | `messages/en.json` `about` namespace (25 keys) rewritten — collectibles-specific mission, values, milestones. ✅ |
+| **VD9/VD10** | Deferred — user stopped session. ⏳ |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
 
-### Already completed this sweep
-| Task | Status |
-|------|--------|
-| P27 | ✅ Payouts seed 7→25 records |
-| VB5/VB6/O4/I2 | ✅ Tracker corrections (were done in Sessions 80/72) |
+---
 
-### Half-complete (working first)
+## 🔜 NEXT — Session 83-cont ⏳ (VD9 + VD10 content + Session 84 Custom Fields)
+
+### Carry-over from Session 83
 | Tasks | Goal |
 |-------|------|
-| SCAM3 (partial) | /scams/types page + incidents/comments/related on profile |
-| SCAM5 (partial) | ScamReportForm actual fields + POST /api/scams/reports |
-
-### Session 83 — Content pages
-| Tasks | Goal |
-|-------|------|
-| VD8 | Rewrite /about with collectibles-specific content |
-| VD9 | Expand /become-seller + /seller-guide |
-| VD10 | Legal policy pages (terms, privacy, cookies, refunds) |
+| VD9 | Expand becomeSeller (~9→25 keys) + rewrite sellerGuide (42 keys) — collectibles-specific |
+| VD10 | Legal pages: terms (IT Act/Consumer Protection/collectibles rules), privacy (DPDP Act 2023), cookies (essential/analytics/marketing), refundPolicy (8+ sections) |
 
 ### Session 84 — Custom Fields
 | Tasks | Goal |

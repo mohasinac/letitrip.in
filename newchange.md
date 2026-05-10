@@ -33,6 +33,42 @@
 
 ---
 
+# Session 83 — 2026-05-10 (SCAM3 live data + SCAM5 form + VD8 about rewrite)
+
+## Scope
+SCAM3 subcollection live data wired, SCAM5 form built, VD8 about content rewritten. VD9/VD10 deferred.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/scams/repository/scammer.repository.ts` | Added `listPublicIncidents()`, `listPublicComments()`, `findManyById()` subcollection query methods |
+| `appkit/src/features/scams/actions/scam-actions.ts` | Added `getScammerProfilePageData()` server action (parallel fetch of scammer + incidents + comments + relatedScammers) |
+| `appkit/src/features/scams/components/ScamProfileView.tsx` | Extended props with `incidents?/comments?/relatedScammers?`; replaced EmptyState placeholders with real data-driven incident cards, comment cards (role/Accused/Victim badges), related scammer links |
+| `appkit/src/index.ts` | Exported `getScammerProfilePageData`, `ScammerProfilePageData` |
+| `appkit/src/client.ts` | Exported scam constants (SCAM_TYPES, SCAM_CATEGORIES, SCAM_PLATFORM_LABELS, ScamPlatformValues) for client bundles |
+| `src/app/[locale]/scams/types/page.tsx` | Fixed import from `@mohasinac/appkit` (was `@mohasinac/appkit/scams`); revalidate=3600 |
+| `src/app/[locale]/scams/[id]/page.tsx` | Rewired to `getScammerProfilePageData()`; passes incidents/comments/relatedScammers to ScamProfileView |
+| `src/app/[locale]/scams/report/page.tsx` | Full ScamReportForm: 3 sections (identity, what happened, privacy), TagInput for phones/UPIs/emails, live scam type helper, char counter, POST /api/scams/reports |
+| `src/app/api/scams/reports/route.ts` | POST route: auth required, Zod validation, paise conversion, creates pending_review doc |
+| `src/constants/api.ts` | Added `API_ROUTES.SCAMS.REPORTS` |
+| `messages/en.json` | `about` namespace (25 keys) rewritten — collectibles-specific mission, values, milestones, CTA |
+| `asciiDiagrams.md` | Updated Scam Registry diagram to ✅; added /scams/types layout, full /scams/[id] detail, /scams/report form |
+| `crud-tracker.md` | SCAM3 ✅, VD8 ✅, Session 83 row updated |
+
+## Deferred
+
+| Task | What was deferred | Fix target |
+|------|-------------------|------------|
+| SCAM5 | Evidence file upload to Firebase Storage (note shown in form, no upload) | I6 / post-alpha |
+| SCAM5 | Soft ban check (`report_scammers` permission) | BAN system (Session 99) |
+| SCAM5 | Rate limit enforcement (pending count query) | SCAM5 follow-up |
+| SCAM5 | Suggested scammers duplicate detection (`GET /api/scams/suggest`) | SCAM5 follow-up |
+| VD9 | becomeSeller / sellerGuide namespace expansion | Session 83 follow-up |
+| VD10 | Legal policy pages (terms, privacy, cookies, refundPolicy) | Session 83 follow-up |
+
+---
+
 # SCAM3 + SCAM5 — 2026-05-10
 
 ## Scope
