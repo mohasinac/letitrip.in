@@ -60,7 +60,7 @@ async function settleAuction(product: AuctionProductRow): Promise<void> {
     userId: winnerEntry.data.userId,
     userName: winnerEntry.data.userName,
     userEmail: winnerEntry.data.userEmail,
-    sellerId: product.sellerId,
+    storeId: product.storeId,
     amount: winnerEntry.data.bidAmount,
     currency: winnerEntry.data.currency,
     auctionProductId: product.id,

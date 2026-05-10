@@ -106,7 +106,7 @@ export default function LayoutShellClient({
         ],
       },
     ],
-    [navItems, seedPanelEnabled, user?.role],
+    [navItems, seedPanelEnabled],
   );
 
   // Locale switcher for sidebar

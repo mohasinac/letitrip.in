@@ -92,7 +92,7 @@ async function dispatchPayout(entry: {
       mode: payout.paymentMethod === "upi" ? "UPI" : "NEFT",
       purpose: "payout",
       reference_id: payout.id,
-      narration: `LetItRip payout for seller ${payout.sellerId}`,
+      narration: `LetItRip payout for seller ${payout.storeId}`,
     };
 
     const response = await fetch(`${apiBaseUrl}/payouts`, {
@@ -136,7 +136,7 @@ async function dispatchPayout(entry: {
         `Payout ${payout.id} permanently failed after ${MAX_FAILURES} attempts`,
         error,
         {
-          sellerId: payout.sellerId,
+          sellerId: payout.storeId,
         },
       );
     } else {
