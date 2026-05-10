@@ -33,6 +33,33 @@
 
 ---
 
+# Session 102 QA — 2026-05-10 (Seed page public visibility)
+
+## Scope
+
+Made the `/demo/seed` seed panel page and its nav link publicly accessible. Previously both were gated behind admin auth; now the `featureFlags.seedPanel` flag controls link visibility for all users (including guests), and write actions remain API-gated.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `src/app/[locale]/demo/layout.tsx` | Removed `ProtectedRoute(requireAuth, requireRole="admin")` — layout is now a public passthrough `<>{children}</>` |
+| `src/app/[locale]/LayoutShellClient.tsx` | Removed `&& user?.role === "admin"` guard from sidebar "Seed & Docs" link and title-bar `devSlot`; both now appear whenever `seedPanelEnabled` is `true`, regardless of auth state. Cleaned up stale `user?.role` dep from `useMemo` array. |
+
+## Behaviour after this change
+
+- Any user (including logged-out) can visit `/demo/seed` and read DB state, collection counts, and schema documentation
+- The `🌱 Seed` chip in the title bar and "Seed & Docs" in the sidebar sidebar appear for everyone when the flag is on
+- Admins still control the flag via Admin → Feature Flags → seedPanel toggle
+- Actual seed/clear write actions remain blocked at the API level when the flag is off or the caller is not admin
+
+## Tracker / diagram updates
+
+- `crud-tracker.md` SP1 notes updated — removed stale admin-only guard description
+- `asciiDiagrams.md` Seed & Docs panel header updated from "Admin only" to "Public · write actions require admin"; sidebar diagram updated from "(+ Seed & Docs if admin)" to "(+ Seed & Docs if seedPanel on)"
+
+---
+
 # Session 101 QA — 2026-05-10 (TypeScript fix + WA3 + quality pass)
 
 ## Scope
