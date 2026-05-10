@@ -1,5 +1,6 @@
-import { SellerPayoutSettingsView } from "@mohasinac/appkit";
+import { SellerPayoutSettingsView } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants/api";
 
 export default function Page() {
-  return <SellerPayoutSettingsView />;
+  return <SellerPayoutSettingsView apiBase={API_ROUTES.STORE.PAYOUT_SETTINGS} />;
 }

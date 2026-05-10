@@ -83,6 +83,10 @@ export const API_ROUTES = {
     ANALYTICS: "/api/store/analytics",
     WHATSAPP_SETTINGS: "/api/store/whatsapp-settings",
     WHATSAPP_CATALOG_SYNC: "/api/store/whatsapp-settings/catalog-sync",
+    REVIEWS: "/api/store/reviews",
+    REVIEW_REPLY: (id: string) => `/api/store/reviews/${id}/reply`,
+    PAYOUTS: "/api/store/payouts",
+    PAYOUTS_REQUEST: "/api/store/payouts/request",
   },
   USER: {
     PROFILE: "/api/user/profile",

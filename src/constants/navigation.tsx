@@ -243,9 +243,10 @@ export const STORE_NAV_GROUPS: DashboardNavGroup[] = [
     ],
   },
   {
-    title: "Orders",
+    title: "Orders & Reviews",
     items: [
-      { href: String(ROUTES.STORE.ORDERS), label: "Orders" },
+      { href: String(ROUTES.STORE.ORDERS),  label: "Orders"  },
+      { href: String(ROUTES.STORE.REVIEWS), label: "Reviews" },
     ],
   },
   {

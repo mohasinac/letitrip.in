@@ -1,5 +1,6 @@
-import { SellerShippingView } from "@mohasinac/appkit";
+import { SellerShippingView } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants/api";
 
 export default function Page() {
-  return <SellerShippingView />;
+  return <SellerShippingView apiBase={API_ROUTES.STORE.SHIPPING} />;
 }
