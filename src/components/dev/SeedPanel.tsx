@@ -49,12 +49,17 @@ const SYSTEM_COLLECTIONS: SeedCollectionName[] = [
   "notifications", "sessions", "siteSettings",
 ];
 
+const MODERATION_COLLECTIONS: SeedCollectionName[] = [
+  "scammerProfiles",
+];
+
 const ALL_COLLECTIONS: SeedCollectionName[] = [
   ...CORE_COLLECTIONS,
   ...LISTINGS_COLLECTIONS,
   ...TRANSACTIONAL_COLLECTIONS,
   ...CONTENT_COLLECTIONS,
   ...SYSTEM_COLLECTIONS,
+  ...MODERATION_COLLECTIONS,
 ];
 
 const DEFAULT_SELECTED: SeedCollectionName[] = [
@@ -66,7 +71,7 @@ const DEFAULT_SELECTED: SeedCollectionName[] = [
 
 // ─── Collection metadata ──────────────────────────────────────────────────────
 
-type GroupKey = "core" | "listings" | "transactional" | "content" | "system";
+type GroupKey = "core" | "listings" | "transactional" | "content" | "system" | "moderation";
 
 interface FieldDef {
   name: string;
@@ -992,6 +997,48 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "createdAt",type: "timestamp", sortable: true, indexed: true },
     ],
   },
+  scammerProfiles: {
+    label: "Scammer Profiles",
+    icon: "🚨",
+    group: "moderation",
+    target: 10,
+    description: "SEO-first scam registry. Phones, UPI IDs, and emails stored as plaintext so Google indexes them — victims searching a number find the profile. All submissions start as pending_review. Three subcollections per profile: incidents (victim reports), comments (public discussion), contests (disputes).",
+    slugPattern: "scammer-{identifier}  (e.g. scammer-9876543210-at-paytm)",
+    seededItems: [
+      "scammer-rahul-advance-payment — verified, advance_payment_ghost, ₹1,000 lost",
+      "scammer-fake-pokemon-seller-upi — pending_review, fake_preorder_listing, ₹2,200 lost",
+      "scammer-mistaken-identity-case — rejected, delivery dispute, OLX",
+    ],
+    pendingItems: [
+      "Subcollection seed: incidents, comments, contests per profile (SCAM9)",
+      "More verified profiles across scam types",
+    ],
+    uiPath: "/admin/scammers",
+    fields: [
+      { name: "seoSlug",       type: "string",    searchable: true },
+      { name: "displayNames",  type: "array",     searchable: true, indexed: true },
+      { name: "phones",        type: "array",     searchable: true, indexed: true },
+      { name: "upiIds",        type: "array",     searchable: true, indexed: true },
+      { name: "emails",        type: "array",     searchable: true, indexed: true },
+      { name: "scamType",      type: "enum",      filterable: true, indexed: true },
+      { name: "scamPlatform",  type: "enum",      filterable: true, indexed: true },
+      { name: "status",        type: "enum",      filterable: true, indexed: true },
+      { name: "amountLost",    type: "number",    sortable: true },
+      { name: "reportedBy",    type: "ref",       indexed: true },
+      { name: "reportedByAnon",type: "boolean" },
+      { name: "verifiedBy",    type: "ref" },
+      { name: "verifiedAt",    type: "timestamp" },
+      { name: "isContested",   type: "boolean",   filterable: true, indexed: true },
+      { name: "incidentCount", type: "number",    sortable: true, indexed: true },
+      { name: "commentCount",  type: "number",    sortable: true },
+      { name: "contestCount",  type: "number",    sortable: true },
+      { name: "views",         type: "number",    sortable: true, indexed: true },
+      { name: "tags",          type: "array",     filterable: true },
+      { name: "evidence",      type: "array",     note: "/media/ proxy URLs only" },
+      { name: "createdAt",     type: "timestamp", sortable: true, indexed: true },
+      { name: "updatedAt",     type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
 };
 
 // ─── Group labels ─────────────────────────────────────────────────────────────
@@ -1002,6 +1049,7 @@ const GROUP_CONFIG: Record<GroupKey, { label: string; icon: string }> = {
   transactional: { label: "Transactional", icon: "🛒" },
   content: { label: "Content & Marketing", icon: "📣" },
   system: { label: "System & Config", icon: "⚙️" },
+  moderation: { label: "Trust & Safety", icon: "🚨" },
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1680,6 +1728,7 @@ export function SeedPanel() {
     { key: "transactional", cols: TRANSACTIONAL_COLLECTIONS },
     { key: "content", cols: CONTENT_COLLECTIONS },
     { key: "system", cols: SYSTEM_COLLECTIONS },
+    { key: "moderation", cols: MODERATION_COLLECTIONS },
   ];
 
   // ─── Filtered / sorted / paginated collections ───────────────────────────────
@@ -1916,9 +1965,8 @@ export function SeedPanel() {
               LetItRip Demo Seed
             </h1>
             <p className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">
-              Dev-only seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.
+              Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.
             </p>
-            <Badge variant="danger">DEV ONLY — Not available in production</Badge>
           </div>
 
           {/* DB overview stats — always visible */}

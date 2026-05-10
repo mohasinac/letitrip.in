@@ -17,7 +17,7 @@
 | **SEO3** | `next/image` in product grid (`MediaImage` replaces `background-image` CSS), category section, and brands section — WebP/AVIF, srcset, LCP eligible. |
 | **SEO4** | `metadata` exports added to 14 static content/help pages (sellers, contact, help, fees, how-auctions-work, how-checkout-works, how-offers-work, how-orders-work, how-payouts-work, how-pre-orders-work, how-reviews-work, seller-guide, security, track). |
 | **SEO5** | `robots: { index: false }` on paginated category pages (page > 1) and all search result pages. |
-| **SEO6** | `<link rel="preconnect">` + `<link rel="dns-prefetch">` for Firebase Storage, Google Fonts, and GTM in root `layout.tsx`. |
+| **SEO6** | `<link rel="preconnect">` for Firebase Storage, Google Fonts, and GTM in root `layout.tsx` (preconnect covers DNS+TCP+TLS — no separate dns-prefetch needed). |
 | **SEO7** | Canonical URL logic already enforced by category + search page redirect guards. |
 | **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
 | **tracker** | SEO1–SEO7 marked ✅ in `crud-tracker.md`. |
@@ -53,7 +53,6 @@
 | Session | Tasks | Goal |
 |---------|-------|------|
 | 81-impl | C3, VB5, C4, VB6, VB1, VB2, VB7, O4, LL7, LL9, LL10 | Store Finance: coupons, orders, payouts, analytics |
-| 82 | ARCH4, VA19 | Admin Payouts processing + CSV export |
 | 83 | VD8, VD9, VD10 | Content rewrites: About, Seller Guide, Legal |
 | 84 | L1, L2, L3 | Custom Fields system |
 | 85 | SC1, SC2, SC3, SC4 | Sub-listing categories |
@@ -68,12 +67,16 @@
 | 97 | RBAC5, RBAC6, RBAC7 | RBAC: Store capability guards + employee UI + permission groups admin |
 | 98 | RBAC8, RBAC9, RBAC10 | RBAC: Permission audit log + capabilities admin + seed data |
 | 99 | BAN2, BAN3, BAN4 | Bans: Admin ban UI + hard ban cascade + checkout/ticket blocking |
-| 100 | BAN5, BAN6, BAN7 | Bans: Support ticket API + ticket UI + Firebase notification functions |
-| 101 | BAN8, BAN9 | Bans: Ticket seed data + analytics |
-| 102 | SCAM2, SCAM3, SCAM4 | Scams: Scammer repo + public list page + individual profile page |
-| 103 | SCAM5, SCAM6, SCAM7 | Scams: Submit report + scam awareness acknowledgement + admin verify UI |
-| 104 | SCAM8, SCAM9 | Scams: Scam type pages + seed data |
-| 105+ | I6, I7, D5, VC7, O5, HS4-E, VC2, VC4, D3, D4, LL4, LL5 | Deferred: PDF, watermark CDN, messages, Shiprocket |
+| 100 | EX1–EX5, YT1 | Extended homepage sections: stats live queries, multi-carousel, CTA/filter chips, products multi-row, collection-cards, YouTube cards |
+| 101 | AX1, AX2, AX3, A1-ext | Action system: ACTION constants + dispatch hook, URL panel routing, sticky FormActionBar, admin product store picker |
+| 102 | FI1–FI6 | Feature Icons: productFeatures collection, seed, admin+store CRUD, product form, card badges |
+| 103 | BK1–BK3 | Bulk Actions: public selection mode, sticky action bar, compare overlay |
+| 104 | BAN5, BAN6, BAN7 | Bans: Support ticket API + ticket UI + Firebase notification functions |
+| 105 | BAN8, BAN9 | Bans: Ticket seed data + analytics |
+| 106 | SCAM2, SCAM3, SCAM4 | Scams: Scammer repo + public list page + individual profile page |
+| 107 | SCAM5, SCAM6, SCAM7 | Scams: Submit report + scam awareness acknowledgement + admin verify UI |
+| 108 | SCAM8, SCAM9 | Scams: Scam type pages + seed data |
+| 109+ | VA19, I6, I7, D5, VC7, O5, HS4-E, VC2, VC4, D3, D4, LL4, LL5 | Deferred: Admin CSV export, PDF, watermark CDN, messages, Shiprocket |
 
 ### Confirmed UX design for GP1 + SC3 (Sessions 85–86)
 - Both sections live **between the buy-box/actions area and the TABS row** — NOT in belowFold
@@ -296,6 +299,7 @@ Alpha gate:     77-impl → 78-impl → 79-impl → 80-impl → 🚀 ALPHA
 
 ⚠️  Firebase fully reset 2026-05-10 — re-seed all collections via /demo/seed
 ⚠️  RBAC/BAN/SCAM schemas done (80-schema, additive) — UI deferred to sessions 96–104
+⚠️  SCAM seed data + indexes + SeedPanel wired (80-schema-ext) — 3 scammer profiles seeded; `scammerProfiles` in SeedPanel Trust & Safety group; 9 Firestore indexes added; all schema constants exported from @mohasinac/appkit
 
 PHASE               SESSIONS          STATUS
 ────────────────────────────────────────────────────────
