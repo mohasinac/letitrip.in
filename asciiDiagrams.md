@@ -110,6 +110,8 @@
   - [Orders List](#store--orders-list-)
   - [Order Detail SideDrawer](#store--order-detail-sidedrawer-)
   - [Coupons List](#store--coupons-list-)
+  - [Coupon Editor](#store--coupon-editor-)
+  - [Bids](#store--bids-)
   - [Analytics](#store--analytics-)
   - [Storefront Edit](#store--storefront-edit-)
   - [Shipping Config](#store--shipping-config-)
@@ -2872,64 +2874,121 @@ SideDrawer (read-only display + actions):
 
 ---
 
-## Store > Orders List ✅ (LL7 ⏳ full listing layout)
+## Store > Orders List ✅ (LL7 — 2026-05-10)
 
 ```
+Page: /store/orders
+Component: SellerOrdersView (appkit/src/features/seller/components/)
+API: GET /api/store/orders
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  My Orders                                                                   │
+│  [🔍 Search...]  [Filters ▾]  [Sort: Newest ▾]                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [All] [Pending] [Processing] [Shipped] [Delivered] [Cancelled] [Returns]   │
-│  [🔍 Search order ID or buyer...]   [Date range ▾]   [Sort ▾]              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Order ID        Date    Buyer*    Items  Total    Tracking   Status     ⋮  │
+│  Order                    Total      Status        Date          👁          │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  order-3-0508-.. May 08  Ravi K.   3      ₹13,497  TN123456   SHIPPED    ⋮  │
-│  order-1-0507-.. May 07  Priya S.  1      ₹4,999   —          PENDING    ⋮  │
-│  * buyer name visible to seller (not full PII)                              │
-│  Bulk: [Mark Shipped (tracking # modal)]                                    │
+│  order-3-0508-..          ₹13,497   [SHIPPED]     2d ago        👁          │
+│  Ravi K. · 3 items                                                           │
+│  order-1-0507-..          ₹4,999    [PENDING]     3d ago        👁          │
+│  Priya S. · 1 item                                                           │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Filter sidebar: Status (All/PENDING/PROCESSING/SHIPPED/DELIVERED/CANCELLED/REFUNDED)
+Sort: Newest, Oldest
 ```
 
 ---
 
-## Store > Order Detail SideDrawer ⏳ (VB2)
+## Store > Order Detail SideDrawer ✅ (VB2+C4 — 2026-05-10)
 
 ```
-SideDrawer:
+Component: OrderDetailDrawer (sub-component of SellerOrdersView)
+API: GET /api/store/orders/[id]
+     PATCH /api/store/orders/[id] → { status?, trackingNumber?, shippingCarrier?, trackingUrl? }
+
+SideDrawer (opens on 👁 row click):
 ┌──────────────────────────────────────────┐
-│  Order #order-3-0508-a1b2c3          [✕] │
+│  Order order-3-0508-a1b2c3           [✕] │
 ├──────────────────────────────────────────┤
-│  Buyer: Ravi Kumar (masked last name)    │
-│  Address: 123 MG Road, Mumbai 400001     │
+│  [SHIPPED]              2d ago           │
 │  Items:                                  │
-│    🖼 Charizard ETB ×1  ₹4,499           │
-│    🖼 Pikachu Plush ×2  ₹2,598           │
-│  Subtotal: ₹13,497   Shipping: ₹50       │
-│  Total: ₹13,547   Payment: Razorpay      │
+│    Charizard ETB ×1  ₹4,499              │
+│    Pikachu Plush ×2  ₹2,598              │
+│  Total: ₹7,097   Payment: razorpay       │
+│  Ship to: Ravi K. · 123 MG Rd, Mumbai   │
 ├──────────────────────────────────────────┤
-│  Status  [sel: PENDING/PROCESSING/       │
-│            SHIPPED/DELIVERED]            │
-│  Tracking # [input]                      │
-│  Carrier    [sel]                        │
+│  Update order                            │
+│  New status  [— keep current —       ▾]  │
+│              [Processing]                │
+│              [Shipped]                   │
+│  Tracking #  [input]                     │
+│  Carrier     [input]                     │
+│  Tracking URL [input]                   │
 ├──────────────────────────────────────────┤
-│  [Mark Shipped]        [Mark Delivered]  │
-│  [Cancel]                   [Save Order] │
+│              [Close]          [Save]     │
 └──────────────────────────────────────────┘
+
+Note: Sellers can only set status to "processing" or "shipped"
+(server enforces this in PATCH handler)
 ```
 
 ---
 
-## Store > Coupons List ✅
+## Store > Coupons List ✅ (C3+VB1 — 2026-05-10)
 
 ```
+Page: /store/coupons
+Component: SellerCouponsView (appkit/src/features/seller/components/)
+API: GET /api/store/coupons
+     PATCH /api/store/coupons/[id] { action: "activate"|"deactivate" }
+     DELETE /api/store/coupons/[id]
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  My Coupons                                              [+ New Coupon]      │
+│  [🔍 Search by code...]  [Filters ▾]  [Sort: Newest ▾]    [+ Add Coupon]   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Code       Type           Discount   Min Order  Uses      Active   ⋮       │
+│  Code          Status         Updated        ✏ ⇄ 🗑               │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  BLADER20   percentage     20%        ₹500       12/50     ✓        ⋮       │
-│  FREESHIP   free_shipping  —          ₹999       5/20      ✓        ⋮       │
+│  BLADER20                                                                    │
+│  20% off · Expires in 3d   [Active]       2d ago     ✏  ⇄  🗑             │
+│  FREESHIP                                                                    │
+│  Free shipping · Expires in 10d  [Active] 5d ago     ✏  ⇄  🗑             │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+⇄ = toggle active/inactive
+Filter sidebar: Status (All / Active / Inactive)
+```
+
+---
+
+## Store > Coupon Editor ✅ (VB1+C3 — 2026-05-10)
+
+```
+Pages: /store/coupons/new  (create)
+       /store/coupons/[id]/edit  (edit)
+Component: SellerCouponEditorView (appkit/src/features/seller/components/)
+API (create): POST /api/store/coupons
+API (edit):   GET + PATCH /api/store/coupons/[id]
+
+┌─────────────────────────────────────────┐
+│  Create Coupon             (Edit Coupon) │
+├─────────────────────────────────────────┤
+│  Coupon Code   [BLADER20          ]     │
+│                (disabled on edit)       │
+│  Discount Type [Percentage off    ▾]    │
+│                [Fixed amount off  ]     │
+│                [Free shipping     ]     │
+│  Discount %    [20                ]     │
+│  Max Discount  [₹500 cap optional ]     │
+│  Min Purchase  [₹0 optional       ]     │
+│  Total Uses    [50                ]     │
+│  Per Customer  [1                 ]     │
+│  Start Date    [2026-05-01        ]     │
+│  End Date      [2026-12-31        ]     │
+│  ☑ Active — Customers can apply at checkout
+├─────────────────────────────────────────┤
+│  [Cancel]                  [Save]       │
+└─────────────────────────────────────────┘
+
+Paise conversion on save: fixed type value × 100, minPurchase × 100
 ```
 
 ---
@@ -3110,17 +3169,76 @@ Confirm Modal:
 
 ---
 
-## Store > Addresses (Pickup Locations) ⏳ (VB7)
+## Store > Addresses (Pickup Locations) ✅ (VB7 — 2026-05-10)
 
 ```
+Page: /store/addresses
+Component: SellerAddressesView (appkit/src/features/seller/components/)
+APIs: GET/POST /api/store/addresses
+      PUT/DELETE /api/store/addresses/[id]
+Repository: storeAddressRepository (stores/{storeSlug}/addresses subcollection)
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Pickup Addresses                                      [+ Add Address]       │
+│  Manage your store's pickup and return locations                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Label        Full Address                    Pickup Point   Default  ⋮     │
-│  ────────────────────────────────────────────────────────────────────────── │
-│  Warehouse    123 MG Road, Mumbai 400001      ✓              ✓        ⋮     │
-│  Shop         45 FC Road, Pune 411005         ✓              ✗        ⋮     │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │ 📍 Warehouse   ⭐ Default                             ✏  🗑         │   │
+│  │ Ravi Kumar · +91 98765 43210                                         │   │
+│  │ Shop 12, Main Market, Mumbai, Maharashtra 400001, India              │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │ 📍 Shop Front                                         ✏  🗑         │   │
+│  │ Priya Sharma · +91 98800 11223                                       │   │
+│  │ 45 FC Road, Pune, Maharashtra 411005, India                          │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Add/Edit SideDrawer:
+┌──────────────────────────────────┐
+│  Add Address               [✕]  │
+├──────────────────────────────────┤
+│  Label *   [Warehouse         ] │
+│            e.g. Warehouse, Shop │
+│  Full Name * [Ravi Kumar       ] │
+│  Phone *     [+91 98765 43210  ] │
+│  Address Line 1 *               │
+│  Address Line 2                 │
+│  Landmark                       │
+│  City *   [Mumbai]              │
+│  State *  [Maharashtra]         │
+│  Postal * [400001]              │
+│  Country  [India]               │
+│  ☐ Set as default pickup address│
+├──────────────────────────────────┤
+│  [Cancel]        [Add Address]  │
+└──────────────────────────────────┘
+```
+
+---
+
+## Store > Bids ✅ (LL9 — 2026-05-10)
+
+```
+Page: /store/bids
+Component: SellerBidsView (appkit/src/features/seller/components/)
+API: GET /api/store/bids
+     — fetches store's auction productIds (up to 30) then queries bids
+     — ?productId=auction-xyz to filter by specific auction
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [🔍 Search by bidder...]  [Filters ▾]  [Sort: Newest ▾]                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Auction              Bidder      Bid         Status    Date                 │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  Charizard 1st Ed.    Ravi K.     ₹45,000    [Active]  2h ago               │
+│  auction-charizard..                                                         │
+│  Pikachu Gold PSA9    Priya S.    ₹12,500    [Outbid]  5h ago               │
+│  auction-pikachu-..                                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Read-only — no mutations. Filter sidebar: Status (All/Active/Outbid/Won/Lost/Cancelled)
+Status badges: Active=green, Won=blue, Outbid=amber, Lost=grey, Cancelled=red
 ```
 
 ---

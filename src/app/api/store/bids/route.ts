@@ -42,7 +42,7 @@ export const GET = withProviders(createRouteHandler({
     const productIds = auctionResult.items.map((p) => p.id);
     const auctionSummary = auctionResult.items.map((p) => ({
       id: p.id,
-      title: (p as unknown as Record<string, unknown>).title ?? p.id,
+      title: p.title ?? p.id,
     }));
 
     const result = await bidRepository.list({
