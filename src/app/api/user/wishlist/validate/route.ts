@@ -1,19 +1,10 @@
-import { withProviders } from "@/providers.config";
-/**
- * POST /api/user/wishlist/validate
- *
- * Auth required. Scans the authenticated user's wishlist subcollection,
- * removes any items whose product no longer exists in Firestore, and
- * returns how many were removed.
- *
- * Called once on wishlist page mount to keep the wishlist clean.
- */
 import {
   wishlistRepository,
   productRepository,
   successResponse,
   createRouteHandler,
 } from "@mohasinac/appkit";
+import { withProviders } from "@/providers.config";
 
 export const POST = withProviders(
   createRouteHandler({

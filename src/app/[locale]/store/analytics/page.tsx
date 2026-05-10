@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts } from "@mohasinac/appkit/client";
+import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 
 interface AnalyticsData {
@@ -52,11 +52,13 @@ export default function Page() {
       isLoading={loading}
       renderStats={() =>
         error ? (
-          <div className="p-4 rounded-lg border border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] text-sm">
-            {error === "Analytics service not configured"
-              ? "Analytics service is not configured yet. Check back after your first orders."
-              : `Could not load analytics: ${error}`}
-          </div>
+          <Div className="p-4 rounded-lg border border-[var(--appkit-color-border)]">
+            <Text className="text-sm text-[var(--appkit-color-text-muted)]">
+              {error === "Analytics service not configured"
+                ? "Analytics service is not configured yet. Check back after your first orders."
+                : `Could not load analytics: ${error}`}
+            </Text>
+          </Div>
         ) : (
           <SellerAnalyticsStats
             summary={summary}

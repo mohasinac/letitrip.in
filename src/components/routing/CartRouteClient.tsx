@@ -515,7 +515,7 @@ export function CartRouteClient() {
               {/* --- Out-of-stock section (W3) --- */}
               {oosItems.length > 0 && (
                 <Div>
-                  <Text className="mb-3 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
+                  <Text className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">
                     Out of Stock ({oosItems.length})
                   </Text>
                   <Div className="space-y-3">
@@ -563,10 +563,10 @@ export function CartRouteClient() {
               {/* Per-coupon discount rows */}
               {effectiveCoupons.map((c) => (
                 <Div key={c.code} className="flex items-center justify-between">
-                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
+                  <Text className="text-sm text-[var(--appkit-color-success)]">
                     {c.code}{c.scope === "seller" ? " (seller)" : ""}
                   </Text>
-                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
+                  <Text className="text-sm text-[var(--appkit-color-success)]">
                     &minus;₹{c.discountAmount.toFixed(2)}
                   </Text>
                 </Div>
@@ -580,7 +580,7 @@ export function CartRouteClient() {
                       key={c.code}
                       className="flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-900/20 px-3 py-2"
                     >
-                      <Text className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      <Text className="text-xs font-medium text-[var(--appkit-color-success)]">
                         {c.code}{c.scope === "seller" ? " — this seller" : ""}
                       </Text>
                       <button
@@ -658,7 +658,7 @@ export function CartRouteClient() {
               : "Checkout"}
           </Button>
           {hasOnlyOos && (
-            <Text className="text-center text-xs text-red-600 dark:text-red-400">
+            <Text className="text-center text-xs text-[var(--appkit-color-error)]">
               All items are out of stock. Remove them to continue.
             </Text>
           )}

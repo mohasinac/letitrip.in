@@ -1,15 +1,3 @@
-import { withProviders } from "@/providers.config";
-/**
- * POST /api/cart/validate
- *
- * No auth required — works for both guest and authenticated carts.
- *
- * Body: { productIds: string[] }  (max 50)
- *
- * Returns:
- *  stale       – productIds that should be REMOVED (product deleted, sold, archived, discontinued, draft)
- *  outOfStock  – productIds that should be flagged but NOT removed (status == out_of_stock)
- */
 import { z } from "zod";
 import {
   productRepository,
@@ -17,6 +5,7 @@ import {
   successResponse,
   createRouteHandler,
 } from "@mohasinac/appkit";
+import { withProviders } from "@/providers.config";
 
 const validateSchema = z.object({
   productIds: z.array(z.string().min(1)).min(1).max(50),
