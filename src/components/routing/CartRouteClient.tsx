@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Button,
@@ -21,6 +21,10 @@ import {
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 interface ServerCartItem {
   itemId?: string;
   productId: string;
@@ -32,6 +36,8 @@ interface ServerCartItem {
   sellerId?: string;
   sellerName?: string;
   sellerSlug?: string;
+  isAuction?: boolean;
+  isPreOrder?: boolean;
 }
 
 interface AppliedCoupon {
@@ -47,10 +53,41 @@ interface SellerGroup {
   sellerId: string;
   sellerName: string;
   sellerSlug?: string;
-  items: (CartItem & { itemId?: string })[];
+  items: (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[];
 }
 
-function groupBySeller(items: (CartItem & { itemId?: string })[]): SellerGroup[] {
+interface ServerCartResponse {
+  cart: {
+    items: ServerCartItem[];
+    appliedCoupons?: AppliedCoupon[];
+    selectedItemIds?: string[] | null;
+  };
+  subtotal: number;
+  itemCount: number;
+}
+
+interface ValidateResponse {
+  data: { stale: string[]; outOfStock: string[] };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Derive the product detail URL from productId slug prefix. */
+function getProductHref(productId: string, isAuction?: boolean, isPreOrder?: boolean): string {
+  if (isAuction ?? productId.startsWith("auction-")) {
+    return String(ROUTES.PUBLIC.AUCTION_DETAIL(productId));
+  }
+  if (isPreOrder ?? productId.startsWith("preorder-")) {
+    return String(ROUTES.PUBLIC.PRE_ORDER_DETAIL(productId));
+  }
+  return String(ROUTES.PUBLIC.PRODUCT_DETAIL(productId));
+}
+
+function groupBySeller(
+  items: (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[],
+): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
     const meta = item.meta as unknown as Record<string, unknown>;
@@ -65,22 +102,16 @@ function groupBySeller(items: (CartItem & { itemId?: string })[]): SellerGroup[]
   return Array.from(map.values());
 }
 
-interface ServerCartResponse {
-  cart: {
-    items: ServerCartItem[];
-    appliedCoupons?: AppliedCoupon[];
-    selectedItemIds?: string[] | null;
-  };
-  subtotal: number;
-  itemCount: number;
-}
-
-function serverItemsToCartItems(items: ServerCartItem[]): (CartItem & { itemId?: string })[] {
+function serverItemsToCartItems(
+  items: ServerCartItem[],
+): (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[] {
   return items.map((item) => ({
     id: item.itemId ?? item.productId,
     itemId: item.itemId,
     productId: item.productId,
     quantity: item.quantity,
+    isAuction: item.isAuction,
+    isPreOrder: item.isPreOrder,
     meta: {
       productId: item.productId,
       title: item.productTitle,
@@ -98,11 +129,13 @@ function serverItemsToCartItems(items: ServerCartItem[]): (CartItem & { itemId?:
 
 function guestItemsToCartItems(
   items: ReturnType<typeof useGuestCart>["items"],
-): (CartItem & { itemId?: string })[] {
+): (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[] {
   return items.map((item) => ({
     id: item.productId,
     productId: item.productId,
     quantity: item.quantity,
+    isAuction: item.productId.startsWith("auction-"),
+    isPreOrder: item.productId.startsWith("preorder-"),
     meta: {
       productId: item.productId,
       title: item.productTitle ?? item.productId,
@@ -112,6 +145,10 @@ function guestItemsToCartItems(
     },
   }));
 }
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function CartRouteClient() {
   const { user, loading } = useAuth();
@@ -140,11 +177,96 @@ export function CartRouteClient() {
     ? (serverCart?.subtotal ?? 0)
     : cartItems.reduce((sum, i) => sum + i.meta.price * i.quantity, 0);
 
-  const isEmpty = cartItems.length === 0;
-  const isLoading = loading || (isAuthenticated && serverLoading);
-  const sellerGroups = useMemo(() => groupBySeller(cartItems), [cartItems]);
+  // ---------------------------------------------------------------------------
+  // W1: Stale validation — run once on cart load
+  // ---------------------------------------------------------------------------
+  const validatedRef = useRef(false);
+  const [outOfStockIds, setOutOfStockIds] = useState<Set<string>>(new Set());
 
-  // -- Applied coupons (server is source of truth; local state for optimistic updates)
+  useEffect(() => {
+    if (loading || (isAuthenticated && serverLoading)) return;
+    if (cartItems.length === 0) return;
+    if (validatedRef.current) return;
+    validatedRef.current = true;
+
+    const productIds = cartItems.map((i) => i.productId);
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/cart/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productIds }),
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as ValidateResponse;
+        const { stale, outOfStock } = data.data;
+
+        // --- Remove stale items ---
+        if (stale.length > 0) {
+          if (isAuthenticated) {
+            // Find itemIds for stale productIds and call DELETE for each
+            const staleSet = new Set(stale);
+            const staleItems = cartItems.filter((i) => staleSet.has(i.productId));
+            await Promise.allSettled(
+              staleItems.map((item) => {
+                const id = item.itemId ?? item.id;
+                return fetch(`/api/cart/${encodeURIComponent(id)}`, {
+                  method: "DELETE",
+                  credentials: "include",
+                });
+              }),
+            );
+            refetch?.();
+          } else {
+            // Guest cart — remove from localStorage
+            const staleSet = new Set(stale);
+            for (const productId of staleSet) {
+              guest.remove(productId);
+            }
+          }
+          showToast(
+            `${stale.length} item${stale.length !== 1 ? "s" : ""} removed — no longer available.`,
+            "info",
+          );
+        }
+
+        // --- Mark out-of-stock items ---
+        if (outOfStock.length > 0) {
+          setOutOfStockIds(new Set(outOfStock));
+        }
+      } catch {
+        // Validation is best-effort; don't surface errors
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, serverLoading, isAuthenticated]);
+
+  // Reset validation flag when cart changes (user logs in/out)
+  useEffect(() => {
+    validatedRef.current = false;
+  }, [user?.uid]);
+
+  // ---------------------------------------------------------------------------
+  // W3: Split items into in-stock and out-of-stock
+  // ---------------------------------------------------------------------------
+  const [inStockItems, oosItems] = useMemo(() => {
+    const inStock: typeof cartItems = [];
+    const oos: typeof cartItems = [];
+    for (const item of cartItems) {
+      if (outOfStockIds.has(item.productId)) oos.push(item);
+      else inStock.push(item);
+    }
+    return [inStock, oos];
+  }, [cartItems, outOfStockIds]);
+
+  const isEmpty = cartItems.length === 0;
+  const hasOnlyOos = inStockItems.length === 0 && oosItems.length > 0;
+  const isLoading = loading || (isAuthenticated && serverLoading);
+
+  // ---------------------------------------------------------------------------
+  // Applied coupons
+  // ---------------------------------------------------------------------------
   const serverAppliedCoupons: AppliedCoupon[] = serverCart?.cart?.appliedCoupons ?? [];
   const [localCoupons, setLocalCoupons] = useState<AppliedCoupon[] | null>(null);
   const effectiveCoupons = localCoupons ?? serverAppliedCoupons;
@@ -216,14 +338,15 @@ export function CartRouteClient() {
     [isAuthenticated, effectiveCoupons, showToast, refetch],
   );
 
-  // -- Item selection for partial checkout
+  // ---------------------------------------------------------------------------
+  // Item selection for partial checkout
+  // ---------------------------------------------------------------------------
   const serverSelectedSet = useMemo(
     () => new Set(serverCart?.cart?.selectedItemIds ?? []),
     [serverCart],
   );
-  const allItemIds = useMemo(() => cartItems.map((i) => i.itemId ?? i.id), [cartItems]);
+  const allItemIds = useMemo(() => inStockItems.map((i) => i.itemId ?? i.id), [inStockItems]);
   const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null);
-  // null = all selected; use server state as initial fallback
   const effectiveSelected =
     selectedIds ??
     (serverSelectedSet.size > 0 && serverSelectedSet.size < allItemIds.length
@@ -263,37 +386,85 @@ export function CartRouteClient() {
     }
   }, [isAuthenticated]);
 
-  // -- Totals for selected items
+  // ---------------------------------------------------------------------------
+  // Totals
+  // ---------------------------------------------------------------------------
   const selectedSubtotal = useMemo(() => {
     if (!effectiveSelected) return subtotal;
-    return cartItems
+    return inStockItems
       .filter((i) => effectiveSelected.has(i.itemId ?? i.id))
       .reduce((s, i) => s + i.meta.price * i.quantity, 0);
-  }, [cartItems, effectiveSelected, subtotal]);
+  }, [inStockItems, effectiveSelected, subtotal]);
 
   const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
   const finalTotal = Math.max(0, selectedSubtotal - totalDiscount);
 
+  // ---------------------------------------------------------------------------
+  // Item actions — W1 R1: proper toast on all mutations
+  // ---------------------------------------------------------------------------
   const handleQtyChange = useCallback(
-    (id: string, qty: number) => {
+    async (id: string, qty: number) => {
       if (!isAuthenticated) {
         if (qty <= 0) guest.remove(id);
         else guest.updateQuantity(id, qty);
+        return;
+      }
+      // Auth cart — PATCH item via API
+      if (qty <= 0) return; // guard; remove handled by handleRemove
+      try {
+        const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity: qty }),
+          credentials: "include",
+        });
+        if (!res.ok) {
+          showToast("Could not update quantity. Please try again.", "error");
+        } else {
+          refetch?.();
+        }
+      } catch {
+        showToast("Could not update quantity. Please try again.", "error");
       }
     },
-    [isAuthenticated, guest],
+    [isAuthenticated, guest, showToast, refetch],
   );
 
   const handleRemove = useCallback(
-    (id: string) => {
+    async (id: string) => {
       if (!isAuthenticated) {
         guest.remove(id);
         showToast("Item removed from cart.", "info");
+        return;
+      }
+      // Auth cart — DELETE item via API
+      try {
+        const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) {
+          showToast("Could not remove item. Please try again.", "error");
+        } else {
+          showToast("Item removed from cart.", "info");
+          refetch?.();
+        }
+      } catch {
+        showToast("Could not remove item. Please try again.", "error");
       }
     },
-    [isAuthenticated, guest, showToast],
+    [isAuthenticated, guest, showToast, refetch],
   );
 
+  // ---------------------------------------------------------------------------
+  // Render helpers — W4 product link
+  // ---------------------------------------------------------------------------
+  const sellerGroupsInStock = useMemo(() => groupBySeller(inStockItems), [inStockItems]);
+  const sellerGroupsOos = useMemo(() => groupBySeller(oosItems), [oosItems]);
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
   return (
     <CartView
       labels={{ title: "Cart" }}
@@ -301,7 +472,7 @@ export function CartRouteClient() {
       isLoading={isLoading}
       renderItems={(itemsLoading) => (
         <Div className="space-y-6">
-          {/* Select-all toggle */}
+          {/* Select-all toggle — only over in-stock items */}
           {!isEmpty && !itemsLoading && isAuthenticated && allItemIds.length > 1 && (
             <Div className="flex items-center gap-2">
               <input
@@ -324,67 +495,48 @@ export function CartRouteClient() {
           {itemsLoading ? (
             <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
           ) : (
-            sellerGroups.map((group) => (
-              <Div key={group.sellerId}>
-                {/* Seller header */}
-                <Div className="mb-2 flex flex-wrap items-center gap-1.5">
-                  <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    Sold by
-                  </Text>
-                  {group.sellerSlug ? (
-                    <Link
-                      href={`/stores/${group.sellerSlug}`}
-                      className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
-                    >
-                      {group.sellerName}
-                    </Link>
-                  ) : (
-                    <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
-                      {group.sellerName}
-                    </Text>
-                  )}
-                  {/* Seller-scoped coupon badges */}
-                  {effectiveCoupons
-                    .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
-                    .map((c) => (
-                      <span
-                        key={c.code}
-                        className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
-                      >
-                        {c.code}
-                      </span>
-                    ))}
-                </Div>
+            <>
+              {/* --- In-stock seller groups --- */}
+              {sellerGroupsInStock.map((group) => (
+                <SellerGroupSection
+                  key={group.sellerId}
+                  group={group}
+                  isAuthenticated={isAuthenticated}
+                  effectiveSelected={effectiveSelected}
+                  effectiveCoupons={effectiveCoupons}
+                  outOfStockIds={outOfStockIds}
+                  onToggleItem={toggleItem}
+                  onQtyChange={handleQtyChange}
+                  onRemove={handleRemove}
+                  isOutOfStock={false}
+                />
+              ))}
 
-                {/* Items */}
-                <Div className="space-y-3">
-                  {group.items.map((item) => {
-                    const iid = item.itemId ?? item.id;
-                    const isChecked = !effectiveSelected || effectiveSelected.has(iid);
-                    return (
-                      <Div key={item.id} className="flex items-start gap-3">
-                        {isAuthenticated && (
-                          <input
-                            type="checkbox"
-                            aria-label={`Select ${item.meta.title}`}
-                            checked={isChecked}
-                            onChange={() => toggleItem(iid)}
-                            className="mt-5 h-4 w-4 flex-shrink-0 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
-                          />
-                        )}
-                        <Div className="flex-1">
-                          <CartItemRow
-                            item={item}
-                            onQtyChange={handleQtyChange}
-                            onRemove={handleRemove}
-                          />
-                        </Div>
-                      </Div>
-                    );
-                  })}
+              {/* --- Out-of-stock section (W3) --- */}
+              {oosItems.length > 0 && (
+                <Div>
+                  <Text className="mb-3 text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
+                    Out of Stock ({oosItems.length})
+                  </Text>
+                  <Div className="space-y-3">
+                    {sellerGroupsOos.map((group) => (
+                      <SellerGroupSection
+                        key={group.sellerId}
+                        group={group}
+                        isAuthenticated={isAuthenticated}
+                        effectiveSelected={null}
+                        effectiveCoupons={[]}
+                        outOfStockIds={outOfStockIds}
+                        onToggleItem={toggleItem}
+                        onQtyChange={handleQtyChange}
+                        onRemove={handleRemove}
+                        isOutOfStock={true}
+                      />
+                    ))}
+                  </Div>
                 </Div>
-              </Div>
-            ))
+              )}
+            </>
           )}
         </Div>
       )}
@@ -498,14 +650,19 @@ export function CartRouteClient() {
           <Button
             type="button"
             onClick={() => router.push(String(ROUTES.USER.CHECKOUT))}
-            disabled={isEmpty || selectedCount === 0}
+            disabled={isEmpty || selectedCount === 0 || hasOnlyOos}
             className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             {!isAllSelected && selectedCount > 0
               ? `Checkout ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
               : "Checkout"}
           </Button>
-          {!isAllSelected && selectedCount > 0 && (
+          {hasOnlyOos && (
+            <Text className="text-center text-xs text-red-600 dark:text-red-400">
+              All items are out of stock. Remove them to continue.
+            </Text>
+          )}
+          {!isAllSelected && selectedCount > 0 && !hasOnlyOos && (
             <button
               type="button"
               onClick={async () => { await selectAll(); router.push(String(ROUTES.USER.CHECKOUT)); }}
@@ -530,5 +687,98 @@ export function CartRouteClient() {
         </Div>
       )}
     />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SellerGroupSection — extracted to avoid repetitive JSX inline
+// ---------------------------------------------------------------------------
+
+interface SellerGroupSectionProps {
+  group: SellerGroup;
+  isAuthenticated: boolean;
+  effectiveSelected: Set<string> | null;
+  effectiveCoupons: AppliedCoupon[];
+  outOfStockIds: Set<string>;
+  onToggleItem: (itemId: string) => void;
+  onQtyChange: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+  isOutOfStock: boolean;
+}
+
+function SellerGroupSection({
+  group,
+  isAuthenticated,
+  effectiveSelected,
+  effectiveCoupons,
+  onToggleItem,
+  onQtyChange,
+  onRemove,
+  isOutOfStock,
+}: SellerGroupSectionProps) {
+  return (
+    <Div>
+      {/* Seller header */}
+      <Div className="mb-2 flex flex-wrap items-center gap-1.5">
+        <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Sold by
+        </Text>
+        {group.sellerSlug ? (
+          <Link
+            href={String(ROUTES.PUBLIC.STORE_DETAIL(group.sellerSlug))}
+            className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
+          >
+            {group.sellerName}
+          </Link>
+        ) : (
+          <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
+            {group.sellerName}
+          </Text>
+        )}
+        {/* Seller-scoped coupon badges */}
+        {effectiveCoupons
+          .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
+          .map((c) => (
+            <span
+              key={c.code}
+              className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
+            >
+              {c.code}
+            </span>
+          ))}
+      </Div>
+
+      {/* Items */}
+      <Div className="space-y-3">
+        {group.items.map((item) => {
+          const iid = item.itemId ?? item.id;
+          const isChecked = !effectiveSelected || effectiveSelected.has(iid);
+          const productHref = getProductHref(item.productId, item.isAuction, item.isPreOrder);
+
+          return (
+            <Div key={item.id} className="flex items-start gap-3">
+              {isAuthenticated && !isOutOfStock && (
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${item.meta.title}`}
+                  checked={isChecked}
+                  onChange={() => onToggleItem(iid)}
+                  className="mt-5 h-4 w-4 flex-shrink-0 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+                />
+              )}
+              <Div className="flex-1">
+                <CartItemRow
+                  item={item}
+                  href={productHref}
+                  isOutOfStock={isOutOfStock}
+                  onQtyChange={isOutOfStock ? undefined : onQtyChange}
+                  onRemove={onRemove}
+                />
+              </Div>
+            </Div>
+          );
+        })}
+      </Div>
+    </Div>
   );
 }

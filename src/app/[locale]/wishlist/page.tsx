@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   useWishlistWithGuest,
   useSession,
@@ -11,6 +11,7 @@ import {
   Div,
   Heading,
   Text,
+  useToast,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 
@@ -23,11 +24,41 @@ const SORT_OPTIONS = [
 
 export default function WishlistPage() {
   const { user, loading: sessionLoading } = useSession();
+  const { showToast } = useToast();
   const wl = useWishlistWithGuest(sessionLoading ? undefined : user?.uid ?? null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-addedAt");
 
   const isLoading = sessionLoading || wl.isLoading;
+
+  // W2: Stale validation — run once after wishlist loads for auth users
+  const validatedRef = useRef(false);
+  useEffect(() => {
+    if (!user?.uid || wl.isLoading) return;
+    if (validatedRef.current) return;
+    validatedRef.current = true;
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/user/wishlist/validate", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { data: { removedCount: number } };
+        const { removedCount } = data.data;
+        if (removedCount > 0) {
+          showToast(
+            `${removedCount} wishlisted item${removedCount !== 1 ? "s" : ""} removed — product${removedCount !== 1 ? "s" : ""} no longer available.`,
+            "info",
+          );
+          wl.refetch?.();
+        }
+      } catch {
+        // Best-effort — don't surface errors to the user
+      }
+    })();
+  }, [user?.uid, wl.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredItems = useMemo(() => {
     let result = (wl.items as EnrichedWishlistItem[]).slice();

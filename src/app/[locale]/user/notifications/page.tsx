@@ -10,6 +10,7 @@ import {
   Row,
   Stack,
   Button,
+  useToast,
 } from "@mohasinac/appkit/client";
 
 interface NotifItem {
@@ -109,6 +110,7 @@ function NotifCard({
 export default function NotificationsPage() {
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const { data, isLoading } = useQuery<NotifResponse>({
@@ -125,18 +127,27 @@ export default function NotificationsPage() {
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "PATCH" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user-notifications"] }),
+    onError: () => showToast("Could not mark notification as read.", "error"),
   });
 
   const { mutate: markAllRead, isPending: markingAll } = useMutation({
     mutationFn: () =>
       fetch("/api/user/notifications/read-all", { method: "POST" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user-notifications"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+      showToast("All notifications marked as read.", "success");
+    },
+    onError: () => showToast("Could not mark notifications as read.", "error"),
   });
 
   const { mutate: deleteNotif } = useMutation({
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "DELETE" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user-notifications"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+      showToast("Notification deleted.", "info");
+    },
+    onError: () => showToast("Could not delete notification.", "error"),
   });
 
   const filtered = useMemo(() => {
