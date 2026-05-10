@@ -151,12 +151,20 @@ async function _GET(request: Request): Promise<NextResponse> {
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const isRecoverableQueryError =
+    const isIndexError =
       message.includes("FAILED_PRECONDITION") ||
       message.toLowerCase().includes("index") ||
       message.toLowerCase().includes("requires an index");
+    const isPermissionError =
+      message.includes("PERMISSION_DENIED") ||
+      message.includes("7 PERMISSION_DENIED") ||
+      message.toLowerCase().includes("permission denied");
 
-    if (isRecoverableQueryError) {
+    if (isIndexError || isPermissionError) {
+      const warning = isPermissionError
+        ? "Firestore permission denied — check security rules for the products collection"
+        : "Firestore index missing — run: firebase deploy --only firestore:indexes";
+      logError("products", `GET /api/products recoverable DB error: ${warning}`, error);
       return NextResponse.json({
         success: true,
         data: {
@@ -166,14 +174,8 @@ async function _GET(request: Request): Promise<NextResponse> {
           pageSize,
           totalPages: 0,
           hasMore: false,
-          query: {
-            filters,
-            sorts,
-            page,
-            pageSize,
-          },
+          warning,
         },
-        warning: "Query fallback due to index constraints",
       });
     }
 
