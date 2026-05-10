@@ -29,6 +29,12 @@ module.exports = {
     "sm:flex",
     "sm:hidden",
     "sm:block",
+    // Responsive grid column utilities used by appkit listing components
+    // (EventsIndexListing, BlogIndexListing, AuctionsIndexListing, StoresIndexListing,
+    // ReviewsIndexListing, CouponsIndexListing, CategoriesIndexListing).
+    // These live only in appkit source — host JIT must emit them to avoid cascade conflicts.
+    "lg:grid-cols-3",
+    "xl:grid-cols-5",
     // Zinc neutrals (light mode)
     "bg-white",
     "bg-zinc-50",

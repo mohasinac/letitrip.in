@@ -54,7 +54,7 @@ const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
 
 export default function LayoutShellClient({
   children,
-  seedPanelEnabled = false,
+  seedPanelEnabled = true,
 }: {
   children: ReactNode;
   seedPanelEnabled?: boolean;
