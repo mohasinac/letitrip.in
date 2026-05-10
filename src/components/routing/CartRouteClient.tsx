@@ -630,7 +630,7 @@ export function CartRouteClient() {
                   <Text className="text-sm text-zinc-500 dark:text-zinc-400">
                     Total discount ({effectiveCoupons.length} coupon{effectiveCoupons.length !== 1 ? "s" : ""})
                   </Text>
-                  <Text className="text-sm text-emerald-600 dark:text-emerald-400">
+                  <Text className="text-sm text-[var(--appkit-color-success)]">
                     &minus;₹{totalDiscount.toFixed(2)}
                   </Text>
                 </Div>
