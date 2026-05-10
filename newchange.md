@@ -33,6 +33,24 @@
 
 ---
 
+# SCAM3 + SCAM5 — 2026-05-10
+
+## Scope
+SCAM3 remaining pieces + SCAM5 form + API.
+
+## What changed
+
+### SCAM3 — /scams/types page + ScamProfileView additions
+- `src/app/[locale]/scams/types/page.tsx` — new RSC; 7 category sections from `SCAM_CATEGORIES`; 2-column Card grid per category showing each ScamType label, shortDescription, howItHappens (first 150 chars), howToAvoid as numbered list; `generateMetadata`; breadcrumb; CTA footer.
+- `appkit/src/features/scams/components/ScamProfileView.tsx` — added "How to Avoid This Scam" numbered block (from `getScamType`) after "What Happened"; added three EmptyState placeholder sections: "Additional Incidents", "Community Discussion", "Related Profiles"; extended `ScamProfileViewProps` with optional `incidents?`, `comments?`, `relatedScammers?` props.
+- `appkit/src/next/routing/route-map.ts` — `ROUTES.PUBLIC.SCAM_TYPES = "/scams/types"` (already in prev commit).
+- `appkit/src/index.ts` — added `SCAM_CATEGORIES` + `ScamCategoryDefinition` exports (already in prev commit).
+
+### Deferred (SCAM3)
+- Subcollection live data (incidents subcollection API, live comments, live related scammers) — requires backend subcollection queries. Deferred to post-SCAM3.
+
+---
+
 # P27 Payouts Expansion — 2026-05-10
 
 ## Scope
