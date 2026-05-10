@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPublicScammerById } from "@mohasinac/appkit";
+import { getScammerProfilePageData } from "@mohasinac/appkit";
 import { ScamProfileView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { SCAM_TYPE_LABELS } from "@mohasinac/appkit";
@@ -13,9 +13,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const scammer = await getPublicScammerById(id).catch(() => null);
-  if (!scammer) return { title: "Profile Not Found" };
+  const data = await getScammerProfilePageData(id).catch(() => null);
+  if (!data) return { title: "Profile Not Found" };
 
+  const { scammer } = data;
   const name = scammer.displayNames[0] ?? "Unknown";
   const scamLabel = SCAM_TYPE_LABELS[scammer.scamType] ?? scammer.scamType;
 
@@ -35,11 +36,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const scammer = await getPublicScammerById(id).catch(() => null);
+  const data = await getScammerProfilePageData(id).catch(() => null);
 
-  if (!scammer) notFound();
+  if (!data) notFound();
 
-  // Auth is checked client-side on actions (report/contest).
-  // The profile page itself is public — server-render for SEO.
-  return <ScamProfileView scammer={scammer} isAuthenticated={false} />;
+  return (
+    <ScamProfileView
+      scammer={data.scammer}
+      incidents={data.incidents}
+      comments={data.comments}
+      relatedScammers={data.relatedScammers}
+      isAuthenticated={false}
+    />
+  );
 }

@@ -91,6 +91,9 @@ export const API_ROUTES = {
     ADDRESS_BY_ID: (id: string) => `/api/store/addresses/${id}`,
     BIDS: "/api/store/bids",
   },
+  SCAMS: {
+    REPORTS: "/api/scams/reports",
+  },
   USER: {
     PROFILE: "/api/user/profile",
     ADDRESSES: "/api/user/addresses",
