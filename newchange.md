@@ -33,6 +33,45 @@
 
 ---
 
+# Alpha Release — 2026-05-10 (appkit publish + Vercel prod deploy)
+
+## Scope
+
+Verify alpha gate (sessions 77–80 ✅), publish `@mohasinac/appkit`, and deploy letitrip to Vercel prod.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/package.json` | Version `2.3.2 → 2.4.3`; added `"sideEffects": false` (critical for Turbopack tree-shaking) |
+| `appkit/src/index.ts` | Added `SCAM_CATEGORIES`, `ScamCategoryDefinition` exports |
+| `appkit/src/next/routing/route-map.ts` | Added `ROUTES.PUBLIC.SCAM_TYPES = "/scams/types"` |
+| `appkit/src/client.ts` | Added SCAM_TYPES, SCAM_CATEGORIES, SCAM_TYPE_LABELS, SCAM_PLATFORM_LABELS + types (SCAM3 partial) |
+| `appkit/src/features/scams/actions/scam-actions.ts` | Added `ScammerProfilePageData` + `getScammerProfilePageData()` (parallel fetch: incidents + comments + related) |
+| `appkit/src/features/scams/repository/scammer.repository.ts` | Added `listPublicIncidents()`, `listPublicComments()`, `findManyById()` subcollection methods |
+| `appkit/src/seed/payouts-seed-data.ts` | Expanded 7 → 25+ records (P27) |
+| `package.json` | `@mohasinac/appkit: "file:./appkit"` → `"^2.4.3"` (npm registry) |
+| `package-lock.json` | Regenerated clean — resolves from `https://registry.npmjs.org/` (was `"link": true` to local path) |
+| `src/app/[locale]/scams/types/page.tsx` | NEW — `/scams/types` static page: all 27 scam patterns by category (SCAM3 partial) |
+| `src/app/api/demo/seed/route.ts` | Protect admin user (`user-admin-letitrip`) from seed delete — skip with `PROTECTED_UIDS` set |
+| `CLAUDE.md` | Added **appkit Export Rules** section (what belongs in index/client/server.ts + Turbopack trap explanation) and **Appkit Publish & Deploy Rules** section (9-step checklist); added 4 new anti-patterns to Known TS Patterns to Avoid |
+
+## Root cause: Turbopack client-bundle trap
+
+`appkit/src/index.ts` re-exports `providers/storage-firebase` which has a static top-level `import from "firebase-admin/app"`. Local dev uses **webpack**, which externalizes firebase-admin via `next.config.js` `externals`. **Vercel production uses Turbopack**, which ignores webpack `externals` and includes the full import chain in the client bundle → `child_process`/`fs` not found in browser → build failure.
+
+Fix: `"sideEffects": false` in `appkit/package.json` — tells both webpack and Turbopack to tree-shake any re-exported module whose symbols are not consumed. Client components that don't use `firebaseStorageProvider` no longer pull in the firebase-admin chain.
+
+## File:./appkit vs npm registry
+
+`file:./appkit` in `package.json` works locally (webpack + externals handles the firebase chain). It breaks on Vercel because `appkit/dist/` is gitignored, Vercel CLI excludes it when uploading, and `npm ci` links to a dist-less directory. Always publish to npm and update the version pin before deploying.
+
+## Deferred
+
+None.
+
+---
+
 # Session 83 — 2026-05-10 (SCAM3 live data + SCAM5 form + VD8 about rewrite)
 
 ## Scope

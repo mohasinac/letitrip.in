@@ -18,6 +18,8 @@
 - [Seed API Reference](#seed-api-reference)
 - [Firebase Infra Scripts](#firebase-infra-scripts-appkitscripts)
 - [CSS Variable Reference](#css-variable-reference-sticky-positioning)
+- [appkit Export Rules](#appkit-export-rules)
+- [Appkit Publish & Deploy Rules](#appkit-publish--deploy-rules)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 
 ---
@@ -281,6 +283,60 @@ Other CSS variables:
 
 ---
 
+## appkit Export Rules
+
+> **Always enforce these when touching `appkit/src/index.ts`, `appkit/src/client.ts`, or `appkit/src/server.ts`.**
+
+### What belongs where
+
+| Export type | `index.ts` (main) | `client.ts` | `server.ts` |
+|-------------|:-----------------:|:-----------:|:-----------:|
+| UI components, hooks, ROUTES, tokens | ✅ | ✅ | ❌ |
+| Pure constants (SCAM_TYPES, slug patterns, etc.) | ✅ | ✅ | ❌ |
+| Repositories (`scammerRepository`, etc.) | ✅ | ❌ | ✅ |
+| Firebase Admin providers (`getAdminDb`, `getAdminAuth`, `getAdminStorage`, `firebaseStorageProvider`, `firebaseDbProvider`) | ❌ | ❌ | ✅ |
+| Server actions (`"use server"` functions) | ✅ | ❌ | ✅ |
+
+### Why this matters (the Turbopack client-bundle trap)
+
+Local dev uses **webpack**, which respects the `externals` function in `next.config.js` — firebase-admin is silently externalized even if it leaks into the main index. **Vercel prod uses Turbopack**, which ignores webpack `externals`. Turbopack strictly follows the full import chain from every module included in `dist/index.js`. If any re-exported symbol's module chain reaches `firebase-admin` (which has a **static top-level** `import from "firebase-admin/app"`), Turbopack will include `child_process`/`fs` in the **client** bundle → build failure.
+
+**`"sideEffects": false`** in `appkit/package.json` is the safety net: it tells both webpack and Turbopack to eliminate any re-exported module whose symbols are not actually consumed. Never remove this flag.
+
+### Rules
+
+```
+✗ Never add a top-level (module-scope) call to firebase-admin APIs in any appkit file
+✗ Never export from providers/db-firebase or providers/storage-firebase in index.ts
+✗ Never export server-only code in client.ts
+✓ Server providers live in server.ts + their own subpath (providers/db-firebase, providers/storage-firebase)
+✓ When adding a new provider or repository to index.ts, check: does its import chain reach firebase-admin?
+```
+
+---
+
+## Appkit Publish & Deploy Rules
+
+> **Follow this sequence every time appkit changes must reach Vercel production.**
+
+```
+1. Commit all appkit changes (no uncommitted source when building)
+2. Bump version in appkit/package.json  (patch = 0.0.1, minor = 0.1.0)
+3. npm run build  (in appkit/)
+4. npm publish    (in appkit/)
+5. Update letitrip/package.json  "@mohasinac/appkit": "^X.Y.Z"
+6. Delete package-lock.json + re-run npm install  (ensures lockfile resolves from npm registry, not file:)
+7. npx tsc --noEmit  (both repos, must be 0 errors)
+8. Commit package.json + package-lock.json
+9. vercel --prod
+```
+
+**Why not `file:./appkit`?** `appkit/dist/` is gitignored. Vercel CLI respects gitignore when uploading, so the dist folder is excluded. `npm ci` with a `file:` dep will link to a dist-less directory and the build will fail. **`file:./appkit` is local-dev only.**
+
+**Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` for `@mohasinac/appkit`, the lockfile still points to the local directory. Delete the lockfile and re-run `npm install`.
+
+---
+
 ## Known TS Patterns to Avoid
 
 | Anti-pattern | Correct alternative |
@@ -294,3 +350,7 @@ Other CSS variables:
 | `as unknown as SomeThing` | Fix the underlying type mismatch — ask if unsure |
 | Skipping `npx tsc --noEmit` | Always run in BOTH `letitrip.in/` and `appkit/` before committing |
 | `@import "@mohasinac/appkit/styles"` in `globals.css` | `import "@mohasinac/appkit/styles"` in `layout.tsx` — Turbopack inlines CSS @imports before PostCSS runs, breaking tailwindcss + autoprefixer with "Unknown AST node type 0". Always import pre-compiled node_modules CSS via JS imports, not CSS @import. |
+| Exporting firebase-admin providers from `appkit/src/index.ts` | Move to `server.ts` only — they leak into client bundles via Turbopack (see appkit Export Rules above) |
+| Removing `"sideEffects": false` from `appkit/package.json` | This flag is required; without it Turbopack bundles the full firebase-admin chain into client bundles |
+| `"@mohasinac/appkit": "file:./appkit"` in letitrip `package.json` at deploy time | Switch to `"^X.Y.Z"` from npm before `vercel --prod` (see Appkit Publish & Deploy Rules above) |
+| Building and publishing appkit with uncommitted source changes | Always commit first — the build compiles from the working tree, so the published dist may not match git history |
