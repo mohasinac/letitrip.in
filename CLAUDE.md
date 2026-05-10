@@ -315,25 +315,38 @@ Local dev uses **webpack**, which respects the `externals` function in `next.con
 
 ---
 
-## Appkit Publish & Deploy Rules
+## Appkit Local Dev vs Publish Rules
 
-> **Follow this sequence every time appkit changes must reach Vercel production.**
+### 🛑 LOCAL DEVELOPMENT — use `file:./appkit` (default)
+
+During normal development, appkit is consumed as a local symlink. **Never publish to npm during a development session unless explicitly asked.**
 
 ```
-1. Commit all appkit changes (no uncommitted source when building)
-2. Bump version in appkit/package.json  (patch = 0.0.1, minor = 0.1.0)
-3. npm run build  (in appkit/)
-4. npm publish    (in appkit/)
+letitrip/package.json:  "@mohasinac/appkit": "file:./appkit"
+```
+
+Run `npm run watch:appkit` in one terminal — changes to `appkit/src/` are compiled into `appkit/dist/` automatically and picked up by the Next.js dev server immediately. No version bump, no npm publish needed.
+
+### ✅ PUBLISH TO NPM — only when explicitly asked by the user
+
+When the user says "publish appkit" or "release appkit":
+
+```
+1. Commit all appkit source changes first (no uncommitted source)
+2. Bump version in appkit/package.json  (patch = +0.0.1, minor = +0.1.0)
+3. npm run build   (in appkit/)
+4. npm publish     (in appkit/)
 5. Update letitrip/package.json  "@mohasinac/appkit": "^X.Y.Z"
-6. Delete package-lock.json + re-run npm install  (ensures lockfile resolves from npm registry, not file:)
+6. Delete package-lock.json + npm install  (lockfile must resolve from npm, not file:)
 7. npx tsc --noEmit  (both repos, must be 0 errors)
-8. Commit package.json + package-lock.json
-9. vercel --prod
+8. Commit appkit/package.json + letitrip/package.json + package-lock.json
 ```
 
-**Why not `file:./appkit`?** `appkit/dist/` is gitignored. Vercel CLI respects gitignore when uploading, so the dist folder is excluded. `npm ci` with a `file:` dep will link to a dist-less directory and the build will fail. **`file:./appkit` is local-dev only.**
+**Why `file:` works locally but not on Vercel**: `appkit/dist/` is gitignored. Vercel CLI respects gitignore when uploading, so `dist/` is excluded. `npm ci` with a `file:` dep links to a dist-less directory → build failure. The npm registry version ships `dist/` inside the tarball.
 
-**Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` for `@mohasinac/appkit`, the lockfile still points to the local directory. Delete the lockfile and re-run `npm install`.
+**Vercel deploy**: Auto-deploy on push is disabled (`vercel.json` → `"deploymentEnabled": false` for all branches). Run `vercel --prod` manually only when the user asks to deploy.
+
+**Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` after switching to npm, the lockfile still points to the local directory. Delete it and re-run `npm install`.
 
 ---
 
@@ -352,5 +365,5 @@ Local dev uses **webpack**, which respects the `externals` function in `next.con
 | `@import "@mohasinac/appkit/styles"` in `globals.css` | `import "@mohasinac/appkit/styles"` in `layout.tsx` — Turbopack inlines CSS @imports before PostCSS runs, breaking tailwindcss + autoprefixer with "Unknown AST node type 0". Always import pre-compiled node_modules CSS via JS imports, not CSS @import. |
 | Exporting firebase-admin providers from `appkit/src/index.ts` | Move to `server.ts` only — they leak into client bundles via Turbopack (see appkit Export Rules above) |
 | Removing `"sideEffects": false` from `appkit/package.json` | This flag is required; without it Turbopack bundles the full firebase-admin chain into client bundles |
-| `"@mohasinac/appkit": "file:./appkit"` in letitrip `package.json` at deploy time | Switch to `"^X.Y.Z"` from npm before `vercel --prod` (see Appkit Publish & Deploy Rules above) |
+| `"@mohasinac/appkit": "^X.Y.Z"` (npm) in letitrip `package.json` during local dev | Use `file:./appkit` for local dev; only switch to npm version when deploying or when user asks to publish |
 | Building and publishing appkit with uncommitted source changes | Always commit first — the build compiles from the working tree, so the published dist may not match git history |

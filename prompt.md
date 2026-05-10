@@ -26,6 +26,7 @@
 8. **Update ASCII diagrams** — add/update any diagrams affected by new pages or flows.
 9. **Seed data + Firebase** — if any schema changed: update seed files in `appkit/src/seed/`, update `firestore.indexes.json`, update SeedPanel entries, update sievejs config.
 10. **Commit** — code commit first, then a separate docs commit.
+11. **appkit: build only, do NOT publish** — run `npm run build` in `appkit/` so `dist/` is up to date for local dev. Only bump version + `npm publish` when the user explicitly says to release. Vercel auto-deploy is disabled; only `vercel --prod` when asked.
 
 > **Why:** `prompt.md` is read cold at every session start. Stale LAST COMPLETED and 🔜 NEXT means the next session wastes turns re-deriving context and risks regression.
 
@@ -319,10 +320,14 @@ Search `appkit/src/` first. Primitives → `appkit/src/ui/`. Features → `appki
 
 ### Build cycle (appkit changes)
 ```bash
-npm run watch:appkit   # terminal 1
-npm run dev            # terminal 2
+npm run watch:appkit   # terminal 1 — compiles appkit/src/ → appkit/dist/ on save
+npm run dev            # terminal 2 — Next.js picks up appkit/dist/ changes live
 npx tsc --noEmit       # must pass before commit (both repos)
 ```
+
+**appkit is consumed via `file:./appkit` during local dev** — no npm publish needed.
+Only publish to npm when the user explicitly asks. Vercel auto-deploy is disabled (`vercel.json`).
+See CLAUDE.md "Appkit Local Dev vs Publish Rules" for the full publish checklist.
 
 ---
 
