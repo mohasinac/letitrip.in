@@ -3052,13 +3052,13 @@ APIs: GET /api/store/reviews?rating=&replied=&page=&pageSize=
 │  [All ratings ▾]  [All reply statuses ▾]                    42 reviews     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Hot Wheels Redline Vintage                                                  │
-│  ★★★★★  by Rahul Sharma  [Verified ✓]  [approved]  [Replied ✓]            │
+│  ★★★★★  by Rahul Sharma  [Verified ✓]  [approved]  [Store replied ✓]      │
 │  "Perfect packaging, arrived sealed…"                                       │
-│  ↳ Your reply: "Thank you so much, Rahul!…"                                │
+│  ↳ Store reply: "Thank you so much, Rahul!…"                               │
 │                                                           [Edit Reply]       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Pikachu Figure 1/10 Scale                                                  │
-│  ★★★☆☆  by Priya Singh                [approved]   [Pending reply ⚠]      │
+│  ★★★☆☆  by Priya Singh                [approved]   [Awaiting store reply ⚠]│
 │  "Good figure but delayed shipping…"                                        │
 │                                                              [Reply]         │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -3069,7 +3069,7 @@ Reply SideDrawer:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  ★★★☆☆  "Good figure but delayed shipping…"                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Your reply                                                                  │
+│  Store reply                                                                 │
 │  ┌─────────────────────────────────────────────────────┐                   │
 │  │ We apologise for the delay — there was a courier…   │                   │
 │  └─────────────────────────────────────────────────────┘  245/1000         │
