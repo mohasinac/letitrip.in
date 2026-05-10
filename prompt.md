@@ -40,6 +40,16 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Session 88 ✅ 2026-05-10 (Search + Routes — RC3 + RC4)
+
+| Task | What was done |
+|------|--------------|
+| **RC4** | Removed all 10 `[[...action]]` catch-all folders from admin routes (blog, coupons, carousel, bids, deals, featured, orders, reviews, sections, users). Created `/page.tsx` list pages for each. Updated hardcoded `actionHref`/`getRowHref` strings in blog/coupons/deals/featured to use `ROUTES.ADMIN.*` constants. Zero `[[...action]]` folders remain. ✅ |
+| **RC3** | Added `asChild` prop to appkit `Button` via `React.cloneElement` — enables `<Button asChild><Link>` styled-navigation pattern. Fixed all 4 violations: CartRouteClient checkout button (conditional `Button asChild + Link` / `Button disabled`); ProfilePageClient "Manage Addresses" → `<Link>`; UserAddressesClient "+ Add Address" → `<Link>`; store/sublisting-categories "Edit" → `<Link>` (also removed hardcoded `#6366f1` fallback). Removed unused `useRouter` imports/instances in 2 files. appkit built → dist synced to node_modules. ✅ |
+| **appkit 2.4.11** | Built (version auto-bumped from 2.4.10). dist synced to node_modules. Both repos: 0 TS errors. |
+
+---
+
 ## ⚡ LAST COMPLETED — Hotfix 87.1 ✅ 2026-05-10 (CSS display utilities safelist + dev memory)
 
 | Task | What was done |
@@ -115,19 +125,7 @@
 
 ---
 
-## 🔜 NEXT — Session 88 ⏳ (Search + Routes)
-
-### Session 88 — Search + Routes
-| Tasks | Goal |
-|-------|------|
-| RC4 | Route ambiguity audit + CRUD route pattern standardisation |
-| RC3 | Button-vs-Link full sweep (asChild pattern) |
-
-### Session 88 — Search + Routes (already mostly done — SR1/SR2/SR3/RC1/RC2 ✅)
-| Tasks | Goal |
-|-------|------|
-| RC4 | Route ambiguity audit + CRUD route pattern standardisation |
-| RC3 | Button-vs-Link full sweep (asChild pattern) |
+## 🔜 NEXT — Session 89 ⏳ (Query/Sieve)
 
 ### Session 89 — Query/Sieve
 | Tasks | Goal |

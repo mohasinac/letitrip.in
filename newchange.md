@@ -33,6 +33,51 @@
 
 ---
 
+# Session 88 — 2026-05-10 (RC4 + RC3: Route audit + Button/Link sweep)
+
+## Scope
+RC4: All 10 `[[...action]]` catch-all folders removed from admin routes — replaced with standard `/page.tsx` list pages. RC3: `asChild` prop added to appkit Button, all `<Button onClick={() => router.push()}>` violations fixed. appkit 2.4.11 dist rebuilt.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `appkit/src/ui/components/Button.tsx` | Added `asChild?: boolean` prop — cloneElement-based Slot pattern; merges button classes onto child element |
+| `src/app/[locale]/admin/blog/page.tsx` | NEW — list page replacing `[[...action]]`; uses `ROUTES.ADMIN.BLOG_NEW` + `ROUTES.ADMIN.BLOG_EDIT` |
+| `src/app/[locale]/admin/coupons/page.tsx` | NEW — list page replacing `[[...action]]`; uses `ROUTES.ADMIN.COUPONS_NEW` + `ROUTES.ADMIN.COUPONS_EDIT` |
+| `src/app/[locale]/admin/carousel/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/bids/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/deals/page.tsx` | NEW — list page replacing `[[...action]]`; hardcoded hrefs → `ROUTES.ADMIN.PRODUCTS_NEW/EDIT` |
+| `src/app/[locale]/admin/featured/page.tsx` | NEW — list page replacing `[[...action]]`; hardcoded hrefs → `ROUTES.ADMIN.PRODUCTS_NEW/EDIT` |
+| `src/app/[locale]/admin/orders/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/reviews/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/sections/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/users/page.tsx` | NEW — list page replacing `[[...action]]` |
+| `src/app/[locale]/admin/blog/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/coupons/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/carousel/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/bids/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/deals/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/featured/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/orders/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/reviews/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/sections/[[...action]]/page.tsx` | DELETED |
+| `src/app/[locale]/admin/users/[[...action]]/page.tsx` | DELETED |
+| `src/components/routing/CartRouteClient.tsx` | RC3: checkout `<Button onClick→router.push>` → `<Button asChild><Link>` (with disabled-state conditional) |
+| `src/components/user/ProfilePageClient.tsx` | RC3: "Manage Addresses" `<button onClick→router.push>` → `<Link>`; removed unused useRouter import + call |
+| `src/components/user/UserAddressesClient.tsx` | RC3: "+ Add Address" `<button onClick→router.push>` → `<Link>`; added Link import |
+| `src/app/[locale]/store/sublisting-categories/page.tsx` | RC3: "Edit" `<button onClick→router.push>` → `<Link>`; removed hardcoded `#6366f1` CSS var fallback; removed useRouter |
+| `crud-tracker.md` | RC3 ✅, RC4 ✅, Session 88 row marked Done |
+| `prompt.md` | LAST COMPLETED updated to Session 88; NEXT updated to Session 89 |
+| `newchange.md` | This entry |
+| `memory/project_status.md` | Updated with session 88 summary |
+
+## Deferred Items
+
+_None._
+
+---
+
 # Hotfix 87.2 — 2026-05-10 (firebase-admin/database missing in Vercel Lambda)
 
 ## Scope
