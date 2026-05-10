@@ -263,6 +263,7 @@ export const STORE_NAV_GROUPS: DashboardNavGroup[] = [
       { href: String(ROUTES.STORE.SHIPPING),   label: "Shipping"   },
       { href: String(ROUTES.STORE.ADDRESSES),  label: "Addresses"  },
       { href: String(ROUTES.STORE.COUPONS),    label: "Coupons"    },
+      { href: String(ROUTES.STORE.WHATSAPP),   label: "WhatsApp"   },
     ],
   },
 ];

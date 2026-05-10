@@ -34,6 +34,7 @@
  * │  Firestore Triggers                                                     │
  * ├─────────────────────────────────────────────────────────────────────────┤
  * │  onBidPlaced        — bids/{id} onCreate                                │
+ * │  onOrderCreate      — orders/{id} onCreate  → WA announcement           │
  * │  onOrderStatusChange— orders/{id} onUpdate                              │
  * │  onProductWrite     — products/{id} onWrite                             │
  * │                       → optional external search sync (disabled)        │
@@ -68,6 +69,7 @@ export { mediaTmpCleanup } from "./jobs/mediaTmpCleanup";
 
 // ── Firestore triggers ────────────────────────────────────────────────────
 export { onBidPlaced } from "./triggers/onBidPlaced";
+export { onOrderCreate } from "./triggers/onOrderCreate";
 export { onOrderStatusChange } from "./triggers/onOrderStatusChange";
 export { onProductWrite } from "./triggers/onProductWrite";
 export { onReviewWrite } from "./triggers/onReviewWrite";
