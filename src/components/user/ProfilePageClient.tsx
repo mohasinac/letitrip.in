@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES } from "@mohasinac/appkit/client";
 
 interface ProfilePageClientProps {
-  /** When false, suppresses the page-level h1 (use when embedded inside another view). */
   standalone?: boolean;
 }
 
@@ -15,8 +14,12 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const { showToast } = useToast();
   const { data: profile, isLoading } = useProfile({ enabled: !!user });
   const [editing, setEditing] = useState(false);
-  const [displayName, setDisplayName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [displayName, setDisplayName]   = useState("");
+  const [phoneNumber, setPhoneNumber]   = useState("");
+  const [photoURL, setPhotoURL]         = useState("");
+  const [bio, setBio]                   = useState("");
+  const [isPublic, setIsPublic]         = useState(true);
 
   const update = useUpdateProfile({
     onSuccess: () => {
@@ -29,8 +32,12 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   });
 
   const handleEdit = () => {
-    setDisplayName(resolvedName !== namePlaceholder ? resolvedName : "");
+    const resolvedName = profile?.displayName || user?.displayName || "";
+    setDisplayName(resolvedName);
     setPhoneNumber(profile?.phoneNumber ?? "");
+    setPhotoURL(profile?.photoURL ?? "");
+    setBio((profile as any)?.publicProfile?.bio ?? "");
+    setIsPublic((profile as any)?.publicProfile?.isPublic ?? true);
     setEditing(true);
   };
 
@@ -39,7 +46,10 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
     await update.mutateAsync({
       displayName: displayName.trim() || undefined,
       phoneNumber: phoneNumber.trim() || undefined,
-    });
+      photoURL: photoURL.trim() || undefined,
+      bio: bio.trim(),
+      profileIsPublic: isPublic,
+    } as any);
   };
 
   if (isLoading) {
@@ -58,14 +68,12 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
     );
   }
 
-  // Fallback chain: Firestore displayName → Firebase Auth displayName → email prefix
   const resolvedName =
-    profile.displayName ||
-    user?.displayName ||
-    profile.email?.split("@")[0] ||
-    "";
+    profile.displayName || user?.displayName || profile.email?.split("@")[0] || "";
   const namePlaceholder = "Add your name";
   const avatarLetter = (resolvedName || profile.email || "?")[0].toUpperCase();
+  const profileBio = (profile as any)?.publicProfile?.bio ?? "";
+  const profileIsPublic = (profile as any)?.publicProfile?.isPublic ?? true;
 
   return (
     <div className="w-full space-y-6">
@@ -75,6 +83,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
 
       {!editing ? (
         <div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5">
+          {/* Avatar + name row */}
           <div className="flex items-center gap-4">
             {profile.photoURL ? (
               <img
@@ -83,15 +92,16 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
                 className="h-20 w-20 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-slate-700"
               />
             ) : (
-              <div className="h-20 w-20 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-3xl font-bold text-primary dark:text-primary-400 ring-2 ring-zinc-100 dark:ring-slate-700">
+              <div
+                className="h-20 w-20 rounded-full flex items-center justify-center text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700"
+                style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }}
+              >
                 {avatarLetter}
               </div>
             )}
             <div className="space-y-0.5 min-w-0">
               <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-                {resolvedName || (
-                  <span className="text-zinc-400 dark:text-zinc-500 italic">{namePlaceholder}</span>
-                )}
+                {resolvedName || <span className="text-zinc-400 dark:text-zinc-500 italic">{namePlaceholder}</span>}
               </p>
               <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">{profile.email}</p>
               {profile.phoneNumber && (
@@ -99,6 +109,20 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
               )}
             </div>
           </div>
+
+          {/* Bio */}
+          {profileBio && (
+            <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">{profileBio}</p>
+          )}
+
+          {/* Visibility badge */}
+          <p className="text-xs text-zinc-400 dark:text-zinc-500">
+            Profile visibility:{" "}
+            <span className={profileIsPublic ? "text-green-600 dark:text-green-400 font-medium" : "text-zinc-500 font-medium"}>
+              {profileIsPublic ? "Public" : "Private"}
+            </span>
+          </p>
+
           <div className="flex flex-wrap gap-3 pt-1">
             <button
               type="button"
@@ -122,6 +146,8 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
           className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5"
         >
           <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Edit Profile</h2>
+
+          {/* Display Name */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Display Name
@@ -134,6 +160,8 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
               className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+
+          {/* Phone */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Phone Number
@@ -146,6 +174,62 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
               className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+
+          {/* Avatar URL */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Avatar URL
+            </label>
+            <input
+              type="url"
+              value={photoURL}
+              onChange={(e) => setPhotoURL(e.target.value)}
+              placeholder="https://…"
+              className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {/* Bio */}
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Bio <span className="text-zinc-400 font-normal">(max 500 chars)</span>
+            </label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={500}
+              rows={3}
+              placeholder="Tell buyers a little about yourself…"
+              className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            />
+            <p className="text-right text-xs text-zinc-400">{bio.length}/500</p>
+          </div>
+
+          {/* Public profile toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-slate-700 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Public profile</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                When on, your profile is visible to other LetItRip users
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isPublic}
+              onClick={() => setIsPublic((v) => !v)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+                isPublic ? "bg-primary" : "bg-zinc-200 dark:bg-slate-600"
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                  isPublic ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
           <div className="flex gap-3 pt-1">
             <button
               type="button"
@@ -158,7 +242,8 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
             <button
               type="submit"
               disabled={update.isPending}
-              className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-60 transition-colors"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 transition-colors"
+              style={{ background: "var(--appkit-color-primary)" }}
             >
               {update.isPending ? "Saving…" : "Save Changes"}
             </button>

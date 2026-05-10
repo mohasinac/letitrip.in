@@ -1,10 +1,5 @@
-import { UserNotificationsView } from "@mohasinac/appkit";
+import { redirect } from "next/navigation";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ tab: string }>;
-}) {
-  await params;
-  return <UserNotificationsView />;
+export default async function Page() {
+  redirect("/user/notifications");
 }

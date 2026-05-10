@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { PublicProfileView, getPublicUserProfile } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { generateProfileMetadata } from "@/constants/seo.server";
@@ -10,6 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { userId } = await params;
   const user = await getPublicUserProfile(userId).catch(() => null);
   if (!user) return { title: "Profile Not Found" };
+  if ((user.publicProfile as any)?.isPublic === false) return { title: "Profile Not Found" };
   return generateProfileMetadata({
     displayName: user.displayName ?? null,
     email: null,
@@ -21,5 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { userId } = await params;
+  const user = await getPublicUserProfile(userId).catch(() => null);
+  if (!user) notFound();
+  // Private profile — return 404 so no link crawlers or direct URL visitors can access it
+  if ((user.publicProfile as any)?.isPublic === false) notFound();
   return <PublicProfileView userId={userId} />;
 }

@@ -56,17 +56,33 @@ const updateProfileSchema = z.object({
       zoom: z.number(),
     })
     .optional(),
+  bio: z.string().max(500).optional(),
+  profileIsPublic: z.boolean().optional(),
 });
 
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,
   handler: async ({ user, body }) => {
-    // Update profile (auto-resets verification flags when email/phone changes)
+    const { bio, profileIsPublic, ...coreFields } = body!;
+
+    // Update core fields (auto-resets verification flags when email/phone changes)
     const updatedUser = await userRepository.updateProfileWithVerificationReset(
       user!.uid,
-      body!,
+      coreFields,
     );
+
+    // Persist bio + visibility into publicProfile sub-object when provided
+    if (bio !== undefined || profileIsPublic !== undefined) {
+      const existing = (updatedUser as any).publicProfile ?? {};
+      await userRepository.update(user!.uid, {
+        publicProfile: {
+          ...existing,
+          ...(bio !== undefined ? { bio } : {}),
+          ...(profileIsPublic !== undefined ? { isPublic: profileIsPublic } : {}),
+        },
+      } as any);
+    }
 
     return successResponse(
       {
