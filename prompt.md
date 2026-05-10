@@ -39,7 +39,7 @@
 | **GP2** | `GroupSettingsPanel` (3-state: not-in-group / is-parent / is-child). `renderGroupSettings` render prop on `ProductForm`. Wired in `AdminProductEditorView`. Store + admin CRUD API routes (8 routes total: group start/update/dissolve, children add/unlink, leave). ✅ |
 | **Seed** | `grouped-listings-seed-data.ts` (8 bundles), `GroupedListingDocument` schema, `GROUPED_LISTINGS_COLLECTION`, seed route + SeedPanel wired. ✅ |
 | **Firebase indexes** | `groupId+isAuction+status` + `groupId+status+price` on products; `storeId+isActive+createdAt` + `isFeatured+isActive+createdAt` on groupedListings. ✅ |
-| **appkit 2.4.9** | Built + published. Root updated to `^2.4.9`. Both repos tsc 0 errors. ✅ |
+| **appkit 2.4.10** | Built + published (2.4.9 → 2.4.10 with sort bug fix, Select component, cast cleanup). Root `^2.4.10`. Both repos tsc 0 errors. ✅ |
 
 ---
 

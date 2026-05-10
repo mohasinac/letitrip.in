@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 (Session 86) — Grouped listings GP1+GP2: group fields on ProductDocument, repository batch-write methods (startGroup/dissolveGroup/linkChild/unlinkChild/leaveGroup/addChildProduct), ShowGroupSection component, GroupSettingsPanel component, renderGroupSection + renderGroupSettings render props wired in ProductDetailView/PreOrderDetailView/ProductDetailPageView/PreOrderDetailPageView/ProductForm/AdminProductEditorView, store + admin group CRUD API routes (8 routes), public GET /api/products/group/[groupId], seed data, Firebase indexes, appkit 2.4.9. 107 done, 245 remaining.
+> **Last updated:** 2026-05-10 (Session 86 + QC) — GP1+GP2 grouped listings complete. Sort bug fix in ShowGroupSection, Select component replacing raw <select>, unsafe casts removed from AdminProductEditorView. appkit 2.4.10. 107 done, 245 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
