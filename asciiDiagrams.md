@@ -3022,6 +3022,55 @@ SideDrawer:
 
 ---
 
+## Store > WhatsApp Settings ✅ (WA3+WA4 — 2026-05-10)
+
+```
+Page: /store/whatsapp
+Component: SellerWhatsAppSettingsView (appkit/src/features/whatsapp-bot/components/)
+APIs: GET/PUT /api/store/whatsapp-settings
+      POST /api/store/whatsapp-settings/catalog-sync
+Gate: StoreCapability "whatsapp_catalog_sync" (admin-granted)
+
+── Capability locked (default) ─────────────────────────────────────────────────
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ⚠  WhatsApp catalog sync is not enabled for your store.                     │
+│     Contact LetItRip support to request access.                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+── Capability granted ──────────────────────────────────────────────────────────
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  WhatsApp Business Settings                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  § 1 — Setup Guide (step-by-step Meta for Developers instructions)           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  § 2 — Connection Details                                                    │
+│  Phone Number   [+91 9876543210          ]                                   │
+│  WABA ID        [1234567890              ]                                   │
+│  Catalog ID     [9876543210              ]                                   │
+│  Access Token   [••••••                  ] [Show/Hide]                       │
+│  Sync catalog automatically    [toggle: ON]                                  │
+│  [Save Settings]                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  § 3 — Catalog Sync                                                          │
+│  Status: ✅ Connected   Last sync: 10 May 2026, 12:04   Synced: 47 products  │
+│  [Sync Products Now]                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  § 4 — Group Share Link   [https://chat.whatsapp.com/…] [Copy]              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+API: GET → { whatsappConfig: WhatsAppConfig | null }  (accessToken masked "••••••")
+     PUT → save config; token encrypted at rest (encryptPii)
+     POST catalog-sync → findByStore + filter published standard → Meta Commerce API batch
+          → updates lastCatalogSyncAt, lastSyncCount, lastSyncStatus on store doc
+
+Firebase trigger: onOrderCreate (orders/{orderId} onCreate)
+  1. Sends purchase announcement to WHATSAPP_ADMIN_NOTIFY_NUMBERS (env var, comma-sep)
+  2. Resolves store owner → decrypts owner phoneNumber → sends same announcement
+  Non-fatal: delivery failure never blocks the trigger; missing env vars = no-op
+```
+
+---
+
 # USER ACCOUNT AREA
 
 ## User > Layout Shell
