@@ -28,7 +28,7 @@ export default async function Layout({ children, params }: Props) {
   const messages = await getMessages();
 
   const siteSettings = await siteSettingsRepository.getSingleton().catch(() => null);
-  const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? false;
+  const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
 
   return (
     <NextIntlClientProvider

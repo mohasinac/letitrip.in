@@ -34,11 +34,11 @@ const CORE_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
-  "products", "bids",
+  "products", "bids", "sublistingCategories", "groupedListings",
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
-  "orders", "carts", "wishlists", "coupons", "reviews", "payouts",
+  "orders", "carts", "wishlists", "coupons", "reviews", "payouts", "conversations",
 ];
 
 const CONTENT_COLLECTIONS: SeedCollectionName[] = [
@@ -1350,51 +1350,54 @@ function ResourceAccordionCard({
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
       {/* ── Collapsed header ── */}
-      <Div className="flex items-center gap-3 px-4 py-3">
-        <Checkbox
-          id={`col-${col}`}
-          checked={selected}
-          onChange={onToggle}
-          disabled={isRunning}
-          label=""
-        />
-        {/* Expand toggle */}
-        <button
-          type="button"
-          onClick={toggleExpanded}
-          className="flex-1 flex items-center gap-2 text-left"
-        >
-          <span className="text-lg leading-none shrink-0">{meta.icon}</span>
-          <span className="text-sm font-semibold text-zinc-900 dark:text-white flex-1">
-            {meta.label}
-          </span>
-          <StatusDot state={runState} />
-          {/* Counts */}
-          <Div className="flex items-center gap-2 shrink-0">
-            {isLoadingStatus ? (
-              <span className="text-xs text-zinc-400 dark:text-slate-500">…</span>
-            ) : dbStatus ? (
-              <span
-                className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${
-                  isComplete
-                    ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40"
-                    : isEmpty
-                    ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30"
-                    : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"
-                }`}
-              >
-                {existingCount}/{seedCount}
-              </span>
-            ) : null}
-            <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>
-              {statusLabel}
-            </Badge>
-            <span className="text-zinc-400 dark:text-slate-500 text-xs w-4 text-center select-none">
-              {expanded ? "▲" : "▼"}
+      <button
+        type="button"
+        onClick={toggleExpanded}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left"
+      >
+        <span className="text-lg leading-none shrink-0">{meta.icon}</span>
+        <span className="text-sm font-semibold text-zinc-900 dark:text-white flex-1">
+          {meta.label}
+        </span>
+        <StatusDot state={runState} />
+        {/* Counts */}
+        <Div className="flex items-center gap-2 shrink-0">
+          {isLoadingStatus ? (
+            <span className="text-xs text-zinc-400 dark:text-slate-500">…</span>
+          ) : dbStatus ? (
+            <span
+              className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${
+                isComplete
+                  ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40"
+                  : isEmpty
+                  ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30"
+                  : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"
+              }`}
+            >
+              {existingCount}/{seedCount}
             </span>
-          </Div>
-        </button>
-      </Div>
+          ) : null}
+          <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>
+            {statusLabel}
+          </Badge>
+          <span className="text-zinc-400 dark:text-slate-500 text-xs w-4 text-center select-none">
+            {expanded ? "▲" : "▼"}
+          </span>
+        </Div>
+        {/* Checkbox outside accordion, on the far right */}
+        <Div
+          className="shrink-0 ml-1"
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+        >
+          <Checkbox
+            id={`col-${col}`}
+            checked={selected}
+            onChange={onToggle}
+            disabled={isRunning}
+            label=""
+          />
+        </Div>
+      </button>
 
       {/* Inline seed progress bar */}
       {dbStatus && seedCount > 0 && (
@@ -1892,7 +1895,7 @@ export function SeedPanel() {
               {/* Group filter */}
               <div className="flex items-center gap-1 flex-wrap">
                 <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Group:</span>
-                {(["all", "core", "listings", "transactional", "content", "system"] as const).map((g) => {
+                {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
                   const active = filterGroup === g;
                   const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
                   return (

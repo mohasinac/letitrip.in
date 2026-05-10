@@ -33,6 +33,71 @@
 
 ---
 
+# Session 103b — 2026-05-10 (Sidebar fix + Wishlist rewrite)
+
+## Scope
+
+Mobile sidebar nav item alignment fix, seedPanelEnabled fallback to true, and full wishlist page rewrite (ghost items + ListingLayout).
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/layout/AppLayoutShell.tsx` | `navItemClass` changed from `block` to `flex items-center gap-2` — icon + label in sidebar Browse items now align on the same row |
+| `src/app/[locale]/layout.tsx` | `seedPanelEnabled` fallback `?? false` → `?? true` — Seed nav item visible by default when Firestore returns null |
+| `appkit/src/features/wishlist/types/index.ts` | Added `WishlistProductData` and `EnrichedWishlistItem` types; `status` typed as `ProductStatus` union |
+| `appkit/src/client.ts` | New exports: `ListingLayout`, `ListingLayoutProps`, `ListingLayoutLabels`, `Select`, `SelectOption`, `SelectProps`, `WishlistItem`, `WishlistResponse`, `WishlistProductData`, `EnrichedWishlistItem` |
+| `src/app/[locale]/wishlist/page.tsx` | Full rewrite — ghost items fixed (reads `item.product.*` from enriched API response), `ListingLayout` + search `Input` + sort `Select`, raw `<div>` → `Div`, zero `any` casts |
+| `appkit/` dist | Rebuilt via `npm run build`; 0 TS errors both repos |
+
+## Ghost items root cause
+
+`GET /api/user/wishlist` enriches each item with a `product` field. The old page read `item.productTitle` etc. — sparse fields never written to Firestore by `wishlistRepository.addItem`. Fixed by preferring `item.product.*`.
+
+## Tracker
+
+- D1 ✅ Wishlist page wiring
+- VC6 ✅ User Wishlist fix broken wiring
+- W2 still ⏳ stale validation on mount — deferred
+
+---
+
+# Session 103 QA — 2026-05-10 (Dev server + cart auth + seed 403 fix + SeedPanel collections)
+
+## Scope
+
+Dev server stabilisation, unauthenticated cart API fix, seed route 403 chicken-and-egg fix, SeedPanel missing collection groups, appkit rebuild.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `scripts/dev-next.mjs` | Changed `.bin/next` (bash shebang, broken on Windows) → `node_modules/next/dist/bin/next`; added `--webpack` flag |
+| `tailwind.config.js` | Removed `node_modules/@mohasinac/*/dist/**` from content paths — caused PostCSS zombie feedback loop with tsc --watch |
+| `package.json` | Added `--restart-tries 0` to concurrently dev command to prevent crash-loop zombie accumulation |
+| `next.config.js` | Added webpack `externals` function for appkit-local firebase-admin packages + `IgnorePlugin` for optional native deps (`request`, `fast-crc32c`) |
+| `appkit/src/features/cart/hooks/useCartCount.ts` | Added `enabled = false` parameter — query now only fires when caller explicitly passes `true` (i.e., when a user session exists). Previously fired unconditionally for every visitor including guests, causing sitewide `GET /api/cart` spam. |
+| `appkit/src/features/layout/TitleBar.tsx` | Passes `!!rest.user` to `useCartCount()` — authenticated when `user` prop is present, skips query for guests |
+| `src/app/api/demo/seed/route.ts` | `featureFlags.seedPanel` check now defaults to `true` when `site_settings/global` doesn't exist — fixes chicken-and-egg 403 on fresh environments where the seed panel is needed to populate Firestore in the first place |
+| `src/components/dev/SeedPanel.tsx` | Added `sublistingCategories` + `groupedListings` to `LISTINGS_COLLECTIONS`; added `conversations` to `TRANSACTIONAL_COLLECTIONS`; added `"moderation"` to group filter chips — all three collections had COLLECTION_META entries but were absent from ALL_COLLECTIONS so never rendered |
+| `appkit` | Rebuilt dist (tsc → copy-assets) |
+| `scripts/next-memory-forensics.js` | Forensics wrapper for Next.js dev server — measures real server RSS via WMIC, tracks FSWatcher handles, scans .next/ for rebuild loops, writes 9 structured log files to timestamped output directory |
+
+## Behaviour after this change
+
+- Dev server runs stably on Windows via `node node_modules/next/dist/bin/next dev --webpack`
+- PostCSS workers no longer accumulate — Tailwind no longer scans dist/ files
+- `GET /api/cart` is never called for unauthenticated users — TitleBar cart badge uses guest localStorage count only
+- `/api/demo/seed` returns 200 on fresh environments even before siteSettings is seeded
+- SeedPanel now shows all 29 seed collections (previously 26 — conversations, sublistingCategories, groupedListings were silently hidden)
+- "Trust & Safety" group chip appears in SeedPanel filter bar
+
+## TypeScript
+
+Both repos: 0 errors before and after this session.
+
+---
+
 # Session 102 QA — 2026-05-10 (Seed page public visibility)
 
 ## Scope

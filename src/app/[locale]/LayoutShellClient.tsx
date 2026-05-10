@@ -214,6 +214,8 @@ export default function LayoutShellClient({
       logoHref={String(ROUTES.HOME)}
       promotionsHref={String(ROUTES.PUBLIC.PROMOTIONS)}
       cartHref={String(ROUTES.USER.CART)}
+      wishlistHref={String(ROUTES.USER.WISHLIST)}
+      userId={user?.uid ?? null}
       profileHref={String(ROUTES.USER.PROFILE)}
       userOrdersHref={String(ROUTES.USER.ORDERS)}
       userWishlistHref={String(ROUTES.USER.WISHLIST)}

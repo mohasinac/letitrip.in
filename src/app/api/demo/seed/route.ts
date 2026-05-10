@@ -398,7 +398,9 @@ async function resolveAuthConflicts(
 export async function GET(_request: NextRequest) {
   const { siteSettingsRepository } = await import("@mohasinac/appkit");
   const settings = await siteSettingsRepository.getSingleton().catch(() => null);
-  if (!settings?.featureFlags?.seedPanel) {
+  // Default true when siteSettings doc doesn't exist yet (chicken-and-egg on first run)
+  const seedPanelEnabled = settings?.featureFlags?.seedPanel ?? true;
+  if (!seedPanelEnabled) {
     return NextResponse.json(
       { success: false, message: "Seed panel is disabled." },
       { status: 403 },
@@ -438,7 +440,9 @@ export async function POST(request: NextRequest) {
   // Gate: seedPanel feature flag must be enabled in site settings
   const { siteSettingsRepository } = await import("@mohasinac/appkit");
   const settings = await siteSettingsRepository.getSingleton().catch(() => null);
-  if (!settings?.featureFlags?.seedPanel) {
+  // Default true when siteSettings doc doesn't exist yet (chicken-and-egg on first run)
+  const seedPanelEnabled = settings?.featureFlags?.seedPanel ?? true;
+  if (!seedPanelEnabled) {
     return NextResponse.json(
       { success: false, message: "Seed panel is disabled." },
       { status: 403 },
