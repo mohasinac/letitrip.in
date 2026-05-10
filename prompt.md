@@ -31,18 +31,18 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 78 ✅ 2026-05-10 (User Account Core)
+## ⚡ LAST COMPLETED — Session 80 ✅ 2026-05-10 (Alpha: Store Settings)
 
 | Task | What was done |
 |------|--------------|
-| **VC1** | `OrderDetailView` fully wired: renderBack, renderHeader (status badge + tracking number + carrier), renderItems (product image/title/attributes/qty/price), renderAddress, renderPayment (subtotal/shipping/discount/tax/total), renderActions (Track Shipment link, Cancel Order button). `useOrder` hook + `OrderDetailView` exported from appkit client bundle. |
-| **VC3** | `ProfilePageClient` rewritten: bio textarea (max 500 chars), photoURL URL input, isPublic toggle switch. View mode shows bio + Public/Private badge. PATCH `/api/user/profile` schema extended with `bio` + `profileIsPublic`; `userRepository.update()` persists to `publicProfile` sub-object. |
-| **VC5 / D4** | Notifications page fully wired: tab filters (all/unread/orders/bids/system), NotifCard with mark-read/delete buttons, "Mark all read" button. `useMutation` via Tanstack Query. `UserNotificationsView` + `/notifications/[tab]` → redirect. |
-| **LL2** | My Reviews page + GET `/api/user/reviews` via `reviewRepository.findByUser()`. Tab filter (all/approved/pending/rejected), star display, status/verified badges, product link, helpful count. |
-| **LL3** | My Bids page + GET `/api/user/bids` via `bidRepository.findByUser()`. Tab filter (all/active/won/outbid/lost), bid cards with auction link + paise→₹ + winning/status badges. Read-only. |
-| **isPublic guard** | `/profile/[userId]` SSR checks `publicProfile.isPublic === false` → `notFound()`. Metadata also returns "Profile Not Found" for private profiles. |
-| **Smart sidebar CTA** | User layout: "Become a Store Owner" when no store, "Store Dashboard" when seller/admin — computed via `useMemo` from `user.role`. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. Appkit rebuilt (108 assets). |
+| **C6** | `SellerShippingView` rewritten as full form: method radio (custom/shiprocket), rate fields (standard/express paise), free-shipping threshold toggle, pickup address selector (`StoreAddressSelectorCreate`). Saves via PATCH `/api/store/shipping`. |
+| **C7** | `SellerPayoutSettingsView` rewritten: UPI/bank radio, UPI VPA input or bank form (name, masked account number, IFSC, bank name, account type). PATCH `/api/store/payout-settings` with Zod discriminated union + masking on save. |
+| **LL8** | `SellerReviewsView` + GET `/api/store/reviews` + POST `/api/store/reviews/[id]/reply`. Star display, filter chips (rating 1–5, reply status), inline reply SideDrawer. `sellerReply`/`sellerRepliedAt` added to `ReviewDocument`. `/store/reviews` page + "Reviews" in "Orders & Reviews" nav group. |
+| **VB3** | `SellerPayoutRequestView` + POST `/api/store/payouts/request`. Shows available earnings, pre-fills payment method from payout settings, optional notes. Disabled if pending payout or zero earnings. `requestPayout()` server action wired. |
+| **VB10** | `/store/analytics/page.tsx` wired as "use client" fetching from `/api/store/analytics`. Graceful 503 handling. Passes to `SellerAnalyticsStats` + `SellerTopProducts` with rupee formatter. |
+| **O3** | `StoreAddressSelectorCreate` wired into `SellerProductShell` `StepShipping` — replaces plain-text fallback; sellers can pick or inline-create a pickup address on any product listing. |
+| **UX7** | FormShell pattern confirmed across all store-side forms: SellerStorefrontView (useFormShell), SellerShippingView (StackedViewShell), SellerPayoutSettingsView (StackedViewShell). O3 covers QuickFormDrawer via StoreAddressSelectorCreate. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
 
 ---
 
@@ -74,15 +74,36 @@
 
 ---
 
-## 🔜 NEXT — Session 79: Cart Integrity
+## Session 79 ✅ 2026-05-10 (Cart Integrity)
+
+| Task | What was done |
+|------|--------------|
+| **W1** | `POST /api/cart/validate` — accepts `{ productIds: string[] }`, returns `{ stale, outOfStock }`. No auth required. PUBLISHED → in-stock; OUT_OF_STOCK → oos; SOLD/ARCHIVED/DISCONTINUED/DRAFT/null → stale. |
+| **W2** | `POST /api/user/wishlist/validate` — auth required. Batch-checks all user wishlist items, deletes stale from Firestore, returns `{ removedCount, removedProductIds }`. Wishlist page shows info toast + refetches on stale removal. |
+| **W3** | `CartRouteClient` split cartItems into in-stock / OOS sections via useMemo. OOS section header shows item count, items grayed with badge. Checkout disabled + warning when all items OOS. |
+| **W4** | `CartItemRow` augmented with `href?: string` (title becomes link, opens in new tab) and `isOutOfStock?: boolean` (grayed + badge + locked qty). `getProductHref()` maps slug prefix → ROUTES constant (auction-/preorder-/product-). |
+| **R1** | `handleQtyChange` now calls `PATCH /api/cart/[id]` for auth cart with error toast. `handleRemove` calls `DELETE /api/cart/[id]` with success/error toast. Notifications page: mark-all-read and delete mutations show proper success/error/info toasts. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. Fixed 5 pre-existing errors: `helperText`→`helpText` in SellerPayoutSettingsView + SellerShippingView; missing appkit client.ts exports; `API_ROUTES.STORE.PAYOUTS` added; `createApiHandler`→`createRouteHandler` in payouts/request; implicit `any` in analytics page. |
+
+---
+
+## 🔜 NEXT — 🚀 ALPHA RELEASE + Session 81: Store Finance
+
+Alpha gate is complete (sessions 77–80 done). Next session is Store Finance.
 
 | Tasks | Goal |
 |-------|------|
-| W1 | Cart stale validation — remove out-of-stock items on cart open |
-| W2 | Wishlist stale validation — highlight/remove unavailable products |
-| W3 | Cart product links — all 3 listing types (standard/auction/pre-order) |
-| W4 | CRUD UX standard — cart item row actions (delete, quantity stepper) |
-| R1 | CRUD table UX standard — shared DataTable row actions pattern |
+| C3 | Store Coupons CRUD — create, list, toggle, delete via /api/store/coupons |
+| C4 | Store Orders view — list with status filter, order detail drawer |
+| VB1 | Store orders listing wired to real API data |
+| VB2 | Store bids listing wired to real API data |
+| VB5 | Store shipping config form (alias C6 — already done) |
+| VB6 | Store payout settings form (alias C7 — already done) |
+| VB7 | Store addresses CRUD — list, add/edit/delete store pickup addresses |
+| O4 | Store analytics wired (alias VB10 — already done) |
+| LL7 | SellerBidsView — bids received on store's auction listings |
+| LL9 | SellerOrdersView — orders listing for seller's store |
+| LL10 | SellerPayoutsView — payout history list |
 
 ---
 

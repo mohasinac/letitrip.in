@@ -33,6 +33,48 @@
 
 ---
 
+# Session 80 — 2026-05-10 (Alpha: Store Settings)
+
+## Scope
+
+C6 (shipping config form), C7 (payout settings form), LL8 (seller reviews view), VB3 (payout request form), VB10 (analytics wiring), O3 (pickup address selector in product form), UX7 (FormShell pattern confirmation across store forms).
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/seller/components/SellerShippingView.tsx` | Rewritten as full "use client" form: method radio (custom/shiprocket), rate fields (standard/express paise), free-shipping threshold toggle + amount, StoreAddressSelectorCreate for pickup address. PATCH /api/store/shipping. |
+| `appkit/src/features/seller/components/SellerPayoutSettingsView.tsx` | Rewritten as full "use client" form: UPI/bank radio, UPI VPA input or bank form (name, masked account number, IFSC, bank name, account type). Shows masked current account in Alert. PATCH /api/store/payout-settings. |
+| `appkit/src/features/seller/components/SellerReviewsView.tsx` | NEW — reviews received by store: star display, rating filter chips, reply status chips, inline SideDrawer reply form (textarea, max 1000 chars, POST /api/store/reviews/[id]/reply). |
+| `appkit/src/features/seller/components/SellerPayoutRequestView.tsx` | NEW — payout request: fetches payouts summary + payout details, shows available earnings, modal with payment method + optional notes. Disabled if pending payout or zero earnings. |
+| `appkit/src/features/seller/components/index.ts` | Added export for `SellerPayoutRequestView`. |
+| `appkit/src/features/reviews/schemas/firestore.ts` | Added `sellerReply?: string` and `sellerRepliedAt?: Date` to `ReviewDocument`. |
+| `appkit/src/next/routing/route-map.ts` | Added `REVIEWS: "/store/reviews"` to STORE routes. |
+| `appkit/src/client.ts` | Added exports: SellerPayoutRequestView, SellerAnalyticsStats, SellerTopProducts, SellerAnalyticsView, SellerPayoutsView + type exports. |
+| `appkit/src/features/seller/components/SellerProductShell.tsx` | StepShipping: replaced plain-text fallback with StoreAddressSelectorCreate. |
+| `src/app/[locale]/store/shipping/page.tsx` | Wires SellerShippingView with API_ROUTES.STORE.SHIPPING. |
+| `src/app/[locale]/store/payout-settings/page.tsx` | Wires SellerPayoutSettingsView with API_ROUTES.STORE.PAYOUT_SETTINGS. |
+| `src/app/[locale]/store/reviews/page.tsx` | NEW — /store/reviews page. |
+| `src/app/[locale]/store/payouts/page.tsx` | Updated: SellerPayoutRequestView + SellerPayoutsView in Stack. |
+| `src/app/[locale]/store/analytics/page.tsx` | Wired as "use client" fetching /api/store/analytics, passes to SellerAnalyticsStats + SellerTopProducts, handles 503 gracefully. |
+| `src/app/api/store/reviews/route.ts` | NEW — GET /api/store/reviews: list reviews for seller's store, filter by rating + reply status. |
+| `src/app/api/store/reviews/[id]/reply/route.ts` | NEW — POST /api/store/reviews/[id]/reply: validates store ownership, saves sellerReply + sellerRepliedAt. |
+| `src/app/api/store/payout-settings/route.ts` | Added PATCH handler with Zod discriminated union (upi/bank_transfer), account number masking, persists to userRepository. |
+| `src/app/api/store/payouts/request/route.ts` | NEW — POST /api/store/payouts/request: Zod schema (paymentMethod enum + notes), calls requestPayout(). |
+| `src/constants/api.ts` | Added STORE.REVIEWS, STORE.REVIEW_REPLY, STORE.PAYOUTS, STORE.PAYOUTS_REQUEST. |
+| `src/constants/navigation.tsx` | "Orders" group renamed "Orders & Reviews"; added Reviews nav item. |
+
+## Deferred
+
+| What | Why | Target |
+|------|-----|--------|
+| UX9 InlineSelectCreate full wiring | Post-alpha; requires QuickFormDrawer integration for all 8 field types | Session post-alpha |
+| UX4 PreviewPane | Post-alpha per spec | Post-alpha |
+| UX5 MediaPickerDrawer | Post-alpha per spec | Post-alpha |
+| VB7 Store Addresses CRUD | Full CRUD page deferred — O3 covers inline create in product form | Session 81 |
+
+---
+
 # Session 78 — 2026-05-10 (User Account Core)
 
 ## Scope
