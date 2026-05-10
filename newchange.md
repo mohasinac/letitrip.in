@@ -33,6 +33,21 @@
 
 ---
 
+# P27 Payouts Expansion — 2026-05-10
+
+## Scope
+P27 (partial) — payouts seed expansion 7 → 25+
+
+## What changed
+| File | Change |
+|------|--------|
+| `appkit/src/seed/payouts-seed-data.ts` | Expanded 7 → 25+ records. All 8 stores. PAID×14, PENDING×6, PROCESSING×3, FAILED×2. |
+
+## Deferred
+None.
+
+---
+
 # Session 81-impl — 2026-05-10 (Store Finance)
 
 ## Scope
