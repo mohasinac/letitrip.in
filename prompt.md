@@ -112,9 +112,9 @@
 
 ---
 
-## 🔜 NEXT — Multi-session sweep (Sessions 83–109+) 🔄 IN PROGRESS 2026-05-10
+## 🔜 NEXT — Session 83 🔄 IN PROGRESS 2026-05-10 (SCAM3/5 partials + Content)
 
-> ⚠️ **ACTIVE WORK IN PROGRESS** — Another session is actively working through all pending tasks below in order. Do NOT start any of these tasks. Check back after the sweep completes.
+> ⚠️ **ACTIVE WORK IN PROGRESS** — Session 83 working on: SCAM3 remaining (/scams/types + profile subcollections), SCAM5 remaining (ScamReportForm + API), VD8 (about rewrite), VD9 (becomeSeller/sellerGuide), VD10 (legal policies).
 
 ### Already completed this sweep
 | Task | Status |

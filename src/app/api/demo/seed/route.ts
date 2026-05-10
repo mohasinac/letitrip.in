@@ -880,9 +880,16 @@ export async function POST(request: NextRequest) {
 
           if (collectionName === "users") {
             // Auth + Firestore — delete each seed user's auth account then Firestore doc.
+            // The platform admin (admin@letitrip.in) is protected — skip it here;
+            // remove manually via the Firebase console if needed.
+            const PROTECTED_UIDS = new Set(["user-admin-letitrip"]);
             for (const userData of seedData) {
               try {
                 const { uid } = userData as any;
+                if (PROTECTED_UIDS.has(uid)) {
+                  totalSkipped++;
+                  continue;
+                }
                 try {
                   await auth.deleteUser(uid);
                 } catch (err: any) {
