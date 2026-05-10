@@ -33,6 +33,51 @@
 
 ---
 
+# Session 86 — 2026-05-10 (Grouped Listings GP1+GP2)
+
+## Scope
+Full implementation of grouped listings: product schema extension, batch-write repository methods, ShowGroupSection display component, GroupSettingsPanel edit component, all store + admin CRUD API routes, public group fetch route, seed data, Firebase indexes. appkit 2.4.9 published.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/schemas/firestore.ts` | Added 5 group fields to `ProductDocument` + updatable/public field arrays |
+| `appkit/src/features/products/types/index.ts` | Added group fields to `ProductItem` |
+| `appkit/src/features/products/repository/products.repository.ts` | Added 7 group methods: `findByGroupId`, `startGroup`, `updateGroupTitle`, `dissolveGroup`, `linkChildToGroup`, `unlinkChildFromGroup`, `leaveGroup`, `addChildProduct` |
+| `appkit/src/features/products/components/ShowGroupSection.tsx` | NEW — circular thumb HorizontalScroller + Modal/SideDrawer table |
+| `appkit/src/features/products/components/GroupSettingsPanel.tsx` | NEW — 3-state panel (not-in/is-parent/is-child) with add/link/dissolve/leave |
+| `appkit/src/features/products/components/ProductDetailView.tsx` | Added `renderGroupSection` render prop |
+| `appkit/src/features/products/components/PreOrderDetailView.tsx` | Added `renderGroupSection` render prop |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Wired `ShowGroupSection` via `renderGroupSection` |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Wired `ShowGroupSection` via `renderGroupSection` |
+| `appkit/src/features/products/components/ProductForm.tsx` | Added `renderGroupSettings` render prop |
+| `appkit/src/features/admin/components/AdminProductEditorView.tsx` | Wired `GroupSettingsPanel` via `renderGroupSettings` |
+| `appkit/src/features/products/components/index.ts` | Exported `ShowGroupSection`, `GroupSettingsPanel`, `GroupSettingsPanelProps` |
+| `appkit/src/features/grouped/schemas/firestore.ts` | `GroupedListingDocument` + `GROUPED_LISTINGS_COLLECTION` |
+| `appkit/firebase/base/firestore.indexes.json` | Added 4 indexes: products(groupId+isAuction+status, groupId+status+price), groupedListings(storeId+isActive+createdAt, isFeatured+isActive+createdAt) |
+| `src/app/api/products/group/[groupId]/route.ts` | NEW — public GET, returns group members |
+| `src/app/api/store/products/[id]/group/route.ts` | NEW — POST/PATCH/DELETE (start/update-title/dissolve) |
+| `src/app/api/store/products/[id]/group/children/route.ts` | NEW — POST (create/link child) |
+| `src/app/api/store/products/[id]/group/children/[childId]/route.ts` | NEW — DELETE (unlink child) |
+| `src/app/api/store/products/[id]/group/leave/route.ts` | NEW — DELETE (child leaves group) |
+| `src/app/api/admin/products/[id]/group/route.ts` | NEW — admin POST/PATCH/DELETE |
+| `src/app/api/admin/products/[id]/group/children/route.ts` | NEW — admin POST (create/link) |
+| `src/app/api/admin/products/[id]/group/children/[childId]/route.ts` | NEW — admin DELETE (unlink) |
+| `src/app/api/admin/products/[id]/group/leave/route.ts` | NEW — admin DELETE (leave) |
+| `src/constants/api.ts` | Added `PRODUCT_GROUP`, `PRODUCT_GROUP_CHILDREN`, `PRODUCT_GROUP_CHILD`, `PRODUCTS.GROUP` constants |
+| `appkit/package.json` | Bumped 2.4.8 → 2.4.9 |
+| `package.json` | Updated `@mohasinac/appkit` to `^2.4.9` |
+
+## Deferred Items
+
+| Item | Reason | Fix target |
+|------|--------|------------|
+| `ShowGroupSection` tab navigation to member detail pages | Needs `ROUTES.PUBLIC.PRODUCT` which depends on slug pattern — currently uses relative path | Future routing pass |
+| Child product image upload in `GroupSettingsPanel` | MediaUploadField not wired (children start with empty mainImage) | Seller can edit the child product's full form afterward |
+
+---
+
 # Session 86-hotfix — 2026-05-10 (Google Auth RTDB fault-tolerance + PII encryption fix)
 
 ## Scope

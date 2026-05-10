@@ -4216,7 +4216,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │  (circular ~64px cards; current highlighted with ring; click = navigate)   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  GROUP SECTION (⏳ GP1) — shown if groupId is set; products + pre-orders    │
+│  GROUP SECTION (✅ GP1) — shown if groupId is set; products + pre-orders    │
 │                                                                              │
 │  COLLAPSED (default):                                                        │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
@@ -6363,6 +6363,66 @@ Note: Store field only visible when userRole === 'admin'
 │ Name *                       │
 │ [                         ]  │
 └──────────────────────────────┘
+`
+
+---
+
+### A1-ext — GroupSettingsPanel (✅ GP2) in Product Editor
+
+Three mutually-exclusive states rendered below SublistingCategorySelect, hidden on auction forms.
+
+#### State 1 — Not in a group
+
+`
+┌── Group settings ────────────────────────────────────────────────────────┐
+│  This listing is not part of any group.                                   │
+│                                                                           │
+│  [+ Start a group with this listing as the parent]                        │
+└───────────────────────────────────────────────────────────────────────────┘
+`
+
+#### State 2 — This is the group parent
+
+`
+┌── Group settings ────────────────────────────────────────────────────────┐
+│  📦 Group parent  (groupId: product-human-toy)                            │
+│                                                                           │
+│  Group title   [Human Toy Complete Set              ] [Save]              │
+│                                                                           │
+│  Children (3):                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────┐ │
+│  │  [🖼] product-human-toy-head      New    ₹4,500    [Edit] [Unlink]  │ │
+│  │  [🖼] product-human-toy-legs      Used   ₹1,200    [Edit] [Unlink]  │ │
+│  │  [🖼] product-human-toy-arms      New    ₹990      [Edit] [Unlink]  │ │
+│  └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                           │
+│  [+ Add child listing]                  [⚠ Dissolve group (confirm)]     │
+└───────────────────────────────────────────────────────────────────────────┘
+
+"Add child" Modal (< 4 children) or SideDrawer (≥ 5):
+┌── Add to group ─────────────────────────────────────────────────────────┐
+│  [Create new] [Link existing]                                            │
+│  ─────────────────────────── Create new ──────────────────────────────  │
+│  Title  *  [                                                         ]   │
+│  Price  *  ₹ [       ]                                                  │
+│  Condition  [New ▼]                                                      │
+│                                        [Cancel]  [Create child listing]  │
+│  ─────────────────────────── Link existing ───────────────────────────  │
+│  Search listing  [🔍 Type title or slug…                            ▼]   │
+│                  product-hot-wheels-redline (₹1,200)  ← selected        │
+│                                        [Cancel]  [Link to group]        │
+└─────────────────────────────────────────────────────────────────────────┘
+`
+
+#### State 3 — This is a child
+
+`
+┌── Group settings ────────────────────────────────────────────────────────┐
+│  🔗 Part of: Human Toy Complete Set                                       │
+│     Parent: product-human-toy  [Edit parent →]                           │
+│                                                                           │
+│                                              [Leave group (confirm)]     │
+└───────────────────────────────────────────────────────────────────────────┘
 `
 
 ---

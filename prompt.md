@@ -31,6 +31,18 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Session 86 ✅ 2026-05-10 (Grouped Listings GP1→GP2)
+
+| Task | What was done |
+|------|--------------|
+| **GP1** | Group fields on `ProductDocument` (`groupId`, `isGroupParent`, `groupParentSlug`, `groupChildSlugs`, `groupTitle`). `findByGroupId` + 7 batch-write repository methods. `ShowGroupSection` client component (circular thumbs, HorizontalScroller, Modal/SideDrawer table). `renderGroupSection` render prop on `ProductDetailView`+`PreOrderDetailView`; wired in `ProductDetailPageView`+`PreOrderDetailPageView`. Public GET `/api/products/group/[groupId]`. ✅ |
+| **GP2** | `GroupSettingsPanel` (3-state: not-in-group / is-parent / is-child). `renderGroupSettings` render prop on `ProductForm`. Wired in `AdminProductEditorView`. Store + admin CRUD API routes (8 routes total: group start/update/dissolve, children add/unlink, leave). ✅ |
+| **Seed** | `grouped-listings-seed-data.ts` (8 bundles), `GroupedListingDocument` schema, `GROUPED_LISTINGS_COLLECTION`, seed route + SeedPanel wired. ✅ |
+| **Firebase indexes** | `groupId+isAuction+status` + `groupId+status+price` on products; `storeId+isActive+createdAt` + `isFeatured+isActive+createdAt` on groupedListings. ✅ |
+| **appkit 2.4.9** | Built + published. Root updated to `^2.4.9`. Both repos tsc 0 errors. ✅ |
+
+---
+
 ## ⚡ LAST COMPLETED — Session 85 ✅ 2026-05-10 (Sub-listing Categories SC1→SC4 + Store CRUD)
 
 | Task | What was done |
@@ -71,12 +83,7 @@
 
 ---
 
-## 🔜 NEXT — Session 86 ⏳ (Grouped Listings GP1→GP2)
-
-### Session 86 — Grouped Listings
-| Tasks | Goal |
-|-------|------|
-| GP1→GP2 | Schema + ShowGroupSection + edit-screen group settings panel |
+## 🔜 NEXT — Session 87 ⏳ (Social Feed)
 
 ### Session 87 — Social Feed
 | Tasks | Goal |
