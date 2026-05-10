@@ -8,16 +8,20 @@
 
 ---
 
-## 🔁 RULE #0 — END-OF-SESSION CHECKLIST (do this before the final commit, every session)
+## 🔁 RULE #0 — START-OF-SESSION CHECKLIST (do this before writing any code)
 
-1. **Update `prompt.md`** — move the just-finished session into LAST COMPLETED; update the 🔜 NEXT section with the tasks for the *following* session pulled from `crud-tracker.md`.
-2. **Update `memory/project_status.md`** — prepend a bullet summary of what changed this session so the next session starts with full context.
-3. **Update `crud-tracker.md`** — mark completed tasks ✅ with session + one-line note; mark the session row ✅ Done in the roadmap table.
-4. **Prepend `newchange.md`** — add a session entry (scope, changed files table, deferred table).
-5. **Run `npx tsc --noEmit`** in both `letitrip.in/` and `appkit/` — must be 0 errors before committing.
-6. **Commit** — code commit first, then a separate docs commit.
+1. **Read `crud-tracker.md`** — find the next ⏳ tasks; confirm the session goal matches the 🔜 NEXT section below.
+2. **Read `newchange.md` DEFERRED table** — check for open gaps that must be resolved before starting new work.
+3. **Read `memory/project_status.md`** — confirm you have the current state of the project (last session's changes).
+4. **At the END of this session, before the final commit:**
+   - Update `prompt.md` LAST COMPLETED + 🔜 NEXT with the next session's tasks.
+   - Prepend a session entry to `newchange.md` (scope, changed files, deferred items).
+   - Mark completed tasks ✅ in `crud-tracker.md` (session + one-line note; mark session row done).
+   - Update `memory/project_status.md` with a bullet summary of what changed.
+   - Run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/` — must be 0 errors.
+   - Commit: code first, then a separate docs commit.
 
-> **Why:** The next session reads `prompt.md` cold. If LAST COMPLETED and 🔜 NEXT are stale, the session starts by re-deriving context that should already be written down — wasted turns and risk of regression.
+> **Why:** `prompt.md` is read cold at session start. If LAST COMPLETED and 🔜 NEXT are stale, the next session wastes turns re-deriving context and risks regression.
 
 ---
 
