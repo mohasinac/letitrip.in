@@ -4441,6 +4441,76 @@ Note: ShippingPolicyView has its own flat-key i18n structure (not sections array
 
 ---
 
+## Public > Scam Registry ⚠️ (list+profile done; /types pending)
+
+```
+Routes:
+  /scams          → ScamRegistryView (appkit, RSC, revalidate=120)
+  /scams/[id]     → ScamProfileView  (appkit, RSC, revalidate=300)
+  /scams/report   → ScamReportForm   (client, auth-gated)
+
+Data:
+  listVerifiedScammers(searchParams) → ScammerRepository.listVerified(sieveModel)
+  getPublicScammerById(id)           → ScammerRepository.findById / findBySeoSlug + incrementViews
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  /scams — Scam Registry                                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ALERT[warning] — "All profiles verified by moderation team. Report them →" │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Row[between]:                                                               │
+│    Stack: H1 "Scam Registry" | Text secondary                               │
+│    Link → /scams/report: Button[danger] "Report a Scammer"                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Input[search icon] name="q" — search by name / phone / UPI / email        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Grid[cols=3, gap=md]:                                                       │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐           │
+│  │ Row[between]:    │  │ Row[between]:    │  │ Row[between]:    │           │
+│  │  name truncated  │  │  name truncated  │  │  name truncated  │           │
+│  │  Badge[danger]   │  │  Badge[danger]   │  │  Badge[danger]   │           │
+│  │  "Verified"      │  │  "Verified"      │  │  "Verified"      │           │
+│  │ Row[wrap]:       │  │                  │  │                  │           │
+│  │  Badge[warning]  │  │  scam type       │  │  scam type       │           │
+│  │  Badge[default]  │  │  platform        │  │  platform        │           │
+│  │ Stack: Phone/UPI │  │  identifiers     │  │  identifiers     │           │
+│  │ Row[between]:    │  │                  │  │                  │           │
+│  │  victims·amount  │  │  footer          │  │  footer          │           │
+│  │  ChevronRight    │  │                  │  │                  │           │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [Load more] (Row center, appkit-button--outline link)                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  /scams/[id] — Scammer Profile                                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  BREADCRUMB — Home / Scam Registry / [Name]                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Grid[twoThird]:                                                             │
+│  ┌────────────────────────┐ ┌──────────────────────┐                         │
+│  │ LEFT (lg:col-span-2)   │ │ RIGHT sidebar        │                         │
+│  │ Card[elevated]:        │ │ Card[elevated]:      │                         │
+│  │  Row[between]:         │ │  CardHeader: Actions │                         │
+│  │   H1 name              │ │  CardBody:           │                         │
+│  │   Badge[status]        │ │   Link → report      │                         │
+│  │  Row[wrap]:            │ │   Link → contest     │                         │
+│  │   Badge[warning] type  │ │   (or login prompts) │                         │
+│  │   Badge[default] via   │ │ Card[outlined]:      │                         │
+│  │  Row[wrap]: stats      │ │  CardHeader: Contest │                         │
+│  │   views·victims·date   │ │  CardBody:           │                         │
+│  │   amount lost          │ │   Stack[ul]: types   │                         │
+│  │ Grid[2]: IdentityChips │ │ Alert[success]:      │                         │
+│  │  Phone/UPI/Email cards │ │  Verified by team    │                         │
+│  │ Social media rows      │ │  on [date]           │                         │
+│  │ Card[flat]: description│ │                      │                         │
+│  │ Evidence image strip   │ │                      │                         │
+│  └────────────────────────┘ └──────────────────────┘                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Auth > Login ✅
 
 ```

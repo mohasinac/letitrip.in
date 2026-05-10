@@ -8,28 +8,32 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 82-ext ✅ 2026-05-10 (Footer SEO Links + Constants Refactor + Quality Pass)
+## ⚡ LAST COMPLETED — Session 83 ✅ 2026-05-10 (Scam Registry — Nav Wiring + Public Pages + UI Quality Pass)
 
 | Task | What was done |
 |------|--------------|
-| **FOOTER-SEO** | Added `bottomLinks` prop to `FooterLayout` (appkit) — sitemap, robots.txt, security links in bottom bar inside `<nav aria-label="Site utilities">`. Exported `FooterBottomLink` type from appkit index. |
-| **CONSTANTS** | Extracted hardcoded blobs from `LayoutShellClient.tsx` → `brand.ts` (name/desc/social), `footer.tsx` (trust bar/social/bottom links), `search.ts` (search labels). All re-exported from `src/constants/index.ts`. |
-| **NEWSLETTER** | Extracted inline stub JSX → `FooterNewsletterSlot` (`src/components/layout/`) with real API call, success/loading states, source:"footer" tag. |
-| **APPKIT-QUALITY** | Replaced raw `<button>` accordion toggle in `FooterLayout` with appkit `Button variant="ghost"`. |
-| **DIAGRAMS** | Added `## Public > Layout Shell + Footer ✅` to `asciiDiagrams.md`. |
-| **INDEX** | Updated `src/index.md` — new constants + `FooterNewsletterSlot`. |
+| **SCAM1-REPO** | `ScammerRepository` done (`appkit/src/features/scams/repository/scammer.repository.ts`) — `listVerified`, `listAll`, `findBySeoSlug`, `create`, `adminUpdate`, `incrementViews`, `findByContactField`; Sieve fields: status/scamType/scamPlatform/views/incidentCount/createdAt. |
+| **SCAM1-ACTIONS** | `appkit/src/features/scams/actions/scam-actions.ts` — `listVerifiedScammers(searchParams)` + `getPublicScammerById(id)`. |
+| **SCAM3-LIST** | `/scams` list page + `ScamRegistryView` (appkit primitives: `Grid cols={3}`, `Stack`, `Row`, `Card variant="outlined" hover`, `Badge danger/warning/default`, `Alert warning`, `EmptyState`, `Input icon`). |
+| **SCAM3-PROFILE** | `/scams/[id]` profile page + `ScamProfileView` (appkit: `Grid cols="twoThird"`, `Card elevated/outlined`, `CardHeader`, `CardBody`, `Breadcrumb`, `Badge`, `Alert success` for verified meta). |
+| **SCAM5-PAGE** | `/scams/report` auth-gated page (`useSession` redirect, `Alert warning` awareness notice, `EmptyState` placeholder, CSS var colours). |
+| **NAV** | `MAIN_NAV_ITEMS`, `SIDEBAR_SUPPORT_LINKS`, `FOOTER_LINK_GROUPS` all wired to `ROUTES.PUBLIC.SCAMS`. `messages/en.json` "scams" key added. |
+| **ROUTES** | `ROUTES.PUBLIC.SCAMS`, `ROUTES.PUBLIC.SCAM_DETAIL`, `ROUTES.PUBLIC.SCAM_REPORT` added to `route-map.ts`. |
+| **APPKIT-EXPORTS** | `ScamRegistryView`, `ScamProfileView`, `ScamRegistryViewProps`, `ScamProfileViewProps`, `listVerifiedScammers`, `getPublicScammerById`, `ScammerListResult`, `EmptyState` (component) all added to `appkit/src/index.ts`. |
+| **TRACKER** | SCAM1 🔄→✅, SCAM3 ⏳→⚠️, SCAM5 ⏳→⚠️ |
 | **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
 
-> Prior sessions done: 82 (SEO & Lighthouse — SSR hydration + JSON-LD + Core Web Vitals), 80-schema (RBAC+BAN+SCAM), 81 (sellerId→storeId migration), 79 (FAQ/stats), 78 (carousel/sections), 77 (coupon abuse).
+> Prior sessions done: 82-ext (footer SEO + constants refactor), 82 (SEO & Lighthouse — SSR hydration + JSON-LD + Core Web Vitals), 80-schema (RBAC+BAN+SCAM), 81 (sellerId→storeId migration).
 
 ---
 
-## 🔜 NEXT — Session 77-impl: Seller Products (alpha gate)
+## 🔜 NEXT — Session 84: Scam Pages continued + /scams/types page
 
 | Tasks | Goal |
 |-------|------|
-| UX1–UX5, UX9 | FormShell, QuickFormDrawer, StepForm, MediaPickerDrawer, PreviewPane, InlineSelectCreate (UX primitives required by everything below) |
-| O1, O2+C5, C1, VB8, C2, VB9, LL6 | Store profile edit + all 3 product types create/edit (standard/auction/preorder) + seller listing views |
+| SCAM3.3 | `/scams/types` static RSC — 6 category sections, 27 scam type cards |
+| SCAM4 | `/scams/faqs` + scam_awareness FAQ category |
+| SCAM7 | SEO + JSON-LD (BreadcrumbList + FAQPage) on all scam pages |
 
 ---
 
