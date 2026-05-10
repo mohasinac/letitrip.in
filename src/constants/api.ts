@@ -87,6 +87,9 @@ export const API_ROUTES = {
     REVIEW_REPLY: (id: string) => `/api/store/reviews/${id}/reply`,
     PAYOUTS: "/api/store/payouts",
     PAYOUTS_REQUEST: "/api/store/payouts/request",
+    ADDRESSES: "/api/store/addresses",
+    ADDRESS_BY_ID: (id: string) => `/api/store/addresses/${id}`,
+    BIDS: "/api/store/bids",
   },
   USER: {
     PROFILE: "/api/user/profile",
