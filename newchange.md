@@ -33,6 +33,43 @@
 
 ---
 
+# Session 81-impl — 2026-05-10 (Store Finance)
+
+## Scope
+
+C3, VB1, C4+VB2+LL7, VB7, LL9, LL10 — Store coupons editor, orders detail drawer, addresses CRUD, bids view, payouts fix.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/constants/api-endpoints.ts` | Fixed ALL `SELLER_ENDPOINTS` from `/api/seller/*` → `/api/store/*`. Added `COUPON_BY_ID`, `STORE_ADDRESS_BY_ID`, `BIDS`, `ORDERS_BY_ID`. |
+| `appkit/src/features/seller/hooks/useSellerListingData.ts` | Added `refetch` to `UseSellerListingDataResult` interface + return value. |
+| `appkit/src/features/seller/components/SellerCouponEditorView.tsx` | NEW — create/edit form for seller coupons. Exports `CouponEditorDraft` + `SellerCouponEditorViewProps`. Fields: code, type, value, maxDiscount, minPurchase, totalLimit, perUserLimit, startDate, endDate, isActive. Code disabled on edit. |
+| `appkit/src/features/seller/components/SellerCouponsView.tsx` | Rewritten — added `onCreateClick`, `onEditClick`, `onToggle`, `onDelete` props. Custom DataTable columns with Badge status. renderRowActions with Pencil/Toggle/Trash. `extra` prop for Add Coupon button. |
+| `appkit/src/features/seller/components/SellerOrdersView.tsx` | Rewritten — `OrderDetailDrawer` sub-component fetches order, shows items/address/payment, status select + tracking inputs, PATCH save. Main view: custom columns, Eye button opens drawer. |
+| `appkit/src/features/seller/components/SellerAddressesView.tsx` | Rewritten — full self-contained CRUD. Lists store addresses as cards with Edit/Delete. Add/Edit SideDrawer form. Uses `SELLER_ENDPOINTS.STORE_ADDRESSES`. |
+| `appkit/src/features/seller/components/SellerBidsView.tsx` | NEW — read-only DataTable of bids on store's auctions. Columns: Auction, Bidder, Bid ₹, Status badge, Date. Status filter sidebar. |
+| `appkit/src/features/seller/components/index.ts` | Added exports: `SellerCouponEditorView`, `CouponEditorDraft`, `SellerBidsView`, `StoreBidsView`. |
+| `appkit/src/index.ts` | Added exports: `SellerCouponEditorView`, `CouponEditorDraft`, `SellerCouponEditorViewProps`, `SellerBidsView`, `SellerBidsViewProps`, `StoreBidsView`. |
+| `appkit/src/client.ts` | Added: `SellerCouponEditorView`, `SellerBidsView`, `SellerAddressesView` + type exports. |
+| `appkit/src/next/routing/route-map.ts` | Added `ROUTES.STORE.BIDS = "/store/bids"`. |
+| `src/app/api/store/addresses/route.ts` | NEW — GET + POST. GET: lists store addresses. POST: creates via storeAddressRepository. |
+| `src/app/api/store/addresses/[id]/route.ts` | NEW — PUT + DELETE. PUT: updates address. DELETE: deletes address. Both verify store ownership. |
+| `src/app/api/store/bids/route.ts` | NEW — GET. Fetches store's auction productIds, queries bids for those products. Optional `?productId=` filter. |
+| `src/app/[locale]/store/coupons/page.tsx` | Rewritten — passes `onCreateClick`, `onEditClick`, `onToggle`, `onDelete` callbacks. |
+| `src/app/[locale]/store/coupons/new/page.tsx` | Rewritten — "use client", renders `SellerCouponEditorView`, POSTs to `/api/store/coupons`. |
+| `src/app/[locale]/store/coupons/[id]/edit/page.tsx` | NEW — fetches coupon, converts paise→rupees, renders `SellerCouponEditorView` with `initial`. |
+| `src/app/[locale]/store/addresses/page.tsx` | Updated — passes `apiBase={API_ROUTES.STORE.ADDRESSES}`. |
+| `src/app/[locale]/store/bids/page.tsx` | NEW — renders `SellerBidsView`. |
+| `src/constants/api.ts` | Added `STORE.ADDRESSES`, `STORE.ADDRESS_BY_ID`, `STORE.BIDS`. |
+| `src/constants/navigation.tsx` | Added Bids nav item to STORE_NAV_GROUPS "Orders & Reviews". |
+
+## TS errors
+0 in both repos after build.
+
+---
+
 # Session 79 — 2026-05-10 (Cart Integrity)
 
 ## Scope

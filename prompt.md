@@ -31,7 +31,32 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 80 ✅ 2026-05-10 (Alpha: Store Settings)
+## ⚡ LAST COMPLETED — Session 81-impl ✅ 2026-05-10 (Store Finance)
+
+| Task | What was done |
+|------|--------------|
+| **C3** | `/store/coupons/new/page.tsx` fixed to use `SellerCouponEditorView`; `/store/coupons/[id]/edit/page.tsx` added. |
+| **VB1** | `SellerCouponEditorView` — create/edit form: code, type, value, minPurchase, maxDiscount, limits, dates, active toggle. POST/PUT to `/api/store/coupons`. |
+| **C4/VB2/LL7** | `SellerOrdersView` enhanced: rich table columns (order #, date, buyer, items, total, status), row-click → order detail `SideDrawer`; status select + tracking fields + PATCH `/api/store/orders/[id]`. |
+| **VB7** | `SellerAddressesView` fully rewired: fetches `/api/store/addresses`, list + add/edit (SideDrawer) + delete (ConfirmDeleteModal). GET/POST `/api/store/addresses`, PUT/DELETE `/api/store/addresses/[id]`. |
+| **LL9** | `SellerBidsView` (new) — bids on store's auctions, filter by auction, read-only. GET `/api/store/bids`. |
+| **LL10** | `SellerPayoutsView` verified wired; SELLER_ENDPOINTS fixed to `/api/store/*` paths across all views. |
+| **Endpoints** | `SELLER_ENDPOINTS` updated to `/api/store/*` (was `/api/seller/*`); added `COUPON_BY_ID`, `STORE_ADDRESS_BY_ID`, `BIDS`, `ORDERS_BY_ID`. `API_ROUTES.STORE` extended. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
+
+---
+
+## Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
+
+| Task | What was done |
+|------|--------------|
+| **WA3** | `sendWhatsAppBusinessMessage()` + `syncProductsToCatalog()` + `buildPurchaseAnnouncementMessage()` in appkit whatsapp-bot/helpers. GET/PUT `/api/store/whatsapp-settings` (encrypted token, capability gate). POST `/api/store/whatsapp-settings/catalog-sync` (Meta Commerce API batch). `onOrderCreate` Firebase trigger → purchase announcement to admin + store owner. `--appkit-color-warning-surface` CSS token (light + dark). `STORE.WHATSAPP` route + nav link. `whatsapp_catalog_sync` StoreCapability. |
+| **Quality** | `LayoutShellClient`: fixed misplaced `import Link` (was after constants). `FormShell`: `amber-100/900` → `var(--appkit-color-warning-surface)`. `dev-next.mjs`: stable Next.js bin path. `transpilePackages` + `tailwind.config.js` dist scan removed. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors (fixed 3 WA3 catalog-sync errors). |
+
+---
+
+## Session 80 ✅ 2026-05-10 (Alpha: Store Settings)
 
 | Task | What was done |
 |------|--------------|
@@ -87,23 +112,13 @@
 
 ---
 
-## 🔜 NEXT — 🚀 ALPHA RELEASE + Session 81: Store Finance
-
-Alpha gate is complete (sessions 77–80 done). Next session is Store Finance.
+## 🔜 NEXT — Session 82: Admin Finance
 
 | Tasks | Goal |
 |-------|------|
-| C3 | Store Coupons CRUD — create, list, toggle, delete via /api/store/coupons |
-| C4 | Store Orders view — list with status filter, order detail drawer |
-| VB1 | Store orders listing wired to real API data |
-| VB2 | Store bids listing wired to real API data |
-| VB5 | Store shipping config form (alias C6 — already done) |
-| VB6 | Store payout settings form (alias C7 — already done) |
-| VB7 | Store addresses CRUD — list, add/edit/delete store pickup addresses |
-| O4 | Store analytics wired (alias VB10 — already done) |
-| LL7 | SellerBidsView — bids received on store's auction listings |
-| LL9 | SellerOrdersView — orders listing for seller's store |
-| LL10 | SellerPayoutsView — payout history list |
+| VD8 | Admin orders overview |
+| VD9 | Admin payouts management |
+| VD10 | Admin coupons management |
 
 ---
 
