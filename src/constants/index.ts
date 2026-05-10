@@ -58,6 +58,19 @@ export type {
   SiteFeature,
 } from "./homepage-data";
 
+// Brand identity constants
+export { BRAND, getBrandCopyright } from "./brand";
+
+// Footer static data (trust bar, social links, bottom links)
+export {
+  FOOTER_TRUST_BAR_ITEMS,
+  FOOTER_SOCIAL_LINKS,
+  FOOTER_BOTTOM_LINKS,
+} from "./footer";
+
+// Search overlay labels
+export { SEARCH_LABELS } from "./search";
+
 // FAQ category constants
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";

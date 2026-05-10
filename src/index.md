@@ -30,6 +30,9 @@
 | `SIDEBAR_SUPPORT_LINKS` | `navigation.tsx` | Support links shown at bottom of all sidebars |
 | `FOOTER_LINK_GROUPS` | `navigation.tsx` | Footer link column groups |
 | `MAIN_NAV_ITEMS` | `navigation.tsx` | Top navbar items (public header navigation) |
+| `BRAND`, `getBrandCopyright` | `brand.ts` | Brand identity strings (name, description, social URLs, copyright helper) |
+| `FOOTER_TRUST_BAR_ITEMS`, `FOOTER_SOCIAL_LINKS`, `FOOTER_BOTTOM_LINKS` | `footer.tsx` | Footer static data — trust bar (5 items + SVG icons), social links, bottom utility links (sitemap/robots/security) |
+| `SEARCH_LABELS` | `search.ts` | Search overlay label strings |
 | `SEO_CONFIG`, `generatePageMeta`, `generateProductMeta`, `generateStoreMeta`, `generateCategoryMeta`, `generateBrandMeta`, `generateEventMeta` | `seo.server.ts` | Server-side SEO metadata generators for generateMetadata() |
 | `FIELD_NAMES` | `field-names.ts` | Firestore field name constants (prevents typo bugs in queries) |
 | `HOMEPAGE_DATA` | `homepage-data.ts` | Static homepage section fallback data |
@@ -158,6 +161,12 @@
 | `products/route.ts` | GET/POST | Seller product list + create |
 
 ---
+
+## Layout Components — `src/components/layout/`
+
+| Name | File | What it does |
+|------|------|-------------|
+| `FooterNewsletterSlot` | `layout/FooterNewsletterSlot.tsx` | Footer newsletter subscribe form — calls POST /api/newsletter/subscribe with source "footer"; shows success state |
 
 ## Homepage Components — `src/components/homepage/`
 

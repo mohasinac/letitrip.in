@@ -8,21 +8,19 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 82 ✅ 2026-05-10 (SEO & Lighthouse — SSR Hydration + JSON-LD + Core Web Vitals)
+## ⚡ LAST COMPLETED — Session 82-ext ✅ 2026-05-10 (Footer SEO Links + Constants Refactor + Quality Pass)
 
 | Task | What was done |
 |------|--------------|
-| **SEO1** | Homepage section SSR hydration — all 8 section hooks + components accept `initialData?`/`initialItems?`; `MarketplaceHomepageView` runs `Promise.all` server-fetches for enabled sections only; `section-renderer.tsx` threads data via `SectionData` interface. Carousels now have content in initial HTML for crawlers. |
-| **SEO2** | JSON-LD structured data on product, auction, blog, and FAQ pages (`productJsonLd`, `auctionJsonLd`, `blogPostJsonLd`, `faqJsonLd`, `breadcrumbJsonLd`). |
-| **SEO3** | `next/image` in product grid (`MediaImage` replaces `background-image` CSS), category section, and brands section — WebP/AVIF, srcset, LCP eligible. |
-| **SEO4** | `metadata` exports added to 14 static content/help pages (sellers, contact, help, fees, how-auctions-work, how-checkout-works, how-offers-work, how-orders-work, how-payouts-work, how-pre-orders-work, how-reviews-work, seller-guide, security, track). |
-| **SEO5** | `robots: { index: false }` on paginated category pages (page > 1) and all search result pages. |
-| **SEO6** | `<link rel="preconnect">` for Firebase Storage, Google Fonts, and GTM in root `layout.tsx` (preconnect covers DNS+TCP+TLS — no separate dns-prefetch needed). |
-| **SEO7** | Canonical URL logic already enforced by category + search page redirect guards. |
+| **FOOTER-SEO** | Added `bottomLinks` prop to `FooterLayout` (appkit) — sitemap, robots.txt, security links in bottom bar inside `<nav aria-label="Site utilities">`. Exported `FooterBottomLink` type from appkit index. |
+| **CONSTANTS** | Extracted hardcoded blobs from `LayoutShellClient.tsx` → `brand.ts` (name/desc/social), `footer.tsx` (trust bar/social/bottom links), `search.ts` (search labels). All re-exported from `src/constants/index.ts`. |
+| **NEWSLETTER** | Extracted inline stub JSX → `FooterNewsletterSlot` (`src/components/layout/`) with real API call, success/loading states, source:"footer" tag. |
+| **APPKIT-QUALITY** | Replaced raw `<button>` accordion toggle in `FooterLayout` with appkit `Button variant="ghost"`. |
+| **DIAGRAMS** | Added `## Public > Layout Shell + Footer ✅` to `asciiDiagrams.md`. |
+| **INDEX** | Updated `src/index.md` — new constants + `FooterNewsletterSlot`. |
 | **TypeScript** | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
-| **tracker** | SEO1–SEO7 marked ✅ in `crud-tracker.md`. |
 
-> Prior sessions done: 80-schema (RBAC+BAN+SCAM schemas), 80-plan (EX/YT/AX/FI/BK planning), 81 (sellerId→storeId migration), 80-arch (ARCH3 + seed QA), 79 (FAQ expansion + live stats), 78 (carousel + section form builders), 77 (coupon abuse prevention).
+> Prior sessions done: 82 (SEO & Lighthouse — SSR hydration + JSON-LD + Core Web Vitals), 80-schema (RBAC+BAN+SCAM), 81 (sellerId→storeId migration), 79 (FAQ/stats), 78 (carousel/sections), 77 (coupon abuse).
 
 ---
 
@@ -336,3 +334,6 @@ Deferred            105+              ⏳
 ────────────────────────────────────────────────────────
 ```
 follow all rules and complete all tasks, prioritize pending tasks or tech debt first. check for tsc errors before proceeding to next task. update ascii diagrams after every session.
+
+in the end recheck all the changes , update the tracker , prompt.md file , update our memory . update ascii diagrams and try to optimize and write better quality code so that we have more maintainability. also update or add the seed data and firebase indices and sieverjs and other config and the seedpanel entry for the same. make sure we use our html wrappers and themed contents with variables and no hardcoded text or breakpoints
+then commit all changes

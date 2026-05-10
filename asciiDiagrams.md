@@ -12,6 +12,22 @@
   - [Standard Admin Listing View Pattern](#shared--standard-admin-listing-view-pattern-)
   - [MediaUploadField](#shared--mediauploadfield-)
   - [PageLoader](#shared--pageloader-)
+- **Card Components & List Views** *(all collections)*
+  - [Card Inventory Table](#card-components--card-inventory-table)
+  - [BaseListingCard (compound primitive)](#card-components--baselistingcard-compound-primitive)
+  - [ProductCard + ProductGrid](#card-components--productcard--productgrid)
+  - [InteractiveProductCard](#card-components--interactiveproductcard)
+  - [MarketplaceAuctionCard + MarketplaceAuctionGrid](#card-components--marketplaceauctioncard--marketplaceauctiongrid)
+  - [MarketplacePreorderCard](#card-components--marketplacepreordercard)
+  - [MarketplaceOrderCard](#card-components--marketplaceordercard)
+  - [InteractiveStoreCard](#card-components--interactivestorecard)
+  - [CategoryCard + CategoryGrid](#card-components--categorycard--categorygrid)
+  - [BlogFeaturedCard](#card-components--blogfeaturedcard)
+  - [EventCard](#card-components--eventcard)
+  - [CouponCard](#card-components--couponcard)
+  - [CollectionCard + CollectionGrid](#card-components--collectioncard--collectiongrid)
+  - [Stat Cards (Admin / Seller / Dashboard)](#card-components--stat-cards)
+  - [Unused / Superseded Cards](#card-components--unused--superseded-cards)
 - **UX Patterns — Form Shells (shared across Admin / Store / User)**
   - [FormShell](#ux--formshell--full-width-side-panel-)
   - [QuickFormDrawer](#ux--quickformdrawer--fast-action-drawer-)
@@ -110,6 +126,7 @@
   - [Settings](#user--settings-)
   - [Notifications](#user--notifications-)
 - **Public Area**
+  - [Layout Shell + Footer](#public--layout-shell--footer-)
   - [Homepage](#public--homepage--all-sections--overview)
   - [Section — welcome](#public--homepage-section--welcome)
   - [Section — carousel](#public--homepage-section--carousel)
@@ -3194,6 +3211,69 @@ SideDrawer:
 
 # PUBLIC PAGES
 
+## Public > Layout Shell + Footer ✅
+
+```
+HEADER (sticky, --header-height written to :root)
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  [LetItRip logo]  [🔍 Search]  ···nav items···  [♡ Wishlist]  [🛒 Cart]     │
+│                   [Products][Auctions][Pre-Orders][Categories][Stores][Blog] │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+MOBILE SIDEBAR (slide-in from left, sidebarTitle="Menu")
+┌──────────────────────────────────┐
+│ Menu                         [✕] │
+│ ─────────────────────────────── │
+│ ▸ Browse (defaultOpen)           │
+│   [🏠] Home                      │
+│   [🛍] Products                  │
+│   [🔨] Auctions                  │
+│   [📅] Pre-Orders                │
+│   [🏪] Stores  …                 │
+│ ─────────────────────────────── │
+│ ▸ Support                        │
+│   About  · Contact  · Help       │
+│   (+ Seed & Docs if admin)       │
+│ ─────────────────────────────── │
+│ [Login] (solid)                  │
+│ [Register] (outline)             │
+│ ─────────────────────────────── │
+│ [🌙 Theme toggle]  [🌐 Locale]  │
+└──────────────────────────────────┘
+
+FOOTER (FooterLayout — src: appkit/src/features/layout/FooterLayout.tsx)
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  TRUST BAR (showTrustBar=true, 5 items, collapses to 2-col on mobile)        │
+│  🚚 Free Shipping    ↩️ Easy Returns    🔒 Secure Payments    📞 24/7 Support  │
+│  ✓ 100% Authentic                                                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  BRAND COL (lg:col-span-2)      │  LINK GROUPS (lg:col-span-3)              │
+│  LetItRip (h5)                  │  Shop    Support   Sellers  Learn  Legal  │
+│  India's collector-first …      │  ───     ───       ───      ───    ───    │
+│  [Instagram] [Twitter] [WA]     │  Products  Help Ctr  Become  Auctions  ToS│
+│                                 │  Auctions  FAQs      Guide   Pre-Ord  PP  │
+│  [newsletter form slot]         │  Pre-Ord   Contact   Fees    Offers   CP  │
+│  "Get deals & drops…"           │  Promotions Track    Payouts Blog     RP  │
+│  [email input] [Subscribe]      │  Stores    About     Store   Events   SP  │
+│                                 │  Categories          Dash                 │
+│                                 │  (mobile: each group = accordion toggle)  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  BOTTOM BAR                                                                  │
+│  © 2026 LetItRip. All rights reserved.                                       │
+│  [Sitemap] · [Robots.txt] · [Security]    Made with ♥ for collectors        │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Key decisions:
+- Trust bar items + social links + bottom utility links → src/constants/footer.tsx
+- Brand strings (name, description, social URLs) → src/constants/brand.ts
+- Newsletter slot → FooterNewsletterSlot component (calls POST /api/newsletter/subscribe)
+- Bottom links: /sitemap.xml · /robots.txt · /security (SEO utility, crawlable)
+- Accordion toggle uses appkit Button variant="ghost" (not raw <button>)
+- --header-height CSS var used for sticky offset throughout the app
+```
+
+---
+
 ## Public > Homepage ✅ (all sections — overview)
 
 ```
@@ -5477,44 +5557,162 @@ Feature badge pill:
 
 ### BK — Public Bulk Actions
 
-#### Public Listing — Selection Mode (desktop)
+> Selection trigger: **hover checkbox** (desktop) + **long-press** (mobile)
+> No explicit "Select mode" toolbar button — selection starts naturally.
+> Select All / Clear live in the ListingToolbar (replaces the search row when ≥1 item selected).
+
+#### Desktop — Normal state (no selection)
 
 `
-┌──────────────────────────────────────────────────────────────────────┐
-│ Products       [☐ Select]  [Filter ▼]  [Sort ▼]  [⊞ Grid | ≡ List]  │
-│                                                                      │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐           │
-│  │☑ [img]  │  │☐ [img]  │  │☑ [img]  │  │☐ [img]  │           │
-│  │  Name    │  │  Name    │  │  Name    │  │  Name    │           │
-│  │  ₹1,200  │  │  ₹3,500  │  │  ₹800    │  │  ₹2,100  │           │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘           │
-│                                                                      │
-│ ┌──────────────────────────────────────────────────────────────┐    │
-│ │  2 selected   [♡ Wishlist]  [⇄ Compare]  [↗ Share]   [✕]   │    │
-│ └────────────────────── STICKY BOTTOM BAR ────────────────────┘    │
-└──────────────────────────────────────────────────────────────────────┘
-Note: ☑ = checkbox overlay top-left of card; selected card has primary ring
+Toolbar (normal):
+┌─────────────────────────────────────────────────────────────────────────┐
+│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡]  [↺]            │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Card (no hover):                   Card (on hover — checkbox fades in):
+┌──────────────────────────┐       ┌──────────────────────────┐
+│                          │       │ [☐]                      │  ← checkbox appears
+│       [img]              │  →→→  │       [img]              │    opacity-0 → opacity-100
+│       Name               │       │       Name               │    on mouseenter
+│       ₹1,200             │       │       ₹1,200             │
+└──────────────────────────┘       └──────────────────────────┘
+  click card body → navigate          click [☐] → select card (no navigate)
+                                       click card body → navigate (unchanged)
 `
 
-#### Public Listing — Selection Mode (mobile)
+#### Desktop — Selection active (≥1 card selected)
+
+`
+Toolbar (selection active — search row replaced):
+┌─────────────────────────────────────────────────────────────────────────┐
+│  [☑ Select All (70)]  [Clear selection (2)]  Sort [… ▾]  [⊞/≡]  [↺]   │
+└─────────────────────────────────────────────────────────────────────────┘
+                          ↑
+                         count = currently selected items
+
+Cards (selection active):
+┌──────────────────────────┐  ┌──────────────────────────┐
+│ [☑]  ← filled, primary   │  │ [☐]  ← still unchecked   │
+│       [img]              │  │       [img]              │
+│       Name               │  │       Name               │
+│       ₹1,200             │  │       ₹3,500             │
+│ ── primary ring ─────────│  └──────────────────────────┘
+└──────────────────────────┘
+  ring-2 ring-primary ring-offset-1 on selected cards
+  click card body OR checkbox → toggles selection (no navigation while bar is open)
+
+Sticky bottom bulk bar (slides up when ≥1 selected):
+┌─────────────────────────────────────────────────────────────────────────┐
+│  2 selected    [♡ Wishlist]   [⇄ Compare]   [↗ Share]   [✕ Clear]      │
+└────────────────────────────────── STICKY BOTTOM ───────────────────────┘
+  [✕ Clear] = deselects all (bar slides away, toolbar reverts to search row)
+  bottom: 0; z-index: var(--appkit-z-modal)
+  transition: slide up from bottom on mount, slide down on dismiss
+`
+
+#### Mobile — Normal state (no selection)
 
 `
 ┌──────────────────────────────┐
-│ Products  [☐ Select] [≡] [⊕]│
+│ [🔍 Search  🔍] [⚙] [≡] [↺] │  ← normal toolbar
 │ ─────────────────────────── │
 │ ┌──────────┐ ┌──────────┐   │
-│ │☑ [img]  │ │☐ [img]  │   │
+│ │          │ │          │   │  ← tap → navigate (no checkbox visible)
+│ │  [img]   │ │  [img]   │   │    long-press → vibrate + enter selection
 │ │  Name    │ │  Name    │   │
 │ │  ₹1,200  │ │  ₹3,500  │   │
 │ └──────────┘ └──────────┘   │
+└──────────────────────────────┘
+Long-press behaviour:
+  500ms hold → haptic feedback (navigator.vibrate(30))
+  First card is auto-selected
+  App enters selection mode (toolbar + bulk bar appear)
+`
+
+#### Mobile — Selection active
+
+`
+Toolbar (selection active — search row replaced):
+┌──────────────────────────────┐
+│ [☑ All (70)]  [Clear (2)]    │  ← replaces search row
+│ Sort [… ▾]  [⊞/≡]  [↺]      │  ← sort/view controls stay
+└──────────────────────────────┘
+
+Cards (with checkboxes, tap = toggle select):
+┌──────────────────────────────┐
 │ ┌──────────┐ ┌──────────┐   │
-│ │☑ [img]  │ │☐ [img]  │   │
-│ │  Name    │ │  Name    │   │
+│ │[☑][img] │ │[☐][img] │   │  ← checkbox always visible in selection mode
+│ │  Name    │ │  Name    │   │    tap card anywhere → toggles selection
+│ │  ₹1,200  │ │  ₹3,500  │   │    (no navigation while in selection mode)
+│ └──────────┘ └──────────┘   │
+│ ┌──────────┐ ┌──────────┐   │
+│ │[☑][img] │ │[☐][img] │   │
 │ └──────────┘ └──────────┘   │
 │ ─────────────────────────── │
-│ 2 selected           [✕]    │
-│ [♡Wishlist][⇄Compare][↗Share]│
+│ 2 selected           [✕]    │  ← sticky bottom bar
+│ [♡ Wishlist] [⇄] [↗ Share]  │
 └──────────────────────────────┘
+[✕] in the bar = clear all + exit selection mode
+`
+
+#### State Machine
+
+`
+NORMAL MODE
+  ├── desktop hover card      → checkbox fades in (no state change)
+  ├── desktop click [☐]      → SELECT card → SELECTION MODE
+  └── mobile long-press card  → SELECT card + haptic → SELECTION MODE
+
+SELECTION MODE
+  ├── click/tap [☐] on card   → toggle selected/deselected
+  ├── click/tap card body      → toggle selected/deselected (no navigation)
+  ├── [Select All (N)]         → select all visible items (current page)
+  ├── [Clear selection (N)]    → deselect all → back to NORMAL MODE
+  └── [✕ Clear] in bulk bar   → deselect all → back to NORMAL MODE
+
+Bulk actions (≥1 selected):
+  [♡ Wishlist]  → addToWishlist(selectedIds) — auth required, shows login prompt if not
+  [⇄ Compare]   → open compare overlay (max 4 items; shows "Max 4" toast if exceeded)
+  [↗ Share]     → navigator.share({ url: /products?ids=… }) or copy link fallback
+`
+
+#### useBulkSelection hook API (BK1 — to be built in appkit)
+
+`
+// appkit/src/features/shared/hooks/useBulkSelection.ts
+
+const {
+  selectedIds,       // Set<string>  — currently selected item IDs
+  isSelecting,       // boolean      — true when ≥1 item selected
+  isSelected,        // (id) => bool
+  toggle,            // (id) => void — select if not selected, deselect if selected
+  selectAll,         // (ids: string[]) => void — select all visible IDs
+  clearAll,          // () => void
+} = useBulkSelection()
+
+// Usage in ProductsIndexListing:
+const bulk = useBulkSelection()
+
+// Toolbar:
+// isSelecting → show [Select All] [Clear (N)] instead of search row
+
+// Each card:
+<InteractiveProductCard
+  selectable={bulk.isSelecting}
+  isSelected={bulk.isSelected(product.id)}
+  onSelect={bulk.toggle}
+/>
+
+// Sticky bottom bar:
+{bulk.isSelecting && (
+  <BulkActionsBar
+    count={bulk.selectedIds.size}
+    onWishlist={() => addToWishlist([...bulk.selectedIds])}
+    onCompare={() => openCompare([...bulk.selectedIds])}
+    onShare={() => shareProducts([...bulk.selectedIds])}
+    onClear={bulk.clearAll}
+  />
+)}
 `
 
 #### Compare Overlay (desktop, 2-column)
@@ -6085,4 +6283,652 @@ RESOURCE HINTS (SEO6) — src/app/layout.tsx
   <link rel="preconnect"   href="https://www.googletagmanager.com" />
   <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 ```
+
+---
+
+# Card Components & List Views
+
+> **Living section.** Every card component and its grid/list container is documented here.
+> Status key: ✅ active (actually imported by views) | 🚫 superseded (exported but nothing imports it)
+> Checkbox key: [chk] = checkbox rendered | — = no checkbox
+
+---
+
+## Card Components > Card Inventory Table
+
+```
+Component                   File                                                        Checkbox  Status   Used By
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+BaseListingCard             appkit/src/ui/components/BaseListingCard.tsx                [chk]     ✅      MarketplaceAuctionCard, MarketplacePreorderCard
+ProductCard                 appkit/src/features/products/components/ProductGrid.tsx     [chk]     ✅      ProductGrid, InteractiveProductCard
+InteractiveProductCard      appkit/src/features/products/components/Interactive…        —         ✅      ProductsIndexListing, FeaturedProductsSection, CategoryProductsListing
+MarketplaceAuctionCard      appkit/src/features/auctions/components/Marketplace…        [chk]     ✅      MarketplaceAuctionGrid, AuctionsIndexListing, FeaturedAuctionsSection
+MarketplacePreorderCard     appkit/src/features/pre-orders/components/Marketplace…      [chk]     ✅      PreOrdersIndexListing, StorePreOrdersListing, FeaturedPreOrdersSection
+MarketplaceOrderCard        appkit/src/features/orders/components/Marketplace…          [chk]     ✅      OrdersIndexListing (user/store)
+InteractiveStoreCard        appkit/src/features/stores/components/Interactive…          [chk]     ✅      StoresIndexListing, FeaturedStoresSection
+CategoryCard                appkit/src/features/categories/components/CategoryGrid.tsx  —         ✅      CategoryGrid, ShopByCategorySection
+BlogFeaturedCard            appkit/src/features/blog/components/BlogFeaturedCard.tsx    —         ✅      BlogIndexListing
+EventCard                   appkit/src/features/events/components/EventCard.tsx         —         ✅      EventsIndexListing
+CouponCard                  appkit/src/features/promotions/components/CouponCard.tsx    —         ✅      CouponsIndexListing
+CollectionCard              appkit/src/features/collections/components/CollectionCard   —         ✅      CollectionGrid
+ConcernCard                 appkit/src/features/categories/components/ConcernCard.tsx   —         ✅      CategoryFiltersSection
+SocialPostCard              appkit/src/features/homepage/components/SocialPostCard.tsx  —         ✅      SocialFeedSection
+BeforeAfterCard             appkit/src/features/homepage/components/BeforeAfterCard.tsx —         ✅      CustomCardsSection (comparison variant)
+AdminStatCard               appkit/src/features/admin/components/analytics/Admin…       —         ✅      AdminAnalyticsView
+DashboardStatsGrid          appkit/src/features/admin/components/DashboardStats.tsx     —         ✅      AdminDashboardView
+AuctionCard                 appkit/src/features/auctions/components/AuctionCard.tsx     —         🚫     UNUSED — superseded by MarketplaceAuctionCard
+PreorderCard                appkit/src/features/pre-orders/components/PreorderCard.tsx  —         🚫     UNUSED — superseded by MarketplacePreorderCard
+DashboardStatsCard          appkit/src/ui/components/DashboardStatsCard.tsx             —         🚫     UNUSED — defined but imported nowhere
+SellerStatCard              appkit/src/features/seller/components/SellerStatCard.tsx    —         🚫     UNUSED — exported but no view imports it
+```
+
+---
+
+## Card Components > BaseListingCard (compound primitive)
+
+```
+File: appkit/src/ui/components/BaseListingCard.tsx
+Used by: MarketplaceAuctionCard, MarketplacePreorderCard (compound composition)
+
+Sub-components:
+  BaseListingCard           — root wrapper (grid/list variant)
+  BaseListingCard.Hero      — image area with hover effects and badge overlays
+  BaseListingCard.Info      — text/action area below image
+  BaseListingCard.Checkbox  — absolute-positioned selection overlay
+
+Props:
+  variant?:    "grid" | "list"   — layout direction
+  isSelected?: boolean           — applies primary ring when true
+  isDisabled?: boolean           — greys out card
+
+BaseListingCard.Checkbox props:
+  selected?:  boolean
+  onSelect?:  (e: MouseEvent<HTMLButtonElement>) => void
+  position?:  string             — Tailwind classes, default "top-2 left-2"
+
+GRID variant (default):
+┌──────────────────────────────────────┐
+│  ┌──────────────────────────────┐    │
+│  │ [chk]                        │    │  ← BaseListingCard.Checkbox (top-left, 5×5 px)
+│  │                              │    │    white bg → primary fill when selected
+│  │        Hero Image            │    │
+│  │   (aspect-square)            │    │
+│  │                              │    │
+│  └──────────────────────────────┘    │
+│  Info area (title, price, actions)   │
+└──────────────────────────────────────┘
+
+LIST variant (flex-row):
+┌──────────────────────────────────────────────────────────────────┐
+│ [chk] │  [Hero Image 1:1]  │  Info area (title, price, actions)  │
+└──────────────────────────────────────────────────────────────────┘
+
+Selected state:
+  ring-2 ring-[var(--appkit-color-primary)] ring-offset-2
+  BaseListingCard.Checkbox: bg-[var(--appkit-color-primary)] checkmark icon visible
+```
+
+---
+
+## Card Components > ProductCard + ProductGrid
+
+```
+Files:
+  Card:  appkit/src/features/products/components/ProductGrid.tsx  (lines 14–286)
+  Grid:  appkit/src/features/products/components/ProductGrid.tsx  (lines 298–641)
+
+ProductCard props (key):
+  product:         ProductItem
+  href?:           string         — wraps card in <Link> when provided (and not in selection mode)
+  selectionMode?:  boolean        — enables checkbox overlay
+  isSelected?:     boolean
+  onSelect?:       (id: string) => void
+  isWishlisted?:   boolean
+  onAddToWishlist? / onAddToCart? / onBuyNow? / onClick?
+
+CARD VIEW — normal (no selection, no hover):
+┌──────────────────────────────────────┐
+│ ♡                    [SALE badge]    │  ← wishlist heart (top-right), sale badge (top-left)
+│                                      │
+│          Product Image               │
+│          (aspect-4/3)                │
+│                                      │
+├──────────────────────────────────────┤
+│ [Category] [Brand]                   │  ← chip badges
+│ Product Title (2-line clamp)         │
+│ ★★★★☆  (4.2)  ·  32 reviews         │
+│ ₹ 1,200  ~~₹ 1,500~~                │
+│ [Add to Cart]  [Buy Now]             │
+└──────────────────────────────────────┘
+
+CARD VIEW — desktop hover (checkbox fades in, card body still navigates):
+┌──────────────────────────────────────┐
+│ [☐]  ♡               [SALE badge]   │  ← checkbox top-left, opacity 0→100 on mouseenter
+│                                      │    clicking [☐] → selects card (no nav)
+│          Product Image               │    clicking card body → navigates to detail
+│          (aspect-4/3)                │
+│                                      │
+├──────────────────────────────────────┤
+│ Product Title (2-line clamp)         │
+│ ₹ 1,200                              │
+│ [Add to Cart]  [Buy Now]             │
+└──────────────────────────────────────┘
+
+CARD VIEW — selectionMode=true (BK active, all cards show checkbox, body click = select):
+┌──────────────────────────────────────┐
+│ [☑]                  [SALE badge]    │  ← checkbox always visible, primary fill when selected
+│                                      │    ring-2 ring-primary ring-offset-1 on selected card
+│          Product Image               │    clicking anywhere on card → toggles selection
+│          (aspect-4/3)                │    (navigation DISABLED while in selection mode)
+│                                      │
+├──────────────────────────────────────┤
+│ Product Title (2-line clamp)         │
+│ ₹ 1,200                              │
+└──────────────────────────────────────┘
+Note: BK trigger (see BK diagram): desktop=hover→click☐ | mobile=long-press
+      selectionMode prop is set by the parent listing via useBulkSelection() hook
+
+LIST VIEW (ProductListRow — view="list"):
+┌──────────────────────────────────────────────────────────────────────┐
+│ [img 80×80]  Product Title (1-line clamp)    ★★★★☆  ₹1,200  ♡       │
+│              [Category] [Brand]                                       │
+└──────────────────────────────────────────────────────────────────────┘
+
+ProductGrid props (key):
+  products:         T[]
+  view?:            "card" | "fluid" | "list"
+  selectionMode?:   boolean
+  selectedIds?:     Set<string>
+  onToggleSelect?:  (id: string) => void
+  renderCard?:      custom render slot
+  slots?:           LayoutSlots — overrides grid regions
+
+Grid column counts (card view):
+  xs:1 → sm:2 → md:3 → lg:4 → xl:5
+
+Grid column widths (fluid view):
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))
+```
+
+---
+
+## Card Components > InteractiveProductCard
+
+```
+File: appkit/src/features/products/components/InteractiveProductCard.tsx
+
+Wraps ProductCard in a <Link>. Navigation-first: card click always navigates UNLESS the
+BK selection mode is active, in which case body click = toggle select.
+
+Props:
+  product:          ProductItem
+  href:             string   (required)
+  selectable?:      boolean  — when true, card is in BK selection mode
+  isSelected?:      boolean
+  onSelect?:        (id: string, selected: boolean) => void
+  isWishlisted?:    boolean
+  onToggleWishlist? / onAddToCart? / onBuyNow?
+
+BK SELECTION INTEGRATION (see BK diagram for full UX):
+  selectable=false (default, normal mode):
+    • Card body click → navigates to product detail
+    • Desktop hover → ProductCard's checkbox fades in (opacity-0 → opacity-100)
+    • Clicking that checkbox → calls onSelect, enters selection mode (selectable flips true)
+    • Mobile long-press → haptic → calls onSelect, enters selection mode
+
+  selectable=true (BK selection mode active):
+    • Card body click → toggles selection (no navigation)
+    • Checkbox is always visible at opacity-100
+    • isSelected=true → ring-2 ring-primary ring-offset-1
+
+Used by: ProductsIndexListing, StoreProductsListing, FeaturedProductsSection
+Note: The hover visibility of the checkbox is CSS-only (group-hover/opacity). The actual
+      "enters selection mode" signal goes up to the parent listing via onSelect callback
+      which triggers useBulkSelection() state change → sets selectable=true on all cards.
+```
+
+---
+
+## Card Components > MarketplaceAuctionCard + MarketplaceAuctionGrid
+
+```
+Files:
+  Card: appkit/src/features/auctions/components/MarketplaceAuctionCard.tsx
+  Grid: appkit/src/features/auctions/components/MarketplaceAuctionGrid.tsx
+
+MarketplaceAuctionCard props (key):
+  product:     MarketplaceAuctionCardData  (extends ProductItem)
+  variant?:    "grid" | "card" | "fluid" | "list"
+  selectable?: boolean
+  isSelected?: boolean
+  onSelect?:   (id: string, selected: boolean) => void
+  inWishlist?: boolean
+  href? / hrefBuilder? / onNavigate?
+  wishlistActions?: WishlistToggleActions
+  labels?:     MarketplaceAuctionCardLabels  (all CTA/badge text customizable)
+
+GRID variant (default):
+┌──────────────────────────────────────────────────┐
+│ [chk]  ★ Featured        [🔴 LIVE / ENDING / END] │  ← BaseListingCard.Checkbox top-left
+│                                                  │    Status badge top-right (color-coded)
+│    ◀  [●○○○○○]  ▶   [Auction badge bottom-right] │  ← image carousel (6 imgs, hover auto-rotate)
+│       [dot indicators]                           │
+│    [▶ Play] icon if video attached               │
+├──────────────────────────────────────────────────┤
+│ ♡  Product Title (2-line clamp)                  │  ← wishlist heart (right)
+│ Current bid: ₹ 45,000  (12 bids)                │
+│ [⏱ 2h 14m 33s remaining]  ← countdown badge     │
+│    🔴 ended / 🟡 ending soon / 🟢 live           │
+│ [Place Bid →]    [Buyout ₹ 80,000]               │  ← Buyout only if buyoutPrice set
+└──────────────────────────────────────────────────┘
+
+LIST variant (flex-row, same info but horizontal):
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [chk] [carousel 1:1]  Title          Current bid  Countdown  [Bid][Buyout]│
+│                        description (2-line, rich text)                    │
+└───────────────────────────────────────────────────────────────────────────┘
+
+Checkbox (BK integration — same pattern as all marketplace cards):
+  Desktop: checkbox fades in (opacity-0 → opacity-100) on card hover
+           clicking checkbox → onSelect (no navigate); body click still navigates
+  Mobile:  long-press card → haptic + auto-selects card → selectable=true for all cards
+  selectable=true (BK active): checkbox always visible; body click = toggle select
+  Position: top-left, 5×5 px BaseListingCard.Checkbox
+  Style:    white/lightgray → primary fill + checkmark when isSelected=true
+
+Status badge colors:
+  🔴 Ended      → bg-danger   text
+  🟡 Ending Soon → bg-warning  text   (< 1h remaining)
+  🟢 Live        → bg-success  text
+
+AuctionCountdown (re-exported from AuctionCard.tsx):
+  Shows: Xh Ym Zs in dark badge
+  Updates every second via setInterval
+
+MarketplaceAuctionGrid props:
+  auctions:     MarketplaceAuctionCardData[]
+  view?:        "grid" | "fluid" | "list"
+  selectable?:  boolean
+  selectedIds?: Set<string>
+  onToggleSelect?
+  cardLabels?:  MarketplaceAuctionCardLabels
+  Grid cols:    xs:1 → sm:2 → md:3 → lg:3 → xl:4
+```
+
+---
+
+## Card Components > MarketplacePreorderCard
+
+```
+File: appkit/src/features/pre-orders/components/MarketplacePreorderCard.tsx
+
+Uses BaseListingCard compound pattern (same as MarketplaceAuctionCard).
+
+Props (key):
+  product:     MarketplacePreorderCardData  (extends ProductItem)
+  variant?:    "grid" | "list"
+  selectable?: boolean
+  isSelected?: boolean
+  onSelect?:   (id: string, selected: boolean) => void
+  inWishlist?: boolean
+  href? / hrefBuilder? / onNavigate?
+  onAddToCart?
+  wishlistActions?: WishlistToggleActions
+  labels?:     MarketplacePreorderCardLabels
+
+GRID variant:
+┌──────────────────────────────────────────────────┐
+│ [chk]  [Pre-order badge]  [Featured badge]       │  ← BaseListingCard.Checkbox top-left
+│                                                  │
+│         Product Image  (zoom on hover)           │
+│         (aspect-square)                          │
+├──────────────────────────────────────────────────┤
+│ ♡  Product Title (2-line clamp)                  │
+│ ₹ 4,499  ~~₹ 5,000~~                            │
+│ [🚚 Ships: Sep 2026]  ← ship date badge          │
+│    indigo=upcoming / amber=in-prod / green=ready │
+│ [Reserve Now →]   [🛒 Add to Cart]              │
+└──────────────────────────────────────────────────┘
+
+LIST variant (flex-row):
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ [chk] [img 1:1]  Title  ·  description (2-line)   ₹ price  [Ship badge] [Reserve]│
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+Checkbox: same BK hover/long-press pattern as MarketplaceAuctionCard (BaseListingCard.Checkbox, 5×5 px, top-left)
+```
+
+---
+
+## Card Components > MarketplaceOrderCard
+
+```
+File: appkit/src/features/orders/components/MarketplaceOrderCard.tsx
+
+Props (key):
+  order:     MarketplaceOrderCardOrder
+  variant?:  "grid" | "list"
+  selectable?: boolean
+  isSelected?: boolean
+  onSelect?:   (id: string, selected: boolean) => void
+  links?:    { detailHref, trackHref?, reviewHref? }
+  onNavigate?
+  labels?:   Partial<MarketplaceOrderCardLabels>
+
+GRID variant (flex-col):
+┌──────────────────────────────────────┐
+│ [chk]  📦  Order #ABC123            │  ← 6×6 px checkbox button (top-left)
+│            2026-05-08  ·  3 items   │
+│            [SHIPPED badge]           │  ← color-coded status badge
+│            ₹ 12,500                 │  ← tabular-nums
+│ [Track Order]  [Leave Review]       │  ← conditional: Track if shipped/delivered
+│                                      │    Review if delivered
+│ [View Order →]                       │
+└──────────────────────────────────────┘
+
+LIST variant (flex-row):
+┌──────────────────────────────────────────────────────────────────────┐
+│ [chk] 📦 Order #ABC123  ·  2026-05-08  │ [SHIPPED]  ₹12,500  [View] │
+└──────────────────────────────────────────────────────────────────────┘
+
+Checkbox: 6×6 px button (top-left), inline SVG checkmark
+  Style: white/lightgray border → primary fill when isSelected=true
+
+Status badge variants:
+  PENDING        → badge-pending   (yellow)
+  PROCESSING     → badge-info      (blue)
+  SHIPPED        → badge-active    (cyan)
+  DELIVERED      → badge-success   (green)
+  CANCELLED      → badge-danger    (red)
+  REFUNDED       → badge-warning   (orange)
+  RETURN_REQUESTED → badge-muted   (gray)
+```
+
+---
+
+## Card Components > InteractiveStoreCard
+
+```
+File: appkit/src/features/stores/components/InteractiveStoreCard.tsx
+
+Props (key):
+  store:     StoreListItem
+  href:      string
+  selectable?: boolean
+  selected?:   boolean        ← NOTE: prop name is "selected" not "isSelected" (inconsistency)
+  onSelect?:   (id: string, selected: boolean) => void
+  labels?:     { products?, sold?, reviews?, visitStore? }
+
+CARD:
+┌──────────────────────────────────────────────────┐
+│ [chk]                  [● Verified badge]        │  ← 5×5 px checkbox, top-left
+│     Store Banner Image (aspect-video)            │
+│     [Store Logo]  ← absolute, bottom-left 56px  │
+├──────────────────────────────────────────────────┤
+│ Store Name                                       │
+│ Description (2-line rich-text clamp)             │
+│ ★★★★☆ (4.2)  ·  128 reviews                     │
+│ 📦 70 Products   💰 450 Sold                     │
+│ [Visit Store →]                                  │
+└──────────────────────────────────────────────────┘
+
+Checkbox: 5×5 px button absolute top-left over banner
+  Style: white bg → primary fill + checkmark when selected=true
+
+NOTE: Inconsistent prop name — uses `selected?: boolean` instead of `isSelected?: boolean`
+  like all other marketplace cards. Fix in future when unifying selection API.
+
+Used by: StoresIndexListing, FeaturedStoresSection (homepage)
+```
+
+---
+
+## Card Components > CategoryCard + CategoryGrid
+
+```
+Files:
+  Card + Grid: appkit/src/features/categories/components/CategoryGrid.tsx
+
+CategoryCard props:
+  category:  CategoryItem
+  href?:     string       — Link-based navigation
+  onClick?:  (category) => void  — click-based (no href)
+  className?: string
+
+CARD:
+┌──────────────────────────────────────┐
+│ [Category Image or gradient]         │
+│ (aspect-4/3)                         │
+│   [📦 icon overlay]                  │
+│   [★ Featured badge top-right]       │
+├──────────────────────────────────────┤
+│ Category Name                        │
+│ Description (2-line clamp, optional) │
+│ 70 products                          │
+│ Browse [→]                           │
+└──────────────────────────────────────┘
+Checkbox: NONE
+Two render paths: <Link href> navigation | <button onClick> filter
+
+CategoryGrid props:
+  categories:    CategoryItem[]
+  getHref?:      (category) => string
+  onCategoryClick?: (category) => void
+  emptyLabel?:   string
+  Grid cols:     xs:2 → sm:3 → md:4 → lg:5
+```
+
+---
+
+## Card Components > BlogFeaturedCard
+
+```
+File: appkit/src/features/blog/components/BlogFeaturedCard.tsx
+
+Props:
+  post:      BlogPost
+  href:      string
+  labels?:   { featuredBadge?, readTime? }
+  className?: string
+
+CARD (always wrapped in TextLink):
+┌──────────────────────────────────────┐
+│ Cover Image (aspect-video)           │
+│   [NEWS badge]  [★ FEATURED badge]   │  ← category-colored / featured conditional
+├──────────────────────────────────────┤
+│ Post Title (2-line clamp)            │
+│ Excerpt (2-line clamp)               │
+│ ─────────────────────────────────── │
+│ [avatar]  Author · 5 min read        │
+│ May 08 2026                          │
+└──────────────────────────────────────┘
+
+Category badge colors:
+  news=blue / tips=green / guides=purple / updates=orange / community=pink
+
+Checkbox: NONE
+Used by: BlogIndexListing (featured post slot)
+```
+
+---
+
+## Card Components > EventCard
+
+```
+File: appkit/src/features/events/components/EventCard.tsx
+
+Exports: EventCard, EventStatusBadge
+
+Props:
+  event:          EventItem
+  labels?:        { participate?, viewDetails?, viewResults?, entries? }
+  onParticipate?: (event: EventItem) => void
+
+CARD:
+┌──────────────────────────────────────┐
+│ Cover Image (aspect-video)           │
+│   [🏷️ SALE type icon]  [ACTIVE badge] │  ← type icon top-left, status badge top-right
+├──────────────────────────────────────┤
+│ Event Title (2-line clamp)           │
+│ Description (3-line rich-text clamp) │
+│ ⏱ 3 days remaining                  │
+│ 👥 142 entries                       │
+│ [Participate →]   ← primary CTA      │
+│   or [View Details] (if not active)  │
+│   or [View Results] (if ended)       │
+└──────────────────────────────────────┘
+
+Type icons: 🏷️ SALE / 🎁 OFFER / 📊 POLL / 📝 SURVEY / 💬 FEEDBACK / 🏆 TOURNAMENT / 📅 CONVENTION / 🤝 MEETUP
+
+Checkbox: NONE
+Used by: EventsIndexListing
+```
+
+---
+
+## Card Components > CouponCard
+
+```
+File: appkit/src/features/promotions/components/CouponCard.tsx
+
+Props:
+  coupon:    CouponItem
+  labels?:   { copy?, copied?, expires?, minOrder?, off?, freeShipping? }
+  onCopy?:   (code: string) => void
+  className?: string
+
+CARD (no product image — text/badge focused):
+┌──────────────────────────────────────┐  ← background color = type-coded
+│  [PURPLE: % OFF | GREEN: ₹ OFF |    │
+│   BLUE: FREE SHIP | ORANGE: BUY X]  │
+│                                      │
+│   20% OFF                            │  ← large type display
+│   Summer Sale Coupon                 │  ← coupon name
+│   Valid on all trading cards         │  ← description
+│                                      │
+│   ┌─────────────────┐  [Copy]        │  ← monospace code box
+│   │ SUMMER20        │  → [Copied!]   │    copy state toggle
+│   └─────────────────┘                │
+│   Min. order: ₹ 999                  │
+│   Expires: Dec 31, 2026              │
+└──────────────────────────────────────┘
+
+Checkbox: NONE
+Used by: CouponsIndexListing (public), checkout coupon section
+```
+
+---
+
+## Card Components > CollectionCard + CollectionGrid
+
+```
+File: appkit/src/features/collections/components/CollectionCard.tsx
+
+CollectionCard props:
+  collection:  CollectionListItem
+  href:        string
+
+CARD:
+┌──────────────────────────────────────┐
+│ Image / gradient fallback            │
+│ (scale-up on hover)                  │
+├──────────────────────────────────────┤
+│ Collection Title                     │
+│ Subtitle (optional)                  │
+│ 24 items                             │
+└──────────────────────────────────────┘
+
+Checkbox: NONE
+
+CollectionGrid props:
+  collections: CollectionListItem[]
+  getHref:     (slug: string) => string
+  Grid cols:   xs:1 → sm:2 → md:3
+```
+
+---
+
+## Card Components > Stat Cards
+
+```
+Three stat card components exist — only AdminStatCard and DashboardStatsGrid are active.
+
+──────────────────────────────────────────────────────────────────────────────────
+AdminStatCard  ✅  (appkit/src/features/admin/components/analytics/AdminStatCard.tsx)
+Used by: AdminAnalyticsView
+
+┌──────────────────────────────┐
+│  [icon]  Label               │
+│          LARGE VALUE         │
+└──────────────────────────────┘
+Props: label, value, icon?, className?
+
+──────────────────────────────────────────────────────────────────────────────────
+DashboardStatsGrid  ✅  (appkit/src/features/admin/components/DashboardStats.tsx)
+Used by: AdminDashboardView (via renderStats render prop)
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐ │
+│  │ 💰           │  │ 📦           │  │ ⏳           │  │ ⭐             │ │
+│  │  ₹ 8,45,000  │  │  103         │  │  12          │  │  4.8           │ │
+│  │ Total Revenue│  │ Total Orders │  │ Pending Rev. │  │ Avg Rating     │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └────────────────┘ │
+└────────────────────────────────────────────────────────────────────────────┘
+Props: stats: DashboardStats, isLoading, labels?
+
+──────────────────────────────────────────────────────────────────────────────
+DashboardStatsCard  🚫  (appkit/src/ui/components/DashboardStatsCard.tsx)
+Status: UNUSED — defined but imported by no views. Candidate for deletion.
+Would render: icon box + label + large value + optional trend %
+
+SellerStatCard  🚫  (appkit/src/features/seller/components/SellerStatCard.tsx)
+Status: UNUSED — exported in seller/components/index.ts but no view imports it.
+Would render: label + value + subLabel + trend indicator (▲/▼ %)
+Candidate for deletion once SellerAnalyticsView is built (use AdminStatCard pattern instead).
+```
+
+---
+
+## Card Components > Unused / Superseded Cards
+
+```
+The following cards are exported from the appkit barrel but are imported by zero views.
+They should be removed or replaced.
+
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│  Component         File                                  Why superseded                 │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│  AuctionCard       features/auctions/AuctionCard.tsx     Replaced by MarketplaceAuction │
+│                                                          Card (richer: carousel, checkout│
+│                                                          badge, wishlist, BaseListingCard│
+│                                                          selection). AuctionCountdown    │
+│                                                          re-export from AuctionCard.tsx  │
+│                                                          IS still used — keep the file   │
+│                                                          but mark AuctionCard deprecated. │
+│                                                                                          │
+│  PreorderCard      features/pre-orders/PreorderCard.tsx  Replaced by MarketplacePreorder│
+│                                                          Card (richer: BaseListingCard,  │
+│                                                          wishlist, cart, ship badge).    │
+│                                                                                          │
+│  DashboardStats    ui/components/DashboardStatsCard.tsx  No consumer. Functionality     │
+│  Card                                                    covered by DashboardStatsGrid + │
+│                                                          AdminStatCard.                  │
+│                                                                                          │
+│  SellerStatCard    features/seller/SellerStatCard.tsx    No consumer. Build             │
+│                                                          SellerAnalyticsView using       │
+│                                                          AdminStatCard pattern instead.  │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+
+ACTION ITEMS (non-urgent — do in a cleanup session):
+  1. Remove DashboardStatsCard export from ui/components/index.ts
+  2. Remove SellerStatCard export from seller/components/index.ts
+  3. In AuctionCard.tsx: mark AuctionCard as @deprecated but keep AuctionCountdown export
+  4. In PreorderCard.tsx: remove or mark @deprecated — nothing re-exports AuctionCountdown
+     from here so the whole file can be deleted when confirmed unused
+  5. Prop naming fix: InteractiveStoreCard uses `selected` prop — rename to `isSelected`
+     to match the rest of the selection API (MarketplaceAuctionCard, MarketplacePreorderCard,
+     MarketplaceOrderCard, ProductCard all use `isSelected`)
+```
+
+*Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session.*
 
