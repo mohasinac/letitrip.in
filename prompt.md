@@ -8,6 +8,19 @@
 
 ---
 
+## 🔁 RULE #0 — END-OF-SESSION CHECKLIST (do this before the final commit, every session)
+
+1. **Update `prompt.md`** — move the just-finished session into LAST COMPLETED; update the 🔜 NEXT section with the tasks for the *following* session pulled from `crud-tracker.md`.
+2. **Update `memory/project_status.md`** — prepend a bullet summary of what changed this session so the next session starts with full context.
+3. **Update `crud-tracker.md`** — mark completed tasks ✅ with session + one-line note; mark the session row ✅ Done in the roadmap table.
+4. **Prepend `newchange.md`** — add a session entry (scope, changed files table, deferred table).
+5. **Run `npx tsc --noEmit`** in both `letitrip.in/` and `appkit/` — must be 0 errors before committing.
+6. **Commit** — code commit first, then a separate docs commit.
+
+> **Why:** The next session reads `prompt.md` cold. If LAST COMPLETED and 🔜 NEXT are stale, the session starts by re-deriving context that should already be written down — wasted turns and risk of regression.
+
+---
+
 ## ⚡ LAST COMPLETED — Session 78 ✅ 2026-05-10 (User Account Core)
 
 | Task | What was done |
