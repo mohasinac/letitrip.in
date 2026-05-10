@@ -33,6 +33,36 @@
 
 ---
 
+# Session 79 — 2026-05-10 (Cart Integrity)
+
+## Scope
+
+W1 (cart stale validate endpoint), W2 (wishlist stale validate endpoint), W3 (OOS cart section), W4 (CartItemRow product links + OOS styling), R1 (auth cart mutations + notification toasts). Plus 5 pre-existing TS error fixes.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/cart/components/CartDrawer.tsx` | `CartItemRow` augmented: `href?: string` (title becomes `<a target="_blank">`), `isOutOfStock?: boolean` (opacity-60, badge, locked qty stepper). |
+| `appkit/src/features/seller/components/SellerPayoutSettingsView.tsx` | `helperText` → `helpText` (2 occurrences) — pre-existing TS error fix. |
+| `appkit/src/features/seller/components/SellerShippingView.tsx` | `helperText` → `helpText` (2 occurrences) — pre-existing TS error fix. |
+| `appkit/src/features/seller/components/index.ts` | Added `SellerReviewsView` export. |
+| `appkit/src/client.ts` | Added exports: SellerPayoutSettingsView, SellerShippingView, SellerReviewsView, SellerPayoutRequestView, SellerAnalyticsStats, SellerTopProducts, SellerAnalyticsView, SellerPayoutsView + type exports. |
+| `src/app/api/cart/validate/route.ts` | NEW — POST /api/cart/validate. No auth. Accepts `{ productIds: string[] }`. Returns `{ stale, outOfStock }`. |
+| `src/app/api/user/wishlist/validate/route.ts` | NEW — POST /api/user/wishlist/validate. Auth required. Batch-checks wishlist items, deletes stale from Firestore. Returns `{ removedCount, removedProductIds }`. |
+| `src/app/[locale]/wishlist/page.tsx` | On mount calls /api/user/wishlist/validate, shows info toast + refetches if stale items removed. |
+| `src/app/[locale]/user/notifications/page.tsx` | `markAllRead` and `deleteNotif` mutations now show success/error/info toasts via `useToast`. |
+| `src/app/[locale]/store/analytics/page.tsx` | Explicit `(v: number)` type on `formatRevenue` callbacks. |
+| `src/app/api/store/payouts/request/route.ts` | `createApiHandler` → `createRouteHandler`; explicit cast for `user.displayName`. |
+| `src/components/routing/CartRouteClient.tsx` | Full rewrite: stale-validate useEffect (W1), OOS section split (W3), `getProductHref()` (W4), auth PATCH/DELETE with toasts (R1), `SellerGroupSection` sub-component. |
+| `src/constants/api.ts` | Added `STORE.PAYOUTS: "/api/store/payouts"`. |
+
+## Deferred items
+
+None.
+
+---
+
 # Session 80 — 2026-05-10 (Alpha: Store Settings)
 
 ## Scope

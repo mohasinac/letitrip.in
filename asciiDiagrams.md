@@ -4282,26 +4282,35 @@ FAQs: static RSC — no toolbar, ?q= silently accepted but not filtered.
 
 ---
 
-## Public > Cart ✅ (partial)
+## Public > Cart ✅ Session 79
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  My Cart  (3 items)                                                          │
+│  Note: on mount, stale items (deleted products) auto-removed + info toast   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  IN STOCK                                                                    │
-│  🖼 Charizard ETB       ₹4,499   Qty [1 ▾]  [View →] [🗑]                 │
-│  🖼 Pikachu Plush ×2   ₹2,598   Qty [2 ▾]  [View →] [🗑]                 │
+│  🖼 [Charizard ETB ↗]    ₹4,499   Qty [1 ▾]  [🗑]  ← title = product link │
+│  🖼 [Pikachu Plush ↗] ×2 ₹2,598   Qty [2 ▾]  [🗑]                         │
 │  ─────────────────────────────────────────────────────────────────────────  │
-│  OUT OF STOCK (⏳ W3)                                                        │
-│  🖼 Hot Wheels RLC      [OUT OF STOCK]       [View →] [🗑]                 │
+│  OUT OF STOCK (1)                                                            │
+│  🖼 [Hot Wheels RLC ↗]   [OUT OF STOCK]  Qty: 1  [🗑]  ← gray + badge     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Coupon: [WELCOME10    ] [Apply]                                             │
 │  Subtotal:  ₹7,097                                                           │
 │  Discount:  -₹710 (WELCOME10 10%)                                           │
 │  Shipping:  ₹50                                                              │
 │  Total:     ₹6,437                                                           │
-│  [Proceed to Checkout →]  (disabled if only out-of-stock items)              │
+│  [Proceed to Checkout →]  (disabled if ALL items are out-of-stock)           │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Data flow:
+  CartRouteClient → POST /api/cart/validate → { stale[], outOfStock[] }
+  Stale items → DELETE /api/cart/[id] (auth) or localStorage.remove (guest)
+  OOS items → shown grayed, qty locked, checkout disabled if only OOS remain
+  Qty change → PATCH /api/cart/[id] (auth) with error toast
+  Remove → DELETE /api/cart/[id] (auth) with success/error toast
+  Item title → getProductHref() maps slug prefix to ROUTES.PUBLIC.PRODUCT/AUCTION/PRE_ORDER_DETAIL
 ```
 
 ---
