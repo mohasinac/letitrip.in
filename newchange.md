@@ -33,6 +33,27 @@
 
 ---
 
+# Hotfix 87.2 — 2026-05-10 (firebase-admin/database missing in Vercel Lambda)
+
+## Scope
+Google OAuth login failing in prod with "Cannot find module '/var/task/node_modules/firebase-admin/lib/database/index.js'". Added `outputFileTracingIncludes` to `next.config.js` to force Vercel to copy the RTDB files into Lambda bundles.
+
+## Root Cause
+`appkit/src/providers/db-firebase/admin.ts` uses `(module as any).require("firebase-admin/database")` — intentionally bypasses webpack static analysis. Vercel's output file tracer therefore never sees this dependency, so `lib/database/**` is excluded from the Lambda `/var/task/node_modules/`. At runtime, `module.require("firebase-admin/database")` fails with ENOENT.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `next.config.js` | Added `experimental.outputFileTracingIncludes` — forces `firebase-admin/lib/database/**` + `/lib/esm/database/**` into every `/api/**` Lambda bundle |
+| `newchange.md` | This entry |
+
+## Deferred Items
+
+_None._
+
+---
+
 # Hotfix 87.1 — 2026-05-10 (CSS responsive display utilities + dev memory cap)
 
 ## Scope

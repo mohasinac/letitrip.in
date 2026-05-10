@@ -32,6 +32,14 @@
 
 ---
 
+## ⚡ LAST COMPLETED — Hotfix 87.2 ✅ 2026-05-10 (firebase-admin/database missing in Lambda)
+
+| Task | What was done |
+|------|--------------|
+| **RTDB fix** | Google OAuth failing: `Cannot find module '/var/task/node_modules/firebase-admin/lib/database/index.js'`. Appkit uses `(module as any).require("firebase-admin/database")` which escapes webpack + Vercel's tracer → database files excluded from Lambda bundle. Fixed by adding `experimental.outputFileTracingIncludes` to `next.config.js` forcing inclusion for all `/api/**` routes. ✅ |
+
+---
+
 ## ⚡ LAST COMPLETED — Hotfix 87.1 ✅ 2026-05-10 (CSS display utilities safelist + dev memory)
 
 | Task | What was done |
