@@ -23,6 +23,7 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import {
   getDefaultCurrency,
+  storeRepository,
   userRepository,
   orderRepository,
   payoutRepository,
@@ -57,31 +58,30 @@ export const weeklyPayoutEligibility = onSchedule(
       logInfo(JOB, `Found ${eligible.length} eligible order(s) — grouping by seller`);
 
       // Group by sellerId
-      const bySeller = new Map<
-        string,
-        typeof eligible
-      >();
+      const byStore = new Map<string, typeof eligible>();
       for (const entry of eligible) {
-        const sellerId = (entry.data as { sellerId?: string }).sellerId;
-        if (!sellerId) {
-          logWarn(JOB, `Order ${entry.id} has no sellerId — skipping`);
+        const storeId = (entry.data as { storeId?: string }).storeId;
+        if (!storeId) {
+          logWarn(JOB, `Order ${entry.id} has no storeId — skipping`);
           continue;
         }
-        if (!bySeller.has(sellerId)) bySeller.set(sellerId, []);
-        bySeller.get(sellerId)!.push(entry);
+        if (!byStore.has(storeId)) byStore.set(storeId, []);
+        byStore.get(storeId)!.push(entry);
       }
 
       let payoutsCreated = 0;
       let ordersProcessed = 0;
 
-      for (const [sellerId, orders] of bySeller.entries()) {
-        const seller = await userRepository.findById(sellerId);
+      for (const [storeId, orders] of byStore.entries()) {
+        const store = await storeRepository.findBySlug(storeId);
+        const seller = store ? await userRepository.findById(store.ownerId) : null;
         if (!seller) {
-          logWarn(JOB, `Seller ${sellerId} not found — skipping ${orders.length} order(s)`, {
+          logWarn(JOB, `Store/seller ${storeId} not found — skipping ${orders.length} order(s)`, {
             orderIds: orders.map((o) => o.id),
           });
           continue;
         }
+        const sellerId = store!.ownerId;
 
         const grossAmount = orders.reduce(
           (sum, o) => sum + ((o.data as { totalPrice?: number }).totalPrice ?? 0),
@@ -91,7 +91,7 @@ export const weeklyPayoutEligibility = onSchedule(
         const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
 
         const payoutInput = {
-          sellerId,
+          storeId,
           sellerName: (seller.displayName ?? seller.email ?? sellerId) as string,
           sellerEmail: (seller.email ?? "") as string,
           orderIds: orders.map((o) => o.id),

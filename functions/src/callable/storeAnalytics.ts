@@ -14,6 +14,7 @@ import type { Request, Response } from "express";
 import {
   orderRepository,
   productRepository,
+  storeRepository,
   formatMonthYear,
   ProductStatusValues,
 } from "../lib/appkit";
@@ -36,15 +37,15 @@ function normalizeDate(raw: Date | string | number): Date {
   return new Date(raw as string | number);
 }
 
-async function loadSeller6MonthOrders(
-  sellerId: string,
+async function loadStore6MonthOrders(
+  storeId: string,
 ): Promise<OrderDocument[]> {
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
   const isoStart = sixMonthsAgo.toISOString();
 
   const result = await orderRepository.listAll({
-    filters: `sellerId==${sellerId},createdAt>=${isoStart}`,
+    filters: `storeId==${storeId},createdAt>=${isoStart}`,
     sorts: "-createdAt",
     page: "1",
     pageSize: "300",
@@ -55,7 +56,7 @@ async function loadSeller6MonthOrders(
   let hasMore = result.hasMore;
   while (hasMore && page <= 5) {
     const next = await orderRepository.listAll({
-      filters: `sellerId==${sellerId},createdAt>=${isoStart}`,
+      filters: `storeId==${storeId},createdAt>=${isoStart}`,
       sorts: "-createdAt",
       page: String(page),
       pageSize: "300",
@@ -96,17 +97,25 @@ export const storeAnalytics = onRequest(
     try {
       logInfo(FN, "Store analytics requested", { sellerId });
 
+      // Resolve storeId (slug) from ownerId (Firebase Auth UID)
+      const store = await storeRepository.findByOwnerId(sellerId);
+      if (!store) {
+        res.status(404).json({ error: "Store not found for this seller" });
+        return;
+      }
+      const storeId = store.id;
+
       const [past6MonthOrders, totalProductsResult, publishedProductsResult] =
         await Promise.all([
-          loadSeller6MonthOrders(sellerId),
-          productRepository.list({ page: "1", pageSize: "1" }, { sellerId }),
+          loadStore6MonthOrders(storeId),
+          productRepository.list({ page: "1", pageSize: "1" }, { storeId }),
           productRepository.list(
             {
               filters: `status==${ProductStatusValues.PUBLISHED}`,
               page: "1",
               pageSize: "1",
             },
-            { sellerId, status: ProductStatusValues.PUBLISHED },
+            { storeId, status: ProductStatusValues.PUBLISHED },
           ),
         ]);
 
