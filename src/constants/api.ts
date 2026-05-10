@@ -70,6 +70,12 @@ export const API_ROUTES = {
     ANALYTICS: "/api/admin/analytics",
     DASHBOARD: "/api/admin/dashboard",
     SITE_SETTINGS: "/api/admin/site-settings",
+    SUBLISTING_CATEGORIES: "/api/admin/sublisting-categories",
+    SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/admin/sublisting-categories/${id}`,
+  },
+  SUBLISTING_CATEGORIES: {
+    BY_SLUG: (slug: string) => `/api/sublisting-categories/${slug}`,
+    LISTINGS: (slug: string) => `/api/sublisting-categories/${slug}/listings`,
   },
   STORE: {
     PRODUCTS: "/api/store/products",

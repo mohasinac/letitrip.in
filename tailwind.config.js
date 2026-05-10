@@ -7,9 +7,8 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    // Scan appkit source directly — tsc watch writes to dist not src, so this
-    // path is stable and does not trigger Tailwind re-runs on every recompile.
-    "./node_modules/@mohasinac/*/src/**/*.{js,ts,jsx,tsx,mdx}",
+    // appkit pre-compiles its own Tailwind utilities into dist/tailwind-utilities.css
+    // (imported via @mohasinac/appkit/styles). No host-side scan needed.
   ],
   safelist: [
     // Zinc neutrals (light mode)
