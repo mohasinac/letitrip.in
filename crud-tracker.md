@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 — Session 100: UX shells + seller product forms (UX1–UX3, UX6, C1, C2, VB8, VB9, O2+C5, VB4, LL6 ✅). WA schema additions: StoreDocument.whatsappConfig + SiteSettingsCredentials WA fields + integration-keys resolver (WA1+WA2 ✅). TypeScript: 0 errors in both repos. ~112 done, 218 remaining.
+> **Last updated:** 2026-05-10 — WA3: WhatsApp Cloud API helpers (sendWhatsAppBusinessMessage, syncProductsToCatalog, buildPurchaseAnnouncementMessage), GET/PUT /api/store/whatsapp-settings, POST /api/store/whatsapp-settings/catalog-sync, onOrderCreate Firebase trigger (purchase announcement), --appkit-color-warning-surface CSS token, STORE.WHATSAPP route, whatsapp_catalog_sync StoreCapability. TypeScript: 0 errors both repos. ~113 done, 217 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 

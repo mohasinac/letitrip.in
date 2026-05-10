@@ -100,7 +100,7 @@ export default function LayoutShellClient({
         title: "Support",
         items: [
           ...SIDEBAR_SUPPORT_LINKS,
-          ...(seedPanelEnabled && user?.role === "admin"
+          ...(seedPanelEnabled
             ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
             : []),
         ],
@@ -143,9 +143,9 @@ export default function LayoutShellClient({
   // Notification bell hidden per product decision — only show wishlist
   const notificationSlot = <>{wishlistIcon}</>;
 
-  // Seed & Docs slot — visible to admins when seedPanel feature flag is enabled
+  // Seed & Docs slot — visible to everyone when seedPanel feature flag is enabled
   const devSlot =
-    seedPanelEnabled && user?.role === "admin" ? (
+    seedPanelEnabled ? (
       <Link
         href={String(ROUTES.DEMO.SEED)}
         className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
