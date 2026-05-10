@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuctionDetailPageView, getProductById } from "@mohasinac/appkit";
+import { AuctionDetailPageView, getProductById, auctionJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
 import { placeBidAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
 
@@ -26,5 +26,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <AuctionDetailPageView id={id} onPlaceBid={placeBidAction} />;
+  const auction = await getProductById(id).catch(() => null);
+
+  const ldAuction = auction
+    ? auctionJsonLd({
+        id: auction.id,
+        title: auction.title,
+        description: auction.description ?? "",
+        slug: auction.slug ?? id,
+        price: auction.currentBid ?? auction.price,
+        currency: auction.currency ?? "INR",
+        mainImage: auction.mainImage,
+        images: auction.images,
+        isAuction: true,
+        auctionEndDate: auction.auctionEndDate instanceof Date
+          ? auction.auctionEndDate
+          : auction.auctionEndDate
+            ? new Date(auction.auctionEndDate as unknown as string)
+            : undefined,
+      })
+    : null;
+
+  const ldBreadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Auctions", url: "/auctions" },
+    { name: auction?.title ?? "Auction", url: `/auctions/${id}` },
+  ]);
+
+  return (
+    <>
+      {ldAuction && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldAuction) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
+      />
+      <AuctionDetailPageView id={id} onPlaceBid={placeBidAction} />
+    </>
+  );
 }

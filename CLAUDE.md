@@ -165,8 +165,11 @@ When implementing a new feature that changes a schema, data model, API contract,
 | Bid | `bid-` | `bid-charizard-psa9-ravi-20260508-x7y8z9` |
 | Payout | `payout-` | `payout-mistys-cards-20260508-q1w2e3` |
 | Notification | `notif-` | `notif-order-shipped-001` |
+| Grouped listing | `group-` | `group-pokemon-starter-bundle` |
+| Support ticket | `ticket-` | `ticket-order-issue-ravi-20260508` |
+| Scammer profile | `scammer-` | `scammer-9876543210-at-paytm` |
 
-**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings.
+**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles.
 
 **Semantic generator IDs** (slug-like prefix + date + random suffix, NOT Firestore auto-IDs):
 - orders → `order-{itemCount}-{YYYYMMDD}-{rand6}`

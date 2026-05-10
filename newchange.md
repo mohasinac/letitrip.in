@@ -33,6 +33,37 @@
 
 ---
 
+# Session 80-plan — 2026-05-10 (Feature Planning: EX / YT / AX / FI / BK Tiers)
+
+## Scope
+
+Planning-only session (no code written). Designed 5 new feature tiers and documented them in `crud-tracker.md`, `prompt.md`, and `asciiDiagrams.md`.
+
+## New tiers added
+
+| Tier | Tasks | Description |
+|------|-------|-------------|
+| **EX** | EX1–EX5 | Extended Homepage Sections — Stats live collection queries, multi-carousel (max 5 slides each), Categories/Brands CTA + filter chips, Products multi-row max-20 paginated, common `collection-cards` section type |
+| **YT** | YT1 | YouTube video link cards in SocialFeedSection — thumbnail from videoId, play overlay, `--appkit-color-youtube` token |
+| **AX** | AX1, AX2, AX3, A1-ext | Centralized `ACTION` constants + `useActionDispatch` hook, URL panel routing (`?panel=create` / `?panel=edit&id=slug`) + `usePanelUrlSync` hook, sticky `FormActionBar` (desktop top / mobile bottom), admin product store picker |
+| **FI** | FI1–FI6 | `productFeatures` Firestore collection, 10 platform seed features, admin CRUD, store custom features, product form assignment, `FeatureBadge`/`FeatureBadgeList` on cards and detail pages |
+| **BK** | BK1–BK3 | Public listing selection mode + `useProductSelection` hook (max 10), sticky bulk action bar (guest: Compare+Share; auth: +Wishlist), `CompareOverlay` (desktop side-by-side + mobile swipeable) |
+
+## Session roadmap entries added
+
+Sessions 100 (EX+YT), 101 (AX), 102 (FI), 103 (BK) appended to ordered sessions table.
+
+## Task count
+
+19 new tasks added. At time of session: 283 → 302 total, 173 → 192 remaining.
+(After Session 80-schema RBAC/BAN/SCAM additions: grows to 330 total, 239 remaining.)
+
+## ASCII diagrams added (asciiDiagrams.md)
+
+Desktop + mobile diagrams for all 10 new feature areas: Stats admin config + rendered grid, Carousel list + edit pages, Categories/Brands with CTA+filter, Products multi-row, Collection Cards Section (admin config + desktop + mobile), YouTube social card (admin config + desktop feed + mobile card), ACTION before/after flow, URL panel auto-open (desktop + mobile), Sticky form bars (desktop + mobile), Feature flags admin table + product card badges + product form tab, Bulk selection mode (desktop + mobile), Bulk action bar, Compare overlay (desktop + mobile).
+
+---
+
 # Session 81 — 2026-05-10 (sellerId → storeId Full Migration — ARCH2/ARCH5/ARCH8)
 
 ## Scope

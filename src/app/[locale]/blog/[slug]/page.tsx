@@ -1,4 +1,4 @@
-import { getBlogPostBySlug } from "@mohasinac/appkit";
+import { getBlogPostBySlug, blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/constants/seo.server";
@@ -37,10 +37,41 @@ export default async function Page({ params }: Props) {
   const post = await getPost(slug);
   if (!post) notFound();
 
+  const coverImage = typeof post.coverImage === "string" ? post.coverImage : post.coverImage?.url;
+
+  const ldPost = blogPostJsonLd({
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt ?? "",
+    coverImage,
+    publishedAt: post.publishedAt ? new Date(post.publishedAt) : undefined,
+    updatedAt: post.updatedAt ? new Date(post.updatedAt) : undefined,
+    authorName: post.authorName,
+    authorAvatar: post.authorAvatar,
+    metaTitle: post.metaTitle,
+    metaDescription: post.metaDescription,
+  });
+
+  const ldBreadcrumb = breadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: post.title, url: `/blog/${slug}` },
+  ]);
+
   return (
-    <div>
-      <BlogPostPageClient slug={slug} locale={locale} />
-      <ShareButtons title={post.title} />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldPost) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
+      />
+      <div>
+        <BlogPostPageClient slug={slug} locale={locale} />
+        <ShareButtons title={post.title} />
+      </div>
+    </>
   );
 }
