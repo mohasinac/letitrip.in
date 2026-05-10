@@ -82,6 +82,10 @@
         "tsup": "^8.5.1",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.58.0"
+    },
+    "overrides": {
+        "@types/react": "^19",
+        "@types/react-dom": "^19"
     }
 }
 

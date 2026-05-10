@@ -15,7 +15,6 @@
  * - USER_NAV_ALL_ITEMS  — flat list of all user nav items (for sidebar items prop)
  */
 
-import type { ReactNode } from "react";
 import {
   Home,
   ShoppingBag,
@@ -28,30 +27,29 @@ import {
   Star,
   ShieldAlert,
 } from "lucide-react";
+import type {
+  AdminNavGroup,
+  AdminNavItem,
+  StoreNavGroup,
+  StoreNavItem,
+  UserNavGroup,
+  UserNavItem,
+  MainNavbarItem,
+  AppLayoutShellSidebarLink,
+} from "@mohasinac/appkit/client";
 import { THEME_CONSTANTS } from "./theme";
 import { ROUTES } from "./routes";
 
 // ---------------------------------------------------------------------------
-// Shared types (mirror appkit sidebar interfaces — no appkit import needed)
+// NavItem — public navbar entry (label injected at runtime via tNav)
+// icon uses appkit's ReactNode so the type is consistent when spread into MainNavbarItem
 // ---------------------------------------------------------------------------
 
 export interface NavItem {
   key: string;
   href: string;
-  icon: ReactNode;
+  icon: MainNavbarItem["icon"];
   highlighted?: boolean;
-}
-
-interface DashboardNavItem {
-  href: string;
-  label: string;
-  icon?: ReactNode;
-}
-
-interface DashboardNavGroup {
-  title: string;
-  items: DashboardNavItem[];
-  defaultOpen?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -80,7 +78,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
 // Public sidebar "Support" section (static, no i18n needed)
 // ---------------------------------------------------------------------------
 
-export const SIDEBAR_SUPPORT_LINKS: DashboardNavItem[] = [
+export const SIDEBAR_SUPPORT_LINKS: AppLayoutShellSidebarLink[] = [
   { href: String(ROUTES.PUBLIC.ABOUT),   label: "About"         },
   { href: String(ROUTES.PUBLIC.CONTACT), label: "Contact"       },
   { href: String(ROUTES.PUBLIC.HELP),    label: "Help"          },
@@ -150,7 +148,7 @@ export const FOOTER_LINK_GROUPS = [
 // Admin dashboard sidebar
 // ---------------------------------------------------------------------------
 
-export const ADMIN_NAV_GROUPS: DashboardNavGroup[] = [
+export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Management",
     items: [
@@ -227,7 +225,7 @@ export const ADMIN_NAV_GROUPS: DashboardNavGroup[] = [
 // Store dashboard sidebar
 // ---------------------------------------------------------------------------
 
-export const STORE_NAV_GROUPS: DashboardNavGroup[] = [
+export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Overview",
     items: [
@@ -276,7 +274,7 @@ export const STORE_NAV_GROUPS: DashboardNavGroup[] = [
 // User account sidebar
 // ---------------------------------------------------------------------------
 
-export const USER_NAV_GROUPS: DashboardNavGroup[] = [
+export const USER_NAV_GROUPS: UserNavGroup[] = [
   {
     title: "Shopping",
     items: [
@@ -304,4 +302,4 @@ export const USER_NAV_GROUPS: DashboardNavGroup[] = [
   },
 ];
 
-export const USER_NAV_ALL_ITEMS: DashboardNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items);
+export const USER_NAV_ALL_ITEMS: UserNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items ?? []);

@@ -33,10 +33,14 @@
 
 ---
 
-# Session 89 — 2026-05-11 (Detail page UX + Wishlist filters)
+# Session 89 — 2026-05-11 (Detail page UX + Wishlist filters + Blog/Event bug fixes)
 
 ## Scope
-VD12: De-cramp all 3 product detail pages + remove duplicate info. Wishlist filter drawer added. Store sub-page toolbars verified intact. 0 TS errors both repos.
+VD12: De-cramp all 3 product detail pages + remove duplicate info. Wishlist filter drawer added. Store sub-page toolbars verified intact.
+J16: Blog related post cards not clickable — `BlogCard` needed `href` prop.
+J17: Event participate "something went wrong" — `createRouteHandler` `authOptional` pattern added.
+Infra: Switched from npm `^2.4.11` to `file:./appkit` for local dev; resolved dual `@types/react` conflict.
+0 TS errors both repos.
 
 ## Changed Files
 
@@ -46,10 +50,19 @@ VD12: De-cramp all 3 product detail pages + remove duplicate info. Wishlist filt
 | `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Status badge (Active/Ended) moved next to auction badge in title block; bid count consolidated under current-bid price; timing inline below bid; fallback sidebar stripped of repeat current-bid/starting-bid/bid-count block (shows only starting bid + min increment + input + buttons); dropped unused `React` import. |
 | `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Removed duplicate price from info column (price lives in buy-bar panel); `gap="sm"→"md"` on info Stack; delivery date kept in info column. |
 | `src/app/[locale]/wishlist/page.tsx` | Added `filterContent` drawer to `ListingLayout`: Type filter (All/Standard/Auction/Pre-Order) + price range (min/max in ₹, converted to paise internally). Staged pending/applied filter state. `countActiveFilters()` helper. Clear-all button shown when search or filters active. |
+| `src/app/[locale]/blog/[slug]/BlogPostPageClient.tsx` | Added `ROUTES` import; `renderRelatedCard` now passes `href` built from locale + `ROUTES.BLOG.ARTICLE(relatedPost.slug)`; back button uses `ROUTES.PUBLIC.BLOG`. Removed `as any` cast. |
+| `appkit/src/features/blog/components/BlogPostView.tsx` | Fallback `BlogCard` (rendered when no `renderRelatedCard` prop provided) now passes `href={String(ROUTES.BLOG.ARTICLE(rel.slug))}`. |
+| `src/app/api/events/[id]/entries/route.ts` | Added `authOptional: true` to `createRouteHandler` — reads session cookie when present, continues as anonymous when not. Removed `(user as any)` cast; `safeUser` now typed correctly. |
+| `appkit/src/next/api/routeHandler.ts` | Added `authOptional?: boolean` to `RouteHandlerOptions` + `displayName?: string` to `RouteUser`. Handler now tries `verifySession` when `authOptional` is set, silently continues anonymous on failure. |
+| `appkit/package.json` | `@types/react` pinned `19.1.0 → 19.2.14` to match root; eliminates dual-version conflict when using `file:./appkit`. |
+| `package.json` (root) | `@mohasinac/appkit` changed `^2.4.11 → file:./appkit` for local dev. |
+| `package-lock.json` | Regenerated to reflect `file:./appkit` resolution + hoisted `@types/react@19.2.14`. |
 
 ## Notes
 - Store sub-page toolbars (`StoreProductsListing`, `StoreAuctionsListing`, `StorePreOrdersListing`) verified intact — all use `ListingToolbar` + filter drawers.
 - Wishlist `filterPendingCount` prop omitted (prop is in appkit source but not yet in compiled dist; will be available after next appkit rebuild).
+- `authOptional` is the correct pattern for any route that serves both logged-in and anonymous users (public event participation, guest wishlists, etc.) — it reads the session if available but does not require it.
+- Dual `@types/react` root cause: `file:./appkit` causes npm to install appkit's own `node_modules/@types/react`, creating two different `ReactNode` types. Fix is version-pinning so npm hoists to root.
 
 ---
 

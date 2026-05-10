@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 (Session 88) — RC4 (10 [[...action]] catch-alls replaced with /page.tsx) + RC3 (Button asChild added, all router.push-in-button violations fixed). appkit 2.4.11 dist rebuilt. 109 done, 243 remaining.
+> **Last updated:** 2026-05-11 (Session 89) — J16 blog related cards not clickable (BlogCard href missing, fixed in BlogPostPageClient + BlogPostView fallback) + J17 event participate auth error for logged-in users (createRouteHandler authOptional added). authOptional pattern added to routeHandler.ts. dual @types/react conflict resolved (appkit pinned to 19.2.14). file:./appkit local dev. 107 done, 245 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -54,10 +54,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 352 |
-| ✅ Done | 105 |
+| ✅ Done | 107 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 247 |
+| ⏳ Remaining | 245 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -236,6 +236,8 @@ Rules to keep top-of-mind every task:
 | J13 | Products listing (standard) shows "No products found" — auctions/pre-orders unaffected | M | ✅ | Session 76-infra (2026-05-10) | **Two compounding root causes:** (1) All 20 standard product seed docs had no `isAuction` or `isPreOrder` fields — Firestore `where("isAuction", "==", false)` returns 0 docs when the field is absent (undefined ≠ false). Fixed: added `isAuction: false, isPreOrder: false` to all 20 entries in `appkit/src/seed/products-standard-seed-data.ts`. (2) Missing Firestore composite index `(status ASC, isAuction ASC, createdAt DESC)` — query throws FAILED_PRECONDITION, silently caught as null initialData, staleTime:Infinity prevents client refetch. Fixed: added both `(status, isAuction, createdAt)` and `(status, isAuction, isPreOrder, createdAt)` composite indexes to `appkit/firebase/base/firestore.indexes.json` (the permanent source that `firebase-merge.mjs` reads) and to the merged `firestore.indexes.json`. **Re-seed products collection after deploying indexes.** |
 | J14 | Blog listing page shows no posts (initialData shape mismatch) | S | ✅ | Session 76-infra (2026-05-10) | `BlogIndexPageView` SSR fetched via `blogRepository.listPublished()` which returns `FirebaseSieveResult` `{ items, total, page, pageSize, totalPages, hasMore }`. But `initialData` was passed directly to `BlogIndexListing` which calls `useBlogPosts` expecting `BlogListResponse` `{ posts, meta }`. `posts` field was always undefined → empty array → `staleTime:Infinity` (since initialData !== undefined) → client never refetched. Fixed in `appkit/src/features/blog/components/BlogIndexPageView.tsx`: transform SSR result to `BlogListResponse` shape before passing. If SSR fails → `undefined` initialData → staleTime=0 → client fetches. |
 | J15 | Events listing page shows no events — wrong default status filter | S | ✅ | Session 76-infra (2026-05-10) | `EventsListPageView.buildEventFilters()` defaulted to `parts.push("status==published")` but events have no "published" status — valid statuses are DRAFT/ACTIVE/PAUSED/ENDED. SSR returned valid-but-empty result → initialData set → staleTime:Infinity → client never refetched. Fixed in `appkit/src/features/events/components/EventsListPageView.tsx` line 24: changed default from `"status==published"` to `"status==active"`. |
+| J16 | Blog related post cards not clickable | S | ✅ | Session 89 (2026-05-11) | `BlogCard` wraps in `<Link>` only when `href` prop is provided. `renderRelatedCard` in `BlogPostPageClient.tsx` passed `<BlogCard post={relatedPost} />` with no `href` → static non-navigable card. Fixed: (1) `BlogPostPageClient.tsx` now imports `ROUTES` and passes `href={\`/${locale}${String(ROUTES.BLOG.ARTICLE(relatedPost.slug))}\`}`. (2) `BlogPostView.tsx` fallback `BlogCard` (rendered when no `renderRelatedCard` prop) also lacked `href` — fixed to pass `String(ROUTES.BLOG.ARTICLE(rel.slug))`. Both fixes committed. |
+| J17 | Event participate button shows "something went wrong" for logged-in users | S | ✅ | Session 89 (2026-05-11) | `POST /api/events/[id]/entries` used `createRouteHandler` with no `auth` or `authOptional` option → session cookie never read → `user` always `undefined` → `enterEvent()` saw no user → threw auth error even for authenticated users. Fixed: (1) Added `authOptional?: boolean` to `RouteHandlerOptions` in `appkit/src/next/api/routeHandler.ts` — reads session if cookie present, continues as anonymous on failure. (2) Added `displayName?: string` to `RouteUser` interface. (3) Route now uses `authOptional: true`. `enterEvent` already handles both user-present and anonymous cases correctly. |
 
 ---
 
