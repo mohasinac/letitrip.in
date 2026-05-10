@@ -61,8 +61,8 @@ function buildFilters(url: URL): string {
   if (brand) parts.push(`brand==${brand}`);
   const condition = param(url, "condition");
   if (condition) parts.push(`condition==${condition}`);
-  const storeIdParam = param(url, "storeId");
-  if (storeIdParam) parts.push(`storeId==${storeIdParam}`);
+  const storeId = param(url, "storeId");
+  if (storeId) parts.push(`storeId==${storeId}`);
   const query = param(url, "q");
   if (query) parts.push(`title@=*${query}`);
   const minPrice = param(url, "minPrice");
@@ -83,8 +83,6 @@ function buildFilters(url: URL): string {
   if (featured === "true") parts.push("featured==true");
   const isPromoted = param(url, "isPromoted");
   if (isPromoted === "true") parts.push("isPromoted==true");
-  const storeId = param(url, "storeId");
-  if (storeId) parts.push(`storeId==${storeId}`);
   const minBid = param(url, "minBid");
   if (minBid !== null && !Number.isNaN(Number(minBid))) {
     parts.push(`currentBid>=${minBid}`);
