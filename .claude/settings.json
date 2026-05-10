@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm ls *)",
       "Bash(git -C \"d:\\\\proj\\\\letitrip.in\" diff --stat HEAD)",
-      "Bash(node scripts/dev-next.mjs --help)"
+      "Bash(node scripts/dev-next.mjs --help)",
+      "Bash(mkdir -p \"d:/proj/letitrip.in/src/app/api/store/reviews\" && mkdir -p \"d:/proj/letitrip.in/src/app/api/store/reviews/[id]/reply\")"
+    ],
+    "additionalDirectories": [
+      "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"
     ]
   }
 }
