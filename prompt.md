@@ -7,7 +7,21 @@
 
 ---
 
-## ⚡ CURRENT TASK — Session 80-plan ✅ COMPLETE 2026-05-10 (Feature Planning: EX / YT / AX / FI / BK Tiers)
+## ⚡ CURRENT TASK — Session 80-schema ✅ COMPLETE 2026-05-10 (RBAC + BAN + SCAM Foundation Schemas)
+
+| Task | Status | What was done |
+|------|--------|--------------|
+| **RBAC1 schema** | ✅ | `appkit/src/features/auth/permissions/constants.ts` — 85+ `Permission` strings, 18 `EmployeeGroup` presets, `PERMISSION_GROUPS` record, 37-entry `ROUTE_PERMISSION_MAP`, 18 `StoreCapability` values, helper fns `hasPermission/hasAnyPermission/hasAllPermissions/hasCapability`. |
+| **UserRole + Zod** | ✅ | Added `"employee"` to `UserRole` union in `auth/types/index.ts`. Fixed pre-existing Zod mismatch (`"customer","superadmin"` → `"user","moderator","employee"`). |
+| **UserDocument fields** | ✅ | Added `permissions?`, `permissionGroup?`, `softBans?`, `hardBanReason?`, `hardBannedAt?`, `hardBannedBy?`, `scamAwarenessAcknowledgedAt?` to `UserDocument`. New `UserSoftBan` interface. |
+| **StoreDocument fields** | ✅ | Added `capabilities?: StoreCapability[]` + `customCommissionRate?: number`. Re-exported `StoreCapability` from `stores/schemas/firestore.ts`. |
+| **BAN1 schema** | ✅ | `appkit/src/features/support/schemas/firestore.ts` — full `SupportTicketDocument` schema: 8 categories, 5 statuses, 4 priorities, threaded `TicketMessage[]`, limit constants (`ACTIVE_TICKET_STATUSES`, `ELIGIBLE_ORDER_STATUSES_FOR_TICKET`). |
+| **SCAM1 constants** | ✅ | `appkit/src/features/scams/constants/scam-types.ts` — 27 scam type definitions across 6 categories, each with `howItHappens` + `howToAvoid[]`. Full label maps, helper fns. |
+| **SCAM1 schema** | ✅ | `appkit/src/features/scams/schemas/firestore.ts` — `ScammerDocument` with SEO-first plaintext phones/UPIs/emails, `ScamPlatform`, `SocialPlatform`, evidence URLs, status workflow, field constants. |
+| **TypeScript** | ✅ | Both `appkit/` and root `src/` pass `npx tsc --noEmit` with 0 errors. |
+| **tracker** | ✅ | `crud-tracker.md` updated: 3 new tiers (RBAC 10 tasks, BAN 9 tasks, SCAM 9 tasks), total 302→330 tasks. |
+
+## ⚡ PREVIOUS TASK — Session 80-plan ✅ COMPLETE 2026-05-10 (Feature Planning: EX / YT / AX / FI / BK Tiers)
 
 | Task | Status | What was done |
 |------|--------|--------------|
@@ -164,6 +178,15 @@
 | 90 | X7a, X7b | Color token audit |
 | 91 | X8a, X8b | Layout token audit |
 | 92–95 | P23–P31 | Seed scale expansion |
+| 96 | RBAC2, RBAC3, RBAC4 | RBAC: Employee invite flow + Admin RSC layout guards + permission middleware |
+| 97 | RBAC5, RBAC6, RBAC7 | RBAC: Store capability guards + employee management UI + permission groups admin |
+| 98 | RBAC8, RBAC9, RBAC10 | RBAC: Permission audit log + store capabilities admin + capability seed data |
+| 99 | BAN2, BAN3, BAN4 | Bans: Admin ban UI + hard ban cascade + checkout/ticket blocking |
+| 100 | BAN5, BAN6, BAN7 | Bans: Support ticket API + ticket UI (user + admin) + Firebase notification functions |
+| 101 | BAN8, BAN9 | Bans: Ticket seed data + analytics |
+| 102 | SCAM2, SCAM3, SCAM4 | Scams: Scammer repository + public list page + individual profile page |
+| 103 | SCAM5, SCAM6, SCAM7 | Scams: Submit scam report form + scam awareness acknowledgement + admin verify UI |
+| 104 | SCAM8, SCAM9 | Scams: Scam type pages + seed data |
 | 96+ | I6, I7, D5, VC7, O5, HS4-E, VC2, VC4, D3, D4, LL4, LL5 | Deferred: PDF, watermark CDN, messages, Shiprocket |
 
 ### Confirmed UX design for GP1 + SC3 (planned for Sessions 85–86)
@@ -258,11 +281,13 @@ Internal server logic only (checkout, analytics, payout calculation, auth checks
   sellerId (= Firebase UID) — stays as-is for auth; NEVER returned in API responses
 ```
 
-### User roles — 3 public tiers
+### User roles — 5 tiers
 ```
-user     → basic buyer (no store)
-seller   → has ≥1 store; role assigned on store creation
-admin    → platform admin (moderator = admin sub-role, internal only)
+user      → basic buyer (no store)
+seller    → has ≥1 store; role assigned on store creation
+moderator → content moderation sub-role (internal)
+employee  → internal staff; access governed entirely by permissions[] array, not role
+admin     → platform admin; bypasses ALL permission checks
 ```
 
 ### No hardcoded values
@@ -413,8 +438,10 @@ social-feed · custom-cards · google-reviews
 | Notification | `notif-` | `notif-order-shipped-001` |
 | Payout | `payout-` | `payout-mistys-cards-20260508-q1w2e3` |
 | Sub-listing category | `sublisting-` | `sublisting-base-set-charizard` |
+| Support ticket | `ticket-` | `ticket-order-issue-ravi-20260508` |
+| Scammer profile | `scammer-` | `scammer-9876543210-at-paytm` |
 
-**Rule:** `id === slug` for products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides — these are pure slugs with no timestamp or random suffix.
+**Rule:** `id === slug` for products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, scammer profiles — these are pure slugs with no timestamp or random suffix.
 
 **Semantic generator IDs** (slug-like with date + random suffix — NOT Firestore auto-IDs):
 - orders → `order-{itemCount}-{YYYYMMDD}-{rand6}`
@@ -573,7 +600,7 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ## PLAN SNAPSHOT — ASCII (update each session)
 
 ```
-Sessions done: 60–76, 67-b, 76-infra, 76-content
+Sessions done: 60–76, 67-b, 76-infra, 76-content, 80-plan, 80-schema, 81 (sellerId migration)
 Current:       77 ⏳ next — Seller Products (O1, O2+C5, C1, VB8, C2, VB9, LL6)
 Next:          78 (D1+VC6, VC1, VC3, VC5, LL1–LL3) — User account core
                79 (W1–W4, R1) — Cart integrity
@@ -581,6 +608,7 @@ Next:          78 (D1+VC6, VC1, VC3, VC5, LL1–LL3) — User account core
                🚀 ALPHA after session 80
 
 ⚠️  Firebase was fully reset 2026-05-10 — re-seed all 23 collections via /demo/seed
+⚠️  RBAC/BAN/SCAM schemas done (additive) — UI/API deferred to post-alpha sessions 96–104
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE               SESSIONS    STATUS

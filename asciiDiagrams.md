@@ -5598,3 +5598,225 @@ Note: Store field only visible when userRole === 'admin'
 └──────────────────────────────┘
 `
 
+---
+
+## RBAC / BAN / SCAM — Architecture Diagrams (Session 80-schema)
+
+---
+
+### RBAC > Permission Check Flow
+
+```
+Request (RSC layout / API route)
+│
+├─ role === "admin"  →  ALLOW (bypass all checks)
+│
+├─ role === "employee"
+│   └─ read UserDocument.permissions[]
+│       └─ hasPermission(permission, user)  →  ALLOW / DENY
+│
+└─ role === "user" | "seller" | "moderator"
+    └─ checked against role-gated routes only (no ROUTE_PERMISSION_MAP needed)
+
+StoreCapability check (separate from user permissions):
+StoreDocument.capabilities[]
+  └─ hasCapability("host_auctions", store)  →  ALLOW / DENY
+  default capabilities: ["suggest_brands", "create_coupons"]
+```
+
+### RBAC > Employee Groups (18 presets)
+
+```
+EmployeeGroup                Scope
+─────────────────────────────────────────────────────────────────
+content_moderator            Reviews, comments, listings, bans
+review_manager               Reviews CRUD + respond
+blog_poster                  Blog read/write/publish
+community_manager            Events, blog, reviews, reports
+event_handler                Events CRUD
+newsletter_manager           Newsletter only
+seo_manager                  SEO metadata, site settings SEO tab
+ad_manager                   Ad slots, carousel slides
+site_manager                 Full site settings
+catalog_manager              Categories, brands, products
+finance_manager              Payouts, orders read, analytics
+data_analyst                 Read-only: analytics, orders, users
+customer_support             Support tickets, order lookup
+support_agent                Support tickets only
+store_onboarding             Store applications review
+trust_and_safety             Users, bans, scam reports, support
+auction_monitor              Auctions read + close
+scam_moderator               Scam registry verify/reject
+custom                       Arbitrary permission array (admin set)
+```
+
+### RBAC > Store Capability Tiers
+
+```
+Tier 1 — Default (all stores)
+  suggest_brands        propose new brand additions
+  create_coupons        create store-scoped coupons
+
+Tier 2 — Verified Sellers (admin-granted)
+  host_auctions         create auction listings
+  host_preorders        create pre-order listings
+  create_categories     propose niche subcategories
+  bulk_listing_import   CSV import up to 500 listings
+  extended_return_window  store-level 30d return policy
+  verified_seller       ✓ badge on store profile + cards
+
+Tier 3 — Premium / Partner
+  featured_placement    products appear in featured sections
+  promotional_banner    custom banner on store page
+  priority_support      support tickets escalated to high priority
+  multiple_stores       create more than one store
+  custom_store_slug     change storeSlug after creation
+  api_access            programmatic API key for inventory sync
+  lower_commission_rate custom platform commission %
+  early_access_features beta feature flags
+  advanced_analytics    extended analytics dashboard
+```
+
+---
+
+### BAN > Soft Ban Architecture
+
+```
+UserDocument.softBans: UserSoftBan[]
+  ┌─────────────────────────────────────────┐
+  │ action:    BannedAction                 │  ← 8 possible actions
+  │ reason:    string                       │
+  │ bannedBy:  uid (employee/admin)         │
+  │ bannedAt:  Date                         │
+  │ expiresAt: Date | null (null = forever) │
+  └─────────────────────────────────────────┘
+
+BannedAction values:
+  write_reviews · write_blog_comments · join_events
+  place_bids · create_listings · send_messages
+  create_support_tickets · report_scammers
+
+Expiry rule: expiresAt in past = expired (treated as lifted, never deleted from array)
+Hard ban:   disabled: true + hardBanReason + hardBannedAt + hardBannedBy
+            Also calls Firebase Auth updateUser(uid, { disabled: true })
+```
+
+### BAN > Support Ticket Limits
+
+```
+CREATE TICKET — server-side enforcement chain:
+  1. user.disabled === true  →  403 (hard banned)
+  2. hasSoftBan(user, "create_support_tickets")  →  403
+  3. !user.uid  →  401 (no guest creation)
+  4. category === "order_issue":
+     a. orderId required
+     b. order.status must be in ELIGIBLE_ORDER_STATUSES_FOR_TICKET
+        ["PENDING", "PROCESSING", "SHIPPED", "RETURN_REQUESTED"]
+     c. existing open ticket for this orderId?  →  409
+  5. general tickets: count(status in ACTIVE_TICKET_STATUSES) >= 2  →  429
+  6. same category with status "waiting_on_user"?  →  409
+
+ACTIVE_TICKET_STATUSES: ["open", "in_progress", "waiting_on_user"]
+```
+
+### BAN > Ticket Status Flow
+
+```
+[open]
+  │
+  ├─ admin picks up ──────────────────────► [in_progress]
+  │                                             │
+  │                                             ├─ needs user input ─► [waiting_on_user]
+  │                                             │                            │
+  │                                             │                     user replies ─► [in_progress]
+  │                                             │
+  │                                             └─ resolved ──────────► [resolved]
+  │                                                                          │
+  └─────────────────────────────────────────────────────────────────── closed ─► [closed]
+
+Priority: low · normal · high · urgent
+Category: order_issue · billing_payment · account · listing_dispute
+          scam_report · refund_request · auction_dispute · general
+```
+
+---
+
+### SCAM > Registry Architecture
+
+```
+PUBLIC PAGES (SEO-first)
+─────────────────────────
+/scams                    list of verified scammer profiles
+/scams/[slug]             individual scammer profile
+/scams/types              index of all 27 scam types
+/scams/types/[type]       scam type detail page with howItHappens + howToAvoid
+
+ADMIN PAGES
+───────────
+/admin/scams              all scammer profiles (all statuses)
+/admin/scams/[id]         verify / reject / edit / remove
+
+USER FLOW
+─────────
+Register → scamAwarenessAcknowledgedAt gate → can submit reports
+Submit scammer report → status: "pending_review"
+Admin verifies → status: "verified" → appears on /scams
+Admin rejects → status: "rejected" → not shown
+
+SEO KEY DESIGN POINTS:
+- phones[], upiIds[], emails[] rendered as plaintext HTML text nodes (not data-attrs)
+- seoSlug = id (no timestamp) → stable canonical URL
+- verified scammers appear in sitemap
+- Each /scams/types/[type] page has howItHappens prose + numbered howToAvoid list
+  → long-tail SEO for "XYZ scam india collectibles"
+```
+
+### SCAM > ScammerDocument Key Fields
+
+```
+ScammerDocument
+  id / seoSlug        "scammer-9876543210-at-paytm"   ← pure slug, no timestamp
+  displayNames[]      ["Rahul Sharma", "RS Toys"]      ← multiple aliases
+  phones[]            ["9876543210", "+919876543210"]   ← plaintext, indexed by Google
+  upiIds[]            ["9876543210@paytm"]              ← plaintext
+  emails[]            ["rs.toys.fake@gmail.com"]        ← plaintext
+  socialMedia[]       [{ platform, handle, url? }]
+  scamType            ScamType (27 values)
+  scamPlatform        ScamPlatform (11 values)
+  description         reporter's narrative (max 2000 chars)
+  amountLost?         INR paise (optional)
+  itemInvolved?       "Charizard PSA 9" (optional)
+  evidence[]          /media/ proxy URLs only
+  reportedBy          uid
+  reportedByAnon      bool (shows "Anonymous" on public page if true)
+  status              pending_review | verified | rejected | removed
+  verifiedBy?         admin/employee uid
+  views               server-incremented counter
+
+Max pending per user: 5 (MAX_PENDING_SCAMMER_REPORTS_PER_USER)
+Slug prefix: scammer-
+Collection: scammerProfiles
+```
+
+### SCAM > 27 Types Across 6 Categories
+
+```
+Category                  Types
+────────────────────────────────────────────────────────────────────
+price_manipulation        undervaluation, fake_price_reference,
+                          bait_and_switch, condition_misrepresentation
+social_engineering        sympathy_play, trust_building_fraud,
+                          urgency_pressure, student_impersonation
+payment_fraud             advance_payment_ghost, fake_payment_screenshot,
+                          partial_payment_ghost, chargeback_fraud,
+                          overpayment_scam
+preorder_delivery_fraud   preorder_hold, fake_preorder_listing,
+                          endless_delay_scam
+identity_impersonation    seller_impersonation, platform_impersonation,
+                          account_takeover_resale, fake_escrow
+item_authenticity_fraud   counterfeit_item, fake_grading_claim,
+                          graded_case_tampering, sealed_product_repack
+logistics_fraud           empty_box_ship, fake_tracking_number,
+                          return_swap_fraud
+```
+
