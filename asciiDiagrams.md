@@ -2759,7 +2759,7 @@ SideDrawer (read-only display + actions):
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Seed & Docs (Admin only · feature-flag gated)                               │
+│  Seed & Docs (Public · feature-flag gated · write actions require admin)     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  STICKY TOOLBAR                                                              │
 │  [Select All] [Select Default] [Clear] [🔄 Refresh]                         │
@@ -3247,7 +3247,7 @@ MOBILE SIDEBAR (slide-in from left, sidebarTitle="Menu")
 │ ─────────────────────────────── │
 │ ▸ Support                        │
 │   About  · Contact  · Help       │
-│   (+ Seed & Docs if admin)       │
+│   (+ Seed & Docs if seedPanel on)│
 │ ─────────────────────────────── │
 │ [Login] (solid)                  │
 │ [Register] (outline)             │
@@ -7240,5 +7240,57 @@ TypeChips Sieve filter mapping:
 
 Row edit → routes to ROUTES.STORE.PRODUCTS_EDIT / AUCTIONS_EDIT / PRE_ORDERS_EDIT
 Row delete → calls onDeleteProduct?(id) with confirm() guard
+```
+
+---
+
+## Section 101 — WA3+WA4+WA6+WA7 (2026-05-10)
+
+### SellerWhatsAppSettingsView — `/store/whatsapp`
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  WhatsApp Business                                               │
+├──────────────────────────────────────────────────────────────────┤
+│  ① Setup Guide                                                   │
+│  ╔══════════════════════════════════════════════════════════════╗ │
+│  ║ 1. Create Meta Business Account                             ║ │
+│  ║ 2. Get WABA ID + Phone Number ID                            ║ │
+│  ║ 3. Generate System User access token                        ║ │
+│  ║ 4. Create / connect Commerce Catalog                        ║ │
+│  ║ 5. Paste credentials below                                  ║ │
+│  ╚══════════════════════════════════════════════════════════════╝ │
+│  ② Connection                      [● Connected / ○ Not set]    │
+│  │ Phone Number  [+91 98765 43210]  WABA ID  [123456789012345] │  │
+│  │ Catalog ID    [987654321098765]  Token     [•••• (change)]  │  │
+│  │                                           [Save Credentials]│  │
+│  ③ Catalog Sync                                                  │
+│  │ Enable sync [toggle]  Last: 2026-05-10 10:34 · success · 42 │  │
+│  │                                              [Sync Now →]   │  │
+│  ④ Announcement Preview (static example message)                 │
+│  ⑤ Share to Group  [editable message textarea]  [Open WhatsApp] │
+└──────────────────────────────────────────────────────────────────┘
+
+API: GET/PUT /api/store/whatsapp-settings  ·  POST .../catalog-sync
+Gate: whatsapp_catalog_sync StoreCapability (admin-granted)
+```
+
+### WA3 Server helpers + WA5 onOrderCreate
+
+```
+sendWhatsAppBusinessMessage → POST graph.facebook.com/v20.0/{phoneNumberId}/messages
+syncProductsToCatalog       → 50/batch → POST {catalogId}/items_batch
+buildPurchaseAnnouncementMessage → "🛑 New order! {buyer} purchased {item} for ₹{amount}."
+All exported from @mohasinac/appkit/server
+
+onOrderCreate trigger (orders/{orderId} onCreate):
+  build message → send to WHATSAPP_ADMIN_NOTIFY_NUMBERS (env, comma-sep)
+  → storeRepository.findBySlug(storeId)
+  → userRepository.findById(store.ownerId) → decryptPii(phoneNumber) → send
+  All sends non-fatal. Skips if WHATSAPP_PHONE_NUMBER_ID not configured.
+
+sellerId → storeId migration (arch3): storeAnalytics, weeklyPayoutEligibility,
+  autoPayoutEligibility, auctionSettlement, payoutBatch — all now use storeId
+  (store slug) and do two-step store→ownerId lookup when user record needed.
 ```
 
