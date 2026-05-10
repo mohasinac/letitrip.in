@@ -33,6 +33,60 @@
 
 ---
 
+# Session 85 — 2026-05-10 (Sub-listing Categories SC1→SC4 + Store CRUD)
+
+## Scope
+Full sub-listing category feature: schema, repository, admin CRUD, seller-facing form field + carousel section, public browse page, store-owner CRUD pages. appkit bumped to 2.4.6.
+
+## What changed
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/schemas/sublisting-categories.ts` | Schema: `SublistingCategoryDocument`, `SublistingCategoryCreateInput`, `SublistingCategoryUpdateInput` |
+| `appkit/src/features/products/schemas/firestore.ts` | Added `sublistingCategoryId?` to `ProductDocument`, `PRODUCT_PUBLIC_FIELDS`, `PRODUCT_UPDATABLE_FIELDS` |
+| `appkit/src/features/products/repository/sublisting-categories.repository.ts` | Full repository: list, findBySlug, create, update, delete (batch unlink), getListingsByCategoryId, incrementProductCount |
+| `appkit/src/repositories/index.ts` | Exported `SublistingCategoriesRepository`, `sublistingCategoriesRepository` |
+| `appkit/src/index.ts` | Exported new types + `sublistingCategoriesRepository` + components |
+| `appkit/src/features/admin/components/AdminSublistingCategoriesView.tsx` | Admin list view (DataTable, search, sort) |
+| `appkit/src/features/admin/components/AdminSublistingCategoryEditorView.tsx` | Admin create/edit form (name, itemCode, description, coverImage) |
+| `appkit/src/features/admin/components/index.ts` | Exported new admin views |
+| `appkit/src/features/products/components/SublistingCategorySelect.tsx` | Self-contained dropdown for ProductForm |
+| `appkit/src/features/products/components/SublistingCarouselSection.tsx` | Collapsible carousel (circular thumbs, CSS vars, price chips) |
+| `appkit/src/features/products/components/ProductDetailView.tsx` | Added `renderSublistingSection` prop → `afterMain` |
+| `appkit/src/features/products/components/AuctionDetailView.tsx` | Added `renderSublistingSection` prop → merged into `afterMain` with mobileBidForm |
+| `appkit/src/features/products/components/PreOrderDetailView.tsx` | Added `renderSublistingSection` prop → `afterMain` |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Wired `SublistingCarouselSection` via `renderSublistingSection` |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Wired `SublistingCarouselSection` via `renderSublistingSection` |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Wired `SublistingCarouselSection` via `renderSublistingSection` |
+| `appkit/src/features/products/components/index.ts` | Exported `SublistingCategorySelect`, `SublistingCarouselSection` |
+| `appkit/src/next/routing/route-map.ts` | Added `ROUTES.STORE.SUBLISTING_CATEGORIES*` and confirmed admin/public routes |
+| `appkit/src/constants/api-endpoints.ts` | Added `ADMIN_ENDPOINTS.SUBLISTING_CATEGORIES*` |
+| `appkit/src/seed/sublisting-categories-seed-data.ts` | Rewrote with correct schema (12 entries across all verticals) |
+| `appkit/firebase/base/firestore.indexes.json` | Added 3 new composite indexes: products(sublistingCategoryId+status+price), sublistingCategories(name+createdAt), sublistingCategories(productCount+createdAt) |
+| `appkit/package.json` | Bumped to 2.4.6 |
+| `src/app/api/admin/sublisting-categories/route.ts` | Added "seller" to GET roles |
+| `src/app/api/store/sublisting-categories/route.ts` | NEW — GET (list) + POST (create, seller-owned) |
+| `src/app/api/store/sublisting-categories/[id]/route.ts` | NEW — GET + PUT + DELETE (ownership check for sellers) |
+| `src/app/[locale]/admin/sublisting-categories/page.tsx` | Admin list page |
+| `src/app/[locale]/admin/sublisting-categories/new/page.tsx` | Admin create page |
+| `src/app/[locale]/admin/sublisting-categories/[id]/edit/page.tsx` | Admin edit page |
+| `src/app/[locale]/sublisting-categories/[slug]/page.tsx` | NEW — public category browse page (RSC, generateMetadata) |
+| `src/app/[locale]/store/sublisting-categories/page.tsx` | NEW — store list + CRUD actions |
+| `src/app/[locale]/store/sublisting-categories/new/page.tsx` | NEW — store create form |
+| `src/app/[locale]/store/sublisting-categories/[id]/edit/page.tsx` | NEW — store edit form |
+| `src/constants/api.ts` | Added `API_ROUTES.STORE.SUBLISTING_CATEGORIES*` |
+| `src/constants/navigation.tsx` | Added "Sub-listing Groups" to `STORE_NAV_GROUPS` + "Sub-listings" to `ADMIN_NAV_GROUPS` |
+| `src/components/dev/SeedPanel.tsx` | Updated `sublistingCategories` entry (correct schema fields, 12 seeded items) |
+| `package.json` | Bumped `@mohasinac/appkit` to `^2.4.6` |
+
+## Deferred
+| Item | Reason | Fix target |
+|------|--------|------------|
+| `SublistingCategorySelect` uses admin endpoint | Sellers allowed on admin GET, so the selector works for all roles. If admin endpoint is ever locked to admin-only, the select needs to switch to store endpoint. | Future if needed |
+| Public listing grid uses raw `<img>` | SC4 public page uses `<img>` with `loading="lazy"`. Could be `next/image` but requires known dimensions. | P-image optimization pass |
+
+---
+
 # Hotfix — 2026-05-10 (Tailwind layout broken + appkit self-contained CSS)
 
 ## Scope

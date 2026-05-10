@@ -113,6 +113,7 @@
   - [Coupon Editor](#store--coupon-editor-)
   - [Bids](#store--bids-)
   - [Analytics](#store--analytics-)
+  - [Sub-listing Categories](#store--sub-listing-categories-)
   - [Storefront Edit](#store--storefront-edit-)
   - [Shipping Config](#store--shipping-config-)
   - [Payout Settings](#store--payout-settings-)
@@ -156,6 +157,7 @@
   - [Store Detail](#public--store-detail-)
   - [Categories Listing](#public--categories-listing-)
   - [Category Detail](#public--category-detail-)
+  - [Sub-listing Category Detail](#public--sub-listing-category-detail-)
   - [Brands Listing](#public--brands-listing-)
   - [Events Listing](#public--events-listing-)
   - [Event Detail](#public--event-detail-)
@@ -3023,6 +3025,48 @@ API: GET /api/store/analytics → proxies Firebase Function storeAnalytics
 
 ---
 
+## Store > Sub-listing Categories ✅ (SC1+SC2 store-side — 2026-05-10)
+
+```
+Pages: /store/sublisting-categories          (list)
+       /store/sublisting-categories/new      (create)
+       /store/sublisting-categories/[id]/edit (edit)
+APIs:  GET    /api/store/sublisting-categories
+       POST   /api/store/sublisting-categories
+       GET    /api/store/sublisting-categories/[id]
+       PUT    /api/store/sublisting-categories/[id]
+       DELETE /api/store/sublisting-categories/[id]
+Ownership: sellers can only edit/delete categories where createdBy === store.id
+
+LIST PAGE (/store/sublisting-categories)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Sub-listing Groups                              [+ New Category]           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Search [________________________]                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Base Set Charizard 108/120      #PKMN-BS-108    12 items  [Edit] [Delete]  │
+│  Hot Wheels Redline 1968–1977    #HW-RL-68       8 items   [Edit] [Delete]  │
+│  Gundam HGUC 1/144              #BNDI-HGUC      5 items   [Edit]           │
+│  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│
+│  (admin-created categories show without Delete — ownership gated)           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+CREATE / EDIT FORM (/new or /[id]/edit)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  New Sub-listing Category          (Edit Sub-listing Category)               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Name *          [Base Set Charizard 108/120            ]                   │
+│  Item Code       [PKMN-BS-108  optional identifier      ]                   │
+│  Description     [Group of all Base Set Charizard ...   ]                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [Cancel]                                          [Create Category]        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+State: createdBy = store.id set on POST; sellers only see Edit/Delete for own records.
+```
+
+---
+
 ## Store > Storefront Edit ✅ (VB4/O2+C5 — 2026-05-10)
 
 ```
@@ -4154,7 +4198,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 │                           │  │  CardGame Hub          [Visit Store →]    │  │
 │                           │  └───────────────────────────────────────────┘  │
 ├───────────────────────────┴─────────────────────────────────────────────────┤
-│  SUB-LISTING SECTION (⏳ SC3) — shown if sublistingCategoryId is set        │
+│  SUB-LISTING SECTION (✅ SC3) — shown if sublistingCategoryId is set        │
 │                                                                              │
 │  COLLAPSED (default):                                                        │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
@@ -4243,7 +4287,7 @@ STICKY BUY BAR (on scroll past buy box):
 │                           │  │  CardGame Hub          [Visit Store →]    │ │
 │                           │  └───────────────────────────────────────────┘ │
 ├───────────────────────────┴─────────────────────────────────────────────────┤
-│  SUB-LISTING SECTION (⏳ SC3) — same collapsible section as Product Detail  │
+│  SUB-LISTING SECTION (✅ SC3) — same collapsible section as Product Detail  │
 │  COLLAPSED: ▶  More listings like this: [category name]  (N)               │
 │  EXPANDED:  ▼  [circular ~64px card scroller + View all →]                 │
 │  (current highlighted; click = navigate; collapsed by default)             │
@@ -4347,6 +4391,46 @@ Filter Drawer (fixed overlay, slides from LEFT, z-50):
 │  Condition   │  [Product grid — same as Products listing]                   │
 │  Sort        │                                                               │
 └──────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Sub-listing Category Detail ✅ (SC4 — 2026-05-10)
+
+```
+Route: /sublisting-categories/[slug]
+File:  src/app/[locale]/sublisting-categories/[slug]/page.tsx  (RSC, revalidate=300)
+Data:  sublistingCategoriesRepository.findBySlug(slug)
+       sublistingCategoriesRepository.getListingsByCategoryId(id, { limit: 48 })
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [🖼 coverImage — full-width banner if available]                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Breadcrumb: Sub-listing Categories › Base Set Charizard 108/120             │
+│                                                                              │
+│  Base Set Charizard 108/120                                      [12 items]  │
+│  Item code: PKMN-BS-108                                                      │
+│  All known printings of the Base Set Charizard 108/120 Holo Rare…           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐    │
+│  │ 🖼         │ │ 🖼         │ │ 🖼         │ │ 🖼         │ │ 🖼         │   │
+│  │ PSA 9     │ │ Raw NM    │ │ CGC 8.5   │ │ LP Play   │ │ BCCG 10   │   │
+│  │ ₹2,99,999 │ │ ₹18,500   │ │ ₹1,24,000 │ │ ₹4,200    │ │ ₹89,000   │   │
+│  │ [AUCTION] │ │           │ │ [AUCTION] │ │           │ │           │   │
+│  └───────────┘ └───────────┘ └───────────┘ └───────────┘ └───────────┘   │
+│  (grid: 2col sm → 3col md → 4col lg → 5col xl — CSS columns, no Tailwind  │
+│   magic numbers; hover: border var(--appkit-color-primary))                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  EMPTY STATE (no listings):                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  No listings in this group yet.                                      │    │
+│  │  [Browse all products →]                                             │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Listing card renders: type badge (AUCTION/PRE-ORDER or none), condition badge,
+price (fmt() using Intl.NumberFormat INR), title, hover border primary color.
+generateMetadata: title = "{name} | LetItRip", description = category.description.
 ```
 
 ---
