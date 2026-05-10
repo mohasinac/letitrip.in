@@ -7343,3 +7343,181 @@ sellerId → storeId migration (arch3): storeAnalytics, weeklyPayoutEligibility,
   (store slug) and do two-step store→ownerId lookup when user record needed.
 ```
 
+---
+
+## User > Order Detail ✅ (Session 78)
+
+```
+Component: src/app/[locale]/user/orders/view/[id]/page.tsx
+Hook:      useOrder(id, { endpoint: /api/user/orders/:id }) → appkit/client
+View:      OrderDetailView (render-prop shell) → appkit/client
+Routes:    ROUTES.USER.ORDERS (back), ROUTES.USER.ORDER_TRACK(id), ROUTES.USER.ORDER_CANCEL(id)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ← My Orders                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderHeader                                                                │
+│  ┌───────────────────────────────────┬──────────────────────┐               │
+│  │ Order #XXXXXXXX                   │ [status badge]       │               │
+│  │ 10 May 2026                       │ (STATUS_COLORS map)  │               │
+│  │ Tracking: ABC123 via BlueDart     │                      │               │
+│  └───────────────────────────────────┴──────────────────────┘               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderItems  —  Items (N)                                                   │
+│  ┌──────┬────────────────────────────────────────────────────┐              │
+│  │ img  │ Product Title                                      │              │
+│  │ 64px │ Variant: Size: M · Color: Red                      │              │
+│  │      │ ×2                                    ₹1,200       │              │
+│  └──────┴────────────────────────────────────────────────────┘              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderAddress  —  Delivery Address                                          │
+│    123 Main St, Line 2                                                       │
+│    Mumbai, Maharashtra, 400001                                               │
+│    India  |  +91 98765 43210                                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderPayment  —  Payment Summary                                           │
+│    Subtotal              ₹1,000                                              │
+│    Shipping              Free                                                │
+│    Discount (WELCOME10)  −₹100                                               │
+│    Tax                   ₹90                                                 │
+│    ─────────────────────────────                                             │
+│    Total                 ₹990                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderActions                                                               │
+│    [Track Shipment]  (shown if trackingNumber exists)                        │
+│    [Cancel Order]    (shown if status pending|confirmed) → ORDER_CANCEL(id)  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STATUS_COLORS: pending→yellow, confirmed|processing→blue, shipped→indigo,
+  delivered→green, cancelled→red, refunded→orange,
+  return_requested→amber, returned→zinc
+```
+
+---
+
+## User > My Reviews ✅ (Session 78)
+
+```
+Component: src/app/[locale]/user/reviews/page.tsx
+API:       GET /api/user/reviews → reviewRepository.findByUser(uid)
+Nav:       ROUTES.USER.REVIEWS — "My Reviews" in USER_NAV_GROUPS Shopping group
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  My Reviews                                                                  │
+│  N reviews                                                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [All] [Published] [Pending] [Rejected]   ← tab filter (client-side)        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ Product Title (link)                    [Verified] [approved badge]   │  │
+│  │ Store Name                                                             │  │
+│  │ ★★★★☆  Good                                                           │  │
+│  │ Review Title                                                           │  │
+│  │ Comment text (3-line clamp)…                                           │  │
+│  │ 10 May 2026                              3 found helpful               │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STATUS_COLORS: approved→green, pending→yellow, rejected→red
+StarDisplay: ★ filled=text-yellow-400 / empty=text-zinc-300
+```
+
+---
+
+## User > My Bids ✅ (Session 78)
+
+```
+Component: src/app/[locale]/user/bids/page.tsx
+API:       GET /api/user/bids → bidRepository.findByUser(uid)
+Nav:       ROUTES.USER.BIDS — "My Bids" in USER_NAV_GROUPS Shopping group
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  My Bids                                                                     │
+│  N bids                                                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [All] [Active] [Won] [Outbid] [Lost]     ← tab filter (client-side)        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ Auction Title (link → AUCTION_DETAIL)   [Winning] [active badge]      │  │
+│  │ 10 May 2026                                                            │  │
+│  │ ─────────────────────────────────────────────────────────────────     │  │
+│  │ Your bid                                              ₹2,500          │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+STATUS_COLORS: active→blue, outbid→yellow, won→green, cancelled→red, lost→zinc
+Winning badge: bg-primary/10 text-primary
+```
+
+---
+
+## User > Notifications ✅ (Session 78)
+
+```
+Component: src/app/[locale]/user/notifications/page.tsx
+API:       GET /api/user/notifications?pageSize=50
+           PATCH /api/user/notifications/:id      (mark read)
+           POST  /api/user/notifications/read-all (mark all read)
+           DELETE /api/user/notifications/:id     (delete)
+View:      UserNotificationsView (render-prop shell) → appkit/client
+/notifications/[tab]/page.tsx → redirect("/user/notifications")
+
+Classification sets:
+  ORDER_TYPES:  order_placed|confirmed|shipped|delivered|cancelled
+  BID_TYPES:    bid_placed|bid_outbid|bid_won|bid_lost
+  SYSTEM_TYPES: system|welcome|promotion
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  renderToolbar                                                               │
+│  [All] [Unread (N)] [Orders] [Bids] [System]     [Mark all read]            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  renderList                                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ • Notification Title              (unread dot + highlighted border) │    │
+│  │   Message body (2-line clamp)                           5m ago      │    │
+│  │   [View Order]  [Mark read]                          [Delete]       │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │   Read Notification Title         (plain border)                    │    │
+│  │   Message body                                          2h ago      │    │
+│  │   [View Order]                                       [Delete]       │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Unread card: border-primary/30 bg-primary/5 dark:bg-primary/10
+Read card:   border-zinc-200 bg-white dark:bg-slate-900
+```
+
+---
+
+## User > Profile Edit ✅ (Session 78, extends VC3)
+
+```
+Component: src/components/user/ProfilePageClient.tsx
+API:       PATCH /api/user/profile
+           body: { displayName?, bio?, photoURL?, profileIsPublic? }
+           Persists: core fields → updateProfileWithVerificationReset()
+                     bio + isPublic → userRepository.update({ publicProfile: { bio, isPublic } })
+
+Public profile guard: src/app/[locale]/profile/[userId]/page.tsx (SSR)
+  getPublicUserProfile(userId) → if publicProfile.isPublic === false → notFound()
+  Also returns { title: "Profile Not Found" } in generateMetadata
+
+View mode:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [Avatar]  Display Name              [Public] or [Private] badge            │
+│            @handle                                                           │
+│            Bio text                                                          │
+│                                                    [Edit Profile]           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Edit mode:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Display Name  [input]                                                       │
+│  Photo URL     [input]                                                       │
+│  Bio           [textarea, max 500 chars]                                     │
+│  Public Profile  [toggle switch]  — controls /profile/[id] visibility       │
+│                                                  [Save]  [Cancel]           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+

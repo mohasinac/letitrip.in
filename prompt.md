@@ -8,20 +8,26 @@
 
 ---
 
-## 🔁 RULE #0 — START-OF-SESSION CHECKLIST (do this before writing any code)
+## 🔁 RULE #0 — SESSION PROTOCOL
 
-1. **Read `crud-tracker.md`** — find the next ⏳ tasks; confirm the session goal matches the 🔜 NEXT section below.
-2. **Read `newchange.md` DEFERRED table** — check for open gaps that must be resolved before starting new work.
-3. **Read `memory/project_status.md`** — confirm you have the current state of the project (last session's changes).
-4. **At the END of this session, before the final commit:**
-   - Update `prompt.md` LAST COMPLETED + 🔜 NEXT with the next session's tasks.
-   - Prepend a session entry to `newchange.md` (scope, changed files, deferred items).
-   - Mark completed tasks ✅ in `crud-tracker.md` (session + one-line note; mark session row done).
-   - Update `memory/project_status.md` with a bullet summary of what changed.
-   - Run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/` — must be 0 errors.
-   - Commit: code first, then a separate docs commit.
+### At the START of every session (before writing any code):
+1. **Update `prompt.md`** — set LAST COMPLETED to the previous session; set 🔜 NEXT to the current session's tasks from `crud-tracker.md`.
+2. **Update `memory/project_status.md`** — note what this session will work on and any carry-over from the last session.
+3. **Read `newchange.md` DEFERRED table** — check for open gaps that must be resolved before starting new work.
 
-> **Why:** `prompt.md` is read cold at session start. If LAST COMPLETED and 🔜 NEXT are stale, the next session wastes turns re-deriving context and risks regression.
+### At the END of every session (before the final commit):
+1. **Fix all TypeScript errors** — run `npx tsc --noEmit` in both `letitrip.in/` and `appkit/`. Must be 0 errors.
+2. **Recheck all changes** — re-read every file touched this session and verify correctness; no half-finished implementations.
+3. **Code quality** — use appkit HTML wrappers (`Div`, `Row`, `Stack`, `Text`, `Heading`), CSS variables (`var(--appkit-color-*)`, `var(--header-height)`), no hardcoded hex, no arbitrary Tailwind breakpoints.
+4. **Update `crud-tracker.md`** — mark completed tasks ✅ with session + one-line note; mark session row ✅ Done in roadmap.
+5. **Update `prompt.md`** — move this session into LAST COMPLETED; set 🔜 NEXT to the *next* session's tasks.
+6. **Update `memory/project_status.md`** — prepend a bullet summary of everything that changed.
+7. **Prepend `newchange.md`** — session entry: scope, changed files table, deferred items table.
+8. **Update ASCII diagrams** — add/update any diagrams affected by new pages or flows.
+9. **Seed data + Firebase** — if any schema changed: update seed files in `appkit/src/seed/`, update `firestore.indexes.json`, update SeedPanel entries, update sievejs config.
+10. **Commit** — code commit first, then a separate docs commit.
+
+> **Why:** `prompt.md` is read cold at every session start. Stale LAST COMPLETED and 🔜 NEXT means the next session wastes turns re-deriving context and risks regression.
 
 ---
 
