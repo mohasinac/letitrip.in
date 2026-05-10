@@ -390,6 +390,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "bidCount",      type: "number",    sortable: true },
       { name: "avgRating",     type: "number",    sortable: true },
       { name: "tags",          type: "array",     filterable: true },
+      { name: "customFields",  type: "array",     note: "up to 50; key/type/value/unit per row (L1)" },
+      { name: "customSections",type: "array",     note: "up to 3; each has title/text/fields[] (L3)" },
       { name: "createdAt",     type: "timestamp", sortable: true, indexed: true },
     ],
   },

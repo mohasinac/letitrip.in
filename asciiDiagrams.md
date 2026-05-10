@@ -925,13 +925,16 @@ Row ⋮ menu:
 │  On Sale     [tog]    │  Start Date [input]   End Date [input]              │
 │  Is Sold     [tog]    │                                                     │
 │                       │  PRE-ORDER FIELDS (shown if type=preorder)          │
-│  CUSTOM FIELDS (⏳L1) │  Deposit % [input]                                  │
+│  CUSTOM FIELDS ✅ (L1)│  Deposit % [input]                                  │
 │  + Add field          │  Est. Delivery [input]                              │
-│  [key][type][value]   │  Production Status [sel]                            │
-│                       │  Max Quantity [input]                               │
-│  CUSTOM SECTIONS (⏳L2│                                                     │
+│  [key|type|value|unit]│  Production Status [sel]                            │
+│  {n} / 50             │  Max Quantity [input]                               │
+│                       │                                                     │
+│  CUSTOM SECTIONS ✅(L3│                                                     │
 │  + Add section        │                                                     │
 │  [title][rich text]   │                                                     │
+│  [CustomFieldsEditor] │                                                     │
+│  {n} / 3              │                                                     │
 └───────────────────────┴─────────────────────────────────────────────────────┘
 ```
 
@@ -4196,11 +4199,12 @@ API key: integrations.googlePlacesApiKey in siteSettings
 │  │  [🖼] Cape          Sealed   ₹2,100   [View]                       │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  TABS: [Description] [Specifications] [Reviews (47)] [Custom Sections...]   │
+│  TABS: [Description] [Specifications] [Reviews (47)] [My Custom Tab] ...    │
 │  ────────────────────────────────────────────────────────────────────────── │
 │  TAB: Description — [RichTextRenderer]                                       │
-│  TAB: Specifications — custom fields table                                   │
-│  TAB: Reviews — ReviewSummary + ReviewsList                                 │
+│  TAB: Specifications — <dl> key-value pairs from customFields[]             │
+│  TAB: Reviews — ReviewSummary + ReviewsList                                  │
+│  TAB: {section.title} ✅ (L2) — per customSections[]; rich text + fields dl │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  BELOW FOLD:                                                                 │
 │  "More from CardGame Hub" → [product carousel]                               │
