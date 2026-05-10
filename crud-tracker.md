@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 (Session 89) — J16 blog related cards not clickable (BlogCard href missing, fixed in BlogPostPageClient + BlogPostView fallback) + J17 event participate auth error for logged-in users (createRouteHandler authOptional added). authOptional pattern added to routeHandler.ts. dual @types/react conflict resolved (appkit pinned to 19.2.14). file:./appkit local dev. 107 done, 245 remaining.
+> **Last updated:** 2026-05-11 (Session 89-b) — FAQ section redesign: category tabs, multi-open, HTML answers, configurable displayCount/defaultOpenCount. WhatsApp Community section: brand-themed gradient, RichText description, benefits checklist. @types/react dual-instance TS errors fixed (peerDeps + overrides). navigation.tsx imports appkit types directly. 14 pre-existing TS errors eliminated. appkit rebuilt. 107 done, 245 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 

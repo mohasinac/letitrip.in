@@ -33,6 +33,36 @@
 
 ---
 
+# Session 89 — 2026-05-11 (FAQ + WhatsApp section redesign, TS deduplication)
+
+## Scope
+Homepage FAQ section: category tab bar, multi-open accordion, HTML answer rendering via RichText, configurable displayCount/defaultOpenCount. WhatsApp Community section: redesigned with brand primary gradient, benefits grid, blockquote testimonial, proper RichText for description. Full TypeScript deduplication — 14 pre-existing errors eliminated. appkit 2.4.11 dist rebuilt.
+
+## Changed Files
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/homepage/schemas/firestore.ts` | `FAQSectionConfig` expanded: `showCategoryTabs`, `visibleTabs: FAQCategoryKey[]`, `allowMultipleOpen`, `defaultOpenCount`. `FAQCategoryKey` extracted as named union type. |
+| `appkit/src/features/homepage/components/FAQSection.tsx` | Full rewrite: built-in tab bar (Button, primary/ghost variant), multi-open Set state, `defaultOpenCount`, CSS grid expand/collapse animation, RichText for HTML answers (no dangerouslySetInnerHTML). |
+| `appkit/src/features/homepage/components/WhatsAppCommunitySection.tsx` | Redesigned: brand primary→cobalt gradient card, WhatsApp green only for icon + CTA button, RichText description, benefits checklist, blockquote testimonial, no inline styles. |
+| `appkit/src/features/homepage/lib/section-renderer.tsx` | `FaqItem` type: added `category` field. `faq` case: passes subtitle, tabs, showCategoryTabs, allowMultipleOpen, defaultOpenCount, slicedItems, hasMore. `whatsapp-community` case: passes benefits, testimonial, buttonText. |
+| `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | faqItems mapping: added `category: faq.category ?? "general"`. |
+| `appkit/src/seed/homepage-sections-seed-data.ts` | `section-homepage-faq` config: added `showCategoryTabs: true`, `visibleTabs`, `allowMultipleOpen: false`, `defaultOpenCount: 1`; removed stale `expandedByDefault`. |
+| `appkit/src/features/layout/index.ts` | Export `AppLayoutShellSidebarLink` + `AppLayoutShellSidebarSection` types. |
+| `appkit/src/client.ts` | Re-export `AppLayoutShellSidebarLink`, `AppLayoutShellSidebarSection` from layout/index. |
+| `appkit/package.json` | Moved `@types/react` from devDependencies to peerDependencies (deduplication). Removed `@types/react-dom` from devDependencies. |
+| `src/constants/navigation.tsx` | Removed local `DashboardNavItem`/`DashboardNavGroup` types; import `AdminNavGroup`, `AdminNavItem`, `StoreNavGroup`, `StoreNavItem`, `UserNavGroup`, `UserNavItem`, `MainNavbarItem`, `AppLayoutShellSidebarLink` from appkit. All exported constants now typed with appkit types. |
+| `package.json` | Added `"overrides": { "@types/react": "^19", "@types/react-dom": "^19" }` to force deduplication. |
+| `src/app/[locale]/faqs/page.tsx` | JSON-LD now includes all public FAQs (not filtered to showOnHomepage). Limit raised to 50. |
+
+## Notes
+- Re-seed `homepageSections` via SeedPanel to pick up new FAQ config fields (showCategoryTabs, visibleTabs, allowMultipleOpen, defaultOpenCount).
+- 14 pre-existing TS errors all fixed — root cause was dual `@types/react` instances (appkit pinned at 19.2.14, main app at ^19). Fixed by: moving to peerDeps, adding overrides, running npm install, rebuilding dist.
+- No new Firebase indexes needed — category tab filtering is client-side; server query unchanged.
+- This was a polish/redesign session — no new tracker tasks created.
+
+---
+
 # Session 89 — 2026-05-11 (Detail page UX + Wishlist filters + Blog/Event bug fixes)
 
 ## Scope
