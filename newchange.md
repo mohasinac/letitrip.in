@@ -62,6 +62,27 @@ Documentation-only sync: no code written. Brought `prompt.md`, `crud-tracker.md`
 
 ---
 
+# Session 90 — 2026-05-11 (AX1: Action constants + useActionDispatch + panelStore + migration)
+
+## Scope
+AX1 complete. Built the full action dispatch infrastructure: constants (done in prior partial), useActionDispatch hook, Zustand panelStore, and migrated SellerProductsView handleEdit.
+
+## Files changed
+
+| File | Change |
+|------|--------|
+| `appkit/package.json` | Added `zustand ^5.0.13` to dependencies |
+| `appkit/src/stores/panel-store.ts` | **NEW** — Zustand usePanelStore: panelId, data, openPanel, closePanel, isPanelOpen |
+| `appkit/src/react/hooks/use-action-dispatch.ts` | **NEW** — useActionDispatch(options?) hook: NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY dispatch |
+| `appkit/src/client.ts` | Exported useActionDispatch, DispatchAction, UseActionDispatchOptions, usePanelStore |
+| `appkit/src/index.ts` | Same exports added |
+| `appkit/src/features/seller/components/SellerProductsView.tsx` | handleEdit migrated: router.push → dispatch({ type: "NAVIGATE" }); removed useRouter import |
+
+## Deferred items
+None — AX1 fully done.
+
+---
+
 # Session SB Plan — 2026-05-11 (Bundle & Prize Draw Listings + Event Raffle System — Planning Only)
 
 ## Scope

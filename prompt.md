@@ -7,28 +7,25 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 89b (2026-05-11)
+### ✅ Last completed — Session 90 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| FAQSection rewrite | Category tab bar, multi-open Set state, `defaultOpenCount`, CSS grid animation, `RichText` for HTML answers. `FAQSectionConfig` expanded with `showCategoryTabs`, `visibleTabs`, `allowMultipleOpen`. |
-| WhatsAppCommunitySection | Primary→cobalt gradient card. WhatsApp green for icon + CTA only. `RichText` description, benefits checklist, blockquote testimonial. CSS variables only — no inline styles. |
-| @types/react dedup | Moved to `peerDependencies` in appkit + `"overrides"` in root. Eliminated 14 TS errors. |
-| nav types | `navigation.tsx` now imports all nav group types from appkit directly. |
-| FAQs page JSON-LD | All public FAQs included (limit 50, not filtered to `showOnHomepage`). |
+| AX1 constants | `action-defs.ts` — ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + all META maps + preset groups. |
+| AX1 hook + store | `useActionDispatch` hook (NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY). Zustand `usePanelStore` (panelId, data, openPanel, closePanel, isPanelOpen). Zustand v5 added to appkit deps. |
+| AX1 migration | `SellerProductsView.tsx` `handleEdit` migrated from `router.push` → `dispatch({ type: "NAVIGATE" })`. |
 
-### 🔄 Current — Session 90 (2026-05-11)
+### 🔄 Current — Session 90-colors (2026-05-11)
 
 | Task | Status | Notes |
 |------|--------|-------|
-| AX1 constants | ✅ done | `action-defs.ts` — ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + all META maps. Exported from `client.ts` + `index.ts`. FormShell/DrawerFormFooter labels from FORM_ACTION_META. |
-| AX1 hook + migration | ⏳ pending | `useActionDispatch` (NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY) + Zustand `panelStore` + migrate `router.push` patterns in admin views |
+| X7a | ⏳ pending | Define missing CSS color tokens |
+| X7b | ⏳ pending | Replace all hardcoded hex violations |
 
 ### 🔜 Next sessions (safe-first order)
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| 90 (finish) | AX1 remainder | `useActionDispatch` hook + `panelStore` + admin router.push migration | zero |
 | 90-colors | X7a, X7b | CSS color token audit — define missing tokens, replace all hex violations | zero |
 | 91 | X8a, X8b | Layout token audit — z-index, spacing, breakpoint violations | zero |
 | 92 | AX2, AX3 | `?panel=create/edit` deep-links + `FormActionBar` sticky bars | low |
@@ -47,7 +44,7 @@
 ## PLAN SNAPSHOT
 
 ```
-107 tasks ✅ done · 290 remaining · 397 total (as of Session 90 partial)
+108 tasks ✅ done · 289 remaining · 397 total (as of Session 90 done)
 
 PHASE                   SESSIONS     STATUS
 ──────────────────────────────────────────────────
@@ -73,7 +70,7 @@ Search + Routes         88           ✅  RC3/RC4
 UX Polish               89a          ✅  VD12, J16, J17, wishlist filter
 FAQ + WA redesign       89b          ✅  FAQSection, WhatsApp, @types/react
 ────────── 🚀 ALPHA on Vercel prod 2026-05-10 ──────────
-Action constants        90 (partial) 🔄  AX1 constants ✅; hook ⏳
+Action constants        90           ✅  AX1 complete (constants+hook+store+migration)
 Color tokens            90-colors    ⏳
 Layout tokens           91           ⏳
 Action URLs + bars      92           ⏳
