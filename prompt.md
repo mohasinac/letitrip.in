@@ -31,56 +31,6 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 81-impl ✅ 2026-05-10 (Store Finance)
-
-| Task | What was done |
-|------|--------------|
-| **C3** | `/store/coupons/new/page.tsx` fixed to use `SellerCouponEditorView`; `/store/coupons/[id]/edit/page.tsx` added. |
-| **VB1** | `SellerCouponEditorView` — create/edit form: code, type, value, minPurchase, maxDiscount, limits, dates, active toggle. POST/PUT to `/api/store/coupons`. |
-| **C4/VB2/LL7** | `SellerOrdersView` enhanced: rich table columns (order #, date, buyer, items, total, status), row-click → order detail `SideDrawer`; status select + tracking fields + PATCH `/api/store/orders/[id]`. |
-| **VB7** | `SellerAddressesView` fully rewired: fetches `/api/store/addresses`, list + add/edit (SideDrawer) + delete (ConfirmDeleteModal). GET/POST `/api/store/addresses`, PUT/DELETE `/api/store/addresses/[id]`. |
-| **LL9** | `SellerBidsView` (new) — bids on store's auctions, filter by auction, read-only. GET `/api/store/bids`. |
-| **LL10** | `SellerPayoutsView` verified wired; SELLER_ENDPOINTS fixed to `/api/store/*` paths across all views. |
-| **Endpoints** | `SELLER_ENDPOINTS` updated to `/api/store/*` (was `/api/seller/*`); added `COUPON_BY_ID`, `STORE_ADDRESS_BY_ID`, `BIDS`, `ORDERS_BY_ID`. `API_ROUTES.STORE` extended. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
-
----
-
-## Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
-
-| Task | What was done |
-|------|--------------|
-| **WA3** | `sendWhatsAppBusinessMessage()` + `syncProductsToCatalog()` + `buildPurchaseAnnouncementMessage()` in appkit whatsapp-bot/helpers. GET/PUT `/api/store/whatsapp-settings` (encrypted token, capability gate). POST `/api/store/whatsapp-settings/catalog-sync` (Meta Commerce API batch). `onOrderCreate` Firebase trigger → purchase announcement to admin + store owner. `--appkit-color-warning-surface` CSS token (light + dark). `STORE.WHATSAPP` route + nav link. `whatsapp_catalog_sync` StoreCapability. |
-| **Quality** | `LayoutShellClient`: fixed misplaced `import Link` (was after constants). `FormShell`: `amber-100/900` → `var(--appkit-color-warning-surface)`. `dev-next.mjs`: stable Next.js bin path. `transpilePackages` + `tailwind.config.js` dist scan removed. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors (fixed 3 WA3 catalog-sync errors). |
-
----
-
-## Session 80 ✅ 2026-05-10 (Alpha: Store Settings)
-
-| Task | What was done |
-|------|--------------|
-| **C6** | `SellerShippingView` rewritten as full form: method radio (custom/shiprocket), rate fields (standard/express paise), free-shipping threshold toggle, pickup address selector (`StoreAddressSelectorCreate`). Saves via PATCH `/api/store/shipping`. |
-| **C7** | `SellerPayoutSettingsView` rewritten: UPI/bank radio, UPI VPA input or bank form (name, masked account number, IFSC, bank name, account type). PATCH `/api/store/payout-settings` with Zod discriminated union + masking on save. |
-| **LL8** | `SellerReviewsView` + GET `/api/store/reviews` + POST `/api/store/reviews/[id]/reply`. Star display, filter chips (rating 1–5, reply status), inline reply SideDrawer. `sellerReply`/`sellerRepliedAt` added to `ReviewDocument`. `/store/reviews` page + "Reviews" in "Orders & Reviews" nav group. |
-| **VB3** | `SellerPayoutRequestView` + POST `/api/store/payouts/request`. Shows available earnings, pre-fills payment method from payout settings, optional notes. Disabled if pending payout or zero earnings. `requestPayout()` server action wired. |
-| **VB10** | `/store/analytics/page.tsx` wired as "use client" fetching from `/api/store/analytics`. Graceful 503 handling. Passes to `SellerAnalyticsStats` + `SellerTopProducts` with rupee formatter. |
-| **O3** | `StoreAddressSelectorCreate` wired into `SellerProductShell` `StepShipping` — replaces plain-text fallback; sellers can pick or inline-create a pickup address on any product listing. |
-| **UX7** | FormShell pattern confirmed across all store-side forms: SellerStorefrontView (useFormShell), SellerShippingView (StackedViewShell), SellerPayoutSettingsView (StackedViewShell). O3 covers QuickFormDrawer via StoreAddressSelectorCreate. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
-
----
-
-## Session 101 QA ✅ 2026-05-10 (TypeScript audit + WA3 + quality pass)
-
-| Task | What was done |
-|------|--------------|
-| **WA3** | `sendWhatsAppBusinessMessage()` + `syncProductsToCatalog()` + `buildPurchaseAnnouncementMessage()` in appkit whatsapp-bot/helpers. GET/PUT `/api/store/whatsapp-settings` (encrypted token, capability gate). POST `/api/store/whatsapp-settings/catalog-sync` (Meta Commerce API batch). `onOrderCreate` Firebase trigger → purchase announcement to admin + store owner. `--appkit-color-warning-surface` CSS token (light + dark). `STORE.WHATSAPP` route + nav link. `whatsapp_catalog_sync` StoreCapability. |
-| **Quality** | `LayoutShellClient`: fixed misplaced `import Link` (was after constants). `FormShell`: `amber-100/900` → `var(--appkit-color-warning-surface)`. `dev-next.mjs`: stable Next.js bin path. `transpilePackages` + `tailwind.config.js` dist scan removed. |
-| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors (fixed 3 WA3 catalog-sync errors). |
-
----
-
 ## Session 100 ✅ 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
 
 | Task | What was done |

@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-10 (Multi-session sweep) — P27 payouts seed 7→25 records ✅. Tracker corrections: VB5/VB6/O4/I2 marked ✅ (were done in Sessions 80/72 but tracker not updated). Summary: 103 done, 249 remaining.
+> **Last updated:** 2026-05-10 (Session 83 + sweep) — SCAM3 ✅ (types page + profile sections), SCAM5 ⚠️ (form + API done; file upload/rate limit/suggest deferred), VD8 ✅ (about rewrite), P27 ✅ (payouts seed 7→25), tracker corrections: VB5/VB6/O4/I2/SCAM3/VD8 marked ✅. 105 done, 247 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
