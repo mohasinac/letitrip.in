@@ -33,6 +33,66 @@
 
 ---
 
+# Sync Audit — 2026-05-11 (tracker + prompt + diagrams brought to current state)
+
+## Scope
+Documentation-only sync: no code written. Brought `prompt.md`, `crud-tracker.md`, and `asciiDiagrams.md` into alignment with what was actually built in Sessions 89a, 89b, and the AX1 partial (Session 90). Reordered upcoming session roadmap safe-first.
+
+## Changes Made
+
+| File | Change |
+|------|--------|
+| `prompt.md` | Added 3 LAST COMPLETED entries: Session 89a (VD12 + J16 + J17 + wishlist filter drawer), Session 89b (FAQ redesign + WhatsApp redesign + @types/react dedup), Session 90 partial (AX1 constants). Updated 🔜 NEXT with safe-first session priority (AX1 complete → colors → layout → AX2/AX3 → extended sections → feature icons → bulk → Q tier → seed scale). Updated PLAN SNAPSHOT to reflect sessions 89a/89b ✅ and AX1 🔄. |
+| `crud-tracker.md` | Split old session 89 row (Q1–Q6 — never started) into: 89-a ✅ (VD12/J16/J17/wishlist filter), 89-b ✅ (FAQ+WhatsApp+TS dedup), 90 🔄 (AX1 partial). Reordered sessions 90–105: safe-first (token audits → AX2/AX3 → extended sections → feature icons → bulk → Q tier → seed scale → RBAC/BAN/SCAM). Updated header timestamp. |
+| `asciiDiagrams.md` | **Admin > Section Editor — faq**: replaced `expandedByDefault` with `defaultOpenCount`, added `allowMultipleOpen`, replaced old category checkboxes with `visibleTabs[]` array. **Public > Homepage Section — faq**: added category tab bar UI, defaultOpenCount behavior, RichText note, removed expandedByDefault note. **Public > Homepage Section — whatsapp-community**: updated background from "WhatsApp green" to "brand primary→cobalt gradient"; added RichText description, blockquote testimonial, benefits grid layout note; clarified green is only for icon + CTA. **User > Wishlist**: added filter drawer (Type selector + price range min/max), badge count, pending/applied filter state, clear-all behavior. **Public > Product Detail** (VD12): removed duplicate price from info column — price+discount now in actions sidebar only. **Public > Auction Detail** (VD12): status badge (Active/Ended) moved to title block; bid count + timing inline under bid; fallback sidebar stripped of duplicate data. **Public > Pre-Order Detail**: NEW diagram added (was missing entirely). |
+| `newchange.md` | This entry. |
+
+## Open Deferred Items (still pending after audit)
+| Item | Status |
+|------|--------|
+| P20 — carousel config `as unknown as SectionConfig` TS cast | ⚠️ Tech debt — open |
+| HS4-E — per-store Google Reviews page | ⏳ deferred to session 102+ |
+| BUG 1 — HorizontalScroller `perView` void | ⏳ open (not yet verified post-89b) |
+| BUG 2 — HeroCarousel returns null when no slides | ⏳ open |
+| BUG 3 — Ad slot key mismatch `after0` vs `afterHero` | ⏳ open |
+| BUG 4 — FAQ section hardcoded empty in MarketplaceHomepageView | ✅ Fixed by Session 89b — section-renderer.tsx faq case now passes real faqItems (from faqsRepository.getHomepageFAQs()) and real tabs. Verified in source. |
+| BUG 5 — `brands` section type has no render case | ⏳ open |
+| BUG 7 — HorizontalScroller wrong dark-mode selector | ⏳ open |
+| BUG 8 — HorizontalScroller grid mode slide width | ⏳ open |
+
+---
+
+# Session SB Plan — 2026-05-11 (Bundle & Prize Draw Listings + Event Raffle System — Planning Only)
+
+## Scope
+Full planning session for Sessions SB1–SB10. No code written. Produced approved plan (saved at `C:\Users\mohsi\.claude\plans\subcategory-must-be-applicable-tingly-stroustrup.md`). Updated `crud-tracker.md` with 54 new tasks (Tier SB + Tier TC). Implementation deferred to future sessions.
+
+## What was planned
+
+| Session | Scope |
+|---------|-------|
+| SB1 | `listingType` enum migration — replaces `isAuction`/`isPreOrder` boolean flags. Schema changes for products, orders, bundles. New BundleDocument collection. New bundlesRepository. Firestore index overhaul. Routes + API constants. 7 Firebase Functions. |
+| SB2 | Subcategory fix (both fields for all listingTypes). Video upload enabled for all types. |
+| SB3 | Bundle listings own collection — BundleItemsPicker, BundleForm, NonRefundableConsentModal, stock-sync triggers, reverse-reference partOfBundleIds, seller/admin/public CRUD pages, BundlesListingView, BundleDetailPageView, API routes. |
+| SB4 | Prize draw listings (listingType="prize-draw") — PrizeDrawItemsEditor, PrizeDrawCollage, ProductForm prize draw section, seller/admin/public CRUD pages, PrizeDrawsListingView, PrizeDrawDetailPageView, reveal API with crypto.randomInt(), PrizeRevealModal. |
+| SB5 | Navigation (MAIN_NAV_ITEMS, STORE/ADMIN_NAV_GROUPS, footer), 6 new FAQ seed entries, seller guide pages, homepage sections seed (featured bundles, prize draws, brand spotlights), full seed data backfill. |
+| SB6 | Per-user purchase limits: maxPerUser on products + bundles, countByUser methods, order creation enforcement, UI badges. |
+| SB7 | "Part of bundle" indicators on product cards + detail pages. Category detail page all-listing-type tabs. Store/admin/search tab updates. |
+| SB8 | Prize draw 3-day reveal lock (prizeRevealDeadline), auto-refund on expiry, pool exhaustion handling, notification functions. |
+| SB9 | Event raffle system — EventType "raffle"+"spin_wheel", EventDocument raffle config, triggerEventRaffle + assignSpinPrize Firebase functions, winner page, SpinWheelView, AdminEventEditorView raffle section, Firestore indexes. |
+| SB10 / TC | Tab configuration constants system — TabConfig interface, public page tab constants (tabs.ts), dashboard tab constants (dashboard-tabs.ts), migrate all view components, helpers. |
+
+## Changed Files (planning only — no code)
+
+| File | Change |
+|------|--------|
+| `crud-tracker.md` | Header updated to SB plan. Summary table updated: Total 390, Remaining 283. Index entries added for Tier SB and Tier TC. GD22 duplicate text fixed. 54 new task rows appended (SB1-A through SB10-D + TC1–TC4). |
+
+## Deferred
+All SB1–SB10 implementation tasks deferred — user requested tracking update only. Start with SB1 in next implementation session.
+
+---
+
 # Session 89 — 2026-05-11 (FAQ + WhatsApp section redesign, TS deduplication)
 
 ## Scope

@@ -9,6 +9,7 @@
 - [🛑 Rule #1 — Stop and Ask Before Deciding](#-rule-1--stop-and-ask-before-deciding)
 - [🛑 Rule #2 — ✅ Does Not Mean Working](#-rule-2---does-not-mean-working)
 - [🛑 Rule #3 — Schema/Logic Changes Must Update Older Functionality](#-rule-3--schemalogic-changes-must-update-older-functionality)
+- [🛑 Rule #4 — Never Fix Without Verifying It Is Actually Broken](#-rule-4--never-fix-without-verifying-it-is-actually-broken)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
@@ -20,6 +21,7 @@
 - [CSS Variable Reference](#css-variable-reference-sticky-positioning)
 - [appkit Export Rules](#appkit-export-rules)
 - [Appkit Publish & Deploy Rules](#appkit-publish--deploy-rules)
+- [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 
 ---
@@ -58,6 +60,18 @@ When implementing a new feature that changes a schema, data model, API contract,
 4. **Update types** — if a TypeScript type in `appkit/src/features/*/types.ts` changes, search for all downstream casts, spreads, and destructures and update them too.
 
 **Why:** In this project, schema drift across sessions (hooks not updated when API contracts change, seed data not reflecting new required fields) has caused silent failures that surface only at runtime.
+
+---
+
+## 🛑 RULE #4 — NEVER FIX SOMETHING WITHOUT VERIFYING IT IS ACTUALLY BROKEN
+
+Before touching any code in response to a bug report, plan note, or memory entry:
+
+1. **Read the current source file** — do not rely on bug descriptions from memory files, plans, or old session notes.
+2. **Confirm the bug is present** — if the code already handles the case correctly, mark the bug resolved and move on without writing any code.
+3. **Check when the file was last modified** — `git log -1 -- <file>` tells you whether it was already fixed in a recent session.
+
+**Why:** All 8 bugs documented in the appkit bug catalog (BUG-1 through BUG-8) were verified in Session 89 and found to be already fixed. Acting on stale bug reports caused unnecessary re-implementation risk. Plan files and memory entries describe what was true when written — not necessarily what is true now.
 
 ---
 
@@ -347,6 +361,26 @@ When the user says "publish appkit" or "release appkit":
 **Vercel deploy**: Auto-deploy on push is disabled (`vercel.json` → `"deploymentEnabled": false` for all branches). Run `vercel --prod` manually only when the user asks to deploy.
 
 **Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` after switching to npm, the lockfile still points to the local directory. Delete it and re-run `npm install`.
+
+---
+
+## Recurrent Root Cause Patterns
+
+> These patterns have caused multiple bugs across many sessions. Treat each as a red flag during code review and implementation. The bug IDs in parentheses are the first known instance — see the [Known Bugs plan](../../Users/mohsi/.claude/plans/in-our-git-hirsoty-elegant-lagoon.md) for full history.
+
+| # | Pattern | Red flag to watch for |
+|---|---------|----------------------|
+| 1 | **Firestore field absence ≠ false** | `where("isAuction", "==", false)` returns 0 docs when `isAuction` is absent from a document. Every seed document MUST have all filtered boolean fields explicitly set (J13). |
+| 2 | **Missing Firestore composite indexes** | Queries with multiple `where` + `orderBy` throw `FAILED_PRECONDITION` silently in prod. Add to `appkit/firebase/base/firestore.indexes.json` and deploy. Never add indexes to the root `firestore.indexes.json` directly (J13). |
+| 3 | **Tailwind class purging** | Any class generated only inside appkit (not in `./src/**`) is purged in prod unless safelisted in `tailwind.config.js` or pre-compiled into `dist/tailwind-utilities.css` (HF87-1). |
+| 4 | **SSR shape mismatches** | Repository methods return `FirebaseSieveResult`; page views expect domain-specific shapes (e.g. `{ posts: [] }`). Always transform before passing as `initialData` (J14). |
+| 5 | **Component prop API drift** | appkit component props evolve (`open` → `isOpen`, `showToast(obj)` → `showToast(msg, variant)`). Always read the component source before using it — never assume the API from memory (HF86-4, HF89-wa). |
+| 6 | **Vercel Lambda dynamic require** | `(module as any).require(...)` bypasses Vercel's output file tracer. Force-include via `experimental.outputFileTracingIncludes` in `next.config.js` (HF87-2). |
+| 7 | **Dual `@types/react` instances** | appkit pinning a specific `@types/react` version creates dual instances. Use `peerDependencies` + `overrides` in root `package.json` (HF89-ts). |
+| 8 | **Slot-shell render props not passed** | Calling any appkit view shell with zero render props renders a layout skeleton with no content. Always check that all `renderXxx` props are wired on every page that uses the shell. |
+| 9 | **`createWithId` bypasses BaseRepository hooks** | Any PII encryption, validation, or other override in `BaseRepository` is skipped when `createWithId` is called directly. Always override `createWithId` in the subclass (HF86-3). |
+| 10 | **CSS @import of node_modules in globals.css** | Turbopack inlines `@import` before PostCSS runs, breaking tailwindcss + autoprefixer. Always import pre-compiled CSS from node_modules via JS (`import "pkg/styles"` in `layout.tsx` — never `@import` in CSS) (CSS-import). |
+| 11 | **Stale bug/plan descriptions** | Plan files and memory entries describe what was true when written. Always verify by reading the current source file before writing any fix. Never act on a bug description without confirming the bug still exists (Rule #4). |
 
 ---
 

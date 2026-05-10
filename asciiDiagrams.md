@@ -1846,7 +1846,7 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 
 ---
 
-## Admin > Section Editor — faq
+## Admin > Section Editor — faq *(updated Session 89b)*
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -1860,18 +1860,23 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 │  ┌────────────────────────────────────────────────────────────────┐ │
 │  │ Quick answers about buying, selling, and collecting            │ │
 │  └────────────────────────────────────────────────────────────────┘ │
-│  Display Count (how many FAQs to show)                               │
-│  ┌────────┐                                                          │
-│  │  5     │                                                          │
-│  └────────┘                                                          │
-│  ☑ Show on homepage  (FAQs also need showOnHomepage:true in DB)     │
-│  ☐ Expand all by default                                            │
+│  Display Count (how many FAQs to show)     Default Open Count        │
+│  ┌────────┐                                ┌────────┐               │
+│  │  5     │                                │  1     │               │
+│  └────────┘                                └────────┘               │
+│  ☑ Show category tabs                                               │
+│  ☐ Allow multiple open at once                                      │
 │  ☑ Show "View all FAQs" link                                        │
 │                                                                      │
-│  FAQ Categories to include                                           │
-│  ☑ General    ☑ Payment    ☑ Shipping                               │
-│  ☐ Returns    ☐ Account    ☐ Products    ☐ Sellers                  │
+│  Visible Category Tabs (shown when "Show category tabs" is on)       │
+│  ☑ General    ☑ Shipping    ☑ Payments                              │
+│  ☑ Auctions   ☑ Pre-orders  ☐ Returns    ☐ Account                 │
+│  (order reflects visibleTabs[] array — drag-to-reorder not yet impl)│
 └──────────────────────────────────────────────────────────────────────┘
+Fields: title · subtitle · displayCount · defaultOpenCount ·
+  showCategoryTabs · visibleTabs: FAQCategoryKey[] · allowMultipleOpen ·
+  linkToFullPage
+Note: ☐ "Expand all by default" removed — replaced by defaultOpenCount
 ```
 
 ---
@@ -3434,14 +3439,12 @@ Firebase trigger: onOrderCreate (orders/{orderId} onCreate)
 
 ---
 
-## User > Wishlist ✅ (VC6)
+## User > Wishlist ✅ (VC6 + Session 89a filter drawer)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  My Wishlist  (24 items)                    [Sort: Recently Added ▾]        │
+│  My Wishlist  (24 items)       [🔍 Search...] [⚙ Filters (2)] [Sort ▾]    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Filter: [All] [In Stock] [Out of Stock] [On Sale]                          │
-├────────────────────────────────────────────────────────────────────────────┤
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐      │
 │  │ 🖼            │ │ 🖼            │ │ 🖼  OUT OF   │ │ 🖼            │      │
 │  │ Charizard ETB│ │ SHF Goku UI  │ │     STOCK    │ │ Beyblade BX01│      │
@@ -3452,6 +3455,24 @@ Firebase trigger: onOrderCreate (orders/{orderId} onCreate)
 │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘      │
 │  ⚠ 2 items removed (no longer available)                                    │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+FILTER DRAWER (opens when [⚙ Filters] is clicked):
+┌─── Filters ─────────────────────────────────────────────────────────────────┐
+│  Listing Type                                                                │
+│  ● All   ○ Standard   ○ Auction   ○ Pre-Order                               │
+│                                                                              │
+│  Price Range                                                                 │
+│  Min ₹  ┌───────┐    Max ₹  ┌───────┐                                       │
+│         │       │           │       │                                       │
+│         └───────┘           └───────┘                                       │
+│  (values in ₹; converted to paise internally for API)                        │
+│                                                                              │
+│  [Clear All Filters]              [Apply Filters]                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+State: filterPending (staged, not yet applied) + filterApplied (active)
+Badge: [⚙ Filters (N)] shows count from countActiveFilters() helper
+Clear-all: shown in toolbar when search text OR any filter is active
 ```
 
 ---
@@ -3958,58 +3979,83 @@ Source: blogPosts Firestore (status=published, ordered by publishedAt desc)
 
 ---
 
-## Public > Homepage Section — whatsapp-community
+## Public > Homepage Section — whatsapp-community *(updated Session 89b)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │  [WhatsApp green background]                                        │   │
+│  │  [brand primary → cobalt gradient — NOT solid WhatsApp green]       │   │
 │  │                                                                     │   │
+│  │  [WhatsApp icon — green only for icon]                              │   │
 │  │  Join the LetItRip Collectors Community                             │   │
 │  │  4,200 members                                                      │   │
+│  │                                                                     │   │
+│  │  [RichText description — styled via var(--appkit-color-*)]          │   │
+│  │  Connect with 4,000+ Indian collectors on WhatsApp. Share pulls,   │   │
+│  │  get authentication help, trade advice, and be first to know        │   │
+│  │  about new drops.                                                   │   │
 │  │                                                                     │   │
 │  │  ✓  First look at rare listings before they go live                │   │
 │  │  ✓  Authentication help from experienced collectors                 │   │
 │  │  ✓  Live auction alerts for Charizard, Redlines & signed tops       │   │
 │  │  ✓  Free giveaways and community events                            │   │
+│  │  (benefits grid — rendered from benefits[] config)                  │   │
 │  │                                                                     │   │
-│  │  "The LetItRip WhatsApp group helped me authenticate a PSA slab    │   │
-│  │   within 10 minutes." — Rahul S., Bengaluru                        │   │
+│  │  ┌─ blockquote testimonial ──────────────────────────────────────┐ │   │
+│  │  │  "The LetItRip WhatsApp group helped me authenticate a PSA    │ │   │
+│  │  │   slab within 10 minutes." — Rahul S., Bengaluru              │ │   │
+│  │  └───────────────────────────────────────────────────────────────┘ │   │
 │  │                                                                     │   │
-│  │  [Join WhatsApp Community]                                          │   │
+│  │  [🟢 Join WhatsApp Community]  ← green only on CTA button          │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 Component: WhatsAppCommunitySection
-Config fields: title · description · groupLink · memberCount ·
-  benefits[] · buttonText · testimonial
+  (appkit/src/features/homepage/components/WhatsAppCommunitySection.tsx)
+Config fields: title · description (RichText) · groupLink · memberCount ·
+  benefits[] · buttonText · testimonial (optional blockquote)
+Styling: card uses brand primary→cobalt CSS gradient — WhatsApp green (#25D366)
+  is reserved only for the icon and CTA button; no inline styles
 ```
 
 ---
 
-## Public > Homepage Section — faq
+## Public > Homepage Section — faq *(updated Session 89b)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Frequently Asked Questions                  [View all FAQs →]              │
 │  Quick answers about buying, selling, and collecting on LetItRip            │
 │   ─ ✶ ─                                                                     │
+│                                                                             │
+│  CATEGORY TAB BAR (shown when showCategoryTabs=true):                       │
+│  [General ▪]  [Shipping]  [Payments]  [Auctions]  [Pre-orders]              │
+│  (Button primary variant = active tab; ghost = inactive)                    │
+│                                                                             │
 │  ─────────────────────────────────────────────────────────────────────────  │
 │  ▶  How does bidding work on LetItRip?                                      │
 │  ─────────────────────────────────────────────────────────────────────────  │
-│  ▼  Is my payment safe? What is escrow?                                     │
+│  ▼  Is my payment safe? What is escrow?          ← auto-open (defaultOpenCount=1) │
 │     Payments are held in escrow and released to the seller only after       │
 │     you confirm safe delivery. If delivery fails, you get a full refund.    │
+│     [Rendered via RichText — no dangerouslySetInnerHTML]                    │
 │  ─────────────────────────────────────────────────────────────────────────  │
 │  ▶  How long does shipping take?                                             │
 │  ─────────────────────────────────────────────────────────────────────────  │
 │  ▶  Can I return a product?                                                  │
 │  ─────────────────────────────────────────────────────────────────────────  │
 │  ▶  How do pre-orders work?                                                  │
+│                                                                             │
+│  [View all FAQs →]   (shown if linkToFullPage=true and hasMore)             │
 └─────────────────────────────────────────────────────────────────────────────┘
-Component: FAQSection
-Config fields: title · subtitle · showOnHomepage · displayCount ·
-  expandedByDefault · linkToFullPage · categories[]
-Source: faqs Firestore (showOnHomepage=true, ordered by priority)
+Component: FAQSection (appkit/src/features/homepage/components/FAQSection.tsx)
+Config fields: title · subtitle · displayCount · defaultOpenCount ·
+  showCategoryTabs · visibleTabs: FAQCategoryKey[] · allowMultipleOpen ·
+  linkToFullPage
+Source: faqs Firestore (showOnHomepage=true, ordered by priority), then
+  client-side filtered by active tab (category field on FaqItem)
+State: open items tracked as Set<string> (multi-open) or max-1 string (single-open)
+Expand/collapse: CSS grid-template-rows animation (0fr ↔ 1fr)
+Note: "expandedByDefault" field REMOVED — use defaultOpenCount instead
 ```
 
 ---
@@ -4176,7 +4222,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Product Detail ✅
+## Public > Product Detail ✅ *(VD12 updated Session 89a)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -4185,11 +4231,13 @@ API key: integrations.googlePlacesApiKey in siteSettings
 │  IMAGE GALLERY            │  Charizard Base Set ETB — Sealed                │
 │  ┌───────────────┐        │  ★★★★★ (47 reviews)   [Verified Seller ✓]      │
 │  │               │        │                                                 │
-│  │  Main Image   │        │  ₹4,499  ~~₹5,000~~  [SALE]                    │
-│  │               │        │  Condition: Sealed   Stock: 12 left             │
-│  └───────────────┘        │  Brand: Pokémon Company · Category: Pokémon TCG │
-│  [🖼][🖼][🖼][🖼]          │                                                 │
-│  [▶ YouTube]              │  ┌──────────────────────────────────────────┐  │
+│  │  Main Image   │        │  Condition: Sealed   Stock: 12 left             │
+│  │               │        │  Brand: Pokémon Company · Category: Pokémon TCG │
+│  └───────────────┘        │  (VD12: no duplicate price here — price lives   │
+│  [🖼][🖼][🖼][🖼]          │   in actions sidebar only)                      │
+│  [▶ YouTube]              │                                                 │
+│                           │  ┌──────────────────────────────────────────┐  │
+│                           │  │  ₹4,499  ~~₹5,000~~  [SALE]             │  │
 │                           │  │  Qty [1 ▾]  [🛒 Add to Cart]            │  │
 │                           │  │            [Make Offer]  [♡ Wishlist]    │  │
 │                           │  └──────────────────────────────────────────┘  │
@@ -4263,18 +4311,19 @@ STICKY BUY BAR (on scroll past buy box):
 
 ---
 
-## Public > Auction Detail ✅
+## Public > Auction Detail ✅ *(VD12 updated Session 89a)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Charizard Base Set #4 — PSA 9                                               │
+│  [Live Auction] [Active ●]  Charizard Base Set #4 — PSA 9                   │
+│  (VD12: status badge moved next to auction badge in title block)            │
 ├───────────────────────────┬─────────────────────────────────────────────────┤
 │  IMAGE GALLERY            │  AUCTION STATUS                                  │
-│  [same as product]        │  ⏱ Ends in: 12:34:56   [LIVE]                  │
-│                           │  Current Bid: ₹2,99,999   (47 bids)             │
+│  [same as product]        │  Current Bid: ₹2,99,999                          │
+│                           │  (47 bids)   ⏱ Ends in: 12:34:56               │
+│                           │  (VD12: bid count + timing now inline under bid) │
 │                           │  Starting Bid: ₹99,999                           │
-│                           │  Reserve: Met ✓                                 │
-│                           │  Bid Increment: ₹5,000                          │
+│                           │  Min Increment: ₹5,000                           │
 │                           │  [Trading Cards] · [Pokémon Company]            │
 │                           │                                                 │
 │                           │  ┌──────────────────────────────────────────┐  │
@@ -4286,6 +4335,8 @@ STICKY BUY BAR (on scroll past buy box):
 │                           │  ┌──── Listed by ────────────────────────────┐ │
 │                           │  │  CardGame Hub          [Visit Store →]    │ │
 │                           │  └───────────────────────────────────────────┘ │
+│                           │  (VD12: fallback read-only sidebar stripped of  │
+│                           │   repeat current-bid/starting-bid/bid-count)   │
 ├───────────────────────────┴─────────────────────────────────────────────────┤
 │  SUB-LISTING SECTION (✅ SC3) — same collapsible section as Product Detail  │
 │  COLLAPSED: ▶  More listings like this: [category name]  (N)               │
@@ -4299,6 +4350,46 @@ STICKY BUY BAR (on scroll past buy box):
 │  Priya S.   ₹2,50,000   May 08 12:01   Outbid                               │
 │  * Masked: first name + last initial only                                   │
 │  NOTE: GP1 (group row) is NOT shown on auction detail pages                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Public > Pre-Order Detail ✅ *(added Session 89a — VD12)*
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Breadcrumb: Home › Model Kits › Gundam › RX-78-2 Perfect Grade             │
+├───────────────────────────┬─────────────────────────────────────────────────┤
+│  IMAGE GALLERY            │  RX-78-2 Gundam Perfect Grade — Pre-Order       │
+│  ┌───────────────┐        │  [Pre-Order]  ★★★★★ (12 reviews)               │
+│  │               │        │                                                 │
+│  │  Main Image   │        │  Condition: New (sealed on arrival)             │
+│  │               │        │  Brand: Bandai · Category: Model Kits           │
+│  └───────────────┘        │  Expected Delivery: Aug 2026                    │
+│  [🖼][🖼][🖼]              │  (VD12: no duplicate price here — price lives   │
+│  [▶ YouTube]              │   in buy-bar panel only)                        │
+│                           │                                                 │
+│                           │  ┌──── Pre-Order Panel ───────────────────────┐ │
+│                           │  │  ₹8,999  (₹2,999 deposit to reserve)       │ │
+│                           │  │  Deposit: ₹2,999  Balance: ₹6,000          │ │
+│                           │  │  [Pre-Order Now]  [♡ Wishlist]             │ │
+│                           │  └────────────────────────────────────────────┘ │
+│                           │                                                 │
+│                           │  ┌──── Sold by ──────────────────────────────┐  │
+│                           │  │  Gundam Galaxy          [Visit Store →]   │  │
+│                           │  └───────────────────────────────────────────┘  │
+├───────────────────────────┴─────────────────────────────────────────────────┤
+│  SUB-LISTING SECTION (✅ SC3) — same pattern as Product + Auction Detail    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  GROUP SECTION (✅ GP1) — shown if groupId set; same circular cards as      │
+│  Product Detail (pre-orders support groups; auctions do NOT)                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  TABS: [Description] [Specifications] [Reviews (12)] [My Custom Tab] ...    │
+│  TAB: Description — [RichTextRenderer]                                       │
+│  TAB: Specifications — <dl> key-value pairs from customFields[]             │
+│  TAB: Reviews — ReviewSummary + ReviewsList                                  │
+│  TAB: {section.title} ✅ (L2) — customSections rich text + fields dl        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
