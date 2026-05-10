@@ -204,17 +204,31 @@
 Component: appkit/src/ui/components/ListingToolbar.tsx
 Used by: all 11 *IndexListing + Store*Listing public/store views + all 16 Admin*View listing views
 
-Mobile layout (two rows):
+Key props:
+  labels?:           ListingToolbarLabels  — override all button/label text for i18n
+  bulkMode?:         boolean               — when true, replaces search row with Select All / Clear
+  bulkSelectedCount? / bulkTotalCount?     — drives "N selected" count display
+  onBulkSelectAll? / onBulkClear?          — wired to useBulkSelection.toggleAll / clearSelection
+
+Normal mode — Mobile layout (two rows):
 ┌─────────────────────────────────────────────────────────────────┐
 │  [🔍 Search…                                         [🔍]]      │  ← full-width search row
 ├───────────────────────────────────────────────────────────────  │
 │  [⚙ Filters (N)]  [Sort: … ▾]  [⊞/≡]  [↺]  {extra}           │  ← controls row
 └─────────────────────────────────────────────────────────────────┘
 
-Desktop layout (single row):
+Normal mode — Desktop layout (single row):
 ┌─────────────────────────────────────────────────────────────────┐
 │  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡]  [↺]  {extra}  │
 └─────────────────────────────────────────────────────────────────┘
+
+Bulk mode (bulkMode=true — selection active on listing):
+┌─────────────────────────────────────────────────────────────────┐
+│  [☑ Select All (70)]  3 selected  [Clear]  Sort [… ▾]  [⊞/≡]   │
+└─────────────────────────────────────────────────────────────────┘
+  Search row is hidden; Select All / Clear replace it.
+  "Select All (N)" becomes "Deselect All" when all items are selected.
+  Sort, view toggle, and extra slot remain visible.
 
 Controls & update behaviour:
   [🔍 Search]     input + commit button / Enter key → DEFERRED (URL updated on commit only)
@@ -5771,43 +5785,59 @@ Bulk actions (≥1 selected):
   [↗ Share]     → navigator.share({ url: /products?ids=… }) or copy link fallback
 `
 
-#### useBulkSelection hook API (BK1 — to be built in appkit)
+#### useBulkSelection hook API (BK1 ✅ — appkit/src/react/hooks/useBulkSelection.ts)
 
 `
-// appkit/src/features/shared/hooks/useBulkSelection.ts
+// Options:
+useBulkSelection<T>({
+  items:        T[],              // current page items
+  keyExtractor: (item: T) => string,
+  maxSelection?: number,          // default 100
+})
 
-const {
-  selectedIds,       // Set<string>  — currently selected item IDs
-  isSelecting,       // boolean      — true when ≥1 item selected
-  isSelected,        // (id) => bool
-  toggle,            // (id) => void — select if not selected, deselect if selected
-  selectAll,         // (ids: string[]) => void — select all visible IDs
-  clearAll,          // () => void
-} = useBulkSelection()
+// Returns:
+{
+  selectedIds:    string[],       // Array.from(set) — for API calls / serialisation
+  selectedIdSet:  Set<string>,    // O(1) membership — use in render (has() not includes())
+  selectedCount:  number,
+  isSelecting:    boolean,        // true when selectedCount > 0 — drives BK UI mode
+  isSelected:     (id) => bool,
+  isAllSelected:  boolean,
+  isIndeterminate: boolean,
+  toggle:         (id) => void,
+  toggleAll:      () => void,     // selects all if any unselected; deselects all if all selected
+  clearSelection: () => void,
+  setSelectedIds: (ids[]) => void,
+}
 
-// Usage in ProductsIndexListing:
-const bulk = useBulkSelection()
+// Wired in ProductsIndexListing / PreOrdersIndexListing / StoresIndexListing:
+const selection = useBulkSelection({ items: products, keyExtractor: (p) => p.id });
 
-// Toolbar:
-// isSelecting → show [Select All] [Clear (N)] instead of search row
-
-// Each card:
-<InteractiveProductCard
-  selectable={bulk.isSelecting}
-  isSelected={bulk.isSelected(product.id)}
-  onSelect={bulk.toggle}
+// Toolbar bulkMode:
+<ListingToolbar
+  bulkMode={selection.isSelecting}
+  bulkSelectedCount={selection.selectedCount}
+  bulkTotalCount={products.length}
+  onBulkSelectAll={selection.toggleAll}
+  onBulkClear={selection.clearSelection}
 />
 
-// Sticky bottom bar:
-{bulk.isSelecting && (
-  <BulkActionsBar
-    count={bulk.selectedIds.size}
-    onWishlist={() => addToWishlist([...bulk.selectedIds])}
-    onCompare={() => openCompare([...bulk.selectedIds])}
-    onShare={() => shareProducts([...bulk.selectedIds])}
-    onClear={bulk.clearAll}
-  />
-)}
+// Each card:
+<MarketplacePreorderCard
+  selectable={selection.isSelecting}
+  isSelected={selection.selectedIdSet.has(product.id)}
+  onSelect={(id) => selection.toggle(id)}
+/>
+
+// Always-rendered bottom bar (slides up/down via CSS):
+<BulkActionsBar
+  selectedCount={selection.selectedCount}
+  onClearSelection={selection.clearSelection}
+  actions={[
+    { key: "cart",     label: "Add to Cart", variant: "primary",   icon: <ShoppingCart />, onClick: () => { ... } },
+    { key: "wishlist", label: "Wishlist",    variant: "secondary",  icon: <Heart />,        onClick: () => { ... } },
+  ]}
+/>
 `
 
 #### Compare Overlay (desktop, 2-column)
@@ -6431,36 +6461,50 @@ Sub-components:
   BaseListingCard.Info      — text/action area below image
   BaseListingCard.Checkbox  — absolute-positioned selection overlay
 
-Props:
-  variant?:    "grid" | "list"   — layout direction
+Root props:
+  variant?:    "grid" | "list"   — layout direction; grid=flex-col, list=flex-row items-stretch
   isSelected?: boolean           — applies primary ring when true
-  isDisabled?: boolean           — greys out card
+  isDisabled?: boolean           — greys out card (opacity-60)
+  onMouseDown/Up/Leave/TouchStart/End — forwarded to root <div> for useLongPress integration
+
+Hero props:
+  aspect?:     "square" | "4/3" | string  — only used in grid variant; list variant ignores it
+  variant?:    "grid" | "list"
+
+Info props:
+  variant?:    "grid" | "list"
 
 BaseListingCard.Checkbox props:
   selected?:  boolean
   onSelect?:  (e: MouseEvent<HTMLButtonElement>) => void
   position?:  string             — Tailwind classes, default "top-2 left-2"
+  className?: string             — e.g. "opacity-0 group-hover:opacity-100 transition-opacity"
 
-GRID variant (default):
+GRID variant (default) — flex-col:
 ┌──────────────────────────────────────┐
 │  ┌──────────────────────────────┐    │
-│  │ [chk]                        │    │  ← BaseListingCard.Checkbox (top-left, 5×5 px)
-│  │                              │    │    white bg → primary fill when selected
-│  │        Hero Image            │    │
-│  │   (aspect-square)            │    │
+│  │ [chk]                        │    │  ← BaseListingCard.Checkbox (top-left)
+│  │                              │    │    opacity-0 → opacity-100 on group-hover
+│  │        Hero Image            │    │    primary fill + checkmark when selected
+│  │   (aspect-square or 4/3)     │    │
 │  │                              │    │
 │  └──────────────────────────────┘    │
-│  Info area (title, price, actions)   │
+│  Info area p-3 (title, price, CTA)   │
 └──────────────────────────────────────┘
 
-LIST variant (flex-row):
-┌──────────────────────────────────────────────────────────────────┐
-│ [chk] │  [Hero Image 1:1]  │  Info area (title, price, actions)  │
-└──────────────────────────────────────────────────────────────────┘
+LIST variant — flex-row items-stretch:
+┌─────────────────────────────────────────────────────────────────────────┐
+│  [img]  │  Info area p-2 sm:p-3 justify-center (compact layout)         │
+│ w-20/h-20│  title (2-line clamp) + [♡]                                  │
+│sm:w-28/28│  price + date/countdown badge                                │
+│          │  [primary action button — self-start]                        │
+└─────────────────────────────────────────────────────────────────────────┘
+  Hero: fixed w-20 h-20 (sm: w-28 h-28) — no aspect ratio box
+  Info: flex-col justify-center, gap-1, tighter padding than grid
 
-Selected state:
-  ring-2 ring-[var(--appkit-color-primary)] ring-offset-2
-  BaseListingCard.Checkbox: bg-[var(--appkit-color-primary)] checkmark icon visible
+Selected state (both variants):
+  border-primary outline outline-2 outline-primary shadow-sm
+  BaseListingCard.Checkbox: bg-primary checkmark icon visible
 ```
 
 ---
@@ -6524,10 +6568,15 @@ Note: BK trigger (see BK diagram): desktop=hover→click☐ | mobile=long-press
       selectionMode prop is set by the parent listing via useBulkSelection() hook
 
 LIST VIEW (ProductListRow — view="list"):
-┌──────────────────────────────────────────────────────────────────────┐
-│ [img 80×80]  Product Title (1-line clamp)    ★★★★☆  ₹1,200  ♡       │
-│              [Category] [Brand]                                       │
-└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│ [img]   Product Title (2-line clamp)                                  ♡  │
+│ w-16/64 Category · Brand                                                 │
+│ sm:w-20 ₹1,200  -20%  ★4.2                                              │
+└──────────────────────────────────────────────────────────────────────────┘
+  Thumbnail: w-16 h-16 → sm: w-20 h-20 (no fixed px columns)
+  Content: flex-col, title 2-line clamp, category·brand joined with ·
+  Price + discount badge + rating all inline (flex-wrap)
+  Container: divide-y divide-zinc-100 rounded-xl border (wraps all rows)
 
 ProductGrid props (key):
   products:         T[]
@@ -6617,11 +6666,15 @@ GRID variant (default):
 │ [Place Bid →]    [Buyout ₹ 80,000]               │  ← Buyout only if buyoutPrice set
 └──────────────────────────────────────────────────┘
 
-LIST variant (flex-row, same info but horizontal):
-┌───────────────────────────────────────────────────────────────────────────┐
-│ [chk] [carousel 1:1]  Title          Current bid  Countdown  [Bid][Buyout]│
-│                        description (2-line, rich text)                    │
-└───────────────────────────────────────────────────────────────────────────┘
+LIST variant (flex-row via BaseListingCard):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [img]  │  Title (2-line clamp)                               [♡]        │
+│ w-20/28│  ₹ 45,000  [⏱ 2h 14m]  12 bids                               │
+│        │  [🔨 Place Bid]  ← self-start (hidden when ended)              │
+└─────────────────────────────────────────────────────────────────────────┘
+  Countdown badge retains live/ending/ended color (COUNTDOWN_STATUS_CLASS map)
+  Buyout button hidden in list mode (grid only)
+  Winner name hidden in list mode (grid only)
 
 Checkbox (BK integration — same pattern as all marketplace cards):
   Desktop: checkbox fades in (opacity-0 → opacity-100) on card hover
@@ -6685,10 +6738,15 @@ GRID variant:
 │ [Reserve Now →]   [🛒 Add to Cart]              │
 └──────────────────────────────────────────────────┘
 
-LIST variant (flex-row):
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ [chk] [img 1:1]  Title  ·  description (2-line)   ₹ price  [Ship badge] [Reserve]│
-└─────────────────────────────────────────────────────────────────────────────────┘
+LIST variant (flex-row via BaseListingCard):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ [img]  │  Title (2-line clamp)                               [♡]        │
+│ w-20/28│  ₹ 4,499  [🚚 Ships: Sep 2026]                                 │
+│        │  [Reserve now]  ← self-start, text-xs                          │
+└─────────────────────────────────────────────────────────────────────────┘
+  Description is hidden in list mode (grid only)
+  Add to Cart button is hidden in list mode (grid only)
+  Heart icon shows only when wishlistActions provided
 
 Checkbox: same BK hover/long-press pattern as MarketplaceAuctionCard (BaseListingCard.Checkbox, 5×5 px, top-left)
 ```
@@ -7025,7 +7083,7 @@ ACTION ITEMS (non-urgent — do in a cleanup session):
      MarketplaceOrderCard, ProductCard all use `isSelected`)
 ```
 
-*Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session. BK1+BK2 implemented: hover/long-press selection, Set-based useBulkSelection, full-width BulkActionsBar, ListingToolbar bulkMode, BaseListingCard + all marketplace cards updated.*
+*Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session. BK1+BK2 implemented: hover/long-press selection, Set-based useBulkSelection, full-width BulkActionsBar, ListingToolbar bulkMode, BaseListingCard + all marketplace cards updated. Session 85 list-view redesign: BaseListingCard list variant now renders flex-row with fixed w-20/h-20 thumbnail; MarketplaceAuctionCard + MarketplacePreorderCard have compact list branches; ProductListRow rebuilt as flex-col content block (no hardcoded column px widths). BulkActionsBar: stable action keys, CSS var danger token, Button import. ListingToolbar: labels prop for i18n, VIEW_BTN_* const maps. MarketplaceAuctionCard: COUNTDOWN_STATUS_CLASS module-level const with dark mode variants.*
 
 ---
 

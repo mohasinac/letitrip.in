@@ -8,7 +8,17 @@
 
 ---
 
-## ⚡ LAST COMPLETED — Session 100 ✅ 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
+## ⚡ LAST COMPLETED — Session 85 ✅ 2026-05-10 (BK1+BK2 list-view redesign + quality pass)
+
+| Task | What was done |
+|------|--------------|
+| **BK1+BK2 list view** | `BaseListingCard`: list variant now `flex-row items-stretch`; Hero uses fixed `w-20 h-20 sm:w-28 sm:h-28` thumbnail (no aspect-ratio box); Info uses `justify-center` with tighter padding. `MarketplaceAuctionCard` + `MarketplacePreorderCard`: compact list branches — title+heart inline, price+countdown/ship-badge inline, single `self-start` action button; description + secondary buttons hidden in list mode. `ProductListRow`: rebuilt without hardcoded px column widths; `flex-col` content block with 2-line clamp, category·brand joined with `·`, price+discount+rating inline; `formatCurrency` + responsive thumbnail. |
+| **Quality pass** | `BulkActionsBar`: `BulkAction` interface now requires stable `key` field (no index keys); `danger` variant uses `var(--appkit-color-danger)` CSS token. `ListingToolbar`: new `labels?: ListingToolbarLabels` prop (i18n-ready); `VIEW_BTN_*` class constants extracted to module scope; `ListingToolbarLabels` exported from `ui/index.ts`. `MarketplaceAuctionCard`: `COUNTDOWN_STATUS_CLASS` module-level const with dark-mode variants. |
+| **TypeScript** | Both repos pass `npx tsc --noEmit` 0 errors. |
+
+---
+
+## Session 100 ✅ 2026-05-10 (77-impl: UX Shells + Seller Product Forms)
 
 | Task | What was done |
 |------|--------------|
