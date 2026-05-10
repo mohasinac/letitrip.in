@@ -296,6 +296,8 @@ One task per commit. Never commit with TS errors. Never batch tasks.
 ```
 Sessions done:  60–76 + 76-infra + 76-content + 77 (coupons) + 78 (carousel) + 79 (FAQ/stats)
                 + 80-arch + 80-plan + 80-schema + 81 (sellerId migration)
+                + 82 (SEO1–7) + 82-ext (BK1+BK2: hover/long-press bulk selection, Set-based useBulkSelection,
+                  full-width BulkActionsBar, ListingToolbar bulkMode, all marketplace cards updated)
 Next:           77-impl — Seller Products + UX primitives
 Alpha gate:     77-impl → 78-impl → 79-impl → 80-impl → 🚀 ALPHA
 

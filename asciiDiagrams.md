@@ -7000,5 +7000,5 @@ ACTION ITEMS (non-urgent — do in a cleanup session):
      MarketplaceOrderCard, ProductCard all use `isSelected`)
 ```
 
-*Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session.*
+*Last updated: 2026-05-10 — Card Components section added (Session 82 follow-up). SEO1–SEO7 section added same session. BK1+BK2 implemented: hover/long-press selection, Set-based useBulkSelection, full-width BulkActionsBar, ListingToolbar bulkMode, BaseListingCard + all marketplace cards updated.*
 
