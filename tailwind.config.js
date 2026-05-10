@@ -7,11 +7,9 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    // @mohasinac packages are often consumed as source in dev.
-    // Scan all package source files so shared utility classes are not purged.
+    // Scan appkit source directly — tsc watch writes to dist not src, so this
+    // path is stable and does not trigger Tailwind re-runs on every recompile.
     "./node_modules/@mohasinac/*/src/**/*.{js,ts,jsx,tsx,mdx}",
-    // Keep dist scan for environments where packages are built prepublish.
-    "./node_modules/@mohasinac/*/dist/**/*.{js,mjs,cjs}",
   ],
   safelist: [
     // Zinc neutrals (light mode)

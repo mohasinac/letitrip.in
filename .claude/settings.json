@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm ls *)"
+      "Bash(npm ls *)",
+      "Bash(git -C \"d:\\\\proj\\\\letitrip.in\" diff --stat HEAD)",
+      "Bash(node scripts/dev-next.mjs --help)"
     ]
   }
 }

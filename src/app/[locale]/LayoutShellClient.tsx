@@ -19,30 +19,6 @@ import {
   type SearchResourceType,
   type SearchResourceTypeOption,
 } from "@mohasinac/appkit/client";
-
-const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
-  { value: "products",    label: "Products" },
-  { value: "auctions",    label: "Auctions" },
-  { value: "pre-orders",  label: "Pre-Orders" },
-  { value: "stores",      label: "Stores" },
-  { value: "categories",  label: "Categories" },
-  { value: "brands",      label: "Brands" },
-  { value: "events",      label: "Events" },
-  { value: "blog",        label: "Blog" },
-  { value: "faqs",        label: "FAQs" },
-];
-
-const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
-  products:   "/products",
-  auctions:   "/auctions",
-  "pre-orders": "/pre-orders",
-  stores:     "/stores",
-  categories: "/categories",
-  brands:     "/brands",
-  events:     "/events",
-  blog:       "/blog",
-  faqs:       "/faqs",
-};
 import Link from "next/link";
 import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
 import { FooterNewsletterSlot } from "@/components/layout/FooterNewsletterSlot";
@@ -51,6 +27,30 @@ import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/con
 import { BRAND, getBrandCopyright } from "@/constants/brand";
 import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants/footer";
 import { SEARCH_LABELS } from "@/constants/search";
+
+const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
+  { value: "products",   label: "Products" },
+  { value: "auctions",   label: "Auctions" },
+  { value: "pre-orders", label: "Pre-Orders" },
+  { value: "stores",     label: "Stores" },
+  { value: "categories", label: "Categories" },
+  { value: "brands",     label: "Brands" },
+  { value: "events",     label: "Events" },
+  { value: "blog",       label: "Blog" },
+  { value: "faqs",       label: "FAQs" },
+];
+
+const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
+  products:     "/products",
+  auctions:     "/auctions",
+  "pre-orders": "/pre-orders",
+  stores:       "/stores",
+  categories:   "/categories",
+  brands:       "/brands",
+  events:       "/events",
+  blog:         "/blog",
+  faqs:         "/faqs",
+};
 
 export default function LayoutShellClient({
   children,
