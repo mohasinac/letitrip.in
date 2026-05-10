@@ -4,7 +4,7 @@ import { siteSettingsRepository } from "@mohasinac/appkit";
 import { fetchGoogleReviews } from "@mohasinac/appkit/server";
 import { createApiHandler } from "@mohasinac/appkit";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/social-feed/google-reviews
