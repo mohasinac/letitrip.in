@@ -55,9 +55,11 @@ const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
 export default function LayoutShellClient({
   children,
   seedPanelEnabled = true,
+  siteLogoUrl,
 }: {
   children: ReactNode;
   seedPanelEnabled?: boolean;
+  siteLogoUrl?: string;
 }) {
   const tNav = useTranslations("nav");
   const router = useRouter();
@@ -211,6 +213,7 @@ export default function LayoutShellClient({
       user={shellUser}
       brandName={BRAND.NAME}
       brandShortName={BRAND.SHORT_NAME}
+      siteLogoUrl={siteLogoUrl}
       logoHref={String(ROUTES.HOME)}
       promotionsHref={String(ROUTES.PUBLIC.PROMOTIONS)}
       cartHref={String(ROUTES.USER.CART)}

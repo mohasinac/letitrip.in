@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Container, Div, Section, Text } from "@mohasinac/appkit";
-import { getAdminDb } from "@mohasinac/appkit";
+import { getAdminDb } from "@mohasinac/appkit/server";
 
 const PREVIEW_COLLECTION = "previewDrafts";
 

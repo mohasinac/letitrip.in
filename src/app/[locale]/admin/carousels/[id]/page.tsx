@@ -9,11 +9,12 @@ import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 export const dynamic = "force-dynamic";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function AdminCarouselDetailPage({ params }: Props) {
-  if (params.id === "new") {
+  const { id } = await params;
+  if (id === "new") {
     return (
       <Section className="py-8">
         <Container>
@@ -32,7 +33,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
     );
   }
 
-  const result = await carouselsRepository.getCarouselWithSlides(params.id).catch(() => null);
+  const result = await carouselsRepository.getCarouselWithSlides(id).catch(() => null);
   if (!result) return notFound();
 
   const { carousel, slides } = result;

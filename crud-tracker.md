@@ -1322,3 +1322,18 @@ Rules to keep top-of-mind every task:
 | TS17 | Firebase indexes deploy (ops) | XS | ⏳ | Ops step — to be run by user: `firebase deploy --only firestore:indexes`. Pushes pending composites accumulated since 2026-05-10. Status verified in Firebase console afterward. |
 | TS18 | Razorpay client checkout wiring | L | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `CheckoutRouteClient.tsx:157–233` has full Razorpay flow (loadScript → POST /api/payment/create-order → openRazorpayModal → POST /api/payment/verify → success redirect). Failure path + COD fallback both wired. Audit incorrectly described as a stub. |
 | TS19 | Final sweep verification + tracker close | XS | ✅ | TS 2026-05-12 — `npx tsc --noEmit` 0 errors in both repos. Browser smoke-tests pending user (checkout add-address drawer, admin /media browse, MediaPickerModal Existing tab, wishlist with seeded deleted product, /preview/{token} renders). TS17 indexes deploy left for user to run. |
+
+---
+
+## Tier BR — Site brand mark (titlebar + welcome)
+> Added: 2026-05-12. One-off polish: previously the titlebar rendered the site name as plain text scaled by breakpoint, and the admin-uploaded `siteSettings.logo.url` was never wired into the public UI. This tier introduces a single source of truth for the LetItRip wordmark and routes the admin override end-to-end.
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| BR1 | `<SiteLogo />` primitive in appkit/ui | S | ✅ | BR 2026-05-12 — new `appkit/src/ui/components/SiteLogo.tsx` renders an SVG wordmark ("LetItRip" + ".in" superscript) using `--appkit-color-primary-700 / cobalt / secondary-400` CSS vars (with hex fallbacks). Optional `src` prop swaps to `<img>` when an admin logo URL is supplied. `variant="solid"` uses `currentColor` for coloured surfaces. Exported from `appkit/src/ui/index.ts`. |
+| BR2 | Titlebar uses `<SiteLogo />` with responsive scaling | S | ✅ | BR 2026-05-12 — `TitleBarLayout.tsx` replaces the text-only `brandName/brandShortName` block with `<SiteLogo src={siteLogoUrl} className="h-7 md:h-9 lg:h-10" />`. `brandShortName` prop retained for back-compat (silenced via `void`). |
+| BR3 | Welcome section uses `<SiteLogo />` | XS | ✅ | BR 2026-05-12 — `WelcomeSection.tsx` right-panel placeholder swapped from giant `brandLogoText` `<Span>` for `<SiteLogo title={brandLogoText} className="h-24 xl:h-32 2xl:h-40 max-w-full" />`. Admin override does not flow here yet (homepage section config is separate from site-wide branding). |
+| BR4 | Plumb `siteLogoUrl` through layer stack | S | ✅ | BR 2026-05-12 — added optional `siteLogoUrl?: string` to `TitleBarLayoutProps`, forwarded by `TitleBar` via `extends`, accepted by `AppLayoutShellProps` and passed to TitleBar at line 581, accepted by `LayoutShellClient` and forwarded to `AppLayoutShell`. |
+| BR5 | Wire admin override from siteSettings | XS | ✅ | BR 2026-05-12 — `src/app/[locale]/layout.tsx` reads `siteSettings?.logo?.url` server-side and passes to `LayoutShellClient`. Empty / missing falls back to the SVG wordmark. |
+| BR6 | Seed default to empty `logo.url` | XS | ✅ | BR 2026-05-12 — `appkit/src/seed/site-settings-seed-data.ts` `logo.url` switched from `/favicon.svg` (tab icon, wrong asset) to `""` so the SVG wordmark renders by default on a fresh seed. Admin can upload via `/admin/site-settings`. |
+| BR7 | Fix Next 15 `params` Promise typing on admin carousel detail page | XS | ✅ | BR 2026-05-12 — incidental TS sweep fix: `src/app/[locale]/admin/carousels/[id]/page.tsx` updated `Props.params` to `Promise<{ id: string }>` and `await params` once at the top. Clears the only remaining `npx tsc --noEmit` error in the root repo. |
