@@ -7,13 +7,15 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S13 (2026-05-12)
+### ✅ Last completed — S13 + follow-up (2026-05-12)
 
 | Task | Summary |
 |------|---------|
-| Q1 | `functions/src/callable/listingProcessor.ts` — HTTPS Function in `asia-south1` (`x-internal-secret` auth, `minInstances:0`, `maxInstances:20`). Accepts `{ collection, q, f, s, p, ps, cursor, baseOpts }`. Cursor is opaque base64 of `{ page }` over the existing `productRepository.list` (Sieve) offset — supports both `mode="pages"` (p=N) and `mode="infinite"` (cursor) on one Function. `SUPPORTED_COLLECTIONS = [COLLECTIONS.PRODUCTS]`. `CACHE_CONTROL` + `DEFAULT_SORT` hoisted. Registered in `functions/src/index.ts`. **Deviations**: `minInstances:0` not 1 (cost), opaque cursor not true `startAfter` (drift OK), Sieve `q=` substring kept (not range prefix). |
+| Q1 | `functions/src/callable/listingProcessor.ts` — HTTPS Function in `asia-south1` (`x-internal-secret` auth, `minInstances:0`, `maxInstances:20`). Accepts `{ collection, q, f, s, p, ps, cursor, baseOpts }`. Cursor is opaque base64 of `{ page }`. Now dispatches to **20 collections** via a `LISTERS` table: products, categories, brands, orders, reviews, coupons, bids, payouts, blogPosts, events, faqs, notifications, scammers, sublistingCategories, productFeatures, homepageSections, users (direct) + stores (`baseOpts.activeOnly`), eventEntries (`baseOpts.eventId`), productTemplates (`baseOpts.storeId`). `ListingValidationError` → 400. Deployed to Cloud Run. |
 | Q3 | `src/app/api/products/route.ts` — `callListingProcessor()` helper forwards to the Function when `FIREBASE_FUNCTION_LISTING_URL`+`LETITRIP_INTERNAL_SECRET` env are set; otherwise local `productRepository.list` fallback. `PUBLIC_LISTING_CACHE_CONTROL` constant matches Function-side header. `ids=` batch mode unchanged. **`/api/pre-orders` deferred** — current handler queries non-existent `preorders` collection; spec decision needed. |
 | Q6 | `appkit/src/react/hooks/useInfiniteScroll.ts` — IntersectionObserver primitive (in-flight guard + auto-disable on `hasMore:false` + unmount cleanup). Exported from `@mohasinac/appkit/client`. **View wiring deferred** — `useProducts` (useQuery-based) → `useInfiniteQuery` refactor has too much regression surface across the 4 listing views to bundle with the hook. |
+| Sieve aliases | `SieveOptions.aliases` plumbed through the Sieve adapter (`appkit/src/providers/db-firebase/sieve.ts`). `expandFilterAliases()` pure helper exported. `productRepository.FILTER_ALIASES` registered: `listingType==auction\|preorder\|product` (with `!=`), `scope==publicProducts\|publicAuctions\|publicPreorders\|published`, `promoted==true`, `featuredPublic==true`. Auto-applied inside `productRepository.list`, so the Vercel route, listingProcessor, and SSR views all benefit. |
+| Ops | `firebase deploy` — listingProcessor live (asia-south1, public URL), `firestore.indexes.json` deployed (catches up Q5/S12 + S8 follow-up + S9 conversation indexes), `firestore.rules` + `storage.rules` released. `package.json` UTF-8 BOM stripped (was breaking tsup→esbuild→postcss). `functions/.gitignore` anchored `/lib/` so source `functions/src/lib/*.ts` is now tracked. |
 
 ### ✅ Last completed — TS Tech-Debt Sweep (2026-05-12)
 
