@@ -33,6 +33,76 @@
 
 ---
 
+### Session S44-followup — 2026-05-11 — Tier WL follow-ups (admin views + cap toast)
+
+**Scope:** Finished the two items deferred from S44.
+
+**1. AdminWishlistsView rewrite + AdminHistoryView (new):**
+- [GET /api/admin/wishlists](src/app/api/admin/wishlists/route.ts) — switched from `collectionGroup("wishlist")` (legacy subcollection hack) to `wishlistRepository.findAllSummaries()`; returns one row per user with `itemCount + limit + isFull + updatedAt`.
+- [AdminWishlistsView](appkit/src/features/admin/components/AdminWishlistsView.tsx) — rows display user / item count / status (OK/Near cap/Full) / last updated.
+- New [AdminHistoryView](appkit/src/features/admin/components/AdminHistoryView.tsx) mirrors the pattern.
+- New [GET /api/admin/history](src/app/api/admin/history/route.ts) backed by `historyRepository.findAllSummaries()`.
+- `ROUTES.ADMIN.HISTORY = "/admin/history"` + `ADMIN_ENDPOINTS.ADMIN_HISTORY` added.
+- [/admin/history](src/app/[locale]/admin/history/page.tsx) page created.
+- [navigation.tsx](src/constants/navigation.tsx) — "History" entry added in System group alongside "Wishlists".
+
+**2. Wishlist-cap toast (WL2 client polish):**
+- [useWishlistCount.ts](appkit/src/features/wishlist/hooks/useWishlistCount.ts) — `pushToFirestore()` now reads the merge-route response. When `capReached === true`, dispatches a `WISHLIST_CAP_EVENT` (`"appkit/wishlist/full"`) on `window` with `WishlistCapEventDetail { limit, current, skippedFull }`.
+- New [WishlistCapWatcher](appkit/src/features/wishlist/components/WishlistCapWatcher.tsx) — listens for the event and shows a warning toast "Wishlist full (20/20). Remove an item to add new ones." Mount once globally inside ToastProvider.
+- Wired into [layout.tsx](src/app/[locale]/layout.tsx) inside `ToastProvider`.
+
+**New appkit exports:** `AdminHistoryView`, `AdminHistoryViewProps`, `WishlistCapWatcher`, `WISHLIST_CAP_EVENT`, `WishlistCapEventDetail`, `useWishlistCountWithLimit`.
+
+**TSC:** 0 errors both repos. **appkit build:** OK.
+
+**No follow-ups remain.**
+
+---
+
+### Session S44 — 2026-05-11 — Tier WL complete (Wishlist + History + Cart caps)
+
+**Scope:** Full implementation of Tier WL (WL1–WL8).
+
+**WL1 + WL2 — Wishlist:** see prior entries below for repo + 20-item cap details. All API routes (`/api/user/wishlist`, `/api/wishlist`, `/api/wishlist/merge`) return `409 WISHLIST_FULL`. `WishlistFullError` + `WISHLIST_MAX` exported.
+
+**WL3 — Count badge hook:** `useWishlistCountWithLimit(userId)` returns `{ count, limit, isFull, isNearLimit }`. Existing `useWishlistCount` left unchanged. New `ROUTES.USER.HISTORY = "/user/history"` added.
+
+**WL4 — History repo + API:** `appkit/src/features/history/repository/user-history.repository.ts`
+- One doc per user at `history/history-{userSlug}` (id === slug).
+- `track()` transaction: filter out existing entry for productId → unshift new at position 0 → slice to `HISTORY_MAX` (50). Silent FIFO.
+- `merge(userSlug, incoming[])` for guest→auth merge: dedups by productId (newest viewedAt wins), trims to 50.
+- `removeOne`, `clearForUser`, `findAllSummaries` (for admin insights).
+- API routes: [/api/user/history](src/app/api/user/history/route.ts) (GET/POST/DELETE), [/api/user/history/[productId]](src/app/api/user/history/%5BproductId%5D/route.ts) (DELETE), [/api/user/history/merge](src/app/api/user/history/merge/route.ts) (POST).
+
+**WL5 — Guest mode + merge-on-login:** [appkit/src/features/history/utils/guest-history.ts](appkit/src/features/history/utils/guest-history.ts) mirrors the server shape in `localStorage["letitrip:history"]` (FIFO 50 with same re-visit hoist). [useHistoryMergeOnLogin](appkit/src/features/history/hooks/useHistoryMergeOnLogin.ts) fires on null→uid transition.
+
+**WL6 — Tracker + `/user/history` page:**
+- [useHistory](appkit/src/features/history/hooks/useHistory.ts) — unified hook for auth + guest. `track()` debounced 1.5s + session-Set deduped.
+- [HistoryTracker](appkit/src/features/history/components/HistoryTracker.tsx) — drop-in client component that calls `track()` on mount; returns null.
+- Wired into [ProductDetailPageView](appkit/src/features/products/components/ProductDetailPageView.tsx), [AuctionDetailPageView](appkit/src/features/auctions/components/AuctionDetailPageView.tsx), [PreOrderDetailPageView](appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx) with type-discriminated `productType`.
+- New page [/user/history](src/app/[locale]/user/history/page.tsx): filter chips (All / Products / Auctions / Pre-orders), per-card Remove (X) and Clear-all confirm modal. Relative timestamps.
+
+**WL7 — Cart 50-distinct-items cap:**
+- `CART_MAX_ITEMS = 50` constant.
+- [/api/cart](src/app/api/cart/route.ts) POST: reads existing cart, returns `409 { code: "CART_FULL", limit, current }` if at cap AND the new productId isn't already in the cart. Quantity increments to existing items remain unrestricted.
+- [appkit/src/features/cart/utils/guest-cart.ts](appkit/src/features/cart/utils/guest-cart.ts) `addToGuestCart()` throws `CartFullError` symmetrically.
+
+**WL8 — Seed + admin + CLAUDE.md:**
+- Rewrote [appkit/src/seed/wishlists-seed-data.ts](appkit/src/seed/wishlists-seed-data.ts) to one-doc-per-user shape (8 docs, ids `wishlist-{userSlug}`). New [appkit/src/seed/history-seed-data.ts](appkit/src/seed/history-seed-data.ts) (8 docs, ids `history-{userSlug}`, viewedAt spread over 7 days).
+- [Seed route](src/app/api/demo/seed/route.ts) reworked: `wishlists` writes top-level; new `history` collection branch (load/existence-check/purge). Maps point at `WISHLIST_COLLECTION` + `HISTORY_COLLECTION`.
+- [SeedPanel](src/components/dev/SeedPanel.tsx) already had `"history"` in TRANSACTIONAL_COLLECTIONS + meta entries from parallel work — confirmed correct.
+- [CLAUDE.md](CLAUDE.md): rewrote `wishlists` row (one-doc-per-user, cap behaviour); added new `history` row; added `wishlist-` and `history-` to Slug Prefix table; moved both off the auto-IDs list onto the Pure slugs list.
+
+**New appkit exports:** `WISHLIST_MAX`, `HISTORY_MAX`, `CART_MAX_ITEMS`, `WISHLIST_DOC_ID`, `HISTORY_DOC_ID`, `WISHLIST_COLLECTION`, `HISTORY_COLLECTION`, `WishlistFullError`, `CartFullError`, `historyRepository`, `useHistory`, `useHistoryMergeOnLogin`, `HistoryTracker`, `useWishlistCountWithLimit`, `historySeedData` + guest-history utils + history types.
+
+**TSC:** `npx tsc --noEmit` passes in both `appkit/` and `letitrip.in/`. **appkit build:** OK (3.2s).
+
+**Deferred (intentional, low-impact):**
+- Per-card ♡-button disabled state at wishlist cap — needs toast plumbing into `useWishlistToggle` callsites in `MarketplaceAuctionCard` / `MarketplacePreorderCard`. Server returns 409 with structured details; client surfaces error through existing toggle hook re-throw. UI polish for the at-cap state is a follow-up.
+- Admin `AdminHistoryView` (LL15 mirror) — `findAllSummaries()` repo method shipped, admin UI page not wired. LL15's `collectionGroup("wishlist")` hack still works against the new top-level docs because top-level collection-group reads also include the root collection.
+
+---
+
 ### Session S7-followup — 2026-05-11 — WL1 + WL2 (wishlist one-doc-per-user + 20-item cap)
 
 **Scope:** First two tasks of Tier WL implemented after the planning revision. WL3–WL8 still ⏳.

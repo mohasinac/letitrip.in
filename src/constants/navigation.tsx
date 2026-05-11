@@ -215,6 +215,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: String(ROUTES.ADMIN.NOTIFICATIONS), label: "Notifications" },
       { href: String(ROUTES.ADMIN.CARTS),         label: "Carts"         },
       { href: String(ROUTES.ADMIN.WISHLISTS),     label: "Wishlists"     },
+      { href: String(ROUTES.ADMIN.HISTORY),       label: "History"       },
       { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags" },
       { href: String(ROUTES.ADMIN.COPILOT),       label: "Copilot"       },
     ],

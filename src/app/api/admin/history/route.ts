@@ -1,14 +1,14 @@
 import { withProviders } from "@/providers.config";
-import { wishlistRepository } from "@mohasinac/appkit";
+import { historyRepository } from "@mohasinac/appkit";
 import {
   createRouteHandler,
   successResponse,
-  WISHLIST_MAX,
+  HISTORY_MAX,
 } from "@mohasinac/appkit";
 
 /**
- * GET /api/admin/wishlists — one row per user with item count + last update.
- * Backed by `wishlistRepository.findAllSummaries()` (top-level `wishlists/` docs).
+ * GET /api/admin/history — one row per user with item count + last visit.
+ * Backed by `historyRepository.findAllSummaries()` (top-level `history/` docs).
  */
 export const GET = withProviders(
   createRouteHandler({
@@ -17,16 +17,15 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const limit = Math.min(Number(url.searchParams.get("limit") ?? "200"), 500);
-      const summaries = await wishlistRepository.findAllSummaries();
+      const summaries = await historyRepository.findAllSummaries();
       const sorted = summaries
         .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
         .slice(0, limit)
         .map((s) => ({
-          id: `wishlist-${s.userId}`,
+          id: `history-${s.userId}`,
           userId: s.userId,
           itemCount: s.itemCount,
-          limit: WISHLIST_MAX,
-          isFull: s.itemCount >= WISHLIST_MAX,
+          limit: HISTORY_MAX,
           updatedAt: s.updatedAt.toISOString(),
         }));
       return successResponse({ items: sorted, total: sorted.length });

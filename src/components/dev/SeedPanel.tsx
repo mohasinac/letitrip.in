@@ -38,7 +38,7 @@ const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
-  "orders", "carts", "wishlists", "coupons", "reviews", "payouts", "conversations",
+  "orders", "carts", "wishlists", "history", "coupons", "reviews", "payouts", "conversations",
 ];
 
 const CONTENT_COLLECTIONS: SeedCollectionName[] = [
@@ -505,26 +505,45 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Wishlists",
     icon: "💖",
     group: "transactional",
-    target: 40,
-    description: "User wishlist entries — each is a product + user pair with addedAt timestamp.",
-    slugPattern: "auto-ID",
+    target: 10,
+    description: "One document per user holding the items[] array. Top-level collection; doc id === slug === wishlist-{userSlug}. Cap WISHLIST_MAX (20) enforced inside a Firestore transaction.",
+    slugPattern: "wishlist-{userSlug}  (e.g. wishlist-user-mohsin-c — id === slug)",
     seededItems: [
-      "19 wishlist entries across 4 buyer accounts",
+      "One doc per buyer (≈10 docs); each items[] sized 1–15",
       "Mix of standard, auction, and pre-order products",
-      "createdAt timestamps for recency sorting",
+      "items ordered newest-first (addedAt desc)",
+      "productSnapshot { title, thumb, currentPrice } per item",
     ],
     pendingItems: [
-      "21 more entries to reach target 40",
       "Public wishlist sharing (URL slug on wishlist)",
     ],
-    uiPath: "/wishlist",
+    uiPath: "/user/wishlist",
     fields: [
-      { name: "userId",        type: "ref",       filterable: true, indexed: true },
-      { name: "productId",     type: "ref",       filterable: true, indexed: true },
-      { name: "productTitle",  type: "string",    searchable: true },
-      { name: "productPrice",  type: "number",    sortable: true },
-      { name: "productStatus", type: "enum",      filterable: true },
-      { name: "addedAt",       type: "timestamp", sortable: true, indexed: true },
+      { name: "userId",     type: "ref",       filterable: true, indexed: true },
+      { name: "items",      type: "array",     note: "WishlistItem[] — productId/productType/addedAt/priceAtAdd/productSnapshot" },
+      { name: "updatedAt",  type: "timestamp", sortable: true },
+    ],
+  },
+  history: {
+    label: "History (recently viewed)",
+    icon: "🕓",
+    group: "transactional",
+    target: 10,
+    description: "One document per user holding viewed-product items[]. Top-level collection; doc id === slug === history-{userSlug}. Soft cap HISTORY_MAX (50) — silent FIFO trim. Re-visit dedups by productId and unshifts to position 0.",
+    slugPattern: "history-{userSlug}  (e.g. history-user-mohsin-c — id === slug)",
+    seededItems: [
+      "One doc per buyer; each items[] sized 5–30 across mixed productTypes",
+      "items ordered newest-first (viewedAt desc) — same product never duplicates",
+      "productSnapshot { title, thumb, price, storeId, storeName } per item",
+    ],
+    pendingItems: [
+      "AdminHistoryView read-only listing under System group",
+    ],
+    uiPath: "/user/history",
+    fields: [
+      { name: "userId",     type: "ref",       filterable: true, indexed: true },
+      { name: "items",      type: "array",     note: "HistoryItem[] — productId/productType/viewedAt/productSnapshot" },
+      { name: "updatedAt",  type: "timestamp", sortable: true },
     ],
   },
   coupons: {

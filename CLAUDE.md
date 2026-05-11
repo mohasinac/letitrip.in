@@ -131,7 +131,8 @@ Before touching any code in response to a bug report, plan note, or memory entry
 |-----------|-----------|-----------|----------------|-------|
 | **orders** (10 seeded, 35+ target) | id (`order-`), buyerId, storeId, items[], totalAmount (paise), paymentMethod, paymentId, shippingAddress, trackingNumber, carrier, status (PENDING/PROCESSING/SHIPPED/DELIVERED/CANCELLED/REFUNDED/RETURN_REQUESTED) | shippingAddress.fullName, shippingAddress.phone | buyerId, storeId, status, createdAt | All 7 statuses seeded |
 | **carts** (5 seeded, 20+ target) | id, userId (null=guest), sessionId, items[], updatedAt | — | userId, sessionId | 12 auth + 8 guest carts targeted |
-| **wishlists** (19 seeded, 40+ target) | id, userId, productId, addedAt, priceAtAdd | — | userId, productId | One doc per user+product pair |
+| **wishlists** (8 seeded, 10+ target) | id (=`wishlist-{userSlug}`), userId, items[]: {productId, productType, addedAt, priceAtAdd, productSnapshot}, updatedAt | — | userId, updatedAt | **One doc per user** at top-level. id === slug. items[] hard-capped at WISHLIST_MAX (20) — server returns 409 `WISHLIST_FULL` on overflow. All mutations wrapped in Firestore txn. Idempotent re-add is a no-op. |
+| **history** (8 seeded, 10+ target) | id (=`history-{userSlug}`), userId, items[]: {productId, productType, viewedAt, productSnapshot}, updatedAt | — | userId, updatedAt | **One doc per user** at top-level. id === slug. items[] soft-capped at HISTORY_MAX (50) — silent FIFO evict oldest. Re-visit removes any existing entry for productId and unshifts new entry to position 0. Guest users mirror to `localStorage["letitrip:history"]`; on login `/api/user/history/merge` upserts + dedups by productId (newest viewedAt wins) + trims to 50. |
 | **coupons** (10 seeded, 20+ target) | id (`coupon-`), code, name, type (percentage/fixed/free_shipping/buy_x_get_y), scope (admin/seller), sellerId?, discount.{value, maxDiscount, minPurchase}, usage.{totalLimit, perUserLimit, currentUsage}, validity.{startDate, endDate, isActive}, restrictions.{firstTimeUserOnly, combineWithSellerCoupons, applicableProducts, applicableCategories} | — | code, validity.isActive, validity.startDate, validity.endDate, type, createdBy | 5 admin coupons (WELCOME10/POKEMON25/FREESHIP999/BLADER20/VIP2026) + 5 seller coupons (PALACE15/DIECAST10/BEYARENA20/CARDGAME5/TOKYOTOYS10) |
 | **reviews** (35 seeded, 60+ target) | id (`review-`), storeId, productId, buyerId, rating (1-5), title, body, images[], isVerifiedPurchase, sellerResponse?, helpfulCount, publishedAt | — | storeId, productId, buyerId, rating, isVerifiedPurchase, publishedAt | Distributed across all 8 stores |
 | **payouts** (7 seeded, 25+ target) | id, storeId, sellerId, amount (paise), status (PENDING/PROCESSING/PAID/FAILED), periodStart, periodEnd, ordersIncluded[], paymentMethod, transactionId? | — | storeId, sellerId, status, createdAt | — |
@@ -184,8 +185,10 @@ Before touching any code in response to a bug report, plan note, or memory entry
 | Grouped listing | `group-` | `group-pokemon-starter-bundle` |
 | Support ticket | `ticket-` | `ticket-order-issue-ravi-20260508` |
 | Scammer profile | `scammer-` | `scammer-9876543210-at-paytm` |
+| Wishlist (per user) | `wishlist-` | `wishlist-user-mohsin-c` |
+| History (per user) | `history-` | `history-user-mohsin-c` |
 
-**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles.
+**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles, wishlists, history.
 
 **Semantic generator IDs** (slug-like prefix + date + random suffix, NOT Firestore auto-IDs):
 - orders → `order-{itemCount}-{YYYYMMDD}-{rand6}`
@@ -193,7 +196,7 @@ Before touching any code in response to a bug report, plan note, or memory entry
 - reviews → `review-{productName}-{userFirstName}-{YYYYMMDD}`
 - payouts → `payout-{sellerName}-{YYYYMMDD}-{rand6}`
 
-**True Firestore auto-IDs** (no prefix, no slug): carts, wishlists, eventEntries, notifications, sessions.
+**True Firestore auto-IDs** (no prefix, no slug): carts, eventEntries, notifications, sessions.
 
 ---
 

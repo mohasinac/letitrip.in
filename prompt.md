@@ -7,14 +7,21 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S7 (2026-05-11)
+### ✅ Last completed — S44 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| EX5 | `"collection-cards"` SectionType + `CollectionCardsSectionConfig` (collections array up to 3, layout/itemsPerRow/maxItems/showCollectionTabs/cta). `CollectionCardsSection` async RSC. AdminSectionsView builder with 1–3 entry repeater. Data fetching deferred. |
-| SB11-A–G | 3 new homepage section types — `featured-bundles`, `prize-draws`, `event-raffles`. Schema + 3 async RSC components (empty-state until upstream features ship) + admin builders for each + section-renderer cases + 4 Firestore indexes (bundles ×3, events hasRaffle+status+startsAt) + 3 disabled seed docs (orders 20/21/22). |
+| WL1+WL2 | Wishlist top-level one-doc-per-user (`wishlists/wishlist-{userSlug}`, id===slug). 20-item hard cap → 409 `WISHLIST_FULL`; idempotent re-add is no-op. All mutations in txn. `WishlistFullError` + `WISHLIST_MAX` exported. |
+| WL3 | `useWishlistCountWithLimit()` → `{ count, limit, isFull, isNearLimit }`. `WishlistCapWatcher` mounts under `ToastProvider`; listens on `WISHLIST_CAP_EVENT` (`"appkit/wishlist/full"`) dispatched by merge route on `capReached`. |
+| WL4+WL5 | New top-level `history` collection (id `history-{userSlug}`, one doc per user). 50-item soft cap, silent FIFO evict + re-visit hoist (dedup by productId, unshift to 0). Guest mirror in `localStorage["letitrip:history"]`; `useHistoryMergeOnLogin` merges on null→uid. |
+| WL6 | `useHistory()` unified hook (auth + guest), debounced 1.5s + session-deduped. `HistoryTracker` client component dropped into Product/Auction/PreOrder detail views. `/user/history` page with filter tabs + ConfirmDeleteModal. |
+| WL7 | Cart 50-distinct-items hard cap (per-item qty unrestricted). Server `/api/cart` POST → 409 `CART_FULL`; guest cart util throws `CartFullError`. |
+| WL8 | Wishlist seed rewritten to one-doc-per-user (8 docs). New `history-seed-data.ts` (8 docs). Seed route load/existence/purge branches reworked. SeedPanel meta entries. CLAUDE.md collection inventory + slug-prefix table updated. |
+| S44 follow-ups | `AdminWishlistsView` rewritten via `wishlistRepository.findAllSummaries()` (drops legacy `collectionGroup("wishlist")` hack). New `AdminHistoryView` + `/admin/history` page + `GET /api/admin/history` + nav. `ROUTES.ADMIN.HISTORY` + `ROUTES.USER.HISTORY` + `ACCOUNT_ENDPOINTS.HISTORY*` added. |
 
 ### 🔜 Current — S8 (next session)
+
+> S44 (Tier WL) shipped out-of-order — full implementation + follow-ups in one session. Roadmap continues at S8.
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -27,6 +34,7 @@
 | **S5** ✅ | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
 | **S6** ✅ | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
 | **S7** ✅ | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
+| **S44** ✅ | WL1–WL8 + follow-ups | Tier WL — Wishlist 20-cap + History 50-FIFO + Cart 50-cap + admin views | low |
 | **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
 | **S10** | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |

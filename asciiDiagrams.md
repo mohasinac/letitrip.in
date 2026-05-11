@@ -103,6 +103,7 @@
   - [Notifications](#admin--notifications-adminnotificationsview--ll13)
   - [Carts](#admin--carts-admincartsview--ll14)
   - [Wishlists](#admin--wishlists-adminwishlistsview--ll15)
+  - [History](#admin--history-adminhistoryview--s44)
 - **Store Area**
   - [Layout Shell](#store--layout-shell)
   - [Dashboard](#store--dashboard-)
@@ -124,6 +125,7 @@
   - [Orders List](#user--orders-list-)
   - [Order Detail](#user--order-detail-)
   - [Wishlist](#user--wishlist-)
+  - [History (Recently Viewed)](#user--history-recently-viewed-)
   - [Addresses](#user--addresses-)
   - [Profile Edit](#user--profile-edit-)
   - [Settings](#user--settings-)
@@ -5436,22 +5438,109 @@ RowActionMenu [⋮]:
 
 ---
 
-## Admin > Wishlists (AdminWishlistsView — LL15)
+## Admin > Wishlists (AdminWishlistsView — LL15, rewritten S44)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ ADMIN > WISHLISTS                     (read-only insights view)              │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│ [Search…]                                              [Refresh]             │
-├───────────────────┬──────────────────┬──────────────┬──────────┬─────────────┤
-│ Product           │ User ID          │ Price at Add │ Added At │ Product ID  │
-├───────────────────┼──────────────────┼──────────────┼──────────┼─────────────┤
-│ Hot Wheels Redlin…│ user-ravi-kumar  │ ₹1,499       │ 3 days   │ product-hw… │
-│ Charizard PSA 9   │ user-priya-s     │ ₹24,999      │ 1 week   │ product-ch… │
-│ Beyblade Burst    │ user-amit-k      │ ₹899         │ 2 weeks  │ product-bb… │
-└───────────────────┴──────────────────┴──────────────┴──────────┴─────────────┘
-  Data source: Firestore collectionGroup("wishlist") — cross-user subcollection query.
+│ [Search by user ID…]               [Sort: Recently updated ▾]   [Refresh]    │
+├──────────────────────────┬─────────────────┬───────────┬─────────────────────┤
+│ User                     │ Item count      │ Status    │ Last updated        │
+├──────────────────────────┼─────────────────┼───────────┼─────────────────────┤
+│ user-ravi-kumar          │ 20 of 20        │ Full      │ 2 hours ago         │
+│ user-priya-s             │ 18 of 20        │ Near cap  │ 1 day ago           │
+│ user-amit-k              │ 3 of 20         │ OK        │ 5 days ago          │
+└──────────────────────────┴─────────────────┴───────────┴─────────────────────┘
+  Data source: top-level wishlists/wishlist-{userSlug} via wishlistRepository.findAllSummaries().
+  One row per user. Drops the legacy collectionGroup("wishlist") subcollection hack.
   No row actions — read-only insights view.
+```
+
+---
+
+## Admin > History (AdminHistoryView — S44)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ADMIN > HISTORY                       (read-only insights view)              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [Search by user ID…]               [Sort: Recently active ▾]    [Refresh]    │
+├──────────────────────────┬─────────────────┬───────────┬─────────────────────┤
+│ User                     │ Item count      │ Status    │ Last visit          │
+├──────────────────────────┼─────────────────┼───────────┼─────────────────────┤
+│ user-ravi-kumar          │ 50 of 50        │ At cap    │ 12 minutes ago      │
+│ user-priya-s             │ 47 of 50        │ Near cap  │ 1 hour ago          │
+│ user-amit-k              │ 8 of 50         │ OK        │ 3 days ago          │
+└──────────────────────────┴─────────────────┴───────────┴─────────────────────┘
+  Data source: top-level history/history-{userSlug} via historyRepository.findAllSummaries().
+  One row per user. Read-only diagnostic view.
+```
+
+---
+
+## User > History (Recently Viewed)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Recently Viewed                                                              │
+│ 23 of 50 · Sign in to keep your history across devices  [Clear all]          │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ( All )  ( Products )  ( Auctions )  ( Pre-orders )                          │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [📦] Hot Wheels Redline 1969 Camaro                                     [×]  │
+│      [Product]  Hot Wheels India · Visited 2 mins ago                        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [🎯] Charizard 1st Edition PSA 9 (auction)                              [×]  │
+│      [Auction]  Pokemon Palace · Visited 6 hours ago                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [📅] Beyblade X BX-10 (booster)                                          [×] │
+│      [Pre-order]  BeyArena · Visited 1 day ago                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+  Data sources:
+    - Auth user: GET /api/user/history  (top-level history/history-{userSlug})
+    - Guest user: localStorage["letitrip:history"]  (same FIFO 50 + re-visit hoist)
+  Cap: HISTORY_MAX = 50, silent FIFO evict — no warning toast.
+  Re-visit: same productId removes prior entry and unshifts to position 0.
+  Tracker: <HistoryTracker> in Product/Auction/PreOrder detail views (1.5s debounce + session-dedup).
+  Clear all: ConfirmDeleteModal variant="warning".
+```
+
+---
+
+## Caps Summary (Tier WL — S44)
+
+```
+RESOURCE          DOC ID                          CAP   ON OVERFLOW
+──────────────────────────────────────────────────────────────────────────────
+wishlists/...     wishlist-{userSlug}              20   BLOCK + 409 WISHLIST_FULL + toast
+                                                       (idempotent re-add = no-op)
+history/...       history-{userSlug}               50   SILENT FIFO evict oldest
+                                                       (re-visit removes + unshifts)
+carts/{uid}       (existing — auto-id)             50   BLOCK + 409 CART_FULL + toast
+                  distinct items                        (per-item qty unrestricted)
+```
+
+```
+WISHLIST CAP TOAST FLOW
+───────────────────────────────────────────────────────────────────────────────
+
+  Guest add  ──►  pushWishlistOp ──►  60s sync via useWishlistCount
+                                        │
+                                        ▼
+                              POST /api/wishlist/merge
+                                        │
+                                        ▼
+                       Response { capReached: true, skippedFull, limit }
+                                        │
+                                        ▼
+                    window.dispatchEvent("appkit/wishlist/full", detail)
+                                        │
+                                        ▼
+                            <WishlistCapWatcher /> in layout.tsx
+                                        │
+                                        ▼
+                       useToast().showToast("Wishlist full…", "warning")
 ```
 
 ---

@@ -48,6 +48,7 @@ import {
   siteSettingsSeedData,
   faqSeedData,
   wishlistsSeedData,
+  historySeedData,
   conversationsSeedData,
   sublistingCategoriesSeedData,
   groupedListingsSeedData,
@@ -81,6 +82,7 @@ import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
 import { SUBLISTING_CATEGORIES_COLLECTION } from "@mohasinac/appkit";
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
+import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -107,6 +109,7 @@ type CollectionName =
   | "sessions"
   | "carts"
   | "wishlists"
+  | "history"
   | "conversations"
   | "sublistingCategories"
   | "groupedListings"
@@ -144,7 +147,8 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   eventEntries: EVENT_ENTRIES_COLLECTION,
   sessions: SESSION_COLLECTION,
   carts: CART_COLLECTION,
-  wishlists: "wishlist", // Subcollection under users
+  wishlists: WISHLIST_COLLECTION,
+  history: HISTORY_COLLECTION,
   conversations: CONVERSATIONS_COLLECTION,
   sublistingCategories: SUBLISTING_CATEGORIES_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
@@ -177,6 +181,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   sessions: sessionsSeedData,
   carts: cartsSeedData,
   wishlists: wishlistsSeedData,
+  history: historySeedData,
   conversations: conversationsSeedData,
   sublistingCategories: sublistingCategoriesSeedData,
   groupedListings: groupedListingsSeedData,
@@ -287,14 +292,18 @@ async function countExistingForCollection(
 
   if (colName === "wishlists") {
     const refs = (seedData as any[])
-      .filter((d) => d.userId && d.productId)
-      .map((d) =>
-        db
-          .collection(USER_COLLECTION)
-          .doc(d.userId)
-          .collection("wishlist")
-          .doc(d.productId),
-      );
+      .filter((d) => d.id)
+      .map((d) => db.collection(WISHLIST_COLLECTION).doc(d.id));
+    if (refs.length === 0) return 0;
+    const snaps = await db.getAll(...refs);
+    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
+      .length;
+  }
+
+  if (colName === "history") {
+    const refs = (seedData as any[])
+      .filter((d) => d.id)
+      .map((d) => db.collection(HISTORY_COLLECTION).doc(d.id));
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
     return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
@@ -728,34 +737,50 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "wishlists") {
-            // Wishlists are subcollection under users; doc id is productId
-            for (const wishlistData of seedData) {
+            // One doc per user at top-level wishlists/wishlist-{userId}
+            for (const wishlistDoc of seedData) {
               try {
-                const { userId, productId, ...data } = wishlistData as any;
-
-                if (!userId || !productId) {
-                  serverLogger.error("Wishlist item missing userId or productId");
+                const { id, userId, items, updatedAt } = wishlistDoc as any;
+                if (!id || !userId) {
+                  serverLogger.error("Wishlist doc missing id or userId");
                   totalErrors++;
                   continue;
                 }
-
-                const docRef = db
-                  .collection(USER_COLLECTION)
-                  .doc(userId)
-                  .collection("wishlist")
-                  .doc(productId);
-
-                await docRef.set(
+                await db.collection(WISHLIST_COLLECTION).doc(id).set(
                   stripUndefined({
-                    productId,
-                    ...data,
-                    addedAt: data.addedAt ?? new Date(),
+                    userId,
+                    items: items ?? [],
+                    updatedAt: updatedAt ?? new Date(),
                   }),
-                  { merge: true },
+                  { merge: false },
                 );
                 totalCreated++;
               } catch (err) {
-                serverLogger.error(`Error seeding wishlist item:`, err);
+                serverLogger.error(`Error seeding wishlist doc:`, err);
+                totalErrors++;
+              }
+            }
+          } else if (collectionName === "history") {
+            // One doc per user at top-level history/history-{userId}
+            for (const historyDoc of seedData) {
+              try {
+                const { id, userId, items, updatedAt } = historyDoc as any;
+                if (!id || !userId) {
+                  serverLogger.error("History doc missing id or userId");
+                  totalErrors++;
+                  continue;
+                }
+                await db.collection(HISTORY_COLLECTION).doc(id).set(
+                  stripUndefined({
+                    userId,
+                    items: items ?? [],
+                    updatedAt: updatedAt ?? new Date(),
+                  }),
+                  { merge: false },
+                );
+                totalCreated++;
+              } catch (err) {
+                serverLogger.error(`Error seeding history doc:`, err);
                 totalErrors++;
               }
             }
@@ -939,16 +964,22 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "wishlists") {
-            // Purge the wishlist subcollection for every seed user.
-            const userIds = [...new Set((seedData as any[]).map((d) => d.userId).filter(Boolean))] as string[];
-            for (const userId of userIds) {
-              try {
-                await purgeCollection(db, `${USER_COLLECTION}/${userId}/wishlist`);
-                totalDeleted++;
-              } catch (err) {
-                serverLogger.error(`Error purging wishlists for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
-                totalErrors++;
-              }
+            // Top-level wishlists collection — purge all docs.
+            try {
+              await purgeCollection(db, WISHLIST_COLLECTION);
+              totalDeleted++;
+            } catch (err) {
+              serverLogger.error("Error purging wishlists", { error: err instanceof Error ? err.message : String(err) });
+              totalErrors++;
+            }
+          } else if (collectionName === "history") {
+            // Top-level history collection — purge all docs.
+            try {
+              await purgeCollection(db, HISTORY_COLLECTION);
+              totalDeleted++;
+            } catch (err) {
+              serverLogger.error("Error purging history", { error: err instanceof Error ? err.message : String(err) });
+              totalErrors++;
             }
           } else if (collectionName === "couponUsage") {
             // Purge the couponUsage subcollection for every seed user that has records.

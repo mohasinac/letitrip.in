@@ -9,6 +9,7 @@ import {
   SessionProvider,
   ThemeProvider,
   ToastProvider,
+  WishlistCapWatcher,
   ZodSetup,
 } from "@mohasinac/appkit/client";
 import { siteSettingsRepository } from "@mohasinac/appkit";
@@ -42,6 +43,7 @@ export default async function Layout({ children, params }: Props) {
       <ThemeProvider>
         <SessionProvider initialUser={null}>
           <ToastProvider position="top-right">
+            <WishlistCapWatcher />
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
