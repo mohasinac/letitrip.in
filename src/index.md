@@ -114,7 +114,7 @@
 
 | Name | File | What it does |
 |------|------|-------------|
-| `UserAddressesClient` | `user/UserAddressesClient.tsx` | Addresses list client wrapper |
+| `UserAddressesClient` | `user/UserAddressesClient.tsx` | Addresses list — set-default + two-step delete confirm |
 | `AddAddressClient` | `user/AddAddressClient.tsx` | Add address client wrapper |
 | `EditAddressClient` | `user/EditAddressClient.tsx` | Edit address client wrapper |
 | `ProfilePageClient` | `user/ProfilePageClient.tsx` | Profile page client wrapper |
@@ -195,4 +195,6 @@
 | `src/app/[locale]/admin/layout.tsx` | Admin area layout + sidebar nav |
 | `src/app/[locale]/store/layout.tsx` | Seller dashboard layout + sidebar nav |
 | `src/app/[locale]/user/layout.tsx` | User account layout + sidebar nav |
+| `src/app/[locale]/user/returns/page.tsx` | Returns & refunds list — filters orders by `return_requested` status |
+| `src/app/[locale]/user/orders/[id]/cancel/page.tsx` | Order cancel — reason form + `cancelOrderAction`; guards non-cancellable statuses |
 | `src/app/[locale]/demo/layout.tsx` | Demo/seed area layout (admin-protected) |

@@ -3477,7 +3477,7 @@ Clear-all: shown in toolbar when search text OR any filter is active
 
 ---
 
-## User > Addresses ⏳ (LL4/VC3-adjacent)
+## User > Addresses ✅ (LL4, Session S2)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -3492,8 +3492,16 @@ Clear-all: shown in toolbar when search text OR any filter is active
 │  │ [⊞ Edit] [🗑 Delete]           │  │ [Set Default] [⊞ Edit] [🗑 Del] │  │
 │  └─────────────────────────────────┘  └─────────────────────────────────┘  │
 │                                                                              │
+│  Delete confirm banner (inline, shown on delete click):                     │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ ⚠  Delete this address? This cannot be undone.  [Delete]  [Cancel]  │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
 │  Empty state: "No addresses saved. Add your first delivery address."        │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Set Default: onSetDefault → useSetDefaultAddress.mutate({ addressId })
+Delete:      two-step — confirmDeleteId state → confirm banner → useDeleteAddress.mutate({ id })
 ```
 
 ---
@@ -8046,13 +8054,84 @@ View mode:
 │                                                    [Edit Profile]           │
 └─────────────────────────────────────────────────────────────────────────────┘
 
-Edit mode:
+Edit mode (S2: avatar replaced with ImageUpload):
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Display Name  [input]                                                       │
-│  Photo URL     [input]                                                       │
+│  Phone Number  [input]                                                       │
+│  Profile Photo [ImageUpload — file/camera, crop modal, useMediaUpload]      │
 │  Bio           [textarea, max 500 chars]                                     │
 │  Public Profile  [toggle switch]  — controls /profile/[id] visibility       │
 │                                                  [Save]  [Cancel]           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## User > Settings — Password Change ✅ (Session S2, extends D3)
+
+```
+Component: src/app/[locale]/user/settings/page.tsx
+Hook:      useChangePassword() from @mohasinac/appkit/client
+API:       POST /api/user/change-password
+           body: { currentPassword, newPassword }
+           Reauthenticates via Firebase, then updates password
+
+Password section (renderPasswordForm):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  CHANGE PASSWORD                                                             │
+│  Current Password  [input type=password]                                     │
+│  New Password      [input type=password, minLength=8]                        │
+│  Confirm Password  [input type=password]                                     │
+│                                              [Update Password]              │
+└─────────────────────────────────────────────────────────────────────────────┘
+Client-side guards: passwords must match + min 8 chars before calling mutate
+```
+
+---
+
+## User > Returns & Refunds ✅ (Session S2, LL5)
+
+```
+Route:     /user/returns
+Page:      src/app/[locale]/user/returns/page.tsx
+View:      UserReturnsView (appkit slot-shell, mirrors UserOrdersView)
+Hook:      useOrders({ orderStatus: "return_requested" })
+Nav:       USER_NAV_GROUPS Shopping section → "Returns"
+ROUTES:    ROUTES.USER.RETURNS = "/user/returns"
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Returns & Refunds                                                           │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  [Order card]  Order #order-xxx   return_requested badge   [row clickable]  │
+│  [Order card]  Order #order-yyy   return_requested badge   [row clickable]  │
+│  Row click → ROUTES.USER.ORDER_DETAIL(order.id)                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## User > Order Cancel ✅ (Session S2, LL5)
+
+```
+Route:     /user/orders/[id]/cancel
+Page:      src/app/[locale]/user/orders/[id]/cancel/page.tsx
+Action:    cancelOrderAction(id, reason) — server action
+Hook:      useOrder(id) — fetches order to check cancellability
+Guard:     only "pending" | "processing" orders can be cancelled
+
+Cancellable state:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Cancel Order   Order #[id]                                                  │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Reason for cancellation *                                                   │
+│  [textarea, max 500 chars]                                                   │
+│                                    [Cancel Order]  [Keep Order →]           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Non-cancellable state (order already shipped/delivered/etc):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ⚠  This order cannot be cancelled — status: shipped                        │
+│     ← Back to order                                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
