@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES } from "@mohasinac/appkit/client";
+import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload } from "@mohasinac/appkit/client";
 
 interface ProfilePageClientProps {
   standalone?: boolean;
@@ -12,6 +12,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const { user } = useAuth();
   const { showToast } = useToast();
   const { data: profile, isLoading } = useProfile({ enabled: !!user });
+  const { upload } = useMediaUpload();
   const [editing, setEditing] = useState(false);
 
   const [displayName, setDisplayName]   = useState("");
@@ -48,7 +49,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
       photoURL: photoURL.trim() || undefined,
       bio: bio.trim(),
       profileIsPublic: isPublic,
-    } as any);
+    });
   };
 
   if (isLoading) {
@@ -173,19 +174,22 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
             />
           </div>
 
-          {/* Avatar URL */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Avatar URL
-            </label>
-            <input
-              type="url"
-              value={photoURL}
-              onChange={(e) => setPhotoURL(e.target.value)}
-              placeholder="https://…"
-              className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+          {/* Avatar */}
+          <ImageUpload
+            label="Profile Photo"
+            currentImage={photoURL}
+            captureSource="both"
+            enableCrop
+            onUpload={(file) => {
+              const parts = (user?.displayName ?? user?.email ?? "user").split(" ");
+              return upload(file, "avatars", true, {
+                type: "user-avatar",
+                firstName: parts[0] ?? "user",
+                lastName: parts[1] ?? "",
+              });
+            }}
+            onChange={(url) => setPhotoURL(url)}
+          />
 
           {/* Bio */}
           <div className="space-y-1">
