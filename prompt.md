@@ -7,28 +7,21 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S10 (2026-05-11)
+### ✅ Last completed — S8 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| I6 | PDF support in media uploader. Server: `/api/media/upload` accepts `application/pdf` with `%PDF-` magic-byte check + 20MB cap; PDF uploads stage to `tmp/documents/{uid}/…`. `PDF_ONLY_CONTEXTS` (`invoice`/`payout-doc`) — symmetric guards: PDF-only ctx requires PDF bytes; every other ctx rejects PDF bytes. Magic numbers extracted to named constants (`MEGABYTE`, `MAX_PDF_BYTES`, `MAX_LABEL`, `PDF_MAGIC`, `PDF_FOLDER`). Client: `MediaUploadField` gains `isPdf`/`isPdfAccept` helpers + PDF preview tile + auto file-only capture in PDF mode. |
-| I7 | Media CDN watermark proxy `/api/media/[...slug]`. Node runtime, `force-dynamic`. Slug → Storage path with traversal protection. `loadWatermarkConfig()` reads `siteSettingsRepository.getSingleton()` cached 60s in-memory. `sharp` text+image watermarks composited at `config.size %` of target width with `config.opacity` (image watermark loaded directly via Admin SDK to avoid proxy recursion). Non-images pass through. `Cache-Control: public, max-age=DAY_SECONDS, s-maxage=WEEK_SECONDS, immutable`. `SiteSettingsDocument.watermark` schema + `siteSettingsSeedData.watermark` + `ERROR_MESSAGES.MEDIA.NOT_FOUND`/`PROXY_FAILED` + SeedPanel note all updated. |
+| FI1 | `productFeatures` schema + repository (`MAX_STORE_CUSTOM_FEATURES=20`, `MAX_FEATURES_PER_PRODUCT=10`). `icon` is a union: appkit icon-set name key OR raw SVG-path string. delete refuses when any product references the feature. |
+| FI2 | 10 platform feature seeds (free-shipping, verified-seller, accept-returns, condition-new/used, featured, promoted, auction-winner-badge, shipping-paid-by-seller, preorder-confirmed) wired into seed route + SeedPanel meta. |
+| FI3 | `/admin/features` — list w/ Platform vs Store-Custom scope tabs + SideDrawer editor (label, description, icon, iconColor token, category, productTypes pill checkboxes, scope radio, storeId Select, displayOrder, isActive). `/api/admin/features` admin-only. DELETE returns 409 when referenced. |
+| FI4 | `/store/features` — store dashboard list (usage chip n/20, inline isActive toggle, Add disabled at cap). `/api/store/features` enforces `scope=store + storeId=owner's store`, 403 on non-owned mutations. Reuses AdminFeatureEditorView via `fixedScope + endpointOverride`. |
+| FI5 | `ProductFeaturesSelector` slotted into `ProductForm` (single form handles all 3 product types). 10-per-product cap with disabled extra rows + over-limit banner. |
+| FI6 | `FeatureBadge` + `FeatureBadgeList` + `ProductFeaturesProvider` context. ProductCard renders maxVisible=3 below price; detail views render full list. SSR-loaded via `loadProductFeaturesForStore` (detail) or `listPlatform` (listing). Legacy 'About this product' text bullets gated to absent-prop only. |
+| Follow-up tracked | Secondary listing surfaces (search, wishlist, promotions, store-detail, related-products carousel) still need `ProductFeaturesProvider` wrapper — entry added to newchange DEFERRED as FI6-2. |
 
-### ✅ Last completed — S44 (2026-05-11)
+### 🔜 Current — S9 (next session)
 
-| Task | Summary |
-|------|---------|
-| WL1+WL2 | Wishlist top-level one-doc-per-user (`wishlists/wishlist-{userSlug}`, id===slug). 20-item hard cap → 409 `WISHLIST_FULL`; idempotent re-add is no-op. All mutations in txn. `WishlistFullError` + `WISHLIST_MAX` exported. |
-| WL3 | `useWishlistCountWithLimit()` → `{ count, limit, isFull, isNearLimit }`. `WishlistCapWatcher` mounts under `ToastProvider`; listens on `WISHLIST_CAP_EVENT` (`"appkit/wishlist/full"`) dispatched by merge route on `capReached`. |
-| WL4+WL5 | New top-level `history` collection (id `history-{userSlug}`, one doc per user). 50-item soft cap, silent FIFO evict + re-visit hoist (dedup by productId, unshift to 0). Guest mirror in `localStorage["letitrip:history"]`; `useHistoryMergeOnLogin` merges on null→uid. |
-| WL6 | `useHistory()` unified hook (auth + guest), debounced 1.5s + session-deduped. `HistoryTracker` client component dropped into Product/Auction/PreOrder detail views. `/user/history` page with filter tabs + ConfirmDeleteModal. |
-| WL7 | Cart 50-distinct-items hard cap (per-item qty unrestricted). Server `/api/cart` POST → 409 `CART_FULL`; guest cart util throws `CartFullError`. |
-| WL8 | Wishlist seed rewritten to one-doc-per-user (8 docs). New `history-seed-data.ts` (8 docs). Seed route load/existence/purge branches reworked. SeedPanel meta entries. CLAUDE.md collection inventory + slug-prefix table updated. |
-| S44 follow-ups | `AdminWishlistsView` rewritten via `wishlistRepository.findAllSummaries()` (drops legacy `collectionGroup("wishlist")` hack). New `AdminHistoryView` + `/admin/history` page + `GET /api/admin/history` + nav. `ROUTES.ADMIN.HISTORY` + `ROUTES.USER.HISTORY` + `ACCOUNT_ENDPOINTS.HISTORY*` added. |
-
-### 🔜 Current — S8 (next session)
-
-> S44 (Tier WL) shipped out-of-order — full implementation + follow-ups in one session. Roadmap continues at S8.
+> S8 (Tier FI) shipped end-to-end. Next roadmap entry: BK3 (compare overlay) + D5 (Messages RTDB listener) + VC7 (Conversations view).
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -42,7 +35,7 @@
 | **S6** ✅ | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
 | **S7** ✅ | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
 | **S44** ✅ | WL1–WL8 + follow-ups | Tier WL — Wishlist 20-cap + History 50-FIFO + Cart 50-cap + admin views | low |
-| **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
+| **S8** ✅ | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
 | **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
 | **S11** | O5 | Shiprocket auto-create | medium |
@@ -90,7 +83,7 @@ PENDING (new S-numbering, risk-ordered)
 ──────────────────────────────────────────────────
 Zero-risk UI            S1–S6        ✅  audits + user account + store forms + API sanitization
 Homepage features       S7           ✅  EX5 + SB11 (collection-cards + 3 new section types)
-Feature icons           S8           ⏳  FI1–FI6 productFeatures collection
+Feature icons           S8           ✅  FI1–FI6 productFeatures collection (one-shot session)
 UX + RTDB               S9           ⏳  BK3 compare overlay + Messages RTDB
 Infrastructure          S10–S11      ⏳  PDF + watermark CDN + Shiprocket
 Query/Sieve             S12–S13      ⏳  Firebase Function — medium risk

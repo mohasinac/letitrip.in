@@ -1207,6 +1207,101 @@ StackedViewShell (full page):
 
 ---
 
+## Admin > Feature Badges ✅ (S8 — FI3)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ListingToolbar    [search]  [Sort ▾]              [+ Add Feature]           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ (sticky scope tabs) [Platform]  [ Store Custom ]                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ DataTable                                                                   │
+│ ─────────────────────────────────────────────────────────────────────────── │
+│ feature-free-shipping        shipping · all              Active   2 days    │
+│ feature-verified-seller      seller · all                Active   2 days    │
+│ feature-auction-winner-badge auction · auction           Active   2 days    │
+│ feature-preorder-confirmed   preorder · preorder         Active   2 days    │
+│ …                                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+        ↓ row click
+SideDrawer (AdminFeatureEditorView, embedded)
+  Label · Description · Icon (key OR M-svg) · Icon colour (token Select)
+  Category Select · Display order · Applies-to pill checkboxes
+  Scope radio (platform | store) → if store: Store Select (loads stores)
+  Active Toggle · [Save] [Delete]
+        ↓ POST/PUT/DELETE /api/admin/features[/{id}]
+  DELETE: repo throws ValidationError when products.where("features",
+          array-contains, id) is non-empty → 409 with message surfaced
+```
+
+## Store > Feature Badges ✅ (S8 — FI4)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Custom feature badges                                                       │
+│ 3 of 20 used. Platform features are always available on top.                │
+│                                                       [+ Add Feature]       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ (if isFull)  You have reached the 20-feature limit for your store…          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  • Signed by Artist                       custom · all      [ on  ●  ]      │
+│  • Authenticated by Beckett               seller · all      [ on  ●  ]      │
+│  • Hand-painted                           custom · product  [ off ○  ]      │
+└─────────────────────────────────────────────────────────────────────────────┘
+        ↓ row click           inline Toggle  → PUT { isActive }
+SideDrawer (AdminFeatureEditorView, embedded, fixedScope="store",
+            endpointOverride → SELLER_ENDPOINTS.FEATURES{,BY_ID})
+        ↓ POST/PUT/DELETE /api/store/features[/{id}]
+  Auth gate: storeRepository.findByOwnerId(uid) — 403 on non-owned feature
+  POST: forces scope="store" + storeId=owner.store.id, 409 at 20-cap
+```
+
+## Product Form > Feature Badges ✅ (S8 — FI5)
+
+```
+ProductForm (single component serves standard/auction/preorder)
+  Resolves productType from product.isAuction / product.isPreOrder
+  ┌─ Feature badges ───────────────────────────────────────────────────┐
+  │ Selected: 2 of 10                                                  │
+  │ Platform features                                                  │
+  │   ☑ Free Shipping       ☑ Verified Seller                          │
+  │   ☐ Returns Accepted    ☐ Featured                                 │
+  │ Store custom features                                              │
+  │   ☐ Signed by Artist                                               │
+  └────────────────────────────────────────────────────────────────────┘
+        ↓ onChange → update({ features })  (string[] of feature IDs)
+  At cap: unchecked rows go disabled.
+  Over cap (legacy doc): red banner "Too many features selected"
+```
+
+## Card + Detail > Feature Badge Render ✅ (S8 — FI6)
+
+```
+Page (RSC)
+  ├─ const productFeatures = await loadProductFeaturesForStore(storeId)
+  └─ <ProductDetailPageView productFeatures={productFeatures} … />
+        └─ if productFeatures && features.length > 0:
+              <FeatureBadgeList productFeatureIds={features}
+                                features={productFeatures} />
+        └─ else (legacy): render text "About this product" bullets
+
+Listing Page (RSC)
+  ├─ const platform = await productFeaturesRepository.listPlatform()
+  └─ <ProductFeaturesProvider features={platform}>
+       <ProductsIndexPageView … />
+     </ProductFeaturesProvider>
+        └─ ProductCard (grid view) reads useProductFeatures() context
+              └─ if features && product.features?.length > 0:
+                    <FeatureBadgeList maxVisible={3} className="mt-2" … />
+
+FeatureBadge resolution:
+  icon "truck" → ICON_MAP[truck]  → lucide-react <Truck />
+  icon "M 4 4 L 20 20 …" → isFeatureIconPath() true → <svg><path d={icon}/></svg>
+  iconColor "--appkit-color-primary" → style.color + style.borderColor via var()
+```
+
+---
+
 ## Admin > Categories List ✅ (RC4 — dedicated routes)
 
 ```

@@ -26,10 +26,72 @@
 | 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
 | 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ✅ Done 2026-05-08 — Session 67-b | — |
 | 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ✅ Done S1 2026-05-11 — see HS4-E | HS4-E ✅ |
+| 2026-05-11 | FI6 secondary surfaces | Cross-store listing pages other than /products, /auctions, /pre-orders do not yet wrap children in `ProductFeaturesProvider`, so feature badges don't render on cards there. Surfaces: SearchResultsClient, wishlist page, PromotionsProductsClient, StoreDetailLayoutView, RelatedProductsCarousel. Fix is mechanical (add `listPlatform()` + Provider in the corresponding page/server boundary). | ⏳ Open | Track as FI6-2; pick up in a follow-up session. |
 
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S8 — 2026-05-11 — FI1–FI6 productFeatures (collection + admin/store CRUD + product-form selector + card/detail badges)
+
+**Scope:** Tier FI — Feature Icons. All six tasks shipped end-to-end; no deferrals.
+
+**Files changed (appkit):**
+
+| File | Change |
+|---|---|
+| [src/features/products/schemas/product-features.ts](appkit/src/features/products/schemas/product-features.ts) | NEW — `ProductFeatureDocument`, scope/category/productType unions, `MAX_STORE_CUSTOM_FEATURES=20`, `MAX_FEATURES_PER_PRODUCT=10`, `isFeatureIconPath()` predicate. icon is a union: name key OR raw SVG path-d (per session decision). |
+| [src/features/products/repository/product-features.repository.ts](appkit/src/features/products/repository/product-features.repository.ts) | NEW — `list/listFiltered/listPlatform/listForStore/create/update/delete/countByStore`. create validates scope↔storeId pairing, enforces 20-cap. delete throws ValidationError when any product references the feature. |
+| [src/features/products/repository/loadProductFeatures.ts](appkit/src/features/products/repository/loadProductFeatures.ts) | NEW — `loadProductFeaturesForStore(storeId)` SSR helper: parallel `listPlatform + listForStore`, dedupe. |
+| [src/seed/product-features-seed-data.ts](appkit/src/seed/product-features-seed-data.ts) | NEW — 10 platform features (FI2 spec). |
+| [src/features/admin/components/AdminFeaturesView.tsx](appkit/src/features/admin/components/AdminFeaturesView.tsx) | NEW — list with Platform/Store-Custom scope tabs, ListingToolbar + SideDrawer for create/edit. |
+| [src/features/admin/components/AdminFeatureEditorView.tsx](appkit/src/features/admin/components/AdminFeatureEditorView.tsx) | NEW — SideDrawer-embedded editor; supports `fixedScope`, `fixedStoreId`, `endpointOverride` so it's reused by FI4. |
+| [src/features/seller/components/SellerFeaturesView.tsx](appkit/src/features/seller/components/SellerFeaturesView.tsx) | NEW — store dashboard: usage chip (n/20), Add disabled at cap, inline isActive toggle, SideDrawer reusing AdminFeatureEditorView. Re-exported as `StoreFeaturesView`. |
+| [src/features/products/components/ProductFeaturesSelector.tsx](appkit/src/features/products/components/ProductFeaturesSelector.tsx) | NEW — checkbox grid (platform + store sections), filtered by productType, 60s cached, MAX_FEATURES_PER_PRODUCT cap + over-limit banner. |
+| [src/features/products/components/ProductForm.tsx](appkit/src/features/products/components/ProductForm.tsx) | Slotted selector above Custom Sections; resolves productType from `isAuction`/`isPreOrder`. |
+| [src/features/products/components/FeatureBadge.tsx](appkit/src/features/products/components/FeatureBadge.tsx) | NEW — `FeatureBadge` resolves by id from features[]; `FeatureBadgeList` w/ maxVisible + "+N more". Icon resolves via lucide map or SVG-path. |
+| [src/features/products/components/ProductFeaturesContext.tsx](appkit/src/features/products/components/ProductFeaturesContext.tsx) | NEW — `ProductFeaturesProvider` + `useProductFeatures`. ProductCard reads context; no waterfall. |
+| [src/features/products/components/ProductGrid.tsx](appkit/src/features/products/components/ProductGrid.tsx) | Card renders `<FeatureBadgeList maxVisible=3 />` below price row when context + product.features present. ProductListRow unchanged. |
+| [src/features/products/components/ProductDetailPageView.tsx](appkit/src/features/products/components/ProductDetailPageView.tsx) | `productFeatures` prop. Legacy text Highlights gated to render only when prop is absent. |
+| [src/features/auctions/components/AuctionDetailPageView.tsx](appkit/src/features/auctions/components/AuctionDetailPageView.tsx) | Same — `productFeatures` prop + gated Highlights. |
+| [src/features/pre-orders/components/PreOrderDetailPageView.tsx](appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx) | Same. |
+| [src/constants/api-endpoints.ts](appkit/src/constants/api-endpoints.ts) | `ADMIN_ENDPOINTS.PRODUCT_FEATURES{,BY_ID}` + `SELLER_ENDPOINTS.FEATURES{,BY_ID}`. |
+| [src/next/routing/route-map.ts](appkit/src/next/routing/route-map.ts) | `ROUTES.ADMIN.FEATURES{,_NEW,_EDIT}` + `ROUTES.STORE.FEATURES{,_NEW,_EDIT}`. |
+| [src/seed/index.ts + manifest.ts + actions/demo-seed-actions.ts](appkit/src/seed/) | productFeatures seed + manifest entry + SeedCollectionName extension. |
+| [src/client.ts + src/index.ts + src/repositories/index.ts + features/products/components/index.ts + features/admin/components/index.ts + features/seller/components/index.ts](appkit/src/) | Barrel exports for new components, types, repo, helper. |
+
+**Files changed (letitrip.in):**
+
+| File | Change |
+|---|---|
+| [src/app/api/admin/features/route.ts + [id]/route.ts](src/app/api/admin/features/) | NEW — admin GET/POST/PUT/DELETE with zod schemas. Admin-only writes; DELETE returns 409 when feature is referenced. |
+| [src/app/api/store/features/route.ts + [id]/route.ts](src/app/api/store/features/) | NEW — seller-scoped: GET returns `{ items, total, limit, isFull }`. POST forces `scope=store + storeId=owner's store`. Mutating routes 403 when feature isn't owned by the seller. |
+| [src/app/[locale]/admin/features/page.tsx](src/app/[locale]/admin/features/page.tsx) | NEW — mounts `AdminFeaturesView`. |
+| [src/app/[locale]/store/features/page.tsx](src/app/[locale]/store/features/page.tsx) | NEW — mounts `SellerFeaturesView`. |
+| [src/app/[locale]/products/[slug]/page.tsx](src/app/[locale]/products/[slug]/page.tsx) + [auctions/[id]/page.tsx](src/app/[locale]/auctions/[id]/page.tsx) + [pre-orders/[id]/page.tsx](src/app/[locale]/pre-orders/[id]/page.tsx) | SSR-load via `loadProductFeaturesForStore(product.storeId)`, pass as prop. |
+| [src/app/[locale]/products/page.tsx](src/app/[locale]/products/page.tsx) + [auctions/page.tsx](src/app/[locale]/auctions/page.tsx) + [pre-orders/page.tsx](src/app/[locale]/pre-orders/page.tsx) | SSR-load via `productFeaturesRepository.listPlatform()`, wrap children in `<ProductFeaturesProvider>`. Store-scope features intentionally NOT loaded on cross-store listing pages. |
+| [src/app/api/demo/seed/route.ts](src/app/api/demo/seed/route.ts) | productFeatures wiring in CollectionName / COLLECTION_MAP / SEED_DATA_MAP. Falls through to generic upsert branch. |
+| [src/components/dev/SeedPanel.tsx](src/components/dev/SeedPanel.tsx) | productFeatures meta (description, slugPattern, fields, group=listings). |
+| [src/constants/navigation.tsx](src/constants/navigation.tsx) | `Feature Badges` entries in ADMIN_NAV_GROUPS Catalog + STORE_NAV_GROUPS Catalog. |
+| [CLAUDE.md](CLAUDE.md) | Registered `feature-` slug prefix + added product features to pure-slugs list. |
+
+**Session decisions (Rule #1):**
+- Bundled S44-followup pre-existing dirty state was actually already committed by a parallel session (git status snapshot at session start was stale). No pre-S8 cleanup commit needed.
+- icon field: union (icon-set name key OR SVG path-d) per user choice — `isFeatureIconPath()` predicate disambiguates at render time in `FeatureBadge`.
+- 6 separate commits, one per task (`feat(products): FI1`, `seed(products): FI2`, `feat(admin): FI3`, `feat(seller): FI4`, `feat(products): FI5`, `feat(products): FI6`).
+- Spec said FI3 admin uses PATCH; implemented as PUT for consistency with the existing admin route family. Behaviour is identical for the schemas in use.
+- Spec said FI4 store routes live under `/store/[slug]/features` but the rest of the store dashboard uses `/store/<resource>` (current-seller from auth, no slug). Matched the existing convention.
+- FI3 admin delete: instead of pre-querying products from the UI, the repo refuses delete via `ValidationError` when `products.where('features', 'array-contains', id)` returns any doc. UI surfaces the 409 with the repo's message.
+- Cards: only the grid `ProductCard` renders feature badges; `ProductListRow` (compact horizontal) left alone since pill badges would crowd the row.
+- Listing pages load **platform features only** (since result set spans stores). Detail pages load platform + that product's store features.
+
+**Deferred / known follow-ups:**
+- Other listing surfaces (search results, wishlist, promotions, store-detail page sub-listings, related-products carousel) do not yet wrap children in `ProductFeaturesProvider`. Cards there render no feature badges. Wiring is mechanical (add provider + listPlatform load in the corresponding page/view); explicit follow-up below.
+- `MediaUploadField`, `siteSettings.watermark`, and `admin/schemas/firestore.ts` carry pre-existing uncommitted I7 (S10 parallel) work — left untouched.
+
+**TSC:** Both repos clean. Appkit `dist/` rebuilt + verified.
 
 ---
 

@@ -144,6 +144,8 @@
 | `feature-flags/route.ts` | GET | Get feature flags — auth: admin/moderator; reads siteSettings.featureFlags + featureFlagRollouts (VA17) |
 | `feature-flags/route.ts` | PUT | Update feature flags — auth: admin; zod {flags, rollouts}; writes via siteSettingsRepository.updateSingleton (VA17) |
 | `store-addresses/route.ts` | GET | All store addresses — auth: admin/moderator; optional storeId param → specific subcollection or collectionGroup("addresses"); returns id, storeId, label, city, state, pincode, isPickupLocation, createdAt (LL17) |
+| `features/route.ts` | GET/POST | productFeatures admin CRUD (FI3) — GET filters by scope/storeId/isActive; POST admin-only zod-validated create |
+| `features/[id]/route.ts` | GET/PUT/DELETE | productFeatures item — DELETE returns 409 when feature is referenced by any product (FI3) |
 
 ---
 
@@ -161,6 +163,8 @@
 | `products/route.ts` | GET/POST | Seller product list + create |
 | `templates/route.ts` | GET/POST | Product template list (store-scoped) + create — (G1 S4) |
 | `templates/[id]/route.ts` | GET/PUT/DELETE | Product template detail + mutations — seller-scoped (G1 S4) |
+| `features/route.ts` | GET/POST | Seller productFeatures — GET returns `{ items, total, limit, isFull }`; POST forces `scope=store + storeId=owner's store`, 409 at 20-cap (FI4) |
+| `features/[id]/route.ts` | GET/PUT/DELETE | Seller feature item — 403 when feature isn't owned by the authenticated seller's store (FI4) |
 | `profile/route.ts` | PUT | Change store slug — validates format, checks availability, batch-migrates document ID (O1 S4) |
 | `slug/check/route.ts` | GET | Check if a store slug is available — returns `{ available, reason }` (O1 S4) |
 
