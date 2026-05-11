@@ -65,6 +65,38 @@
 
 ---
 
+### Session S8 follow-up — 2026-05-11 — productFeatures quality pass (constants, validators, ERROR_MESSAGES, Firestore indices)
+
+**Scope:** Refactor pass on the S8 surface — extract magic strings/options into shared modules, replace raw HTML with appkit primitives where it matters, push composite Firestore indices for the new query shapes. No behaviour change.
+
+**Files changed**
+
+| File | Change |
+|---|---|
+| [appkit/src/features/products/constants/product-features.constants.ts](appkit/src/features/products/constants/product-features.constants.ts) | NEW — `PRODUCT_FEATURE_CATEGORY_OPTIONS`, `*_PRODUCT_TYPE_OPTIONS`, `*_SCOPE_OPTIONS`, `*_ICON_COLOR_OPTIONS`, `*_SCOPE_TABS`, `DEFAULT_DISPLAY_ORDER=100`, `CARD_MAX_VISIBLE=3`, `QUERY_STALE_MS=60_000`. Shared by editor, selector, AdminFeaturesView. |
+| [appkit/src/features/products/schemas/product-features.validators.ts](appkit/src/features/products/schemas/product-features.validators.ts) | NEW — `productFeatureAdminCreateSchema` / `productFeatureStoreCreateSchema` / `productFeatureUpdateSchema` zod schemas + inferred payload types. Replaces hand-rolled schemas in the four route handlers. |
+| [appkit/src/errors/messages.ts](appkit/src/errors/messages.ts) | Added `ERROR_MESSAGES.PRODUCT_FEATURES.*` (FETCH/CREATE/UPDATE/DELETE_FAILED + NOT_FOUND + SCOPE_*  + STORE_CAP_REACHED + DELETE_REFERENCED + NOT_OWNED_BY_STORE + NO_STORE). |
+| [appkit/src/features/products/repository/product-features.repository.ts](appkit/src/features/products/repository/product-features.repository.ts) | All thrown messages now route through `ERROR_MESSAGES.PRODUCT_FEATURES.*` + a `failureMessage()` helper. STORE_CAP_REACHED appends `(${MAX_STORE_CUSTOM_FEATURES})` so the surfacing route can still detect the cap via substring. |
+| [appkit/src/features/admin/components/AdminFeatureEditorView.tsx](appkit/src/features/admin/components/AdminFeatureEditorView.tsx) | Inline option arrays + TOAST constants extracted. Switched to `Stack`/`Grid`/`Div`/`Text` wrappers. Class strings hoisted to module-level constants (`PILL_BASE_CLASS`, etc.). `Select<ProductFeatureScope>` / `<ProductFeatureCategory>` for type-safe enum values. |
+| [appkit/src/features/admin/components/AdminFeaturesView.tsx](appkit/src/features/admin/components/AdminFeaturesView.tsx) | `PRODUCT_FEATURE_SCOPE_TABS` from shared module. `Div`/`Row`/`Text` primitives + module-level class constants for sticky tabs / pagination bar / error banner. `mapFeatureRow` extracted from inline `mapRows`. `DEFAULT_SCOPE` constant. |
+| [appkit/src/features/seller/components/SellerFeaturesView.tsx](appkit/src/features/seller/components/SellerFeaturesView.tsx) | Raw `<div>` / `<ul>` / `<li>` swapped for `Stack`/`Row` (`as="ul"`/`"li"`). `TOAST` + class-name constants extracted. Toast fallback messages route through `ERROR_MESSAGES.PRODUCT_FEATURES.*`. `invalidate()` helper to dedup the query invalidation. |
+| [appkit/src/features/products/components/FeatureBadge.tsx](appkit/src/features/products/components/FeatureBadge.tsx) | Exported `FEATURE_ICON_MAP`. `Tag` is now the explicit fallback (was previously inline). Class strings + sizes promoted to module-level constants. `colorStyleFor()` helper. Switched to `Row`/`Span` for the badge container. Font sizes now use `--appkit-font-size-2xs` CSS var. |
+| [appkit/src/features/products/components/ProductFeaturesSelector.tsx](appkit/src/features/products/components/ProductFeaturesSelector.tsx) | Swapped raw `<div>`/`<span>` for `Stack`/`Grid`/`Div`/`Text`/`Heading`. Class strings → module constants. `unwrapItems` helper dedups response unwrapping. Imports `PRODUCT_FEATURE_QUERY_STALE_MS` from shared constants. |
+| [appkit/src/features/products/components/ProductGrid.tsx](appkit/src/features/products/components/ProductGrid.tsx) | `maxVisible={PRODUCT_FEATURE_CARD_MAX_VISIBLE}` (was hardcoded 3). |
+| [src/app/api/admin/features/route.ts + [id]/route.ts](src/app/api/admin/features/) | Route handlers now import the shared zod schemas + payload types from appkit. ERROR_MESSAGES used for default error responses. |
+| [src/app/api/store/features/route.ts + [id]/route.ts](src/app/api/store/features/) | Same — shared `productFeatureStoreCreateSchema` + `productFeatureUpdateSchema`. The 20-cap detection now compares against `ERROR_MESSAGES.PRODUCT_FEATURES.STORE_CAP_REACHED` substring (no more case-insensitive `"maximum"` heuristic). Forbidden responses use `ERROR_MESSAGES.PRODUCT_FEATURES.NO_STORE` / `NOT_OWNED_BY_STORE`. |
+| [appkit/src/index.ts](appkit/src/index.ts) | Export the new validator schemas + payload types + option lists + tuning constants. |
+| [appkit/firebase/base/firestore.indexes.json](appkit/firebase/base/firestore.indexes.json) | **3 new composite indices for `productFeatures`**: `scope+isActive`, `scope+storeId`, `scope+storeId+isActive`. Covers `listPlatform`, `listForStore`, `countByStore` query shapes. |
+| firestore.indexes.json (root + appkit-mirror) | Regenerated via `node appkit/scripts/firebase-merge.mjs` in both repos. |
+| [appkit/index.md](appkit/index.md) | Document the new validators + option lists + tuning constants. |
+| asciiDiagrams.md | No diagram change — wire layout unchanged. |
+
+**Deploy note for ops:** the 3 new productFeatures indices need a manual `firebase deploy --only firestore:indexes` (or `npm run firebase:deploy`) on the active Firebase project. Until they exist, `listFiltered({scope,isActive})` falls back to a `FAILED_PRECONDITION` in prod. Pattern #2 in CLAUDE.md "Recurrent Root Cause Patterns".
+
+**TSC:** Both repos clean after refactor.
+
+---
+
 ### Session S8 — 2026-05-11 — FI1–FI6 productFeatures (collection + admin/store CRUD + product-form selector + card/detail badges)
 
 **Scope:** Tier FI — Feature Icons. All six tasks shipped end-to-end; no deferrals.

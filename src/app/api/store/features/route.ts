@@ -1,5 +1,4 @@
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
 import {
   createRouteHandler,
   successResponse,
@@ -8,29 +7,10 @@ import {
   productFeaturesRepository,
   storeRepository,
   MAX_STORE_CUSTOM_FEATURES,
+  productFeatureStoreCreateSchema,
+  type ProductFeatureStoreCreatePayload,
+  ERROR_MESSAGES,
 } from "@mohasinac/appkit";
-
-const productTypeEnum = z.enum(["product", "auction", "preorder", "all"]);
-const categoryEnum = z.enum([
-  "shipping",
-  "seller",
-  "condition",
-  "platform",
-  "auction",
-  "preorder",
-  "custom",
-]);
-
-const createSchema = z.object({
-  label: z.string().min(1).max(80),
-  description: z.string().max(500).optional(),
-  icon: z.string().min(1).max(2000),
-  iconColor: z.string().max(80).optional(),
-  category: categoryEnum,
-  productTypes: z.array(productTypeEnum).min(1),
-  isActive: z.boolean(),
-  displayOrder: z.number().int().min(0).max(10_000),
-});
 
 export const GET = withProviders(
   createRouteHandler({
@@ -38,7 +18,8 @@ export const GET = withProviders(
     roles: ["seller", "admin"],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
-      if (!store) return ApiErrors.forbidden("No store found for this account");
+      if (!store)
+        return ApiErrors.forbidden(ERROR_MESSAGES.PRODUCT_FEATURES.NO_STORE);
       const items = await productFeaturesRepository.listFiltered({
         scope: "store",
         storeId: store.id,
@@ -54,13 +35,14 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler<(typeof createSchema)["_output"]>({
+  createRouteHandler<ProductFeatureStoreCreatePayload>({
     auth: true,
     roles: ["seller", "admin"],
-    schema: createSchema,
+    schema: productFeatureStoreCreateSchema,
     handler: async ({ body, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
-      if (!store) return ApiErrors.forbidden("No store found for this account");
+      if (!store)
+        return ApiErrors.forbidden(ERROR_MESSAGES.PRODUCT_FEATURES.NO_STORE);
       try {
         const doc = await productFeaturesRepository.create({
           ...body!,
@@ -69,12 +51,14 @@ export const POST = withProviders(
         });
         return successResponse(doc, "Feature created", 201);
       } catch (err) {
-        return errorResponse(
-          err instanceof Error ? err.message : "Failed to create feature",
-          err instanceof Error && err.message.toLowerCase().includes("maximum")
-            ? 409
-            : 400,
+        const message =
+          err instanceof Error
+            ? err.message
+            : ERROR_MESSAGES.PRODUCT_FEATURES.CREATE_FAILED;
+        const isCap = message.includes(
+          ERROR_MESSAGES.PRODUCT_FEATURES.STORE_CAP_REACHED,
         );
+        return errorResponse(message, isCap ? 409 : 400);
       }
     },
   }),
