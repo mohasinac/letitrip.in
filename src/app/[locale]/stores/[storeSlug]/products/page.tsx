@@ -1,4 +1,8 @@
-import { StoreProductsPageView } from "@mohasinac/appkit";
+import {
+  StoreProductsPageView,
+  loadProductFeaturesForStore,
+} from "@mohasinac/appkit";
+import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
@@ -6,5 +10,10 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  return <StoreProductsPageView storeSlug={storeSlug} />;
+  const features = await loadProductFeaturesForStore(storeSlug).catch(() => []);
+  return (
+    <ProductFeaturesProvider features={features}>
+      <StoreProductsPageView storeSlug={storeSlug} />
+    </ProductFeaturesProvider>
+  );
 }

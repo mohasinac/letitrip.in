@@ -8,8 +8,10 @@ import {
   getPromotions,
   Heading,
   PromotionsHero,
+  productFeaturesRepository,
   Text,
 } from "@mohasinac/appkit";
+import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { PromotionsProductsClient } from "./PromotionsProductsClient";
 
 export const revalidate = 120;
@@ -72,8 +74,12 @@ export default async function Page({
   const activeCoupons = promotions?.activeCoupons ?? [];
   const promotedProducts = (promotions?.promotedProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
   const featuredProducts = (promotions?.featuredProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
+  const platformFeatures = await productFeaturesRepository
+    .listPlatform()
+    .catch(() => []);
 
   return (
+    <ProductFeaturesProvider features={platformFeatures}>
     <Div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Hero */}
       <PromotionsHero
@@ -164,5 +170,6 @@ export default async function Page({
         )}
       </Div>
     </Div>
+    </ProductFeaturesProvider>
   );
 }

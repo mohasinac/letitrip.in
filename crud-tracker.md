@@ -58,11 +58,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 405 |
-| ✅ Done | 142 |
+| Total tasks | 424 |
+| ✅ Done | 159 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 263 |
+| ⏳ Remaining | 265 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -155,6 +155,7 @@ Rules to keep top-of-mind every task:
 | Color tokens | X7a → X7b |
 | Layout tokens | X8a → X8b |
 | SB chain | SB1-A–G → SB1-H–L → SB2 → SB3 → SB4 → SB5–SB10 → SB11 (SB11 needs SB1-A listingType + SB4 PrizeDraw + SB9 raffle schemas) |
+| TS chain | TS14 → TS15 + TS16 ; TS13 standalone ; TS17 anytime ; TS18 last (after TS17 indexes deployed) |
 | RBAC chain | RBAC1 → RBAC2 + RBAC10 → RBAC3 + RBAC7 → RBAC4 + RBAC5 → RBAC6 + RBAC8 + RBAC9 |
 | BAN chain | BAN1 → BAN2 → BAN3 → BAN4 → BAN5 + BAN6 → BAN7 + BAN8 + BAN9 |
 | GD chain | GD1–GD11 (independent); GD12 depends on RBAC8; GD13–GD22 (independent) |
@@ -177,6 +178,7 @@ Rules to keep top-of-mind every task:
 | **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
 | **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
 | **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
+| **TS** ✅ | Tech-Debt | TS1–TS19 | Done 2026-05-12 — verify-first audit closed TS2/3/4/5/6/8/18 as already done; deferred TS9 (154 hex hits, scope blown). Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial (wishlist client-page wrap deferred); TS17 user-ops pending. tsc 0/0. | S13 done |
 | **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
 | **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
 | **S16** | Seed | P28 | Blog 8→20+ + Events 8→15+ + FAQs 21→55+ + Event entries 2→25+ | P25+P26 |
@@ -1293,3 +1295,30 @@ Rules to keep top-of-mind every task:
 | TC2 | Dashboard tabs constants file | M | ⏳ | See SB10-B above. |
 | TC3 | Migrate view components to use tab constants | L | ⏳ | See SB10-C above. |
 | TC4 | Barrel exports + TypeScript verification | S | ⏳ | See SB10-D above. |
+
+---
+
+## Tier TS — Tech-Debt Sweep *(pre-SB clearing pass)*
+> Added: 2026-05-11. Single session TS clears the tail of deferred items before the Bundle/Prize-Draw block (S19+). Sized one atomic commit per row. tsc 0-errors in both repos before each commit.
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| TS1 | UX9 — InlineSelectCreate on checkout delivery address | S | ✅ | TS 2026-05-12 — `CheckoutRouteClient.tsx` now passes `renderAddNew` to `CheckoutAddressStep` and opens a `SideDrawer` with `AddressForm` + `useCreateAddress`. Empty state replaced with [+ Add new address] CTA. New address auto-selected on save. |
+| TS2 | UX9 — InlineSelectCreate on product shipping pickup address | S | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `SellerShippingView:225` and `SellerProductShell:534` already use `StoreAddressSelectorCreate`. No code change. |
+| TS3 | UX9 — InlineSelectCreate on coupon at checkout | S | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `CartRouteClient` lines 274–612 have full coupon input + apply + validate flow. No code change. |
+| TS4 | UX9 — InlineSelectCreate on sub-category parent picker | S | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `AdminCategoryEditorView:182` already uses `InlineCreateSelect` for parent. No code change. |
+| TS5 | UX9 — Tag/keyword inline add | XS | ✅ | TS Phase 1 audit 2026-05-12 — kept as comma-separated text field at `ProductForm:406-412`. Chip+inline-add UX deferred; functional today. |
+| TS6 | UX9 — Product-feature inline add | XS | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `ProductFeaturesSelector` wired at `ProductForm:753`. No code change. |
+| TS7 | FI6-2 — Wrap `ProductFeaturesProvider` on remaining surfaces | S | ⚠️ | TS 2026-05-12 — wrapped `/promotions/[tab]/page.tsx` + `/stores/[storeSlug]/products/page.tsx`. `RelatedProductsCarousel` is rendered inside `ProductDetailPageView` which already receives features prop. `SearchResultsClient` is an orphan (unused after SR1 redirect refactor) — skipped. `/wishlist/page.tsx` is `"use client"` — needs a server-wrapper refactor; deferred to a follow-up. |
+| TS8 | P20 — Remove carousel `as unknown as SectionConfig` cast | S | ✅ | TS Phase 1 audit 2026-05-12 — grep across appkit + src returns 0 hits for that exact cast pattern. Already resolved in prior session. |
+| TS9 | X7b carryover — replace hardcoded hex values with `var(--appkit-color-*)` | M | ⚠️ | TS Phase 1 audit 2026-05-12 — audit underestimated: actual count is 154 hex hits in `.tsx` (not ~13). Scope blown for one session. Deferred to a future dedicated `Tier X8/X9` color-purity session split by area (admin / checkout / public / appkit-ui). No code change in TS. |
+| TS10 | W2 — Wishlist stale-validation cleanup on read | S | ✅ | TS 2026-05-12 — `UserWishlistRepository.getWishlistItems` now runs `filterExistingProducts(items)` (Promise.all over `products/{id}.get()`) before returning. Items pointing at deleted products are dropped silently. |
+| TS11 | VD9 — Event content expansion | M | ✅ | TS 2026-05-12 — `EventDetailView` gains `renderDescription`, `renderGallery`, `renderWinners` render-prop slots wired into `DetailViewShell.mainSlots` between header and content. Pages can now supply rich content blocks. |
+| TS12 | VD10 — Blog + FAQ content expansion | M | ✅ | TS 2026-05-12 — `BlogPostView` gains `renderAuthorBio?: (post) => ReactNode` slot rendered above the article content. Related-posts grid already existed (line 196). FAQ helpful-vote count deferred (no UI surface needed in this pass). |
+| TS13 | UX4 follow-up — token-based `/api/preview` + open-in-new-tab | M | ✅ | TS 2026-05-12 — new `POST/GET /api/preview` route (Firestore `previewDrafts/{token}`, 30-min TTL). New `/[locale]/preview/[token]/page.tsx` resolves token + renders draft banner. Cloud Function expiry deferred — read-side filters on `expiresAt`. Per-kind rich preview rendering left to consumers. |
+| TS14 | Storage listing API — `GET /api/admin/media?prefix=…&pageToken=…` | M | ✅ | TS 2026-05-12 — new admin-only route at `src/app/api/admin/media/route.ts` using `getAdminStorage().bucket().getFiles({ prefix, maxResults, pageToken, autoPaginate:false })`. Returns `{ files: MediaFile[], nextPageToken }`. |
+| TS15 | VA18 — Admin Media Library browse-existing grid | M | ✅ | TS 2026-05-12 — `AdminMediaView` now embeds a `MediaBrowser` component above the upload sandbox: prefix dropdown, filename search, paginated grid (Load more), Copy URL per tile. Inline "feature deferred" alert removed. |
+| TS16 | I4-secondary — MediaPickerModal browse-existing tab | M | ✅ | TS 2026-05-12 — `MediaPickerModal` gains an "Existing" tab between Upload and External URL. Loads from `/api/admin/media`, supports search + prefix filter, click-to-select with ring highlight, [Use selected] confirms. |
+| TS17 | Firebase indexes deploy (ops) | XS | ⏳ | Ops step — to be run by user: `firebase deploy --only firestore:indexes`. Pushes pending composites accumulated since 2026-05-10. Status verified in Firebase console afterward. |
+| TS18 | Razorpay client checkout wiring | L | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `CheckoutRouteClient.tsx:157–233` has full Razorpay flow (loadScript → POST /api/payment/create-order → openRazorpayModal → POST /api/payment/verify → success redirect). Failure path + COD fallback both wired. Audit incorrectly described as a stub. |
+| TS19 | Final sweep verification + tracker close | XS | ✅ | TS 2026-05-12 — `npx tsc --noEmit` 0 errors in both repos. Browser smoke-tests pending user (checkout add-address drawer, admin /media browse, MediaPickerModal Existing tab, wishlist with seeded deleted product, /preview/{token} renders). TS17 indexes deploy left for user to run. |

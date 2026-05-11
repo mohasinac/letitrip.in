@@ -23,9 +23,27 @@
 | Q2 | `parseListingParams(url)` + `serializeListingParams(params, extra)` helpers in `appkit/src/utils/listing-params.ts` (also barrel-exported from `@mohasinac/appkit`). Short canonical names `f / s / p / ps / q / cursor` accepted on `/api/products`, `/api/pre-orders`, `/api/stores`, `/api/stores/[slug]/{products,auctions}`. Long names (`filters / sorts / sort / page / pageSize / q / cursor`) remain accepted for backwards compat. Short wins when both present. Defaults hoisted to per-route `DEFAULT_PAGE / PAGE_SIZE / SORT` constants. |
 | Q4 | Sibling `parseListingSearchParams(searchParams)` for Next.js SSR pages. Applied to `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`. `StoreProductsPageView` now accepts `searchParams` (was hardcoded to page 1, sort `-createdAt`). Cursor is thread-only until S13 listingProcessor lands. |
 
-### 🔜 Current — S9 (next session)
+### ✅ Last completed — TS Tech-Debt Sweep (2026-05-12)
 
-> S12 (Tier Q indices + param standardisation) done. Roadmap continues at S9 (BK3 compare overlay + D5 Messages RTDB + VC7 Conversations view) — note a parallel session already scaffolded `src/app/api/user/conversations/*` + `src/app/[locale]/user/messages/page.tsx`; those break tsc until their appkit-side `getConversation` / `sendMessage` / `listConversationsForBuyer` / `ChatList` / `ChatWindow` / `MessagesView` exports land in S9.
+| Task | Summary |
+|------|---------|
+| TS Phase 1 audit | Verified-done closed without code change: TS2 (Seller pickup uses StoreAddressSelectorCreate), TS3 (CartRouteClient coupon flow), TS4 (AdminCategoryEditorView InlineCreateSelect), TS5 (comma-tag input kept), TS6 (ProductFeaturesSelector wired), TS8 (`as unknown as SectionConfig` cast already removed), TS18 (Razorpay client flow already wired in `CheckoutRouteClient:157–233`). |
+| TS9 | Deferred — `~/proj/letitrip.in` has **154** hardcoded hex hits in `.tsx` (audit estimated ~13). Scope blown; needs its own multi-commit color-purity session split by area. |
+| TS1 | `CheckoutRouteClient.tsx` now passes `renderAddNew` to `CheckoutAddressStep`; `SideDrawer` + `AddressForm` + `useCreateAddress` wire inline create at checkout; empty state replaced with [+ Add new address]. |
+| TS7 | Wrapped `/promotions/[tab]/page.tsx` and `/stores/[storeSlug]/products/page.tsx` in `ProductFeaturesProvider`. SearchResultsClient is orphan (unused after SR1 redirect). `/wishlist/page.tsx` (use-client) wrap deferred — needs server-wrapper refactor. RelatedProductsCarousel already inherits features from `ProductDetailPageView`. |
+| TS10 | `UserWishlistRepository.getWishlistItems` now filters stale entries (Promise.all over `products/{id}.get()`) — silently drops snapshots whose source product has been deleted. |
+| TS11 | `EventDetailView` gains `renderDescription`, `renderGallery`, `renderWinners` render-prop slots between header and content. |
+| TS12 | `BlogPostView` gains `renderAuthorBio?: (post) => ReactNode` slot rendered above article content. |
+| TS13 | New `POST/GET /api/preview` route (Firestore `previewDrafts/{token}` with 30-min TTL) + new `/[locale]/preview/[token]/page.tsx` resolver with draft banner. |
+| TS14 | New admin-only `GET /api/admin/media?prefix=&pageToken=&pageSize=` at `src/app/api/admin/media/route.ts` using `getAdminStorage().bucket().getFiles({ prefix, maxResults, pageToken, autoPaginate:false })`. |
+| TS15 | `AdminMediaView` embeds new `MediaBrowser` component above upload sandbox: prefix dropdown, filename search, paginated grid, Copy URL per tile. |
+| TS16 | `MediaPickerModal` gains "Existing" tab between Upload and External URL — search + prefix filter + click-to-select + [Use selected]. |
+| TS17 | ⏳ Pending user ops — run `firebase deploy --only firestore:indexes` to push pending composites. |
+| TS19 | `npx tsc --noEmit` clean in both repos; tracker counts updated (149 → 159 done). Browser smoke-tests pending user. |
+
+### 🔜 Current — S13 (next session)
+
+> TS Tech-Debt Sweep done. Roadmap continues at S13 (Q1/Q3/Q6 — `listingProcessor` Firebase Function + proxy routes + infinite scroll). After that, the SB block (S19+).
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -45,6 +63,7 @@
 | **S11** ✅ | O5 | Shiprocket auto-create | medium |
 | **S12** ✅ | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
 | **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |
+| **TS** ✅ | TS1–TS19 | Tech-debt sweep — verify-first closed 6 already-done; deferred TS9 (154 hex hits); implemented TS1/10/11/12/13/14/15/16/19; TS7 partial; TS17 ops pending | medium-high |
 | **S14–S18** | P24–P31 | Seed scale (auctions/categories/blog/coupons/validator) | low |
 | **S19–S30** | SB1–SB11, TC | Bundle + Prize Draw + Event Raffle system | high |
 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement | high |
@@ -92,6 +111,7 @@ UX + RTDB               S9           ⏳  BK3 compare overlay + Messages RTDB
 Infrastructure          S10–S11      ⏳  PDF + watermark CDN + Shiprocket
 Query/Sieve             S12          ✅  Q5 indices + Q2 short params + Q4 listing views
 Query/Sieve             S13          ⏳  Q1/Q3/Q6 listingProcessor + infinite scroll
+Tech-debt sweep         TS           ✅  Verify-first audit + 10 implementations; TS9 deferred (154 hex); TS17 ops pending
 Seed scale              S14–S18      ⏳  auctions/categories/blog/coupons/validator
 Bundle + Prize Draw     S19–S30      ⏳  SB1–SB11 + TC (largest feature — new collections)
 RBAC + BAN              S31–S37      ⏳  security gates — do after all features stable

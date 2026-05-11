@@ -35,6 +35,73 @@
 
 ---
 
+### Session TS — 2026-05-12 — Tech-Debt Sweep (verify-first audit + 10 implementations)
+
+**Scope:** Single tail-clearing session inserted between S13 and S19 (Bundle backbone). Goal: clear the carry-over list (UX9 wires, FI6-2 wraps, P20 cast, X7b hex, W2 stale wishlist, VD9/VD10 content, preview tokens, Media Library, indexes deploy, Razorpay client). Followed Rule #4 with a verify-first audit pass.
+
+**Phase 1 — Verify-first audit (no code change):**
+
+| Task | Outcome |
+|------|---------|
+| TS2 | ✅ — `SellerShippingView:225` + `SellerProductShell:534` already use `StoreAddressSelectorCreate`. |
+| TS3 | ✅ — `CartRouteClient:274–612` already has full coupon input + apply + validate flow. |
+| TS4 | ✅ — `AdminCategoryEditorView:182` already uses `InlineCreateSelect` for parent. |
+| TS5 | ✅ — Comma-separated text input at `ProductForm:406-412` kept; chip+inline-add UX deferred. |
+| TS6 | ✅ — `ProductFeaturesSelector` already wired at `ProductForm:753`. |
+| TS8 | ✅ — Grep across appkit + src returns 0 hits for `as unknown as SectionConfig`. |
+| TS18 | ✅ — `CheckoutRouteClient.tsx:157–233` has the full Razorpay flow (loadScript → POST /api/payment/create-order → openRazorpayModal → POST /api/payment/verify → success redirect). Audit incorrectly described it as a stub. |
+| TS9 | ⚠️ Deferred — actual count is **154** hardcoded hex hits in `.tsx`, not ~13. Scope blown; needs its own multi-commit session split by area (admin / checkout / public / appkit-ui). |
+
+**Phase 2 — Implementations:**
+
+| Task | Files | Notes |
+|------|-------|-------|
+| TS1 | `src/components/routing/CheckoutRouteClient.tsx` | Imports `AddressForm`, `SideDrawer`, `useCreateAddress`, `AddressFormData`. Adds local `addAddressDrawerOpen` state + `handleAddressFormSubmit`. Passes `renderAddNew` to `CheckoutAddressStep` and replaces empty state with a [+ Add new address] CTA. `SideDrawer` wraps the page; on save → new address auto-selected, drawer closes, success toast. |
+| TS7 | `src/app/[locale]/promotions/[tab]/page.tsx`, `src/app/[locale]/stores/[storeSlug]/products/page.tsx` | Both server pages now load product features (platform or store) and wrap their tree in `ProductFeaturesProvider`. `SearchResultsClient` skipped (orphan after SR1). Wishlist `"use client"` wrap deferred. |
+| TS10 | `appkit/src/features/wishlist/repository/user-wishlist.repository.ts` | `getWishlistItems` now calls new private `filterExistingProducts(items)` which runs `Promise.all` over `products/{id}.get()` and drops entries pointing at deleted products. Silent. No throw on individual product-read errors (item kept for safety). |
+| TS11 | `appkit/src/features/events/components/EventDetailView.tsx` | New optional render-prop slots: `renderDescription`, `renderGallery`, `renderWinners`. Wired into `DetailViewShell.mainSlots` between header and content. |
+| TS12 | `appkit/src/features/blog/components/BlogPostView.tsx` | New optional `renderAuthorBio?: (post) => ReactNode` rendered above the article content card. Related-posts grid already existed at line 196. |
+| TS13 | `src/app/api/preview/route.ts` (new), `src/app/[locale]/preview/[token]/page.tsx` (new) | POST creates `previewDrafts/{token}` with 30-min TTL; GET reads + checks expiry. Page resolves token, shows draft banner, renders draft JSON (per-kind rich rendering to be wired by consumer pages). Cloud-Function cleanup deferred; read-side filters on `expiresAt`. |
+| TS14 | `src/app/api/admin/media/route.ts` (new) | Admin-only `GET ?prefix=&pageToken=&pageSize=` (default 24, max 100). Uses `getAdminStorage().bucket().getFiles({ prefix, maxResults, pageToken, autoPaginate:false })`. Returns `{ files: MediaFile[], nextPageToken }`. |
+| TS15 | `appkit/src/features/admin/components/AdminMediaView.tsx` | New internal `MediaBrowser` component: prefix dropdown (Products/Auctions/Pre-orders/Stores/Blog/Events/Carousel/Users/Admin), filename search, paginated 6-col grid, [Copy URL] per tile, [Load more] for `nextPageToken`. Replaces the "feature deferred" Alert. |
+| TS16 | `appkit/src/features/media/MediaPickerModal.tsx` | New "Existing" tab between Upload and External URL. Loads from `/api/admin/media`, filters by prefix + filename search, click-to-select grid (5-col, max-height scroll), [Use selected] confirms. |
+
+**Files changed:**
+
+| Path | Change |
+|------|--------|
+| `crud-tracker.md` | Added TS row (Ordered Sessions), Tier TS table (19 rows), TS dep chain. Closed TS1/2/3/4/5/6/8/10/11/12/13/14/15/16/18/19 ✅; TS7 ⚠️; TS9 ⚠️ deferred; TS17 ⏳. Summary: 142 → 159 done, 263 → 265 remaining (after +19 new tasks). |
+| `prompt.md` | Replaced CURRENT (S9) block with LAST COMPLETED (TS) summary. Next-sessions table TS row → ✅. PLAN SNAPSHOT pending block TS → ✅. |
+| `src/components/routing/CheckoutRouteClient.tsx` | TS1 wiring (imports + state + drawer + render-prop). |
+| `src/app/[locale]/promotions/[tab]/page.tsx` | TS7 wrap. |
+| `src/app/[locale]/stores/[storeSlug]/products/page.tsx` | TS7 wrap. |
+| `src/app/api/admin/media/route.ts` (new) | TS14. |
+| `src/app/api/preview/route.ts` (new) | TS13 endpoint. |
+| `src/app/[locale]/preview/[token]/page.tsx` (new) | TS13 page. |
+| `appkit/src/features/wishlist/repository/user-wishlist.repository.ts` | TS10. |
+| `appkit/src/features/admin/components/AdminMediaView.tsx` | TS15 MediaBrowser. |
+| `appkit/src/features/media/MediaPickerModal.tsx` | TS16 Existing tab. |
+| `appkit/src/features/events/components/EventDetailView.tsx` | TS11 slots. |
+| `appkit/src/features/blog/components/BlogPostView.tsx` | TS12 author-bio slot. |
+
+**Deferred from this session (added to DEFERRED table):**
+
+| Item | Reason | Target |
+|------|--------|--------|
+| TS9 — hex carryover | 154 hits found vs ~13 estimated; one session insufficient | Future Tier X9 color-purity session, split by area (admin / checkout / public / appkit-ui). |
+| TS7 wishlist wrap | `/wishlist/page.tsx` is `"use client"` — needs server-wrapper refactor to host `ProductFeaturesProvider` cleanly. | Single follow-up task in a UX polish session. |
+| TS13 per-kind rich render | Preview token page renders draft JSON; per-kind visual preview (product / auction / blog / event) requires coupling to view components. | Wire as consumers adopt the preview flow. |
+| TS17 indexes deploy | Ops step requires user's Firebase CLI session. | User runs `firebase deploy --only firestore:indexes`. |
+| FAQ helpful-count UI (TS12 sub-scope) | Schema exists; UI surface not built. | Polish session. |
+| Cloud-Function `expirePreviewDrafts` | Read-side filters on `expiresAt` for now. | Add when functions next deployed. |
+
+**Verification:**
+
+- `npx tsc --noEmit` clean in both `letitrip.in/` and `appkit/`.
+- Browser smoke-tests pending user: checkout add-address drawer, admin Media Library browse, MediaPickerModal Existing tab, wishlist with seeded deleted product, `/preview/{token}` page.
+
+---
+
 ### Session S9 — 2026-05-11 — BK3 + D5 + VC7 (Compare overlay + Messages RTDB)
 
 **Scope:** Product Compare overlay (BK3) + full Firebase-RTDB-pinged Firestore conversation system (D5 + VC7).

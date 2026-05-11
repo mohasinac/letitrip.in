@@ -617,6 +617,136 @@ Watermark config (site_settings/global . watermark):
 
 ---
 
+## Shared > Tech-Debt Sweep (TS) — Three New Surfaces ✅ (2026-05-12)
+
+```
+A · Checkout Add-Address Drawer (TS1)
+─────────────────────────────────────
+  CheckoutRouteClient (use client)
+    │
+    ├── CheckoutAddressStep
+    │     ├── addresses[] (useAddresses)
+    │     │     ├── card → onSelectAddress(id, address)
+    │     │     │
+    │     │     └── empty state  ┐
+    │     │                      ├──→ [+ Add new address]
+    │     └── renderAddNew  ─────┘         │
+    │                                      ▼
+    └── SideDrawer (open ⇄ addAddressDrawerOpen)
+          └── AddressForm
+                onSubmit ──→ useCreateAddress.mutate
+                                      │
+                                      ▼
+                              POST /api/user/addresses
+                                      │
+                                ┌─────┴─────┐
+                                ▼           ▼
+                          setSelected(created)
+                          drawer.close()
+                          toast("Address added")
+
+B · Admin Media Library (TS14 + TS15)
+─────────────────────────────────────
+  GET /api/admin/media?prefix=&pageToken=&pageSize=24
+                  │
+                  ▼
+   getAdminStorage().bucket().getFiles({
+     prefix, maxResults, pageToken, autoPaginate: false
+   })
+                  │
+                  ▼
+   { files: [{ name, size, contentType, updatedAt,
+               downloadURL = "/api/media/<encoded-name>" }],
+     nextPageToken }
+
+  AdminMediaView (StackedViewShell)
+    ├── <Alert variant="info" title="Media Library">…</Alert>
+    ├── <MediaBrowser> ──────────────────────────────────┐
+    │      Select prefix ▼     Input filename search...   │
+    │      ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐         │
+    │      │ img │ │ img │ │ img │ │ img │ │ img │  · · ·  │
+    │      └─────┘ └─────┘ └─────┘ └─────┘ └─────┘         │
+    │      [Copy URL]  [Copy URL]  [Copy URL]  [Copy URL]  │
+    │      ─────────────────────────                       │
+    │      N file(s) · more available     [Load more →]    │
+    └─────────────────────────────────────────────────────┘
+    └── Upload sandbox (existing)
+          MediaUploadField · MediaUploadList · Clear
+
+C · MediaPickerModal — Existing Tab (TS16)
+─────────────────────────────────────
+  ┌─ Modal ─────────────────────────────┐
+  │ [Upload file] [Existing] [URL]      │
+  │ ─────────────                       │
+  │ Prefix: products/    Filter…        │
+  │ ┌───┐┌───┐┌───┐┌───┐┌───┐           │
+  │ │   ││   ││ ✓ ││   ││   │ ← select  │
+  │ └───┘└───┘└───┘└───┘└───┘           │
+  │                                     │
+  │           [Cancel] [Use selected]   │
+  └─────────────────────────────────────┘
+
+D · Preview Tokens (TS13)
+─────────────────────────────────────
+  FormShell PreviewPane (admin/seller form)
+    │  "Open in new tab ↗"
+    ▼
+  POST /api/preview { kind, draft }
+    │
+    ▼
+  Firestore.previewDrafts/{token}
+    { kind, draft, createdBy, createdAt, expiresAt = now+30min }
+    │
+    ▼
+  Open  /preview/{token}  in new tab
+    │
+    ▼
+  Server page  loadPreview(token)
+    ├── Firestore.previewDrafts/{token}.get()
+    ├── filter on expiresAt > now  → else notFound()
+    └── render { banner, kind, draft }
+
+  GET /api/preview?token=  is used by client-side previewers.
+
+E · Wishlist Stale Filter (TS10)
+─────────────────────────────────────
+  GET /api/user/wishlist
+    │
+    ▼
+  UserWishlistRepository.getWishlistItems(userSlug)
+    ├── docRef(userSlug).get()  → items[]
+    ├── filterExistingProducts(items)
+    │     └── Promise.all( items.map(i →
+    │                products/{i.productId}.get().exists ? i : null) )
+    │           .filter(notNull)
+    └── return alive items only  (stale snapshots dropped silently)
+
+F · Slot additions
+─────────────────────────────────────
+  EventDetailView  (TS11)
+    DetailViewShell.mainSlots = [
+      renderCoverImage,
+      renderHeader,
+      renderDescription,   ← NEW
+      renderGallery,       ← NEW
+      renderContent,
+      renderParticipateAction,
+      renderWinners,       ← NEW
+      renderLeaderboard,
+    ]
+
+  BlogPostView  (TS12)
+    body  = [
+      header,
+      ... tags,
+      renderAuthorBio(post),   ← NEW (above content)
+      renderContent(post),
+      related-posts grid,
+    ]
+```
+
+---
+
 ## Shared > PageLoader ✅ (X5 — replaces all 15 loading.tsx skeletons)
 
 ```

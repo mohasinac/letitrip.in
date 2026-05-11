@@ -2,21 +2,24 @@
 
 import { useCallback, useState } from "react";
 import {
+  AddressForm,
   Button,
   CheckoutAddressStep,
   CheckoutView,
   Div,
   Heading,
   Input,
+  SideDrawer,
   Stack,
   Text,
   useAddresses,
   useAuth,
   useCartQuery,
+  useCreateAddress,
   useToast,
   ROUTES,
 } from "@mohasinac/appkit/client";
-import type { Address } from "@mohasinac/appkit/client";
+import type { Address, AddressFormData } from "@mohasinac/appkit/client";
 import { useRouter } from "next/navigation";
 import {
   sendConsentOtpAction,
@@ -101,6 +104,27 @@ export function CheckoutRouteClient() {
 
   const [step, setStep] = useState<CheckoutStep>("address");
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [addAddressDrawerOpen, setAddAddressDrawerOpen] = useState(false);
+  const { mutate: createAddress, isPending: isCreatingAddress } =
+    useCreateAddress({
+      onSuccess: (created) => {
+        setSelectedAddress(created);
+        setAddAddressDrawerOpen(false);
+        showToast("Address added", "success");
+      },
+      onError: (err) => {
+        showToast(
+          err instanceof Error ? err.message : "Failed to add address",
+          "error",
+        );
+      },
+    });
+  const handleAddressFormSubmit = useCallback(
+    (data: AddressFormData) => {
+      createAddress(data);
+    },
+    [createAddress],
+  );
   const [maskedEmail, setMaskedEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -280,6 +304,20 @@ export function CheckoutRouteClient() {
     step === "address" ? 0 : step === "otp" ? 1 : step === "payment" ? 2 : 2;
 
   return (
+    <>
+    <SideDrawer
+      isOpen={addAddressDrawerOpen}
+      onClose={() => setAddAddressDrawerOpen(false)}
+      title="Add new address"
+      mode="create"
+    >
+      <AddressForm
+        onSubmit={handleAddressFormSubmit}
+        onCancel={() => setAddAddressDrawerOpen(false)}
+        isLoading={isCreatingAddress}
+        submitLabel="Save address"
+      />
+    </SideDrawer>
     <CheckoutView
       labels={{ title: "Checkout" }}
       totalSteps={3}
@@ -327,9 +365,29 @@ export function CheckoutRouteClient() {
                 </Div>
               )}
               renderEmptyState={() => (
-                <Text className="text-sm text-zinc-500 dark:text-zinc-400">
-                  No saved addresses. Please add one in your profile.
-                </Text>
+                <Div className="rounded-xl border border-dashed border-zinc-300 dark:border-slate-600 p-6 text-center">
+                  <Text className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
+                    No saved addresses yet.
+                  </Text>
+                  <Button
+                    type="button"
+                    onClick={() => setAddAddressDrawerOpen(true)}
+                    className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+                  >
+                    + Add new address
+                  </Button>
+                </Div>
+              )}
+              renderAddNew={() => (
+                <Div className="mt-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setAddAddressDrawerOpen(true)}
+                  >
+                    + Add new address
+                  </Button>
+                </Div>
               )}
             />
           );
@@ -456,5 +514,6 @@ export function CheckoutRouteClient() {
         </Div>
       )}
     />
+    </>
   );
 }
