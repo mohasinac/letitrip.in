@@ -7927,8 +7927,9 @@ Routes:    ROUTES.USER.ORDERS (back), ROUTES.USER.ORDER_TRACK(id), ROUTES.USER.O
 │    Total                 ₹990                                                │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  renderActions                                                               │
-│    [Track Shipment]  (shown if trackingNumber exists)                        │
-│    [Cancel Order]    (shown if status pending|confirmed) → ORDER_CANCEL(id)  │
+│    [Download Invoice] → ROUTES.USER.ORDER_INVOICE(id), target=_blank        │
+│    [Track Shipment]   (shown if trackingNumber exists)                       │
+│    [Cancel Order]     (shown if status pending|confirmed) → ORDER_CANCEL(id) │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 STATUS_COLORS: pending→yellow, confirmed|processing→blue, shipped→indigo,
@@ -8067,24 +8068,55 @@ Edit mode (S2: avatar replaced with ImageUpload):
 
 ---
 
-## User > Settings — Password Change ✅ (Session S2, extends D3)
+## User > Settings ✅ (Session S3, VC4 — rebuilt with tabs)
 
 ```
 Component: src/app/[locale]/user/settings/page.tsx
-Hook:      useChangePassword() from @mohasinac/appkit/client
-API:       POST /api/user/change-password
-           body: { currentPassword, newPassword }
-           Reauthenticates via Firebase, then updates password
+Hooks:     useChangePassword(), useChangeEmail() from @mohasinac/appkit/client
+APIs:      POST /api/user/change-password  (password change, server updates Firebase Auth)
+           GET  /api/user/export           (data download — profile + addresses + orders as JSON)
+Email flow: client reauthenticates → Firebase verifyBeforeUpdateEmail() → user clicks link → email updates
 
-Password section (renderPasswordForm):
+Tab bar:  [Account]  [Privacy]  [Appearance]
+          active tab: border-[var(--appkit-color-primary)] text-[var(--appkit-color-primary)]
+
+── Account tab ───────────────────────────────────────────────────────────────
 ┌─────────────────────────────────────────────────────────────────────────────┐
+│  ACCOUNT INFO                                                                │
+│  Display Name / email.split("@")[0]           [Edit profile →]             │
+│  user@example.com                                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  CHANGE EMAIL                                                                │
+│  New Email Address  [input type=email]                                       │
+│  Current Password   [input type=password]                                    │
+│                                         [Send Verification Email]           │
+├─────────────────────────────────────────────────────────────────────────────┤
 │  CHANGE PASSWORD                                                             │
-│  Current Password  [input type=password]                                     │
-│  New Password      [input type=password, minLength=8]                        │
-│  Confirm Password  [input type=password]                                     │
-│                                              [Update Password]              │
+│  Current Password   [input type=password]                                    │
+│  New Password       [input type=password, minLength=8]                       │
+│  Confirm Password   [input type=password]                                    │
+│                                         [Update Password]                   │
 └─────────────────────────────────────────────────────────────────────────────┘
-Client-side guards: passwords must match + min 8 chars before calling mutate
+
+── Privacy tab ───────────────────────────────────────────────────────────────
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  YOUR DATA                                                                   │
+│  Download a copy of your account data...                                     │
+│  [Download My Data]  → window.open("/api/user/export", "_blank")            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  DELETE ACCOUNT                                                              │
+│  To permanently delete... please contact our support team.                   │
+│  [Contact Support →]  → ROUTES.PUBLIC.SUPPORT                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+── Appearance tab ────────────────────────────────────────────────────────────
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  THEME & FONT                                                                │
+│  <FontToggleClient />                                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  LANGUAGE                                                                    │
+│  Display Language  [English ▾] (disabled — coming soon)                     │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -8133,5 +8165,45 @@ Non-cancellable state (order already shipped/delivered/etc):
 │  ⚠  This order cannot be cancelled — status: shipped                        │
 │     ← Back to order                                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## User > Order Invoice ✅ (Session S3, VC2)
+
+```
+Route:     /user/orders/[id]/invoice
+Page:      src/app/[locale]/user/orders/[id]/invoice/page.tsx
+Hook:      useOrder(id, { endpoint: /api/user/orders/:id })
+Opens:     from "Download Invoice" button on order detail (target=_blank)
+ROUTES:    ROUTES.USER.ORDER_INVOICE(id) = "/user/orders/:id/invoice"
+Print:     action bar hidden via print:hidden; print: classes force black text on all content
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  [print:hidden]  ← Back to order          [Print / Save as PDF]            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  LetItRip                                              Invoice              │
+│  letitrip.in                                     #XXXXXXXX · 10 May 2026   │
+│                                                                              │
+│  DELIVERED TO                                                                │
+│  123 Main St, Line 2                                                         │
+│  Mumbai, Maharashtra 400001 · India                                          │
+│                                                                              │
+│  Item                                Qty    Price                           │
+│  ─────────────────────────────────────────────────                          │
+│  Charizard PSA 9 (Set: Base Set)      1     ₹12,000                        │
+│  Hot Wheels Redline (Color: Red)      2     ₹2,400                         │
+│  ─────────────────────────────────────────────────                          │
+│                            Subtotal          ₹14,400                        │
+│                            Shipping          Free                            │
+│                            Discount (WEL10)  −₹1,440                        │
+│                            Tax (GST)         ₹1,298                         │
+│                            ─────────────────────────                        │
+│                            Total             ₹14,258                        │
+│                                                                              │
+│          Thank you for shopping with LetItRip · letitrip.in                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+Note: table elements kept as native HTML for consistent print/PDF rendering
+Discount row colour: text-emerald-600 dark:text-emerald-400 (print:text-black)
 ```
 

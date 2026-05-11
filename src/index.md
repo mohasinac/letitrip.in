@@ -197,4 +197,7 @@
 | `src/app/[locale]/user/layout.tsx` | User account layout + sidebar nav |
 | `src/app/[locale]/user/returns/page.tsx` | Returns & refunds list — filters orders by `return_requested` status |
 | `src/app/[locale]/user/orders/[id]/cancel/page.tsx` | Order cancel — reason form + `cancelOrderAction`; guards non-cancellable statuses |
+| `src/app/[locale]/user/orders/[id]/invoice/page.tsx` | Invoice print view — renders order as printable invoice; "Print / Save as PDF" button; action bar hidden in print media |
+| `src/app/[locale]/user/settings/page.tsx` | Settings page — Account/Privacy/Appearance tabs; email change (`useChangeEmail`), password change, data export, Contact Support link |
+| `src/app/api/user/export/route.ts` | GET `/api/user/export` — auth required; returns profile + addresses + orders as `attachment` JSON file |
 | `src/app/[locale]/demo/layout.tsx` | Demo/seed area layout (admin-protected) |
