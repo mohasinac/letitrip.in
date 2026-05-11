@@ -279,6 +279,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     title: "Shopping",
     items: [
       { href: String(ROUTES.USER.ORDERS),    label: "My Orders"   },
+      { href: String(ROUTES.USER.RETURNS),   label: "Returns"     },
       { href: String(ROUTES.USER.BIDS),      label: "My Bids"     },
       { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews"  },
       { href: String(ROUTES.USER.OFFERS),    label: "My Offers"   },
