@@ -242,6 +242,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.PRE_ORDERS),              label: "Pre-Orders"        },
       { href: String(ROUTES.STORE.OFFERS),                  label: "Offers"            },
       { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),   label: "Sub-listing Groups"},
+      { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"    },
       { href: String(ROUTES.STORE.TEMPLATES),               label: "Templates"         },
     ],
   },
