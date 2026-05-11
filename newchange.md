@@ -28,10 +28,53 @@
 | 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ✅ Done S1 2026-05-11 — see HS4-E | HS4-E ✅ |
 | 2026-05-11 | FI6 secondary surfaces | Cross-store listing pages other than /products, /auctions, /pre-orders do not yet wrap children in `ProductFeaturesProvider`, so feature badges don't render on cards there. Surfaces: SearchResultsClient, wishlist page, PromotionsProductsClient, StoreDetailLayoutView, RelatedProductsCarousel. Fix is mechanical (add `listPlatform()` + Provider in the corresponding page/server boundary). | ⏳ Open | Track as FI6-2; pick up in a follow-up session. |
 | 2026-05-11 | S9 WIP imports break tsc | Untracked scaffolding for D5/VC7 (Messages/Conversations) imports yet-to-ship appkit symbols: `getConversation`, `sendMessage`, `MESSAGE_MAX_LENGTH`, `listConversationsForBuyer`, `ChatList`, `ChatWindow`, `MessagesView`. Files: `src/app/api/user/conversations/*`, `src/app/[locale]/user/messages/page.tsx`. Main repo tsc has errors only in those files. Appkit tsc clean. | ⏳ Open | S9 — finish the appkit-side messages feature exports + ship the consumer routes together. |
+| 2026-05-12 | Q3-pre-orders | `/api/pre-orders/route.ts` not wired through `listingProcessor` in S13. Current handler delegates to appkit `preOrdersGET` which uses a `db.getRepository("preorders")` path against a separate collection that doesn't exist in this seed. Spec decision needed: (a) rewrite the handler to treat pre-orders as `products` with `isPreOrder==true` and forward to `listingProcessor`, or (b) add a real `preorders` collection. | ⏳ Open | Follow-up session — bundle with Q6-views wiring. |
+| 2026-05-12 | Q6-views | `useInfiniteScroll` primitive shipped; full wiring into the 4 listing views deferred. `useProducts` hook uses `useQuery` — switching to `useInfiniteQuery` is a real refactor (cursor accumulator, key invalidation, SSR hydration) with regression surface across ProductsIndexListing, AuctionsListView, PreOrdersListView, StoreProductsPageView. | ⏳ Open | Follow-up session — own session with browser verification per view. |
+| 2026-05-12 | Q1-ops | `listingProcessor` Function not yet deployed. Until `firebase deploy --only functions` is run and `FIREBASE_FUNCTION_LISTING_URL` is set in Vercel env, `/api/products` keeps using the local `productRepository.list` fallback (works fine, just no Firebase-side offload yet). | ⏳ Open | Ops step — user runs deploy + sets env. |
 
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S13 — 2026-05-12 — Q1 + Q3 + Q6 (listingProcessor + thin-proxy + useInfiniteScroll)
+
+**Scope:** Move public listing queries to a Firebase HTTPS Function colocated with Firestore; thin-proxy them from Vercel; ship the IntersectionObserver primitive that consumes the cursor from the Function.
+
+**Architecture**
+
+```
+[Browser] ──► Vercel /api/products (thin proxy, sanitizes filters)
+              │   no env? ──► local productRepository.list  (dev fallback)
+              └─► env set? ─► HTTPS POST + x-internal-secret
+                              │
+                              ▼
+                    asia-south1: listingProcessor
+                              │  (collection switch — products only)
+                              ▼
+                    productRepository.list (Sieve passthrough)
+                              │
+                              ▼   { items, total, page, pageSize, totalPages, hasMore, cursor }
+                       Cache-Control: public, max-age=60,
+                       s-maxage=120, stale-while-revalidate=60
+```
+
+Cursor is opaque base64 `{page}` over the existing Sieve offset — same response shape supports `mode="pages"` and `mode="infinite"` clients on one function. Switching to true `startAfter` lastDoc is a follow-up if drift becomes a measurable issue.
+
+| File | Change |
+|------|--------|
+| `functions/src/callable/listingProcessor.ts` (NEW) | HTTPS onRequest in `asia-south1`, `x-internal-secret` auth, `minInstances:0`, `maxInstances:20`. `SUPPORTED_COLLECTIONS = [COLLECTIONS.PRODUCTS]`. Cursor encode/decode helpers. Page+pageSize clamp. Forwards to `productRepository.list({filters, sorts, page, pageSize}, baseOpts)`. |
+| `functions/src/index.ts` | Register `listingProcessor` export. |
+| `src/app/api/products/route.ts` | New `callListingProcessor()` helper. When `FIREBASE_FUNCTION_LISTING_URL`+`LETITRIP_INTERNAL_SECRET` are set, forwards `{ collection, f, s, p, ps, cursor, baseOpts }`. Otherwise falls back to the existing `productRepository.list` path so local dev keeps working without the Function deployed. Response now includes `cursor`. `ids=` batch mode unchanged. `PUBLIC_LISTING_CACHE_CONTROL` constant deduplicates the header string. |
+| `appkit/src/react/hooks/useInfiniteScroll.ts` (NEW) | IntersectionObserver primitive. Caller supplies `hasMore` + `onLoadMore`; hook guards re-entry, disconnects on unmount, exposes `sentinelRef` + `isLoadingMore`. Cursor-agnostic. |
+| `appkit/src/client.ts` | Export `useInfiniteScroll` + types. |
+
+**Quality refactor**: `COLLECTIONS.PRODUCTS` from `functions/config/constants.ts` instead of string literals; `CACHE_CONTROL` + `DEFAULT_SORT` hoisted in the Function; `PUBLIC_LISTING_CACHE_CONTROL` hoisted in the Vercel route.
+
+**TSC**: 0 errors in functions, appkit, main. **appkit build**: OK. **No Firestore schema change** — no seed/index/SeedPanel updates needed (Q5 indices already deployed in S12). **Sieve config unchanged** — listingProcessor is a Sieve passthrough.
+
+**Deferred (logged above)**: Q3-pre-orders (spec decision), Q6-views (useProducts refactor), Q1-ops (`firebase deploy` + Vercel env).
 
 ---
 

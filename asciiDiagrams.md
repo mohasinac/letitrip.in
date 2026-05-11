@@ -9014,3 +9014,68 @@ Debounce: 600ms after input. Check state: idle | checking | available | taken | 
 Success banner shows new URL after save.
 ```
 
+
+## S13 — listingProcessor + thin-proxy + useInfiniteScroll (Q1 + Q3 + Q6)
+
+```
+Layer            Where                                                 Notes
+───────────────  ─────────────────────────────────────────────────────  ──────────────────────────
+Browser          ProductsIndexListing (use-client)                     React Query useQuery today;
+                 useProducts hook                                       useInfiniteQuery wiring is
+                                                                         a follow-up (Q6-views).
+                 useInfiniteScroll(sentinelRef, onLoadMore)             Cursor-agnostic primitive.
+
+Vercel edge      /api/products/route.ts                                 buildFilters() = security gate
+                 PUBLIC_LISTING_CACHE_CONTROL                            (only safelisted Sieve fields).
+                                                                         ids= batch mode bypasses
+                                                                         listingProcessor entirely.
+                 │
+                 │ env FIREBASE_FUNCTION_LISTING_URL set?
+                 │
+                 ├── no  ─► productRepository.list(...)  (dev fallback)
+                 │
+                 └── yes ─► HTTPS POST + x-internal-secret
+                            { collection, f, s, p, ps, cursor, baseOpts }
+
+Firebase         functions/src/callable/listingProcessor.ts             asia-south1
+asia-south1      ─ verifySecret(x-internal-secret)                       minInstances: 0
+                 ─ SUPPORTED_COLLECTIONS check                            maxInstances: 20
+                 ─ cursor ?? p ?? DEFAULT_PAGE                            timeout 30s
+                 ─ productRepository.list({filters, sorts, page, pageSize})
+                 ─ Cache-Control: public, max-age=60, s-maxage=120,
+                                  stale-while-revalidate=60
+                 ─ return { items, total, page, pageSize, totalPages,
+                            hasMore, cursor: hasMore ? base64({page+1}) : null }
+
+Firestore        products/                                              All existing Sieve indices
+                 (Sieve passthrough — no schema change)                  from Q5/S12 still apply.
+```
+
+### Cursor encoding
+```
+cursor = base64( JSON.stringify({ page: <next page number> }) )
+hasMore === false  →  cursor: null
+```
+Why opaque: clients never reason about page numbers when in `mode="infinite"`; they just forward the previous response's `cursor`. The same Function serves `mode="pages"` clients via `p=N` directly. Switching to true `startAfter` lastDoc is a follow-up if drift becomes a measurable issue.
+
+### useInfiniteScroll contract
+```ts
+const { sentinelRef, isLoadingMore } = useInfiniteScroll({
+  hasMore: page.hasMore,
+  onLoadMore: () => fetchNext(page.cursor),
+  rootMargin: "200px",           // optional — defaults shown
+});
+
+// JSX
+<>{items.map(...)}<div ref={sentinelRef} />{isLoadingMore && <Skeleton/>}</>
+```
+Hook responsibilities: re-entry guard, auto-disable on `hasMore: false`, unmount cleanup. Domain state (items, cursor, hasMore) stays in the caller.
+
+### Deploy / ops
+```
+1. firebase deploy --only functions       # publishes listingProcessor to Cloud Run
+2. Vercel env (Production):
+   FIREBASE_FUNCTION_LISTING_URL = <Cloud Run URL of listingProcessor>
+   LETITRIP_INTERNAL_SECRET      = <existing shared secret>
+3. Until step 2 is done, /api/products silently uses the local repo fallback.
+```

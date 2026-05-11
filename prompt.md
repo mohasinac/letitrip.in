@@ -7,21 +7,13 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S9 (2026-05-11)
+### ✅ Last completed — S13 (2026-05-12)
 
 | Task | Summary |
 |------|---------|
-| BK3 | `CompareOverlay` (appkit) — fixed `inset-0`, `z-index: var(--appkit-z-modal,60)`. Desktop ≥md: CSS-grid columns. Mobile <md: `useSwipe` + dot pagination + Escape close. Wired into ProductsIndexListing + PreOrdersIndexListing BulkActionsBars (disabled outside 2–4 range). New `productRepository.listByIds(ids)` + `GET /api/products?ids=…` (max 20) + `ACTION_ID.COMPARE` + `COMPARE_MAX_ITEMS=4` + `BulkAction.disabled` flag. |
-| D5 | `/user/messages` page rewired from stub. `MessagesView` + `ChatList` + `ChatWindow` shells wired via `useConversations` + `useConversation`. `ConversationListItem` (unread chip), `MessageBubble` (mine/theirs), `MessageInput` (Enter sends, 2000-char cap). Auto-marks-read on open; auto-scrolls; mobile back button. |
-| VC7 | Messages — Firebase RTDB hybrid. Firestore = canonical (messages embedded in `conversations/{id}`); RTDB = ping channel only. New `conversationsRepository` (txn-wrapped append/markRead). Server actions `listConversationsForBuyer/listConversationsForStore/getConversation/sendMessage/markConversationRead`. 4 API routes (`/api/user/conversations` + `[id]` + `[id]/messages` + `[id]/read`). Each write fans out 3 RTDB pings (`chats/{convId}/lastUpdate` + 2× `chats/user/{uid}/lastUpdate`). Client hooks subscribe via `getClientRealtimeProvider().subscribe(...)`. 2 new composite indexes. |
-
-### ✅ Last completed — S12 (2026-05-11)
-
-| Task | Summary |
-|------|---------|
-| Q5 | 5 new Firestore composite indices on `products` — `(category,price)`, `(brandSlug,createdAt)`, `(storeId,status)`, `(isPromoted,createdAt)`, `(featured,createdAt)`. Sixth spec index (`isAuction,auctionEndDate`) already existed. Source: `appkit/firebase/base/firestore.indexes.json`; merged via `firebase-merge.mjs` to both root mirrors. Ops `firebase deploy --only firestore:indexes` pending. |
-| Q2 | `parseListingParams(url)` + `serializeListingParams(params, extra)` helpers in `appkit/src/utils/listing-params.ts` (also barrel-exported from `@mohasinac/appkit`). Short canonical names `f / s / p / ps / q / cursor` accepted on `/api/products`, `/api/pre-orders`, `/api/stores`, `/api/stores/[slug]/{products,auctions}`. Long names (`filters / sorts / sort / page / pageSize / q / cursor`) remain accepted for backwards compat. Short wins when both present. Defaults hoisted to per-route `DEFAULT_PAGE / PAGE_SIZE / SORT` constants. |
-| Q4 | Sibling `parseListingSearchParams(searchParams)` for Next.js SSR pages. Applied to `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`. `StoreProductsPageView` now accepts `searchParams` (was hardcoded to page 1, sort `-createdAt`). Cursor is thread-only until S13 listingProcessor lands. |
+| Q1 | `functions/src/callable/listingProcessor.ts` — HTTPS Function in `asia-south1` (`x-internal-secret` auth, `minInstances:0`, `maxInstances:20`). Accepts `{ collection, q, f, s, p, ps, cursor, baseOpts }`. Cursor is opaque base64 of `{ page }` over the existing `productRepository.list` (Sieve) offset — supports both `mode="pages"` (p=N) and `mode="infinite"` (cursor) on one Function. `SUPPORTED_COLLECTIONS = [COLLECTIONS.PRODUCTS]`. `CACHE_CONTROL` + `DEFAULT_SORT` hoisted. Registered in `functions/src/index.ts`. **Deviations**: `minInstances:0` not 1 (cost), opaque cursor not true `startAfter` (drift OK), Sieve `q=` substring kept (not range prefix). |
+| Q3 | `src/app/api/products/route.ts` — `callListingProcessor()` helper forwards to the Function when `FIREBASE_FUNCTION_LISTING_URL`+`LETITRIP_INTERNAL_SECRET` env are set; otherwise local `productRepository.list` fallback. `PUBLIC_LISTING_CACHE_CONTROL` constant matches Function-side header. `ids=` batch mode unchanged. **`/api/pre-orders` deferred** — current handler queries non-existent `preorders` collection; spec decision needed. |
+| Q6 | `appkit/src/react/hooks/useInfiniteScroll.ts` — IntersectionObserver primitive (in-flight guard + auto-disable on `hasMore:false` + unmount cleanup). Exported from `@mohasinac/appkit/client`. **View wiring deferred** — `useProducts` (useQuery-based) → `useInfiniteQuery` refactor has too much regression surface across the 4 listing views to bundle with the hook. |
 
 ### ✅ Last completed — TS Tech-Debt Sweep (2026-05-12)
 
@@ -41,9 +33,9 @@
 | TS17 | ⏳ Pending user ops — run `firebase deploy --only firestore:indexes` to push pending composites. |
 | TS19 | `npx tsc --noEmit` clean in both repos; tracker counts updated (149 → 159 done). Browser smoke-tests pending user. |
 
-### 🔜 Current — S13 (next session)
+### 🔜 Current — S14 (next session)
 
-> TS Tech-Debt Sweep done. Roadmap continues at S13 (Q1/Q3/Q6 — `listingProcessor` Firebase Function + proxy routes + infinite scroll). After that, the SB block (S19+).
+> S13 done. Q1+Q3+Q6 shipped with Q3-pre-orders, Q6-views, and Q1-ops (Firebase deploy + Vercel env) deferred (see newchange.md). Roadmap continues at S14 (P24 — auctions 6→20 + pre-orders 5→10 + bids 20→120+ seed scale). After that, S15–S18 (more seed scale) then S19+ (SB Bundle/Prize Draw).
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -62,7 +54,7 @@
 | **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
 | **S11** ✅ | O5 | Shiprocket auto-create | medium |
 | **S12** ✅ | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
-| **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |
+| **S13** ✅ | Q1, Q3, Q6 | listingProcessor Function + /api/products thin-proxy + useInfiniteScroll primitive. Q3-pre-orders + Q6-views deferred. | medium |
 | **TS** ✅ | TS1–TS19 | Tech-debt sweep — verify-first closed 6 already-done; deferred TS9 (154 hex hits); implemented TS1/10/11/12/13/14/15/16/19; TS7 partial; TS17 ops pending | medium-high |
 | **S14–S18** | P24–P31 | Seed scale (auctions/categories/blog/coupons/validator) | low |
 | **S19–S30** | SB1–SB11, TC | Bundle + Prize Draw + Event Raffle system | high |

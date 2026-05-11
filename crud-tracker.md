@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S9 ✅ BK3 + D5 + VC7 (Compare overlay + Messages RTDB). 142 done, 263 remaining.
+> **Last updated:** 2026-05-12 — S13 ✅ Q1 + Q3 + Q6 (listingProcessor + thin proxy + useInfiniteScroll primitive). 162 done, 262 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -59,10 +59,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 424 |
-| ✅ Done | 159 |
+| ✅ Done | 162 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 265 |
+| ⏳ Remaining | 262 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -177,7 +177,7 @@ Rules to keep top-of-mind every task:
 | **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
 | **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
 | **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
-| **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
+| **S13** ✅ | Query | Q1, Q3, Q6 | Done 2026-05-12. Q1 listingProcessor Function + Q3 /api/products thin proxy + Q6 useInfiniteScroll primitive. **Deferred**: Q3-pre-orders (spec decision needed) + Q6-views (useProducts → useInfiniteQuery refactor risk). Ops: `firebase deploy --only functions` + set `FIREBASE_FUNCTION_LISTING_URL` in Vercel. | — |
 | **TS** ✅ | Tech-Debt | TS1–TS19 | Done 2026-05-12 — verify-first audit closed TS2/3/4/5/6/8/18 as already done; deferred TS9 (154 hex hits, scope blown). Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial (wishlist client-page wrap deferred); TS17 user-ops pending. tsc 0/0. | S13 done |
 | **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
 | **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
@@ -544,12 +544,12 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| Q1 | `listingProcessor` Firebase HTTPS Function | M | ⏳ | | File: `functions/src/callable/listing-processor.ts`. Input: `{ collection, q?, f?, s?, p?, ps?, cursor? }`. Text search via per-collection field config (range queries, no JS pass). Cursor-based pagination. Cache-Control header on response. Set `minInstances: 1`. Returns `{ items, total, page, pageSize, cursor, hasMore }`. |
+| Q1 | `listingProcessor` Firebase HTTPS Function | M | ✅ | S13 2026-05-12 | New `functions/src/callable/listingProcessor.ts` accepting `{ collection, q, f, s, p, ps, cursor, baseOpts }`. Cursor is opaque base64 of `{ page }` over the existing Sieve offset path — same response shape supports `mode="pages"` (p=N) AND `mode="infinite"` (cursor) clients. `x-internal-secret` auth. `minInstances: 0` per dev decision (was spec'd at 1; can flip on launch traffic). `Cache-Control: public, max-age=60, s-maxage=120, stale-while-revalidate=60`. `COLLECTIONS.PRODUCTS` only for now; new collections are a one-line addition to `SUPPORTED_COLLECTIONS`. |
 | Q2 | Standardise listing API query param names | S | ✅ S12 2026-05-11 — `parseListingParams(url)` helper in `appkit/src/utils/listing-params.ts` applied to /api/products + /api/pre-orders + /api/stores + /api/stores/[slug]/{products,auctions}. Short `f/s/p/ps/q/cursor` wins; long names retained for backwards compat. |
-| Q3 | Delegate listing API routes to `listingProcessor` Firebase Function | M | ⏳ | | Replace direct Sieve calls in `/api/products/route.ts` and `/api/pre-orders/route.ts` with HTTP calls to `listingProcessor`. Use Firebase Admin SDK server-side. Vercel route becomes thin proxy. |
+| Q3 | Delegate listing API routes to `listingProcessor` Firebase Function | M | ⚠️ | S13 2026-05-12 | `/api/products/route.ts` now forwards to `listingProcessor` when `FIREBASE_FUNCTION_LISTING_URL`+`LETITRIP_INTERNAL_SECRET` env are set, falling back to direct `productRepository.list` otherwise (keeps dev workflow). `PUBLIC_LISTING_CACHE_CONTROL` constant matches the Function-side header. `ids=` batch mode unchanged. **Pre-orders deferred** — `/api/pre-orders/route.ts` delegates to appkit `preOrdersGET` which uses `db.getRepository("preorders")` against a separate collection that doesn't exist in this seed; wiring through `listingProcessor` needs a spec decision (treat as products with `isPreOrder==true` filter, or add a real `preorders` collection). |
 | Q4 | Update appkit listing views for new param names + cursor pagination | S | ✅ S12 2026-05-11 — All 4 views switched to `parseListingSearchParams`. Defaults hoisted to `DEFAULT_PAGE` / `DEFAULT_PAGE_SIZE` / `DEFAULT_SORT` constants. `StoreProductsPageView` now accepts `searchParams` (previously hardcoded). Cursor is thread-only until S13 listingProcessor lands. |
 | Q5 | Firestore composite indexes for common filter+sort combos | S | ✅ S12 2026-05-11 — 5 of 6 spec indices added to `appkit/firebase/base/firestore.indexes.json` (the 6th, isAuction+auctionEndDate, already existed). Merged to both root mirror files via `node appkit/scripts/firebase-merge.mjs`. Ops deploy via `firebase deploy --only firestore:indexes` is pending. |
-| Q6 | Infinite scroll on public listing pages | M | ⏳ | | Add `useInfiniteScroll` hook in appkit: wraps `IntersectionObserver` on a sentinel `div` at list bottom; on intersect fetches next cursor batch and appends to items state. Wire into `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView` as `mode="infinite"`. Show skeleton cards while loading next batch. "Back to top" button appears after 2 pages loaded. Admin/store tables keep `mode="pages"`. |
+| Q6 | Infinite scroll on public listing pages | M | ⚠️ | S13 2026-05-12 | `useInfiniteScroll` primitive shipped at `appkit/src/react/hooks/useInfiniteScroll.ts` — IntersectionObserver wrapper that fires `onLoadMore` when a sentinel div scrolls into view; in-flight guard + auto-disable on `hasMore: false` + clean unmount. Exported from `@mohasinac/appkit/client`. **View wiring deferred** to a follow-up — the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) use `useProducts` which is `useQuery`-based; switching to `useInfiniteQuery` is a substantial refactor with regression surface and is not appropriate to bundle with the primitive. |
 
 ---
 
