@@ -7,27 +7,29 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 91 (2026-05-11)
+### ✅ Last completed — Session 92 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| X8a | Added z-below/base/raised/tooltip + input/avatar size tokens + grid-min-card tokens to `tokens.css`. Updated both `tailwind.config.js` with named z-index tokens (modal/toast/overlay/tooltip/below/base/raised). |
-| X8b | Tokenized 26 CSS files: z-index → named vars, min-height 44px/40px → input-lg/md, font-size 10px → text-2xs, line-height/letter-spacing → leading/tracking vars, elevation box-shadows → shadow vars, grid minmax → grid-min-card vars. |
+| AX2 | `usePanelUrlSync` hook (`?panel=create\|edit&id=`). `DataTable.onRowClick`. `embedded` prop on 7 admin editor views (Brand/Product/Category/Blog/FAQ/Coupon/Event). Wired 8 admin listing views (Brands/Products/Categories/Blog/Events/FAQs/Coupons/Stores) with SideDrawer + embedded editor. Exported from `index.ts` + `client.ts`. |
+| AX3 | `FormActionBar` component — sticky bottom mobile / sticky top desktop (below `--header-height`). Breadcrumbs, dirty-dot, Discard/Preview/Save Draft/Publish buttons. CSS uses only `var(--appkit-color-*)` + `var(--appkit-z-raised)` tokens — no hex violations. |
+| Cleanup | End-of-session audit: FormActionBar.style.css hex violations fixed → all CSS variables. Tracker summary corrected (110 done, 287 remaining). |
 
-### 🔄 Current — Session 92 (next)
+### 🔄 Current — Session 93 (next)
 
 | Task | Status | Notes |
 |------|--------|-------|
-| AX2 | ⏳ pending | `?panel=create/edit` URL deep-links for admin panels |
-| AX3 | ⏳ pending | `FormActionBar` sticky save/cancel bars |
+| EX1 | ⏳ pending | Live collection stats queries for homepage sections |
+| EX2 | ⏳ pending | Multi-carousel (multiple `carouselSlides` sections on homepage) |
+| EX3 | ⏳ pending | Categories/brands CTA + filter-chip sections |
+| EX4 | ⏳ pending | Products multi-row section |
+| YT1 | ⏳ pending | YouTube cards in social feed section |
 
 ### 🔜 Next sessions (safe-first order)
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| 91 | X8a, X8b | Layout token audit — z-index, spacing, breakpoint violations | zero |
-| 92 | AX2, AX3 | `?panel=create/edit` deep-links + `FormActionBar` sticky bars | low |
-| 93 | EX1–EX5, YT1, SB11 | Extended homepage sections + bundles/prize-draw/raffle sections | low |
+| 93 | EX1–EX4, YT1 | Live stats + multi-carousel + CTA chips + products multi-row + YouTube cards | low |
 | 94 | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | 95 | BK1–BK3 | Public bulk selection + compare overlay | low |
 | 96 | Q5, Q1–Q4, Q6 | Firestore indexes deploy + `listingProcessor` Firebase Function + infinite scroll | medium |
@@ -42,7 +44,7 @@
 ## PLAN SNAPSHOT
 
 ```
-112 tasks ✅ done · 285 remaining · 397 total (as of Session 91 done)
+110 tasks ✅ done · 287 remaining · 397 total (as of Session 92 done)
 
 PHASE                   SESSIONS     STATUS
 ──────────────────────────────────────────────────
@@ -71,7 +73,7 @@ FAQ + WA redesign       89b          ✅  FAQSection, WhatsApp, @types/react
 Action constants        90           ✅  AX1 complete (constants+hook+store+migration)
 Color tokens            90-colors    ✅  X7a+X7b complete (77 CSS files tokenized)
 Layout tokens           91           ✅  X8a+X8b complete (tokens + 26 CSS files)
-Action URLs + bars      92           ⏳
+Action URLs + bars      92           ✅  AX2+AX3 complete (usePanelUrlSync, 8 admin panels, FormActionBar)
 Extended sections       93           ⏳
 Feature icons           94           ⏳
 Bulk actions            95           ⏳

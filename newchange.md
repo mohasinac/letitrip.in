@@ -33,6 +33,22 @@
 
 ---
 
+### Session 92 cleanup — End-of-session audit & quality pass — 2026-05-11
+
+**Scope**: Post-session cleanup; no new features. TypeScript verified (0 errors both repos). Code quality audit on session output.
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/ui/components/FormActionBar.style.css` | Replaced all hex violations with CSS variable tokens: `rgba(255,255,255,0.95)` → `var(--appkit-color-surface)`, dark bg → `var(--appkit-color-surface-elevated)`, dark border → `var(--appkit-color-border)`, `#71717a` → `var(--appkit-color-text-muted)`, `#18181b` → `var(--appkit-color-text)`, `#f4f4f5` redundant dark override removed (token handles it), `border-radius: 9999px` → `var(--appkit-radius-full)`, `font-size: 0.875rem` → `var(--appkit-text-sm)`, `font-size: 0.75rem` → `var(--appkit-text-xs)`. Removed all hex fallbacks from `var(--appkit-color-border, #hex)` style. Dropped redundant `.dark` title + breadcrumb color overrides (semantic tokens handle dark mode). |
+| `crud-tracker.md` | Summary table corrected: 107 → 110 done, 290 → 287 remaining (was out of sync with header). |
+| `prompt.md` | Session 92 → LAST COMPLETED; Session 93 (EX1–EX4, YT1) set as CURRENT. Plan snapshot updated: 92 ✅, counts corrected to 110/287. Next sessions table trimmed (removed stale 91/92 rows). |
+| `asciiDiagrams.md` | AX2 desktop diagram redrawn: was incorrect split-panel layout; corrected to show full-screen SideDrawer overlay with state machine. AX3 z-index label fixed: `z-dropdown` → `z-raised=10`. |
+| `memory/project_status.md` | Updated with session 92 completion summary. |
+
+**Deferred / skipped**: None — audit-only session.
+
+---
+
 ### Session 92 — Action URLs + FormActionBar (AX2 + AX3) — 2026-05-11
 
 **Scope**: Inline create/edit panels wired to URL params on all admin listing views; FormActionBar component.

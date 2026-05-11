@@ -58,10 +58,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 397 |
-| ✅ Done | 107 |
+| ✅ Done | 110 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 290 |
+| ⏳ Remaining | 287 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---

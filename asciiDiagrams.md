@@ -6038,48 +6038,38 @@ ACTION dispatch flow:
 
 ### AX2 — Edit/Create URL Panel Auto-Open
 
-#### Desktop: List → URL triggers panel
+#### State machine
 
 `
-URL: /admin/products
-┌──────────────────────────────────────────────────────────────────┐
-│ Products                    [+ New]  [Filters]  [Export]         │
-│ ┌────────────────────────────────────────────────────────────┐   │
-│ │ ID                  Name        Status   Actions           │   │
-│ │ product-hot-wheels  Hot Wheels  Active   [Edit] [🗑]       │   │
-│ │ product-charizard   Charizard   Active   [Edit] [🗑]       │   │
-│ └────────────────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────────────┘
-
-URL: /admin/products?panel=edit&id=product-hot-wheels
-┌─────────────────────────────────────────────────────────────────┐
-│ Products  [+ New]  [Filters]                                    │
-│ ┌─────────────────────┐  ┌──────────────────────────────────┐  │
-│ │ ID         Actions  │  │ ← Edit: Hot Wheels Redline Vintage│  │
-│ │ prod-hw    [Edit]   │  │ ─────────────────────────────── │  │
-│ │ prod-char  [Edit]   │  │  [form fields…]                  │  │
-│ └─────────────────────┘  │                                  │  │
-│                           │  [Share link 🔗]                │  │
-│                           │  [Discard]        [Save →]      │  │
-│                           └──────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-On close/success → router.replace('/admin/products')
+URL param:  none              ?panel=create      ?panel=edit&id=xxx
+State:      list              isCreateOpen=true  isEditOpen=true, editId="xxx"
+SideDrawer: closed            open (Add X)       open (Edit X)
+Close:      —                 router.replace()   router.replace()
 `
 
-#### Mobile: URL triggers full-screen panel
+#### Desktop + Mobile: URL triggers full-screen SideDrawer
 
 `
-URL: /admin/products?panel=edit&id=product-hot-wheels
-┌──────────────────────────────┐
-│ ←  Edit: Hot Wheels Redline  │
-│ ─────────────────────────── │
-│  [form fields, full width]   │
-│                              │
-│  [Share link 🔗]             │
-│ ─────────────────────────── │
-│ [Discard]          [Save →] │  ← sticky bottom bar
-└──────────────────────────────┘
-On close → router.replace('/admin/products')
+URL: /admin/brands                        URL: /admin/brands?panel=edit&id=brand-hot-wheels
+┌──────────────────────────────────────┐  ┌──────────────────────────────────────┐
+│ Brands            [+ Add Brand]      │  │ ╔══════════════════════════════════╗  │
+│ [Search] [Sort]   [Filters]          │  │ ║ ✏ Edit Brand            [✕ Close]║  │
+│ ┌────────────────────────────────┐   │  │ ║ ─────────────────────────────── ║  │
+│ │ Name            Slug    Status │   │  │ ║  Brand name *                    ║  │
+│ │ Hot Wheels  brand-hw   Active  │──→click║  [Hot Wheels                  ]  ║  │
+│ │ Bandai      brand-ban  Active  │   │  │ ║                                  ║  │
+│ └────────────────────────────────┘   │  │ ║  Slug                            ║  │
+│                                      │  │ ║  [brand-hot-wheels             ] ║  │
+└──────────────────────────────────────┘  │ ║                                  ║  │
+                                          │ ║  [Delete]              [Save →]  ║  │
+                                          │ ╚══════════════════════════════════╝  │
+                                          └──────────────────────────────────────┘
+                                          Backdrop dims list; close → router.replace()
+
+Routing hooks:
+  openCreatePanel() → router.push(?panel=create)
+  openEditPanel(id) → router.push(?panel=edit&id=xxx)
+  closePanel()      → router.replace(pathname, no panel params)
 `
 
 ---
@@ -6092,7 +6082,7 @@ On close → router.replace('/admin/products')
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Admin / Products / Edit ● Hot Wheels Redline Vintage     ← breadcrumb │
 │                                              [👁 Preview] [Draft] [Publish →]│
-│ ─── STICKY TOP BAR (z-dropdown, top: var(--header-height)) ─────────  │
+│ ─── STICKY TOP BAR (z-raised=10, top: var(--header-height)) ────────  │
 │                                                                        │
 │  [Basic Info tab]  [Media]  [Pricing]  [Inventory]  [Features]         │
 │                                                                        │
