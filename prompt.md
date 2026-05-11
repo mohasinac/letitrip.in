@@ -22,8 +22,8 @@
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| **S1** | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug audit + field renames + per-store Google Reviews | zero |
-| **S2** | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
+| **S1** ✅ | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug audit + field renames + per-store Google Reviews | zero |
+| **S2** ✅ | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
 | **S3** | VC2, VC4 | Invoice PDF + user settings tabs | zero |
 | **S4** | G1, G2, O1 | Store templates CRUD + slug management | zero |
 | **S5** | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
@@ -46,8 +46,8 @@
 ## PLAN SNAPSHOT
 
 ```
-115 tasks ✅ done · 282 remaining · 397 total (as of Session 93 done)
-Roadmap reorganized 2026-05-11 → 43 pending sessions S1–S43 (risk-ordered, all deferred integrated)
+120 tasks ✅ done · 277 remaining · 397 total (as of S2 done 2026-05-11)
+Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1+S2 ✅
 
 COMPLETED (sessions 60–93)
 ──────────────────────────────────────────────────
