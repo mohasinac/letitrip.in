@@ -5,6 +5,10 @@
  * repository calls from Vercel routes with a Firebase-side processor, so
  * Vercel becomes a thin caching proxy.
  *
+ * Every appkit repository extends `BaseRepository` and routes its `.list()`
+ * through the same `sieveQuery()` adapter — so adding a new collection is
+ * a one-line addition to `LISTERS` below.
+ *
  * Cursor support: opaque base64 over `{page}`. Callers may choose either
  *   - `mode="pages"` → pass `p` directly, ignore `cursor`
  *   - `mode="infinite"` → start with no cursor, then forward the `cursor`
@@ -15,18 +19,37 @@
 
 import { onRequest } from "firebase-functions/v2/https";
 import type { Request, Response } from "express";
-import { productRepository } from "../lib/appkit";
+import {
+  bidRepository,
+  blogRepository,
+  brandsRepository,
+  categoriesRepository,
+  couponsRepository,
+  eventRepository,
+  faqsRepository,
+  homepageSectionsRepository,
+  notificationRepository,
+  orderRepository,
+  payoutRepository,
+  productFeaturesRepository,
+  productRepository,
+  reviewRepository,
+  scammerRepository,
+  sublistingCategoriesRepository,
+  userRepository,
+} from "../lib/appkit";
 import { COLLECTIONS, REGION } from "../config/constants";
 import { logInfo, logError } from "../utils/logger";
 
 const FN = "listingProcessor";
-const SUPPORTED_COLLECTIONS = [COLLECTIONS.PRODUCTS] as const;
-type SupportedCollection = (typeof SUPPORTED_COLLECTIONS)[number];
 
 /** s-maxage matches the Vercel CDN tier; stale-while-revalidate masks deploys. */
 const CACHE_CONTROL =
   "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
 const DEFAULT_SORT = "-createdAt";
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 100;
 
 interface ListingRequestBody {
   collection: string;
@@ -36,12 +59,8 @@ interface ListingRequestBody {
   p?: number | string;
   ps?: number | string;
   cursor?: string;
-  /** Optional collection-specific base options (e.g. `status`, `storeId`). */
-  baseOpts?: {
-    status?: string;
-    storeId?: string;
-    categoriesIn?: string[];
-  };
+  /** Collection-specific base options forwarded to the repo's `list()` call. */
+  baseOpts?: Record<string, unknown>;
 }
 
 interface ListingResponseBody {
@@ -55,9 +74,62 @@ interface ListingResponseBody {
   cursor: string | null;
 }
 
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 20;
-const MAX_PAGE_SIZE = 100;
+/**
+ * One entry per supported listing collection. The Sieve heavy-lifting
+ * (filters/sorts/pagination) is provided uniformly by `BaseRepository`, so
+ * each entry is just a thin call into the right repo method.
+ *
+ * `baseOpts` is the per-repo escape hatch (productRepository accepts
+ * `{ status, storeId, categoriesIn }`, etc.). The Vercel caller is the
+ * security gate — listingProcessor itself trusts the secret-authed input.
+ */
+interface SieveLikeResult {
+  items: unknown[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+type Lister = (
+  model: {
+    filters: string;
+    sorts: string;
+    page: string;
+    pageSize: string;
+  },
+  baseOpts: Record<string, unknown>,
+) => Promise<SieveLikeResult>;
+
+const LISTERS: Record<string, Lister> = {
+  [COLLECTIONS.PRODUCTS]: (m, o) =>
+    productRepository.list(m, o as Parameters<typeof productRepository.list>[1]),
+  [COLLECTIONS.CATEGORIES]: (m) => categoriesRepository.list(m),
+  [COLLECTIONS.BRANDS]: (m) => brandsRepository.list(m),
+  [COLLECTIONS.ORDERS]: (m) => orderRepository.listAll(m),
+  [COLLECTIONS.REVIEWS]: (m) => reviewRepository.listAll(m),
+  [COLLECTIONS.COUPONS]: (m) => couponsRepository.list(m),
+  [COLLECTIONS.BIDS]: (m) => bidRepository.list(m),
+  [COLLECTIONS.PAYOUTS]: (m) => payoutRepository.list(m),
+  [COLLECTIONS.BLOG_POSTS]: (m) => blogRepository.listAll(m),
+  [COLLECTIONS.EVENTS]: (m) => eventRepository.list(m),
+  [COLLECTIONS.FAQS]: (m) => faqsRepository.list(m),
+  [COLLECTIONS.NOTIFICATIONS]: (m) => notificationRepository.list(m),
+  [COLLECTIONS.SCAMMERS]: (m) => scammerRepository.listAll(m),
+  [COLLECTIONS.SUBLISTING_CATEGORIES]: (m) =>
+    sublistingCategoriesRepository.list(m),
+  [COLLECTIONS.PRODUCT_FEATURES]: (m) => productFeaturesRepository.list(m),
+  [COLLECTIONS.HOMEPAGE_SECTIONS]: (m) => homepageSectionsRepository.list(m),
+  [COLLECTIONS.USERS]: (m) => userRepository.list(m),
+  // Excluded: eventEntries (needs eventId), productTemplates (needs storeId),
+  // carousels (no Sieve list method), sessions/tokens (auth-sensitive),
+  // carts/wishlists/history (subcollection or single-doc-per-user shape),
+  // stores (uses listStores/listAllStores with non-Sieve signature — wire
+  // separately if a generic stores listing is needed).
+};
+
+const SUPPORTED_COLLECTIONS = Object.keys(LISTERS);
 
 function verifySecret(req: Request): boolean {
   const secret = process.env.LETITRIP_INTERNAL_SECRET;
@@ -95,24 +167,25 @@ function clampPage(raw: number | string | undefined): number {
   return Math.floor(n);
 }
 
-async function runProducts(
+async function runListing(
+  collection: string,
   body: ListingRequestBody,
 ): Promise<ListingResponseBody> {
+  const lister = LISTERS[collection];
+  if (!lister) throw new Error(`No lister registered for ${collection}`);
+
   const cursorPage = decodeCursor(body.cursor);
   const page = cursorPage ?? clampPage(body.p);
   const pageSize = clampPageSize(body.ps);
 
-  // q is folded into the filter string by the caller (Vercel route) when
-  // present — listingProcessor stays purely a Sieve passthrough so filter
-  // composition rules remain owned by the route that knows the safe-field set.
-  const result = await productRepository.list(
+  const result = await lister(
     {
       filters: body.f ?? "",
       sorts: body.s ?? DEFAULT_SORT,
       page: String(page),
       pageSize: String(pageSize),
     },
-    body.baseOpts,
+    body.baseOpts ?? {},
   );
 
   return {
@@ -151,24 +224,19 @@ export const listingProcessor = onRequest(
       return;
     }
 
-    if (!(SUPPORTED_COLLECTIONS as readonly string[]).includes(body.collection)) {
-      res
-        .status(400)
-        .json({ error: `Unsupported collection: ${body.collection}` });
+    if (!LISTERS[body.collection]) {
+      res.status(400).json({
+        error: `Unsupported collection: ${body.collection}`,
+        supported: SUPPORTED_COLLECTIONS,
+      });
       return;
     }
-    const collection = body.collection as SupportedCollection;
 
     try {
-      let payload: ListingResponseBody;
-      switch (collection) {
-        case COLLECTIONS.PRODUCTS:
-          payload = await runProducts(body);
-          break;
-      }
+      const payload = await runListing(body.collection, body);
 
       logInfo(FN, "listing served", {
-        collection,
+        collection: body.collection,
         page: payload.page,
         pageSize: payload.pageSize,
         total: payload.total,
