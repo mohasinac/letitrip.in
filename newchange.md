@@ -33,28 +33,31 @@
 
 ---
 
-### Planning S44 — 2026-05-11 — Tier WL (Wishlist + Recently Viewed + Cart caps)
+### Planning S44 — 2026-05-11 — Tier WL (Wishlist + History + Cart caps)
 
 **Scope:** Plan only — no code yet. Added Tier WL (WL1–WL8) to `crud-tracker.md` and S44 to the session roadmap. Awaiting user approval before implementation.
 
-**Design decisions confirmed with user (Rule #1):**
+**Final design — user confirmed schema shift after first draft:**
 
-| Question | Decision |
+| Decision | Detail |
 |---|---|
-| Wishlist storage | Separate **top-level collection** `/wishlists/{id}` with `userId` = user slug (`user-…`) as FK. Subcollection paths + LL15 `collectionGroup` hack removed. ID: `wish-{userSlug}-{productSlug}` (deterministic, idempotent re-add). |
-| Recently viewed storage | **Auth users** → top-level `/recentlyViewed/{id}` with `userId` = user slug FK. ID: `view-{userSlug}-{productSlug}` (upsert on re-view). **Guest users** → `localStorage["letitrip:recentlyViewed"]`. On login, guest history merges into Firestore (dedup by productId, keep max viewedAt, FIFO 50). |
-| Wishlist cap | Hard cap 20. Block add + toast "Wishlist full (20/20). Remove an item to add new ones." Persistent banner on `/user/wishlist` + ♡ buttons disabled at cap. |
-| Recently viewed cap | Soft cap 50. FIFO evict oldest silently (auto-tracking, not user intent → no warning). |
-| Cart cap | Hard cap 50 **distinct** items. Block add + toast "Cart full (50/50). Remove items to add new ones." Per-item quantity increment is unrestricted. |
+| Wishlist storage | Top-level collection `wishlists`. **One doc per user** — id === slug === `wishlist-{userSlug}` (e.g. `wishlist-user-mohsin-c`). Doc shape `{ userId, items[], updatedAt }`. No composite indexes needed. Subcollection paths + LL15 `collectionGroup` hack removed. |
+| History storage | Top-level collection `history`. **One doc per user** — id === slug === `history-{userSlug}`. Doc shape `{ userId, items[], updatedAt }`. Guest users mirror to `localStorage["letitrip:history"]`; on login merge into Firestore (dedup by productId, keep newest viewedAt). |
+| Re-visit semantics | On re-visit, **remove existing entry for that productId and unshift new entry at position 0** with fresh viewedAt. Same product never duplicates; jumps to top. |
+| Wishlist cap | Hard cap 20. Idempotent re-add is a no-op (not an error). At cap → `409 WISHLIST_FULL` + toast "Wishlist full (20/20). Remove an item to add new ones." Persistent banner + ♡ buttons disabled at cap. |
+| History cap | Soft cap 50. **Silent FIFO trim** (auto-tracking, no warning). |
+| Cart cap | Hard cap 50 **distinct** items (per-item qty unrestricted). At cap → `409 CART_FULL` + toast "Cart full (50/50). Remove items to add new ones." |
+| ID convention | `id === slug` everywhere (LetItRip standard, same as products/stores). |
+| Concurrency | All mutations on the per-user doc run inside a Firestore transaction. |
 | Tabbed stores | User said **ignore — not needed**. Dropped from scope. |
 
-**New tasks (8):** WL1 schema · WL2 wishlist cap · WL3 count badge · WL4 recentlyViewed collection · WL5 guest localStorage + merge · WL6 tracker + `/user/history` · WL7 cart cap · WL8 seed + admin + indexes + CLAUDE.md.
+**New tasks (8):** WL1 wishlist one-doc-per-user schema · WL2 wishlist 20-cap (block) · WL3 count badge · WL4 history one-doc-per-user schema (50 FIFO + re-visit hoist) · WL5 guest localStorage + merge-on-login · WL6 tracker + `/user/history` page · WL7 cart 50-cap (block) · WL8 seed + admin views + CLAUDE.md.
 
 **Roadmap:** S44 inserted after S6.
 
 **Counters:** 397 → 405 total tasks; 269 → 277 ⏳ remaining; 128 done (unchanged).
 
-**New slug prefixes to register in CLAUDE.md (WL8):** `wish-`, `view-`.
+**New slug prefixes to register in CLAUDE.md (WL8):** `wishlist-`, `history-` (both follow id === slug pattern).
 
 **Deferred:** Implementation — start S44 in a fresh session after user approval.
 
