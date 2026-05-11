@@ -16,6 +16,7 @@ export function UserAddressesClient() {
   const router = useRouter();
   const { showToast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const { data: addresses = [], isLoading } = useAddresses();
 
@@ -35,9 +36,15 @@ export function UserAddressesClient() {
     onError: (err) => showToast(err.message ?? "Failed to update default address.", "error"),
   });
 
-  const handleDelete = (id: string) => {
-    setDeletingId(id);
-    deleteAddress.mutate({ id });
+  const handleDeleteRequest = (id: string) => {
+    setConfirmDeleteId(id);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!confirmDeleteId) return;
+    setDeletingId(confirmDeleteId);
+    setConfirmDeleteId(null);
+    deleteAddress.mutate({ id: confirmDeleteId });
   };
 
   if (isLoading) {
@@ -65,10 +72,37 @@ export function UserAddressesClient() {
           + Add Address
         </Link>
       </div>
+
+      {confirmDeleteId && (
+        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">
+          <p className="text-sm font-medium text-red-800 dark:text-red-200">
+            Delete this address? This cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleDeleteConfirm}
+              disabled={deleteAddress.isPending}
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60 transition-colors"
+            >
+              {deleteAddress.isPending ? "Deleting…" : "Delete"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDeleteId(null)}
+              className="rounded-lg border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       <AddressBook
         addresses={addresses as any[]}
         onEdit={(address) => router.push(String(ROUTES.USER.ADDRESSES_EDIT(address.id)))}
-        onDelete={handleDelete}
+        onDelete={handleDeleteRequest}
+        onSetDefault={(addressId) => setDefault.mutate({ addressId })}
         onAdd={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
         emptyLabel="You have no saved addresses yet."
         addLabel="Add New Address"
