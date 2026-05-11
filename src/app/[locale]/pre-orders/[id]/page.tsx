@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { PreOrderDetailPageView, getProductById } from "@mohasinac/appkit";
+import {
+  PreOrderDetailPageView,
+  getProductById,
+  loadProductFeaturesForStore,
+} from "@mohasinac/appkit";
 import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
@@ -25,5 +29,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  return <PreOrderDetailPageView id={id} onReserveNow={reservePreOrderAction} />;
+  const product = await getProductById(id).catch(() => null);
+  const productFeatures = await loadProductFeaturesForStore(
+    product?.storeId ?? null,
+  ).catch(() => []);
+  return (
+    <PreOrderDetailPageView
+      id={id}
+      productFeatures={productFeatures}
+      onReserveNow={reservePreOrderAction}
+    />
+  );
 }

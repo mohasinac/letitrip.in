@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PreOrdersListView } from "@mohasinac/appkit";
+import { PreOrdersListView, productFeaturesRepository } from "@mohasinac/appkit";
+import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
@@ -18,5 +19,12 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  return <PreOrdersListView searchParams={resolvedSearchParams} />;
+  const platformFeatures = await productFeaturesRepository
+    .listPlatform()
+    .catch(() => []);
+  return (
+    <ProductFeaturesProvider features={platformFeatures}>
+      <PreOrdersListView searchParams={resolvedSearchParams} />
+    </ProductFeaturesProvider>
+  );
 }

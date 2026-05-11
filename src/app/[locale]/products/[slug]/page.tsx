@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { ProductDetailPageView, getProductById, productJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
+import {
+  ProductDetailPageView,
+  getProductById,
+  productJsonLd,
+  breadcrumbJsonLd,
+  loadProductFeaturesForStore,
+} from "@mohasinac/appkit";
 import { MakeOfferButton } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants/seo.server";
@@ -24,6 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const product = await getProductById(slug).catch(() => null);
+  const productFeatures = await loadProductFeaturesForStore(
+    product?.storeId ?? null,
+  ).catch(() => []);
 
   const ldProduct = product
     ? productJsonLd({
@@ -64,6 +73,7 @@ export default async function Page({ params }: Props) {
       )}
       <ProductDetailPageView
         slug={slug}
+        productFeatures={productFeatures}
         renderOfferAction={({ productId, price, minOfferPercent }) => (
           <MakeOfferButton
             productId={productId}

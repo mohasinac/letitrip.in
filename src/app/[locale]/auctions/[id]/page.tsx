@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { AuctionDetailPageView, getProductById, auctionJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
+import {
+  AuctionDetailPageView,
+  getProductById,
+  auctionJsonLd,
+  breadcrumbJsonLd,
+  loadProductFeaturesForStore,
+} from "@mohasinac/appkit";
 import { placeBidAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
 
@@ -27,6 +33,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { id } = await params;
   const auction = await getProductById(id).catch(() => null);
+  const productFeatures = await loadProductFeaturesForStore(
+    auction?.storeId ?? null,
+  ).catch(() => []);
 
   const ldAuction = auction
     ? auctionJsonLd({
@@ -65,7 +74,11 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
       />
-      <AuctionDetailPageView id={id} onPlaceBid={placeBidAction} />
+      <AuctionDetailPageView
+        id={id}
+        productFeatures={productFeatures}
+        onPlaceBid={placeBidAction}
+      />
     </>
   );
 }
