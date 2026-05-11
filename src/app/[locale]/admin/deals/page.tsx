@@ -25,7 +25,7 @@ export default function Page() {
         id: toStringValue(item.id, `product-${index}`),
         primary: toStringValue(item.title ?? item.name, "Untitled product"),
         secondary: [
-          toStringValue(item.sellerName ?? item.storeName, "Unknown seller"),
+          toStringValue(item.storeName, "Unknown store"),
           item.price != null ? `₹${item.price}` : "",
         ]
           .filter(Boolean)

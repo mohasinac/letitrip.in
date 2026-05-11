@@ -8,12 +8,12 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
   const store = await storeRepository.findBySlug(storeSlug).catch(() => null);
-  const sellerId = (store as any)?.ownerId ?? (store as any)?.sellerId ?? undefined;
+  const storeId = (store as any)?.id ?? undefined;
 
   return (
     <CouponsIndexListing
       storeSlug={storeSlug}
-      sellerId={sellerId}
+      storeId={storeId}
     />
   );
 }

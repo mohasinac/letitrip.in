@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository, sanitizeProductsForPublic } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 
@@ -130,7 +130,9 @@ async function _GET(request: Request): Promise<NextResponse> {
     const response = NextResponse.json({
       success: true,
       data: {
-        items: result.items,
+        items: sanitizeProductsForPublic(
+          result.items as unknown as Array<Record<string, unknown>>,
+        ),
         total: result.total,
         page: result.page,
         pageSize,
