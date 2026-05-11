@@ -9,6 +9,7 @@ import {
   Text,
   Row,
   Stack,
+  Button,
 } from "@mohasinac/appkit/client";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -188,29 +189,20 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         if (!order) return null;
         return (
           <Row gap="3" wrap>
-            <Link
-              href={String(ROUTES.USER.ORDER_INVOICE(order.id))}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
-            >
-              Download Invoice
-            </Link>
-            {canTrack && (
-              <Link
-                href={String(ROUTES.USER.ORDER_TRACK(order.id))}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
-              >
-                Track Shipment
+            <Button variant="outline" size="sm" asChild>
+              <Link href={String(ROUTES.USER.ORDER_INVOICE(order.id))} target="_blank" rel="noopener noreferrer">
+                Download Invoice
               </Link>
+            </Button>
+            {canTrack && (
+              <Button variant="outline" size="sm" asChild>
+                <Link href={String(ROUTES.USER.ORDER_TRACK(order.id))}>Track Shipment</Link>
+              </Button>
             )}
             {canCancel && (
-              <Link
-                href={String(ROUTES.USER.ORDER_CANCEL(order.id))}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
-              >
-                Cancel Order
-              </Link>
+              <Button variant="danger" size="sm" asChild>
+                <Link href={String(ROUTES.USER.ORDER_CANCEL(order.id))}>Cancel Order</Link>
+              </Button>
             )}
           </Row>
         );

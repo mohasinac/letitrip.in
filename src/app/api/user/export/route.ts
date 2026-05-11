@@ -1,6 +1,16 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, orderRepository, addressRepository } from "@mohasinac/appkit";
+import type { FirebaseSieveResult, OrderDocument } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
+
+const EMPTY_ORDER_RESULT: FirebaseSieveResult<OrderDocument> = {
+  items: [],
+  total: 0,
+  page: 1,
+  pageSize: 0,
+  totalPages: 0,
+  hasMore: false,
+};
 
 export const GET = withProviders(
   createRouteHandler({
@@ -9,7 +19,7 @@ export const GET = withProviders(
       const uid = user!.uid;
 
       const [orders, addresses] = await Promise.all([
-        orderRepository.listForUser(uid, {}).catch(() => ({ data: [], total: 0 })),
+        orderRepository.listForUser(uid, {}).catch(() => EMPTY_ORDER_RESULT),
         addressRepository.findByUser(uid).catch(() => []),
       ]);
 
@@ -26,13 +36,13 @@ export const GET = withProviders(
           publicProfile: user!.publicProfile,
           stats: user!.stats,
         },
-        addresses: Array.isArray(addresses) ? addresses : [],
-        orders: ((orders as any).data ?? []).map((o: any) => ({
+        addresses,
+        orders: orders.items.map((o) => ({
           id: o.id,
-          status: o.orderStatus,
-          total: o.total,
+          status: o.status,
+          total: o.totalPrice,
           currency: o.currency,
-          createdAt: o.createdAt,
+          orderDate: o.orderDate instanceof Date ? o.orderDate.toISOString() : o.orderDate,
           items: o.items,
         })),
       };

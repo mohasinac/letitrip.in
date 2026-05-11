@@ -11,6 +11,8 @@ import {
   Row,
   Stack,
   Text,
+  Input,
+  Button,
 } from "@mohasinac/appkit/client";
 import { FontToggleClient } from "@/components/user/FontToggleClient";
 
@@ -24,9 +26,12 @@ const TAB_LABELS: Record<Tab, string> = {
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-4">
+    <Stack
+      gap="md"
+      className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
+    >
       {children}
-    </Div>
+    </Stack>
   );
 }
 
@@ -35,52 +40,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     <Text className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
       {children}
     </Text>
-  );
-}
-
-function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-    >
-      {children}
-    </label>
-  );
-}
-
-function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={
-        "w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 " +
-        "px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 " +
-        "focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] " +
-        (props.className ?? "")
-      }
-    />
-  );
-}
-
-function SubmitButton({
-  isPending,
-  label,
-  pendingLabel,
-}: {
-  isPending: boolean;
-  label: string;
-  pendingLabel: string;
-}) {
-  return (
-    <button
-      type="submit"
-      disabled={isPending}
-      className="rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 transition-colors"
-      style={{ background: "var(--appkit-color-primary)" }}
-    >
-      {isPending ? pendingLabel : label}
-    </button>
   );
 }
 
@@ -106,7 +65,7 @@ export default function Page() {
     },
   });
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       showToast("New passwords do not match.", "error");
@@ -126,7 +85,7 @@ export default function Page() {
   const changeEmail = useChangeEmail({
     onSuccess: () => {
       showToast(
-        `Verification email sent to ${newEmail}. Please click the link in the email to confirm your new address.`,
+        `Verification email sent to ${newEmail}. Click the link in the email to confirm your new address.`,
         "success",
       );
       setEmailPassword("");
@@ -137,15 +96,10 @@ export default function Page() {
     },
   });
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newEmail || !emailPassword) return;
     changeEmail.mutate({ currentPassword: emailPassword, newEmail });
-  };
-
-  // --- data export ---
-  const handleExport = () => {
-    window.open("/api/user/export", "_blank");
   };
 
   return (
@@ -173,7 +127,6 @@ export default function Page() {
       {/* Account tab */}
       {activeTab === "account" && (
         <Stack gap="lg">
-          {/* account info */}
           <SectionCard>
             <SectionTitle>Account Info</SectionTitle>
             <Row justify="between" align="center" gap="md">
@@ -194,87 +147,71 @@ export default function Page() {
             </Row>
           </SectionCard>
 
-          {/* email change */}
           <SectionCard>
             <SectionTitle>Change Email</SectionTitle>
             <Text variant="secondary" className="text-xs">
-              A verification link will be sent to your new address. Your email will update after you click the link.
+              A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
             <form onSubmit={handleEmailSubmit} className="space-y-3">
-              <Div className="space-y-1">
-                <FieldLabel htmlFor="new-email">New Email Address</FieldLabel>
-                <TextInput
-                  id="new-email"
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  placeholder="new@example.com"
-                />
-              </Div>
-              <Div className="space-y-1">
-                <FieldLabel htmlFor="email-password">Current Password</FieldLabel>
-                <TextInput
-                  id="email-password"
-                  type="password"
-                  value={emailPassword}
-                  onChange={(e) => setEmailPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                />
-              </Div>
-              <SubmitButton
-                isPending={changeEmail.isPending}
-                label="Send Verification Email"
-                pendingLabel="Sending…"
+              <Input
+                id="new-email"
+                type="email"
+                label="New Email Address"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="new@example.com"
               />
+              <Input
+                id="email-password"
+                type="password"
+                label="Current Password"
+                value={emailPassword}
+                onChange={(e) => setEmailPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+              <Button type="submit" isLoading={changeEmail.isPending} size="sm">
+                Send Verification Email
+              </Button>
             </form>
           </SectionCard>
 
-          {/* password change */}
           <SectionCard>
             <SectionTitle>Change Password</SectionTitle>
             <form onSubmit={handlePasswordSubmit} className="space-y-3">
-              <Div className="space-y-1">
-                <FieldLabel htmlFor="current-password">Current Password</FieldLabel>
-                <TextInput
-                  id="current-password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                />
-              </Div>
-              <Div className="space-y-1">
-                <FieldLabel htmlFor="new-password">New Password</FieldLabel>
-                <TextInput
-                  id="new-password"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                />
-              </Div>
-              <Div className="space-y-1">
-                <FieldLabel htmlFor="confirm-password">Confirm New Password</FieldLabel>
-                <TextInput
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                />
-              </Div>
-              <SubmitButton
-                isPending={changePassword.isPending}
-                label="Update Password"
-                pendingLabel="Updating…"
+              <Input
+                id="current-password"
+                type="password"
+                label="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                autoComplete="current-password"
               />
+              <Input
+                id="new-password"
+                type="password"
+                label="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
+              <Input
+                id="confirm-password"
+                type="password"
+                label="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+              />
+              <Button type="submit" isLoading={changePassword.isPending} size="sm">
+                Update Password
+              </Button>
             </form>
           </SectionCard>
         </Stack>
@@ -288,12 +225,15 @@ export default function Page() {
             <Text variant="secondary" className="text-xs">
               Download a copy of your account data including your profile, addresses, and order history.
             </Text>
-            <button
-              onClick={handleExport}
-              className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
-            >
-              Download My Data
-            </button>
+            <Div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open("/api/user/export", "_blank")}
+              >
+                Download My Data
+              </Button>
+            </Div>
           </SectionCard>
 
           <SectionCard>
@@ -302,12 +242,11 @@ export default function Page() {
               To permanently delete your account and all associated data, please contact our support team.
               Account deletion is irreversible.
             </Text>
-            <Link
-              href={String(ROUTES.PUBLIC.SUPPORT)}
-              className="inline-block rounded-xl border border-red-200 dark:border-red-900 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
-            >
-              Contact Support →
-            </Link>
+            <Div>
+              <Button variant="danger" size="sm" asChild>
+                <Link href={String(ROUTES.PUBLIC.SUPPORT)}>Contact Support →</Link>
+              </Button>
+            </Div>
           </SectionCard>
         </Stack>
       )}
@@ -322,20 +261,13 @@ export default function Page() {
 
           <SectionCard>
             <SectionTitle>Language</SectionTitle>
-            <Div className="space-y-1">
-              <FieldLabel htmlFor="language">Display Language</FieldLabel>
-              <select
-                id="language"
-                defaultValue="en"
-                disabled
-                className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none opacity-60 cursor-not-allowed"
-              >
-                <option value="en">English</option>
-              </select>
-              <Text variant="secondary" className="text-xs">
-                Additional languages coming soon.
-              </Text>
-            </Div>
+            <Input
+              id="language"
+              label="Display Language"
+              disabled
+              defaultValue="English"
+              helperText="Additional languages coming soon."
+            />
           </SectionCard>
         </Stack>
       )}
