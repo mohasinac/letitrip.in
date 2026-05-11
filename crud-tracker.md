@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — Sessions 89a ✅ 89b ✅ 90 ✅ (AX1) 91 ✅ (X8a+X8b layout tokens) 92 ✅ (AX2+AX3: usePanelUrlSync, inline admin panels, FormActionBar). 110 done, 287 remaining (397 total).
+> **Last updated:** 2026-05-11 — S1 ✅ (SL6, ARCH9, VD3-subsumed, HS4-E done; A1-ext verified already present). 116 done, 281 remaining (397 total).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -58,10 +58,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 397 |
-| ✅ Done | 110 |
+| ✅ Done | 116 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 287 |
+| ⏳ Remaining | 281 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -153,66 +153,108 @@ Rules to keep top-of-mind every task:
 | GP chain | GP1 → GP2 |
 | Color tokens | X7a → X7b |
 | Layout tokens | X8a → X8b |
+| SB chain | SB1-A–G → SB1-H–L → SB2 → SB3 → SB4 → SB5–SB10 → SB11 (SB11 needs SB1-A listingType + SB4 PrizeDraw + SB9 raffle schemas) |
+| RBAC chain | RBAC1 → RBAC2 + RBAC10 → RBAC3 + RBAC7 → RBAC4 + RBAC5 → RBAC6 + RBAC8 + RBAC9 |
+| BAN chain | BAN1 → BAN2 → BAN3 → BAN4 → BAN5 + BAN6 → BAN7 + BAN8 + BAN9 |
+| GD chain | GD1–GD11 (independent); GD12 depends on RBAC8; GD13–GD22 (independent) |
 
-### Ordered Sessions
+### Ordered Sessions — Pending (S1–S43)
 
 | Session | Phase | Task IDs | Goal | Must-have-before |
 |---------|-------|----------|------|-----------------|
-| **60** | Foundation | F2, E2, K4+L3+L4+L5, J10, J11, J12, X1, SL5, SL6, E7 | Brands nav item + bids DELETE + events rich text + bid/store link bugs + zero TS errors + slug integrity + footer links | — |
-| **61** | Seed-1 Core | P11, P12, P13, P14, P15 | Seed manifest + site settings + brands + categories + users + stores | Session 60 done |
-| **62** | Seed-2 Listings | P16, P17, P18 | Standard products (20) + auctions + bids + pre-orders | P15 (user/store IDs needed) |
-| **63** | Seed-3 System | P19, P21, P22, P20, P10 | Blog + events + FAQs + reviews + orders + coupons + homepage sections + SeedPanel overhaul | P12–P18 |
-| **64** | Infrastructure | E3+E4, H1, I4, I8, I5, SL4, E6 | Field-name constants + unified API_ROUTES + InlineCreateSelect + MediaPickerModal + YouTube media + MediaUploadField audit + generateMetadata + /support page | P11 manifest for SeedPanel |
-| **65** | Carousel | CF1 | Full carousel redesign — schema + component + admin editor + API + seed (XL — full session, 6 sub-parts, one commit each) | P20 carousel data (backward-compat first) |
-| **66** | Sections-1 | HS1, HS2, HS3 | Extend section schema + all 11 missing builders + enhance 7 existing builders | HS1 before HS2+HS3 |
-| **67** | Sections-2 | HS4, HS5 | Google Reviews integration + Custom Cards component + builder | HS1+HS2 |
-| **68** | Admin-1 | X2, A1, VA2, I1 | Toast standard + Products 3-mode editor + deals/featured toggles | Session 64 infra; seed data |
-| **69** | Admin-2 | A3, VA6, A4, VA4 | Coupons editor + Blog editor with RichTextEditor | Session 68 patterns |
-| **70** | Admin-3 | A5, VA5, F5, VA7, VA8 | FAQs + Navigation CMS + Site Settings 12-group form (VA8 unblocks I7) | Session 68 patterns |
-| **71** | Admin-Finance | M1, VA19, M3, VA13, I3 | Analytics charts + Payouts mark-paid + CSV + seed reset button | VA8 credentials |
-| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11, LL11, LL12, LL13, LL14, LL15 | Stores / Users / Orders / Reviews management forms + Sessions / Event entries / Notifications / Carts / Wishlists listing views | Session 68 patterns | ✅ Done 2026-05-09 |
-| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | Bids + Newsletter + Contact + Feature flags + Media library admin + Return requests queue + Store addresses listing | Session 72 (patterns from N3/B1/B2) | ✅ Done 2026-05-10 |
-| **74** | Quality | X3, X4, X5, X6 | Dark mode + responsive + PageLoader 15s timeout + media filename convention | Sessions 68–73 forms built |
-| **75** | Quality | X3, X4, X5, X6 | Dark mode/responsive + form checklist + PageLoader 15s + media filenames ✅ Done 2026-05-10 | Sessions 68–73 forms built |
-| **76-listing** | **Listing View Migration** ✅ Done 2026-05-10 | — | Migrated all 16 admin listing views from `AdminListingScaffold` to `ListingToolbar` + `useUrlTable` + `DataTable` + filter drawer pattern. `DataTable.columns` made optional with DEFAULT_COLUMNS. Fixed `actionsSlot`→`extra` prop name on two views. 0 TS errors in both repos post-migration. | Session 76 done |
-| **76** | **Alpha: Public Catalogue** ✅ Done 2026-05-10 | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | Brand audit (LetItRip) + fix all missing next-intl keys + category/brand/store on all 3 product card types + detail pages + brands listing page + support/footer verify | Sessions 60–75 done |
-| **76-infra** | **Hotfix + Firebase Reset** ✅ Done 2026-05-10 | J13, J14, J15, INFRA1, INFRA2 | Products listing fix (isAuction/isPreOrder must be explicit false in seed + 2 new composite indexes) · Blog initialData shape fix · Events status filter fix (published→active) · firebase-reset.mjs .count()→.get().size · firebase-delete-indexes.mjs (new, fixes 409 loop) · Full Firebase reset + 263 indexes + 24 functions redeployed. ⚠️ Re-seed all 23 collections. | Session 76 done; any session needing index changes: run firebase-delete-indexes.mjs first |
-| **77-ux** | **UX Foundation** | UX1, UX2, UX3, UX4, UX5, UX9 | FormShell + QuickFormDrawer + StepForm + PreviewPane + MediaPickerDrawer + InlineSelectCreate — build all form-shell primitives first so Session 77 can use them | Session 76 done |
-| **77** | **Alpha: Seller Products** | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | Apply UX patterns to all 3 product create/edit forms (standard/auction/pre-order) + store profile + seller listing views — G1/G2 (templates) deferred post-alpha | 77-ux patterns built |
-| **78** | **Alpha: User Account** ✅ Done 2026-05-10 | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | Order detail (VC1), profile edit (VC3), notifications (VC5), Reviews page (LL2), Bids page (LL3). isPublic guard on /profile/[userId]. Sidebar smart CTA (Become Seller ↔ Store Dashboard). VC2/VC4/LL4/LL5 deferred post-alpha. | Sessions 76–77 |
-| **79** | **Alpha: Cart Integrity** ✅ Done 2026-05-10 | W1, W2, W3, W4, R1 | Cart stale validation (POST /api/cart/validate) + wishlist validate (POST /api/user/wishlist/validate) + OOS section + product links (CartItemRow href/isOutOfStock) + CRUD toast pattern + fixed missing appkit client exports | Sessions 76–78 |
-| **80-arch** | **Store Identity + Seed QA** ✅ Done 2026-05-10 | ARCH3 + seed QA | Reviews sellerId → storeId/storeSlug across types, Zod schemas, useReviews hook. Categories seed: 6 niche subcategories now show seller createdBy. Seed expansions committed: 50 standard products, 11 auctions, 8 pre-orders, 35 reviews, 8 stores, 18 users, 13 store addresses, 10 coupons, 53 FAQs. | Session 79 done |
-| **80** | **Alpha: Store Settings** ✅ Done 2026-05-10 | UX7, C6, C7, O3, VB3, VB10, LL8 | SellerShippingView full form (C6), PATCH payout-settings + SellerPayoutSettingsView UPI/bank (C7), SellerReviewsView + store reviews API + reply endpoint (LL8), SellerPayoutRequestView + POST /api/store/payouts/request (VB3), analytics wired to real data (VB10), StoreAddressSelectorCreate in product form shipping step (O3), FormShell pattern confirmed across store forms (UX7). 0 TS errors both repos. | Session 77 (store patterns) |
-| — | **🚀 ALPHA RELEASE** | — | End-to-end: browse → add to cart → checkout → order created; seller can list; user can see orders | Sessions 76–80 complete |
-| **81** | **Alpha: Store Finance** ✅ Done 2026-05-10 | C3, VB1, C4, VB2, LL7, VB7, LL9, LL10 | C3: coupons edit page /store/coupons/[id]/edit. VB1: SellerCouponEditorView create+edit form. C4+VB2+LL7: SellerOrdersView rich DataTable columns + OrderDetailDrawer SideDrawer with status/tracking update. VB7: SellerAddressesView full CRUD (list cards, add/edit SideDrawer, delete) + GET/POST /api/store/addresses + PUT/DELETE /api/store/addresses/[id]. LL9: SellerBidsView read-only listing + GET /api/store/bids. LL10: SellerPayoutsView now live (fixed SELLER_ENDPOINTS). ROUTES.STORE.BIDS added. storeAddressRepository.create/update/delete wired. useSellerListingData gains `refetch`. TypeScript: 0 errors both repos. | Session 81-impl |
-| **82** | SEO & Lighthouse ✅ | SEO1–SEO7 | Done 2026-05-10: SSR hydration for homepage sections, JSON-LD on detail pages, next/image in product grid, metadata on 14 static pages, robots noindex on paginated pages, preconnect hints in root layout | — |
-| **83** | Content ⚠️ partial | VD8 ✅, VD9 ⏳, VD10 ⏳ | VD8 about rewrite done (Session 83). VD9 becomeSeller/sellerGuide + VD10 legal policies deferred. | VD7 (brand fixed first) |
-| **84** | Custom Fields | L1, L2, L3 | Custom fields editor + render on detail pages (all 3 types) + CRUD in product forms | A1 (product form base) |
-| **85** | Sub-listing ✅ Done 2026-05-10 | SC1, SC2, SC3, SC4 | SC1: SublistingCategoryDocument schema, SublistingCategoriesRepository, sublistingCategoryId on ProductDocument, admin + public API routes. SC2: AdminSublistingCategoriesView + AdminSublistingCategoryEditorView + admin pages + nav. SC3: SublistingCategorySelect in ProductForm, SublistingCarouselSection, renderSublistingSection on all 3 detail views + page views. SC4: public /sublisting-categories/[slug] page. Store CRUD: /store/sublisting-categories CRUD pages + API + nav entry. tsc 0 errors. appkit 2.4.6 published. | A1; SC1 → SC2+SC3 → SC4 |
-| **86** | Grouped | GP1, GP2 | Grouped listings schema + ShowGroupSection + edit-screen group settings modal | A1 (product editor) |
-| **87** | Social Feed ✅ Done 2026-05-10 | S4, S1, S2, S3, S5 | S1: API route + 4-platform fetchers. S2: SocialFeedSection RSC + SocialPostCard. S3: renderSocialFeedBuilder() in AdminSectionsView + renderTypedBuilder() wire. S4: Meta/TikTok/DeviantArt credential fields in VA8 ⑧Integrations. S5: seed exists (disabled). tsc 0 new errors, appkit dist built. | VA8 credentials |
-| **88** | Search + Routes ✅ Done 2026-05-10 | RC2, SR1, SR2, SR3, RC1, RC3, RC4 | RC4: removed all 10 [[...action]] catch-alls, created /page.tsx for each. RC3: Button asChild added to appkit, all 4 router.push-in-button violations fixed. SR1/SR2/SR3/RC1/RC2 done in prior sessions. 0 TS errors both repos. | Sessions 76–87 stable |
-| **89-a** | UX Polish ✅ Done 2026-05-11 | VD12, J16, J17, D1 (wishlist filter) | VD12: De-cramped all 3 product detail pages (removed duplicate price rows, gap="md", consolidated auction bid sidebar). J16: BlogCard href prop added in BlogPostPageClient + BlogPostView fallback. J17: authOptional pattern added to createRouteHandler + events entries route. Wishlist: filter drawer with Type + price range. Switched @mohasinac/appkit: ^2.4.11 → file:./appkit. 0 TS errors both repos. | Sessions 76–88 stable |
-| **89-b** | FAQ + WhatsApp ✅ Done 2026-05-11 | FAQSection rewrite, WhatsApp redesign, @types/react dedup | FAQSection: category tab bar, multi-open Set state, defaultOpenCount, CSS grid animation, RichText HTML answers. FAQSectionConfig: showCategoryTabs, visibleTabs, allowMultipleOpen, defaultOpenCount (removed expandedByDefault). WhatsAppCommunitySection: brand primary→cobalt gradient, benefits grid, blockquote testimonial, RichText description. @types/react moved to peerDeps + root overrides — eliminated 14 TS errors. navigation.tsx imports appkit types. 0 TS errors both repos. | 89-a done |
-| **90** | Action System ✅ Done 2026-05-11 | AX1 | Constants done: action-defs.ts with ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + META maps. Exported from client.ts + index.ts. FormShell/DrawerFormFooter labels from FORM_ACTION_META. Hook done: useActionDispatch (NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY) + Zustand panelStore (usePanelStore). Zustand v5 added to appkit deps. SellerProductsView handleEdit migrated to dispatch({ type: "NAVIGATE" }). 0 TS errors both repos, appkit build clean. | Session 77-ux FormShell done |
-| **90-colors** | Colors | X7a, X7b | Extend CSS color token system + replace all hardcoded hex violations (one file per commit). **Zero schema/API risk — safe to do first.** | AX1 complete |
-| **91** | Layout | X8a, X8b | Layout tokens + replace breakpoint/z-index/size violations. **Zero schema/API risk.** | X7a+X7b done |
-| **92** | Action URLs + Bars ✅ Done 2026-05-11 | AX2, AX3 | AX2: `usePanelUrlSync` hook (URL-based ?panel=create/edit&id=xxx). DataTable `onRowClick` prop. All 7 AdminXxxEditorViews get `embedded` prop (skip StackedViewShell). Wired 8 admin listing views (Brands/Products/Categories/Blog/Events/FAQs/Coupons/Stores) with inline SideDrawer + embedded editor. Exported from index.ts + client.ts. AX3: FormActionBar component + CSS — sticky top desktop, sticky bottom mobile, breadcrumbs, dirty-dot, Discard/Preview/Save Draft/Publish. 0 TS errors both repos. | AX1 complete |
-| **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | Stats live queries + multi-carousel + categories/brands CTA+filter chips + products multi-row + YouTube cards in social feed. **EX5 (supersedes 8 old section types) is highest-risk sub-task — do last within session.** | ✅ Done 2026-05-11 |
-| **94** | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Session 77 product forms done |
-| **95** | Bulk Actions | BK1, BK2, BK3 | Public listing selection mode + sticky bulk action bar + compare overlay (desktop table + mobile swipe) | BK3 needs infinite scroll (Q6) as nice-to-have |
-| **96** | Query/Sieve | Q5, Q1, Q2, Q3, Q4, Q6 | Q5: Firestore composite indexes (deploy only, low risk). Q1–Q4, Q6: listingProcessor Firebase Function + API param standardisation + infinite scroll. **Medium risk — API contract change + new Firebase Function deploy.** | Seed data complete |
-| **97** | Seed Scale-1 | P23, P24 | Standard products 100+ + auctions 20 + pre-orders 10 — real media URLs | P22 done |
-| **98** | Seed Scale-2 | P25, P26 | Categories 55+ + Users 15+ + Brands 25+ | P23 products (cross-refs needed) |
-| **99** | Seed Scale-3 | P27, P28 | Reviews 60+ + Orders 35+ + Blog 20+ + Events 15+ + FAQs 55+ | P25+P26 |
-| **100** | Seed Scale-4 | P29, P30 | Coupons 20+ + Notifications 40+ + Messages + SubCats + Grouped | P27 orders needed |
-| **101** | Seed Quality | P31 | Zod validation + PII masking + dry-run diff + error handling | P23–P30 done |
-| **102+** | Deferred | I6, I7, D5, VC7, O5, HS4-E, VC2, VC4, D3, D4, LL4, LL5 | PDF support + watermark CDN + Messages RTDB + Shiprocket + per-store Google Reviews + invoice + user settings/addresses | VA8 (I7); all else |
-| **103** | RBAC | RBAC1–RBAC10 | Permission constants → server resolver → SSR gates → API guards → Team UI | — |
-| **104** | BAN | BAN1–BAN9 | Schema → enforcement → ticket API → admin UI → Firebase functions | RBAC done |
-| **105** | SCAM UI | SCAM2, SCAM4, SCAM6, SCAM7, SCAM8 | Admin management + FAQs + acknowledgement + SEO + notifications | — |
+| **S1** | Zero-risk | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug/cross-ref integrity audit + field renames + per-store Google Reviews deferred integration + admin store picker in product form | — | ✅ **Done 2026-05-11** — SL6 (cross-ref audit + 3 fixes), ARCH9 (sellerId→ownerId), VD3 (subsumed by SEO5), HS4-E (googleReviews on StoreDocument + SellerStorefrontView + store About page), A1-ext (already present). |
+| **S2** | Zero-risk | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + saved-addresses listing view + orders listing view | S1 done |
+| **S3** | Zero-risk | VC2, VC4 | Invoice PDF download + user settings tabs (payment/notifications) | Sessions 76–93 stable |
+| **S4** | Zero-risk | G1, G2, O1 | Store product templates CRUD + slug management page | Session 77 product forms done |
+| **S5** | Zero-risk | UX4, UX8, UX9 | PreviewPane wiring + admin quick-edit drawer + InlineSelectCreate refinements | UX1–UX3 done |
+| **S6** | Zero-risk | ARCH1, ARCH6, ARCH7 | Strip sellerId from all public API responses + response shape audit | — |
+| **S7** | Homepage | EX5, SB11-A, SB11-B, SB11-C, SB11-D, SB11-E, SB11-F, SB11-G | Collection Cards unified section type + 3 new section types (featured-bundles / prize-draws / event-raffles) + disabled seed docs | EX1–EX4 done (S93) |
+| **S8** | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Session 77 product forms done |
+| **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done |
+| **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) |
+| **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable |
+| **S12** | Query | Q5, Q2, Q4 | Deploy Firestore composite indexes + standardize query param names (f/s/p/ps/q) + update client views | — |
+| **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
+| **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
+| **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
+| **S16** | Seed | P28 | Blog 8→20+ + Events 8→15+ + FAQs 21→55+ + Event entries 2→25+ | P25+P26 |
+| **S17** | Seed | P29, P30 | Coupons 5→20+ + notifications 10→40+ + wishlists/carts scale + messages/sublistingCategories/groupedListings seed | P27 orders needed |
+| **S18** | Seed | P31 | Seed runner: Zod validation + PII masking + dry-run diff + error handling | P14–P17 done |
+| **S19** | Bundle | SB1-A, SB1-B, SB1-C, SB1-D, SB1-E, SB1-F, SB1-G | listingType enum migration + ProductDocument/BundleDocument schema + Zod + migration script + OrderDocument extension + repository boolean→listingType refactor | — |
+| **S20** | Bundle | SB1-H, SB1-I, SB1-J, SB1-K, SB1-L | bundlesRepository + Firestore indexes + ROUTES constants + API_ROUTES constants + 7 Firebase Functions | S19 done |
+| **S21** | Bundle | SB2-A, SB2-B, SB3-A, SB3-B, SB3-C | ProductForm subcategory/video fix + BundleItemsPicker + BundleForm + NonRefundableConsentModal | S20 done |
+| **S22** | Bundle | SB3-D, SB3-E, SB3-F, SB3-G, SB3-H, SB3-I, SB3-J | Bundle stock-sync + reverse refs + store/admin/public views + listing page + detail page + API routes | S21 done |
+| **S23** | Prize Draw | SB4-A, SB4-B, SB4-C, SB4-D, SB4-E | PrizeDrawItemsEditor + Collage component + ProductForm prize-draw section + extend seller views + store/admin/public page files | S22 done |
+| **S24** | Prize Draw | SB4-F, SB4-G, SB4-H, SB4-I | Prize draw listing + detail page + reveal API (crypto.randomInt) + PrizeRevealModal | S23 done |
+| **S25** | Bundle Nav | SB5-A, SB5-B, SB5-C, SB5-D, SB5-E | Nav constants + FAQ seed + seller guide pages + homepage section seed + listingType backfill seed | S24 done |
+| **S26** | Bundle Limits | SB6-A, SB6-B, SB6-C, SB6-D, SB6-E | Per-user purchase limits + ordersRepository methods + order API enforcement + UI badges + form inputs | S22 done |
+| **S27** | Bundle Badges | SB7-A, SB7-B, SB7-C, SB7-D | "In bundle" badges on cards/detail pages + category/store/admin listing-type filter tabs | S22 done |
+| **S28** | Prize Auto | SB8-A, SB8-B, SB8-C, SB8-D, SB8-E, SB8-F | Prize draw reveal deadline + auto-refund function + pool exhaustion + notifications + reminder email + UI badges | S24 done |
+| **S29** | Event Raffle | SB9-A through SB9-I | Event Raffle system — schema + Firebase Functions + winner page + SpinWheelView + admin editor | S22 done |
+| **S30** | Tab Constants | SB10-A, SB10-B, SB10-C, SB10-D, TC1, TC2, TC3, TC4 | TabConfig interface + dashboard/public tab constants files + migrate view components off inline arrays | S22 done |
+| **S31** | RBAC-1 | RBAC1, RBAC2, RBAC10 | Permission constants + server resolver + proxy middleware gate | — |
+| **S32** | RBAC-2 | RBAC3, RBAC7 | Admin layout SSR gate + sidebar filtered by permissions | S31 done |
+| **S33** | RBAC-3 | RBAC4, RBAC5 | Section-level layout files + API route guards | S32 done |
+| **S34** | RBAC-4 | RBAC6, RBAC8, RBAC9 | Team management page + store capabilities + Firestore security rules | S33 done |
+| **S35** | BAN-1 | BAN1, BAN2, BAN3 | Ban schema + soft-ban enforcement middleware + hard-ban cascade | — |
+| **S36** | BAN-2 | BAN4, BAN5, BAN6 | Support ticket API + guest checkout block + admin ban management UI | S35 done |
+| **S37** | BAN-3 | BAN7, BAN8, BAN9 | Support ticket management pages + Firebase Functions for ticket/ban lifecycle | S36 done |
+| **S38** | SCAM-1 | SCAM2, SCAM4 | Admin scammer management UI + scam-specific FAQ entries | RBAC8 done (S34) |
+| **S39** | SCAM-2 | SCAM6, SCAM7, SCAM8, SCAM9 | Registration acknowledgement + SEO/JSON-LD + Firebase notifications + RBAC wiring | S38 done |
+| **S40** | Guides Store | GD1, GD2, GD3, GD4, GD5, GD6 | Store guides hub + listings guide + orders guide + finance guide + capabilities guide + settings guide | — |
+| **S41** | Guides Buyer | GD7, GD8, GD9, GD10, GD11 | Buyer help hub + shopping guide + auctions/pre-orders guide + orders/returns guide + account/safety guide | — |
+| **S42** | Guides Admin | GD12, GD13, GD14, GD15, GD16 | Capability-gated guide cards + admin guide hub + users + catalog + stores | RBAC8 done (S34) |
+| **S43** | Guides Admin+ | GD17, GD18, GD19, GD20, GD21, GD22 | Admin orders/finance/content/site/team/analytics/trust guides | S42 done |
 
 > **XL/L task guidance**: CF1 = 6 sub-parts, one commit each. VA8 = commit ①–⑥ then ⑦–⑫. HS2 = 3–4 builders per commit. X7b/X8b = one CSS file per commit. Never batch large tasks into one commit.
+
+---
+
+### Completed Sessions Archive (S60–S93)
+
+| Session | Phase | Task IDs | Outcome |
+|---------|-------|----------|---------|
+| **60** | Foundation | F2, E2, K4+L3+L4+L5, J10, J11, J12, X1, SL5, SL6, E7 | ✅ Done 2026-05-06 |
+| **61** | Seed-1 Core | P11, P12, P13, P14, P15 | ✅ Done |
+| **62** | Seed-2 Listings | P16, P17, P18 | ✅ Done |
+| **63** | Seed-3 System | P19, P21, P22, P20, P10 | ✅ Done |
+| **64** | Infrastructure | E3+E4, H1, I4, I8, I5, SL4, E6 | ✅ Done |
+| **65** | Carousel | CF1 | ✅ Done |
+| **66** | Sections-1 | HS1, HS2, HS3 | ✅ Done |
+| **67** | Sections-2 | HS4, HS5 | ✅ Done |
+| **68** | Admin-1 | X2, A1, VA2, I1 | ✅ Done |
+| **69** | Admin-2 | A3, VA6, A4, VA4 | ✅ Done |
+| **70** | Admin-3 | A5, VA5, F5, VA7, VA8 | ✅ Done |
+| **71** | Admin-Finance | M1, VA19, M3, VA13, I3 | ✅ Done |
+| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11, LL11–LL15 | ✅ Done 2026-05-09 |
+| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | ✅ Done 2026-05-10 |
+| **74** | Quality | X3, X4, X5, X6 | ✅ Done |
+| **75** | Quality | X3, X4, X5, X6 | ✅ Done 2026-05-10 |
+| **76-listing** | Listing View Migration | — | ✅ Done 2026-05-10 — 16 admin views to ListingToolbar+useUrlTable+DataTable |
+| **76** | Alpha: Public Catalogue | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | ✅ Done 2026-05-10 |
+| **76-infra** | Hotfix + Firebase Reset | J13, J14, J15, INFRA1, INFRA2 | ✅ Done 2026-05-10 — firebase-reset.mjs + firebase-delete-indexes.mjs |
+| **77-ux** | UX Foundation | UX1, UX2, UX3, UX4, UX5, UX9 | ✅ Done — FormShell+QuickFormDrawer+StepForm+PreviewPane+MediaPickerDrawer+InlineSelectCreate |
+| **77** | Alpha: Seller Products | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | ✅ Done |
+| **78** | Alpha: User Account | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | ✅ Done 2026-05-10 |
+| **79** | Alpha: Cart Integrity | W1, W2, W3, W4, R1 | ✅ Done 2026-05-10 |
+| **80-arch** | Store Identity + Seed QA | ARCH3 + seed QA | ✅ Done 2026-05-10 |
+| **80** | Alpha: Store Settings | UX7, C6, C7, O3, VB3, VB10, LL8 | ✅ Done 2026-05-10 |
+| **🚀** | **ALPHA RELEASE** | — | ✅ Sessions 76–80 complete — browse → cart → checkout → orders; seller can list |
+| **81** | Alpha: Store Finance | C3, VB1, C4, VB2, LL7, VB7, LL9, LL10 | ✅ Done 2026-05-10 |
+| **82** | SEO & Lighthouse | SEO1–SEO7 | ✅ Done 2026-05-10 |
+| **83** | Content | VD8 | ✅ Partial — VD9+VD10 deferred |
+| **84** | Custom Fields | L1, L2, L3 | ✅ Done |
+| **85** | Sub-listing | SC1, SC2, SC3, SC4 | ✅ Done 2026-05-10 |
+| **86** | Grouped | GP1, GP2 | ✅ Done |
+| **87** | Social Feed | S4, S1, S2, S3, S5 | ✅ Done 2026-05-10 |
+| **88** | Search + Routes | RC2, SR1, SR2, SR3, RC1, RC3, RC4 | ✅ Done 2026-05-10 |
+| **89-a** | UX Polish | VD12, J16, J17, D1 (wishlist filter) | ✅ Done 2026-05-11 |
+| **89-b** | FAQ + WhatsApp | FAQSection rewrite, WhatsApp redesign, @types/react dedup | ✅ Done 2026-05-11 |
+| **90** | Action System | AX1 | ✅ Done 2026-05-11 — ACTION constants + useActionDispatch + panelStore |
+| **90-colors** | Colors | X7a, X7b | ✅ Done |
+| **91** | Layout Tokens | X8a, X8b | ✅ Done 2026-05-11 |
+| **92** | Action URLs + Bars | AX2, AX3 | ✅ Done 2026-05-11 — usePanelUrlSync + 8 inline admin editors + FormActionBar |
+| **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | ✅ Done 2026-05-11 — stats live queries + multi-carousel + CTA filter chips + multi-row products + YouTube cards |
 
 ---
 
@@ -225,7 +267,7 @@ Rules to keep top-of-mind every task:
 | SL3 | Update repository findBySlug methods to use prefixed slugs | S | ✅ | Part 48 | All repos query slug field directly; fixed faqQueryHelpers.bySlug to use top-level slug |
 | SL4 | generateMetadata + full social share preview for all pages | M | ✅ | Part 64 | LETITRIP_SEO config + wrapper functions in `src/constants/seo.server.ts`. Static og:/twitter metadata on all 10 listing pages. Real-data generateMetadata on product/auction/pre-order/store/category/brand/event detail pages via getProductById/getStoreBySlug/getCategoryBySlug/getBrandBySlug. FAQ category page metadata from param. Blog already had full metadata. New `getBrandBySlug()` action added to appkit. |
 | SL5 | Backend API route slug params — no transformation needed | S | ✅ | Session 60 | Audited 2026-05-06: all route handlers pass `[slug]`/`[id]` params unchanged to repo; no stripping or re-prefixing found |
-| SL6 | Verify id === slug convention + cross-reference integrity | M | ⏳ | | **id === slug is already the app convention** — `[id]` and `[slug]` route params are the same value; no new pages needed. Task is only: (a) confirm every Firestore document ID equals its `slug` field across all collections (stores, categories, brands, blog posts, events, FAQs, sections, nav items, carousel slides, ads); (b) cross-reference audit — every relational field (`storeId`, `categorySlug`, `brandSlug`, `parentId`) must point to a real document with a matching slug in both code (repositories, form selects) and seed data. Known issue: some seed products categorised under semantically wrong category (e.g. anime figures under `category-audio-electronics`) — fix in P14. |
+| SL6 | Verify id === slug convention + cross-reference integrity | M | ✅ | S1 | Audited 2026-05-11. id===slug: PASS across all 17 pure-slug collections. Cross-ref fixes: (1) duplicate product-beyblade-x-bx01-dran-sword at line 3619 renamed to product-beyblade-x-bx01-dran-sword-starter-pack; orders-seed preeti-016 updated. (2) wishlists-seed-data.ts fully rewritten — pokemon character userIds and non-existent productIds replaced with 20 real entries across 8 real buyers. (3) 8 legacy non-seeded product files deleted (products-seed-data.ts with 3 phantom stores, anime-figures, beyblade, hot-wheels, transformers, retro-gaming, cosplay-accessories, letitrip-official seed files). (4) productsSeedData export removed from seed/index.ts, index.ts, server.ts. All verified with tsc --noEmit 0 errors both repos. |
 
 ### Slug prefix table (enforced everywhere):
 
@@ -403,7 +445,7 @@ Rules to keep top-of-mind every task:
 | HS3 | Enhance 7 existing resource builders with sort/filter/count | M | ✅ | Session 66 | **Depends on HS1.** `AdminSectionsView.tsx` — extend products, auctions, pre-orders, stores, events, reviews, social-feed builders: **(1) Resource builders** (products/auctions/pre-orders/stores/events): add Sort By dropdown (Latest/Oldest/Price Low→High/Price High→Low/Featured/On Sale/Popular), Filter by Brand (`DynamicSelect` → `/api/brands`), Filter by Category (`DynamicSelect` → `/api/categories`), Max Items radio (5/10/20), Loop toggle. **(2) reviews**: add source radio (Platform reviews / Google Business Reviews); if Google selected → show placeId input. **(3) social-feed**: add layout select (Grid/Masonry/Carousel), showCaption toggle, showStats toggle, postType select. Also fix New Section flow: type-selector modal shows grid of all 21 type cards with icon + description; selecting type opens editor drawer pre-set to that type. All save/delete use `useToast`. `UnsavedChangesModal` on dirty drawer close. |
 | HS4 | Google Business Reviews integration | M | ✅ | Session 67-b | **Depends on HS1+HS2.** **(A) API proxy** `src/app/api/social-feed/google-reviews/route.ts` (NEW): `GET ?placeId=X&maxReviews=5&minRating=4` → calls Google Places API v1 `/details` with `fields=reviews,rating,user_ratings_total`; filters by `minRating`; slices to `maxReviews`; response cached `revalidate: 3600`. Returns `{ reviews: Array<{ authorName, authorPhotoUrl, rating, text, time, profileUrl }>, aggregateRating, totalRatings }`. Empty if `googleMapsApiKey` not configured in site_settings (returns `{ error: "not-configured" }`). **(B) Component** (NEW `appkit/src/features/homepage/components/GoogleReviewsSection.tsx`): async RSC; reads `placeId` from config (falls back to `site_settings.googlePlaceId`); calls proxy route; renders review cards (avatar + name, star rating, date, review text, "Posted on Google" badge with Google logo icon); empty state if not configured. Grid or carousel layout per `cfg.layout`. **(C) Wire** into `MarketplaceHomepageView.tsx` `renderSection` switch as `case "google-reviews"`. **(D) Credentials**: expose `googleMapsApiKey` + `googlePlaceId` in VA8 ⑧Integrations (alongside TikTok/DeviantArt fields already there). |
 | HS5 | Custom Cards section — component + builder | M | ✅ | Session 67-b | **Depends on HS1+HS2.** **(A) Component** (NEW `appkit/src/features/homepage/components/CustomCardsSection.tsx`): renders `cards[]` per `layout` — Grid: CSS grid `columns` cols; Row: `HorizontalScroller` wrapper (existing component); Masonry: CSS columns. Each card: optional image (full-width top, via `/media/` proxy, `next/image`), eyebrow, title, body text, buttons row, optional form embed (`<iframe sandbox="allow-forms allow-scripts" loading="lazy">`). Card bg/text color from CSS token vars. `autoScroll` wraps in `SectionCarousel` (existing). **(B) Wire** into `MarketplaceHomepageView.tsx` `renderSection` switch as `case "custom-cards"`. **(C) Builder form**: Session 78 gap fix — typed `renderCustomCardsBuilder()` added to AdminSectionsView: layout select, columns select, card repeater (per card: image URL, imageAlt, eyebrow, title, body, link, backgroundColor, textColor, borderRadius select, shadowLevel select; Add/Remove card buttons). |
-| HS4-E | Google Reviews per-store — store About page + per-store config | S | ⏳ | | **Deferred from HS4 (user request 2026-05-08).** Add `googleReviews?: { placeId: string; enabled: boolean; maxReviews?: number; minRating?: number; layout?: "grid"\|"carousel" }` to `StoreDocument`. Store About page: render `GoogleReviewsSection` if `store.googleReviews.enabled`. Admin/seller store settings: expose placeId + enabled toggle + maxReviews/minRating. Reuses `GoogleReviewsSection` component from HS4 unchanged. |
+| HS4-E | Google Reviews per-store — store About page + per-store config | S | ✅ | S1 2026-05-11 | Added `googleReviews?: { placeId, enabled, maxReviews?, minRating?, layout? }` to `StoreDocument`. `SellerStorefrontView` extended with Google Reviews section (enabled toggle, placeId, maxReviews, minRating — fields visible when enabled). Store About page (`src/app/[locale]/stores/[storeSlug]/about/page.tsx`) renders `GoogleReviewsSection` from `@mohasinac/appkit/server` when `googleReviews.enabled && placeId`. `GoogleReviewsSection` exported from server.ts. 0 TSC errors both repos. |
 
 ---
 
@@ -566,7 +608,7 @@ Rules to keep top-of-mind every task:
 |---|------|-----------|--------|------|-------|
 | VD1 | /support Help Centre page | S | ✅ | Session 76 | HelpPageView renders at /support. helpPage i18n namespace added to en.json (Session 76). |
 | VD2 | Footer dead link audit + fix | S | ✅ | Session 76 | Footer links verified. /support page exists. LetItRip brand cleanup done in same session. |
-| VD3 | generateMetadata for all detail pages (SL4) | S | ⏳ | | Canonical URL, title, description, `openGraph.url` for product/auction/preorder/store/category/brand/blog/event detail pages. |
+| VD3 | generateMetadata for all detail pages (SL4) | S | ✅ | Subsumed by SEO5 (Session 82) | Metadata for all public detail pages (product, auction, preorder, blog, store, category, brand, event) done under SEO5 which also covered static pages. VD3 scope fully absorbed. |
 | VD4 | Category + brand display on product cards + listing filters | M | ✅ | Session 76 | Category+brand chips added to ProductCard content area (ProductGrid.tsx). Brand link added (with brandSlug) + category link on all 3 detail page views. brandSlug added to ProductDocument + ProductItem types. |
 | VD5 | Store profile on product detail pages (not user profile) | S | ✅ | Session 76 | Store card with "Visit Store →" button added to all 3 detail views (ProductDetailPageView, AuctionDetailPageView, PreOrderDetailPageView). Uses storeId===storeSlug convention for link. Logo/rating deferred post-alpha. |
 | VD6 | Brands listing page | S | ✅ | Session 75 | /brands page with BrandsListView exists and renders. |
@@ -768,7 +810,7 @@ Rules to keep top-of-mind every task:
 | ARCH6 | Public product cards + detail pages: show store identity | M | ⏳ | | Everywhere a product card or detail page shows "seller" info, switch to store: `storeName` + link to `/stores/{storeSlug}`. Affects: `ProductCard`, `AuctionCard`, `PreorderCard`, product detail page. Never show `sellerName` or `sellerId` to public users. |
 | ARCH7 | Seller profile page: store-first identity; admin view shows ownerId | M | ⏳ | | Public `/profile/{userId}` for a seller: show store card prominently (storeName, storeSlug, logo) — not user bio name. Admin `/admin/users/{id}` detail: show `ownerId` (Firebase UID) alongside `storeId` for the stores they own. |
 | ARCH8 | Seed data unification: all collections → store identity | L | ✅ | Session 81 | Done as part of ARCH2 migration: payouts, orders, cart, coupons, all product seeds (letitrip-official, anime-figures, beyblade, hot-wheels, transformers, retro-gaming, cosplay-accessories) all migrated to storeId/storeName, storeId prefix corrected (store- prefix). |
-| ARCH9 | Chat room schema: rename sellerId → ownerId | S | ⏳ | | `appkit/src/features/admin/schemas/firestore.ts` `ChatRoomDocument`: rename `sellerId`→`ownerId`, `sellerName`→`ownerName`. Update `/api/chat/route.ts` (all references). Half-rename = one atomic commit. ownerId = Firebase UID of the store owner in the chat context. |
+| ARCH9 | Chat room schema: rename sellerId → ownerId | S | ✅ | S1 2026-05-11 | Renamed `sellerId`→`ownerId`, `sellerName`→`ownerName` across: `appkit/src/features/admin/schemas/firestore.ts` (ChatRoomDocument interface, CHAT_ROOM_FIELDS, CHAT_ROOM_INDEXED_FIELDS, DEFAULT_CHAT_ROOM_DATA, chatRoomQueryHelpers), `chat.repository.ts`, `chat-actions.ts`, `useChat.ts`, `src/app/api/chat/route.ts`, `src/actions/chat.actions.ts`. appkit dist rebuilt. 0 TSC errors both repos. |
 
 ---
 
@@ -996,9 +1038,9 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Notes |
 |---|------|-----------|--------|-------|
 | AX1 | Centralized ACTION constants + useActionDispatch hook | M | ✅ | **Session 90 (2026-05-11) — fully done.** Constants: `appkit/src/features/products/constants/action-defs.ts` — ACTION_ID/ROW_ACTION_ID/FORM_ACTION_ID/DASHBOARD_QUICK_ACTION_ID + all META maps + preset groups. Hook: `appkit/src/react/hooks/use-action-dispatch.ts` — useActionDispatch(options?) returns async dispatch(action) handling NAVIGATE/OPEN_PANEL/TOAST/BULK/COPY. Store: `appkit/src/stores/panel-store.ts` — Zustand usePanelStore (panelId, data, openPanel, closePanel, isPanelOpen). Zustand v5 added to appkit deps. Migration: SellerProductsView.tsx handleEdit migrated from router.push to dispatch({ type: "NAVIGATE" }). All exported from client.ts + index.ts. 0 TS errors both repos, appkit build clean. |
-| AX2 | Edit/Create URL routing — panel auto-open on URL params | M | ⏳ | Depends on AX1. **Pattern**: listing pages read URL search params ?panel=create or ?panel=edit&id={slug}. On mount: if params present -> dispatch(ACTION.OPEN_PANEL(panelId, { id })). On panel onClose/onSuccess -> router.replace(basePath) (removes query params). **usePanelUrlSync(panelId, basePath)** hook (new, appkit/src/hooks/): reads useSearchParams(), on mount calls dispatch if params match, subscribes to panelStore — when panel closes, calls router.replace(basePath). **Deep-link format**: /admin/products?panel=create (create panel opens); /admin/products?panel=edit&id=product-abc (edit panel opens pre-loaded). **Wire into**: admin products, auctions, preorders, stores, categories, brands, blog, events, FAQs, coupons (10 admin listing pages) + all store-seller listing pages. **Share**: copy icon in panel header -> ACTION.COPY(window.location.href, "Edit link copied") after URL is updated on open. Add ROUTES.ADMIN.PRODUCT_EDIT(id) etc. helper functions to route-map. npx tsc --noEmit -> 0 errors. |
-| AX3 | Sticky form action bars — desktop top + mobile bottom | S | ⏳ | Depends on UX1 (FormShell). Extends FormShell spec: **Desktop** — sticky top bar: breadcrumb trail + resource name + [Preview] [Save Draft] [Publish]. Position: sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)]. Background: var(--appkit-color-surface) with bottom border. **Mobile** (< md) — sticky bottom bar: [Discard] [Save Draft] [Publish]. Position: sticky bottom-0, same z-index. Top bar hidden on mobile (space constraint). **Dirty state**: when any form field changes, set isDirty flag. Browser tab title prepends "* " while dirty. Esc when dirty: show ConfirmModal ("Discard unsaved changes?") before closing. **Toast on action**: Save Draft -> toast "Draft saved" (success). Publish -> toast "Published successfully" (success). Validation error -> toast "Fix the errors above" (error) + scroll to first error field. **FormActionBar** component (new, appkit/src/ui/components/): props { title, breadcrumbs, onSaveDraft, onPublish, onPreview, onDiscard, isDirty, isSubmitting }. Used by FormShell. npx tsc --noEmit -> 0 errors. |
-| A1-ext | Admin product create: store picker dropdown | S | ⏳ | Depends on Session 77 product forms. **Problem**: admin users currently create products without a store selector. **Fix**: in ProductForm.tsx (and all 3 product type editors), add a Store field at the top of the form — rendered ONLY when userRole === "admin". Component: InlineSelectCreate (H1, already exists) or Select loading stores via storeRepository.list({ status: "active" }). Display: storeName (storeId). On select: sets form.storeId and form.storeName. For sellers: field hidden — storeId auto-set from authenticated user store. **Validation**: admin must select a store (required field). **API**: product create routes already accept storeId from body — no route changes needed. npx tsc --noEmit -> 0 errors. |
+| AX2 | Edit/Create URL routing — panel auto-open on URL params | M | ✅ | **Session 92 (2026-05-11) — done.** usePanelUrlSync hook (URL ?panel=create/edit&id=xxx); DataTable onRowClick prop; embedded prop on all 7 AdminXxxEditorViews; 8 admin listing views wired with inline SideDrawer + embedded editor; exported from index.ts + client.ts. 0 TS errors both repos. | Depends on AX1. **Pattern**: listing pages read URL search params ?panel=create or ?panel=edit&id={slug}. On mount: if params present -> dispatch(ACTION.OPEN_PANEL(panelId, { id })). On panel onClose/onSuccess -> router.replace(basePath) (removes query params). **usePanelUrlSync(panelId, basePath)** hook (new, appkit/src/hooks/): reads useSearchParams(), on mount calls dispatch if params match, subscribes to panelStore — when panel closes, calls router.replace(basePath). **Deep-link format**: /admin/products?panel=create (create panel opens); /admin/products?panel=edit&id=product-abc (edit panel opens pre-loaded). **Wire into**: admin products, auctions, preorders, stores, categories, brands, blog, events, FAQs, coupons (10 admin listing pages) + all store-seller listing pages. **Share**: copy icon in panel header -> ACTION.COPY(window.location.href, "Edit link copied") after URL is updated on open. Add ROUTES.ADMIN.PRODUCT_EDIT(id) etc. helper functions to route-map. npx tsc --noEmit -> 0 errors. |
+| AX3 | Sticky form action bars — desktop top + mobile bottom | S | ✅ | **Session 92 (2026-05-11) — done.** FormActionBar component (sticky top desktop, sticky bottom mobile, breadcrumbs, dirty-dot, Discard/Preview/Save Draft/Publish); isDirty flag; browser tab title "* " prefix; ConfirmModal on Esc when dirty; wired in FormShell. 0 TS errors both repos. | Depends on UX1 (FormShell). Extends FormShell spec: **Desktop** — sticky top bar: breadcrumb trail + resource name + [Preview] [Save Draft] [Publish]. Position: sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)]. Background: var(--appkit-color-surface) with bottom border. **Mobile** (< md) — sticky bottom bar: [Discard] [Save Draft] [Publish]. Position: sticky bottom-0, same z-index. Top bar hidden on mobile (space constraint). **Dirty state**: when any form field changes, set isDirty flag. Browser tab title prepends "* " while dirty. Esc when dirty: show ConfirmModal ("Discard unsaved changes?") before closing. **Toast on action**: Save Draft -> toast "Draft saved" (success). Publish -> toast "Published successfully" (success). Validation error -> toast "Fix the errors above" (error) + scroll to first error field. **FormActionBar** component (new, appkit/src/ui/components/): props { title, breadcrumbs, onSaveDraft, onPublish, onPreview, onDiscard, isDirty, isSubmitting }. Used by FormShell. npx tsc --noEmit -> 0 errors. |
+| A1-ext | Admin product create: store picker dropdown | S | ✅ | Already present pre-S1 | `AdminProductEditorView.tsx` already has a `DynamicSelect` store picker at the top of the form (lines 214-228), loading stores via `ADMIN_ENDPOINTS.STORES`. This view is admin-only by namespace so the field is already correctly scoped. Sellers use separate `SellerCreateProductView` / `SellerEditProductView` which auto-set storeId. No code change needed. |
 
 ---
 

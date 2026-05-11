@@ -7,40 +7,40 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 93 (2026-05-11)
+### ✅ Last completed — S1 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| EX1 | `LiveStatRequest[]` pipeline. `LiveStatsMap = Record<string, string>` keyed by `stat.key`. `CollectionQueryMetric` + `ALLOWED_LIVE_COLLECTIONS` allowlist. Admin builder state extended (source/metric/collection/filterField/filterValue/suffix). |
-| EX2 | `CarouselDocument` + `carouselsRepository` (addSlide/removeSlide/reorderSlides/getCarouselWithSlides + `TooManySlidesError`). `/admin/carousels` list + detail pages. `ROUTES.ADMIN.CAROUSELS`. 1 default carousel seeded. Firestore indexes. |
-| EX3 | `SectionCTA` type. `CategoriesSectionConfig` + `BrandsSectionConfig` extended with `cta?` + `filters?`. `ShopByCategorySection` + `BrandsSection` render filter chips + CTA button — all CSS var tokens, no hardcoded hex. |
-| EX4 | `SectionPagination` type. `ProductsSectionConfig` extended with `rows`/`maxItems`/`pagination`. `FeaturedProductsSection` `ProductGrid` component with load-more/arrows/auto-scroll. `rows=1` keeps original `SectionCarousel` (backward-compat). |
-| YT1 | `StaticSocialPost` interface. `"youtube"` added to `SocialPlatform`. `handle` optional in config. `YouTubeCard` (16:9, red play button, CSS var tokens). `SocialFeedSection` YouTube branch uses static posts from config (no API token). 2 YouTube posts seeded. |
-| Infra | `carousels` added to seed route, SeedPanel, `SeedCollectionName`, manifest, and Firestore indexes. Firebase-merge run. |
+| SL6 | Full id===slug + cross-ref integrity audit. 3 fixes: duplicate product ID, wishlists rewrite (19 invalid → 20 valid cross-refs), 7 legacy seed files deleted. |
+| ARCH9 | `sellerId`→`ownerId`, `sellerName`→`ownerName` across 6 files (schema, repository, actions, hook, API route, server action). appkit dist rebuilt. 0 TSC errors. |
+| VD3 | Marked subsumed by SEO5 (Session 82). No code change needed. |
+| HS4-E | `googleReviews?` added to `StoreDocument`. `SellerStorefrontView` extended with Google Reviews section. Store About page renders `GoogleReviewsSection` from `@mohasinac/appkit/server` when enabled. |
+| A1-ext | Verified already implemented — `AdminProductEditorView` has `DynamicSelect` store picker unconditionally (admin-only namespace). |
 
-### 🔄 Current — Session 94 (next)
+### 🔜 Current — S2 (next session)
 
-| Task | Status | Notes |
-|------|--------|-------|
-| FI1 | ⏳ pending | `productFeatures` Firestore collection + seed |
-| FI2 | ⏳ pending | Admin CRUD for product features |
-| FI3 | ⏳ pending | Store CRUD for product features |
-| FI4 | ⏳ pending | Product form integration |
-| FI5 | ⏳ pending | Feature badges on product cards |
-| FI6 | ⏳ pending | Feature section on product detail |
-
-### 🔜 Next sessions (safe-first order)
+### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| 94 | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
-| 95 | BK1–BK3 | Public bulk selection + compare overlay | low |
-| 96 | Q5, Q1–Q4, Q6 | Firestore indexes deploy + `listingProcessor` Firebase Function + infinite scroll | medium |
-| 97–101 | P23–P31 | Seed scale (100+ products, 55+ categories, 60+ reviews, etc.) | low |
-| 102–104 | RBAC1–RBAC10 | Permission constants → server resolver → SSR gates → admin Team UI | medium |
-| 105–107 | BAN1–BAN9 | Ban enforcement → ticket API → admin UI → Firebase functions | medium |
-| 108–110 | SCAM2,4,6,7,8 | Admin mgmt + FAQs + acknowledgement + SEO + notifications | low |
-| 111+ | G1/G2, VC2/VC4, GD1–GD22, ARCH1/6/7/9, SL6 | Templates, user forms, guide pages, store identity audit, watermark CDN | deferred |
+| **S1** | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug audit + field renames + per-store Google Reviews | zero |
+| **S2** | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
+| **S3** | VC2, VC4 | Invoice PDF + user settings tabs | zero |
+| **S4** | G1, G2, O1 | Store templates CRUD + slug management | zero |
+| **S5** | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
+| **S6** | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
+| **S7** | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
+| **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
+| **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
+| **S10** | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
+| **S11** | O5 | Shiprocket auto-create | medium |
+| **S12** | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
+| **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |
+| **S14–S18** | P24–P31 | Seed scale (auctions/categories/blog/coupons/validator) | low |
+| **S19–S30** | SB1–SB11, TC | Bundle + Prize Draw + Event Raffle system | high |
+| **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement | high |
+| **S38–S39** | SCAM2,4,6,7,8,9 | Admin scammer UI + SEO + notifications | medium |
+| **S40–S43** | GD1–GD22 | In-app guide pages (store/buyer/admin) | zero |
 
 ---
 
@@ -48,48 +48,49 @@
 
 ```
 115 tasks ✅ done · 282 remaining · 397 total (as of Session 93 done)
+Roadmap reorganized 2026-05-11 → 43 pending sessions S1–S43 (risk-ordered, all deferred integrated)
 
-PHASE                   SESSIONS     STATUS
+COMPLETED (sessions 60–93)
 ──────────────────────────────────────────────────
 Foundation + Seed       60–64        ✅
 Carousel                65           ✅
 Homepage Sections       66–67        ✅
 Admin CRUD              68–75        ✅
 Public Catalogue        76           ✅
-SEO + Bulk              82           ✅
-RBAC/BAN/SCAM schemas   80-schema    ✅
-sellerId migration      81           ✅
-Seller Products         77-impl      ✅
-Cart Integrity          79-impl      ✅
-User Account Core       78-impl      ✅
-Store Settings          80-impl      ✅
-Store Finance           81-impl      ✅
-Content rewrites        83/84        ✅  VD8/VD9/VD10
-Custom Fields           84           ✅  L1/L2/L3
+Seller Products         77           ✅
+User Account Core       78           ✅
+Cart Integrity          79           ✅
+Store Settings + Fin    80–81        ✅
+SEO + Lighthouse        82           ✅
+Content + CustomFields  83–84        ✅  VD8/L1–L3 (VD9/VD10 deferred → S1/S2)
 Sub-listings            85           ✅  SC1–SC4
 Grouped Listings        86           ✅  GP1/GP2
 Social Feed             87           ✅  S1–S5
 Search + Routes         88           ✅  RC3/RC4
-UX Polish               89a          ✅  VD12, J16, J17, wishlist filter
-FAQ + WA redesign       89b          ✅  FAQSection, WhatsApp, @types/react
+UX Polish + FAQ + WA    89a/89b      ✅
 ────────── 🚀 ALPHA on Vercel prod 2026-05-10 ──────────
-Action constants        90           ✅  AX1 complete (constants+hook+store+migration)
-Color tokens            90-colors    ✅  X7a+X7b complete (77 CSS files tokenized)
-Layout tokens           91           ✅  X8a+X8b complete (tokens + 26 CSS files)
-Action URLs + bars      92           ✅  AX2+AX3 complete (usePanelUrlSync, 8 admin panels, FormActionBar)
-Extended sections       93           ✅  EX1-EX4+YT1 (live stats, multi-carousel, CTA chips, multi-row products, YouTube feed)
-Feature icons           94           ⏳
-Bulk actions            95           ⏳
-Query/Sieve             96           ⏳  Firebase Function — medium risk
-Seed scale              97–101       ⏳
-RBAC UI                 102–104      ⏳
-Bans UI                 105–107      ⏳
-Scams UI                108–110      ⏳
-Deferred                111+         ⏳
+Action constants        90           ✅  AX1
+Color + Layout tokens   90c/91       ✅  X7a+X7b+X8a+X8b
+Action URLs + bars      92           ✅  AX2+AX3 (usePanelUrlSync, 8 inline panels, FormActionBar)
+Extended sections       93           ✅  EX1–EX4+YT1
+
+PENDING (new S-numbering, risk-ordered)
+──────────────────────────────────────────────────
+Zero-risk UI            S1–S6        ⏳  audits + user account + store forms + API sanitization
+Homepage features       S7           ⏳  EX5 + SB11 (collection-cards + 3 new section types)
+Feature icons           S8           ⏳  FI1–FI6 productFeatures collection
+UX + RTDB               S9           ⏳  BK3 compare overlay + Messages RTDB
+Infrastructure          S10–S11      ⏳  PDF + watermark CDN + Shiprocket
+Query/Sieve             S12–S13      ⏳  Firebase Function — medium risk
+Seed scale              S14–S18      ⏳  auctions/categories/blog/coupons/validator
+Bundle + Prize Draw     S19–S30      ⏳  SB1–SB11 + TC (largest feature — new collections)
+RBAC + BAN              S31–S37      ⏳  security gates — do after all features stable
+SCAM UI                 S38–S39      ⏳  admin scammer + SEO + notifications
+In-app Guides           S40–S43      ⏳  GD1–GD22 (zero-risk static content)
 ──────────────────────────────────────────────────
 
 ⚠️  Firebase reset 2026-05-10 — re-seed all collections via /demo/seed
-⚠️  RBAC/BAN/SCAM schemas done (additive) — UI deferred to sessions 102–110
+⚠️  RBAC/BAN/SCAM schemas done (additive) — UI deferred to S31–S39
 ⚠️  appkit via file:./appkit locally — do NOT npm publish unless user asks
 ```
 

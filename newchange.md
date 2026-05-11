@@ -25,11 +25,41 @@
 | 2026-05-07 | P10 Part B | Full SeedPanel UI redesign (collapsible groups, per-collection API calls, progress bar) was never built in Session 63 — task was silently marked ✅ | ✅ Fixed 2026-05-07 | — |
 | 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
 | 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ✅ Done 2026-05-08 — Session 67-b | — |
-| 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ⏳ New task needed — see tracker | New task HS4-E |
+| 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ✅ Done S1 2026-05-11 — see HS4-E | HS4-E ✅ |
 
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S1 — Zero-risk audit + field renames + HS4-E — 2026-05-11
+
+**Scope**: SL6 cross-ref integrity audit, ARCH9 sellerId→ownerId rename, VD3 (subsumed by SEO5), HS4-E per-store Google Reviews, A1-ext (already present).
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/features/admin/schemas/firestore.ts` | ARCH9: `sellerId`→`ownerId`, `sellerName`→`ownerName` in `ChatRoomDocument`, `CHAT_ROOM_FIELDS`, `CHAT_ROOM_INDEXED_FIELDS`, `DEFAULT_CHAT_ROOM_DATA`, `chatRoomQueryHelpers` |
+| `appkit/src/features/admin/repository/chat.repository.ts` | ARCH9: doc ID construction, `findRoom` param, `.where("sellerId")` → `.where("ownerId")`, `softDeleteForUser` check |
+| `appkit/src/features/admin/actions/chat-actions.ts` | ARCH9: `CreateRoomInput.sellerId`→`ownerId`, `createOrGetChatRoom`, `sendChatMessage` resolver |
+| `appkit/src/features/admin/hooks/useChat.ts` | ARCH9: mutation data type `sellerId`→`ownerId` |
+| `src/app/api/chat/route.ts` | ARCH9: Zod schema + body destructure + all references |
+| `src/actions/chat.actions.ts` | ARCH9: local `createRoomSchema` + function signature |
+| `appkit/src/seed/products-standard-seed-data.ts` | SL6-Fix1: renamed duplicate `product-beyblade-x-bx01-dran-sword` at line 3619 → `product-beyblade-x-bx01-dran-sword-starter-pack` |
+| `appkit/src/seed/orders-seed-data.ts` | SL6-Fix1: updated `order-preeti-016-dran-sword` productId to match renamed product |
+| `appkit/src/seed/wishlists-seed-data.ts` | SL6-Fix2: full rewrite — replaced 19 invalid cross-refs (Pokémon character userIds + non-existent productIds) with 20 valid entries across 8 real buyers |
+| `appkit/src/seed/products-seed-data.ts` (deleted) | SL6-Fix3: legacy file not seeded by API, phantom stores, non-collectible categories |
+| `appkit/src/seed/anime-figures-seed-data.ts` (deleted) | SL6-Fix3: used non-existent `store-anime-vault-india` |
+| 6 more legacy seed files (deleted) | SL6-Fix3: beyblade, hot-wheels, transformers, retro-gaming, cosplay-accessories, letitrip-official — not seeded, no consumers |
+| `appkit/src/seed/index.ts`, `appkit/src/index.ts`, `appkit/src/server.ts` | SL6-Fix3: removed `productsSeedData` export |
+| `appkit/src/features/stores/schemas/firestore.ts` | HS4-E: added `googleReviews?: { placeId, enabled, maxReviews?, minRating?, layout? }` to `StoreDocument` |
+| `appkit/src/features/seller/components/SellerStorefrontView.tsx` | HS4-E: `StorefrontDraft` + `googleReviews` section UI (enabled toggle, placeId, maxReviews, minRating) |
+| `appkit/src/server.ts` | HS4-E: exported `GoogleReviewsSection` + `GoogleReviewsSectionProps` |
+| `src/app/[locale]/stores/[storeSlug]/about/page.tsx` | HS4-E: renders `GoogleReviewsSection` from `@mohasinac/appkit/server` when `googleReviews.enabled && placeId` |
+
+**Deferred**: none.
+
+**Counts**: 112 → 116 done, 285 → 281 remaining.
 
 ---
 
