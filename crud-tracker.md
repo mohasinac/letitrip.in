@@ -163,8 +163,8 @@ Rules to keep top-of-mind every task:
 | Session | Phase | Task IDs | Goal | Must-have-before |
 |---------|-------|----------|------|-----------------|
 | **S1** | Zero-risk | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug/cross-ref integrity audit + field renames + per-store Google Reviews deferred integration + admin store picker in product form | — | ✅ **Done 2026-05-11** — SL6 (cross-ref audit + 3 fixes), ARCH9 (sellerId→ownerId), VD3 (subsumed by SEO5), HS4-E (googleReviews on StoreDocument + SellerStorefrontView + store About page), A1-ext (already present). |
-| **S2** | Zero-risk | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + saved-addresses listing view + orders listing view | S1 done |
-| **S3** | Zero-risk | VC2, VC4 | Invoice PDF download + user settings tabs (payment/notifications) | Sessions 76–93 stable |
+| **S2** | Zero-risk | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + saved-addresses listing view + orders listing view | S1 done | ✅ **Done 2026-05-11** |
+| **S3** | Zero-risk | VC2, VC4 | Invoice PDF download + user settings tabs (payment/notifications) | Sessions 76–93 stable | ✅ **Done 2026-05-11** — VC2 (print invoice page + Download Invoice button), VC4 (Account/Privacy/Appearance tabs, email change, data export) |
 | **S4** | Zero-risk | G1, G2, O1 | Store product templates CRUD + slug management page | Session 77 product forms done |
 | **S5** | Zero-risk | UX4, UX8, UX9 | PreviewPane wiring + admin quick-edit drawer + InlineSelectCreate refinements | UX1–UX3 done |
 | **S6** | Zero-risk | ARCH1, ARCH6, ARCH7 | Strip sellerId from all public API responses + response shape audit | — |
@@ -595,9 +595,9 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | VC1 | User Order detail — full render (items, address, payment, tracking) | S | ✅ | Session 78 | `OrderDetailView` wired: renderBack, renderHeader (status badge + tracking), renderItems (image/title/qty/price), renderAddress, renderPayment (subtotal/shipping/discount/tax/total), renderActions (Track Shipment link + Cancel Order button). `useOrder` hook from appkit. |
-| VC2 | User Order invoice download | M | ⏳ | | NEW. "Download Invoice" button on user order detail page. Server route: GET `/api/orders/[id]/invoice`. Generate PDF via `@react-pdf/renderer` or server-side HTML→PDF. |
+| VC2 | User Order invoice download | M | ✅ | S3 2026-05-11 | Print-styled invoice page at `/user/orders/[id]/invoice`; Print/Save as PDF button; Download Invoice link on order detail. ROUTES.USER.ORDER_INVOICE added. |
 | VC3 | User Profile full edit | S | ✅ | Session 78 | ProfilePageClient: bio textarea (max 500), photoURL URL input, isPublic toggle switch. View mode shows bio + Public/Private badge. PATCH /api/user/profile schema extended (bio, profileIsPublic). userRepository.update() persists to publicProfile sub-object. |
-| VC4 | User Settings — password, email, privacy tabs | M | ⏳ | | See D3. Tabs: Account (email change, password change), Privacy (data export, delete account), Appearance (dark mode, language). |
+| VC4 | User Settings — password, email, privacy tabs | M | ✅ | S3 2026-05-11 | Account/Privacy/Appearance tabs; email change (verifyBeforeUpdateEmail re-auth flow); password form in Account tab; Download My Data + Contact Support on Privacy tab; language placeholder on Appearance tab. GET /api/user/export added. |
 | VC5 | User Notifications — view + mark read + delete | S | ✅ | Session 78 | See D4. Fully wired — see D4 row above. |
 | VC6 | User Wishlist — fix broken wiring + stale validation | S | ✅ | Session 103b | Ghost items fixed (enriched product field), ListingLayout + search/sort wired. W2 stale validation deferred — see W2 row. |
 | VC7 | Message system — Firebase RTDB wiring | L | ⏳ | | See D5. Wire `MessagesView` → `ChatList` → `ChatWindow` to Firebase RTDB. Real-time listeners for messages. Send message action. Conversation list shows last message + unread count. |

@@ -7,16 +7,14 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S2 (2026-05-11)
+### ✅ Last completed — S3 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| D2 | `UpdateCurrentProfileInput` extended with `bio`+`profileIsPublic`. Avatar URL `<input>` replaced with `ImageUpload`+`useMediaUpload`. `as any` removed. `ImageUpload`/`ImageUploadProps` exported from appkit `client.ts`. |
-| D3 | `useChangePassword`+`ChangePasswordData` exported from appkit `client.ts`. Settings page: `renderPasswordForm` wired with current/new/confirm fields + match+length validation. |
-| LL4 | `AddressBook.AddressBookProps` extended with `onSetDefault?`; forwarded to `AddressCard`. `UserAddressesClient`: `onSetDefault` wired to `setDefault.mutate({ addressId })`; two-step inline delete confirm dialog added. |
-| LL5 | `UserReturnsView` slot-shell in appkit. `/user/returns` page (filters by `return_requested`). `/user/orders/[id]/cancel` page (reason textarea + `cancelOrderAction`, guards non-cancellable statuses). `ROUTES.USER.RETURNS` added. Returns link in nav. |
+| VC2 | Print-styled invoice page at `/user/orders/[id]/invoice`. `ROUTES.USER.ORDER_INVOICE` added. "Download Invoice" button on order detail opens invoice in new tab. "Print / Save as PDF" action bar on the invoice page. |
+| VC4 | Settings page rebuilt with Account / Privacy / Appearance tabs. Account tab: email change form (Firebase `verifyBeforeUpdateEmail` re-auth flow) + password change form. Privacy tab: Download My Data button (`GET /api/user/export`) + "Contact Support" link for deletion. Appearance tab: FontToggleClient + language placeholder. `useChangeEmail` + `ChangeEmailData` added to appkit. |
 
-### 🔜 Current — S3 (next session)
+### 🔜 Current — S4 (next session)
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -24,7 +22,7 @@
 |---------|-------|------|------|
 | **S1** ✅ | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug audit + field renames + per-store Google Reviews | zero |
 | **S2** ✅ | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
-| **S3** | VC2, VC4 | Invoice PDF + user settings tabs | zero |
+| **S3** ✅ | VC2, VC4 | Invoice PDF + user settings tabs | zero |
 | **S4** | G1, G2, O1 | Store templates CRUD + slug management | zero |
 | **S5** | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
 | **S6** | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
@@ -46,7 +44,7 @@
 ## PLAN SNAPSHOT
 
 ```
-120 tasks ✅ done · 277 remaining · 397 total (as of S2 done 2026-05-11)
+122 tasks ✅ done · 275 remaining · 397 total (as of S3 done 2026-05-11)
 Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1+S2 ✅
 
 COMPLETED (sessions 60–93)

@@ -33,6 +33,27 @@
 
 ---
 
+### Session S3 — Invoice print page + Settings tabs — 2026-05-11
+
+**Scope**: VC2 (invoice print page + Download Invoice button), VC4 (settings tabs: Account/Privacy/Appearance, email change, data export)
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/next/routing/route-map.ts` | VC2: add `ROUTES.USER.ORDER_INVOICE` |
+| `appkit/src/contracts/client-auth.ts` | VC4: add `reauthenticateAndSendEmailUpdateVerification` to `IClientAuthProvider` |
+| `appkit/src/providers/firebase-client/auth.ts` | VC4: implement via re-auth + `verifyBeforeUpdateEmail` |
+| `appkit/src/features/auth/hooks/useAuth.ts` | VC4: add `ChangeEmailData` type + `useChangeEmail` hook |
+| `appkit/src/client.ts` | VC4: export `useChangeEmail`, `ChangeEmailData` |
+| `src/app/[locale]/user/orders/[id]/invoice/page.tsx` (new) | VC2: print-styled invoice page; uses `useOrder`; Print/Save as PDF button |
+| `src/app/[locale]/user/orders/view/[id]/page.tsx` | VC2: Download Invoice button in `renderActions` (opens invoice in new tab) |
+| `src/app/[locale]/ClientProviderBootstrap.tsx` | VC4: add `reauthenticateAndSendEmailUpdateVerification` stub to fallback provider |
+| `src/app/[locale]/user/settings/page.tsx` | VC4: full rewrite with Account/Privacy/Appearance tabs; email change form; password form moved to Account tab; Download My Data + Contact Support on Privacy; language placeholder on Appearance |
+| `src/app/api/user/export/route.ts` (new) | VC4: GET /api/user/export — returns profile + addresses + orders as attachment JSON |
+
+**Deferred**: none.
+
+---
+
 ### Session S2 — User profile, settings, addresses, returns — 2026-05-11
 
 **Scope**: D2 (profile avatar), D3 (password change), LL4 (address set-default + delete confirm), LL5 (returns page + cancel page)
