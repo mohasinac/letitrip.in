@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
-import { productRepository, sanitizeProductsForPublic } from "@mohasinac/appkit";
+import {
+  productRepository,
+  sanitizeProductsForPublic,
+  parseListingParams,
+} from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_SORTS = "-createdAt";
+
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
-}
-
-function numParam(url: URL, key: string, fallback: number): number {
-  const value = url.searchParams.get(key);
-  const parsed = value !== null ? Number(value) : Number.NaN;
-  return Number.isFinite(parsed) ? parsed : fallback;
 }
 
 const SAFE_PRODUCT_FILTER_FIELDS = new Set([
@@ -49,7 +51,16 @@ function validateSieveFilters(
     .join(",");
 }
 
-function buildFilters(url: URL): string {
+/**
+ * Builds a Sieve filter string by combining:
+ *   1. Per-field query params (status, category, brand, …) — the UX-facing API
+ *   2. A raw Sieve filter string via `f=` (short) or `filters=` (long) — gated
+ *      through `validateSieveFilters` so only safelisted fields go through.
+ *
+ * `rawFilters` is passed in so the caller (using `parseListingParams`)
+ * resolves short/long precedence before we get here.
+ */
+function buildFilters(url: URL, rawFilters: string | null): string {
   const parts: string[] = [];
   const status = param(url, "status");
   if (status) parts.push(`status==${status}`);
@@ -104,20 +115,63 @@ function buildFilters(url: URL): string {
   if (preOrderProductionStatus) parts.push(`preOrderProductionStatus==${preOrderProductionStatus}`);
   const freeShipping = param(url, "freeShipping");
   if (freeShipping === "true") parts.push("freeShipping==true");
-  const raw = param(url, "filters");
-  if (raw) {
-    const safe = validateSieveFilters(raw, SAFE_PRODUCT_FILTER_FIELDS);
+  if (rawFilters) {
+    const safe = validateSieveFilters(rawFilters, SAFE_PRODUCT_FILTER_FIELDS);
     if (safe) parts.push(safe);
   }
   return parts.join(",");
 }
 
+const IDS_MAX = 20;
+
 async function _GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
-  const page = numParam(url, "page", 1);
-  const pageSize = numParam(url, "pageSize", 20);
-  const sorts = param(url, "sorts") ?? param(url, "sort") ?? "-createdAt";
-  const filters = buildFilters(url);
+
+  // Batch `ids=` mode — used by Compare overlay (BK3) to fetch up to IDS_MAX
+  // products in a single round-trip. Bypasses the sieve / filters path.
+  const idsParam = param(url, "ids");
+  if (idsParam) {
+    const ids = idsParam
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, IDS_MAX);
+    if (ids.length === 0) {
+      return NextResponse.json({ success: true, data: { items: [], total: 0 } });
+    }
+    try {
+      const items = await productRepository.listByIds(ids);
+      const response = NextResponse.json({
+        success: true,
+        data: {
+          items: sanitizeProductsForPublic(
+            items as unknown as Array<Record<string, unknown>>,
+          ),
+          total: items.length,
+        },
+      });
+      response.headers.set(
+        "Cache-Control",
+        "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
+      );
+      return response;
+    } catch (error) {
+      logError("products", "GET /api/products?ids batch failed", error);
+      return NextResponse.json(
+        { success: false, error: "Failed to fetch products" },
+        { status: 500 },
+      );
+    }
+  }
+
+  const std = parseListingParams(url);
+  const page = std.page ?? DEFAULT_PAGE;
+  const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
+  const sorts = std.sorts ?? DEFAULT_SORTS;
+  // `q` is folded into title sieve clause via buildFilters → keep that contract.
+  // We pass it through the existing per-field `q` param so the buildFilters
+  // helper keeps reading both short and long names identically.
+  const filters = buildFilters(url, std.filters);
 
   try {
     const result = await productRepository.list({
