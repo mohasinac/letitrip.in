@@ -5861,6 +5861,107 @@ RowActionMenu [⋮]:
 
 ---
 
+## User > Messages (D5 + VC7 — S9)
+
+```
+Page: /user/messages   Component: appkit shells MessagesView + ChatList + ChatWindow
+Realtime: Firebase RTDB ping channel — Firestore stays canonical.
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Messages                                            3 conversations · 2 unread │
+├──────────────────────────┬─────────────────────────────────────────────────┤
+│ Conversations            │ Pokémon Palace                          ● Live  │
+│ ┌──────────────────────┐ ├─────────────────────────────────────────────────┤
+│ │ Pokémon Palace   2m  │ │                              [Buyer: Hello! …] │
+│ │ "Hi, is this PSA…"   │ │ [Seller: Yes, PSA 9 …]                          │
+│ │ ●3                   │ │                       [Buyer: Great, taking …] │
+│ ├──────────────────────┤ │ [Seller: Dispatched today, AWB SR12345 …]       │
+│ │ Diecast Depot   1h   │ │                                                 │
+│ │ "Yes I have 3 …"     │ │ ┌──────────────────────────────────────┐ [Send] │
+│ ├──────────────────────┤ │ │ Type a message…  (Enter=send,        │        │
+│ │ Beyblade Arena 1d    │ │ │   Shift+Enter=newline, max 2000)     │        │
+│ └──────────────────────┘ │ └──────────────────────────────────────┘        │
+└──────────────────────────┴─────────────────────────────────────────────────┘
+  Mobile (<md): selecting a conversation hides the list and shows a "← Back"
+  button (renderMobileBack). Auto-marks-read on open of an unread thread.
+  Auto-scrolls to bottom on new messages.
+```
+
+```
+RTDB PING FAN-OUT (D5 / VC7)
+──────────────────────────────────────────────────────────────────────────────
+POST /api/user/conversations/{id}/messages  { body }
+   │
+   ├─ getConversation(id)                        → 404 if absent
+   ├─ resolveConversationRole(user, conv)        → null → 404  (no leakage)
+   │     buyerId === uid          → "buyer"
+   │     store.ownerId === uid    → "seller"
+   │     role === "admin"         → "seller" (replies as the store)
+   ├─ sendMessage({…})  (Firestore txn — appends + bumps unread + lastMessage)
+   └─ pingConversationRtdb({ conversationId, buyerId, sellerOwnerId })
+         │
+         └─ ref.set(Date.now()) at three paths via getAdminRealtimeDb():
+              chats/{convId}/lastUpdate
+              chats/user/{buyerId}/lastUpdate
+              chats/user/{sellerOwnerId}/lastUpdate   (when resolved)
+              (best-effort — failure logged, never throws)
+
+All subscribed clients (useConversation + useConversations) refetch via REST.
+Falls back to focus / explicit refetch if RTDB provider not registered.
+```
+
+```
+SHARED HELPERS  (appkit + letitrip)
+──────────────────────────────────────────────────────────────────────────────
+appkit/src/features/messages/realtime.ts            (no "use client" — both sides)
+  conversationPingPath(id)           → chats/{id}/lastUpdate
+  userConversationsPingPath(uid)     → chats/user/{uid}/lastUpdate
+  buildConversationPingPaths(t)      → string[]
+  type ConversationPingTargets { conversationId, buyerId, sellerOwnerId }
+
+appkit/src/features/messages/actions/ping-rtdb.ts   (server-only)
+  pingConversationRtdb(targets)  — best-effort fan-out for all 3 paths.
+
+src/lib/conversations/authorise.ts                  (consumer-only)
+  resolveConversationRole(user, conv) → { role, sellerOwnerId } | null
+  Shared across GET /[id], POST /[id]/messages, POST /[id]/read.
+```
+
+---
+
+## Public > Compare Overlay (BK3 — S9)
+
+```
+Component: appkit/src/features/products/components/CompareOverlay.tsx
+Trigger: Compare button in BulkActionsBar on /products + /pre-orders listings
+  (disabled when selection < 2 or > COMPARE_MAX_ITEMS=4)
+
+Desktop (≥md) — CSS-grid columns:
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Compare items                                                          [×] │
+├────────────────────────────────────────────────────────────────────────────┤
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                        │
+│ │ [photo]  │ │ [photo]  │ │ [photo]  │ │ [photo]  │   grid-template-cols:  │
+│ │ Title   ✕│ │ Title   ✕│ │ Title   ✕│ │ Title   ✕│   repeat(N,minmax(0,1fr))│
+│ │ ₹4,499   │ │ ₹6,899   │ │ ₹2,799   │ │ ₹9,499   │                        │
+│ │ [new]    │ │ [used]   │ │ [new]    │ │ [new]    │                        │
+│ │ [Pokémon]│ │ [Hot W.] │ │ [Beyblade│ │ [Gundam] │                        │
+│ │ Pokémon  │ │ Diecast  │ │ Beyblade │ │ Tokyo    │                        │
+│ │ Palace   │ │ Depot    │ │ Arena    │ │ Toys IN  │                        │
+│ │ [View]   │ │ [View]   │ │ [View]   │ │ [View]   │                        │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘                        │
+└────────────────────────────────────────────────────────────────────────────┘
+
+Mobile (<md) — single column + useSwipe + dots:
+  swipe left  → next     swipe right → previous     Esc → close
+
+z-index: var(--appkit-z-modal, 60)
+Data: items prop OR productIds → GET /api/products?ids=p1,p2,… (max 20)
+productRepository.listByIds(ids[]) — single db.getAll batch.
+```
+
+---
+
 ## Caps Summary (Tier WL — S44)
 
 ```
