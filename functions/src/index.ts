@@ -80,3 +80,4 @@ export { onStoreWrite } from "./triggers/onStoreWrite";
 export { adminAnalytics } from "./callable/adminAnalytics";
 export { storeAnalytics } from "./callable/storeAnalytics";
 export { promotionsApi } from "./callable/promotions";
+export { listingProcessor } from "./callable/listingProcessor";
