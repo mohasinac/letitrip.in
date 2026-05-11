@@ -7,15 +7,15 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S5 (2026-05-11)
+### ✅ Last completed — S6 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| UX4 | `previewSlot?: () => ReactNode` added to `FormShellProps` + `SellerProductShellProps`. 👁 Preview button in FormShell top bar; preview mode shows draft banner + slot content; "← Back to Edit" restores form. Token-based "Open in new tab" deferred. |
-| UX8 | New `QuickEditMenu` component — ⋮ dropdown where each action can open a `QuickFormDrawer`. Wired in `AdminProductsView` (status/featured/isPromoted) and `AdminOrdersView` (status quick update). |
-| UX9 | `InlineCreateSelect` upgraded with `createFields`+`onCreateSubmit` props (QuickFormDrawer path). `CategoryInlineSelect` + `BrandInlineSelect` ready-to-use seller components. Remaining 6 field wirings deferred. |
+| ARCH1 | New `sanitizeProductForPublic`/`sanitizeProductsForPublic` in `appkit/src/features/products/utils/sanitize.ts` — strips `sellerId`/`sellerName`/`sellerEmail`/`ownerId`. Wired into appkit GET list, appkit GET detail, and letitrip top-level `/api/products` GET. |
+| ARCH6 | Detail views + list views + store listings + coupons: every public `sellerId`/`sellerName` reference replaced by `storeId`/`storeName`. Deprecated `sellerId` props dropped. Admin `deals`/`featured`: `sellerName` fallback removed. |
+| ARCH7 | `PublicProfileView`: seller hero leads with `store.storeName`/`store.storeLogoURL` from live store doc. `AdminUserEditorView`: Identity block shows Owner ID (Firebase UID) + ownedStoreId/storeName. |
 
-### 🔜 Current — S6 (next session)
+### 🔜 Current — S7 (next session)
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -26,7 +26,7 @@
 | **S3** ✅ | VC2, VC4 | Invoice PDF + user settings tabs | zero |
 | **S4** ✅ | G1, G2, O1 | Store templates CRUD + slug management | zero |
 | **S5** ✅ | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
-| **S6** | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
+| **S6** ✅ | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
 | **S7** | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
 | **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
@@ -45,8 +45,8 @@
 ## PLAN SNAPSHOT
 
 ```
-128 tasks ✅ done · 269 remaining · 397 total (as of S5 done 2026-05-11)
-Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1–S5 ✅
+131 tasks ✅ done · 266 remaining · 397 total (as of S6 done 2026-05-11)
+Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1–S6 ✅
 
 COMPLETED (sessions 60–93)
 ──────────────────────────────────────────────────
@@ -74,7 +74,7 @@ Extended sections       93           ✅  EX1–EX4+YT1
 
 PENDING (new S-numbering, risk-ordered)
 ──────────────────────────────────────────────────
-Zero-risk UI            S1–S6        ⏳  audits + user account + store forms + API sanitization
+Zero-risk UI            S1–S6        ✅  audits + user account + store forms + API sanitization
 Homepage features       S7           ⏳  EX5 + SB11 (collection-cards + 3 new section types)
 Feature icons           S8           ⏳  FI1–FI6 productFeatures collection
 UX + RTDB               S9           ⏳  BK3 compare overlay + Messages RTDB

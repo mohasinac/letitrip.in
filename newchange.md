@@ -33,6 +33,38 @@
 
 ---
 
+### Session S6 — 2026-05-11 — ARCH1 + ARCH6 + ARCH7 (public-API seller identity strip)
+
+**Scope:** Strip `sellerId`/`sellerName` from public product responses, switch all public cards/detail pages to store identity, restructure seller profile to lead with store identity, and surface owner UID in admin user editor.
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/utils/sanitize.ts` | **NEW** — `sanitizeProductForPublic` / `sanitizeProductsForPublic` (strip sellerId/sellerName/sellerEmail/ownerId). |
+| `appkit/src/features/products/index.ts` | Export sanitize helpers. |
+| `appkit/src/index.ts` | Re-export sanitize helpers at top-level barrel. |
+| `appkit/src/features/products/api/route.ts` | GET list maps `result.data` through `sanitizeProductsForPublic`. |
+| `appkit/src/features/products/api/[id]/route.ts` | GET detail returns `sanitizeProductForPublic(item)`. |
+| `src/app/api/products/route.ts` | Top-level public GET maps `result.items` through `sanitizeProductsForPublic`. |
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | Removed `sellerName` fallback and `SELLER_DETAIL` href branch — store identity only. |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | Same — and `storeReviews` lookup now keyed off `storeId` (was `sellerId`). |
+| `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` | Same — store identity only. |
+| `appkit/src/features/auctions/components/AuctionsListView.tsx` | `?store=` filter now emits `storeId==` (was `sellerId==`). |
+| `appkit/src/features/pre-orders/components/PreOrdersListView.tsx` | Same. |
+| `appkit/src/features/stores/components/Store{Products,Auctions,PreOrders}Listing.tsx` | Dropped deprecated `sellerId` prop + fallback. |
+| `appkit/src/features/promotions/components/CouponsIndexListing.tsx` | `sellerId` prop → `storeId`; filter `sellerId==X` → `storeId==X`. |
+| `src/app/[locale]/stores/[storeSlug]/coupons/page.tsx` | Passes `storeId={store.id}` instead of resolving owner UID. |
+| `src/app/[locale]/admin/{deals,featured}/page.tsx` | Drop `sellerName` fallback — `storeName` only. |
+| `appkit/src/features/about/components/PublicProfileView.tsx` | For sellers, hero leads with `store.storeName`/`store.storeLogoURL` (fetched via `storeRepository.findById`); storeName/storeDescription pulled from live store doc. |
+| `appkit/src/features/admin/components/AdminUserEditorView.tsx` | New Identity block: shows Owner ID (Firebase UID) + owned storeId/storeName. New `ownedStoreId`/`ownedStoreName` props. |
+| `appkit/src/features/admin/components/AdminUsersView.tsx` | Pass `ownedStoreId`/`ownedStoreName` from `_raw` to editor drawer. |
+| `crud-tracker.md` | ARCH1/ARCH6/ARCH7 marked ✅. |
+
+**TSC:** 0 errors in both repos. **appkit build:** OK.
+
+**Deferred:** none — task complete.
+
+---
+
 ### Session S5 — PreviewPane + Admin QuickEdit + InlineSelectCreate — 2026-05-11
 
 **Scope**: UX4 (PreviewPane wiring), UX8 (admin inline quick-edit), UX9 (InlineSelectCreate refinements)
