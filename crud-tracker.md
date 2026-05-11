@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S1 ✅ (SL6, ARCH9, VD3-subsumed, HS4-E done; A1-ext verified already present). 116 done, 281 remaining (397 total).
+> **Last updated:** 2026-05-11 — S2 ✅ (D2, D3, LL4, LL5 done). 120 done, 277 remaining (397 total).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -58,10 +58,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 397 |
-| ✅ Done | 116 |
+| ✅ Done | 120 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 281 |
+| ⏳ Remaining | 277 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -515,8 +515,8 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | D1 | Wishlist page wiring + filter drawer | S | ✅ | Session 103b + Session 89 | Rewired with `useWishlistWithGuest` + `ListingLayout`. Ghost items fixed — API enriched `product` field used. Search + sort toolbar. `EnrichedWishlistItem` type added. **Session 89**: Added `filterContent` drawer to `ListingLayout` — Type filter (Standard/Auction/Pre-Order) and price range (min/max, rupees, converted to paise). Staged filter state (`pending` + `applied`) — Apply/Clear buttons. `countActiveFilters()` helper drives the filter badge count. |
-| D2 | User Profile full edit | S | ⏳ | | REUSE: `ProfileView` EXISTS + `useProfile`/`useUpdateProfile` hooks EXIST — check which fields are wired; add missing publicProfile fields; `ImageCropModal` EXISTS for avatar |
-| D3 | User Settings complete — password, email, privacy | M | ⏳ | | REUSE: `UserSettingsView` EXISTS — complete renderAppearance + add password change section; `Toggle` + `Input` for settings |
+| D2 | User Profile full edit | S | ✅ | Session S2 2026-05-11 | `UpdateCurrentProfileInput` extended with `bio`+`profileIsPublic`; avatar URL `<input>` replaced with `ImageUpload`+`useMediaUpload`; `as any` casts removed from mutateAsync call. `ImageUpload`+`ImageUploadProps` added to appkit `client.ts`. |
+| D3 | User Settings complete — password, email, privacy | M | ✅ | Session S2 2026-05-11 | `useChangePassword`+`ChangePasswordData` exported from appkit `client.ts`; `renderPasswordForm` wired to settings page with current/new/confirm fields + client-side validation (match + min 8 chars). |
 | D4 | Notifications view + mark read + delete | S | ✅ | Session 78 | `UserNotificationsView` wired with tab filters (all/unread/orders/bids/system), mark-all-read (POST /read-all), delete individual. `useQuery` + `useMutation` via Tanstack Query. |
 | I2 | Admin Payout processing | M | ✅ | Session 72 | Done via ARCH4 (M3 superseded). `AdminPayoutsView`: mark-paid + CSV export + storeId/storeName identity. |
 | D5 | Messages — conversation view (deferred) | L | ⏳ | | REUSE: `MessagesView`, `ChatList`, `ChatWindow` all EXIST in account/components — wire Firebase RTDB; deferred to last |
@@ -670,8 +670,8 @@ Rules to keep top-of-mind every task:
 | LL1 | `UserOrdersView` — user order history list | M | ✅ | Session 103 | Status filter tabs (all/pending/processing/shipped/delivered/cancelled/refunded/return_requested). Columns: order ID, date, items count, total (₹), status badge. Row click → VC1 (order detail). API: `/api/user/orders`. |
 | LL2 | `UserReviewsView` — reviews written by the logged-in user | S | ✅ | Session 78 | Tab filters (all/approved/pending/rejected). Review cards with star display, verified badge, status badge, product link, helpful count. API: GET `/api/user/reviews` via `reviewRepository.findByUser()`. |
 | LL3 | `UserBidsView` — bid history | S | ✅ | Session 78 | Tab filters (all/active/won/outbid/lost). Bid cards with auction link, bid amount (paise→₹), winning/status badges. API: GET `/api/user/bids` via `bidRepository.findByUser()`. Read-only. |
-| LL4 | `UserAddressesView` — address book list | S | ⏳ | | Columns: label, fullName, city, state, pincode, default badge. Actions per row: edit (→AddressForm SideDrawer), delete (ConfirmDeleteModal), set as default. "Add address" button top-right → AddressForm. API: `/api/user/addresses`. See also VC3 (profile edit). |
-| LL5 | `UserReturnsView` — return requests list | S | ⏳ | | Listing of orders where status is RETURN_REQUESTED or REFUNDED. Columns: order ID, primary product thumbnail, date requested, current status badge. Row link → VC1 (order detail). API: `/api/user/orders?status=RETURN_REQUESTED`. See also VC1. |
+| LL4 | `UserAddressesView` — address book list | S | ✅ | Session S2 2026-05-11 | `AddressBook.AddressBookProps` extended with `onSetDefault`; `AddressBook` map now forwards it to `AddressCard`. `UserAddressesClient`: `onSetDefault` wired to `setDefault.mutate({ addressId })`; delete now shows inline confirm dialog before calling `deleteAddress.mutate`. |
+| LL5 | `UserReturnsView` — return requests list | S | ✅ | Session S2 2026-05-11 | `UserReturnsView` slot-shell created in appkit (mirrors `UserOrdersView`). `/user/returns/page.tsx` — orders filtered by `return_requested` status via `useOrders`. `/user/orders/[id]/cancel/page.tsx` created — cancel form with reason textarea, uses `cancelOrderAction`, guards non-cancellable statuses. `ROUTES.USER.RETURNS` added to route map. Returns link added to `USER_NAV_GROUPS`. |
 
 > **Wishlist** list view is covered by VC6 (`WishlistView` + `useWishlistWithGuest`). No separate LL task needed.
 

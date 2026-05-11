@@ -33,6 +33,29 @@
 
 ---
 
+### Session S2 — User profile, settings, addresses, returns — 2026-05-11
+
+**Scope**: D2 (profile avatar), D3 (password change), LL4 (address set-default + delete confirm), LL5 (returns page + cancel page)
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/features/account/hooks/useProfile.ts` | D2: `UpdateCurrentProfileInput` extended with `bio?` and `profileIsPublic?` |
+| `appkit/src/features/account/components/AddressBook.tsx` | LL4: `AddressBookProps` extended with `onSetDefault?`; forwarded to each `AddressCard` in map |
+| `appkit/src/features/account/components/UserReturnsView.tsx` (new) | LL5: slot-shell component mirroring `UserOrdersView` |
+| `appkit/src/features/account/components/index.ts` | LL5: export `UserReturnsView` + props types |
+| `appkit/src/client.ts` | D2: export `ImageUpload`, `ImageUploadProps`; D3: export `useChangePassword`, `ChangePasswordData`; LL5: export `UserReturnsView`, `UserReturnsViewProps`, `UserReturnsViewLabels` |
+| `appkit/src/next/routing/route-map.ts` | LL5: add `ROUTES.USER.RETURNS = "/user/returns"` |
+| `src/components/user/ProfilePageClient.tsx` | D2: import `ImageUpload`+`useMediaUpload`; replace avatar URL `<input>` with `<ImageUpload>`; remove `as any` from `mutateAsync` call |
+| `src/components/user/UserAddressesClient.tsx` | LL4: add `confirmDeleteId` state; two-step delete confirm dialog; wire `onSetDefault={(addressId) => setDefault.mutate({ addressId })}` |
+| `src/app/[locale]/user/settings/page.tsx` | D3: import `useChangePassword`+`useToast`; `handlePasswordSubmit` with match+length validation; `renderPasswordForm` with 3 password fields |
+| `src/app/[locale]/user/returns/page.tsx` (new) | LL5: `UserReturnsView` page — `useOrders({ orderStatus: "return_requested" })` → `OrdersList` |
+| `src/app/[locale]/user/orders/[id]/cancel/page.tsx` (new) | LL5: cancel form — reason textarea, `cancelOrderAction`, guards non-cancellable `orderStatus` |
+| `src/constants/navigation.tsx` | LL5: add Returns link to `USER_NAV_GROUPS` Shopping section |
+
+**Deferred**: none.
+
+---
+
 ### Session S1 — Zero-risk audit + field renames + HS4-E — 2026-05-11
 
 **Scope**: SL6 cross-ref integrity audit, ARCH9 sellerId→ownerId rename, VD3 (subsumed by SEO5), HS4-E per-store Google Reviews, A1-ext (already present).
