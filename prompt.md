@@ -7,15 +7,15 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S4 (2026-05-11)
+### ✅ Last completed — S5 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| G1 | `product_templates` Firestore collection + `ProductTemplateRepository`. `/store/templates` page with SideDrawer create/edit. API: GET/POST `/api/store/templates`, GET/PUT/DELETE `/api/store/templates/[id]`. "Templates" in store nav. |
-| G2 | `renderTemplateSelector` + `onSaveAsTemplate` props on `SellerProductShell`. Template selector at top of Basic step; "Save as Template" button at bottom of Publish section. |
-| O1 | `/store/slug` management page — current slug, debounced availability check, slug migration. `storeRepository.changeSlug()` atomic batch. `GET /api/store/slug/check`, `PUT /api/store/profile`. "Store URL" in store nav. |
+| UX4 | `previewSlot?: () => ReactNode` added to `FormShellProps` + `SellerProductShellProps`. 👁 Preview button in FormShell top bar; preview mode shows draft banner + slot content; "← Back to Edit" restores form. Token-based "Open in new tab" deferred. |
+| UX8 | New `QuickEditMenu` component — ⋮ dropdown where each action can open a `QuickFormDrawer`. Wired in `AdminProductsView` (status/featured/isPromoted) and `AdminOrdersView` (status quick update). |
+| UX9 | `InlineCreateSelect` upgraded with `createFields`+`onCreateSubmit` props (QuickFormDrawer path). `CategoryInlineSelect` + `BrandInlineSelect` ready-to-use seller components. Remaining 6 field wirings deferred. |
 
-### 🔜 Current — S5 (next session)
+### 🔜 Current — S6 (next session)
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -25,7 +25,7 @@
 | **S2** ✅ | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
 | **S3** ✅ | VC2, VC4 | Invoice PDF + user settings tabs | zero |
 | **S4** ✅ | G1, G2, O1 | Store templates CRUD + slug management | zero |
-| **S5** | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
+| **S5** ✅ | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
 | **S6** | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
 | **S7** | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
 | **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
@@ -45,8 +45,8 @@
 ## PLAN SNAPSHOT
 
 ```
-125 tasks ✅ done · 272 remaining · 397 total (as of S4 done 2026-05-11)
-Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1+S2 ✅
+128 tasks ✅ done · 269 remaining · 397 total (as of S5 done 2026-05-11)
+Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1–S5 ✅
 
 COMPLETED (sessions 60–93)
 ──────────────────────────────────────────────────

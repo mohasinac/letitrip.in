@@ -33,6 +33,37 @@
 
 ---
 
+### Session S5 — PreviewPane + Admin QuickEdit + InlineSelectCreate — 2026-05-11
+
+**Scope**: UX4 (PreviewPane wiring), UX8 (admin inline quick-edit), UX9 (InlineSelectCreate refinements)
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/shell/FormShell.tsx` | Added `previewSlot?: () => ReactNode` prop; 👁 Preview toggle in top bar; preview mode shows draft banner + slot content; back-to-edit restores form; left nav + bottom bar hidden in preview mode |
+| `appkit/src/features/seller/components/SellerProductShell.tsx` | Added `previewSlot` prop; forwarded to both create and edit `FormShell` usages |
+| `appkit/src/features/admin/components/QuickEditMenu.tsx` | New component — ⋮ dropdown where each action can open a `QuickFormDrawer` |
+| `appkit/src/features/admin/components/AdminProductsView.tsx` | Added `handleQuickEdit` + `renderRowActions` wired with `QuickEditMenu` (status/featured/isPromoted quick-edit + full editor link) |
+| `appkit/src/features/admin/components/AdminOrdersView.tsx` | Replaced `RowActionMenu` with `QuickEditMenu`; added quick status update action via `QuickFormDrawer` |
+| `appkit/src/ui/components/InlineCreateSelect.tsx` | Added `createFields?: QuickFieldDef[]` + `onCreateSubmit?` props → QuickFormDrawer path alongside existing SideDrawer `renderCreateForm` path |
+| `appkit/src/features/seller/components/CategoryInlineSelect.tsx` | New — async category search + optional inline create via `CategoryQuickCreateForm` |
+| `appkit/src/features/seller/components/BrandInlineSelect.tsx` | New — async brand search + inline create via `BrandQuickCreateForm` (allowCreate defaults to true) |
+| `appkit/src/features/admin/components/index.ts` | Exported `QuickEditMenu` + types |
+| `appkit/src/features/seller/components/index.ts` | Exported `CategoryInlineSelect` + `BrandInlineSelect` |
+| `appkit/src/index.ts` | Exported `QuickEditMenu`, `CategoryInlineSelect`, `BrandInlineSelect` |
+| `appkit/index.md` | Added `FormShell`, `QuickFormDrawer`, `StepForm`, `QuickEditMenu`, `CategoryInlineSelect`, `BrandInlineSelect` entries; updated `InlineCreateSelect` entry |
+| `crud-tracker.md` | UX4/UX8/UX9 marked ✅; S5 marked done; count updated to 128/397 |
+
+## DEFERRED
+
+| Task | Reason | Target |
+|------|--------|--------|
+| UX4 "Open in new tab" preview | Requires token-based `/api/preview` endpoint + draft serialisation | post-S5 |
+| UX9 remaining field wirings (6 of 8) | Checkout address, pickup address, coupon, sub-category parent, tags, features | per-form sessions |
+
+## tsc status: Both repos clean (0 errors). Appkit built + dist updated.
+
+---
+
 ### Session S4 — Product Templates + Store Slug Management — 2026-05-11
 
 **Scope**: G1 (product templates CRUD), G2 (template selector + save-as-template in product form), O1 (store slug management page)
