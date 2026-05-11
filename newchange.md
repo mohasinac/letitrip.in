@@ -33,6 +33,35 @@
 
 ---
 
+### Session S10 — 2026-05-11 — I6 + I7 (PDF upload mode + Media CDN watermark proxy)
+
+**Scope:** Tier-3 Infra — Tier I tasks I6 (PDF support in media uploader) and I7 (Vercel Media CDN proxy with on-the-fly watermark).
+
+**I6 — PDF support in media uploader**
+
+| File | Change |
+|------|--------|
+| [src/app/api/media/upload/route.ts](src/app/api/media/upload/route.ts) | `allowedDocTypes = ["application/pdf"]`; magic-byte check on `%PDF-` (belt-and-braces over `file-type`); per-kind size cap (`MAX_PDF_BYTES = 20MB`, `MAX_VIDEO_BYTES = 50MB`, `MAX_IMAGE_BYTES = 10MB`); `kind` discriminator drives both size limit + label. `PDF_ONLY_CONTEXTS` (`"invoice"`, `"payout-doc"`) — type-predicate `isPdfOnlyContext(ctx)` narrows `MediaFilenameContext` so `generateMediaFilename(ctx)` stays type-safe. Symmetric guards: PDF-only ctx → require PDF bytes; any other ctx → reject PDF bytes. PDF uploads default to `tmp/documents/{uid}/…` instead of `tmp/uploads/…`. All numeric / string literals lifted to named constants (`MEGABYTE`, `MAX_LABEL`, `ALLOWED_TYPES_LABEL`, `PDF_MAGIC`, `PDF_FOLDER`, `DEFAULT_MEDIA_FOLDER`). |
+| [appkit/src/features/media/upload/MediaUploadField.tsx](appkit/src/features/media/upload/MediaUploadField.tsx) | Helpers `isPdf(url)` + `isPdfAccept(accept)`. `pdfMode` derived from `accept`. New PDF preview tile (rose-tinted 48×48 chip + filename link). `effectiveCaptureSource = pdfMode ? "file-only" : captureSource` — camera/YouTube/external URL tabs hidden for PDF fields. |
+
+**I7 — Media CDN proxy with watermark**
+
+| File | Change |
+|------|--------|
+| [src/app/api/media/[...slug]/route.ts](src/app/api/media/%5B...slug%5D/route.ts) (NEW) | Node.js runtime + `force-dynamic`. Slug → Storage path with traversal protection (`..` + leading `/` rejected). `loadWatermarkConfig()` reads `siteSettingsRepository.getSingleton()` and caches the value 60s in-memory. `sharp` pipeline: text watermark via inline SVG overlay sized to `config.size%` of target width (XML-escaped text, white fill + black stroke, both alphas derived from `config.opacity`); image watermark loaded directly via Storage Admin (recursion-safe — never goes through this proxy itself) and resized preserving aspect ratio. Non-images (PDF, video, SVG) pass through untouched. Watermark failure falls back to the original bytes. `Cache-Control: public, max-age=DAY_SECONDS, s-maxage=WEEK_SECONDS, immutable`. Errors use `ERROR_MESSAGES.MEDIA.NOT_FOUND` / `PROXY_FAILED`. |
+| [appkit/src/features/admin/schemas/firestore.ts](appkit/src/features/admin/schemas/firestore.ts) | `SiteSettingsDocument.watermark?: { type, text?, imageUrl?, size?, opacity? }` block added with full JSDoc. Backs the existing `AdminSiteSettingsView` form (parallel work). |
+| [appkit/src/seed/site-settings-seed-data.ts](appkit/src/seed/site-settings-seed-data.ts) | `watermark` block seeded with text default `"letitrip.in"` @ 30% / 20% opacity. |
+| [appkit/src/errors/messages.ts](appkit/src/errors/messages.ts) | `ERROR_MESSAGES.MEDIA.NOT_FOUND` + `PROXY_FAILED` added. |
+| [src/components/dev/SeedPanel.tsx](src/components/dev/SeedPanel.tsx) | `siteSettings.watermark` field-doc note updated: `"type (text\|image), text, imageUrl, size %, opacity %"` (was generic `"enabled, opacity, position"`). |
+
+**TSC:** 0 errors both repos. **appkit build:** OK (3.3s).
+
+**Deferred:** Video baked-in watermark (needs FFmpeg pipeline) — current strategy is to watermark video thumbnails via the same image proxy and let the player render a CSS overlay badge.
+
+**No DB indexes or sieve registrations required** — proxy is a direct Storage read, no Firestore queries.
+
+---
+
 ### Session S44-followup — 2026-05-11 — Tier WL follow-ups (admin views + cap toast)
 
 **Scope:** Finished the two items deferred from S44.

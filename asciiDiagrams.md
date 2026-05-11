@@ -395,10 +395,75 @@ After upload / value set:
   [https://…  ___________________________]  [Apply]
   "External URLs are stored as-is and are not watermarked."
 
+─── PDF mode (S10/I6) ────────────────────────────────────────────────────────
+When accept="application/pdf" (or ".pdf"):
+  pdfMode = true   →  effectiveCaptureSource = "file-only"
+                  →  YouTube + External tabs hidden
+                  →  Camera capture hidden
+
+  After upload (PDF preview tile):
+  ┌─────────────────────────────────────────────────────┐
+  │  ┌───┐                                              │
+  │  │PDF│  invoice-order-12-20260511.pdf  (link)       │
+  │  └───┘                                              │
+  └─────────────────────────────────────────────────────┘
+  PDF chip uses rose-100/dark:rose-900 background.
+
 Staged-URL cleanup:
   Every uploaded URL is tracked in stagedUrlsRef.
   On unmount (if not isPersisted): calls onAbort(stagedUrls[]) → parent DELETE /api/media?url=…
   On save: parent sets isPersisted=true to suppress cleanup.
+```
+
+---
+
+## Shared > Media CDN Proxy (S10/I7) ✅
+
+```
+Route: src/app/api/media/[...slug]/route.ts   (runtime: nodejs)
+
+GET /media/<storagePath…>
+─────────────────────────────────────────────────────────────────────────────
+
+┌─ Vercel CDN cache hit ───────────────────────────────────────────────────┐
+│ Browser → CDN → 200 (Cache-Control: public, max-age=DAY, s-max=WEEK,     │
+│                       immutable)                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+   ▲ no Node handler invocation; cheap
+
+┌─ Cache miss ─────────────────────────────────────────────────────────────┐
+│ 1. params.slug = ["products","abc","img-1.webp"]                         │
+│ 2. slugToStoragePath() → "products/abc/img-1.webp"                       │
+│      ├─ traversal protection: rejects ".." segments + leading "/"        │
+│ 3. bucket.file(path).exists()  →  404 if missing                         │
+│ 4. file.getMetadata() + file.download()                                  │
+│ 5. PDF / video / SVG → pass-through with same cache headers              │
+│ 6. Image →  loadWatermarkConfig()                                        │
+│         │    └─ siteSettingsRepository.getSingleton()                    │
+│         │       (60s in-memory cache via watermarkCache)                 │
+│         ▼                                                                │
+│      applyWatermark(buf, cfg, selfPath)                                  │
+│         ├─ type:"text"  → inline SVG overlay (size%, opacity%, fill+     │
+│         │                 stroke, XML-escaped)                           │
+│         └─ type:"image" → bucket.file(wmPath).download() (NEVER via      │
+│                           this proxy — recursion-safe)                   │
+│                          → sharp.resize(target × size/100, fit:inside)   │
+│                          → composite gravity:center, blend:over          │
+│      watermark failure → log warn, serve original                        │
+│ 7. 200 with Cache-Control + Content-Type                                 │
+│      (body = new Uint8Array(buf) so NextResponse accepts it)             │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Errors:
+  ▸ slug invalid / file missing      → 404 (ERROR_MESSAGES.MEDIA.NOT_FOUND)
+  ▸ unexpected error                 → 500 (ERROR_MESSAGES.MEDIA.PROXY_FAILED)
+
+Watermark config (site_settings/global . watermark):
+  type:    "text" | "image"
+  text:    string                            (default "letitrip.in")
+  imageUrl: /media/<slug>                    (must be proxy URL — not raw)
+  size:    0–100  (% of target width; 0 disables)
+  opacity: 0–100  (default 20)
 ```
 
 ---

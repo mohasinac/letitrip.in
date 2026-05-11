@@ -7,6 +7,13 @@
 
 ## SESSION STATE
 
+### ✅ Last completed — S10 (2026-05-11)
+
+| Task | Summary |
+|------|---------|
+| I6 | PDF support in media uploader. Server: `/api/media/upload` accepts `application/pdf` with `%PDF-` magic-byte check + 20MB cap; PDF uploads stage to `tmp/documents/{uid}/…`. `PDF_ONLY_CONTEXTS` (`invoice`/`payout-doc`) — symmetric guards: PDF-only ctx requires PDF bytes; every other ctx rejects PDF bytes. Magic numbers extracted to named constants (`MEGABYTE`, `MAX_PDF_BYTES`, `MAX_LABEL`, `PDF_MAGIC`, `PDF_FOLDER`). Client: `MediaUploadField` gains `isPdf`/`isPdfAccept` helpers + PDF preview tile + auto file-only capture in PDF mode. |
+| I7 | Media CDN watermark proxy `/api/media/[...slug]`. Node runtime, `force-dynamic`. Slug → Storage path with traversal protection. `loadWatermarkConfig()` reads `siteSettingsRepository.getSingleton()` cached 60s in-memory. `sharp` text+image watermarks composited at `config.size %` of target width with `config.opacity` (image watermark loaded directly via Admin SDK to avoid proxy recursion). Non-images pass through. `Cache-Control: public, max-age=DAY_SECONDS, s-maxage=WEEK_SECONDS, immutable`. `SiteSettingsDocument.watermark` schema + `siteSettingsSeedData.watermark` + `ERROR_MESSAGES.MEDIA.NOT_FOUND`/`PROXY_FAILED` + SeedPanel note all updated. |
+
 ### ✅ Last completed — S44 (2026-05-11)
 
 | Task | Summary |
@@ -37,7 +44,7 @@
 | **S44** ✅ | WL1–WL8 + follow-ups | Tier WL — Wishlist 20-cap + History 50-FIFO + Cart 50-cap + admin views | low |
 | **S8** | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
-| **S10** | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
+| **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
 | **S11** | O5 | Shiprocket auto-create | medium |
 | **S12** | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
 | **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |

@@ -972,7 +972,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "announcementBanner", type: "map", note: "enabled, text, link, color" },
       { name: "seoDefaults",    type: "map", note: "title, description, og:image" },
       { name: "contactSocial",  type: "map", note: "email, phone, social handles" },
-      { name: "watermark",      type: "map", note: "enabled, opacity, position" },
+      { name: "watermark",      type: "map", note: "type (text|image), text, imageUrl, size %, opacity %" },
       { name: "fees",           type: "map", note: "platformFeeRate, gstRate" },
       { name: "integrations",   type: "map", note: "Razorpay, Shiprocket keys (test)" },
       { name: "shipping",       type: "map", note: "defaultCarrier, freeShippingThreshold" },

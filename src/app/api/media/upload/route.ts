@@ -34,6 +34,28 @@ const BLOG_ADDITIONAL_IMAGE_MAX = 5;
 const RICH_TEXT_IMAGE_MAX = 20;
 const TMP_UPLOAD_PREFIX = "tmp";
 
+// File-size limits — kept as named bytes so the size-too-large response can
+// quote the user-facing megabyte label without re-deriving it.
+const MEGABYTE = 1024 * 1024;
+const MAX_IMAGE_BYTES = 10 * MEGABYTE;
+const MAX_PDF_BYTES = 20 * MEGABYTE;
+const MAX_VIDEO_BYTES = 50 * MEGABYTE;
+const MAX_LABEL: Record<"image" | "pdf" | "video", string> = {
+  image: "10MB",
+  pdf: "20MB",
+  video: "50MB",
+};
+
+const PDF_MAGIC = "%PDF-";
+const ALLOWED_TYPES_LABEL =
+  "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime, PDF";
+
+const PDF_FOLDER = "documents";
+const DEFAULT_MEDIA_FOLDER = "uploads";
+
+const PDF_ONLY_CONTEXTS = ["invoice", "payout-doc"] as const;
+type PdfOnlyContextType = (typeof PDF_ONLY_CONTEXTS)[number];
+
 /**
  * POST /api/media/upload
  *
@@ -73,29 +95,56 @@ export const POST = withProviders(createRouteHandler({
       "image/webp",
     ];
     const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
-    const allowedTypes = [...allowedImageTypes, ...allowedVideoTypes];
+    const allowedDocTypes = ["application/pdf"];
+    const allowedTypes = [
+      ...allowedImageTypes,
+      ...allowedVideoTypes,
+      ...allowedDocTypes,
+    ];
 
     // Convert file to buffer early so we can inspect magic bytes
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Server-side magic byte detection — cannot be spoofed by the client
+    // Server-side magic byte detection — cannot be spoofed by the client.
+    // PDFs: belt-and-braces check on the literal `%PDF-` header even though
+    // `file-type` will already classify it as application/pdf.
     const detected = await fileTypeFromBuffer(buffer);
+    const looksLikePdf =
+      buffer.length >= PDF_MAGIC.length &&
+      buffer.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
     if (!detected || !allowedTypes.includes(detected.mime)) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
-        allowed: "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime",
+        allowed: ALLOWED_TYPES_LABEL,
         detected: detected?.mime ?? "unknown",
+      });
+    }
+    if (detected.mime === "application/pdf" && !looksLikePdf) {
+      return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
+        allowed: `PDF (must start with ${PDF_MAGIC} header)`,
+        detected: "non-pdf bytes claiming application/pdf",
       });
     }
 
     // Use server-detected MIME type for storage, not client-supplied file.type
     const detectedMime = detected.mime;
     const isVideo = allowedVideoTypes.includes(detectedMime);
-    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB or 10MB
+    const isPdf = allowedDocTypes.includes(detectedMime);
+    const kind: keyof typeof MAX_LABEL = isVideo
+      ? "video"
+      : isPdf
+        ? "pdf"
+        : "image";
+    const maxSize =
+      kind === "video"
+        ? MAX_VIDEO_BYTES
+        : kind === "pdf"
+          ? MAX_PDF_BYTES
+          : MAX_IMAGE_BYTES;
 
     if (file.size > maxSize) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
-        maxSize: isVideo ? "50MB" : "10MB",
+        maxSize: MAX_LABEL[kind],
         fileSize: formatFileSize(file.size),
       });
     }
@@ -310,12 +359,35 @@ export const POST = withProviders(createRouteHandler({
           "video/mp4": "mp4",
           "video/webm": "webm",
           "video/quicktime": "mov",
+          "application/pdf": "pdf",
         };
         const detectedExt = mimeToExt[detectedMime] ?? detected.ext;
-        // Inject the server-verified extension into the context
-        if (ctx.type === "invoice" || ctx.type === "payout-doc") {
+
+        // PDF-only contexts must receive PDF bytes; non-PDF contexts must not
+        // accept PDF uploads. Narrowing via the type-predicate keeps the
+        // generateMediaFilename call site type-safe.
+        const isPdfOnlyContext = (
+          c: MediaFilenameContext,
+        ): c is Extract<MediaFilenameContext, { type: PdfOnlyContextType }> =>
+          (PDF_ONLY_CONTEXTS as readonly string[]).includes(c.type);
+
+        if (isPdfOnlyContext(ctx)) {
+          if (!isPdf) {
+            return errorResponse(
+              `${ctx.type} context requires a PDF file`,
+              400,
+              { context: ctx.type, detected: detectedMime },
+            );
+          }
           filename = generateMediaFilename(ctx);
         } else {
+          if (isPdf) {
+            return errorResponse(
+              "PDF uploads are only allowed for invoice or payout-doc contexts",
+              400,
+              { context: ctx.type, detected: detectedMime },
+            );
+          }
           filename = generateMediaFilename({ ...ctx, ext: detectedExt });
         }
       } else {
@@ -329,7 +401,10 @@ export const POST = withProviders(createRouteHandler({
 
     // Determine storage path.
     // New uploads are always staged under tmp/* until entity save finalization.
-    const folderInput = (folder || "uploads").replace(/^\/+|\/+$/g, "");
+    // PDFs go under `documents/` instead of `uploads/` so the proxy + lifecycle
+    // policies can treat them differently from media binaries.
+    const defaultFolder = isPdf ? PDF_FOLDER : DEFAULT_MEDIA_FOLDER;
+    const folderInput = (folder || defaultFolder).replace(/^\/+|\/+$/g, "");
     const basePath =
       folderInput === TMP_UPLOAD_PREFIX ||
       folderInput.startsWith(`${TMP_UPLOAD_PREFIX}/`)

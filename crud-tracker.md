@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S44 ✅ Tier WL complete (WL1–WL8 all done). 136 done, 269 remaining (405 total).
+> **Last updated:** 2026-05-11 — S10 ✅ I6 + I7 (PDF uploads + Media CDN watermark proxy). 138 done, 267 remaining (405 total).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -59,10 +59,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 405 |
-| ✅ Done | 136 |
+| ✅ Done | 138 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 269 |
+| ⏳ Remaining | 267 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -173,7 +173,7 @@ Rules to keep top-of-mind every task:
 | **S7** | Homepage | EX5, SB11-A, SB11-B, SB11-C, SB11-D, SB11-E, SB11-F, SB11-G | Collection Cards unified section type + 3 new section types (featured-bundles / prize-draws / event-raffles) + disabled seed docs | EX1–EX4 done (S93) |
 | **S8** | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Session 77 product forms done |
 | **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done |
-| **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) |
+| **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
 | **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable |
 | **S12** | Query | Q5, Q2, Q4 | Deploy Firestore composite indexes + standardize query param names (f/s/p/ps/q) + update client views | — |
 | **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
@@ -372,11 +372,11 @@ Rules to keep top-of-mind every task:
 | E6 | /support page — Help Centre landing page | S | ✅ | Part 65 | `src/app/[locale]/support/page.tsx` reuses `HelpPageView` (topic cards, track order, contact CTA). Full og:/twitter metadata. `ROUTES.PUBLIC.SUPPORT = "/support"` added to appkit route-map. Fixes dead footer link. |
 | E7 | Footer dead link audit + redirect fix | S | ✅ | Session 60 | Audited 2026-05-06: all footer links in LayoutShellClient.tsx resolve to existing pages. Shop/Support/Sellers/Learn/Legal groups all valid. `/support` route maps to `/help` page (exists). E6 (/support page creation) is a separate pending task. |
 | I5 | Media upload audit — wire `MediaUploadField` in all CRUD forms | M | ✅ | Session 64 | Audited all admin editor views. `AdminBrandEditorView` logo+banner fields replaced with `ImageUpload`; `CharacterHotspotForm` uses custom file input (separate from media system — acceptable). All other editors already use `ImageUpload` or `MediaUploadField`. |
-| I6 | Add PDF support to media uploader for invoice/document fields | S | ⏳ | | Extend `MediaUploadField` to accept `accept="application/pdf"` mode. Server-side magic-byte check for `%PDF-` header. Max 20MB. Use in: order invoice upload (VC2), seller payout proof upload (VB3), product spec-sheet attachment field. Store under `documents/` path prefix instead of `media/`. |
+| I6 | Add PDF support to media uploader for invoice/document fields | S | ✅ | Session S10 2026-05-11 | Server: `/api/media/upload` accepts `application/pdf` with `%PDF-` magic-byte check + 20MB cap; PDF uploads land under `tmp/documents/{uid}/` (was `tmp/uploads/`). `invoice`/`payout-doc` contexts now strictly require PDF bytes; all other contexts reject PDFs. File-size limits + folder defaults extracted to named constants (`MAX_PDF_BYTES`, `PDF_FOLDER`, `PDF_ONLY_CONTEXTS`). Client: `MediaUploadField` gains `isPdf` / `isPdfAccept` helpers + a PDF preview tile (rose chip + filename link) + auto file-only capture in PDF mode (camera/YouTube/external URL tabs hidden). |
 | I8 | YouTube + external media URL support in all media fields | M | ✅ | Session 64 | `MediaField` type extended with `source?: "upload"\|"youtube"\|"external"` + `youtubeId?: string`. `MediaUploadField` gets `showYoutube` + `showExternal` props + tab switcher + `extractYouTubeId()` helper. |
 | INFRA1 | firebase-reset.mjs dry-run crash — `.count()` not available in firebase-admin v10 | S | ✅ | Session 76-infra (2026-05-10) | `summarizeFirestore()` called `collectionRef.count().get()` which is a Firestore v11+ aggregate API. appkit uses `firebase-admin@^10.3.0`. Fixed in `appkit/scripts/firebase-reset.mjs`: replaced `.count().get()` with `.get()` and `.size` on the snapshot. |
 | INFRA2 | firebase-delete-indexes.mjs — new utility to delete all Firestore composite indexes via REST API | S | ✅ | Session 76-infra (2026-05-10) | Created `appkit/scripts/firebase-delete-indexes.mjs`. Uses firebase-tools OAuth refresh token (from `~/.config/configstore/firebase-tools.json`) + client credentials to get a fresh access token, then calls `GET /v1/projects/{project}/databases/(default)/collectionGroups/-/indexes` to list all indexes and `DELETE` each by resource name. Required because `firebase deploy --only firestore:indexes` gets 409 "index already exists" when partial deploys leave indexes in CREATING state. Also fixed duplicate `faqs` indexes (`isPinned,priority,order` × 2 and `isActive,createdAt` × 2) in `appkit/firebase/base/firestore.indexes.json`. Run before `npm run firebase:deploy` when 409 errors persist. |
-| I7 | Media CDN proxy with configurable watermarking | L | ⏳ | | NEW: `src/app/api/media/[...slug]/route.ts` — Node.js runtime (`sharp` requires Node, not Edge). **Server handles all image delivery** — client never fetches from Firebase Storage directly. Flow: request → fetch original via Admin SDK (Storage rules: private, no `allUsers` read) → read watermark config from `site_settings/singleton` (cached in-memory, TTL 60s) → apply watermark via `sharp` → respond with `Cache-Control: public, max-age=86400, s-maxage=604800, immutable`. Vercel CDN caches per slug. **Watermark config** (stored in `site_settings/singleton`): `watermarkType: "text" | "image"`, `watermarkText` (default `"letitrip.in"`), `watermarkImageUrl` (proxy URL of uploaded watermark image), `watermarkSize` (0–100, % of target image width; aspect ratio of both target and watermark preserved). At 100% the watermark spans the full image width. If no config or size=0 defaults to text "letitrip.in" at 30%. **All Firestore image URL fields must use `/media/<slug>` path** — never raw `firebasestorage.googleapis.com/…` URLs. Seed data URL fields updated to `/media/` scheme. Video: thumbnails watermarked via proxy; player renders CSS overlay badge (client-side). Baked-in video watermark deferred (FFmpeg needed). Depends on VA8 for the settings UI. |
+| I7 | Media CDN proxy with configurable watermarking | L | ✅ | Session S10 2026-05-11 | `src/app/api/media/[...slug]/route.ts` — Node.js runtime, `force-dynamic`. Slug → Storage path with traversal protection (`..` + leading `/` rejected). Watermark config loaded from `siteSettingsRepository.getSingleton()` and cached 60s in-memory. `sharp` pipeline: text watermark via inline SVG overlay sized to `config.size%` of target width with XML-escaped text + black stroke + white fill (alpha from `opacity`); image watermark loaded directly from Storage Admin (never via the proxy itself — avoids recursion) and resized preserving aspect ratio. Non-images (PDF, video, SVG) pass through untouched. Watermark failure falls back to original bytes. `Cache-Control: public, max-age=86400, s-maxage=604800, immutable` so Vercel CDN handles the heavy lifting. `SiteSettingsDocument.watermark` schema added with full JSDoc. `siteSettingsSeedData.watermark` seeded with text default. SeedPanel `watermark` field note updated to reflect new sub-fields. Video baked-in watermark still deferred (needs FFmpeg). |
 
 ---
 
