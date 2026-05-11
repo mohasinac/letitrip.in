@@ -187,8 +187,9 @@ Before touching any code in response to a bug report, plan note, or memory entry
 | Scammer profile | `scammer-` | `scammer-9876543210-at-paytm` |
 | Wishlist (per user) | `wishlist-` | `wishlist-user-mohsin-c` |
 | History (per user) | `history-` | `history-user-mohsin-c` |
+| Product feature | `feature-` | `feature-free-shipping` |
 
-**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles, wishlists, history.
+**Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles, wishlists, history, product features.
 
 **Semantic generator IDs** (slug-like prefix + date + random suffix, NOT Firestore auto-IDs):
 - orders → `order-{itemCount}-{YYYYMMDD}-{rand6}`

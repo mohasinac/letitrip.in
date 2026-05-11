@@ -53,6 +53,7 @@ import {
   sublistingCategoriesSeedData,
   groupedListingsSeedData,
   scammersSeedData,
+  productFeaturesSeedData,
 } from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
@@ -83,6 +84,7 @@ import { SUBLISTING_CATEGORIES_COLLECTION } from "@mohasinac/appkit";
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
+import { PRODUCT_FEATURES_COLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -114,7 +116,8 @@ type CollectionName =
   | "sublistingCategories"
   | "groupedListings"
   | "couponUsage"
-  | "scammerProfiles";
+  | "scammerProfiles"
+  | "productFeatures";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -153,6 +156,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   sublistingCategories: SUBLISTING_CATEGORIES_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
   scammerProfiles: SCAMMER_COLLECTION,
+  productFeatures: PRODUCT_FEATURES_COLLECTION,
 };
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
@@ -186,6 +190,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   sublistingCategories: sublistingCategoriesSeedData,
   groupedListings: groupedListingsSeedData,
   scammerProfiles: scammersSeedData,
+  productFeatures: productFeaturesSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([

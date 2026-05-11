@@ -34,7 +34,7 @@ const CORE_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
-  "products", "bids", "sublistingCategories", "groupedListings",
+  "products", "bids", "sublistingCategories", "groupedListings", "productFeatures",
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
@@ -1086,6 +1086,41 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "evidence",      type: "array",     note: "/media/ proxy URLs only" },
       { name: "createdAt",     type: "timestamp", sortable: true, indexed: true },
       { name: "updatedAt",     type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
+  productFeatures: {
+    label: "Product Features",
+    icon: "🏅",
+    group: "listings",
+    target: 10,
+    description: "Reusable feature badges products opt into via product.features[]. Two scopes: platform (admin-curated, available to every store) and store (seller-owned custom, capped at 20/store). Products may reference up to 10 features.",
+    slugPattern: "feature-*",
+    seededItems: [
+      "feature-free-shipping",
+      "feature-verified-seller",
+      "feature-accept-returns",
+      "feature-condition-new",
+      "feature-condition-used",
+      "feature-featured",
+      "feature-promoted",
+      "feature-auction-winner-badge",
+      "feature-shipping-paid-by-seller",
+      "feature-preorder-confirmed",
+    ],
+    pendingItems: [],
+    uiPath: "/admin/features",
+    fields: [
+      { name: "label",        type: "string",    searchable: true },
+      { name: "icon",         type: "string",    note: "icon-set name key OR SVG path-d" },
+      { name: "iconColor",    type: "string",    note: "--appkit-color-* token" },
+      { name: "category",     type: "enum",      filterable: true },
+      { name: "scope",        type: "enum",      filterable: true, indexed: true },
+      { name: "storeId",      type: "ref",       filterable: true, indexed: true, note: "required when scope=store" },
+      { name: "productTypes", type: "array",     filterable: true },
+      { name: "isActive",     type: "boolean",   filterable: true, indexed: true },
+      { name: "displayOrder", type: "number",    sortable: true },
+      { name: "createdAt",    type: "timestamp", sortable: true },
+      { name: "updatedAt",    type: "timestamp", sortable: true },
     ],
   },
 };
