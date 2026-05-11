@@ -3,16 +3,17 @@ import { withProviders } from "@/providers.config";
  * User Wishlist API — Collection
  *
  * GET  /api/user/wishlist — List current user's wishlist items (with product details)
- * POST /api/user/wishlist — Add a product to the wishlist
+ * POST /api/user/wishlist — Add a product to the wishlist (capped at WISHLIST_MAX)
  */
 
 import { wishlistRepository } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
+import { WishlistFullError } from "@mohasinac/appkit";
+import { WISHLIST_MAX } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
 import { z } from "zod";
 
 const addSchema = z.object({
@@ -29,7 +30,6 @@ export const GET = withProviders(createRouteHandler({
   handler: async ({ user }) => {
     const items = await wishlistRepository.getWishlistItems(user!.uid);
 
-    // Fetch product details for each wishlist item
     const productResults = await Promise.allSettled(
       items.map((item) => productRepository.findById(item.productId)),
     );
@@ -44,7 +44,11 @@ export const GET = withProviders(createRouteHandler({
 
     return successResponse({
       items: enriched,
-      meta: { total: enriched.length },
+      meta: {
+        total: enriched.length,
+        limit: WISHLIST_MAX,
+        isFull: enriched.length >= WISHLIST_MAX,
+      },
     });
   },
 }));
@@ -53,7 +57,9 @@ export const GET = withProviders(createRouteHandler({
  * POST /api/user/wishlist
  *
  * Body: { productId: string }
- * Adds a product to the user's wishlist (idempotent).
+ * Adds a product to the user's wishlist. Idempotent on re-add of an existing item.
+ * Returns 409 WISHLIST_FULL when the user has WISHLIST_MAX (20) items and the product
+ * is not already in their wishlist.
  */
 export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
@@ -61,15 +67,45 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
   handler: async ({ user, body }) => {
     const { productId } = body!;
 
-    // Verify product exists
     const product = await productRepository.findById(productId);
     if (!product) {
       return errorResponse(ERROR_MESSAGES.PRODUCT.NOT_FOUND, 404);
     }
 
-    await wishlistRepository.addItem(user!.uid, productId);
+    const isAuction = (product as { isAuction?: boolean }).isAuction === true;
+    const isPreOrder = (product as { isPreOrder?: boolean }).isPreOrder === true;
+    const productType: "product" | "auction" | "preorder" = isAuction
+      ? "auction"
+      : isPreOrder
+        ? "preorder"
+        : "product";
 
-    return successResponse({ productId }, SUCCESS_MESSAGES.WISHLIST.ADDED, 201);
+    const snapshot = {
+      title: (product as { title?: string }).title,
+      thumb: (product as { images?: string[] }).images?.[0],
+      currentPrice: (product as { price?: number }).price,
+    };
+
+    try {
+      const count = await wishlistRepository.addItem(user!.uid, productId, {
+        productType,
+        priceAtAdd: snapshot.currentPrice,
+        productSnapshot: snapshot,
+      });
+      return successResponse(
+        { productId, count, limit: WISHLIST_MAX, isFull: count >= WISHLIST_MAX },
+        SUCCESS_MESSAGES.WISHLIST.ADDED,
+        201,
+      );
+    } catch (e) {
+      if (e instanceof WishlistFullError) {
+        return errorResponse(
+          `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,
+          409,
+          { code: "WISHLIST_FULL", limit: e.limit, current: e.current },
+        );
+      }
+      throw e;
+    }
   },
 }));
-

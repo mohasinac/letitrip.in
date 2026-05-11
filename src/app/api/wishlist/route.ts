@@ -4,8 +4,10 @@ import {
   successResponse,
   errorResponse,
   productRepository,
+  wishlistRepository,
+  WishlistFullError,
+  WISHLIST_MAX,
 } from "@mohasinac/appkit";
-import { wishlistRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -15,10 +17,14 @@ export const GET = withProviders(
       const wishlistItems = await wishlistRepository.getWishlistItems(uid);
 
       if (wishlistItems.length === 0) {
-        return successResponse({ items: [], total: 0 });
+        return successResponse({
+          items: [],
+          total: 0,
+          limit: WISHLIST_MAX,
+          isFull: false,
+        });
       }
 
-      // Batch-enrich with product details
       const productIds = wishlistItems.map((i) => i.productId);
       const products = await Promise.all(
         productIds.map((id) => productRepository.findById(id).catch(() => null)),
@@ -30,9 +36,9 @@ export const GET = withProviders(
           id: `${uid}-${item.productId}`,
           userId: uid,
           productId: item.productId,
-          productTitle: product?.title ?? undefined,
-          productImage: product?.mainImage ?? undefined,
-          productPrice: product?.price ?? undefined,
+          productTitle: product?.title ?? item.productSnapshot?.title,
+          productImage: product?.mainImage ?? item.productSnapshot?.thumb,
+          productPrice: product?.price ?? item.productSnapshot?.currentPrice,
           productCurrency: product?.currency ?? "INR",
           productSlug: product?.slug ?? item.productId,
           productStatus: product?.status ?? "published",
@@ -42,7 +48,12 @@ export const GET = withProviders(
         };
       });
 
-      return successResponse({ items, total: items.length });
+      return successResponse({
+        items,
+        total: items.length,
+        limit: WISHLIST_MAX,
+        isFull: items.length >= WISHLIST_MAX,
+      });
     },
   }),
 );
@@ -54,8 +65,25 @@ export const POST = withProviders(
       const body = await request.json().catch(() => ({}));
       const { productId } = body as { productId?: string };
       if (!productId) return errorResponse("productId required", 400);
-      await wishlistRepository.addItem(user!.uid, productId);
-      return successResponse({ productId, added: true });
+      try {
+        const count = await wishlistRepository.addItem(user!.uid, productId);
+        return successResponse({
+          productId,
+          added: true,
+          count,
+          limit: WISHLIST_MAX,
+          isFull: count >= WISHLIST_MAX,
+        });
+      } catch (e) {
+        if (e instanceof WishlistFullError) {
+          return errorResponse(
+            `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,
+            409,
+            { code: "WISHLIST_FULL", limit: e.limit, current: e.current },
+          );
+        }
+        throw e;
+      }
     },
   }),
 );
