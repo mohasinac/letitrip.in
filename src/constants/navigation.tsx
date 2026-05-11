@@ -174,6 +174,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: String(ROUTES.ADMIN.CATEGORIES), label: "Categories" },
       { href: String(ROUTES.ADMIN.BRANDS),     label: "Brands"     },
       { href: String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), label: "Sub-listings" },
+      { href: String(ROUTES.ADMIN.FEATURES),   label: "Feature Badges" },
       { href: String(ROUTES.ADMIN.COUPONS),    label: "Coupons"    },
       { href: String(ROUTES.ADMIN.DEALS),      label: "Deals"      },
       { href: String(ROUTES.ADMIN.FEATURED),   label: "Featured"   },
