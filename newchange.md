@@ -33,6 +33,33 @@
 
 ---
 
+### Session S4 — Product Templates + Store Slug Management — 2026-05-11
+
+**Scope**: G1 (product templates CRUD), G2 (template selector + save-as-template in product form), O1 (store slug management page)
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/features/products/schemas/product-templates.ts` (new) | G1: `ProductTemplateDocument`, create/update input types, `PRODUCT_TEMPLATE_COLLECTION` |
+| `appkit/src/features/products/repository/product-templates.repository.ts` (new) | G1: `ProductTemplateRepository` — `findByStore`, `listByStore`, `create`, `update`, `deleteTemplate` |
+| `appkit/src/repositories/index.ts` | G1: export `productTemplateRepository` + types |
+| `appkit/src/index.ts` | G1: export `productTemplateRepository` + types for consumer apps |
+| `appkit/src/features/seller/components/SellerProductShell.tsx` | G2: add `renderTemplateSelector` + `onSaveAsTemplate` props; template selector at top of Basic step; "Save as Template" button at bottom of Publish section |
+| `appkit/src/features/stores/repository/store.repository.ts` | O1: add `isSlugAvailable` + `changeSlug` (atomic batch: create new doc, delete old) |
+| `appkit/src/next/routing/route-map.ts` | O1: add `ROUTES.STORE.SLUG = "/store/slug"` |
+| `src/app/api/store/templates/route.ts` (new) | G1: GET list + POST create — store-scoped |
+| `src/app/api/store/templates/[id]/route.ts` (new) | G1: GET + PUT + DELETE — seller auth |
+| `src/app/api/store/profile/route.ts` (new) | O1: PUT — validates + checks availability + calls `changeSlug` |
+| `src/app/api/store/slug/check/route.ts` (new) | O1: GET `?slug=` — returns `{ available, reason }` |
+| `src/app/[locale]/store/templates/page.tsx` (new) | G1: templates list page — SideDrawer create/edit, search, delete confirm |
+| `src/app/[locale]/store/slug/page.tsx` (new) | O1: slug management page — current slug display, debounced availability check, save |
+| `src/constants/api.ts` | G1+O1: add `TEMPLATES`, `TEMPLATE_BY_ID`, `PROFILE`, `SLUG_CHECK` to `API_ROUTES.STORE` |
+| `src/constants/navigation.tsx` | G1: "Templates" in Listings; O1: "Store URL" in Store section |
+| `src/index.md` | G1+O1: document new routes + pages |
+
+**Deferred**: none.
+
+---
+
 ### Session S3 — Invoice print page + Settings tabs — 2026-05-11
 
 **Scope**: VC2 (invoice print page + Download Invoice button), VC4 (settings tabs: Account/Privacy/Appearance, email change, data export)

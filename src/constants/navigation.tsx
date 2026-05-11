@@ -240,6 +240,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.PRE_ORDERS),              label: "Pre-Orders"        },
       { href: String(ROUTES.STORE.OFFERS),                  label: "Offers"            },
       { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),   label: "Sub-listing Groups"},
+      { href: String(ROUTES.STORE.TEMPLATES),               label: "Templates"         },
     ],
   },
   {
@@ -266,6 +267,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.ADDRESSES),  label: "Addresses"  },
       { href: String(ROUTES.STORE.COUPONS),    label: "Coupons"    },
       { href: String(ROUTES.STORE.WHATSAPP),   label: "WhatsApp"   },
+      { href: String(ROUTES.STORE.SLUG),       label: "Store URL"  },
     ],
   },
 ];

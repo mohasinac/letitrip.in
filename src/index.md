@@ -159,6 +159,10 @@
 | `orders/route.ts` | GET | Seller order list — scoped to store's products |
 | `analytics/route.ts` | GET | Seller analytics — forwards date range to Firebase Function, now uses `storeId` |
 | `products/route.ts` | GET/POST | Seller product list + create |
+| `templates/route.ts` | GET/POST | Product template list (store-scoped) + create — (G1 S4) |
+| `templates/[id]/route.ts` | GET/PUT/DELETE | Product template detail + mutations — seller-scoped (G1 S4) |
+| `profile/route.ts` | PUT | Change store slug — validates format, checks availability, batch-migrates document ID (O1 S4) |
+| `slug/check/route.ts` | GET | Check if a store slug is available — returns `{ available, reason }` (O1 S4) |
 
 ---
 
@@ -201,3 +205,5 @@
 | `src/app/[locale]/user/settings/page.tsx` | Settings page — Account/Privacy/Appearance tabs; email change (`useChangeEmail`), password change, data export, Contact Support link |
 | `src/app/api/user/export/route.ts` | GET `/api/user/export` — auth required; returns profile + addresses + orders as `attachment` JSON file |
 | `src/app/[locale]/demo/layout.tsx` | Demo/seed area layout (admin-protected) |
+| `src/app/[locale]/store/templates/page.tsx` | Product templates list (SideDrawer create/edit) — templates for pre-filling new listings (G1 S4) |
+| `src/app/[locale]/store/slug/page.tsx` | Store URL/slug management — current slug display, availability check, slug change with Firestore migration (O1 S4) |

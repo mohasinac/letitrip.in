@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S2 ✅ (D2, D3, LL4, LL5 done). 120 done, 277 remaining (397 total).
+> **Last updated:** 2026-05-11 — S4 ✅ (G1, G2, O1 done). 125 done, 272 remaining (397 total).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -58,10 +58,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 397 |
-| ✅ Done | 120 |
+| ✅ Done | 125 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 277 |
+| ⏳ Remaining | 272 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -165,7 +165,7 @@ Rules to keep top-of-mind every task:
 | **S1** | Zero-risk | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug/cross-ref integrity audit + field renames + per-store Google Reviews deferred integration + admin store picker in product form | — | ✅ **Done 2026-05-11** — SL6 (cross-ref audit + 3 fixes), ARCH9 (sellerId→ownerId), VD3 (subsumed by SEO5), HS4-E (googleReviews on StoreDocument + SellerStorefrontView + store About page), A1-ext (already present). |
 | **S2** | Zero-risk | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + saved-addresses listing view + orders listing view | S1 done | ✅ **Done 2026-05-11** |
 | **S3** | Zero-risk | VC2, VC4 | Invoice PDF download + user settings tabs (payment/notifications) | Sessions 76–93 stable | ✅ **Done 2026-05-11** — VC2 (print invoice page + Download Invoice button), VC4 (Account/Privacy/Appearance tabs, email change, data export) |
-| **S4** | Zero-risk | G1, G2, O1 | Store product templates CRUD + slug management page | Session 77 product forms done |
+| **S4** | Zero-risk | G1, G2, O1 | Store product templates CRUD + slug management page | Session 77 product forms done | ✅ **Done 2026-05-11** |
 | **S5** | Zero-risk | UX4, UX8, UX9 | PreviewPane wiring + admin quick-edit drawer + InlineSelectCreate refinements | UX1–UX3 done |
 | **S6** | Zero-risk | ARCH1, ARCH6, ARCH7 | Strip sellerId from all public API responses + response shape audit | — |
 | **S7** | Homepage | EX5, SB11-A, SB11-B, SB11-C, SB11-D, SB11-E, SB11-F, SB11-G | Collection Cards unified section type + 3 new section types (featured-bundles / prize-draws / event-raffles) + disabled seed docs | EX1–EX4 done (S93) |
@@ -495,12 +495,12 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| O1 | Store slug management — create + change flow | S | 🔜 | post-alpha | REUSE: `BecomeSellerView` EXISTS — add slug preview. In storefront: `Input` + availability check. API: PUT /api/store/profile with storeSlug |
+| O1 | Store slug management — create + change flow | S | ✅ | S4 2026-05-11 | `/store/slug` page — current slug display + debounced availability check + PUT /api/store/profile. `storeRepository.changeSlug()` batch-migrates doc ID atomically. `GET /api/store/slug/check` for availability. Nav: "Store URL" in Store section. |
 | O2+C5 | Storefront full edit — bio, policies, branding, vacation mode | M | ✅ | Session 100 | Check if `SellerStorefrontView` is stub — complete with `RichTextEditor` (EXISTS) for bio/policies; `Toggle` for vacation mode; `AvatarDisplay` for logo/banner |
 | C6 | Shipping config — method + prices + pickup address add | M | ✅ | Session 80 | `SellerShippingView` rewritten as full form: method radio (custom/shiprocket), rate fields (standard/express), free-shipping threshold toggle, pickup address selector (StoreAddressSelectorCreate). PATCH /api/store/shipping. |
 | C7 | Payout settings — UPI/bank config | M | ✅ | Session 80 | `SellerPayoutSettingsView` rewritten: UPI/bank radio, UPI VPA input or bank form (name, masked account number, IFSC, bank, type). PATCH /api/store/payout-settings with Zod discriminated union + account number masking. |
-| G1 | Product Templates CRUD | M | ⏳ | | NEW collection: product_templates. REUSE: `AdminListingScaffold` pattern for list; `SideDrawer` for create/edit; `Select`/`Input` for fields |
-| G2 | Template apply in product/auction/preorder create forms | S | ⏳ | | REUSE: `DynamicSelect` (EXISTS) for template picker at top of `ProductForm`; add "Save as template" `Button` in form footer |
+| G1 | Product Templates CRUD | M | ✅ | S4 2026-05-11 | `product_templates` Firestore collection. `ProductTemplateRepository` in appkit. `/store/templates` page with SideDrawer create/edit. API: GET/POST `/api/store/templates`, GET/PUT/DELETE `/api/store/templates/[id]`. Nav: "Templates" in Listings section. |
+| G2 | Template apply in product/auction/preorder create forms | S | ✅ | S4 2026-05-11 | `renderTemplateSelector` + `onSaveAsTemplate` props added to `SellerProductShell`. Template selector renders at top of Basic step; "Save as Template" button at bottom of Publish section. |
 | C1 | Store Auctions create/edit | M | ✅ | Session 100 | REUSE: `ProductForm.tsx` EXISTS — check if it has isAuction mode; if yes, wire new pages with mode=auction pre-set; if no, extend ProductForm with auction field group behind isAuction tab |
 | C2 | Store Pre-Orders create/edit | M | ✅ | Session 100 | REUSE: `ProductForm.tsx` EXISTS — same as C1; extend with isPreOrder field group; wire /store/pre-orders/new and /store/pre-orders/[id]/edit |
 | C3 | Store Coupons edit page | S | ✅ | Session 81-impl | /store/coupons/[id]/edit fetches coupon, converts paise→rupees for display, renders SellerCouponEditorView with initial draft. PATCH via /api/store/coupons/[id]. |

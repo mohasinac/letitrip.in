@@ -7,14 +7,15 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S3 (2026-05-11)
+### ✅ Last completed — S4 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| VC2 | Print-styled invoice page at `/user/orders/[id]/invoice`. `ROUTES.USER.ORDER_INVOICE` added. "Download Invoice" button on order detail opens invoice in new tab. "Print / Save as PDF" action bar on the invoice page. |
-| VC4 | Settings page rebuilt with Account / Privacy / Appearance tabs. Account tab: email change form (Firebase `verifyBeforeUpdateEmail` re-auth flow) + password change form. Privacy tab: Download My Data button (`GET /api/user/export`) + "Contact Support" link for deletion. Appearance tab: FontToggleClient + language placeholder. `useChangeEmail` + `ChangeEmailData` added to appkit. |
+| G1 | `product_templates` Firestore collection + `ProductTemplateRepository`. `/store/templates` page with SideDrawer create/edit. API: GET/POST `/api/store/templates`, GET/PUT/DELETE `/api/store/templates/[id]`. "Templates" in store nav. |
+| G2 | `renderTemplateSelector` + `onSaveAsTemplate` props on `SellerProductShell`. Template selector at top of Basic step; "Save as Template" button at bottom of Publish section. |
+| O1 | `/store/slug` management page — current slug, debounced availability check, slug migration. `storeRepository.changeSlug()` atomic batch. `GET /api/store/slug/check`, `PUT /api/store/profile`. "Store URL" in store nav. |
 
-### 🔜 Current — S4 (next session)
+### 🔜 Current — S5 (next session)
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -23,7 +24,7 @@
 | **S1** ✅ | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug audit + field renames + per-store Google Reviews | zero |
 | **S2** ✅ | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + listing views | zero |
 | **S3** ✅ | VC2, VC4 | Invoice PDF + user settings tabs | zero |
-| **S4** | G1, G2, O1 | Store templates CRUD + slug management | zero |
+| **S4** ✅ | G1, G2, O1 | Store templates CRUD + slug management | zero |
 | **S5** | UX4, UX8, UX9 | PreviewPane + quick-edit drawer + InlineSelectCreate | zero |
 | **S6** | ARCH1, ARCH6, ARCH7 | Strip sellerId from public API responses | low |
 | **S7** | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
@@ -44,7 +45,7 @@
 ## PLAN SNAPSHOT
 
 ```
-122 tasks ✅ done · 275 remaining · 397 total (as of S3 done 2026-05-11)
+125 tasks ✅ done · 272 remaining · 397 total (as of S4 done 2026-05-11)
 Roadmap reorganized 2026-05-11 → 43 sessions S1–S43 (risk-ordered, all deferred integrated) — S1+S2 ✅
 
 COMPLETED (sessions 60–93)
