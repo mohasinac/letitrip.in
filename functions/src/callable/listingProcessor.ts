@@ -25,6 +25,7 @@ import {
   brandsRepository,
   categoriesRepository,
   couponsRepository,
+  eventEntryRepository,
   eventRepository,
   faqsRepository,
   homepageSectionsRepository,
@@ -33,8 +34,10 @@ import {
   payoutRepository,
   productFeaturesRepository,
   productRepository,
+  productTemplateRepository,
   reviewRepository,
   scammerRepository,
+  storeRepository,
   sublistingCategoriesRepository,
   userRepository,
 } from "../lib/appkit";
@@ -122,12 +125,58 @@ const LISTERS: Record<string, Lister> = {
   [COLLECTIONS.PRODUCT_FEATURES]: (m) => productFeaturesRepository.list(m),
   [COLLECTIONS.HOMEPAGE_SECTIONS]: (m) => homepageSectionsRepository.list(m),
   [COLLECTIONS.USERS]: (m) => userRepository.list(m),
-  // Excluded: eventEntries (needs eventId), productTemplates (needs storeId),
-  // carousels (no Sieve list method), sessions/tokens (auth-sensitive),
-  // carts/wishlists/history (subcollection or single-doc-per-user shape),
-  // stores (uses listStores/listAllStores with non-Sieve signature — wire
-  // separately if a generic stores listing is needed).
+
+  // Parent-id-scoped collections — caller supplies the parent id via baseOpts.
+  // Each one is still a Sieve-backed list inside the repo, so filters/sorts
+  // /pagination/cursor still apply.
+  [COLLECTIONS.STORES]: (m, o) =>
+    storeRepository.listStores(m, getBoolOpt(o, "activeOnly", true)),
+  [COLLECTIONS.EVENT_ENTRIES]: (m, o) => {
+    const eventId = requireOpt(o, "eventId", COLLECTIONS.EVENT_ENTRIES);
+    return eventEntryRepository.listForEvent(eventId, m);
+  },
+  [COLLECTIONS.PRODUCT_TEMPLATES]: (m, o) => {
+    const storeId = requireOpt(o, "storeId", COLLECTIONS.PRODUCT_TEMPLATES);
+    return productTemplateRepository.listByStore(storeId, m);
+  },
+  // Still excluded (need their own signature/auth path):
+  //   carousels (no Sieve list method — listCarousels returns an array)
+  //   sessions / tokens (auth-sensitive — never proxied)
+  //   carts / wishlists / history (single-doc-per-user shape, not a listing)
 };
+
+function requireOpt(
+  baseOpts: Record<string, unknown>,
+  key: string,
+  collection: string,
+): string {
+  const value = baseOpts[key];
+  if (typeof value !== "string" || value.length === 0) {
+    throw new ListingValidationError(
+      `${collection} listing requires baseOpts.${key}`,
+    );
+  }
+  return value;
+}
+
+function getBoolOpt(
+  baseOpts: Record<string, unknown>,
+  key: string,
+  fallback: boolean,
+): boolean {
+  const value = baseOpts[key];
+  if (typeof value === "boolean") return value;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return fallback;
+}
+
+class ListingValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ListingValidationError";
+  }
+}
 
 const SUPPORTED_COLLECTIONS = Object.keys(LISTERS);
 
@@ -245,6 +294,10 @@ export const listingProcessor = onRequest(
       res.setHeader("Cache-Control", CACHE_CONTROL);
       res.status(200).json(payload);
     } catch (error) {
+      if (error instanceof ListingValidationError) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
       logError(FN, "listing failed", error);
       res.status(500).json({ error: "Internal server error" });
     }

@@ -9079,3 +9079,62 @@ Hook responsibilities: re-entry guard, auto-disable on `hasMore: false`, unmount
    LETITRIP_INTERNAL_SECRET      = <existing shared secret>
 3. Until step 2 is done, /api/products silently uses the local repo fallback.
 ```
+
+## S13 follow-up — Filter aliases + parent-id dispatch
+
+### Filter aliases (appkit Sieve adapter)
+
+Aliases are virtual filter clauses that expand into real Sieve clauses before
+the underlying `@mohasinac/sievejs` processor touches them. Plumbed through
+`SieveOptions.aliases` and applied in both `applySieveToFirestore` and
+`sieveQuery`.
+
+```
+Caller filter string
+  ?f=listingType==auction,minPrice>=100
+            │
+            ▼
+expandFilterAliases(filters, productRepository.FILTER_ALIASES)
+            │
+            ▼   isAuction==true,isPreOrder==false,minPrice>=100
+SieveProcessorBase.apply(model, baseQuery)
+            │
+            ▼
+Firestore query
+```
+
+### Aliases registered today (productRepository.FILTER_ALIASES)
+
+| Alias clause                         | Expands to                                              |
+|--------------------------------------|---------------------------------------------------------|
+| `listingType==auction`               | `isAuction==true,isPreOrder==false`                     |
+| `listingType==preorder`              | `isAuction==false,isPreOrder==true`                     |
+| `listingType==product`               | `isAuction==false,isPreOrder==false`                    |
+| `listingType!=auction`               | `isAuction==false`                                      |
+| `scope==publicProducts`              | `status==published,isAuction==false,isPreOrder==false`  |
+| `scope==publicAuctions`              | `status==published,isAuction==true`                     |
+| `scope==publicPreorders`             | `status==published,isPreOrder==true`                    |
+| `scope==published`                   | `status==published`                                     |
+| `promoted==true`                     | `status==published,isPromoted==true`                    |
+| `featuredPublic==true`               | `status==published,featured==true`                      |
+
+Unknown values are dropped silently — same default as the rest of the Sieve
+allowlist behavior.
+
+### listingProcessor parent-id dispatch
+
+For collections whose `.list()` requires a parent id, the dispatch reads it
+from `baseOpts` and returns 400 when missing. Sieve filters/sorts/pagination
+still apply on the parent-scoped query.
+
+```
+collection: "eventEntries"  →  baseOpts.eventId required
+collection: "productTemplates"  →  baseOpts.storeId required
+collection: "stores"  →  baseOpts.activeOnly (boolean, default true)
+```
+
+All other previously-supported collections (products, categories, brands,
+orders, reviews, coupons, bids, payouts, blogPosts, events, faqs,
+notifications, scammers, sublistingCategories, productFeatures,
+homepageSections, users) work without `baseOpts` — that input is the
+escape hatch for repos that need it.
