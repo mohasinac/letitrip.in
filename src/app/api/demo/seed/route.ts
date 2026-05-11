@@ -42,6 +42,7 @@ import {
   payoutsSeedData,
   notificationsSeedData,
   blogPostsSeedData,
+  carouselsSeedData,
   carouselSlidesSeedData,
   homepageSectionsSeedData,
   siteSettingsSeedData,
@@ -55,6 +56,7 @@ import {
 import {
   CAROUSEL_SLIDES_COLLECTION,
   HOMEPAGE_SECTIONS_COLLECTION,
+  CAROUSELS_COLLECTION,
 } from "@mohasinac/appkit";
 import { SITE_SETTINGS_COLLECTION } from "@mohasinac/appkit";
 import { FAQS_COLLECTION } from "@mohasinac/appkit";
@@ -88,6 +90,7 @@ type CollectionName =
   | "categories"
   | "stores"
   | "products"
+  | "carousels"
   | "carouselSlides"
   | "homepageSections"
   | "siteSettings"
@@ -129,6 +132,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   reviews: REVIEW_COLLECTION,
   bids: BID_COLLECTION,
   coupons: COUPONS_COLLECTION,
+  carousels: CAROUSELS_COLLECTION,
   carouselSlides: CAROUSEL_SLIDES_COLLECTION,
   homepageSections: HOMEPAGE_SECTIONS_COLLECTION,
   siteSettings: SITE_SETTINGS_COLLECTION,
@@ -160,6 +164,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   bids: bidsSeedData,
   coupons: couponsSeedData,
   couponUsage: couponUsageSeedData,
+  carousels: carouselsSeedData,
   carouselSlides: carouselSlidesSeedData,
   homepageSections: homepageSectionsSeedData,
   siteSettings: [siteSettingsSeedData], // Wrap singleton in array

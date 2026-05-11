@@ -42,7 +42,7 @@ const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const CONTENT_COLLECTIONS: SeedCollectionName[] = [
-  "blogPosts", "events", "eventEntries", "carouselSlides", "homepageSections", "faqs",
+  "blogPosts", "events", "eventEntries", "carousels", "carouselSlides", "homepageSections", "faqs",
 ];
 
 const SYSTEM_COLLECTIONS: SeedCollectionName[] = [
@@ -747,6 +747,29 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "userEmail",       type: "string",    filterable: true, pii: true },
       { name: "status",          type: "enum",      filterable: true, indexed: true },
       { name: "createdAt",       type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
+  carousels: {
+    label: "Named Carousels",
+    icon: "🗂️",
+    group: "content",
+    target: 5,
+    description: "Named carousel containers (EX2). Each carousel holds up to 5 slide IDs. carouselId on CarouselSectionConfig selects which carousel to render; null = default hero.",
+    slugPattern: "carousel-{name}  (e.g. carousel-hero-default)",
+    seededItems: [
+      "1 default carousel (carousel-hero-default, slideIds: [])",
+    ],
+    pendingItems: [
+      "4 more named carousels for category/event/brand features",
+    ],
+    uiPath: "/admin/carousels",
+    fields: [
+      { name: "id",         type: "string",    filterable: true },
+      { name: "name",       type: "string",    searchable: true },
+      { name: "slideIds",   type: "array" },
+      { name: "createdBy",  type: "ref" },
+      { name: "createdAt",  type: "timestamp", sortable: true, indexed: true },
+      { name: "updatedAt",  type: "timestamp", sortable: true },
     ],
   },
   carouselSlides: {
