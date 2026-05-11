@@ -8207,3 +8207,80 @@ Note: table elements kept as native HTML for consistent print/PDF rendering
 Discount row colour: text-emerald-600 dark:text-emerald-400 (print:text-black)
 ```
 
+---
+
+## Store > Product Templates ✅ (Session S4, G1)
+
+```
+Route:   /store/templates
+Page:    src/app/[locale]/store/templates/page.tsx
+API:     GET/POST /api/store/templates   GET/PUT/DELETE /api/store/templates/[id]
+ROUTES:  ROUTES.STORE.TEMPLATES
+Nav:     Listings → Templates (STORE_NAV_GROUPS)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Product Templates                             [+ New Template]             │
+│  Save common field sets to pre-fill new listings faster.                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [Search templates…                                                    ]     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Pokémon Card Standard                     [Edit] [Delete]                  │
+│  trading-cards · Pokémon Company · like_new                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Hot Wheels Die-cast                       [Edit] [Delete]                  │
+│  diecast-vehicles · Hot Wheels · new                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+SideDrawer (mode=create|edit):
+┌─────────────────────────────────────┐
+│  New Template             [×]       │
+│  ─────────────────────────────────  │
+│  Template Name *                    │
+│  [                              ]   │
+│  Description (optional)             │
+│  [                              ]   │
+│  Category (optional)                │
+│  [                              ]   │
+│  Brand (optional)                   │
+│  [                              ]   │
+│  Condition (optional)               │
+│  [Any condition            ▼]       │
+│  ─────────────────────────────────  │
+│              [Cancel] [Create Template]│
+└─────────────────────────────────────┘
+```
+
+---
+
+## Store > Slug Management ✅ (Session S4, O1)
+
+```
+Route:   /store/slug
+Page:    src/app/[locale]/store/slug/page.tsx
+API:     GET /api/store/slug/check?slug=   PUT /api/store/profile
+ROUTES:  ROUTES.STORE.SLUG
+Nav:     Store → Store URL (STORE_NAV_GROUPS)
+Repo:    storeRepository.isSlugAvailable(slug)
+         storeRepository.changeSlug(current, new)  — atomic Firestore batch
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Store URL / Slug                                                            │
+│  Your store's public URL. Changing it will break existing links.            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Current URL                                                                 │
+│  letitrip.in/store/pokemon-palace                                           │
+│                                                                              │
+│  New Store Slug                                                              │
+│  [pokemon-palace-official                                             ]      │
+│  letitrip.in/store/pokemon-palace-official                                  │
+│  ✓ This slug is available.   (or ✗ taken / invalid)                        │
+│                                                                              │
+│  ⚠ Changing your slug will update your store URL immediately.               │
+│    Saved links to the old URL will stop working.                             │
+│                                                                              │
+│                                            [Update Slug]                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+Debounce: 600ms after input. Check state: idle | checking | available | taken | invalid
+Success banner shows new URL after save.
+```
+
