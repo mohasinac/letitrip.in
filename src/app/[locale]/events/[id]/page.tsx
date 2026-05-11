@@ -1,5 +1,5 @@
 import {
-  getPublicEventById,
+  getEventForDetail,
   getEventLeaderboard,
 } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
@@ -15,7 +15,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const event = await getPublicEventById(id).catch(() => null);
+  const event = await getEventForDetail(id);
   if (!event) return { title: "Event Not Found" };
   const e = event as unknown as Record<string, unknown>;
   const coverImage =
@@ -60,11 +60,16 @@ function formatDate(value: unknown): string {
 export default async function Page({ params }: Props) {
   const { locale, id } = await params;
   const [event, leaderboard] = await Promise.all([
-    getPublicEventById(id).catch(() => null),
+    getEventForDetail(id),
     getEventLeaderboard(id).catch(() => []),
   ]);
-
   if (!event) notFound();
+
+  const safeLeaderboard = (leaderboard as any[]).map((entry) => ({
+    id: String(entry.id ?? ""),
+    userDisplayName: entry.userDisplayName ?? undefined,
+    points: entry.points ?? undefined,
+  }));
 
   const e = event as unknown as Record<string, unknown>;
   const coverImage =
@@ -78,7 +83,6 @@ export default async function Page({ params }: Props) {
   const statusBadgeCls = STATUS_BADGE[eventStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
 
   const totalEntries = (event as any).stats?.totalEntries as number | undefined;
-
   const now    = Date.now();
   const endsAt = event.endsAt ? new Date(event.endsAt as unknown as string).getTime() : null;
   const isActive = eventStatus === "active" || (endsAt !== null && endsAt > now);
@@ -89,12 +93,6 @@ export default async function Page({ params }: Props) {
     allowComment: boolean;
     requireLogin?: boolean;
   } | undefined;
-
-  const safeLeaderboard = (leaderboard as any[]).map((entry) => ({
-    id: String(entry.id ?? ""),
-    userDisplayName: entry.userDisplayName ?? undefined,
-    points: entry.points ?? undefined,
-  }));
 
   return (
     <EventDetailClient

@@ -31,10 +31,87 @@
 | 2026-05-12 | Q3-pre-orders | `/api/pre-orders/route.ts` not wired through `listingProcessor` in S13. Current handler delegates to appkit `preOrdersGET` which uses a `db.getRepository("preorders")` path against a separate collection that doesn't exist in this seed. Spec decision needed: (a) rewrite the handler to treat pre-orders as `products` with `isPreOrder==true` and forward to `listingProcessor`, or (b) add a real `preorders` collection. | ⏳ Open | Follow-up session — bundle with Q6-views wiring. |
 | 2026-05-12 | Q6-views | `useInfiniteScroll` primitive shipped; full wiring into the 4 listing views deferred. `useProducts` hook uses `useQuery` — switching to `useInfiniteQuery` is a real refactor (cursor accumulator, key invalidation, SSR hydration) with regression surface across ProductsIndexListing, AuctionsListView, PreOrdersListView, StoreProductsPageView. | ⏳ Open | Follow-up session — own session with browser verification per view. |
 | 2026-05-12 | Q1-ops | `listingProcessor` Function not yet deployed. Until `firebase deploy --only functions` is run and `FIREBASE_FUNCTION_LISTING_URL` is set in Vercel env, `/api/products` keeps using the local `productRepository.list` fallback (works fine, just no Firebase-side offload yet). | ⏳ Open | Ops step — user runs deploy + sets env. |
+| 2026-05-12 | S1-cli | `appkit/src/cli/index.ts` not moved to `_internal/server/cli/`. `withFeatures` still at original path. Non-blocking — consumer uses `withFeatures` from `@mohasinac/appkit/cli` which still resolves. | ⏳ Open | Complete before or during S2. |
+| 2026-05-12 | S1-configs | Consumer config files (`next.config.js`, `postcss.config.js`, `tailwind.config.js`, `eslint.config.js`, `tsconfig.json`) not yet rewritten to use `defineXxx()` helpers. Helpers are published and ready; consumer files are functional but not using them. | ⏳ Open | Complete before or during S2. |
 
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Sessions Arch-S4 + Arch-S5 — 2026-05-12 — _internal/server/features/ layers (cart/orders/promotions/reviews/wishlist/history/homepage)
+
+**Scope:** S4+S5 of the SSR rearchitecture plan. Created the full `_internal/server/features/` stack for 8 feature domains.
+
+| Feature | data.ts | service.ts | actions.ts | Notes |
+|---------|---------|-----------|-----------|-------|
+| cart | upsertCartItem, mergeGuestItems (React.cache) | assertCartCapacity, assertValidQuantity | addToCart, removeFromCart, clearCart, mergeGuestCart | addToCartSchema expanded with full snapshot fields |
+| orders | getOrder, listOrdersForBuyer, listOrdersForSeller | assertOrderOwnership, assertOrderCancellable, assertOrderReturnable | updateOrderStatus, cancelOrder, requestReturn | Domain errors: OrderNotFoundError, OrderOwnershipError, OrderNotCancellableError, OrderReturnWindowError |
+| promotions | getCouponByCode, validateCoupon, listCoupons | isValidCoupon | createCoupon, updateCoupon, deleteCoupon, applyCouponToOrder | Fixed: getCouponByCode (not findByCode); applyCoupon 5-arg signature |
+| reviews | getReviewsForProduct, getReviewsForStore, hasUserPurchasedProduct | — | createReview, replyToReview, deleteReview, markReviewHelpful | Config: REVIEWS_PAGE_SIZE=20, REVIEW_*_LENGTH constants |
+| wishlist | getWishlistForUser → { items, meta } | — | addToWishlist, removeFromWishlist, clearWishlist, mergeGuestWishlist | Return shape fixed from plain array to { items, meta } |
+| history | getHistoryForUser → { items, meta } | — | addToHistory, mergeGuestHistory, clearHistory | historyRepository added to repositories barrel |
+| homepage | getHomepageInitial, getHomepageSections, getHeroCarouselSlides | — | — | Config: HOMEPAGE_FEATURED_REVIEWS_LIMIT=18, HOMEPAGE_RECENT_BLOG_POSTS_LIMIT=6 |
+
+**Cross-cutting fixes:**
+- `appkit/src/repositories/index.ts` — added `historyRepository`, `UserHistoryItem`, `HistoryProductType`, `WishlistFullError`
+- `NotFoundError` — made `id` optional (backward compat with 1-arg callers in letitrip.in)
+- `AuthPayload.name` used (not `displayName`)
+- Zod schemas use all config constants (no magic numbers)
+
+**Gates (all ✅):** `tsc --noEmit` 0 errors × 2 repos, `npm run build` in appkit/ clean.
+
+---
+
+### Session S1/S2 (SSR Arch) — 2026-05-12 — Foundation + Products data layer + Dark mode + Config helpers
+
+**Scope (combined):** S1 foundation complete; two S1-deferred config rewrites done; S2 partial (products data layer + OG image).
+
+| Area | What was done |
+|------|---------------|
+| S1 deferred | `next.config.js` → `defineNextConfig()` (IgnorePlugin also moved into helper); `postcss.config.js` → `definePostcssConfig()`; `tsconfig.json` → extends `@mohasinac/appkit/tsconfig.base.json`; fixed `tsconfig.base.json` (`jsx:"react-jsx"`, removed bad path aliases) |
+| Dark mode | `SEMANTIC_COLORS_DARK` — full dark token set (surface, text, border, state); `siteSettings.theme` gains `primaryDark/secondaryDark/accentDark`; `LayoutShellClient` injects both `:root` and `.dark` variable blocks; `defineTailwindConfig` maps all semantic tokens |
+| S2 products data layer | `_internal/shared/features/products/config.ts` — page-size constants; `_internal/server/features/products/data.ts` — `getProductForDetail` (React.cache), `getReviewsForProduct`, `listSitemapProducts`; exported from `server-entry.ts` |
+| S2 types fix | `appkit/package.json` `"types"` → `dist/server-entry.d.ts` (was `index.d.ts`); consumer now sees all new symbols |
+| S2 products page | `products/[slug]/page.tsx` — uses `getProductForDetail` + passes `initialProduct` (kills double-fetch); `ProductDetailPageView` accepts `initialProduct?` to skip internal fetch |
+| S2 OG image | `products/[slug]/opengraph-image.tsx` — edge runtime, 1200×630, product image bg + title + price |
+| Plan tracker | `ssr-arch-tracker.md` updated with S2 progress |
+
+**Gates (all ✅):** `tsc --noEmit` × 2, `audit-violations`, `verify-entries`, `verify-css-build`, appkit `npm run build`
+
+---
+
+### Session S1 (SSR Arch) — 2026-05-12 — Foundation: entries + tokens + config helpers + CLI + dark mode
+
+**Scope:** S1 of the approved SSR rearchitecture plan (`cant-we-do-it-cosmic-flamingo.md`). Foundation-only — no feature migration. All structural scaffolding in place; existing app untouched functionally.
+
+**Tracker:** `ssr-arch-tracker.md` created for S1–S7 progress.
+
+| Area | What was done |
+|------|---------------|
+| `_internal/` skeleton | Created `_internal/{client,server,shared}/` with stub `index.ts` files |
+| Entry files | `client-entry.ts` + `server-entry.ts` — S1 proxy: `export * from "./index"` + new `_internal/` symbols |
+| `package.json` | Conditional `exports` map (`react-server`, `edge-light`, `browser`, `worker`, `import`, `default`); `sideEffects: ["**/*.css"]`; `bin` + `files` expanded for 9 CLI scripts; `./configs` export added |
+| TS project refs | `tsconfig.{client,server,shared}.json` (composite, `_internal/` scoped); `tsconfig.base.json` (consumer-facing) |
+| Tokens | `_internal/shared/tokens/index.ts` — `SEMANTIC_COLORS` (brand + state + surface + text), `SEMANTIC_COLORS_DARK` (full dark-mode set), `SEMANTIC_RADIUS/SHADOWS/Z_INDEX`, `MOTION_TOKENS`, `BREAKPOINTS`, `Responsive<T>`, `PLATFORM_LIMITS` |
+| Dark mode | `SEMANTIC_COLORS_DARK` added; `siteSettings.theme` gains `primaryDark/secondaryDark/accentDark`; `LayoutShellClient` injects both `:root { }` (light) and `.dark { }` (dark) CSS variable blocks |
+| Config helpers | `configs/{next,postcss,tailwind,eslint}.ts` — `defineXxx()` factories; `defineTailwindConfig` maps all semantic tokens to CSS vars; `darkMode:"class"` |
+| AppkitConfig | `_internal/shared/config/schema.ts` — full `AppkitConfig` interface; `letitrip.in/appkit.config.js` generated |
+| i18n contract | `_internal/client/i18n/LabelsProvider.tsx` — `LabelsProvider`, `useLabels`, `AppkitLabelSet` |
+| ESLint boundaries | `appkit/.eslintrc.json` — `no-restricted-imports` across `_internal/{client,server,shared}` |
+| CLI scripts | `audit-violations`, `verify-entries`, `verify-css-build`, `smoke-ssr`, `smoke-bundle`, `smoke-theme`, `init-config`, `labels-extract` |
+| Cleanup | Deleted `scripts/test-regex.mjs` |
+
+**Gates (all ✅):**
+- `npx tsc --noEmit` 0 errors in `appkit/` and `letitrip.in/`
+- `node scripts/audit-violations.mjs` — 0 boundary violations
+- `node scripts/verify-entries.mjs` — client entry firebase-admin free
+- `npm run build` in `appkit/` — tsc + assets + tailwind + verify-css all pass
+
+**Deferred into ssr-arch-tracker.md:**
+- `cli/index.ts` move → `_internal/server/cli/` (non-blocking for S2)
+- Consumer config file rewrites (next.config.js, postcss.config.js, tailwind.config.js, eslint.config.js, tsconfig.json)
 
 ---
 

@@ -56,10 +56,19 @@ export default function LayoutShellClient({
   children,
   seedPanelEnabled = true,
   siteLogoUrl,
+  siteTheme,
 }: {
   children: ReactNode;
   seedPanelEnabled?: boolean;
   siteLogoUrl?: string;
+  siteTheme?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+    primaryDark?: string;
+    secondaryDark?: string;
+    accentDark?: string;
+  };
 }) {
   const tNav = useTranslations("nav");
   const router = useRouter();
@@ -195,8 +204,37 @@ export default function LayoutShellClient({
     bottomLinks: FOOTER_BOTTOM_LINKS,
   }), []);
 
+  // Build CSS custom property blocks from admin-controlled theme colors.
+  // `:root` carries light-mode overrides; `.dark` carries dark-mode overrides.
+  // Dark-mode-specific keys (primaryDark etc.) are extracted to the .dark block;
+  // light keys without a dark counterpart also appear in .dark as fallback.
+  const themeStyle = (() => {
+    if (!siteTheme) return null;
+    const lightEntries: string[] = [];
+    const darkEntries: string[] = [];
+    const DARK_SUFFIX = "Dark";
+    for (const [k, v] of Object.entries(siteTheme)) {
+      if (!v) continue;
+      if (k.endsWith(DARK_SUFFIX)) {
+        const baseKey = k.slice(0, -DARK_SUFFIX.length);
+        darkEntries.push(`--appkit-color-${baseKey}: ${v}`);
+      } else {
+        lightEntries.push(`--appkit-color-${k}: ${v}`);
+        // fallback: if no dark variant provided, light value is reused in dark
+        if (!(siteTheme as Record<string, string | undefined>)[k + DARK_SUFFIX]) {
+          darkEntries.push(`--appkit-color-${k}: ${v}`);
+        }
+      }
+    }
+    const parts: string[] = [];
+    if (lightEntries.length) parts.push(`:root { ${lightEntries.join("; ")} }`);
+    if (darkEntries.length) parts.push(`.dark { ${darkEntries.join("; ")} }`);
+    return parts.length ? parts.join("\n") : null;
+  })();
+
   return (
     <Fragment>
+    {themeStyle && <style>{themeStyle}</style>}
     <AdRuntimeInitializer />
     <AppLayoutShell
       navItems={navItems}

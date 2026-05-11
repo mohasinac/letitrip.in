@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import {
   PreOrderDetailPageView,
-  getProductById,
-  loadProductFeaturesForStore,
+  getPreOrderForDetail,
+  getProductFeaturesForPreOrder,
 } from "@mohasinac/appkit";
 import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -13,7 +13,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const product = await getProductById(id).catch(() => null);
+  const product = await getPreOrderForDetail(id);
   if (!product) return { title: "Pre-Order Not Found" };
   return _gm({
     title: `Pre-Order: ${product.title}`,
@@ -29,10 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const product = await getProductById(id).catch(() => null);
-  const productFeatures = await loadProductFeaturesForStore(
-    product?.storeId ?? null,
-  ).catch(() => []);
+  const product = await getPreOrderForDetail(id);
+  const productFeatures = await getProductFeaturesForPreOrder(product?.storeId ?? null);
   return (
     <PreOrderDetailPageView
       id={id}

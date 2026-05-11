@@ -31,6 +31,7 @@ export default async function Layout({ children, params }: Props) {
   const siteSettings = await siteSettingsRepository.getSingleton().catch(() => null);
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
   const siteLogoUrl = siteSettings?.logo?.url || undefined;
+  const siteTheme = siteSettings?.theme;
 
   return (
     <NextIntlClientProvider
@@ -48,7 +49,7 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl}>{children}</LayoutShellClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}>{children}</LayoutShellClient>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

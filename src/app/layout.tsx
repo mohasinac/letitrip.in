@@ -1,5 +1,5 @@
 import "@mohasinac/appkit/styles";
-import "./globals.css";
+import "@/styles/globals.compiled.css";
 import { Poppins, Inter, Cormorant_Garamond, Playfair_Display } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";

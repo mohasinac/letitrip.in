@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import {
   ProductDetailPageView,
-  getProductById,
   productJsonLd,
   breadcrumbJsonLd,
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
+import { getProductForDetail } from "@mohasinac/appkit";
 import { MakeOfferButton } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants/seo.server";
@@ -16,7 +16,8 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductById(slug).catch(() => null);
+  // getProductForDetail is wrapped in React.cache() — shared with the page render.
+  const product = await getProductForDetail(slug).catch(() => null);
   if (!product) return { title: "Product Not Found" };
   return generateProductMetadata({
     title: product.title,
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getProductById(slug).catch(() => null);
+  const product = await getProductForDetail(slug).catch(() => null);
   const productFeatures = await loadProductFeaturesForStore(
     product?.storeId ?? null,
   ).catch(() => []);
@@ -73,6 +74,7 @@ export default async function Page({ params }: Props) {
       )}
       <ProductDetailPageView
         slug={slug}
+        initialProduct={product}
         productFeatures={productFeatures}
         renderOfferAction={({ productId, price, minOfferPercent }) => (
           <MakeOfferButton

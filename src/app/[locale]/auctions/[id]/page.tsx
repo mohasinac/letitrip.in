@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import {
   AuctionDetailPageView,
-  getProductById,
+  getAuctionForDetail,
+  getProductFeaturesForAuction,
   auctionJsonLd,
   breadcrumbJsonLd,
-  loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
 import { placeBidAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
@@ -15,7 +15,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const auction = await getProductById(id).catch(() => null);
+  const auction = await getAuctionForDetail(id);
   if (!auction) return { title: "Auction Not Found" };
   return generateAuctionMetadata({
     title: auction.title,
@@ -32,10 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const auction = await getProductById(id).catch(() => null);
-  const productFeatures = await loadProductFeaturesForStore(
-    auction?.storeId ?? null,
-  ).catch(() => []);
+  const auction = await getAuctionForDetail(id);
+  const productFeatures = await getProductFeaturesForAuction(auction?.storeId ?? null);
 
   const ldAuction = auction
     ? auctionJsonLd({

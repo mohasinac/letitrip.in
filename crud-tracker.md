@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-12 — S13 ✅ Q1 + Q3 + Q6 (listingProcessor + thin proxy + useInfiniteScroll primitive). 162 done, 262 remaining.
+> **Last updated:** 2026-05-12 — Arch-S4+S5 ✅ appkit `_internal/server/features/` layers (cart, orders, promotions, reviews, wishlist, history, homepage). 162 done, 262 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -179,6 +179,8 @@ Rules to keep top-of-mind every task:
 | **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
 | **S13** ✅ | Query | Q1, Q3, Q6 | Done 2026-05-12. Q1 listingProcessor Function (deployed, 20 collections supported) + Q3 /api/products thin proxy + Q6 useInfiniteScroll primitive. Sieve `aliases` (productRepository.FILTER_ALIASES: listingType / scope / promoted / featuredPublic) ship with the same session. Function deploy + indexes + rules pushed via `firebase deploy`. **Deferred**: Q3-pre-orders (spec decision) + Q6-views (useProducts → useInfiniteQuery refactor) + Vercel `FIREBASE_FUNCTION_LISTING_URL` env. | — |
 | **TS** ✅ | Tech-Debt | TS1–TS19 | Done 2026-05-12 — verify-first audit closed TS2/3/4/5/6/8/18 as already done; deferred TS9 (154 hex hits, scope blown). Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial (wishlist client-page wrap deferred); TS17 user-ops pending. tsc 0/0. | S13 done |
+| **Arch-S4** ✅ | SSR Rearch | — | Done 2026-05-12 — `_internal/server/features/` layers for **cart** (service + actions: upsertCartItem, mergeGuestItems, clearCart, removeFromCart), **orders** (data: getOrder/listOrdersForBuyer/listOrdersForSeller; service: assertions + cancellable/returnable checks; actions: updateOrderStatus/cancelOrder/requestReturn; domain errors: OrderNotFoundError, OrderOwnershipError, OrderNotCancellableError, OrderReturnWindowError), **promotions** (data: getCouponByCode/validateCoupon/listCoupons; service: isValidCoupon; actions: createCoupon/updateCoupon/deleteCoupon/applyCouponToOrder). All use `requireRoleUser()` guards + React.cache() for reads. Config constants extracted (ORDERS_PAGE_SIZE, ORDER_RETURN_WINDOW_DAYS, etc.). tsc 0/0. | TS done |
+| **Arch-S5** ✅ | SSR Rearch | — | Done 2026-05-12 — `_internal/server/features/` layers for **reviews** (data: getReviewsForProduct/getReviewsForStore/hasUserPurchasedProduct; actions: createReview/replyToReview/deleteReview/markReviewHelpful), **wishlist** (data: getWishlistForUser → `{ items, meta }`; actions: addToWishlist/removeFromWishlist/clearWishlist/mergeGuestWishlist), **history** (data: getHistoryForUser → `{ items, meta }`; actions: addToHistory/mergeGuestHistory/clearHistory), **homepage** (data: getHomepageInitial/getHomepageSections/getHeroCarouselSlides using HOMEPAGE_FEATURED_REVIEWS_LIMIT + HOMEPAGE_RECENT_BLOG_POSTS_LIMIT constants). Repositories barrel updated with historyRepository + WishlistFullError exports. NotFoundError made backward-compat (id optional). Schema expansions: addToCartSchema full snapshot fields; reviews schema uses all config constants. tsc 0/0. | Arch-S4 done |
 | **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
 | **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
 | **S16** | Seed | P28 | Blog 8→20+ + Events 8→15+ + FAQs 21→55+ + Event entries 2→25+ | P25+P26 |
@@ -259,6 +261,8 @@ Rules to keep top-of-mind every task:
 | **91** | Layout Tokens | X8a, X8b | ✅ Done 2026-05-11 |
 | **92** | Action URLs + Bars | AX2, AX3 | ✅ Done 2026-05-11 — usePanelUrlSync + 8 inline admin editors + FormActionBar |
 | **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | ✅ Done 2026-05-11 — stats live queries + multi-carousel + CTA filter chips + multi-row products + YouTube cards |
+| **Arch-S4** | SSR Rearch | — | ✅ Done 2026-05-12 — cart/orders/promotions `_internal/server/features/` layers with data.ts+service.ts+actions.ts+index.ts. Domain errors. Config constants. |
+| **Arch-S5** | SSR Rearch | — | ✅ Done 2026-05-12 — reviews/wishlist/history/homepage `_internal/server/features/` layers. Repositories barrel updated. NotFoundError backward-compat. Schema expansions (cart snapshot fields, reviews config constants). |
 
 ---
 
