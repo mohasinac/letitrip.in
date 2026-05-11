@@ -6,10 +6,10 @@
  * Admin-controlled seed action — delegates to appkit demoSeed which calls the API route.
  */
 
-import {
-  demoSeed,
-  type SeedCollectionName,
-  type SeedOperationResult,
+import { demoSeed } from "@mohasinac/appkit/server";
+import type {
+  SeedCollectionName,
+  SeedOperationResult,
 } from "@mohasinac/appkit";
 
 /**
