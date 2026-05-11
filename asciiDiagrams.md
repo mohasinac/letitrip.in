@@ -417,6 +417,93 @@ Staged-URL cleanup:
 
 ---
 
+## Shared > Messages — RTDB-pinged Firestore Conversations (S9/D5+VC7) ✅
+
+```
+Architecture: Firestore is canonical. RTDB is a single-value "ping" channel.
+
+Firestore                                 RTDB
+─────────                                 ────
+conversations/{id}                        chats/{id}/lastUpdate          (per-conv)
+  buyerId, storeId, productId             chats/user/{uid}/lastUpdate    (per-user)
+  messages: [{ id, senderId,              ↑
+              senderRole, body,           │ server writes Date.now() on
+              isRead, sentAt }]           │ every mutation. Clients
+  lastMessage, lastMessageAt              │ subscribe, refetch on tick.
+  unreadBuyer, unreadSeller
+  status, createdAt, updatedAt
+
+Path constants (appkit/src/features/messages/realtime.ts — server-safe, no React):
+  conversationPingPath(id)        → "chats/{id}/lastUpdate"
+  userConversationsPingPath(uid)  → "chats/user/{uid}/lastUpdate"
+  buildConversationPingPaths(t)   → [convPath, buyerPath, sellerOwnerPath?]
+
+Server-side ping helper:
+  pingConversationRtdb({conversationId, buyerId, sellerOwnerId}) — best-effort
+    write of Date.now() to every ping path. Failures logged + swallowed
+    (clients fall back to focus / explicit refetch).
+
+Mutating-route flow (POST /api/user/conversations/[id]/{messages,read}):
+  ┌───────────────────────────────────────────────────────────────────┐
+  │  createRouteHandler({ auth: true })                               │
+  │     ↓                                                             │
+  │  getConversation(id)         404 if missing                       │
+  │     ↓                                                             │
+  │  resolveConversationRole(    404 if caller is not buyer / store-  │
+  │    user, conv)               owner / admin (never leaks existence)│
+  │     ↓                                                             │
+  │  sendMessage(...) or markConversationRead(...)                    │
+  │     ↓                                                             │
+  │  pingConversationRtdb({                                           │
+  │    conversationId, buyerId, sellerOwnerId,                        │
+  │  })                                                               │
+  └───────────────────────────────────────────────────────────────────┘
+
+Role resolution (`src/lib/conversations/authorise.ts` — shared by all 3
+mutating routes + the GET-by-id route):
+  conv.buyerId === uid           → "buyer"   + sellerOwnerId = store.ownerId
+  store.ownerId === uid          → "seller"  + sellerOwnerId = uid
+  user.role === "admin"          → "seller"  + sellerOwnerId = store.ownerId
+  else                           → null      (route returns 404)
+
+Client hooks (appkit/src/features/messages/hooks):
+  useConversations(uid)
+    │
+    ├── REST GET /api/user/conversations  (initial + refetch)
+    └── getClientRealtimeProvider().subscribe(userConversationsPingPath(uid))
+          on tick → refetch
+
+  useConversation(id)
+    │
+    ├── REST GET /api/user/conversations/{id}  (initial + refetch)
+    ├── sendMessage(body)  → POST /api/user/conversations/{id}/messages
+    ├── markRead()         → POST /api/user/conversations/{id}/read
+    └── getClientRealtimeProvider().subscribe(conversationPingPath(id))
+          on tick → refetch; setIsConnected(true) on first tick
+
+/user/messages page (src/app/[locale]/user/messages/page.tsx):
+  ┌─────────────────────────────────────────────────────────────────┐
+  │ Messages   N conversations · M unread                           │
+  ├──────────────┬──────────────────────────────────────────────────┤
+  │ ChatList     │ ChatWindow                                       │
+  │ ───────────  │ ────────────                                     │
+  │ ConvListItem │ ← Back to conversations (mobile only)            │
+  │   storeName  │  Live ●  /  Reconnecting…                        │
+  │   product    │ ┌──────────────────────────────────────────────┐ │
+  │   lastMsg    │ │ MessageBubble (theirs)                       │ │
+  │   2m  [3]    │ │ MessageBubble (mine, primary bg, right-align)│ │
+  │              │ │ …                                            │ │
+  │ ConvListItem │ │ (auto-scroll to bottom)                      │ │
+  │   …          │ └──────────────────────────────────────────────┘ │
+  │              │ MessageInput  [textarea, Enter sends, send btn]  │
+  └──────────────┴──────────────────────────────────────────────────┘
+    md: 280px sidebar + 1fr chat — mobile: list and chat swap views.
+
+Firestore composite indices (S9):
+  conversations: (buyerId, lastMessageAt DESC)
+  conversations: (storeId, lastMessageAt DESC)
+```
+
 ## Shared > Listing Params (S12/Q2/Q4) ✅
 
 ```
