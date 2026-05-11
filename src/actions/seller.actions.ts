@@ -57,6 +57,8 @@ import {
   shiprocketGeneratePickup,
   isShiprocketTokenExpired,
   SHIPROCKET_TOKEN_TTL_MS,
+  buildShiprocketTrackingUrl,
+  SHIPROCKET_STATUS_PICKUP_SCHEDULED,
 } from "@mohasinac/appkit";
 import { resolveDate } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -394,7 +396,7 @@ export async function shipOrderAction(
     shipment_id: [srOrderResponse.shipment_id],
   });
 
-  const trackingUrl = `https://shiprocket.co/tracking/${awb}`;
+  const trackingUrl = buildShiprocketTrackingUrl(awb);
   await orderRepository.update(orderId, {
     status: OrderStatusValues.SHIPPED,
     shippingMethod: ShippingMethodValues.SHIPROCKET,
@@ -402,7 +404,7 @@ export async function shipOrderAction(
     shiprocketOrderId: srOrderResponse.order_id,
     shiprocketShipmentId: srOrderResponse.shipment_id,
     shiprocketAWB: awb,
-    shiprocketStatus: "Pickup Scheduled",
+    shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
     shiprocketUpdatedAt: new Date(),
     shippingDate: new Date(),
     payoutStatus: "eligible",

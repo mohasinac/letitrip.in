@@ -21,6 +21,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { buildShiprocketTrackingUrl } from "@mohasinac/appkit";
 import type { ShiprocketWebhookPayload } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit";
 
@@ -87,9 +88,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build standard Shiprocket tracking URL if AWB is present
-    const trackingUrl = awb
-      ? `https://shiprocket.co/tracking/${awb}`
-      : undefined;
+    const trackingUrl = awb ? buildShiprocketTrackingUrl(awb) : undefined;
 
     // Find matching order by shiprocketOrderId numeric field
     const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);

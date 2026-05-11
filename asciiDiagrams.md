@@ -3107,6 +3107,50 @@ Note: Sellers can only set status to "processing" or "shipped"
 (server enforces this in PATCH handler)
 ```
 
+### O5 — Shiprocket auto-create on PATCH (S11, 2026-05-11)
+
+```
+PATCH /api/store/orders/[id]   body: { status:"shipped", shiprocketPackage:{…} }
+────────────────────────────────────────────────────────────────────────────────
+
+  status === "shipped"
+   AND no { trackingNumber, shippingCarrier, trackingUrl } in body
+   AND userDoc.shippingConfig.method === "shiprocket"
+                ↓
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ require body.shiprocketPackage = {weight,length,breadth,height,        │
+  │                                   courierId?}                          │
+  │   missing  → 409 { code: "SHIPROCKET_PACKAGE_REQUIRED" }                │
+  └────────────────────────────────────────────────────────────────────────┘
+                ↓
+  shipOrderAction(id, { method:"shiprocket", packageWeight, …, courierId? })
+        │
+        ├─ requireRoleUser(["seller","admin"]) + STRICT rate limit
+        ├─ guard shippingConfig.isConfigured + method + pickup verified +
+        │  isShiprocketTokenExpired(expiry) === false
+        ├─ guard order.status === CONFIRMED
+        ├─ shiprocketCreateOrder(token, payloadFromOrder)
+        ├─ shiprocketGenerateAWB(token, { shipment_id, courier_id? })
+        ├─ shiprocketGeneratePickup(token, { shipment_id:[id] })
+        └─ orderRepository.update(id, {
+              status: SHIPPED,
+              shippingMethod: SHIPROCKET,
+              trackingUrl: buildShiprocketTrackingUrl(awb),
+              shiprocketOrderId, shiprocketShipmentId, shiprocketAWB,
+              shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
+              shiprocketUpdatedAt, shippingDate,
+              payoutStatus: "eligible",
+           })
+                ↓
+  any throw → 400 { code:"SHIPROCKET_FAILED", message }
+  success   → 200 { …updatedOrder, shiprocket: { awb, trackingUrl, pickupScheduledDate } }
+
+Manual override:
+  If body includes any of trackingNumber / shippingCarrier / trackingUrl,
+  the PATCH writes them as-is and never calls Shiprocket — useful for
+  correcting a bad pickup without reconfiguring the seller's method.
+```
+
 ---
 
 ## Store > Coupons List ✅ (C3+VB1 — 2026-05-10)

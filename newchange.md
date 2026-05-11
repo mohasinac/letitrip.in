@@ -34,6 +34,37 @@
 
 ---
 
+### Session S11 — 2026-05-11 — O5 (Shiprocket auto-create on PATCH)
+
+**Scope:** Wire PATCH `/api/store/orders/[id]` to auto-fire the Shiprocket create-order → AWB → pickup flow when the seller transitions an order to `status="shipped"` without manual tracking data, matching the spec in `crud-tracker.md` (O5).
+
+**Per Rule #4 — verified before implementing:** the full Shiprocket pipeline already exists end-to-end in `shipOrderAction` (`src/actions/seller.actions.ts`) and the dedicated POST `/api/store/orders/[id]/ship` route. The only missing wiring was the PATCH path → `shipOrderAction` delegation that the spec asked for.
+
+**Files**
+
+| File | Change |
+|------|--------|
+| [appkit/src/providers/shipping-shiprocket/index.ts](appkit/src/providers/shipping-shiprocket/index.ts) | New constants: `SHIPROCKET_TRACKING_URL_BASE` + `buildShiprocketTrackingUrl(awb)` + `SHIPROCKET_STATUS_PICKUP_SCHEDULED`. Eliminates the three places that hard-coded `https://shiprocket.co/tracking/${awb}` + `"Pickup Scheduled"`. |
+| [appkit/src/index.ts](appkit/src/index.ts) + [appkit/src/server.ts](appkit/src/server.ts) | Re-export the new helpers from both barrels. Constants/helpers are pure (no firebase-admin) so they are safe in the main barrel. |
+| [src/actions/seller.actions.ts](src/actions/seller.actions.ts) | Shiprocket branch of `shipOrderAction` now uses `buildShiprocketTrackingUrl()` + `SHIPROCKET_STATUS_PICKUP_SCHEDULED` instead of inline strings. |
+| [src/app/api/webhooks/shiprocket/route.ts](src/app/api/webhooks/shiprocket/route.ts) | Same — uses `buildShiprocketTrackingUrl()` for the tracking URL it writes on status updates. |
+| [src/app/api/store/orders/[id]/route.ts](src/app/api/store/orders/%5Bid%5D/route.ts) | Full rewrite. **New optional Zod block** `shiprocketPackage: { weight, length, breadth, height, courierId? }`. New helper `getSellerShippingMethod(uid)` reads the seller's `shippingConfig.method` (returns `null` when unconfigured). New `noManualTracking` detector. When `status="shipped"` + `noManualTracking` + `method === "shiprocket"`: delegates to `shipOrderAction({ method: "shiprocket", … })` and returns its result merged onto the updated order; missing dims → 409 `SHIPROCKET_PACKAGE_REQUIRED`; flow failure → 400 `SHIPROCKET_FAILED` with original error. Otherwise (admin or non-shiprocket): unchanged manual update flow via `orderRepository.updateStatus()`. Module-level constants `SELLER_ALLOWED_STATUSES`. JSDoc explains the auto-fire contract. |
+
+**Behaviour summary**
+
+| Status transition | Method | Manual tracking? | Result |
+|---|---|---|---|
+| → `shipped` | `shiprocket` | none | **Auto-fire Shiprocket** via `shipOrderAction` (requires `shiprocketPackage` in body) |
+| → `shipped` | `shiprocket` | present | Manual update — uses provided trackingNumber/carrier/url, no Shiprocket call |
+| → `shipped` | `custom` / unset | any | Manual update — existing behaviour |
+| → `processing` / others | any | any | Existing behaviour |
+
+**TSC:** 0 errors in both repos. **appkit build:** OK (3.4s).
+
+**No deferrals** — full pipeline (auth → create-order → AWB → pickup → tracking persisted) runs end-to-end from PATCH per user instruction.
+
+---
+
 ### Session S8 — 2026-05-11 — FI1–FI6 productFeatures (collection + admin/store CRUD + product-form selector + card/detail badges)
 
 **Scope:** Tier FI — Feature Icons. All six tasks shipped end-to-end; no deferrals.

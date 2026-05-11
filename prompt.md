@@ -7,6 +7,12 @@
 
 ## SESSION STATE
 
+### ✅ Last completed — S11 (2026-05-11)
+
+| Task | Summary |
+|------|---------|
+| O5 | `PATCH /api/store/orders/[id]` extended with optional `shiprocketPackage` block. When `status="shipped"` + seller's `shippingConfig.method === "shiprocket"` + no manual tracking fields → delegates to `shipOrderAction({ method:"shiprocket", … })` for full create-order → AWB → pickup pipeline. 409 `SHIPROCKET_PACKAGE_REQUIRED` if dims missing, 400 `SHIPROCKET_FAILED` if upstream fails. POST `/api/store/orders/[id]/ship` still works for explicit callers. New helpers `buildShiprocketTrackingUrl(awb)` + `SHIPROCKET_TRACKING_URL_BASE` + `SHIPROCKET_STATUS_PICKUP_SCHEDULED` exported from appkit; `seller.actions.ts` + Shiprocket webhook updated to use them. |
+
 ### ✅ Last completed — S8 (2026-05-11)
 
 | Task | Summary |
@@ -38,7 +44,7 @@
 | **S8** ✅ | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
 | **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
-| **S11** | O5 | Shiprocket auto-create | medium |
+| **S11** ✅ | O5 | Shiprocket auto-create | medium |
 | **S12** | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
 | **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |
 | **S14–S18** | P24–P31 | Seed scale (auctions/categories/blog/coupons/validator) | low |

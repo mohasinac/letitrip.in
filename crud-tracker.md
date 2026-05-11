@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S8 ✅ FI1–FI6 productFeatures collection + admin/store CRUD + product form selector + card/detail badges (also S10 ✅ in a parallel session: I6 + I7 PDF + media watermark CDN proxy).
+> **Last updated:** 2026-05-11 — S11 ✅ O5 Shiprocket auto-create on PATCH (also S8 ✅ FI1–FI6 + S10 ✅ I6/I7 + S44 ✅ Tier WL — all this 2026-05-11 across sessions).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -59,10 +59,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 405 |
-| ✅ Done | 138 |
+| ✅ Done | 139 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 267 |
+| ⏳ Remaining | 266 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -174,7 +174,7 @@ Rules to keep top-of-mind every task:
 | **S8** ✅ | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Done 2026-05-11 |
 | **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done |
 | **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
-| **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable |
+| **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
 | **S12** | Query | Q5, Q2, Q4 | Deploy Firestore composite indexes + standardize query param names (f/s/p/ps/q) + update client views | — |
 | **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
 | **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
@@ -508,7 +508,7 @@ Rules to keep top-of-mind every task:
 | C3 | Store Coupons edit page | S | ✅ | Session 81-impl | /store/coupons/[id]/edit fetches coupon, converts paise→rupees for display, renders SellerCouponEditorView with initial draft. PATCH via /api/store/coupons/[id]. |
 | C4 | Store Orders detail + status + tracking | M | ✅ | Session 81-impl | SellerOrdersView OrderDetailDrawer: fetches order, shows items/address/payment/total. Select status (processing/shipped), tracking number/carrier/URL inputs. PATCH /api/store/orders/[id]. |
 | O4 | Store Analytics seller view | M | ✅ | Session 80 | Done via VB10. `/store/analytics/page.tsx` wired as "use client" fetching from `API_ROUTES.STORE.ANALYTICS`. Passes to `SellerAnalyticsStats` + `SellerTopProducts` with rupee formatter. 503 handled gracefully. |
-| O5 | Shiprocket auto-create on ship | M | ⏳ | | Server-side only: extend PUT /api/store/orders/[id] to call Shiprocket API when status=shipped + method=shiprocket; deferred if complex |
+| O5 | Shiprocket auto-create on ship | M | ✅ | Session S11 2026-05-11 | PATCH `/api/store/orders/[id]` extended with optional `shiprocketPackage` block (weight/length/breadth/height/courierId). When `status="shipped"` AND seller's `shippingConfig.method === "shiprocket"` AND no manual tracking fields supplied, the route delegates to `shipOrderAction` (which calls Shiprocket create-order → AWB → pickup and writes back to the order). Missing package dims → 409 `SHIPROCKET_PACKAGE_REQUIRED`. Shiprocket failure → 400 `SHIPROCKET_FAILED` with original error message. Existing POST `/api/store/orders/[id]/ship` still works for callers that want an explicit ship request. Magic strings extracted to appkit: `buildShiprocketTrackingUrl(awb)` + `SHIPROCKET_TRACKING_URL_BASE` + `SHIPROCKET_STATUS_PICKUP_SCHEDULED` — `seller.actions.ts` + `/api/webhooks/shiprocket` now use them. |
 
 ---
 
