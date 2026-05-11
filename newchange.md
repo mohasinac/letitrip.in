@@ -35,6 +35,48 @@
 
 ---
 
+### Session S9 — 2026-05-11 — BK3 + D5 + VC7 (Compare overlay + Messages RTDB)
+
+**Scope:** Product Compare overlay (BK3) + full Firebase-RTDB-pinged Firestore conversation system (D5 + VC7).
+
+**BK3 — Compare overlay**
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/CompareOverlay.tsx` (NEW) | Fixed `inset-0` at `z-index: var(--appkit-z-modal,60)`. Desktop ≥md: CSS-grid `repeat(N,minmax(0,1fr))` columns. Mobile <md: single column + `useSwipe` left/right + dot pagination. Each column: photo (link target=_blank) + name + price + condition/brand/category chips + store + View CTA + Remove ✕. Escape closes. Loads via `productIds` (→ `GET /api/products?ids=…`) or pre-loaded `items` prop. Labels fully overrideable. |
+| `appkit/src/features/products/repository/products.repository.ts` | New `listByIds(ids[])` — single `db.getAll(...refs)` batch. |
+| `src/app/api/products/route.ts` | Batch `?ids=p1,p2,…` mode (max 20) bypasses sieve filters, returns sanitized payloads. |
+| `appkit/src/features/products/constants/action-defs.ts` | `ACTION_ID.COMPARE` + meta + `COMPARE_MAX_ITEMS=4`; `LISTING_BULK_ACTIONS` updated. |
+| `appkit/src/ui/components/BulkActionsBar.tsx` | `BulkAction.disabled` flag added; rendered with `disabled` + `aria-disabled` + visual state. |
+| `appkit/src/features/products/components/ProductsIndexListing.tsx` + `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx` | Compare action + `<CompareOverlay/>` mount + `compareIds` state. Button disabled outside 2–4 range. |
+
+**D5 + VC7 — Messages**
+
+Architecture: **Firestore is canonical** (`conversations/{id}` with embedded `messages[]`); **RTDB is a ping channel only**. Each API write bumps `chats/{convId}/lastUpdate` + `chats/user/{buyerId}/lastUpdate` + `chats/user/{sellerOwnerId}/lastUpdate` so any subscribed client re-fetches via REST. No double-storing the message tree.
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/messages/repository/conversations.repository.ts` (NEW) | Txn-wrapped `appendMessage` (bumps counterparty unread + lastMessage/lastMessageAt/updatedAt), `markRead(role)` (flips `isRead` on inbound + zeros own counter), `findById`, `listByBuyer`, `listByStore`. |
+| `appkit/src/features/messages/actions/messages-actions.ts` (NEW) | Pure-business wrappers + `MESSAGE_MAX_LENGTH = 2000` + body trim/length guards. |
+| `appkit/src/features/messages/server.ts` (NEW) + `appkit/src/features/messages/index.ts` (NEW) | Server + client barrels. |
+| `appkit/src/features/messages/hooks/useConversation.ts` (NEW) | Fetches via REST; subscribes to `chats/{id}/lastUpdate` and re-fetches on every ping. Returns `sendMessage`, `markRead`, `isConnected`. Falls back to one-shot fetch if RTDB provider absent. Exports `CONVERSATIONS_PING_PATH` + `CONVERSATIONS_PING_USER_PATH`. |
+| `appkit/src/features/messages/hooks/useConversations.ts` (NEW) | List hook; subscribes to `chats/user/{uid}/lastUpdate`. Surfaces `totalUnread`. |
+| `src/app/api/user/conversations/route.ts` (NEW) | `GET` — buyer's threads. |
+| `src/app/api/user/conversations/[id]/route.ts` (NEW) | `GET` — auth via buyerId / store.ownerId / admin. |
+| `src/app/api/user/conversations/[id]/messages/route.ts` (NEW) | `POST` — Zod-validated body; resolves senderRole from buyerId vs store.ownerId vs admin; fans out 3 RTDB pings via `getAdminRealtimeDb()`. |
+| `src/app/api/user/conversations/[id]/read/route.ts` (NEW) | `POST` — same role resolution + ping fan-out. |
+| `src/app/[locale]/user/messages/page.tsx` | Rewritten from stub. Wires `MessagesView` + `ChatList` + `ChatWindow` shells via `useConversations` + `useConversation`. New `ConversationListItem`, `MessageBubble`, `MessageInput`. Auto-marks-read on open; auto-scrolls on new messages; mobile back via `renderMobileBack`. |
+| `appkit/src/client.ts` | New exports: `useConversations`, `useConversation`, `MessagesView`, `ChatList`, `ChatWindow`, types, ping-path constants. |
+| `appkit/src/index.ts` | New server-side exports: `conversationsRepository`, action wrappers, `MESSAGE_MAX_LENGTH`, `ConversationFullError`. |
+| `appkit/firebase/base/firestore.indexes.json` | New composite indexes `conversations(buyerId,lastMessageAt desc)` + `conversations(storeId,lastMessageAt desc)`. **Deploy required.** |
+| `src/components/dev/SeedPanel.tsx` | `conversations` meta refreshed — full field list, slug pattern, RTDB ping architecture note. |
+
+**Per Rule #4 — verified before fixing:** A parallel session had scaffolded the `/api/user/conversations/*` routes + `/user/messages/page.tsx` as stubs that imported from `@mohasinac/appkit`. The appkit-side exports those stubs needed are exactly what S9 landed.
+
+**TSC:** 0 errors both repos. **appkit build:** OK (3.5s). **No deferrals.**
+
+---
+
 ### Session S12 — 2026-05-11 — Q5 + Q2 + Q4 (Firestore indices + listing-param standardisation)
 
 **Scope:** Tier Q — short-name URL params (`f/s/p/ps/q/cursor`) across all public listing routes + their SSR view counterparts, plus the 5 missing composite indices that those filter+sort combos need to avoid `FAILED_PRECONDITION`.

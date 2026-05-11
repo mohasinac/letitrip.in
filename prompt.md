@@ -7,6 +7,14 @@
 
 ## SESSION STATE
 
+### ✅ Last completed — S9 (2026-05-11)
+
+| Task | Summary |
+|------|---------|
+| BK3 | `CompareOverlay` (appkit) — fixed `inset-0`, `z-index: var(--appkit-z-modal,60)`. Desktop ≥md: CSS-grid columns. Mobile <md: `useSwipe` + dot pagination + Escape close. Wired into ProductsIndexListing + PreOrdersIndexListing BulkActionsBars (disabled outside 2–4 range). New `productRepository.listByIds(ids)` + `GET /api/products?ids=…` (max 20) + `ACTION_ID.COMPARE` + `COMPARE_MAX_ITEMS=4` + `BulkAction.disabled` flag. |
+| D5 | `/user/messages` page rewired from stub. `MessagesView` + `ChatList` + `ChatWindow` shells wired via `useConversations` + `useConversation`. `ConversationListItem` (unread chip), `MessageBubble` (mine/theirs), `MessageInput` (Enter sends, 2000-char cap). Auto-marks-read on open; auto-scrolls; mobile back button. |
+| VC7 | Messages — Firebase RTDB hybrid. Firestore = canonical (messages embedded in `conversations/{id}`); RTDB = ping channel only. New `conversationsRepository` (txn-wrapped append/markRead). Server actions `listConversationsForBuyer/listConversationsForStore/getConversation/sendMessage/markConversationRead`. 4 API routes (`/api/user/conversations` + `[id]` + `[id]/messages` + `[id]/read`). Each write fans out 3 RTDB pings (`chats/{convId}/lastUpdate` + 2× `chats/user/{uid}/lastUpdate`). Client hooks subscribe via `getClientRealtimeProvider().subscribe(...)`. 2 new composite indexes. |
+
 ### ✅ Last completed — S12 (2026-05-11)
 
 | Task | Summary |
@@ -32,7 +40,7 @@
 | **S7** ✅ | EX5, SB11-A–G | Collection Cards section type + 3 new homepage section types | low |
 | **S44** ✅ | WL1–WL8 + follow-ups | Tier WL — Wishlist 20-cap + History 50-FIFO + Cart 50-cap + admin views | low |
 | **S8** ✅ | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
-| **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
+| **S9** ✅ | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
 | **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
 | **S11** ✅ | O5 | Shiprocket auto-create | medium |
 | **S12** ✅ | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |

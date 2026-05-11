@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-11 — S11 ✅ O5 Shiprocket auto-create on PATCH (also S8 ✅ FI1–FI6 + S10 ✅ I6/I7 + S44 ✅ Tier WL — all this 2026-05-11 across sessions).
+> **Last updated:** 2026-05-11 — S9 ✅ BK3 + D5 + VC7 (Compare overlay + Messages RTDB). 142 done, 263 remaining.
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -59,10 +59,10 @@
 | Metric | Count |
 |--------|-------|
 | Total tasks | 405 |
-| ✅ Done | 139 |
+| ✅ Done | 142 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 266 |
+| ⏳ Remaining | 263 |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -172,7 +172,7 @@ Rules to keep top-of-mind every task:
 | **S44** | Wishlist+History+Caps | WL1, WL2, WL3, WL4, WL5, WL6, WL7, WL8 | Top-level `wishlists` (userId FK) + 20-item block-cap; new `history` (auth+guest) with 50-item FIFO + `/user/history` page; 50-distinct-items cart cap; seed + indexes + CLAUDE.md | — | ✅ **Done 2026-05-11** |
 | **S7** | Homepage | EX5, SB11-A, SB11-B, SB11-C, SB11-D, SB11-E, SB11-F, SB11-G | Collection Cards unified section type + 3 new section types (featured-bundles / prize-draws / event-raffles) + disabled seed docs | EX1–EX4 done (S93) |
 | **S8** ✅ | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Done 2026-05-11 |
-| **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done |
+| **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done | ✅ **Done 2026-05-11** |
 | **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
 | **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
 | **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
@@ -521,7 +521,7 @@ Rules to keep top-of-mind every task:
 | D3 | User Settings complete — password, email, privacy | M | ✅ | Session S2 2026-05-11 | `useChangePassword`+`ChangePasswordData` exported from appkit `client.ts`; `renderPasswordForm` wired to settings page with current/new/confirm fields + client-side validation (match + min 8 chars). |
 | D4 | Notifications view + mark read + delete | S | ✅ | Session 78 | `UserNotificationsView` wired with tab filters (all/unread/orders/bids/system), mark-all-read (POST /read-all), delete individual. `useQuery` + `useMutation` via Tanstack Query. |
 | I2 | Admin Payout processing | M | ✅ | Session 72 | Done via ARCH4 (M3 superseded). `AdminPayoutsView`: mark-paid + CSV export + storeId/storeName identity. |
-| D5 | Messages — conversation view (deferred) | L | ⏳ | | REUSE: `MessagesView`, `ChatList`, `ChatWindow` all EXIST in account/components — wire Firebase RTDB; deferred to last |
+| D5 | Messages — conversation view | L | ✅ | Session S9 2026-05-11. `/user/messages/page.tsx` wires `MessagesView` + `ChatList` + `ChatWindow` shells via `useConversations(uid)` + `useConversation(convId)`. Subcomponents: `ConversationListItem` (unread chip, relative time), `MessageBubble` (mine/theirs styling), `MessageInput` (Enter sends, 2000-char cap). Auto-marks-read on open; auto-scrolls on new messages; mobile back-button via `renderMobileBack`. Total + per-thread unread surfaced. RTDB pipeline → VC7. |
 
 ---
 
@@ -602,7 +602,7 @@ Rules to keep top-of-mind every task:
 | VC4 | User Settings — password, email, privacy tabs | M | ✅ | S3 2026-05-11 | Account/Privacy/Appearance tabs; email change (verifyBeforeUpdateEmail re-auth flow); password form in Account tab; Download My Data + Contact Support on Privacy tab; language placeholder on Appearance tab. GET /api/user/export added. |
 | VC5 | User Notifications — view + mark read + delete | S | ✅ | Session 78 | See D4. Fully wired — see D4 row above. |
 | VC6 | User Wishlist — fix broken wiring + stale validation | S | ✅ | Session 103b | Ghost items fixed (enriched product field), ListingLayout + search/sort wired. W2 stale validation deferred — see W2 row. |
-| VC7 | Message system — Firebase RTDB wiring | L | ⏳ | | See D5. Wire `MessagesView` → `ChatList` → `ChatWindow` to Firebase RTDB. Real-time listeners for messages. Send message action. Conversation list shows last message + unread count. |
+| VC7 | Message system — Firebase RTDB wiring | L | ✅ | Session S9 2026-05-11. **Hybrid:** Firestore = canonical (`conversations/{id}` with embedded `messages[]`); RTDB = ping channel only. New `conversationsRepository` (txn-wrapped `appendMessage` + `markRead` with unread-counter bumps). Server actions `listConversationsForBuyer / listConversationsForStore / getConversation / sendMessage / markConversationRead`. API: `GET /api/user/conversations`, `GET /api/user/conversations/[id]` (buyer / store-owner / admin authorised), `POST /api/user/conversations/[id]/messages`, `POST /api/user/conversations/[id]/read`. Each write fans out to RTDB `chats/{convId}/lastUpdate` + `chats/user/{buyerId}/lastUpdate` + `chats/user/{sellerOwnerId}/lastUpdate`. Client hooks `useConversations` + `useConversation` subscribe via `getClientRealtimeProvider().subscribe(...)` and re-fetch through the REST API on each ping. Graceful fallback to one-shot fetch when provider is not registered. New composite indexes `conversations(buyerId,lastMessageAt desc)` + `conversations(storeId,lastMessageAt desc)`. |
 
 ### V-D: Public Pages & Navigation
 
@@ -1085,7 +1085,7 @@ Rules to keep top-of-mind every task:
 |---|------|-----------|--------|-------|
 | BK1 | Public listing selection mode | M | ✅ | 2026-05-10. **Design**: hover checkbox (opacity-0 → opacity-100 on hover, always visible when selecting/selected) + 500ms long-press (haptic vibrate) to enter selection mode without explicit button. `useBulkSelection` upgraded to `Set<string>` internals for O(1) lookups; added `isSelecting: boolean`, `selectedIdSet: Set<string>` to return type. Wired on Products/Auctions/PreOrders/Stores listings. `isSelecting` derived from `selectedCount > 0` — no separate boolean state needed. `BaseListingCard` root updated to accept/forward long-press event props. **Session 85 quality pass**: `BulkActionsBar` `actions` array now requires a stable `key` field (replaces array-index key); `danger` variant uses `var(--appkit-color-danger)` CSS token; `Button` import for clear action. `ListingToolbar` now accepts `labels?: ListingToolbarLabels` prop for i18n overrides; VIEW_BTN_* class constants extracted. `MarketplaceAuctionCard` countdown status colours extracted to `COUNTDOWN_STATUS_CLASS` module-level const with dark mode variants. |
 | BK2 | Bulk action sticky bar | M | ✅ | 2026-05-10. Full-width bottom bar (was floating pill). Slide-up CSS transition (`translate-y-full → translate-y-0`). z-index via `var(--appkit-z-modal, 1000)`. `ListingToolbar` upgraded with `bulkMode` props — when selecting, search row replaced by `[Select All (N)] / [Clear (N)]` controls. Cart + Wishlist actions on Products/PreOrders; Compare stub on Stores. tsc: 0 new errors. **Session 85 list-view redesign**: `BaseListingCard` list variant now correctly renders `flex-row items-stretch`; Hero uses fixed `w-20 h-20 sm:w-28 sm:h-28` (no aspect-ratio box); Info uses `justify-center` with tighter padding. `MarketplaceAuctionCard` + `MarketplacePreorderCard` have compact list branches (title+heart inline, price+badge inline, single self-start action button). `ProductListRow` rebuilt: no hardcoded `w-[72px]` column widths; `flex-col` content block with 2-line title clamp, category·brand joined string, price+discount+rating all inline; `formatCurrency` replaces `getDefaultCurrencySymbol()`; thumbnail scales `w-16 h-16 → sm:w-20 h-20`. |
-| BK3 | Compare overlay | L | ⏳ | Depends on BK1, BK2. **CompareOverlay** component (new, appkit/src/features/products/components/). Triggered by Compare in BK2 — opens as fixed inset-0 overlay (z-index var(--appkit-z-modal)). **Desktop layout** (>= md): side-by-side columns (2-4). Each column: product image (click -> detail in new tab), product name, price, condition badge, brand chip, category chip, FeatureBadgeList, store name chip. Column header: Remove button. Bottom: Add to Wishlist (auth only) + View link button. Left side: fixed column of field name labels. **Mobile layout** (< md): single-card swipeable view (useSwipe hook), dot indicator, same fields vertically. Tap backdrop to close. **Data**: CompareOverlay receives selectedIds + pre-fetched product data via productRepository.listByIds(ids) (new repository method). npx tsc --noEmit -> 0 errors. |
+| BK3 | Compare overlay | L | ✅ | Session S9 2026-05-11. `CompareOverlay` in `appkit/src/features/products/components/` — fixed `inset-0`, `z-index: var(--appkit-z-modal,60)`. Desktop (≥md): CSS-grid `repeat(N,minmax(0,1fr))` columns w/ photo + name + price + condition/brand/category chips + store + View CTA + Remove ✕. Mobile (<md): single column + `useSwipe` (left=next, right=prev) + dot pagination. Escape closes. **Data:** new `productRepository.listByIds(ids)` (single `db.getAll`); `GET /api/products?ids=p1,p2,…` exposes it (max 20 ids, sanitized). New `COMPARE` ACTION_ID + `COMPARE_MAX_ITEMS=4` constant. Wired into ProductsIndexListing + PreOrdersIndexListing BulkActionsBars (disabled when selected <2 or >4). `BulkAction.disabled` flag added to the primitive. |
 
 ---
 
