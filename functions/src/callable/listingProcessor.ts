@@ -16,10 +16,17 @@
 import { onRequest } from "firebase-functions/v2/https";
 import type { Request, Response } from "express";
 import { productRepository } from "../lib/appkit";
-import { REGION } from "../config/constants";
+import { COLLECTIONS, REGION } from "../config/constants";
 import { logInfo, logError } from "../utils/logger";
 
 const FN = "listingProcessor";
+const SUPPORTED_COLLECTIONS = [COLLECTIONS.PRODUCTS] as const;
+type SupportedCollection = (typeof SUPPORTED_COLLECTIONS)[number];
+
+/** s-maxage matches the Vercel CDN tier; stale-while-revalidate masks deploys. */
+const CACHE_CONTROL =
+  "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
+const DEFAULT_SORT = "-createdAt";
 
 interface ListingRequestBody {
   collection: string;
@@ -101,7 +108,7 @@ async function runProducts(
   const result = await productRepository.list(
     {
       filters: body.f ?? "",
-      sorts: body.s ?? "-createdAt",
+      sorts: body.s ?? DEFAULT_SORT,
       page: String(page),
       pageSize: String(pageSize),
     },
@@ -144,30 +151,30 @@ export const listingProcessor = onRequest(
       return;
     }
 
+    if (!(SUPPORTED_COLLECTIONS as readonly string[]).includes(body.collection)) {
+      res
+        .status(400)
+        .json({ error: `Unsupported collection: ${body.collection}` });
+      return;
+    }
+    const collection = body.collection as SupportedCollection;
+
     try {
       let payload: ListingResponseBody;
-      switch (body.collection) {
-        case "products":
+      switch (collection) {
+        case COLLECTIONS.PRODUCTS:
           payload = await runProducts(body);
           break;
-        default:
-          res
-            .status(400)
-            .json({ error: `Unsupported collection: ${body.collection}` });
-          return;
       }
 
       logInfo(FN, "listing served", {
-        collection: body.collection,
+        collection,
         page: payload.page,
         pageSize: payload.pageSize,
         total: payload.total,
       });
 
-      res.setHeader(
-        "Cache-Control",
-        "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
-      );
+      res.setHeader("Cache-Control", CACHE_CONTROL);
       res.status(200).json(payload);
     } catch (error) {
       logError(FN, "listing failed", error);

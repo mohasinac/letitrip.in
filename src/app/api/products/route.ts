@@ -11,6 +11,10 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_SORTS = "-createdAt";
 
+/** Matches the Cache-Control used by listingProcessor on Firebase side. */
+const PUBLIC_LISTING_CACHE_CONTROL =
+  "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
+
 interface ListingProcessorResponse {
   items: unknown[];
   total: number;
@@ -198,10 +202,7 @@ async function _GET(request: Request): Promise<NextResponse> {
           total: items.length,
         },
       });
-      response.headers.set(
-        "Cache-Control",
-        "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
-      );
+      response.headers.set("Cache-Control", PUBLIC_LISTING_CACHE_CONTROL);
       return response;
     } catch (error) {
       logError("products", "GET /api/products?ids batch failed", error);
