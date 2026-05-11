@@ -17,6 +17,8 @@ import { productRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
+import { CART_MAX_ITEMS } from "@mohasinac/appkit";
+import { errorResponse } from "@mohasinac/appkit";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({
@@ -59,6 +61,17 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
 
     if (product.availableQuantity < quantity) {
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.INSUFFICIENT_STOCK);
+    }
+
+    // Cart 50-distinct-items hard cap. Quantity bumps to an existing item are unrestricted.
+    const existing = await cartRepository.getOrCreate(user!.uid);
+    const alreadyInCart = existing.items.some((i) => i.productId === product.id);
+    if (!alreadyInCart && existing.items.length >= CART_MAX_ITEMS) {
+      return errorResponse(
+        `Cart full (${existing.items.length}/${CART_MAX_ITEMS}). Remove items to add new ones.`,
+        409,
+        { code: "CART_FULL", limit: CART_MAX_ITEMS, current: existing.items.length },
+      );
     }
 
     const cart = await cartRepository.addItem(user!.uid, {
