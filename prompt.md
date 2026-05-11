@@ -7,17 +7,16 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S1 (2026-05-11)
+### ✅ Last completed — S2 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| SL6 | Full id===slug + cross-ref integrity audit. 3 fixes: duplicate product ID, wishlists rewrite (19 invalid → 20 valid cross-refs), 7 legacy seed files deleted. |
-| ARCH9 | `sellerId`→`ownerId`, `sellerName`→`ownerName` across 6 files (schema, repository, actions, hook, API route, server action). appkit dist rebuilt. 0 TSC errors. |
-| VD3 | Marked subsumed by SEO5 (Session 82). No code change needed. |
-| HS4-E | `googleReviews?` added to `StoreDocument`. `SellerStorefrontView` extended with Google Reviews section. Store About page renders `GoogleReviewsSection` from `@mohasinac/appkit/server` when enabled. |
-| A1-ext | Verified already implemented — `AdminProductEditorView` has `DynamicSelect` store picker unconditionally (admin-only namespace). |
+| D2 | `UpdateCurrentProfileInput` extended with `bio`+`profileIsPublic`. Avatar URL `<input>` replaced with `ImageUpload`+`useMediaUpload`. `as any` removed. `ImageUpload`/`ImageUploadProps` exported from appkit `client.ts`. |
+| D3 | `useChangePassword`+`ChangePasswordData` exported from appkit `client.ts`. Settings page: `renderPasswordForm` wired with current/new/confirm fields + match+length validation. |
+| LL4 | `AddressBook.AddressBookProps` extended with `onSetDefault?`; forwarded to `AddressCard`. `UserAddressesClient`: `onSetDefault` wired to `setDefault.mutate({ addressId })`; two-step inline delete confirm dialog added. |
+| LL5 | `UserReturnsView` slot-shell in appkit. `/user/returns` page (filters by `return_requested`). `/user/orders/[id]/cancel` page (reason textarea + `cancelOrderAction`, guards non-cancellable statuses). `ROUTES.USER.RETURNS` added. Returns link in nav. |
 
-### 🔜 Current — S2 (next session)
+### 🔜 Current — S3 (next session)
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
