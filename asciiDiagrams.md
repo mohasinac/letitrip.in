@@ -5452,7 +5452,7 @@ RowActionMenu [⋮]:
 
 ---
 
-## Architecture > Store Identity (ARCH2/ARCH5/ARCH8 — storeId migration)
+## Architecture > Store Identity (ARCH1/ARCH2/ARCH5/ARCH6/ARCH7/ARCH8 — storeId migration + public sanitize)
 
 > Completed Session 81. Documents the canonical identity model enforced across all collections.
 
@@ -5480,7 +5480,7 @@ IDENTITY MODEL
   │ orders              │ storeId, storeName│ —                   │
   │ cart items          │ storeId, storeName│ —                   │
   │ offers              │ storeId, storeName│ —                   │
-  │ payouts             │ storeId           │ sellerName (display) │
+  │ payouts             │ storeId, storeName│ —                   │
   │ coupons             │ storeId           │ —                   │
   │ conversations       │ storeId           │ —                   │
   │ reviews             │ storeId, storeName│ —                   │
@@ -5551,6 +5551,59 @@ IDENTITY MODEL
   ✗  coupon.storeId === userId            (same mistake)
   ✗  storeId==__none__ as sieve filter   (use early-return instead)
   ✗  offer.counterAmount!                 (use null guard first)
+  ✗  return sellerId/sellerName in public API response (ARCH1)
+  ✗  Show seller display-name in public product/auction/pre-order cards (ARCH6)
+  ✗  Lead with user displayName on a seller's /profile page (ARCH7)
+
+─────────────────────────────────────────────────────────────────────
+
+  PUBLIC API SANITIZATION (ARCH1 — S6)
+
+  appkit/src/features/products/utils/sanitize.ts
+  ────────────────────────────────────────────────
+    sanitizeProductForPublic(item)
+      → strips: sellerId, sellerName, sellerEmail, ownerId
+      → returns: shallow copy with seller-identity fields deleted
+    sanitizeProductsForPublic(items)  →  items.map(sanitizeProductForPublic)
+
+  Wired into every public GET that returns product documents:
+    appkit  products/api/route.ts          GET list   → sanitizeProductsForPublic
+    appkit  products/api/[id]/route.ts     GET item   → sanitizeProductForPublic
+    letitrip src/app/api/products/route.ts GET list   → sanitizeProductsForPublic
+
+  Reviews + orders: schemas never carry sellerId — no sanitize needed.
+  Admin/seller-scoped endpoints: do NOT sanitize (legitimate owner context).
+
+─────────────────────────────────────────────────────────────────────
+
+  PUBLIC IDENTITY ON CARDS / DETAIL / PROFILE (ARCH6 + ARCH7 — S6)
+
+  ProductDetailPageView / AuctionDetailPageView / PreOrderDetailPageView
+    ─ storeName → safeDisplayName (was: storeName || sellerName)
+    ─ href     → /stores/{storeSlug}  (was: fallback to /sellers/{sellerId})
+
+  AuctionsListView / PreOrdersListView
+    ─ ?store= filter → storeId==X  (was: sellerId==X)
+
+  Store{Products,Auctions,PreOrders}Listing
+    ─ Props: { storeId } only  (was: { storeId, sellerId? })
+
+  CouponsIndexListing + stores/[slug]/coupons page
+    ─ Filter → storeId==X   (was: sellerId==X)
+    ─ Caller passes store.id (was: store.ownerId)
+
+  PublicProfileView (/profile/{userId}) — seller branch
+    profile     ← getPublicUserProfile(userId)
+    store       ← storeRepository.findById(profile.storeSlug)
+    hero name   ← store.storeName ?? profile.displayName
+    hero photo  ← store.storeLogoURL ?? profile.photoURL
+    description ← store.storeDescription ?? profile.publicProfile.storeDescription
+
+  AdminUserEditorView (admin drawer for any user)
+    Identity block (always shown when userId present):
+      Owner ID (Firebase UID): {userId}
+      Owns store: {ownedStoreId} — {ownedStoreName?}
+    Props: ownedStoreId, ownedStoreName  (sourced from AdminUsersView._raw)
 ```
 
 ---
