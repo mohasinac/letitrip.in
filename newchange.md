@@ -27,10 +27,50 @@
 | 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ✅ Done 2026-05-08 — Session 67-b | — |
 | 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ✅ Done S1 2026-05-11 — see HS4-E | HS4-E ✅ |
 | 2026-05-11 | FI6 secondary surfaces | Cross-store listing pages other than /products, /auctions, /pre-orders do not yet wrap children in `ProductFeaturesProvider`, so feature badges don't render on cards there. Surfaces: SearchResultsClient, wishlist page, PromotionsProductsClient, StoreDetailLayoutView, RelatedProductsCarousel. Fix is mechanical (add `listPlatform()` + Provider in the corresponding page/server boundary). | ⏳ Open | Track as FI6-2; pick up in a follow-up session. |
+| 2026-05-11 | S9 WIP imports break tsc | Untracked scaffolding for D5/VC7 (Messages/Conversations) imports yet-to-ship appkit symbols: `getConversation`, `sendMessage`, `MESSAGE_MAX_LENGTH`, `listConversationsForBuyer`, `ChatList`, `ChatWindow`, `MessagesView`. Files: `src/app/api/user/conversations/*`, `src/app/[locale]/user/messages/page.tsx`. Main repo tsc has errors only in those files. Appkit tsc clean. | ⏳ Open | S9 — finish the appkit-side messages feature exports + ship the consumer routes together. |
 
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S12 — 2026-05-11 — Q5 + Q2 + Q4 (Firestore indices + listing-param standardisation)
+
+**Scope:** Tier Q — short-name URL params (`f/s/p/ps/q/cursor`) across all public listing routes + their SSR view counterparts, plus the 5 missing composite indices that those filter+sort combos need to avoid `FAILED_PRECONDITION`.
+
+**Files (appkit)**
+
+| File | Change |
+|---|---|
+| [appkit/src/utils/listing-params.ts](appkit/src/utils/listing-params.ts) | NEW. `LISTING_PARAM_NAMES`, `parseListingParams(url)`, `parseListingSearchParams(searchParams)`, `serializeListingParams(params, extra)`. Pure URL → values bag; no defaults baked in. Short > long > legacy precedence (e.g. `s` beats `sorts` beats `sort`). |
+| [appkit/src/utils/index.ts](appkit/src/utils/index.ts) + [appkit/src/index.ts](appkit/src/index.ts) | Barrel exports. |
+| [appkit/firebase/base/firestore.indexes.json](appkit/firebase/base/firestore.indexes.json) | **5 new composite indices on `products`**: `(category,price)`, `(brandSlug,createdAt DESC)`, `(storeId,status)`, `(isPromoted,createdAt DESC)`, `(featured,createdAt DESC)`. Sixth spec index (`isAuction,auctionEndDate`) already existed. |
+| `appkit/firestore.indexes.json` + root `firestore.indexes.json` | Regenerated via `node appkit/scripts/firebase-merge.mjs` in both repos. |
+| [appkit/src/features/pre-orders/api/route.ts](appkit/src/features/pre-orders/api/route.ts) | Switched to `parseListingParams`. Defaults: `DEFAULT_PAGE`, `DEFAULT_PAGE_SIZE`, `MAX_PAGE_SIZE`, `DEFAULT_SORT`. `numParam` helper removed. |
+| [appkit/src/features/stores/api/route.ts](appkit/src/features/stores/api/route.ts) | Same. `q` short/long unified through helper. |
+| [appkit/src/features/stores/api/[storeSlug]/products/route.ts](appkit/src/features/stores/api/[storeSlug]/products/route.ts) + [auctions/route.ts](appkit/src/features/stores/api/[storeSlug]/auctions/route.ts) | Same. |
+| [appkit/src/features/products/components/ProductsIndexPageView.tsx](appkit/src/features/products/components/ProductsIndexPageView.tsx) + [auctions/components/AuctionsListView.tsx](appkit/src/features/auctions/components/AuctionsListView.tsx) + [pre-orders/components/PreOrdersListView.tsx](appkit/src/features/pre-orders/components/PreOrdersListView.tsx) | Switched sort/page/pageSize reads to `parseListingSearchParams`. Per-field `buildXxxFilters` helpers retained — they collect UX-facing per-field params (minPrice, condition, …) into a Sieve string; `parseListingSearchParams` provides the orthogonal `f=` raw-filter slot. |
+| [appkit/src/features/stores/components/StoreProductsPageView.tsx](appkit/src/features/stores/components/StoreProductsPageView.tsx) | Accepts `searchParams` (was hardcoded). Uses `parseListingSearchParams`. Drops unsafe `as Record<string, any>` store narrowing. |
+| [appkit/index.md](appkit/index.md) | Document `parseListingParams` / `parseListingSearchParams` / `serializeListingParams` + the 5 new indices. |
+
+**Files (letitrip.in)**
+
+| File | Change |
+|---|---|
+| [src/app/api/products/route.ts](src/app/api/products/route.ts) | `parseListingParams(url)` drives page/pageSize/sorts. `buildFilters(url, rawFilters)` now receives the precedence-resolved raw filter string. Defaults hoisted to module-level constants. `numParam` removed. |
+| `firestore.indexes.json` | Re-merged from `appkit/firebase/base/firestore.indexes.json` so `firebase deploy` picks up the 5 new indices. |
+| `appkit/` submodule pointer | Bumped 3 times (Q5, Q2, Q4). |
+
+**3 commits per task** (Q5 / Q2 / Q4) — one logical task per commit per the prompt rules.
+
+**Deploy note**: `firebase deploy --only firestore:indexes` is the ops step. Until then the new query shapes return `FAILED_PRECONDITION` in prod (the previous queries used `filters=` with multiple equality + range, which already required composite indices — we're adding more of them, not changing existing semantics).
+
+**Cursor pagination**: `cursor` is plumbed through but inert — the current Sieve uses offset pagination. Cursor becomes live when S13 `listingProcessor` Firebase Function ships.
+
+**Pre-existing tsc errors NOT in S12 scope**: a parallel session has scaffolded D5/VC7 (S9) WIP at `src/app/api/user/conversations/*` + `src/app/[locale]/user/messages/page.tsx` that imports yet-to-ship appkit exports (`getConversation`, `sendMessage`, `MESSAGE_MAX_LENGTH`, `listConversationsForBuyer`, `ChatList`, `ChatWindow`, `MessagesView`). Appkit tsc is clean; main repo errors are all in those WIP files. Tracked in DEFERRED.
+
+**TSC**: appkit clean. Main repo clean except for pre-existing S9-WIP errors in the conversations + messages routes (out-of-scope, not introduced by S12).
 
 ---
 

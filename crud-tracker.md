@@ -175,7 +175,7 @@ Rules to keep top-of-mind every task:
 | **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done |
 | **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
 | **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
-| **S12** | Query | Q5, Q2, Q4 | Deploy Firestore composite indexes + standardize query param names (f/s/p/ps/q) + update client views | — |
+| **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
 | **S13** | Query | Q1, Q3, Q6 | listingProcessor Firebase Function + proxy routes + infinite scroll | Medium risk: new Function deploy; seed data complete |
 | **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
 | **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
@@ -543,10 +543,10 @@ Rules to keep top-of-mind every task:
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | Q1 | `listingProcessor` Firebase HTTPS Function | M | ⏳ | | File: `functions/src/callable/listing-processor.ts`. Input: `{ collection, q?, f?, s?, p?, ps?, cursor? }`. Text search via per-collection field config (range queries, no JS pass). Cursor-based pagination. Cache-Control header on response. Set `minInstances: 1`. Returns `{ items, total, page, pageSize, cursor, hasMore }`. |
-| Q2 | Standardise listing API query param names | S | ⏳ | | All `/api/products`, `/api/pre-orders`, `/api/stores` routes accept short names: `f=` (filters), `s=` (sort), `p=` (page), `ps=` (pageSize), `q=` (search), `cursor=` (pagination cursor). Map internally. Keep old param names working for backwards compat. |
+| Q2 | Standardise listing API query param names | S | ✅ S12 2026-05-11 — `parseListingParams(url)` helper in `appkit/src/utils/listing-params.ts` applied to /api/products + /api/pre-orders + /api/stores + /api/stores/[slug]/{products,auctions}. Short `f/s/p/ps/q/cursor` wins; long names retained for backwards compat. |
 | Q3 | Delegate listing API routes to `listingProcessor` Firebase Function | M | ⏳ | | Replace direct Sieve calls in `/api/products/route.ts` and `/api/pre-orders/route.ts` with HTTP calls to `listingProcessor`. Use Firebase Admin SDK server-side. Vercel route becomes thin proxy. |
-| Q4 | Update appkit listing views for new param names + cursor pagination | S | ⏳ | | `AuctionsListView`, `ProductsIndexPageView`, `PreOrdersListView`, `StoreProductsPageView`: read `f`, `s`, `p`, `ps`, `cursor` from `searchParams`. Store cursor Map for forward/back navigation. |
-| Q5 | Firestore composite indexes for common filter+sort combos | S | ⏳ | | Add to `firestore.indexes.json`: `(category, price)`, `(brandSlug, createdAt)`, `(storeId, status)`, `(isAuction, auctionEndDate)`, `(isPromoted, createdAt)`, `(featured, createdAt)`. Deploy with `firebase deploy --only firestore:indexes`. |
+| Q4 | Update appkit listing views for new param names + cursor pagination | S | ✅ S12 2026-05-11 — All 4 views switched to `parseListingSearchParams`. Defaults hoisted to `DEFAULT_PAGE` / `DEFAULT_PAGE_SIZE` / `DEFAULT_SORT` constants. `StoreProductsPageView` now accepts `searchParams` (previously hardcoded). Cursor is thread-only until S13 listingProcessor lands. |
+| Q5 | Firestore composite indexes for common filter+sort combos | S | ✅ S12 2026-05-11 — 5 of 6 spec indices added to `appkit/firebase/base/firestore.indexes.json` (the 6th, isAuction+auctionEndDate, already existed). Merged to both root mirror files via `node appkit/scripts/firebase-merge.mjs`. Ops deploy via `firebase deploy --only firestore:indexes` is pending. |
 | Q6 | Infinite scroll on public listing pages | M | ⏳ | | Add `useInfiniteScroll` hook in appkit: wraps `IntersectionObserver` on a sentinel `div` at list bottom; on intersect fetches next cursor batch and appends to items state. Wire into `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView` as `mode="infinite"`. Show skeleton cards while loading next batch. "Back to top" button appears after 2 pages loaded. Admin/store tables keep `mode="pages"`. |
 
 ---

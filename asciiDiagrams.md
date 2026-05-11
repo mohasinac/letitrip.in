@@ -417,6 +417,68 @@ Staged-URL cleanup:
 
 ---
 
+## Shared > Listing Params (S12/Q2/Q4) ✅
+
+```
+Standardised short-name URL params — all public listing routes + their SSR views.
+
+Short names                Long names (back-compat)
+─────────────────────────  ─────────────────────────
+f       Sieve filter str   filters
+s       sort string        sorts > sort  (legacy)
+p       page (1-based)     page
+ps      page size          pageSize
+q       full-text query    q
+cursor  opaque pagination  cursor
+
+precedence:  short  >  long  >  legacy
+both set?    short wins, long is ignored
+
+API routes (server-side, take a URL)
+  /api/products                       — buildFilters(url, std.filters)
+  /api/pre-orders                     — std.{filters,sorts,page,pageSize}
+  /api/stores                         — std.{filters,sorts,page,pageSize,q}
+  /api/stores/[slug]/products         — std.{filters,sorts,page,pageSize}
+  /api/stores/[slug]/auctions         — std.{filters,sorts,page,pageSize}
+
+      ↓ const std = parseListingParams(url)
+        const page = std.page ?? DEFAULT_PAGE
+        const sort = std.sorts ?? DEFAULT_SORT
+        …
+
+SSR views (server-component, take a searchParams object)
+  ProductsIndexPageView    AuctionsListView    PreOrdersListView
+  StoreProductsPageView
+
+      ↓ const std = parseListingSearchParams(searchParams)
+        same defaults, same precedence
+
+Out:  serializeListingParams({ f, s, p, ps, q, cursor }, extra?)
+      → URLSearchParams string using only short names — clients should write
+        URLs in short form and let parseListingParams unwind.
+
+cursor is plumbed but inert until S13 listingProcessor ships.
+```
+
+## Shared > Firestore Indices (S12/Q5) ✅
+
+```
+Source of truth:  appkit/firebase/base/firestore.indexes.json
+Merged via      :  node appkit/scripts/firebase-merge.mjs
+                   (must be run from each consumer repo to update its root copy)
+Deploy          :  firebase deploy --only firestore:indexes  (ops step)
+
+5 new composite indices on `products` (Q5):
+  (category,    price)                                  — /products?category=X sort price
+  (brandSlug,   createdAt DESC)                         — /products?brand=X newest
+  (storeId,     status)                                 — store products filtered by status
+  (isPromoted,  createdAt DESC)                         — promoted newest first
+  (featured,    createdAt DESC)                         — featured newest first
+
+Sixth spec index was already present:
+  (isAuction,   auctionEndDate)
+```
+
 ## Shared > Media CDN Proxy (S10/I7) ✅
 
 ```

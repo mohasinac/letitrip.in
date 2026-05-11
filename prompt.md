@@ -7,27 +7,17 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — S11 (2026-05-11)
+### ✅ Last completed — S12 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| O5 | `PATCH /api/store/orders/[id]` extended with optional `shiprocketPackage` block. When `status="shipped"` + seller's `shippingConfig.method === "shiprocket"` + no manual tracking fields → delegates to `shipOrderAction({ method:"shiprocket", … })` for full create-order → AWB → pickup pipeline. 409 `SHIPROCKET_PACKAGE_REQUIRED` if dims missing, 400 `SHIPROCKET_FAILED` if upstream fails. POST `/api/store/orders/[id]/ship` still works for explicit callers. New helpers `buildShiprocketTrackingUrl(awb)` + `SHIPROCKET_TRACKING_URL_BASE` + `SHIPROCKET_STATUS_PICKUP_SCHEDULED` exported from appkit; `seller.actions.ts` + Shiprocket webhook updated to use them. |
-
-### ✅ Last completed — S8 (2026-05-11)
-
-| Task | Summary |
-|------|---------|
-| FI1 | `productFeatures` schema + repository (`MAX_STORE_CUSTOM_FEATURES=20`, `MAX_FEATURES_PER_PRODUCT=10`). `icon` is a union: appkit icon-set name key OR raw SVG-path string. delete refuses when any product references the feature. |
-| FI2 | 10 platform feature seeds (free-shipping, verified-seller, accept-returns, condition-new/used, featured, promoted, auction-winner-badge, shipping-paid-by-seller, preorder-confirmed) wired into seed route + SeedPanel meta. |
-| FI3 | `/admin/features` — list w/ Platform vs Store-Custom scope tabs + SideDrawer editor (label, description, icon, iconColor token, category, productTypes pill checkboxes, scope radio, storeId Select, displayOrder, isActive). `/api/admin/features` admin-only. DELETE returns 409 when referenced. |
-| FI4 | `/store/features` — store dashboard list (usage chip n/20, inline isActive toggle, Add disabled at cap). `/api/store/features` enforces `scope=store + storeId=owner's store`, 403 on non-owned mutations. Reuses AdminFeatureEditorView via `fixedScope + endpointOverride`. |
-| FI5 | `ProductFeaturesSelector` slotted into `ProductForm` (single form handles all 3 product types). 10-per-product cap with disabled extra rows + over-limit banner. |
-| FI6 | `FeatureBadge` + `FeatureBadgeList` + `ProductFeaturesProvider` context. ProductCard renders maxVisible=3 below price; detail views render full list. SSR-loaded via `loadProductFeaturesForStore` (detail) or `listPlatform` (listing). Legacy 'About this product' text bullets gated to absent-prop only. |
-| Follow-up tracked | Secondary listing surfaces (search, wishlist, promotions, store-detail, related-products carousel) still need `ProductFeaturesProvider` wrapper — entry added to newchange DEFERRED as FI6-2. |
+| Q5 | 5 new Firestore composite indices on `products` — `(category,price)`, `(brandSlug,createdAt)`, `(storeId,status)`, `(isPromoted,createdAt)`, `(featured,createdAt)`. Sixth spec index (`isAuction,auctionEndDate`) already existed. Source: `appkit/firebase/base/firestore.indexes.json`; merged via `firebase-merge.mjs` to both root mirrors. Ops `firebase deploy --only firestore:indexes` pending. |
+| Q2 | `parseListingParams(url)` + `serializeListingParams(params, extra)` helpers in `appkit/src/utils/listing-params.ts` (also barrel-exported from `@mohasinac/appkit`). Short canonical names `f / s / p / ps / q / cursor` accepted on `/api/products`, `/api/pre-orders`, `/api/stores`, `/api/stores/[slug]/{products,auctions}`. Long names (`filters / sorts / sort / page / pageSize / q / cursor`) remain accepted for backwards compat. Short wins when both present. Defaults hoisted to per-route `DEFAULT_PAGE / PAGE_SIZE / SORT` constants. |
+| Q4 | Sibling `parseListingSearchParams(searchParams)` for Next.js SSR pages. Applied to `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`. `StoreProductsPageView` now accepts `searchParams` (was hardcoded to page 1, sort `-createdAt`). Cursor is thread-only until S13 listingProcessor lands. |
 
 ### 🔜 Current — S9 (next session)
 
-> S8 (Tier FI) shipped end-to-end. Next roadmap entry: BK3 (compare overlay) + D5 (Messages RTDB listener) + VC7 (Conversations view).
+> S12 (Tier Q indices + param standardisation) done. Roadmap continues at S9 (BK3 compare overlay + D5 Messages RTDB + VC7 Conversations view) — note a parallel session already scaffolded `src/app/api/user/conversations/*` + `src/app/[locale]/user/messages/page.tsx`; those break tsc until their appkit-side `getConversation` / `sendMessage` / `listConversationsForBuyer` / `ChatList` / `ChatWindow` / `MessagesView` exports land in S9.
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -45,7 +35,7 @@
 | **S9** | BK3, D5, VC7 | Compare overlay + Messages RTDB | low |
 | **S10** ✅ | I6, I7 | PDF uploader + Media CDN watermark proxy | medium |
 | **S11** ✅ | O5 | Shiprocket auto-create | medium |
-| **S12** | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
+| **S12** ✅ | Q5, Q2, Q4 | Firestore indexes deploy + param standardization | medium |
 | **S13** | Q1, Q3, Q6 | listingProcessor Firebase Function + infinite scroll | medium |
 | **S14–S18** | P24–P31 | Seed scale (auctions/categories/blog/coupons/validator) | low |
 | **S19–S30** | SB1–SB11, TC | Bundle + Prize Draw + Event Raffle system | high |
@@ -92,7 +82,8 @@ Homepage features       S7           ✅  EX5 + SB11 (collection-cards + 3 new s
 Feature icons           S8           ✅  FI1–FI6 productFeatures collection (one-shot session)
 UX + RTDB               S9           ⏳  BK3 compare overlay + Messages RTDB
 Infrastructure          S10–S11      ⏳  PDF + watermark CDN + Shiprocket
-Query/Sieve             S12–S13      ⏳  Firebase Function — medium risk
+Query/Sieve             S12          ✅  Q5 indices + Q2 short params + Q4 listing views
+Query/Sieve             S13          ⏳  Q1/Q3/Q6 listingProcessor + infinite scroll
 Seed scale              S14–S18      ⏳  auctions/categories/blog/coupons/validator
 Bundle + Prize Draw     S19–S30      ⏳  SB1–SB11 + TC (largest feature — new collections)
 RBAC + BAN              S31–S37      ⏳  security gates — do after all features stable
