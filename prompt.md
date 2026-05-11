@@ -7,29 +7,32 @@
 
 ## SESSION STATE
 
-### ✅ Last completed — Session 92 (2026-05-11)
+### ✅ Last completed — Session 93 (2026-05-11)
 
 | Task | Summary |
 |------|---------|
-| AX2 | `usePanelUrlSync` hook (`?panel=create\|edit&id=`). `DataTable.onRowClick`. `embedded` prop on 7 admin editor views (Brand/Product/Category/Blog/FAQ/Coupon/Event). Wired 8 admin listing views (Brands/Products/Categories/Blog/Events/FAQs/Coupons/Stores) with SideDrawer + embedded editor. Exported from `index.ts` + `client.ts`. |
-| AX3 | `FormActionBar` component — sticky bottom mobile / sticky top desktop (below `--header-height`). Breadcrumbs, dirty-dot, Discard/Preview/Save Draft/Publish buttons. CSS uses only `var(--appkit-color-*)` + `var(--appkit-z-raised)` tokens — no hex violations. |
-| Cleanup | End-of-session audit: FormActionBar.style.css hex violations fixed → all CSS variables. Tracker summary corrected (110 done, 287 remaining). |
+| EX1 | `LiveStatRequest[]` pipeline. `LiveStatsMap = Record<string, string>` keyed by `stat.key`. `CollectionQueryMetric` + `ALLOWED_LIVE_COLLECTIONS` allowlist. Admin builder state extended (source/metric/collection/filterField/filterValue/suffix). |
+| EX2 | `CarouselDocument` + `carouselsRepository` (addSlide/removeSlide/reorderSlides/getCarouselWithSlides + `TooManySlidesError`). `/admin/carousels` list + detail pages. `ROUTES.ADMIN.CAROUSELS`. 1 default carousel seeded. Firestore indexes. |
+| EX3 | `SectionCTA` type. `CategoriesSectionConfig` + `BrandsSectionConfig` extended with `cta?` + `filters?`. `ShopByCategorySection` + `BrandsSection` render filter chips + CTA button — all CSS var tokens, no hardcoded hex. |
+| EX4 | `SectionPagination` type. `ProductsSectionConfig` extended with `rows`/`maxItems`/`pagination`. `FeaturedProductsSection` `ProductGrid` component with load-more/arrows/auto-scroll. `rows=1` keeps original `SectionCarousel` (backward-compat). |
+| YT1 | `StaticSocialPost` interface. `"youtube"` added to `SocialPlatform`. `handle` optional in config. `YouTubeCard` (16:9, red play button, CSS var tokens). `SocialFeedSection` YouTube branch uses static posts from config (no API token). 2 YouTube posts seeded. |
+| Infra | `carousels` added to seed route, SeedPanel, `SeedCollectionName`, manifest, and Firestore indexes. Firebase-merge run. |
 
-### 🔄 Current — Session 93 (next)
+### 🔄 Current — Session 94 (next)
 
 | Task | Status | Notes |
 |------|--------|-------|
-| EX1 | ⏳ pending | Live collection stats queries for homepage sections |
-| EX2 | ⏳ pending | Multi-carousel (multiple `carouselSlides` sections on homepage) |
-| EX3 | ⏳ pending | Categories/brands CTA + filter-chip sections |
-| EX4 | ⏳ pending | Products multi-row section |
-| YT1 | ⏳ pending | YouTube cards in social feed section |
+| FI1 | ⏳ pending | `productFeatures` Firestore collection + seed |
+| FI2 | ⏳ pending | Admin CRUD for product features |
+| FI3 | ⏳ pending | Store CRUD for product features |
+| FI4 | ⏳ pending | Product form integration |
+| FI5 | ⏳ pending | Feature badges on product cards |
+| FI6 | ⏳ pending | Feature section on product detail |
 
 ### 🔜 Next sessions (safe-first order)
 
 | Session | Tasks | Goal | Risk |
 |---------|-------|------|------|
-| 93 | EX1–EX4, YT1 | Live stats + multi-carousel + CTA chips + products multi-row + YouTube cards | low |
 | 94 | FI1–FI6 | `productFeatures` collection + admin/store CRUD + card badges | low |
 | 95 | BK1–BK3 | Public bulk selection + compare overlay | low |
 | 96 | Q5, Q1–Q4, Q6 | Firestore indexes deploy + `listingProcessor` Firebase Function + infinite scroll | medium |
@@ -44,7 +47,7 @@
 ## PLAN SNAPSHOT
 
 ```
-110 tasks ✅ done · 287 remaining · 397 total (as of Session 92 done)
+115 tasks ✅ done · 282 remaining · 397 total (as of Session 93 done)
 
 PHASE                   SESSIONS     STATUS
 ──────────────────────────────────────────────────
@@ -74,7 +77,7 @@ Action constants        90           ✅  AX1 complete (constants+hook+store+mig
 Color tokens            90-colors    ✅  X7a+X7b complete (77 CSS files tokenized)
 Layout tokens           91           ✅  X8a+X8b complete (tokens + 26 CSS files)
 Action URLs + bars      92           ✅  AX2+AX3 complete (usePanelUrlSync, 8 admin panels, FormActionBar)
-Extended sections       93           ⏳
+Extended sections       93           ✅  EX1-EX4+YT1 (live stats, multi-carousel, CTA chips, multi-row products, YouTube feed)
 Feature icons           94           ⏳
 Bulk actions            95           ⏳
 Query/Sieve             96           ⏳  Firebase Function — medium risk

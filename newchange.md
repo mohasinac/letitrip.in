@@ -33,6 +33,43 @@
 
 ---
 
+### Session 93 — Extended Homepage Sections (EX1–EX4 + YT1) — 2026-05-11
+
+**Scope**: Live collection stats queries, multi-carousel support, categories/brands CTA+filter chips, products multi-row pagination, YouTube video cards in social feed.
+
+| File | What changed |
+|------|-------------|
+| `appkit/src/features/homepage/schemas/firestore.ts` | LiveStatPreset alias, CollectionQueryMetric interface, ALLOWED_LIVE_COLLECTIONS; StatsSectionConfig.stats[] extended with source/metric/collectionQuery; CarouselDocument + CarouselCreateInput + CarouselUpdateInput + TooManySlidesError class; CAROUSELS_COLLECTION + MAX_SLIDES_PER_CAROUSEL; carouselId on CarouselSlideDocument + CarouselSectionConfig; SectionCTA type; CategoriesSectionConfig + BrandsSectionConfig cta+filters; SectionPagination type; ProductsSectionConfig rows/maxItems/pagination; "youtube" added to SocialPlatform; StaticSocialPost interface; SocialFeedSectionConfig.posts[] + handle optional; SocialPost.imageUrl+publishedAt optional; SocialPost.videoId+channelName |
+| `appkit/src/features/homepage/lib/live-stats.ts` | Full rewrite — LiveStatRequest[] interface; fetchLiveStats keyed by stat.key; collection-query branch using getFirestoreCount |
+| `appkit/src/features/homepage/components/MarketplaceHomepageView.tsx` | Collects LiveStatRequest[] from stats sections |
+| `appkit/src/features/homepage/lib/section-renderer.tsx` | Stats lookup by stat.key; social-feed guard handles YouTube (no handle needed); passes cta/filters to categories+brands; passes rows/maxItems/pagination to products |
+| `appkit/src/features/homepage/repository/carousels.repository.ts` | New — listCarousels, createCarousel, updateCarousel, addSlide (TooManySlidesError at max), removeSlide, reorderSlides, getCarouselWithSlides; singleton carouselsRepository |
+| `appkit/src/repositories/index.ts` | carouselsRepository + CarouselsRepository exported |
+| `appkit/src/next/routing/route-map.ts` | ADMIN.CAROUSELS + ADMIN.CAROUSEL_DETAIL added |
+| `appkit/src/features/homepage/components/ShopByCategorySection.tsx` | FilterChip component; client-side filter by parentIds; CTA button; CSS var tokens throughout |
+| `appkit/src/features/homepage/components/BrandsSection.tsx` | BrandFilterChip; featured filter chip; CTA button; CSS var tokens |
+| `appkit/src/features/homepage/components/FeaturedProductsSection.tsx` | Full rewrite — ProductGrid with load-more/arrows/auto-scroll pagination; rows=1 keeps SectionCarousel |
+| `appkit/src/features/homepage/components/SocialPostCard.tsx` | YouTubeCard component (16:9, red play button, CSS var tokens); "youtube" in PLATFORM_META; colorClass rename |
+| `appkit/src/features/homepage/components/SocialFeedSection.tsx` | YouTube platform label + profileUrl; YouTube branch in loadPosts (static posts, no API token); handle guard for other platforms |
+| `appkit/src/features/admin/components/sections/adminSectionsTypes.ts` | StatsBuilderState extended: source/metric/collection/filterField/filterValue/suffix |
+| `appkit/src/features/admin/components/sections/adminSectionsBuildParse.ts` | buildStatsConfig emits source/metric/collectionQuery; parseStatsBuilder reads them back |
+| `appkit/src/index.ts` | carouselsRepository, CarouselsRepository, CarouselDocument, TooManySlidesError, CAROUSELS_COLLECTION, MAX_SLIDES_PER_CAROUSEL, carouselsSeedData exported |
+| `appkit/src/seed/carousels-seed-data.ts` | New — 1 default carousel (carousel-hero-default) |
+| `appkit/src/seed/homepage-sections-seed-data.ts` | section-social-feed-youtube added with 2 YouTube posts |
+| `appkit/src/seed/index.ts` + `manifest.ts` | carouselsSeedData exported; carousels added to SeedManifest |
+| `appkit/src/seed/actions/demo-seed-actions.ts` | "carousels" added to SeedCollectionName |
+| `appkit/firebase/base/firestore.indexes.json` | carousels (createdBy+createdAt) + carouselSlides (carouselId+order) indexes added |
+| `src/app/[locale]/admin/carousels/page.tsx` | New — carousel list admin page |
+| `src/app/[locale]/admin/carousels/[id]/page.tsx` | New — carousel detail admin page |
+| `src/app/api/demo/seed/route.ts` | carousels added to CollectionName, COLLECTION_MAP, SEED_DATA_MAP; CAROUSELS_COLLECTION + carouselsSeedData imported |
+| `src/components/dev/SeedPanel.tsx` | carousels added to CONTENT_COLLECTIONS with full metadata card |
+
+**Deferred / skipped**:
+- Admin builder UI fields for EX1/EX2/EX3/EX4 config (AdminSectionsView stats/carousel/categories/brands/products sections) — admin builders not yet wired to new config fields; renders use defaults.
+- EX5 (collection-cards section type) — deferred to a future session (high risk, new section type).
+
+---
+
 ### Session 92 cleanup — End-of-session audit & quality pass — 2026-05-11
 
 **Scope**: Post-session cleanup; no new features. TypeScript verified (0 errors both repos). Code quality audit on session output.
