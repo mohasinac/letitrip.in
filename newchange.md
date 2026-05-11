@@ -33,6 +33,27 @@
 
 ---
 
+### Session S7-followup — 2026-05-11 — WL1 + WL2 (wishlist one-doc-per-user + 20-item cap)
+
+**Scope:** First two tasks of Tier WL implemented after the planning revision. WL3–WL8 still ⏳.
+
+| File | Change |
+|------|--------|
+| `appkit/src/constants/limits.ts` | **NEW** — `WISHLIST_MAX=20`, `HISTORY_MAX=50`, `CART_MAX_ITEMS=50`. `WISHLIST_DOC_ID`/`HISTORY_DOC_ID` helpers. `WISHLIST_COLLECTION`/`HISTORY_COLLECTION`. |
+| `appkit/src/constants/index.ts` | Re-export limits. |
+| `appkit/src/features/wishlist/repository/user-wishlist.repository.ts` | Full rewrite — top-level `wishlists/wishlist-{userSlug}` with items[]; mutations run in a Firestore transaction. `UserWishlistItem` gains optional `productType`/`priceAtAdd`/`productSnapshot`. `WishlistFullError { code, limit, current }`. `addItem` returns new count; idempotent on existing productId. |
+| `appkit/src/features/wishlist/actions/wishlist-actions.ts` | Domain wrapper returns `{ count }`; re-exports `WishlistFullError`. |
+| `appkit/src/index.ts` | `WishlistFullError`, `WISHLIST_MAX`/`HISTORY_MAX`/`CART_MAX_ITEMS`, ID helpers surfaced at the top-level barrel. |
+| `src/app/api/user/wishlist/route.ts`, `src/app/api/wishlist/route.ts`, `src/app/api/wishlist/merge/route.ts` | POST catches `WishlistFullError` → 409 `{ code, limit, current }`. GET adds `{ total, limit, isFull }`. Merge loop is cap-aware; returns `{ merged, skippedFull, attempted, limit, capReached }`. |
+| `src/actions/wishlist.actions.ts` | `addToWishlistAction` now returns a discriminated union `{ ok: true, count, limit, isFull } \| { ok: false, code: "WISHLIST_FULL", limit, current }`. |
+| `crud-tracker.md` | WL1 + WL2 → ✅. |
+
+**Deferred:** WL3 count badge UI, WL4–WL6 History, WL7 Cart cap, WL8 seed + admin views.
+
+**TSC:** 0 errors both repos. **appkit build:** OK.
+
+---
+
 ### Planning S44 — 2026-05-11 — Tier WL (Wishlist + History + Cart caps)
 
 **Scope:** Plan only — no code yet. Added Tier WL (WL1–WL8) to `crud-tracker.md` and S44 to the session roadmap. Awaiting user approval before implementation.
