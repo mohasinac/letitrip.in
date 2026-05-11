@@ -33,6 +33,62 @@
 
 ---
 
+### Planning S44 — 2026-05-11 — Tier WL (Wishlist + Recently Viewed + Cart caps)
+
+**Scope:** Plan only — no code yet. Added Tier WL (WL1–WL8) to `crud-tracker.md` and S44 to the session roadmap. Awaiting user approval before implementation.
+
+**Design decisions confirmed with user (Rule #1):**
+
+| Question | Decision |
+|---|---|
+| Wishlist storage | Separate **top-level collection** `/wishlists/{id}` with `userId` = user slug (`user-…`) as FK. Subcollection paths + LL15 `collectionGroup` hack removed. ID: `wish-{userSlug}-{productSlug}` (deterministic, idempotent re-add). |
+| Recently viewed storage | **Auth users** → top-level `/recentlyViewed/{id}` with `userId` = user slug FK. ID: `view-{userSlug}-{productSlug}` (upsert on re-view). **Guest users** → `localStorage["letitrip:recentlyViewed"]`. On login, guest history merges into Firestore (dedup by productId, keep max viewedAt, FIFO 50). |
+| Wishlist cap | Hard cap 20. Block add + toast "Wishlist full (20/20). Remove an item to add new ones." Persistent banner on `/user/wishlist` + ♡ buttons disabled at cap. |
+| Recently viewed cap | Soft cap 50. FIFO evict oldest silently (auto-tracking, not user intent → no warning). |
+| Cart cap | Hard cap 50 **distinct** items. Block add + toast "Cart full (50/50). Remove items to add new ones." Per-item quantity increment is unrestricted. |
+| Tabbed stores | User said **ignore — not needed**. Dropped from scope. |
+
+**New tasks (8):** WL1 schema · WL2 wishlist cap · WL3 count badge · WL4 recentlyViewed collection · WL5 guest localStorage + merge · WL6 tracker + `/user/history` · WL7 cart cap · WL8 seed + admin + indexes + CLAUDE.md.
+
+**Roadmap:** S44 inserted after S6.
+
+**Counters:** 397 → 405 total tasks; 269 → 277 ⏳ remaining; 128 done (unchanged).
+
+**New slug prefixes to register in CLAUDE.md (WL8):** `wish-`, `view-`.
+
+**Deferred:** Implementation — start S44 in a fresh session after user approval.
+
+---
+
+### Session S7 — 2026-05-11 — EX5 + SB11-A–G (homepage section types: bundles + prize draws + raffles + collection cards)
+
+**Scope:** Add 4 new homepage section types (3 placeholder sections backed by collections that ship later, plus 1 generic mixed-resource section). Schema, components, admin builders, renderer wiring, Firestore indexes, seed docs.
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/homepage/schemas/firestore.ts` | **SCHEMA** — `"featured-bundles" \| "prize-draws" \| "event-raffles" \| "collection-cards"` added to `SectionType`. Config interfaces: `FeaturedBundlesSectionConfig`, `PrizeDrawsSectionConfig`, `EventRafflesSectionConfig`, `CollectionCardsSectionConfig` (+ `CollectionCardsEntry` + `CollectionCardType` + `COLLECTION_CARDS_MAX_ENTRIES`). Discriminated union + `DEFAULT_SECTION_ORDER` extended. |
+| `appkit/src/features/bundles/components/FeaturedBundlesSection.tsx` | **NEW** — async RSC, dashed empty-state placeholder until `bundles` collection ships. |
+| `appkit/src/features/bundles/{index.ts, components/index.ts}` | **NEW** barrel files. |
+| `appkit/src/features/products/components/PrizeDrawsSection.tsx` | **NEW** — async RSC, empty-state until `listingType="prize-draw"` lands. |
+| `appkit/src/features/products/components/index.ts` | Export `PrizeDrawsSection` + props. |
+| `appkit/src/features/events/components/EventRafflesSection.tsx` | **NEW** — async RSC, empty-state until `hasRaffle` flag lands on events. |
+| `appkit/src/features/events/components/index.ts` | Export `EventRafflesSection` + props. |
+| `appkit/src/features/homepage/components/CollectionCardsSection.tsx` | **NEW** — generic mixed-resource section (collections array up to 3 entries), renders tabs + placeholder + optional CTA. |
+| `appkit/src/features/homepage/lib/section-renderer.tsx` | 4 new switch cases wired to the new components. |
+| `appkit/src/features/admin/components/sections/adminSectionsTypes.ts` | New builder-state interfaces + DEFAULTs for all 4 sections. `SECTION_TYPE_OPTIONS` + `SUPPORTED_TYPED_BUILDERS` extended. |
+| `appkit/src/features/admin/components/sections/adminSectionsBuildParse.ts` | `build`/`parse` functions for all 4 new section configs. Collection-cards entry sub-parser with type allowlist. |
+| `appkit/src/features/admin/components/AdminSectionsView.tsx` | 4 new builder render functions (`renderFeaturedBundlesBuilder`, `renderPrizeDrawsBuilder`, `renderEventRafflesBuilder`, `renderCollectionCardsBuilder`). Wired into the typed-config memo, type-load effect, mode-reset effect, and `renderTypedBuilder` switch. Collection-cards builder includes a 1–3 entry repeater with Select/Input/Remove controls. |
+| `appkit/src/seed/homepage-sections-seed-data.ts` | 3 new seed docs (order 20/21/22), all `enabled: false` with comments referencing upstream dependencies. |
+| `appkit/firebase/base/firestore.indexes.json` | 4 composite indexes: `bundles: status+createdAt`, `bundles: status+storeId+createdAt`, `bundles: status+categorySlug+createdAt`, `events: hasRaffle+status+startsAt`. `firebase-merge.mjs` run. |
+| `crud-tracker.md` | EX5 + SB11-A through SB11-G marked ✅. |
+
+**Deferred:**
+- Real data fetching in all 4 new sections — sections render placeholders until the upstream feature work (bundles collection, prize-draw listingType, hasRaffle event flag) lands. Tracker entries note this clearly.
+
+**TSC:** 0 errors in both repos. **appkit build:** OK.
+
+---
+
 ### Session S6 — 2026-05-11 — ARCH1 + ARCH6 + ARCH7 (public-API seller identity strip)
 
 **Scope:** Strip `sellerId`/`sellerName` from public product responses, switch all public cards/detail pages to store identity, restructure seller profile to lead with store identity, and surface owner UID in admin user editor.

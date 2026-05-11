@@ -1240,7 +1240,7 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 
 ---
 
-## Admin > Homepage Sections ✅ (I3 — seed reset button added)
+## Admin > Homepage Sections ✅ (I3 + EX5 + SB11 — seed reset, collection-cards, bundles/draws/raffles)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1269,6 +1269,10 @@ Dedicated page /admin/carousel/new or /admin/carousel/[id]/edit:
 │  ⠿  banner            Promo Banner       17      ✓         ⋮                │
 │  ⠿  trust-indicators  Trust Indicators   18      ✓         ⋮                │
 │  ⠿  whatsapp-community WhatsApp CTA      19      ✓         ⋮                │
+│  ⠿  featured-bundles  Curated Bundles    20      ✗ (S7)    ⋮                │
+│  ⠿  prize-draws       Prize Draws        21      ✗ (S7)    ⋮                │
+│  ⠿  event-raffles     Live Raffles       22      ✗ (S7)    ⋮                │
+│  ⠿  collection-cards  Featured Coll.     23      —  (S7)   ⋮                │
 
   Row ⋮: Edit (Modal with type-specific builder form) | Enable/Disable | Delete
 

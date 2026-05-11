@@ -817,16 +817,14 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     slugPattern: "section-*  (e.g. section-featured-products)",
     mediaFields: ["config.imageUrl  (ad-banner / custom-cards types)"],
     seededItems: [
-      "19 sections covering: hero, featured-products, trending, new-arrivals, flash-sale, brand-list, category-grid, ad-banner, faq-preview, blog-preview, events-preview, social-feed",
-      "sortOrder on all sections",
-      "isVisible + maxItems per section",
-      "Section titles and subtitles",
+      "19 enabled sections covering: hero, featured-products, trending, new-arrivals, flash-sale, brand-list, category-grid, ad-banner, faq-preview, blog-preview, events-preview, social-feed",
+      "3 disabled placeholder sections (S7): featured-bundles, prize-draws, event-raffles — enabled flag flips to true when upstream collections/fields ship",
+      "1 disabled placeholder section: collection-cards (mixed-resource strip)",
+      "sortOrder on all sections, isVisible + maxItems per section",
     ],
     pendingItems: [
-      "6 more sections to reach target 25",
-      "Google Reviews section",
-      "Custom cards marketing section",
-      "Store spotlight section",
+      "Wire data fetching for SB11 sections when bundles collection + listingType='prize-draw' + events.hasRaffle land",
+      "Wire per-collection data fetch for EX5 collection-cards section",
     ],
     uiPath: "/admin/sections",
     fields: [
