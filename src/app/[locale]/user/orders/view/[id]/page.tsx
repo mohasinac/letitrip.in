@@ -188,6 +188,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         if (!order) return null;
         return (
           <Row gap="3" wrap>
+            <Link
+              href={String(ROUTES.USER.ORDER_INVOICE(order.id))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              Download Invoice
+            </Link>
             {canTrack && (
               <Link
                 href={String(ROUTES.USER.ORDER_TRACK(order.id))}

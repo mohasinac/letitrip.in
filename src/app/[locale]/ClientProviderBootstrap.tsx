@@ -78,6 +78,9 @@ const fallbackAuthProvider: IClientAuthProvider = {
   async reauthenticateAndChangePassword() {
     throw new Error("Firebase client config is missing. Password change is unavailable.");
   },
+  async reauthenticateAndSendEmailUpdateVerification() {
+    throw new Error("Firebase client config is missing. Email change is unavailable.");
+  },
   async reloadCurrentUser() {
     return;
   },
