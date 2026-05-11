@@ -21,7 +21,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 
 const createRoomSchema = z.object({
   orderId: z.string().min(1),
-  sellerId: z.string().min(1),
+  ownerId: z.string().min(1),
 });
 
 const CHAT_DISABLED_RESPONSE = () =>
@@ -50,14 +50,14 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
   schema: createRoomSchema,
   handler: async ({ user, body }) => {
     if (!FEATURE_FLAGS.CHAT_ENABLED) return CHAT_DISABLED_RESPONSE();
-    const { orderId, sellerId } = body!;
+    const { orderId, ownerId } = body!;
     const order = await orderRepository.findById(orderId);
     if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);
-    if (order.userId !== user!.uid && sellerId !== user!.uid) {
+    if (order.userId !== user!.uid && ownerId !== user!.uid) {
       throw new AuthorizationError(ERROR_MESSAGES.CHAT.NOT_AUTHORIZED);
     }
     const buyerId = order.userId;
-    const existing = await chatRepository.findRoom(buyerId, sellerId, orderId);
+    const existing = await chatRepository.findRoom(buyerId, ownerId, orderId);
     if (existing) {
       // Re-open the room for the user if they had previously soft-deleted it
       const deletedBy: string[] = existing.deletedBy ?? [];
@@ -68,19 +68,19 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
       }
       return successResponse({ room: existing });
     }
-    const [buyer, seller] = await Promise.all([
+    const [buyer, owner] = await Promise.all([
       userRepository.findById(buyerId),
-      userRepository.findById(sellerId),
+      userRepository.findById(ownerId),
     ]);
     const room = await chatRepository.create({
       buyerId,
-      sellerId,
+      ownerId,
       orderId,
       productId: (order as any).productId,
       productTitle: (order as any).productTitle,
       buyerName: buyer?.displayName ?? "Buyer",
-      sellerName: seller?.displayName ?? "Seller",
-      participantIds: [buyerId, sellerId],
+      ownerName: owner?.displayName ?? "Seller",
+      participantIds: [buyerId, ownerId],
       isGroup: false,
     });
     try {
@@ -89,7 +89,7 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
         chatId: room.id,
         orderId,
         buyerId,
-        sellerId,
+        ownerId,
         createdAt: Date.now(),
       });
     } catch (err) {
@@ -101,7 +101,7 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
     serverLogger.info("Chat room created", {
       chatId: room.id,
       buyerId,
-      sellerId,
+      ownerId,
       orderId,
     });
     return successResponse({ room }, SUCCESS_MESSAGES.CHAT.ROOM_CREATED, 201);

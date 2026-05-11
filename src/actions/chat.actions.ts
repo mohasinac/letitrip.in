@@ -22,7 +22,7 @@ import { FEATURE_FLAGS } from "@mohasinac/appkit";
 
 const createRoomSchema = z.object({
   orderId: z.string().min(1),
-  sellerId: z.string().min(1),
+  ownerId: z.string().min(1),
 });
 
 export async function getChatRoomsAction(): Promise<ChatRoomsResult> {
@@ -32,7 +32,7 @@ export async function getChatRoomsAction(): Promise<ChatRoomsResult> {
   return getChatRooms(user.uid, FEATURE_FLAGS.CHAT_ENABLED);
 }
 
-export async function createOrGetChatRoomAction(input: { orderId: string; sellerId: string }): Promise<CreateRoomResult> {
+export async function createOrGetChatRoomAction(input: { orderId: string; ownerId: string }): Promise<CreateRoomResult> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`chat:create:${user.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
