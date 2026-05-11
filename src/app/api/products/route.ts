@@ -11,6 +11,54 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_SORTS = "-createdAt";
 
+interface ListingProcessorResponse {
+  items: unknown[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+  cursor: string | null;
+}
+
+async function callListingProcessor(
+  collection: "products",
+  args: {
+    filters: string;
+    sorts: string;
+    page: number;
+    pageSize: number;
+    cursor: string | null;
+    baseOpts?: { status?: string; storeId?: string; categoriesIn?: string[] };
+  },
+): Promise<ListingProcessorResponse | null> {
+  const url = process.env.FIREBASE_FUNCTION_LISTING_URL;
+  const secret = process.env.LETITRIP_INTERNAL_SECRET;
+  if (!url || !secret) return null;
+  const upstream = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-internal-secret": secret,
+    },
+    body: JSON.stringify({
+      collection,
+      f: args.filters,
+      s: args.sorts,
+      p: args.page,
+      ps: args.pageSize,
+      cursor: args.cursor ?? undefined,
+      baseOpts: args.baseOpts,
+    }),
+  });
+  if (!upstream.ok) {
+    throw new Error(
+      `listingProcessor returned ${upstream.status}: ${await upstream.text().catch(() => "")}`,
+    );
+  }
+  return (await upstream.json()) as ListingProcessorResponse;
+}
+
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
 }
@@ -172,26 +220,60 @@ async function _GET(request: Request): Promise<NextResponse> {
   // We pass it through the existing per-field `q` param so the buildFilters
   // helper keeps reading both short and long names identically.
   const filters = buildFilters(url, std.filters);
+  const cursor = std.cursor;
 
   try {
-    const result = await productRepository.list({
+    // Q3: prefer the colocated listingProcessor Firebase Function when the
+    // FIREBASE_FUNCTION_LISTING_URL env var is set; otherwise fall back to the
+    // local repository call (keeps dev workflow working without the Function).
+    let items: unknown[];
+    let total: number;
+    let resultPage: number;
+    let totalPages: number;
+    let hasMore: boolean;
+    let nextCursor: string | null = null;
+
+    const upstream = await callListingProcessor("products", {
       filters,
       sorts,
       page,
       pageSize,
+      cursor,
     });
+
+    if (upstream) {
+      items = upstream.items;
+      total = upstream.total;
+      resultPage = upstream.page;
+      totalPages = upstream.totalPages;
+      hasMore = upstream.hasMore;
+      nextCursor = upstream.cursor;
+    } else {
+      const result = await productRepository.list({
+        filters,
+        sorts,
+        page,
+        pageSize,
+      });
+      items = result.items;
+      total = result.total;
+      resultPage = result.page;
+      totalPages = result.totalPages;
+      hasMore = result.hasMore;
+    }
 
     const response = NextResponse.json({
       success: true,
       data: {
         items: sanitizeProductsForPublic(
-          result.items as unknown as Array<Record<string, unknown>>,
+          items as Array<Record<string, unknown>>,
         ),
-        total: result.total,
-        page: result.page,
+        total,
+        page: resultPage,
         pageSize,
-        totalPages: result.totalPages,
-        hasMore: result.hasMore,
+        totalPages,
+        hasMore,
+        cursor: nextCursor,
         query: {
           filters,
           sorts,
