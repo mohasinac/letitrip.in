@@ -21,28 +21,43 @@ Skipping this rule is the same as breaking CLAUDE.md Rule #1.
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — TS Tech-Debt Sweep (2026-05-12)
+### ✅ LAST COMPLETED — S14–S21 + S45 + SB1 data layer (2026-05-12)
 
-- Closed 7 already-done items (TS2/3/4/5/6/8/18) after verify-first audit
-- Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial; TS9 deferred (154 hex hits); TS17 ops pending
-- Tracker count: 149 → 159 done
+Single long arc this date. Eight session-IDs of work, each its own commit.
 
-### 🔄 CURRENT — none (between sessions; awaiting Lane discipline kickoff)
+- **S14 P24** — auctions 11→20, bids 26→60 via `buildBidLadder()`; pre-orders 8 left near-met.
+- **S15 P25** — categories 23→33 via `mkLeaves()`; remaining 22 deferred.
+- **S16 P28** — blog 8→20 (12 rich posts), eventEntries 14→25; events 17 + FAQs 53 near-met (skipped).
+- **S17 P29** — coupons 10→20, notifications 10→40 via `buildNotificationBatch()`, carts 5→15 via `mkCart()`; guest carts dropped (Zod/TS type gap); wishlists skipped.
+- **S18 P31** — seed runner validator hook (`validate(doc) => string[]`) + dry-run diff (`db.getAll` 30-doc chunks) + bounded retry (`isRetryableError` heuristic) + `SeedAbortedError`. PII masking already-better-implemented (AES-256-GCM beats spec's sha256).
+- **S45 EMG** triage — EMG1+EMG4 🎯 ready-to-graduate, EMG2+EMG3 ⏳ holding, EMG5 🚫 deleted.
+- **S19 SB1 schemas** — additive `ListingType` (+ prize-draw, + bundle), `PrizeDrawItem`, BundleDocument feature, OrderDocument prize/bundle fields.
+- **S20 SB1 surface** — `bundlesRepository` (180 LOC, txn `markItemSold`, array-contains `findContainingProduct`), 14 ROUTES, 5 API_ROUTES, 8 new composite indexes.
+- **S21 SB1-G data** — productRepository LISTING_TYPE_VALUES + scope-alias rewrites; seed wrappers stamp listingType on every doc; /api/products translates `?isAuction=true` to `listingType==auction`; new `isAuctionListing`/`isPreOrderListing`/`isStandardListing` predicates; bundles seed (3 entries) + SeedPanel meta + plumbing through manifest/SeedCollectionName/route. SB1-D 🚫 not-needed per user (no real data).
 
-**Next action when a session starts**: pick the first ⏳ from NEXT below, mark it 🔄 here AND in `crud-tracker.md`, add a `[ACTIVE-FEATURES]` line in `newchange.md`.
+Tracker count: 162 → ~172 done (S14/S15/S16/S17/S18/S19/S20/S21/S45 closed; SB1-A/C/G/I ⚠️ partial; SB1-D 🚫).
+
+### 🔄 CURRENT — none (between sessions; awaiting next-session kickoff)
+
+**Critical pending work**:
+1. **Phase-2 listingType consumer sweep** — 36 Lane A files reading `.isAuction`/`.isPreOrder` on product objects. Mechanical-but-careful — own focused session per logical area (products components, search columns/repo, action files, route handlers).
+2. **Phase-3 Lane B `_internal/` migration** — 7 files in `appkit/src/_internal/server/features/{products,auctions,pre-orders}/` + jobs handlers. `[CRUD→SSR]` seam request filed at top of `newchange.md`.
+3. **Phase-4 schema field removal** — coordinated commit dropping boolean fields + legacy indexes once Phases 2 + 3 land.
 
 ### ⏳ NEXT UP — Lane A queue (read `crud-tracker.md` Summary for full list)
 
 | # | Session | Tier / Tasks | Goal |
 |---|---------|--------------|------|
-| 1 | **S14** | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ (seed scale) |
-| 2 | **S15–S18** | P25–P31 | Categories / blog / coupons / validator seed scale |
-| 3 | **S19–S30** | SB1–SB11 + TC | Bundle + Prize Draw + Event Raffle system |
-| 4 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement |
-| 5 | **S38–S39** | SCAM2/4/6/7/8/9 | Admin scammer UI + SEO + notifications |
-| 6 | **S40–S43** | GD1–GD22 | In-app guide pages |
-| 7 | **S44** | OG1–OG5 | OpenGraph backlog (lane handoff candidate — coordinate with Lane B's S7) |
-| 8 | **S45** | EMG1–EMG5 triage | Emerging Patterns review |
+| 1 | **SB1 cleanup** | Phase 2 + Phase 4 (Phase 3 = Lane B) | Sweep 36 `.isAuction`/`.isPreOrder` reads → `isAuctionListing(p)` predicates; then drop schema booleans |
+| 2 | **S21 forms** | SB2-A/B + SB3-A/B/C | ProductForm subcategory/video fix + BundleItemsPicker + BundleForm + NonRefundableConsentModal |
+| 3 | **S22** | SB3-D–J | Bundle stock-sync + reverse refs + store/admin/public views + listing+detail pages + API routes |
+| 4 | **S23–S24** | SB4-A–I | Prize draw editor + reveal API (crypto.randomInt) + PrizeRevealModal |
+| 5 | **S25** | SB5-A–E | Nav constants + FAQ seed + seller guide pages + homepage section seed |
+| 6 | **S26–S30** | SB6-A–E, SB7-A–D, SB8-A–F, SB9-A–I, SB1-L | Limits / badges / auto-refund Functions / Event Raffle / 7 Firebase Functions |
+| 7 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement |
+| 8 | **S38–S39** | SCAM2/4/6/7/8/9 | Admin scammer UI + SEO + notifications |
+| 9 | **S40–S43** | GD1–GD22 | In-app guide pages |
+| 10 | **S44** | OG1–OG5 | OpenGraph backlog (Lane B-exclusive — handoff candidate) |
 
 ### [CROSS-LANE NOTES]
 

@@ -9138,3 +9138,142 @@ orders, reviews, coupons, bids, payouts, blogPosts, events, faqs,
 notifications, scammers, sublistingCategories, productFeatures,
 homepageSections, users) work without `baseOpts` — that input is the
 escape hatch for repos that need it.
+
+---
+
+## Tier SB — Bundle feature foundation (S19+S20+S21 2026-05-12)
+
+### Data model
+
+```
+                ┌────────────────────────┐
+                │   ProductDocument      │
+                │   (products/{slug})    │
+                ├────────────────────────┤
+                │ id, slug, title, ...   │
+                │ listingType: "auction" │  ← canonical discriminator (SB1-A/G)
+                │                |       │     "standard" | "auction" |
+                │                |       │     "pre-order" | "prize-draw" | "bundle"
+                │                v       │
+                │ partOfBundleIds[]: ────┼──► reverse-pointer (SB1-B)
+                │                        │      "this product is in these bundles"
+                │ prizeDrawItems?[]      │  ← only when listingType === "prize-draw"
+                │ pricePerEntry?         │
+                │ prizeRevealStatus?     │     ("pending" | "open" | "closed")
+                │ maxPerUser?            │
+                └─────────▲──────────────┘
+                          │ array-contains
+                          │  (findContainingProduct)
+                ┌─────────┴──────────────────────┐
+                │   BundleDocument               │
+                │   (bundles/{bundle-slug})      │
+                ├────────────────────────────────┤
+                │ id, slug, title                │
+                │ storeId, storeName             │
+                │ status: "draft" | "published"  │
+                │       | "out_of_stock"         │  ← auto-flips when ANY item.isSold
+                │       | "archived"             │
+                │ bundleItemType: "standard"     │  ← homogeneous-only constraint;
+                │       | "pre-order"            │     auctions / prize-draws excluded
+                │ bundleItems[3..16]: {          │     (BUNDLE_MIN_ITEMS / MAX_ITEMS)
+                │    productId, productSlug,     │
+                │    title, listingType,         │
+                │    images[], video?, price,    │
+                │    quantity, isSold            │  ← markItemSold txn flips this
+                │ }                              │
+                │ bundlePrice (paise)            │
+                │ bundleOriginalTotal (paise)    │  ← Σ(items[].price × qty)
+                │ partOfBundleProductIds[]: ─────┼──► duplicated bundleItems[].productId
+                │   (auto-derived on create)     │      for index-friendly array-contains
+                │ isFeatured?, isPromoted?       │
+                │ createdAt, updatedAt           │
+                └────────────────────────────────┘
+```
+
+### Repository surface — `bundlesRepository`
+
+```
+findAll()                         → top 100 by createdAt desc
+findByStore(storeId, status?)     → up to 100 per store (active filter via 'status')
+findByCategory(categorySlug)      → published only, up to 50
+findFeatured()                    → isFeatured=true + published, up to 20
+findBySlug(slug)                  → exact one (slug-indexed)
+findContainingProduct(productId)  → array-contains on partOfBundleProductIds
+                                    "which bundles include this product?"
+create(data)                      → auto-derives partOfBundleProductIds[]
+                                    from bundleItems[].productId
+markItemSold(bundleId, productId) → TRANSACTIONAL:
+                                    1. read current bundle
+                                    2. flip matching item.isSold = true
+                                    3. if any item now sold AND status="published"
+                                       → status = "out_of_stock"
+                                    4. write back
+                                    idempotent — re-marking a sold item is a no-op
+checkBundleStock(bundleId)        → read-only view (no mutation)
+```
+
+### Listing-type query path (SB1-G — productRepository)
+
+```
+Caller passes:    ?isAuction=true / ?isPreOrder=true / ?listingType=auction
+                       │
+                       v
+   src/app/api/products/route.ts buildFilters()
+                       │
+                       │  translates legacy boolean params
+                       │  to: listingType==auction|pre-order|standard
+                       v
+   productRepository.list({ filters, sorts, page, pageSize }, baseOpts)
+                       │
+                       │  Sieve adapter expands FILTER_ALIASES:
+                       │    listingType==auction   → listingType==auction
+                       │    listingType==preorder  → listingType==pre-order
+                       │    listingType==product   → listingType==standard
+                       │    scope==publicProducts  → status==published,listingType==standard
+                       │    scope==publicAuctions  → status==published,listingType==auction
+                       │    scope==publicPreorders → status==published,listingType==pre-order
+                       v
+   Firestore query: where("listingType", "==", X) + composite indexes
+   appkit/firebase/base/firestore.indexes.json — new entries:
+     products: listingType+status+createdAt
+     products: listingType+storeId+status+createdAt
+     products: listingType+category+createdAt
+     products: listingType+auctionEndDate
+     products: listingType+prizeRevealStatus+prizeRevealWindowEnd
+     bundles:  storeId+status+createdAt
+     bundles:  categorySlug+status+createdAt
+     bundles:  isFeatured+status+createdAt
+```
+
+### Canonical consumer accessors (`@mohasinac/appkit`)
+
+```
+import {
+  normalizeListingType,       // (p) => "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"
+  isAuctionListing,           // (p) => boolean
+  isPreOrderListing,          // (p) => boolean
+  isStandardListing,          // (p) => boolean
+} from "@mohasinac/appkit";
+
+// Before (pre-SB1-G):
+if (product.isAuction) { ... }
+
+// After (SB1-G):
+if (isAuctionListing(product)) { ... }
+
+// Or with the lower-level token:
+if (normalizeListingType(product) === "auction") { ... }
+```
+
+### Seed wrappers (additive — SB1-G)
+
+```
+appkit/src/seed/products-auctions-seed-data.ts
+    const _rawProductsAuctionsSeedData = [...inner entries with isAuction:true...];
+    export const productsAuctionsSeedData =
+        _rawProductsAuctionsSeedData.map(p => ({ ...p, listingType: "auction" as const }));
+
+Same pattern in products-preorders-seed-data.ts ("pre-order") and
+products-standard-seed-data.ts ("standard"). Inner entries keep their
+legacy isAuction/isPreOrder fields until Phase 4 schema cleanup lands.
+```
