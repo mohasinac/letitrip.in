@@ -403,8 +403,8 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### New Scaffolds
 
-- [ ] `_internal/client/scaffolds/DashboardScaffold.tsx` — sidebar: bottom-nav xs, off-canvas sm, sticky lg+
-- [ ] `_internal/client/scaffolds/AppShell.tsx` — header/footer/locale/notifications/search slot
+- [x] `_internal/client/scaffolds/DashboardScaffold.tsx` ✅ (2026-05-12 — moved up from S6 backlog; sidebar (lg+) / drawer (md) / bottom-nav (xs/sm); renderNav slot)
+- [x] `_internal/client/scaffolds/AppShell.tsx` ✅ (2026-05-12 — slot-driven header/sidebar/main/footer regions)
 
 ### Functions Migration
 
@@ -431,12 +431,12 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### Features to Migrate
 
-- [ ] `auth` — session stays client; email-verify/reset mutations → server actions; OAuth routes kept
-- [ ] `account` — `server/data: getAccount(uid)`; client form action
-- [ ] `media` — `server/actions: requestUploadUrl, finalizeMedia`; tmp/ → finalized rename preserved
-- [ ] `messages` — `server/data: listConversations`; RTDB ping channel preserved; `server/actions: sendMessage`
-- [ ] `scams` — `server/data: getScamProfile`; SSR (no admin UI yet)
-- [ ] `support` — `server/actions: createTicket`; `server/data: listTickets(uid)`
+- [x] `auth` — `_internal/server/features/auth/{actions,index}.ts` ✅ (2026-05-12 — authMeGET + consent-otp re-exported; session/OAuth remain client-side)
+- [x] `account` — `_internal/server/features/account/{data,actions,index}.ts` ✅ (2026-05-12 — getAccountForDetail + listAddressesForUser cache-wrapped; all 6 address actions re-exported)
+- [ ] `media` — features/media/ has client upload UI only; no server actions yet to shim. Deferred until consumer adds server-side requestUploadUrl/finalizeMedia
+- [x] `messages` — `_internal/server/features/messages/{data,actions,index}.ts` ✅ (2026-05-12 — listConversationsForBuyer/Store + getConversation cache-wrapped; sendMessage/markRead actions; RTDB ping channel preserved)
+- [x] `scams` — `_internal/server/features/scams/{data,index}.ts` ✅ (2026-05-12 — listVerifiedScammers + getScammerForDetail + getScammerProfilePageData)
+- [ ] `support` — features/support/ has only schemas (no actions yet). Deferred until ticket creation is implemented
 - [ ] `layout`, `shell`, `filters`, `forms` — pure client; no fetches
 - [ ] `copilot` — audit; classify as pure client tool or add server actions for mutations
 - [ ] `cron` + `whatsapp-bot` — move out of `features/`; `loyalty` stays skeleton
@@ -461,9 +461,9 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### Final Cleanup (CC-9, CC-10)
 
-- [ ] Remove `serverExternalPackages` appkit entries from `letitrip.in/next.config.js`
-- [ ] Remove `outputFileTracingIncludes` appkit workaround from `letitrip.in/next.config.js`
-- [ ] Remove `webpack.externals` appkit block from `letitrip.in/next.config.js`
+- [ ] Remove `serverExternalPackages` appkit entries from `letitrip.in/next.config.js` — **deferred**: client-entry.ts still wildcard re-exports ./index which transitively pulls firebase-admin. Removing prematurely breaks Vercel/Turbopack builds. Unblocks after S2 demolition closes dual-entry migration.
+- [ ] Remove `outputFileTracingIncludes` appkit workaround from `letitrip.in/next.config.js` — same deferral
+- [ ] Remove `webpack.externals` appkit block from `letitrip.in/next.config.js` — same deferral
 - [ ] Remove any appkit `content` glob or `safelist` from `letitrip.in/tailwind.config.js`
 - [ ] Delete all API routes with no non-React consumers (~200 routes)
 - [ ] Theme-swap experiment across every migrated feature — all repaint
@@ -486,7 +486,7 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 - [ ] CC-1: Demolish `appkit/src/index.ts` (8,933 lines) → replaced by two thin entries
 - [ ] CC-2: Demolish `AdminSectionsView.tsx` (2,768 LOC) → per-section-type files (S6)
-- [ ] CC-3: Hydration helpers `toClient()` + `clientInitial<T>()` in `shared/serialization/`
+- [x] CC-3: Hydration helpers `toClient()` + `clientInitial<T>()` in `shared/serialization/` ✅ (2026-05-12 — recursive Timestamp/Date → ISO; strips undefined; exported from both server-entry and client-entry)
 - [ ] CC-4: ESLint boundary rules inside appkit — extended per session ✅ (S1)
 - [ ] CC-5: `appkit/scripts/` reduced to 6 build scripts + CLI binaries ✅ (S1 partial)
 - [ ] CC-6: Delete dead REST hooks after each feature migrates
