@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { BrandDetailPageView, getBrandForDetail } from "@mohasinac/appkit";
+import {
+  BrandDetailPageView,
+  getBrandForDetail,
+  getBrandCategoryForDetail,
+} from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 300;
@@ -23,5 +27,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  return <BrandDetailPageView slug={slug} />;
+  const initialBrand = await getBrandCategoryForDetail(slug);
+  return <BrandDetailPageView slug={slug} initialBrand={initialBrand} />;
 }

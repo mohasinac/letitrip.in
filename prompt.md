@@ -1,7 +1,95 @@
-# letitrip.in — Master Working Prompt
+# letitrip.in — Master Working Prompt (Lane A · CRUD)
 
-> **Paste at the start of every session.**
-> Task status → `crud-tracker.md` (authoritative) · Deferred → `newchange.md` DEFERRED table · Architecture → `INSTRUCTIONS.md` · Slugs/media → `CLAUDE.md`
+> **Paste at the start of every CRUD-lane session.** Lane B (SSR) uses `ssrprompt.md`.
+> Task status → `crud-tracker.md` (authoritative) · Deferred → `newchange.md` DEFERRED table · Architecture → `INSTRUCTIONS.md` · Slugs/media → `CLAUDE.md` · Lane plan → `~/.claude/plans/what-do-you-think-abundant-turing.md`
+
+---
+
+## 📌 UPDATE-CADENCE RULE (READ FIRST, EVERY SESSION)
+
+**This file MUST be updated:**
+
+1. **Before every commit** — the LAST / CURRENT / NEXT block below must reflect what the commit just did. If you commit without updating this file, the next session loses the thread.
+2. **At session end** — collapse the prior CURRENT into LAST (keep only ONE last block), set CURRENT to the next ⏳ task, and prune the NEXT list.
+3. **When Lane B (SSR) finishes any session that affects a feature also on the CRUD roadmap** — re-read `ssrprompt.md` LAST block and copy any cross-lane note here under `[CROSS-LANE NOTES]`.
+
+Skipping this rule is the same as breaking CLAUDE.md Rule #1.
+
+---
+
+## 📋 LANE A — SESSION STATE (single source of truth for "where are we")
+
+> Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
+
+### ✅ LAST COMPLETED — TS Tech-Debt Sweep (2026-05-12)
+
+- Closed 7 already-done items (TS2/3/4/5/6/8/18) after verify-first audit
+- Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial; TS9 deferred (154 hex hits); TS17 ops pending
+- Tracker count: 149 → 159 done
+
+### 🔄 CURRENT — none (between sessions; awaiting Lane discipline kickoff)
+
+**Next action when a session starts**: pick the first ⏳ from NEXT below, mark it 🔄 here AND in `crud-tracker.md`, add a `[ACTIVE-FEATURES]` line in `newchange.md`.
+
+### ⏳ NEXT UP — Lane A queue (read `crud-tracker.md` Summary for full list)
+
+| # | Session | Tier / Tasks | Goal |
+|---|---------|--------------|------|
+| 1 | **S14** | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ (seed scale) |
+| 2 | **S15–S18** | P25–P31 | Categories / blog / coupons / validator seed scale |
+| 3 | **S19–S30** | SB1–SB11 + TC | Bundle + Prize Draw + Event Raffle system |
+| 4 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement |
+| 5 | **S38–S39** | SCAM2/4/6/7/8/9 | Admin scammer UI + SEO + notifications |
+| 6 | **S40–S43** | GD1–GD22 | In-app guide pages |
+| 7 | **S44** | OG1–OG5 | OpenGraph backlog (lane handoff candidate — coordinate with Lane B's S7) |
+| 8 | **S45** | EMG1–EMG5 triage | Emerging Patterns review |
+
+### [CROSS-LANE NOTES]
+
+_Empty._ Add an entry here when Lane B (SSR) ships something Lane A consumers should wire (new appkit data fn, new view prop, new server action). Format: `YYYY-MM-DD [SSR→CRUD] <one-line>`.
+
+---
+
+## 🛤️ LANE DISCIPLINE — READ BEFORE TOUCHING ANY FILE
+
+This repo runs two parallel Claude sessions in separate worktrees. You are **Lane A (CRUD)**. Lane B (SSR) edits `appkit/src/_internal/server/**`, OG/sitemap/robots/manifest, Functions, and `ssr-arch-tracker.md` in a different worktree at the same time. Step on its files and you create a merge conflict it will silently lose.
+
+### Lane A may write (CRUD)
+
+- `appkit/src/features/**` — feature views, forms, schemas, repositories (add methods only)
+- `appkit/src/seed/**`, `appkit/src/ui/**`
+- `src/app/api/**` — API route handlers + their sibling `_transform.ts` / `_schemas.ts`
+- `src/app/[locale]/**/page.tsx` for **render-prop wiring** (renderXxx slots, initialData props) when the feature is not on Lane B's active list
+- `src/constants/**`, `src/components/**`
+- `crud-tracker.md` — **exclusive owner**
+- `newchange.md` — append-only, prefix each block `[CRUD]`
+
+### Lane A is READ-ONLY on (do not write)
+
+- `appkit/src/_internal/**` — Lane B owns. Call functions from here, do not add/move files.
+- `appkit/src/server-entry.ts`, `appkit/src/client-entry.ts`, `appkit/src/configs/**`, `appkit/tsconfig.*.json`, `appkit/package.json` exports map
+- `appkit/functions/**`
+- `scripts/audit-ssr-in-appkit.mjs` (+ its baseline)
+- Every `opengraph-image.tsx`, `src/app/sitemap.ts`, `src/app/[locale]/robots.ts`, `manifest.ts`
+- `ssr-arch-tracker.md`
+
+### Coordination protocol
+
+Before touching any feature, read the top of `newchange.md` for the `[ACTIVE-FEATURES]` block:
+
+```
+[ACTIVE-FEATURES]
+- products → Lane A (Tier V form polish)
+- bundles → Lane B (S3 data layer)
+```
+
+- If your target feature is owned by Lane B, **pick a different task** — do not push through.
+- When you start a task, prepend a line for your feature (`<feature> → Lane A (<tier> <task-id>)`); when done, remove the line in the same commit that closes the task.
+- If Lane B added a new appkit function you need (data layer, adapter, server action) and it's missing, file the seam request as a one-line `[CRUD→SSR]` entry at the top of `newchange.md` and pick another task while you wait.
+
+### Rebase cadence
+
+At the start of every turn: `git fetch && git rebase origin/main`. Before every commit: `npm run check` exits 0. If you hit a merge conflict in a file Lane B owns, **abort the rebase and ping Lane B** — do not edit its file to resolve.
 
 ---
 
@@ -130,23 +218,33 @@ In-app Guides           S40–S43      ⏳  GD1–GD22 (zero-risk static content
 
 ```
 1. Read crud-tracker.md → find the next ⏳ task for this session, mark it 🔄
-2. Read newchange.md DEFERRED table → resolve any open gaps before new work
-3. Read every source file you will touch — never code from memory or tracker descriptions alone
-4. Run: npx tsc --noEmit in BOTH letitrip.in/ AND appkit/ → must be 0 errors before you begin
-5. If context feels fuzzy (too many files in mind) → STOP and start a fresh session
+2. Read newchange.md [ACTIVE-FEATURES] block → confirm Lane B is NOT on the same feature
+3. Read newchange.md DEFERRED table → resolve any open gaps before new work
+4. Read every source file you will touch — never code from memory or tracker descriptions alone
+5. Run: npm run check → must exit 0 before you begin (tsc both repos + 4 audits + eslint)
+6. If context feels fuzzy (too many files in mind) → STOP and start a fresh session
 ```
+
+**CLAUDE.md rules are non-negotiable**:
+- **Rule #1** — stop and ask before any autonomous decision / scope deviation
+- **Rule #2** — ✅ does not mean working; re-read source, never trust the tracker
+- **Rule #3** — schema/logic change updates every caller + seed + types in the same session
+- **Rule #4** — never fix without first verifying the bug is still present in the current source
+- **Rule #5** — task is not done until `npm run check` exits 0
 
 ### Per-task loop (repeat for every task)
 
 ```
-1. PLAN      Write 3–5 bullets: what files change and why
-2. CODE      Implement the smallest correct change
-3. TSC       npx tsc --noEmit → 0 errors (both repos if appkit changed)
-4. VERIFY    Visual confirm in browser — do not mark ✅ on TS alone
-5. COMMIT    fix/feat/wire/seed(scope): one-line description  (one task per commit)
-6. TRACKER   Mark task ✅ in crud-tracker.md, fill Part#, add one-line done note + timestamp
-7. NEWCHANGE  Prepend task entry to newchange.md (scope, files changed, deferred items)
-8. PROMPT    Update 🔄 CURRENT task status in this file
+1. PLAN      Write 3–5 bullets: what files change and why. Stop if a Lane B file appears.
+2. LANE      Prepend [ACTIVE-FEATURES] line in newchange.md for this feature
+3. CODE      Implement the smallest correct change
+4. CHECK     npm run check → 0 errors (NOT just tsc — full quality gate per CLAUDE.md Rule #5)
+5. VERIFY    Visual confirm in browser — do not mark ✅ on check pass alone
+6. COMMIT    fix/feat/wire/seed(scope): one-line description  (one task per commit)
+7. TRACKER   Mark task ✅ in crud-tracker.md, fill Part#, add one-line done note + timestamp
+8. LANE-CLR  Remove the [ACTIVE-FEATURES] line in the same commit that closes the task
+9. NEWCHANGE  Prepend task entry to newchange.md prefixed [CRUD] (scope, files changed, deferred items)
+10. PROMPT   Update 🔄 CURRENT task status in this file
 ```
 
 ### Per-task checklist

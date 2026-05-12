@@ -3,6 +3,8 @@
 > Read this file at the start of every session. It is the single source of truth for project context, rules, and data references that are not already in the code.
 >
 > **Brand name**: **LetItRip** — always this exact casing in UI copy, messages, and documentation. Domain is letitrip.in but the brand display name is LetItRip. Never write "LetiTrip", "Letitrip", or "Let It Rip".
+>
+> **🛤️ Parallel lanes**: This repo runs two Claude sessions in separate worktrees. Lane A (CRUD) uses `prompt.md` + `crud-tracker.md`. Lane B (SSR) uses `ssrprompt.md` + `ssr-arch-tracker.md`. Coordination via the `[ACTIVE-FEATURES]` block at the top of `newchange.md` (read before touching any feature). Lane plan: `~/.claude/plans/what-do-you-think-abundant-turing.md`. Both prompts must be updated before every commit and at session end.
 
 ## Index
 

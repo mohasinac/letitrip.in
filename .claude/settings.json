@@ -10,7 +10,8 @@
       "Bash(npm run check:*)",
       "Bash(npm run lint)",
       "Bash(npm run lint:fix)",
-      "Bash(npm run audit:ssr-in-appkit)"
+      "Bash(npm run audit:ssr-in-appkit)",
+      "Bash(npm --prefix ./appkit run check:types:appkit)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"
