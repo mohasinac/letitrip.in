@@ -1678,8 +1678,8 @@ Rules to keep top-of-mind every task:
 | OG3 | `user/[slug]/opengraph-image.tsx` | S | ⏳ | Public user profile card — display name + avatar + role badge (verified seller / buyer). **Verify with author whether `/user/[slug]` is a public route before implementing** — store profiles already covered by stores OG. |
 | OG4 | Sub-listing detail OG | S | ⏳ | Verify route exists first (`sub-listings/[slug]/page.tsx` or similar). If yes: scaffold OG with parent listing context + sublisting title. If no: close as N/A with one-line note. |
 | OG5 | Audit script: `appkit/scripts/verify-og-coverage.mjs` | M | ⏳ | Walks `src/app/[locale]/**/page.tsx`, lists every `[slug]`/`[id]` dynamic detail route, checks for sibling `opengraph-image.tsx`, exits non-zero on missing. Wire into CI gate alongside `verify-entries.mjs`. Output format: one line per missing OG. Verification: run on current tree → must report only the OG1–OG4 known gaps + every new resource not yet shipped. |
-| OG-FIX1 | Edge-runtime build break — `node:fs` / `crypto` in OG routes | M | ⏳ | **Production blocker.** Verified S23 2026-05-12: `npm run build` fails at `Collecting page data` with `Failed to load external module node:fs: Native module not found: node:fs` originating from `/[locale]/blog/[slug]/opengraph-image` (and likely all sibling edge OG routes). Root cause: OG routes declare `runtime = "edge"` but import from `@mohasinac/appkit/server`, whose chain pulls in `appkit/dist/features/auth/token-store.js` (`import crypto from "crypto"`) and `consent-otp.js` (`import { createHmac, randomInt } from "crypto"`). Build also surfaces 2 edge-runtime warnings from the same chain via `/api/stores/[storeSlug]/reviews/route.ts`, `/api/checkout/route.ts`, `src/actions/checkout.actions.ts` (callers not declared edge so they're warnings, not errors). **Fix paths to evaluate**: (a) switch OG routes off edge to Node runtime — simplest, costs cold-start latency; (b) add per-feature thin OG data getters in `appkit/src/_internal/server/og/` that import only the bare minimum (no auth/checkout chain) — best long-term; (c) carve `appkit/server` into smaller edge-safe entry points. Last touched in `22a4f3c5e refactor(og): tighten consumer shims` — predates this session. Verification: `npm run build` exits 0 + every `/<route>/opengraph-image` returns `200 image/png` against `curl -sI`. |
-| OG-FIX2 | `outputFileTracingIncludes` moved out of `experimental` | XS | ⏳ | Build warning: `Unrecognized key(s) in object: 'outputFileTracingIncludes' at "experimental"`. Next 16 moved this option to the top-level config. One-line move in `next.config.js` (or in `defineNextConfig` inside `appkit/src/configs/next.ts` if that's where the wrapper sets it). Non-blocking but noisy in every build. |
+| OG-FIX1 | Edge-runtime build break — `node:fs` / `crypto` in OG routes | M | ✅ S23-follow-up 2026-05-12 — applied fix path (a): dropped `export const runtime = "edge"` from all 9 OG routes via the new `scripts/strip-og-edge.mjs` helper. Routes now default to Node runtime; the 2 edge-runtime warnings from `appkit/dist/features/auth/{token-store,consent-otp}.js` (via /api/stores reviews + /api/checkout + checkout.actions) also disappeared. `npm run build` exits 0; zero warnings. Long-term path (b) — thin `_internal/server/og/` getters — can revisit when cold-start latency becomes a problem. Original notes: | **Production blocker.** Verified S23 2026-05-12: `npm run build` fails at `Collecting page data` with `Failed to load external module node:fs: Native module not found: node:fs` originating from `/[locale]/blog/[slug]/opengraph-image` (and likely all sibling edge OG routes). Root cause: OG routes declare `runtime = "edge"` but import from `@mohasinac/appkit/server`, whose chain pulls in `appkit/dist/features/auth/token-store.js` (`import crypto from "crypto"`) and `consent-otp.js` (`import { createHmac, randomInt } from "crypto"`). Build also surfaces 2 edge-runtime warnings from the same chain via `/api/stores/[storeSlug]/reviews/route.ts`, `/api/checkout/route.ts`, `src/actions/checkout.actions.ts` (callers not declared edge so they're warnings, not errors). **Fix paths to evaluate**: (a) switch OG routes off edge to Node runtime — simplest, costs cold-start latency; (b) add per-feature thin OG data getters in `appkit/src/_internal/server/og/` that import only the bare minimum (no auth/checkout chain) — best long-term; (c) carve `appkit/server` into smaller edge-safe entry points. Last touched in `22a4f3c5e refactor(og): tighten consumer shims` — predates this session. Verification: `npm run build` exits 0 + every `/<route>/opengraph-image` returns `200 image/png` against `curl -sI`. |
+| OG-FIX2 | `outputFileTracingIncludes` moved out of `experimental` | XS | ✅ S23-follow-up 2026-05-12 — `appkit/src/configs/next.ts` `defineNextConfig` now reads `outputFileTracingIncludes` as a top-level override key, merges the firebase-admin/lib/database forcing as the default, and emits it at the top of the returned config (not under `experimental`). `NextConfigOverride` interface gained the typed field. `npm run build` no longer prints the "Unrecognized key" warning. Original notes: | Build warning: `Unrecognized key(s) in object: 'outputFileTracingIncludes' at "experimental"`. Next 16 moved this option to the top-level config. One-line move in `next.config.js` (or in `defineNextConfig` inside `appkit/src/configs/next.ts` if that's where the wrapper sets it). Non-blocking but noisy in every build. |
 | DEV-1 | `watch:css` produces degraded `dist/tailwind-utilities.css` | S | ⏳ | Discovered S23 2026-05-12 via the Stop hook: when `npm run dev` is left running, appkit's `watch:css` overwrites `dist/tailwind-utilities.css` with a build missing the `md:` / `lg:` breakpoint utilities (Tailwind scans `dist/` before TSC has finished emitting, so the `min-width:768px` / `min-width:1024px` class strings aren't seen and get purged). `verify-css-build` then fails on next `npm run check`. One-command recovery: `npm --prefix ./appkit run build`. **Fix paths**: (a) point `watch:css` at `src/**` (not `dist/**`), (b) gate `watch:css` on a first-pass TSC completion via a small wrapper, or (c) restore the build CSS on dev shutdown via the `killTree` hook in `scripts/dev-next.mjs`. Tracked so the next audit failure has a one-link explanation. |
 
 ---
@@ -1879,5 +1879,122 @@ Rules to keep top-of-mind every task:
 | RA-TierFI | Retrofit audit — Tier FI Product Feature Icons & Badges | ⏳ | |
 | RA-TierAX | Retrofit audit — Tier AX Action System & URL Patterns | ⏳ | |
 | RA-TierSB | Retrofit audit — Tier SB Bundle / Prize Draw / Event Raffle | ⏳ | |
+| RA-TierAK | Retrofit audit — Tier AK Appkit Reusability + DI | ⏳ | Applies SSR-design checklist + DI checklist (every public feature exposes `I<Feature>Provider`, default impl registered, consumer override path documented). |
+| RA-TierAP | Retrofit audit — Tier AP Architectural Patterns | ⏳ | One pass per pattern (strategy/adapter/facade/decorator/observer/command/cqrs/fsm/spec/builder/chain/null-object/template-method/memento/composite); each gap → fix row under owning feature tier. |
+| RA-TierLP | Retrofit audit — Tier LP Lint Plugin Migration | ⏳ | Confirms migrated rules emit on the same files the scripts used to flag; `check:audits` exit code parity. |
+
+---
+
+## Tier AK — Appkit Reusability + Provider-Registry DI *(post-beta)*
+
+> Post-beta cleanup. Rewrites OK — no backwards-compat shims, no deprecation periods. Delete old code outright; change call sites in the same commit.
+
+### → Tier AK — *Phase 1: lifts from letitrip.in → appkit*
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| AK1-typography | Create `appkit/src/features/typography/` with `<TypographyProvider>` + `<FontToggler>` + `useTypography()`. Pass font className map + localStorage key prefix from consumer. | ⏳ | Migrates `src/components/user/FontToggleClient.tsx`. Default no-op so existing letitrip.in renders identically. |
+| AK1-newsletter | Create `appkit/src/_internal/{client,server}/features/newsletter/` with `<NewsletterForm source="...">` + `INewsletterProvider` (`subscribe(email, source)`). letitrip.in registers Firestore-backed impl. | ⏳ | Consolidates `HomepageNewsletterForm.tsx` + `FooterNewsletterSlot.tsx` (duplicate). Server `actions.ts` + Zod schema in `_internal/shared/features/newsletter/`. |
+| AK1-logger | Move `src/lib/logger.ts` → `appkit/src/monitoring/logger.ts`. Add `ILoggerProvider` contract in `appkit/src/contracts/logger.ts`. Export `getLogger()` via registry. | ⏳ | Sits next to existing `error-tracking.ts` + `performance.ts`. Default console impl; consumer can register Cloud Logging / Sentry / NDJSON. |
+| AK1-url-table | Inline letitrip's `useUrlTable` wrapper logic — accept `router?` + `pathname?` overrides in appkit's `useUrlTable` opts. Delete `src/hooks/useUrlTable.ts`. | ⏳ | Verifies the `opts?` contract works end-to-end. |
+| AK1-ui-labels | Extract generic `UI_LABELS` namespaces (LOADING, EMPTY, ACTIONS, ERROR, TABLE) → `appkit/src/_internal/client/i18n/defaults.ts`. Wire into `LabelsProvider` defaults. letitrip.in keeps only brand-specific labels. | ⏳ | ~200 lines moved. No consumer code changes — `LabelsProvider` falls back to defaults. |
+| AK1-audit | One-shot scan of `letitrip.in/src/` for further generic candidates (search inputs, breadcrumbs, share buttons, copy-to-clipboard, useDebounce/useLocalStorage/useMediaQuery hooks). Produces follow-up rows under AK1. | ⏳ | Audit only. Each finding → its own row. |
+
+### → Tier AK — *Phase 2: DI seams for swappable features*
+
+> Every feature below gets an `I<Feature>Provider` interface in `appkit/src/contracts/`, a default impl, and registration via `appkit/src/contracts/registry.ts`. Consumer registers its own impl at boot to replace any of them without forking appkit.
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| AK2-checkout-di | Add `ICheckoutProvider` contract: `createOrder(cart, address, payment)`, `validateCart(cart)`, `getSteps()`. Refactor `CheckoutView` to consume provider via `useCheckoutProvider()`. Keep current logic as `DefaultCheckoutProvider`. | ⏳ | Flagship example. Cart stays in appkit untouched; checkout becomes consumer-replaceable. |
+| AK2-cart-di | Add `ICartProvider` contract: `getCart()`, `addItem()`, `removeItem()`, `merge(guest, user)`, `clear()`. Cart hooks (`useCart`, `useAddToCart`) consume via provider. Default = current localStorage + Firestore impl. | ⏳ | Lets consumer swap to Redis/server-cart without touching UI. |
+| AK2-notification-di | Add `INotificationProvider` contract: `notify({type, title, body, userId, entityId})`. Default = Firestore `notifications` collection. Consumer can register FCM/email/webhook impl. | ⏳ | Currently hardcoded to `notificationsRepository` everywhere. |
+| AK2-media-upload-di | Add `IMediaUploadProvider` contract: `requestSignedUrl(ctx)`, `confirmUpload(slug)`, `abortUpload(slug)`. Default = current Firebase Storage signed-URL flow. | ⏳ | Lets consumer swap to S3/Cloudinary/Bunny. `generateMediaFilename(ctx)` stays in appkit. |
+| AK2-address-di | Add `IAddressValidationProvider` contract: `validate(address)`, `normalize(address)`, `geocode?(address)`. Default = pincode-only India validation. | ⏳ | Currently inlined in `AddressForm`. |
+| AK2-search-pluggable | `ISearchProvider` already exists in `contracts/search.ts` — audit `SearchView` to confirm it consumes via provider not direct repo calls. Fix gaps. | ⏳ | Audit + retrofit. |
+| AK2-copilot-classify | Audit `features/copilot/` — decide pure-client vs. provider-backed. If provider: add `ICopilotProvider`. | ⏳ | Cross-links `X-copilot-classify`. |
+| AK2-registry-doc | Document the full provider registry in `appkit/README.md` — every `I*Provider`, default impl, how to register a custom one. Include the 6-level Override Hierarchy. | ⏳ | Cross-links `IX-override-doc` + `IX-appkit-docs`. |
+
+### → Tier AK — *Phase 3: SOLID + design-principles sweep*
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| AK3-srp-audit | **SRP** — flag any `_internal/server/features/<f>/data.ts` doing mutations (belongs in `actions.ts`) or `actions.ts` doing reads (belongs in `data.ts`). | ⏳ | Punch-list output; each gap → fix row under owning tier. |
+| AK3-ocp-slots | **OCP** — every appkit view export accepts at least one `renderXxx` slot prop. Gaps become rows. | ⏳ | Sister to lint rule `X-slots-lint`. |
+| AK3-lsp-repo | **LSP** — any subclass overriding `BaseRepository` methods in a way that breaks the parent contract (e.g. `createWithId` bypass — recurrent pattern #9). | ⏳ | Generate rows for each violator. |
+| AK3-isp-contracts | **ISP** — split fat `I*Provider` contracts (>6 methods) into role-specific sub-contracts (e.g. `ICheckoutValidator` + `ICheckoutOrchestrator` + `ICheckoutPayment`). | ⏳ | Apply to new AK2 contracts before they fossilize. |
+| AK3-dip-direct-repo | **DIP** — every appkit component/hook importing a concrete repository instead of a provider. Each → fix row. | ⏳ | Structural enforcer for AK2. |
+| AK3-opts-everywhere | Backfill `opts?: XOptions` on every appkit public function lacking it. Codified by `X-opts-lint`. | ⏳ | |
+| AK3-dry-duplication | **DRY** — run Duplication Decision Framework (CLAUDE.md) on every cross-feature overlap surfaced during AK1. | ⏳ | Cross-links `IX-DUP-AUDIT`. |
+| AK3-yagni-prune | **YAGNI** — flag any contract method / slot prop / opts field with **zero callers**. Delete or document a near-term consumer. | ⏳ | |
+| AK3-demeter | **Law of Demeter** — flag chains like `user.profile.settings.theme.color` deeper than 2 hops in appkit code. Introduce intermediate accessors. | ⏳ | |
+| AK3-composition | **Composition over Inheritance** — audit `appkit/src/repositories/` + `_internal/server/features/*/` class hierarchies. Anything ≥3 levels deep → `mixin(BaseRepo, [WithPII, WithAudit, WithCache])`. | ⏳ | |
+| AK3-tell-dont-ask | **Tell-Don't-Ask** — flag controllers reading state then calling back (`if (cart.isEmpty()) cart.addItem(x)` → `cart.addIfEmpty(x)`). | ⏳ | Surfaces missing intent methods on providers. |
+
+---
+
+## Tier AP — Architectural Patterns (beyond DI) *(post-beta)*
+
+> GoF / DDD / CQRS patterns either already informal in the codebase or that would materially simplify upcoming work. Each row formalizes one pattern with a clear seam.
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| AP1-strategy | **Strategy** — extract pluggable algorithms: `IPricingStrategy` (regular/auction/pre-order/bundle/prize-draw), `IDiscountStrategy` (percentage/fixed/free-shipping/BOGO), `IShippingRateStrategy` (flat/weight/Shiprocket). Default strategies via registry. | ⏳ | Aligns with SB1 listingType migration. |
+| AP2-adapter | **Adapter** — every `_internal/server/features/<f>/adapters.ts` must export `toClientX(doc)` + `fromClientX(payload)` symmetric pair. Codify naming + signature; lint rule `lir/require-adapter-pair`. | ⏳ | Already partially in place. |
+| AP3-facade | **Facade** — document that appkit barrels (`index.ts`, `client.ts`, `server.ts`) ARE facades. Nothing outside appkit may reach into `appkit/src/features/**` directly. Lint via `lir/no-deep-appkit-import` (extend existing `lir/no-deep-barrel-import`). | ⏳ | |
+| AP4-repository-decorator | **Decorator** — replace ad-hoc `BaseRepository` overrides (PII encryption, audit, caching) with composable `withPii(repo)` / `withAudit(repo)` / `withCache(repo)` decorators. Solves `createWithId` bypass class (recurrent #9). | ⏳ | Pairs with `AK3-composition`. Each decorator one file in `appkit/src/repositories/decorators/`. |
+| AP5-observer-eventbus | **Observer / Event Bus** — `appkit/src/events/` with typed channels: `orderPlaced`, `bidWon`, `productViewed`, `userBanned`. Replaces cross-feature direct chains (order → notification → email). | ⏳ | Default in-process bus; consumer can bridge to pub/sub (FCM, Cloud Tasks). |
+| AP6-command-action | **Command** — every `"use server"` action follows `{ input: ZodSchema, handler: (input, ctx) => Result, name: string }` shape so they can be queued, retried, audited, replayed. Retrofit one feature at a time. | ⏳ | Foundation for offline-queue + audit log. |
+| AP7-cqrs-formalize | **CQRS-lite** — codify the existing `data.ts` (queries, `cache()`-wrapped) vs. `actions.ts` (commands) split. Lint rule `lir/no-cross-cqrs-call`. | ⏳ | Sister to `AK3-srp-audit`. |
+| AP8-state-machine | **State Machine** — formalize lifecycles for order (PENDING→PROCESSING→SHIPPED→DELIVERED→REFUNDED), auction (DRAFT→LIVE→ENDED→SETTLED), pre-order (TAKING_ORDERS→AWAITING_STOCK→FULFILLING→CLOSED), ban (NONE→SOFT→HARD), event-entry (PENDING→CONFIRMED→CANCELLED→WAITLISTED). Use lightweight custom FSM or `xstate`. | ⏳ | Replaces scattered `if (status === "X" && newStatus === "Y") allow`. |
+| AP9-specification | **Specification** — composable Firestore filters: `new ActiveListingsSpec().and(new InCategorySpec(slug)).and(new PriceBetweenSpec(lo, hi))`. Existing sieve is partial impl. | ⏳ | Bridges sieve params (f/s/p/ps/q) to typed predicates. |
+| AP10-builder-order | **Builder** — `new OrderBuilder().forBuyer(uid).fromCart(cart).withAddress(addr).withCoupon(code).withPaymentMethod(razorpay).build()`. Replaces the current 60-line `createOrder()`. Validation at `build()`. | ⏳ | Used inside `DefaultCheckoutProvider`. |
+| AP11-chain-of-resp | **Chain of Responsibility** — checkout pipeline: validateCart → applyDiscounts → computeShipping → computeTax → reserveInventory → createPayment → persistOrder → notify. Each link independently testable, registrable, replaceable. | ⏳ | Pairs with AP1 (strategies) + AP6 (commands). |
+| AP12-null-object | **Null Object** — every `I*Provider` ships a `NoOpXProvider` default so consumers opt out without registering. Remove `?.` chains in callers. | ⏳ | E.g. `NoOpLoggerProvider`, `NoOpNotificationProvider`. |
+| AP13-template-method | **Template Method** — `BaseRepository` already uses this. Audit + document hook points (`beforeCreate`, `afterCreate`, `beforeUpdate`) so subclasses don't bypass via direct field writes. Pair with AP4 decorators. | ⏳ | |
+| AP14-memento-draft | **Memento** — formalize draft-save / undo for admin forms (product editor, blog editor, carousel slide builder). One `useDraft(key, snapshot)` hook in appkit. | ⏳ | Each form currently rolls its own localStorage save. |
+| AP15-composite-sections | **Composite** — homepage sections + carousel + product custom sections are composite trees. Document `ISectionRenderer` contract so new section types plug in without touching `HomepageRenderer` switch. | ⏳ | Replaces the 21-section-type switch. Open/Closed for sections. |
+| AP16-principles-doc | Add `appkit/docs/architecture.md` — one page per pattern with when to use, when NOT, code example, anti-example, related rules. Index from `appkit/README.md`. | ⏳ | Onboarding artifact. |
+
+---
+
+## Tier LP — Lint Plugin Migration *(post-beta)*
+
+> Migrate audit scripts into custom `lir/*` rules so there is one source of truth. `verify-css-build.mjs` stays as a script (post-build artifact check). `npm run check:audits` becomes `eslint --rule "lir/audit-*:error" .` after LP1 lands.
+
+### → Tier LP — *Phase 1: audit scripts → rules*
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| LP1-audit-violations | Migrate `appkit/scripts/audit-violations.mjs` → `lir/no-internal-boundary-cross` rule. Enforces `_internal/{client,shared,server}` cross-import bans currently in `appkit/.eslintrc.json` + script. | ⏳ | Delete script after rule lands + `package.json` `check:audits` updated. |
+| LP1-verify-entries | Migrate `appkit/scripts/verify-entries.mjs` → `lir/no-firebase-admin-in-client-entry` rule. Walks import graph from `appkit/src/client.ts` / `client-entry.ts`. | ⏳ | Already partly covered by `lir/no-firebase-admin-outside-backend`; this is the entry-graph variant. |
+| LP1-audit-ssr | Migrate `scripts/audit-ssr-in-appkit.mjs` → 4 rules: `lir/enforce-ssr-shim-size` (≤30 line page.tsx), `lir/enforce-ssr-sidecar` (data.ts/adapters.ts present), `lir/no-hardcoded-branding-in-internal`, `lir/no-fat-og-image` (≤40 line opengraph-image.tsx). | ⏳ | Baseline of 8 root violations becomes `warn` for grandfathered files; new files `error`. Cross-links `X-audit-baseline`. |
+| LP1-verify-css-keep | Keep `appkit/scripts/verify-css-build.mjs` as-is (post-build artifact check; not lintable). | ⏳ | Marker row documenting the decision. |
+
+### → Tier LP — *Phase 2: new rules from CLAUDE.md anti-patterns*
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| LP2-listing-type | `lir/no-isauction-isPreorder-boolean` — flag any read/write of `isAuction` / `isPreOrder` on a product. Use `isAuctionListing(p)` / `normalizeListingType(p)`. Codifies SB1-G Phase 4 (recurrent #1). | ⏳ | Medium. Property-access + object-key + import-name checks. |
+| LP2-no-raw-hex | `lir/no-raw-hex-color` — flag `#[0-9a-fA-F]{3,8}` in `style={}` props and `*.css` outside variable defs. Use `var(--appkit-color-*)`. | ⏳ | Medium. |
+| LP2-no-z-arbitrary | `lir/no-arbitrary-z-index` — flag `z-[N]` in className strings. Use `var(--appkit-z-*)`. | ⏳ | Easy. |
+| LP2-no-inline-nav | `lir/no-inline-nav-groups` — flag inline definition of `*_NAV_GROUPS` or sidebar nav arrays in layout files. Import from `@/constants/navigation`. | ⏳ | Medium. |
+| LP2-no-import-side-css | `lir/no-css-at-import-from-node-modules` — flag `@import "@mohasinac/*"` in `globals.css`. Forces JS `import "pkg/styles"` in `layout.tsx`. Codifies recurrent #10. | ⏳ | Easy. CSS-AST rule. |
+| LP2-routes-strict | `lir/no-hardcoded-route` enhancement — extend to cover `redirect()`, `permanentRedirect()`, `Link href={\`/x/${id}\`}`, fetch URLs. | ⏳ | Enhances existing rule. |
+| LP2-media-filename | `lir/require-generate-media-filename` — flag string literals matching `firebasestorage.googleapis.com` written to Firestore docs. Use `generateMediaFilename(ctx)` + `/media/<slug>` proxy. | ⏳ | Medium. |
+| LP2-no-bare-fetch-firestore | `lir/no-direct-firestore-write` — flag `setDoc`/`updateDoc`/`addDoc` outside `appkit/src/repositories/` + `_internal/server/features/*/actions.ts`. | ⏳ | Enhances `lir/no-direct-firestore-query`. |
+| LP2-opts-suffix | `lir/require-opts-param` (codifies `X-opts-lint`) — flag any export from appkit facades whose last parameter is not `opts?:` and has ≥1 parameter. | ⏳ | Hard. Public-export crawl. |
+| LP2-render-slot | `lir/require-render-slot-prop` (codifies `X-slots-lint`) — flag any appkit view-shell export whose props don't include at least one `render*` prop. | ⏳ | Hard. Component-prop type check. |
+| LP2-firebase-admin-static | `lir/no-static-firebase-admin-import` — flag top-level `import` of `firebase-admin/*` outside `appkit/src/server.ts` + `_internal/server/**` + `repositories/**`. Codifies Turbopack client-bundle trap. | ⏳ | Medium. |
+| LP2-sideEffects-flag | `lir/require-sideeffects-false` — package.json rule on `appkit/package.json`: `"sideEffects": false` must remain. Without it Turbopack bundles firebase-admin chain. | ⏳ | Easy. JSON rule. |
+
+### → Tier LP — *Phase 3: plumbing*
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| LP3-plugin-relocate | Decide: keep plugin at sibling `packages/packages/eslint-plugin-letitrip/` OR move into `appkit/eslint-plugin/` and ship via `@mohasinac/appkit/eslint`. **Recommended: move into appkit** so consumers other than letitrip.in get the rules. | ⏳ | Decision row. If moved: update `eslint.config.mjs:5` import path. |
+| LP3-check-audits-rewire | Update `package.json` — `check:audits` becomes `eslint --rule "lir/audit-*:error" --no-eslintrc .` after LP1 lands. Delete migrated scripts. | ⏳ | Stop hook wiring stays. |
+| LP3-baseline-policy | Document baseline-drift policy for LP1-audit-ssr migrated rules in `appkit/README.md` — grandfathered files warn, new violations error. | ⏳ | |
+| LP3-rule-docs | One markdown page per rule under `appkit/eslint-plugin/docs/<rule>.md` with "Don't / Do / Why" examples. | ⏳ | Improves IDE hover + onboarding. |
 
 ---

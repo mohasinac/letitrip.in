@@ -2,7 +2,9 @@ import { ImageResponse } from "next/og";
 import { getSublistingCategoryForDetail, renderSublistingCategoryOg } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
-export const runtime = "edge";
+// OG-FIX1: removed `export const runtime = "edge"` — the @mohasinac/appkit/server
+// chain pulls in node:crypto via features/auth/{token-store,consent-otp}. Node
+// runtime is the default; cold start is slightly slower but functional.
 export const contentType = "image/png";
 export const size = { width: 1200, height: 630 };
 

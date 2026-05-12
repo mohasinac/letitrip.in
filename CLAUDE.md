@@ -161,6 +161,7 @@ This project deploys to Vercel **Hobby** — the free plan. Every API route, ser
 | `appkit/src/seed/` | All seed data files |
 | `src/app/api/demo/seed/route.ts` | Seed API endpoint (streaming NDJSON) |
 | `src/components/dev/SeedPanel.tsx` | Seed admin UI |
+| `docs.letitrip.in` (when live) | Authoritative deep docs — developer (UI/server/API), buyer help, seller guides, employee/admin guides. `appkit/index.md` + `src/index.md` remain the in-editor quick-reference. See Tier DX in `crud-tracker.md` for build status. |
 
 ---
 
