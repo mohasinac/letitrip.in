@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
+  // getAuctionForDetail is React.cache() — this reuses the generateMetadata read.
   const auction = await getAuctionForDetail(id);
   const productFeatures = await getProductFeaturesForAuction(auction?.storeId ?? null);
 
@@ -74,6 +75,7 @@ export default async function Page({ params }: Props) {
       />
       <AuctionDetailPageView
         id={id}
+        initialAuction={auction}
         productFeatures={productFeatures}
         onPlaceBid={placeBidAction}
       />

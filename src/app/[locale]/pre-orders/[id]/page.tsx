@@ -34,6 +34,7 @@ export default async function Page({ params }: Props) {
   return (
     <PreOrderDetailPageView
       id={id}
+      initialPreOrder={product}
       productFeatures={productFeatures}
       onReserveNow={reservePreOrderAction}
     />

@@ -1,7 +1,7 @@
 # SSR Rearchitecture Tracker — appkit × letitrip.in
 
 > **Approved plan**: `C:\Users\mohsi\.claude\plans\cant-we-do-it-cosmic-flamingo.md`
-> **Last updated**: 2026-05-12 — S1 complete.
+> **Last updated**: 2026-05-12 — S2 complete; Arch-S4+S5 data/action layers done; S3 consumer wiring in progress.
 > **Status legend**: ⏳ pending · 🔄 in progress · ✅ done · ❌ blocked · ⚠️ done-but-verify
 
 ---
@@ -11,10 +11,10 @@
 | Session | Scope | Status |
 |---------|-------|--------|
 | S1 | Foundation — entries, tokens, config helpers, CLI, i18n contract | ✅ Done |
-| S2 | Reference feature (products) + SEO data layer | ⏳ Pending |
-| S3 | Catalog & Listings + ListingScaffold + DetailScaffold | ⏳ Pending |
-| S4 | Transactional core + functions migration batch 1 | ⏳ Pending |
-| S5 | Per-user surfaces + Homepage + Search | ⏳ Pending |
+| S2 | Reference feature (products) + SEO data layer | ✅ Done |
+| S3 | Catalog & Listings + ListingScaffold + DetailScaffold | 🔄 In progress — data layers done; consumer wiring pending |
+| S4 | Transactional core + functions migration batch 1 | ⚠️ Server layers done (cart/orders/promotions); consumer wiring + Functions migration pending |
+| S5 | Per-user surfaces + Homepage + Search | ⚠️ Server layers done (reviews/wishlist/history/homepage); consumer wiring + Functions migration pending |
 | S6 | Seller + Admin + Content + scaffolds completion | ⏳ Pending |
 | S7 | Cross-cutting + lift-from-letitrip + Cleanup & Verify | ⏳ Pending |
 
@@ -151,26 +151,34 @@
 
 ### Features to Migrate
 
-- [ ] `categories` — `server/data: listCategories, getCategory`; SSR category tree in `[locale]/layout.tsx`
-- [ ] `brands` — `server/data: listBrands, getBrand`; `/brands` + `/brands/[slug]` SSR
-- [ ] `auctions` — `server/data: getAuctionForDetail, listActiveAuctions`; RTDB bid stream preserved
-- [ ] `pre-orders` — `server/data: getPreOrderForDetail, listPreOrders`
+- [ ] `categories` — `server/data: listCategories, getCategoryTree, getCategoryForDetail`; SSR category tree in `[locale]/layout.tsx`
+- [x] `brands` — `_internal/server/features/brands/data.ts` (`getBrandForDetail`) + actions done; `BrandDetailPageView` `initialBrand?` prop needed; consumer page passes slug only
+- [x] `auctions` — `_internal/server/features/auctions/data.ts` (`getAuctionForDetail`) done; `AuctionDetailPageView` `initialAuction?` prop needed
+- [x] `pre-orders` — `_internal/server/features/pre-orders/data.ts` (`getPreOrderForDetail`) done; `PreOrderDetailPageView` `initialPreOrder?` prop needed
 - [ ] `bundles` — `server/data: getBundle(slug)` with items pre-resolved
 - [ ] `grouped` — `server/data: getGroupedListing(slug)`
 - [ ] `sublisting` — `server/data: getSublisting(slug)`
-- [ ] `stores` — `server/data: getStore(slug), listStoreProducts`; listing toolbar wired with `initialData`
+- [ ] `stores` — `server/data: getStoreForDetail(slug), listStoreProducts`; `StoreDetailLayoutView` wired with `initialData`
+- [x] `blog` — `_internal/server/features/blog/data.ts` (`getBlogPostForDetail`) + actions done; consumer page already SSR-wired
+- [x] `events` — `_internal/server/features/events/data.ts` (`getEventForDetail`) + actions done; consumer page SSR-wired
+
+### Consumer page: pass initialData to views (stop double-fetch)
+
+- [ ] `AuctionDetailPageView` — add `initialAuction?` prop; update `auctions/[id]/page.tsx` to pass fetched doc
+- [ ] `PreOrderDetailPageView` — add `initialPreOrder?` prop; update `pre-orders/[id]/page.tsx`
+- [ ] `BrandDetailPageView` — add `initialBrand?` prop; update `brands/[slug]/page.tsx`
 
 ### New Scaffolds (appkit)
 
-- [ ] `_internal/client/scaffolds/ListingScaffold.tsx` — responsive sticky-rail filters + grid + toolbar
-- [ ] `_internal/client/scaffolds/DetailScaffold.tsx` — sticky purchase rail on `lg+`, inline below
+- [ ] `_internal/client/scaffolds/ListingScaffold.tsx` — responsive sticky-rail filters + grid + toolbar (deferred to S6)
+- [ ] `_internal/client/scaffolds/DetailScaffold.tsx` — sticky purchase rail on `lg+`, inline below (deferred to S6)
 
 ### Per-feature opengraph-image.tsx
 
-- [ ] `auctions/[slug]/opengraph-image.tsx`
-- [ ] `pre-orders/[slug]/opengraph-image.tsx`
+- [x] `auctions/[id]/opengraph-image.tsx` — done
+- [ ] `pre-orders/[id]/opengraph-image.tsx`
 - [ ] `stores/[slug]/opengraph-image.tsx`
-- [ ] `brands/[slug]/opengraph-image.tsx`
+- [x] `brands/[slug]/opengraph-image.tsx` — done
 
 ### S3 Verification
 
@@ -186,13 +194,13 @@
 > Migrate: cart, checkout, payments, orders, promotions.
 > Functions: promotions, onOrderCreate, onOrderStatusChange, auctionSettlement, autoPayoutEligibility, couponExpiry, offerExpiry.
 
-### Features to Migrate
+### Features to Migrate (server layers ✅ — consumer wiring ⏳)
 
-- [ ] `cart` — server cart for authed users; merge-on-login; guest cart stays localStorage
+- [x] `cart` — `_internal/server/features/cart/` service+actions done (upsertCartItem, mergeGuestItems, clearCart, removeFromCart); consumer API routes wiring pending
 - [ ] `checkout` — `server/actions: createOrder, attachPayment`; Razorpay webhook route preserved
 - [ ] `payments` — `server/actions: createPaymentIntent`; `/api/payments/webhook` preserved
-- [ ] `orders` — `server/data: listOrdersForBuyer, listOrdersForSeller, getOrder`; all order-list pages SSR
-- [ ] `promotions` — `server/data: listCoupons`; `server/actions: createCoupon, applyCoupon`
+- [x] `orders` — `_internal/server/features/orders/` data+service+actions done (getOrder, listOrdersForBuyer, listOrdersForSeller, updateOrderStatus, cancelOrder, requestReturn); consumer pages pending
+- [x] `promotions` — `_internal/server/features/promotions/` data+service+actions done (getCouponByCode, validateCoupon, createCoupon, applyCouponToOrder); consumer pages pending
 
 ### Functions Migration
 
@@ -221,13 +229,13 @@
 > Migrate: reviews, wishlist, history, homepage, search.
 > Functions: onReviewWrite, onBidPlaced, cartPrune, notificationPrune, dailyDataCleanup, countersReconcile, cleanupRtdbEvents.
 
-### Features to Migrate
+### Features to Migrate (server layers ✅ — consumer wiring ⏳)
 
-- [ ] `reviews` — `server/data: listReviewsForStore`; `server/actions: replyToReview`; SSR reviews page
-- [ ] `wishlist` — `server/actions: addToWishlist, removeFromWishlist`; 20-cap preserved; txn writes
-- [ ] `history` — `server/actions: pushToHistory`; 50-FIFO preserved; merge-on-login
-- [ ] `homepage` — single `getHomepageInitial()` parallel `Promise.all`; no per-section client fetch hooks
-- [ ] `search` — `server/data: search(q, resourceType)`; `/search?q=…` SSR rendered; SR1-SR3 preserved
+- [x] `reviews` — `_internal/server/features/reviews/` data+actions done (getReviewsForProduct, getReviewsForStore, createReview, replyToReview, deleteReview, markReviewHelpful); consumer pages pending
+- [x] `wishlist` — `_internal/server/features/wishlist/` data+actions done (getWishlistForUser → {items,meta}, addToWishlist, removeFromWishlist, mergeGuestWishlist); 20-cap preserved
+- [x] `history` — `_internal/server/features/history/` data+actions done (getHistoryForUser → {items,meta}, addToHistory, mergeGuestHistory); 50-FIFO preserved
+- [x] `homepage` — `_internal/server/features/homepage/` data done (getHomepageInitial, getHomepageSections, getHeroCarouselSlides); consumer `[locale]/page.tsx` wiring pending
+- [x] `search` — `_internal/server/features/search/` data+actions done (getSearchResults, searchAction); consumer page wiring pending
 
 ### Functions Migration
 
