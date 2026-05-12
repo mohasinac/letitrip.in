@@ -1,7 +1,11 @@
 # SSR Rearchitecture Tracker — appkit × letitrip.in
 
+> **🛤️ Lane B (SSR) — owned by `ssrprompt.md`.** CRUD feature work runs in parallel under `prompt.md` against `crud-tracker.md`. Before editing this file, confirm you are in the SSR lane (path-ownership table in `ssrprompt.md`). Lane A sessions are READ-ONLY on this tracker. See `~/.claude/plans/what-do-you-think-abundant-turing.md` for the full lane split. Check `newchange.md` `[ACTIVE-FEATURES]` block before touching any feature — Lane A may currently own it.
+>
 > **Approved plan**: `C:\Users\mohsi\.claude\plans\cant-we-do-it-cosmic-flamingo.md`
-> **Last updated**: 2026-05-12 — S1–S4 verification sweep (read every ✅ source file). All ✅ items still hold. tsc clean in both repos; audit-violations/verify-entries/verify-css-build all pass. SSR-in-appkit audit down from 31 → 22 violations. Stale items reclassified: S1 cli-move premise stale (no firebase-admin in withFeatures); S1 eslint.config rewrite would delete 280 lines of lir/* coverage (recommend additive spread instead); S4 Functions migration is multi-session scope. Real remaining work: bundles/grouped/sublisting data layers (S3), BrandDetailPageView type alignment (S3), checkout+payments server layers (S4), Functions handlers (S4 batched).
+> **Lane plan**: `C:\Users\mohsi\.claude\plans\what-do-you-think-abundant-turing.md` (CRUD ↔ SSR coordination)
+> **Last updated**: 2026-05-12 — S3 data layers, S4 server layers, and S4+S5 Functions handlers all landed in appkit in one pass. New: bundles/grouped data layers + FeaturedBundlesSection wired live; BrandDetailPageView accepts `initialBrand: CategoryDocument` via new `getBrandCategoryForDetail`; checkout+payments server actions lifted; 14 job handlers + Firebase runtime adapter in `_internal/server/jobs/`. `npm run check:types && npm run check:audits` exits 0 (audit-ssr-in-appkit holds at baseline 8). Lint regression unchanged (192 errors pre-date this session). Consumer wiring of API routes / functions/src to the new appkit handlers is S7.
+> Update after every completed task. `ssrprompt.md` LAST/CURRENT/NEXT block MUST also be updated before every commit.
 > **Status legend**: ⏳ pending · 🔄 in progress · ✅ done · ❌ blocked · ⚠️ done-but-verify
 
 ---
@@ -105,9 +109,9 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 | S1 | Foundation — entries, tokens, config helpers, CLI, i18n contract | ✅ Done |
 | S2 | Reference feature (products) + SEO data layer | ✅ Done |
 | S3 | Catalog & Listings + ListingScaffold + DetailScaffold | 🔄 In progress — data layers done; consumer wiring pending |
-| S4 | Transactional core + functions migration batch 1 | ⚠️ Server layers done (cart/orders/promotions); consumer wiring + Functions migration pending |
-| S5 | Per-user surfaces + Homepage + Search | ⚠️ Server layers done (reviews/wishlist/history/homepage); consumer wiring + Functions migration pending |
-| S6 | Seller + Admin + Content + scaffolds completion | ⏳ Pending |
+| S4 | Transactional core + functions migration batch 1 | ⚠️ Server layers + handlers done; consumer-side `functions/src/index.ts` rewiring pending |
+| S5 | Per-user surfaces + Homepage + Search | ⚠️ Server layers + handlers done; consumer wiring pending |
+| S6 | Seller + Admin + Content + scaffolds completion | ⚠️ Handlers ported (listingProcessor / adminAnalytics / storeAnalytics / onProductWrite / onCategoryWrite / onStoreWrite / mediaTmpCleanup); admin demolition + scaffold extraction still pending |
 | S7 | Cross-cutting + lift-from-letitrip + Cleanup & Verify | ⏳ Pending |
 
 ---
@@ -246,12 +250,12 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 ### Features to Migrate
 
 - [x] `categories` — `_internal/server/features/categories/data.ts` done (`getCategoryForDetail`, `listRootCategories`, `listFeaturedCategories`, `listMenuCategories`, `getCategoryTree`, `listSitemapCategories`); nav uses static `MAIN_NAV_ITEMS` (no client fetch to replace); CC-8 layout wiring deferred to S6
-- [x] `brands` — `_internal/server/features/brands/data.ts` (`getBrandForDetail`) + actions done; `BrandDetailPageView.initialBrand?` deferred — view calls `categoriesRepository.getCategoryBySlug` (CategoryDocument), `getBrandForDetail` returns BrandDocument; type alignment needed before prop can be added
+- [x] `brands` — `_internal/server/features/brands/data.ts` (`getBrandForDetail` + new `getBrandCategoryForDetail` for the CategoryDocument shape the view consumes) + actions done; `BrandDetailPageView.initialBrand?: CategoryDocument | null` wired; `brands/[slug]/page.tsx` passes it ✅
 - [x] `auctions` — `_internal/server/features/auctions/data.ts` + `AuctionDetailPageView.initialAuction?` prop + `auctions/[id]/page.tsx` wired ✅
 - [x] `pre-orders` — `_internal/server/features/pre-orders/data.ts` + `PreOrderDetailPageView.initialPreOrder?` prop + `pre-orders/[id]/page.tsx` wired ✅
-- [ ] `bundles` — `server/data: getBundle(slug)` with items pre-resolved
-- [ ] `grouped` — `server/data: getGroupedListing(slug)`
-- [ ] `sublisting` — `server/data: getSublisting(slug)`
+- [x] `bundles` — `_internal/server/features/bundles/data.ts` re-exports grouped/ with bundle aliases (`getBundleForDetail`, `getBundleWithItems`, `listFeaturedBundles`); FeaturedBundlesSection now fetches live data and renders cards linked to the bundle store ✅
+- [x] `grouped` — `_internal/server/features/grouped/data.ts` (`getGroupedListingForDetail`, `getGroupedListingWithItems`, `listGroupedListings`, `listFeaturedGroupedListings`, `listSitemapGroupedListings`) ✅
+- [x] `sublisting` — already done at `_internal/server/features/sublisting-categories/data.ts` (`getSublistingCategoryForDetail`) — naming difference noted ✅
 - [x] `stores` — `_internal/server/features/stores/data.ts` done (`getStoreForDetail`, `listStoreProductsInitial`, `listStoreAuctionsInitial`, `listStorePreOrdersInitial`, `listSitemapStores`); `StoreDetailLayoutView` already SSR via `getStoreBySlug` (React.cache); `StoreProductsPageView` already server component; `stores/[storeSlug]/layout.tsx` has `generateMetadata` ✅
 - [x] `blog` — `_internal/server/features/blog/data.ts` (`getBlogPostForDetail`) + actions done; `blog/[slug]/page.tsx` already SSR-wired; `blog/page.tsx` already SSR (static metadata + server component)
 - [x] `events` — `_internal/server/features/events/data.ts` (`getEventForDetail`) + actions done; `events/[id]/page.tsx` already SSR-wired (async server component with `Promise.all` fetch)
@@ -260,7 +264,7 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 - [x] `AuctionDetailPageView` — `initialAuction?` prop added; `auctions/[id]/page.tsx` passes fetched doc ✅
 - [x] `PreOrderDetailPageView` — `initialPreOrder?` prop added; `pre-orders/[id]/page.tsx` passes fetched doc ✅
-- [ ] `BrandDetailPageView` — `initialBrand?` deferred; type mismatch (view uses CategoryDocument via `categoriesRepository`, but `getBrandForDetail` returns BrandDocument from `brandsRepository`)
+- [x] `BrandDetailPageView` — `initialBrand?: CategoryDocument | null` added; resolved by adding `getBrandCategoryForDetail` alongside `getBrandForDetail` (BrandDocument stays for generateMetadata) ✅
 
 ### New Scaffolds (appkit)
 
@@ -298,23 +302,36 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 ### Features to Migrate (server layers ✅ — consumer wiring ⏳)
 
 - [x] `cart` — `_internal/server/features/cart/` service+actions done (upsertCartItem, mergeGuestItems, clearCart, removeFromCart); consumer API routes wiring pending
-- [ ] `checkout` — `server/actions: createOrder, attachPayment`; Razorpay webhook route preserved
-- [ ] `payments` — `server/actions: createPaymentIntent`; `/api/payments/webhook` preserved
+- [x] `checkout` — `_internal/server/features/checkout/` done: `createCheckoutOrderAction` (consent OTP txn + stock reservation + multi-coupon split + order create + cart clear + fire-and-forget emails/usage records), `attachPaymentAction`, `formatShippingAddress`; Razorpay webhook route preserved ✅
+- [x] `payments` — `_internal/server/features/payments/` done: `createPaymentIntentAction` (Razorpay order + fee inflation from siteSettings), `verifyPaymentSignatureAction`, `resolvePaymentFee` ✅
 - [x] `orders` — `_internal/server/features/orders/` data+service+actions done (getOrder, listOrdersForBuyer, listOrdersForSeller, updateOrderStatus, cancelOrder, requestReturn); API routes fixed: `src/app/api/user/orders/_transform.ts` (shared adapter), `[id]/route.ts` now maps OrderDocument→Order, list `route.ts` now returns correct OrderListResponse shape (items: Order[])
 - [x] `promotions` — `_internal/server/features/promotions/` data+service+actions done (getCouponByCode, validateCoupon, createCoupon, applyCouponToOrder); consumer pages pending
 
 ### Functions Migration
 
-- [ ] `_internal/server/jobs/runtime/types.ts` — `CallableHandler`, `FirestoreTriggerHandler`, `ScheduleHandler`, `JobContext`
-- [ ] `_internal/server/jobs/runtime/adapters/firebase.ts` — `bindToFirebase(handlers)`
-- [ ] `_internal/server/jobs/handlers/promotions.ts`
-- [ ] `_internal/server/jobs/handlers/onOrderCreate.ts`
-- [ ] `_internal/server/jobs/handlers/onOrderStatusChange.ts`
-- [ ] `_internal/server/jobs/handlers/auctionSettlement.ts`
-- [ ] `_internal/server/jobs/handlers/autoPayoutEligibility.ts`
-- [ ] `_internal/server/jobs/handlers/couponExpiry.ts`
-- [ ] `_internal/server/jobs/handlers/offerExpiry.ts`
-- [ ] `firebase deploy --only functions --dry-run` — same function names, same triggers
+- [x] `_internal/server/jobs/runtime/types.ts` — `JobContext`, `JobLogger`, `ScheduleHandler`, `FirestoreTriggerHandler`, `CallableHandler`, `JobHandlers` ✅
+- [x] `_internal/server/jobs/runtime/adapters/firebase.ts` — `bindSchedule`, `bindDocumentWritten/Created/Updated`, `bindCallable`, `bindToFirebase` namespace ✅ (firebase-functions added to appkit peerDependencies optional)
+- [x] `_internal/server/jobs/handlers/promotions.ts` ✅
+- [x] `_internal/server/jobs/handlers/onOrderCreate.ts` ✅
+- [x] `_internal/server/jobs/handlers/onOrderStatusChange.ts` ✅ (brand name + from-address routed through env vars, no hardcoded "LetItRip")
+- [x] `_internal/server/jobs/handlers/auctionSettlement.ts` ✅
+- [x] `_internal/server/jobs/handlers/autoPayoutEligibility.ts` ✅
+- [x] `_internal/server/jobs/handlers/couponExpiry.ts` ✅
+- [x] `_internal/server/jobs/handlers/offerExpiry.ts` ✅
+- [x] `_internal/server/jobs/handlers/mediaTmpCleanup.ts` ✅ (2026-05-12 — uses `getAdminStorageLite` + env-driven TTL)
+- [x] `_internal/server/jobs/handlers/pendingOrderTimeout.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/productStatsSync.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/positionsReconcile.ts` ✅ (2026-05-12 — DFS rebuild)
+- [x] `_internal/server/jobs/handlers/payoutBatch.ts` ✅ (2026-05-12 — Razorpay creds via `ctx.env`, brand name via `APP_BRAND_NAME` env)
+- [x] `_internal/server/jobs/handlers/weeklyPayoutEligibility.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/onCategoryWrite.ts` ✅ (2026-05-12 — DFS position trigger)
+- [x] `_internal/server/jobs/handlers/onProductWrite.ts` ✅ (2026-05-12 — category metrics + store stats trigger)
+- [x] `_internal/server/jobs/handlers/onStoreWrite.ts` ✅ (2026-05-12 — no-op shell preserved)
+- [x] `_internal/server/jobs/handlers/adminAnalytics.ts` ✅ (2026-05-12 — CallableHandler returning AdminAnalyticsResult)
+- [x] `_internal/server/jobs/handlers/storeAnalytics.ts` ✅ (2026-05-12 — input `{ sellerId }`; resolves store slug server-side)
+- [x] `_internal/server/jobs/handlers/listingProcessor.ts` ✅ (2026-05-12 — 20 collections + base64 cursor)
+- [x] `_internal/server/jobs/runtime/adapters/firebase.ts` — `bindHttps` added for shared-secret HTTPS callables (`x-internal-secret`); `bindToFirebase.https` exposed (2026-05-12)
+- [ ] `firebase deploy --only functions --dry-run` — deferred (consumer-side `functions/src/index.ts` still wires each function individually; rewiring to `bindToFirebase(handlers)` is the next S7 step now that the handler surface is complete)
 
 ### S4 Verification
 
@@ -344,13 +361,13 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### Functions Migration
 
-- [ ] `_internal/server/jobs/handlers/onReviewWrite.ts`
-- [ ] `_internal/server/jobs/handlers/onBidPlaced.ts`
-- [ ] `_internal/server/jobs/handlers/cartPrune.ts`
-- [ ] `_internal/server/jobs/handlers/notificationPrune.ts`
-- [ ] `_internal/server/jobs/handlers/dailyDataCleanup.ts`
-- [ ] `_internal/server/jobs/handlers/countersReconcile.ts`
-- [ ] `_internal/server/jobs/handlers/cleanupRtdbEvents.ts`
+- [x] `_internal/server/jobs/handlers/onReviewWrite.ts` ✅
+- [x] `_internal/server/jobs/handlers/onBidPlaced.ts` ✅
+- [x] `_internal/server/jobs/handlers/cartPrune.ts` ✅
+- [x] `_internal/server/jobs/handlers/notificationPrune.ts` ✅
+- [x] `_internal/server/jobs/handlers/dailyDataCleanup.ts` ✅
+- [x] `_internal/server/jobs/handlers/countersReconcile.ts` ✅
+- [x] `_internal/server/jobs/handlers/cleanupRtdbEvents.ts` ✅
 
 ### S5 Verification
 
@@ -391,13 +408,13 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### Functions Migration
 
-- [ ] `_internal/server/jobs/handlers/listingProcessor.ts`
-- [ ] `_internal/server/jobs/handlers/adminAnalytics.ts`
-- [ ] `_internal/server/jobs/handlers/storeAnalytics.ts`
-- [ ] `_internal/server/jobs/handlers/onProductWrite.ts`
-- [ ] `_internal/server/jobs/handlers/onCategoryWrite.ts`
-- [ ] `_internal/server/jobs/handlers/onStoreWrite.ts`
-- [ ] `_internal/server/jobs/handlers/mediaTmpCleanup.ts`
+- [x] `_internal/server/jobs/handlers/listingProcessor.ts` ✅ (2026-05-12 — moved into S4-funcs batch)
+- [x] `_internal/server/jobs/handlers/adminAnalytics.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/storeAnalytics.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/onProductWrite.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/onCategoryWrite.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/onStoreWrite.ts` ✅ (2026-05-12)
+- [x] `_internal/server/jobs/handlers/mediaTmpCleanup.ts` ✅ (2026-05-12)
 
 ### CC-8: `[locale]/layout.tsx` SSR Loading
 
@@ -440,7 +457,7 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 ### Final Functions Migration
 
 - [ ] `letitrip.in/functions/src/index.ts` → 3-line `bindToFirebase(handlers)` only
-- [ ] All remaining handlers moved into appkit `_internal/server/jobs/handlers/`
+- [x] All remaining handlers moved into appkit `_internal/server/jobs/handlers/` ✅ (2026-05-12 — 22 of 22 handlers ported; runtime adapter gained `bindHttps` for shared-secret callables)
 
 ### Final Cleanup (CC-9, CC-10)
 
