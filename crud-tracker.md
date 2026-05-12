@@ -1,10 +1,10 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **🛤️ Lane A (CRUD) — owned by `prompt.md`.** SSR rearchitecture work runs in parallel under `ssrprompt.md` against `ssr-arch-tracker.md`. Before editing this file, confirm you are in the CRUD lane (path-ownership table in `prompt.md`). Lane B sessions are READ-ONLY on this tracker. See `~/.claude/plans/what-do-you-think-abundant-turing.md` for the full lane split. Check `newchange.md` `[ACTIVE-FEATURES]` block before touching any feature — Lane B may currently own it.
+> **Single tracker for CRUD + SSR rearchitecture.** SSR rows are folded into existing tiers (Tier 3 / 5 / 6 / 8 / HS / CF / W / LL / Q / V / X / FI / OG / IX) plus a new **Tier RA** retrofit audit, all grouped under § Tier SSR-Merge at the end of this file. SSR architectural rules live in `CLAUDE.md` § "SSR Architecture" and `prompt.md` § "SSR & Appkit Architecture". The lane-split experiment (Lane A/B + `ssr-arch-tracker.md` + `ssrprompt.md`) was wound down 2026-05-12.
 >
-> **Last updated:** 2026-05-12 — Tracker shape rewrite: every pending tier now carries the SSR-arch layered template (Constants / Types / Validation / Data / Service / Actions / Repository / Orchestration / Views / Consumer wiring / OG + sitemap / Error handling / Verification). New tiers added: **Tier OG** (OpenGraph backlog audit, +5 tasks) and **Tier EMG** (Emerging Patterns holding bay, +5 including EMI). 162 done, 272 remaining (was 262).
+> **Last updated:** 2026-05-12 — **Tier DX added (Unified Docs Portal at `docs.letitrip.in`)** consolidating Tier GD (22 tasks → SUPERSEDED) + SB5-C (SUPERSEDED) + Tier IX deeper-docs role. 38 new DX rows across 7 phases (~48 hrs). Tier IX renamed → "Component Quick-Reference Index". Sessions S40–S43 SUPERSEDED. SB1-J + SB5-A annotated for route remap (DX34b). Plan: `~/.claude/plans/say-what-is-better-glimmering-whale.md`. _Earlier 2026-05-12: Tracker shape rewrite + SSR merge — every pending tier carries the SSR-arch layered template; ~33 SSR-folded tasks + Tier RA (~21 retrofit audit rows) + Tier IX duplication/docs rows added._
 > Update after every completed task OR every 30 minutes during a session. `prompt.md` LAST/CURRENT/NEXT block MUST also be updated before every commit.
-> Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
+> Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions found in later sessions)
 
 ## Index
 
@@ -33,7 +33,8 @@
 - [Tier WL — Wishlist, History & Cart Caps](#tier-wl--wishlist-history--cart-caps)
 - [Tier LL — Listing Layouts](#tier-ll--listing-layouts-explicit-list-view-scaffold-per-resource-formedicator-tasks-stay-in-vavbvc)
 - [Tier X — Code Quality](#tier-x--code-quality-typescript-theming-toast-standardisation)
-- [Tier IX — Component / Util / Constant Index](#tier-ix--component--util--constant-index-living-documentation--update-after-every-task)
+- [Tier IX — Component Quick-Reference Index](#tier-ix--component-quick-reference-index-in-editor-greppable-lookup)
+- [Tier DX — Unified Docs Portal](#tier-dx--unified-docs-portal-at-docsletitripin)
 - [Tier S — Social Media Feed Sections](#tier-s--social-media-feed-sections)
 - [Tier GP — Grouped Listings](#tier-gp--grouped-listings-standard-products--pre-orders-only-no-auctions)
 - [Tier SC — Sub-listing Categories](#tier-sc--sub-listing-categories-all-listing-types-products-auctions-pre-orders)
@@ -55,6 +56,8 @@
 - [Tier TC — Tab Configuration Constants System](#tier-tc--tab-configuration-constants-system)
 - [Tier OG — OpenGraph Image Coverage](#tier-og--opengraph-image-coverage-post-alpha-backlog-audit)
 - [Tier EMG — Emerging Patterns](#tier-emg--emerging-patterns-holding-bay-for-codecopy-mentions-without-tasks)
+- [Tier SSR-Merge — SSR Rearchitecture Folded Into Existing Tiers](#tier-ssr-merge--ssr-rearchitecture-folded-into-existing-tiers-2026-05-12)
+- [Tier RA — Retrofit Audit](#tier-ra--retrofit-audit-ssr-design-conformance-audits--tasks-against-the-layered-template)
 
 ---
 
@@ -62,12 +65,12 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 434 |
+| Total tasks | 527 *(was 489; +38 Tier DX rows added 2026-05-12)* |
 | ✅ Done | 162 |
-| 🔄 In Progress | 0 |
+| 🔄 In Progress | 1 *(DX38 — tracker + CLAUDE.md updates landed this session; prompt.md / ssrprompt.md still pending)* |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 271 *(EMG5 deleted-from-active 2026-05-12; EMG1+EMG4 marked 🎯 ready-to-graduate but still pending their dedicated sessions)* |
-| 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
+| ⏳ Remaining | 322 *(326 - 22 GD - 1 SB5-C marked superseded + 38 new DX - 1 DX38 in-progress = 340; trimming for EMG/sessions counted elsewhere — approximate)* |
+| 🚫 Superseded | 42 *(19 prior + 22 Tier GD GD1–GD22 + 1 SB5-C — all 2026-05-12 to Tier DX)* |
 
 ---
 
@@ -252,10 +255,10 @@ Rules to keep top-of-mind every task:
 | **S37** | BAN-3 | BAN7, BAN8, BAN9 | Support ticket management pages + Firebase Functions for ticket/ban lifecycle | S36 done |
 | **S38** | SCAM-1 | SCAM2, SCAM4 | Admin scammer management UI + scam-specific FAQ entries | RBAC8 done (S34) |
 | **S39** | SCAM-2 | SCAM6, SCAM7, SCAM8, SCAM9 | Registration acknowledgement + SEO/JSON-LD + Firebase notifications + RBAC wiring | S38 done |
-| **S40** | Guides Store | GD1, GD2, GD3, GD4, GD5, GD6 | Store guides hub + listings guide + orders guide + finance guide + capabilities guide + settings guide | — |
-| **S41** | Guides Buyer | GD7, GD8, GD9, GD10, GD11 | Buyer help hub + shopping guide + auctions/pre-orders guide + orders/returns guide + account/safety guide | — |
-| **S42** | Guides Admin | GD12, GD13, GD14, GD15, GD16 | Capability-gated guide cards + admin guide hub + users + catalog + stores | RBAC8 done (S34) |
-| **S43** | Guides Admin+ | GD17, GD18, GD19, GD20, GD21, GD22 | Admin orders/finance/content/site/team/analytics/trust guides → files: `_internal/server/features/guides/` + `_internal/client/features/guides/` | S42 done |
+| **S40** | ~~Guides Store~~ | ~~GD1–GD6~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX16–DX21 (`docs.letitrip.in/sellers/*`). See plan `~/.claude/plans/say-what-is-better-glimmering-whale.md`. | — |
+| **S41** | ~~Guides Buyer~~ | ~~GD7–GD11~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX11–DX15 (`docs.letitrip.in/help/*`). | — |
+| **S42** | ~~Guides Admin~~ | ~~GD12–GD16~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX22–DX25 (`docs.letitrip.in/employees/*`). GD12 capability-gate UX moves to in-app residual DX32. | — |
+| **S43** | ~~Guides Admin+~~ | ~~GD17–GD22~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX26–DX31 (`docs.letitrip.in/employees/*`). | — |
 | **S44** | OG coverage | OG1, OG2, OG3, OG4, OG5 | Backlog OpenGraph coverage for existing detail routes (categories / faq / user / sub-listing) + audit script → files: `src/app/[locale]/<x>/opengraph-image.tsx` + `appkit/scripts/verify-og-coverage.mjs` | — |
 | **S45** ✅ | EMG triage | EMG1–EMG5 review | **Done 2026-05-12.** EMG1 EMI 🎯 ready-to-graduate (pair with EMG3 in new Tier PAY when scheduled). EMG2 Loyalty ⏳ keep-holding (skeleton policy). EMG3 Gift cards ⏳ keep-holding pair-with-EMG1. EMG4 Live chat 🎯 ready-to-graduate as Tier CHAT (lower priority than EMG1). EMG5 Referral 🚫 deleted-from-active-tracking (no design note, no signal). |
 
@@ -793,14 +796,106 @@ Rules to keep top-of-mind every task:
 
 ---
 
-## Tier IX — Component / Util / Constant Index *(living documentation — update after every task)*
+## Tier IX — Component Quick-Reference Index *(in-editor greppable lookup)*
 
-> `appkit/index.md` and `src/index.md` are the canonical indexes of all reusable components, utilities, and constants.
-> **Rule**: before creating any new component/util/constant, check the index. After every task that adds/renames/removes one, update the index entry.
+> `appkit/index.md` and `src/index.md` are the fast greppable indexes of all reusable components, utilities, and constants. **Authoritative deep docs live at `docs.letitrip.in` (Tier DX) — these flat tables are the in-editor quick lookup only.**
+> **Rule**: before creating any new component/util/constant, check the index. After every task that adds/renames/removes one, update the relevant row. Deep docs (stories, prop tables, usage examples) go in Tier DX, not here.
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
-| IX1 | Create + maintain `appkit/index.md` + `src/index.md` component/util/constant indexes | S | ✅ | 2026-05-08 | Initial index files created. Format: `\| Name \| Path \| What it does \|`. Covers: UI primitives (82 components), feature views (admin/seller/account/auth/etc.), hooks (85+), repositories (21), utils (18), constants. `src/index.md` covers app-level constants, server actions, routing components, and dev tools. **Update rule**: after every task that adds/removes/renames a component, util, or constant — update the relevant row in the index. This prevents duplicate creation and speeds up future sessions. |
+| IX1 | Create + maintain `appkit/index.md` + `src/index.md` component/util/constant indexes | S | ✅ | 2026-05-08 | Initial index files created. Format: `\| Name \| Path \| What it does \|`. Covers: UI primitives (82 components), feature views (admin/seller/account/auth/etc.), hooks (85+), repositories (21), utils (18), constants. `src/index.md` covers app-level constants, server actions, routing components, and dev tools. **Update rule**: after every task that adds/removes/renames a component, util, or constant — update the relevant row in the index. This prevents duplicate creation and speeds up future sessions. Deep docs (stories, prop tables, usage) go in Tier DX. |
+
+---
+
+## Tier DX — Unified Docs Portal *(at docs.letitrip.in)*
+
+> **Plan file**: `~/.claude/plans/say-what-is-better-glimmering-whale.md` — full task specs, repo coverage matrix, site map, verification.
+>
+> **Why this tier exists**: consolidates developer docs (Storybook + Nextra + TypeDoc + OpenAPI) and end-user how-tos (Tier GD content) into one audience-scoped portal. Replaces Tier GD entirely; absorbs Tier IX's deeper-docs role (Tier IX `index.md` files remain as quick-reference). Spans **both** repos — `appkit/` and `letitrip.in/src/`. Site map: `/developers` (engineers), `/help` (buyers), `/sellers` (store owners), `/employees` (admin + employee). Three in-app residuals (DX32–DX34b) stay in the app because they depend on live user state.
+>
+> **Decisions**: subpackage `docs/` deployed at `docs.letitrip.in` (separate Vercel project, static-only — Rule #6 safe). Full stack from day one. Admin/employee guides are publicly readable on docs (the real permission enforcement stays in the app — these are docs, not data). No auth bridge. Tier IX `index.md` files kept as fast greppable lookup; new portal is authoritative.
+>
+> **Effort**: ~48 hrs across 7 phases; ship across 6–8 sessions. Brand: `LetItRip` exactly (build-time grep gate fails on `Letitrip` / `LetiTrip` / `Let It Rip`).
+>
+> **Tracker conventions**: each DX row carries a one-line summary. Full specs (sections, fields, sub-sections, content sources) live in the plan file. The 22 Tier GD tasks below remain as content-source rows but are marked SUPERSEDED.
+
+### Phase 1 — Foundation
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX1 | Storybook init in `appkit/` (Vite builder) + 5 reference stories + tokens MDX | M | ⏳ | Stories: Button, Input, Modal, SideDrawer, ProductCard. `appkit/.storybook/preview.ts` MUST import `dist/tailwind-utilities.css` (Pattern #3 — class purging trap). Devs only — no runtime impact on app. |
+| DX2 | Nextra subpackage at `docs/` with audience-scoped nav | M | ⏳ | next@15 + nextra@3 + nextra-theme-docs. 4 top-level audiences (`/developers`, `/help`, `/sellers`, `/employees`) via `_meta.json`. Port 3001. |
+| DX3 | Landing page + theme + search + Vercel config | S | ⏳ | 4 audience cards. flexsearch via Nextra default. `docs/vercel.json` auto-deploy main + ignored build when `docs/`+`appkit/src/` unchanged. |
+
+### Phase 2 — Developer docs (covers both repos — see plan "Repo coverage matrix")
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX4 | 6 architecture MDX pages | M | ⏳ | `/developers/architecture/{slug-system,slot-shell-pattern,appkit-exports,vercel-hobby-limits,recurrent-root-cause-patterns,quality-gates}`. Port from CLAUDE.md verbatim; CLAUDE.md adds back-links. Quality-gates page documents `npm run check` chain across both repos. |
+| DX5 | UI primitive stories — both repos | L | ⏳ | ~50 `.stories.tsx` under `appkit/src/ui/components/` + ~5–8 app-only primitives under `src/components/ui/` and reusable widgets (e.g. `src/components/user/FontToggleClient.tsx`). Storybook scans both repos. Sources from `appkit/index.md` + `src/index.md`. |
+| DX6 | Feature view stories — both repos | M | ⏳ | ~12 appkit feature stories (ProductCard, ProductGrid, AuctionCard, PreOrderCard, BundleCard, OrderRow, WishlistItem, ReviewCard, BlogPostCard, EventCard, ShowGroupSection, SublistingCarouselSection) + app-only feature stories (SeedPanel + admin/user/store composites that don't live in appkit). Uses seed-data shapes. Catches Pattern #8 (slot-shell unwired render props). |
+| DX7 | Embed Storybook iframes in Nextra | S | ⏳ | Build Storybook → copy to `docs/public/storybook/`. `<StorybookFrame storyId="..." />` MDX component. MDX page per component at `/developers/ui/{appkit,app}/<name>` and `/developers/features/{appkit,app}/<name>`. |
+| DX7b | Routing reference page | S | ⏳ | `/developers/routing` — slug prefix table + auto-extracted route tree from `src/app/[locale]/**/page.tsx` + full `ROUTES` constant table. |
+| DX7c | Tooling & scripts reference | S | ⏳ | `/developers/tooling/scripts` — every script in `appkit/scripts/*.mjs` + root `scripts/*.mjs` with purpose/command/args/when-to-use. |
+| DX8 | TypeDoc config + JSDoc pass — both repos | M | ⏳ | `typedoc.json` at root. Entry points: appkit `repositories/`, `_internal/server/`, `features/*/schemas/`; app `src/{actions,hooks,constants}`. Output `docs/public/typedoc/{appkit,app}/`. |
+| DX9 | OpenAPI spec + Scalar viewer | L | ⏳ | Hand-written `docs/openapi.yaml` for ~30 representative routes from `src/app/api/**/route.ts`. Defer full coverage until SB3-J Zod canonical → migrate to `zod-to-openapi`. |
+| DX10 | Server contracts MDX — both repos | M | ⏳ | `/developers/server/contracts` (appkit): AuthPayload (`.name` not `.displayName`), applyCoupon 5-arg signature, OrderDocument lowercase status, NotFoundError back-compat (from `project_appkit_internal_server_api` memory). `/developers/server/actions/app`: inventory of `src/actions/*.actions.ts`. |
+| DX10b | Constants reference page | S | ⏳ | `/developers/constants` — ROUTES + API_ROUTES side-by-side + nav group constants tree + slug prefix table + anti-patterns from CLAUDE.md. |
+| DX10c | Data & seed reference page | M | ⏳ | `/developers/data/seed` — port "Seed Data Reference" section of CLAUDE.md (26 collections) with anchor links. Document `POST /api/demo/seed` NDJSON streaming + SeedPanel walkthrough. |
+
+### Phase 3 — Buyer help (replaces GD7–GD11)
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX11 | Buyer help landing `/help` | M | ⏳ | Port GD7. Search-as-you-type, 5 audience cards, scam awareness CTA. |
+| DX12 | `/help/shopping` | M | ⏳ | Port GD8 — 7 sections (browsing, product page, cart, checkout, coupons, confirmation, guest limitations). |
+| DX13 | `/help/auctions` | M | ⏳ | Port GD9 — 7 sections (mechanics, bidding, winning, retraction, pre-orders, cancellations, safety). |
+| DX14 | `/help/orders` | M | ⏳ | Port GD10 — 7 sections (lifecycle, tracking, damage, returns, refund timeline, support, disputes). |
+| DX15 | `/help/account` | S | ⏳ | Port GD11 — 7 sections (profile, notifications, wishlist, reviews, security, scam awareness, reporting). |
+
+### Phase 4 — Seller guides (replaces GD1–GD6)
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX16 | Seller hub `/sellers` | M | ⏳ | Port GD1 (static content only — personalized checklist moves to in-app widget DX33). 6 guide cards. |
+| DX17 | `/sellers/listings` + `/sellers/bundles` + `/sellers/prize-draws` | L | ⏳ | Port GD2 + SB5-C. 7 GD2 sections + 2 sub-pages for bundles + prize-draws. Updated for SB1-G `listingType` migration (legacy `isAuction`/`isPreOrder` booleans removed). |
+| DX18 | `/sellers/orders` | M | ⏳ | Port GD3 — 7 sections (lifecycle, processing, carriers, cancellations, returns, auction orders, FAQ). |
+| DX19 | `/sellers/finance` | M | ⏳ | Port GD4 — 5 sections (commission, payouts, coupons, promoted/featured, tax notice). Commission % via ISR daily revalidation from `siteSettings.fees`. |
+| DX20 | `/sellers/capabilities` | M | ⏳ | Port GD5 — 5 sections (overview, 18-cap table, locked-feature unlock steps, verified badge, multiple stores). **Destination URL for in-app CapabilityGateView (DX32).** |
+| DX21 | `/sellers/settings` | S | ⏳ | Port GD6 — 6 sections (profile, shipping, returns, vacation mode, WhatsApp, visibility). |
+
+### Phase 5 — Admin & employee guides (replaces GD13–GD22)
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX22 | Admin/employee hub `/employees` | M | ⏳ | Port GD13 — all 9 guide cards public (was permission-aware in GD13). `Alert variant="info"` at top: "Docs describe behavior; real access enforced in the app." |
+| DX23 | `/employees/users` | M | ⏳ | Port GD14 — 6 sections (roles, list/search, editor, sessions, employee accounts, PII handling). |
+| DX24 | `/employees/catalog` | M | ⏳ | Port GD15 — 5 sections, updated for SB1-G `listingType`. |
+| DX25 | `/employees/stores` | M | ⏳ | Port GD16 — 6 sections including storeId/ownerId architecture (per `project_store_identity` memory). |
+| DX26 | `/employees/orders-finance` | M | ⏳ | Port GD17 — 7 sections (statuses, ID format, disputes, payouts, returns, commission math, auction settlement). |
+| DX27 | `/employees/content` | M | ⏳ | Port GD18 — 7 sections (blog, events, FAQs, carousel, homepage sections, ads, newsletter). |
+| DX28 | `/employees/site` | S | ⏳ | Port GD19 — 5 sections (settings overview, API keys, platform limits, navigation, feature flags). |
+| DX29 | `/employees/team` | L | ⏳ | Port GD20 — 6 sections including full 18-group permission table. Main internal reference for HR + admin onboarding. |
+| DX30 | `/employees/analytics` | S | ⏳ | Port GD21 — 6 sections. |
+| DX31 | `/employees/trust` | L | ⏳ | Port GD22 — 7 sections (soft/hard ban, applying, appeal, scam workflow, support tickets, trust metrics). |
+
+### Phase 6 — In-app residuals (cannot move to docs — depend on live state)
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX32 | `CapabilityGateView` in-app component | M | ⏳ | Port GD12 locked-feature UX. New `appkit/src/features/stores/components/CapabilityGateView.tsx`. Lock icon + capability name + "What you're missing" + CTA → `docs.letitrip.in/sellers/capabilities`. Wrap locked seller pages. Server still enforces independently. |
+| DX33 | "Getting Started" personalized checklist widget | S | ⏳ | Subset of GD1. New `appkit/src/features/stores/components/SellerOnboardingChecklist.tsx`. Reads live store doc → 5-step list with ✅/⬜. Renders on `/store` dashboard. Each step links to relevant settings; "Learn more →" links to docs. |
+| DX34 | Sidebar Help links across all dashboards | S | ⏳ | From GD1+GD7+GD13. `STORE_NAV_GROUPS` / `ADMIN_NAV_GROUPS` / `USER_NAV_GROUPS` / `FOOTER_LINK_GROUPS` Support — external links to `docs.letitrip.in/{sellers,employees,help}`. `target="_blank" rel="noopener"`. Add `EXTERNAL_URLS.DOCS` constant. |
+| DX34b | Remap SB1-J seller-guide ROUTES + 308 redirects | S | ⏳ | `ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES` / `SELLER_GUIDE_PRIZE_DRAWS` (from SB1-J ✅) currently point to in-app `/seller-guide/*`. (a) Update to external docs URLs via `EXTERNAL_URLS.DOCS`. (b) Catch-all `src/app/[locale]/seller-guide/[...slug]/page.tsx` 308-redirects to docs. Sitemap entry removed. |
+
+### Phase 7 — Integration, gates, governance
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| DX35 | Root npm scripts | S | ⏳ | `docs:dev` (concurrently runs Storybook 6006 + Nextra 3001), `docs:build` (storybook static → copy → typedoc → next build), `docs:start`. |
+| DX36 | Vercel docs project setup | S | ⏳ | New project `letitrip-docs`, build `npm run docs:build`, output `docs/.next`, domain `docs.letitrip.in`. Independent quota — Rule #6 safe (static-only). |
+| DX37 | CI gate — `docs:build` in `npm run check` | S | ⏳ | After `check:audits`, before `check:lint`. Adds ~60–90s; runs in `check` only, NOT in per-turn Stop hook. Brand-consistency grep (`Letitrip`/`LetiTrip`/`Let It Rip`) added to `check:audits`. |
+| DX38 | CLAUDE.md + prompt files + tracker housekeeping | S | 🔄 | (a) **CLAUDE.md**: docs.letitrip.in row in Key Files table — ✅ landed this session. (b) `prompt.md` + `ssrprompt.md` session-end docs maintenance bullet — pending. (c) **Tracker**: Tier IX rename, Tier GD SUPERSEDED, sessions S40–S43 SUPERSEDED, SB5-C SUPERSEDED, SB1-J route-remap note, SB5-A external URLs note, insert Tier DX, index update — ✅ landed this session. |
 
 ---
 
@@ -1223,7 +1318,17 @@ Rules to keep top-of-mind every task:
 
 ---
 
-## Tier GD — In-App Guide Pages *(low priority — post-alpha)*
+## Tier GD — In-App Guide Pages *(🚫 SUPERSEDED by Tier DX 2026-05-12)*
+
+> **🚫 SUPERSEDED by Tier DX (2026-05-12)** — all 22 tasks (GD1–GD22) consolidated into the unified docs portal at `docs.letitrip.in`. Mapping:
+> - GD1–GD6 → DX16–DX21 (`docs.letitrip.in/sellers/*`)
+> - GD7–GD11 → DX11–DX15 (`docs.letitrip.in/help/*`)
+> - GD12 (capability-gated UX) → DX32 in-app residual (`CapabilityGateView`)
+> - GD13–GD22 → DX22–DX31 (`docs.letitrip.in/employees/*`)
+>
+> The GD task rows below remain as the **authoritative content-source spec** for the corresponding DX MDX pages — port the section content verbatim. Do not mark GD rows ✅ when implementing DX; track progress on DX rows instead. Three pieces remain in-app because they depend on live user state: DX32 (capability gates), DX33 (personalized onboarding checklist), DX34 (sidebar Help links + footer links).
+>
+> ~~Original spec preserved below for content reference:~~
 
 > **📐 Layered shape (S14+):** pure RSC content — no Firestore reads, no mutations.
 > - **Constants:** `_internal/shared/features/guides/config.ts` — `GUIDE_SLUGS`, `GUIDE_CATEGORIES`, `GUIDE_AUDIENCES` (admin / store / buyer).
@@ -1321,7 +1426,7 @@ Rules to keep top-of-mind every task:
 | SB1-G | productsRepository — replace boolean queries with listingType | ✅ | S21+S22 2026-05-12 | **Data layer + 5-batch consumer sweep complete.** Batches: (1+2) appkit types/actions/hooks/search, (3) components (ProductForm/AdminProductEditorView/ProductGrid/CompareOverlay/SublistingCarouselSection/ShowGroupSection/MarketplaceAuctionCard/PublicProfileView/SellerProductsView), (4) appkit filter strings (BrandDetailPageView/CategoryDetailPageView/4 stores views + lists + GroupSettingsPanel/api routes/store-query-actions/useRelatedProducts/auctions.repository), (5) root API routes + pages (cart/cart-merge/user-wishlist/wishlist-page/4 group routes/sublisting-categories/whatsapp-catalog-sync/payment-preorder/request-schemas). Predicates re-exported from `@mohasinac/appkit` AND `@mohasinac/appkit/client`. ProductForm + AdminProductEditorView toggles write BOTH the legacy boolean AND the canonical listingType so new docs stay queryable today. Cart-item denormalized snapshots (CartItem.isAuction/isPreOrder, order-splitter, coupons.repository) intentionally untouched — separate schema concern. Schema field removal (drop `isAuction?`/`isPreOrder?` from ProductDocument + legacy boolean-combo indexes) still blocked on Lane B `_internal/` migration — see `[CRUD→SSR]` seam request. ~~Original spec:~~ **File:** `appkit/src/repositories/productsRepository.ts`. **Data + utility layer done; consumer sweep deferred.** `appkit/src/features/products/repository/products.repository.ts`: `PRODUCT_FIELDS.LISTING_TYPE` constant, `LISTING_TYPE_VALUES` enum, all `where("isAuction"...)`/`where("isPreOrder"...)` queries rewritten to `where("listingType", ...)`. `scope` Sieve alias updated. `findAuctions` / `findPreOrders` / `findActivePreOrders` / `findByGroupId` / `findActiveAuctions` / sold-auction sweep all use listingType. `appkit/src/features/products/utils/listing-type.ts` exports new `isAuctionListing` / `isPreOrderListing` / `isStandardListing` predicates so consumers can replace `.isAuction` with `isAuctionListing(p)`. `src/app/api/products/route.ts`: `?isAuction=true`/`?isPreOrder=true` query params translated to `listingType==X` clauses; `SAFE_PRODUCT_FILTER_FIELDS` adds `"listingType"`. **DEFERRED**: 36-file consumer sweep (20 Lane A appkit files + 16 root files reading `.isAuction`/`.isPreOrder`) — needs its own focused session. Plus 7 Lane B `_internal/` files that Lane A is read-only on (`features/{products,auctions,pre-orders}/service.ts`, `data.ts`, `onProductWrite.ts`, `countersReconcile.ts`, `shared/features/products/types.ts`) — see `[CRUD→SSR]` in newchange. ~~Original spec:~~ **File:** `appkit/src/repositories/productsRepository.ts`. Replace all `where("isAuction", "==", true)` with `where("listingType", "==", "auction")`. Replace `where("isPreOrder", "==", true)` with `where("listingType", "==", "pre-order")`. Replace `where("isAuction", "==", false)` with `where("listingType", "==", "standard")`. Remove compound isAuction+isPreOrder guards. Add new methods: `findPrizeDraws(storeId?, status?)`, `findActivePrizeDraws()`, `incrementPrizeEntries(productId)`, `setPrizeRevealStatus(productId, status)`, `markPrizeItemWon(productId, itemNumber)`. `npx tsc --noEmit` → 0 errors. |
 | SB1-H | bundlesRepository — full CRUD + stock sync | ✅ | S20 2026-05-12 | New `appkit/src/features/bundles/repository/bundles.repository.ts` (180 LOC) extends `BaseRepository<BundleDocument>`. Methods: `findAll()`, `findByStore(storeId, status?)`, `findByCategory(category)`, `findFeatured()`, `findBySlug(slug)`, `findContainingProduct(productId)` (uses `array-contains` on `partOfBundleProductIds`), `create(data)` (auto-derives `partOfBundleProductIds`), `markItemSold(bundleId, productId)` (transactional — flips item `isSold` + re-derives bundle `status` if all items kept published, idempotent), `checkBundleStock(bundleId)` (read-only). Exported from `appkit/src/repositories/index.ts` barrel as `BundlesRepository` + `bundlesRepository` singleton. ~~Original spec:~~ **New file:** `appkit/src/repositories/bundlesRepository.ts`. Methods: `findAll(filters?)`, `findByStore(storeId, status?)`, `findByCategory(category)`, `findFeatured()`, `findById(id)`, `findBySlug(slug)`, `create(data)`, `update(id, data)`, `delete(id)`, `checkBundleStock(bundleId)` (checks all items, auto-sets out_of_stock if any isSold=true), `markItemSold(bundleId, productId)`. Export from `appkit/src/server.ts`. `npx tsc --noEmit` → 0 errors. |
 | SB1-I | Firestore indexes — remove boolean-combo, add listingType + bundle indexes | ✅ | S22 Phase 4 2026-05-12 | **Done.** Programmatic filter dropped **34** legacy boolean-combo composite indexes (`isAuction+...`, `isPreOrder+...`) from `appkit/firebase/base/firestore.indexes.json` (304 → 270 total indexes). New 5 product `listingType+...` + 3 bundles composites added back in S20 remain. `firebase-merge.mjs` re-run; root `firestore.indexes.json` regenerated. Deploy via `firebase deploy --only firestore:indexes` is an ops follow-up. ~~Original spec:~~ **File:** `appkit/firebase/base/firestore.indexes.json`. Remove: `isAuction+status+createdAt`, `isAuction+storeId+status+createdAt`, `isPreOrder+status+createdAt`, `isPreOrder+storeId+status+createdAt`, `isAuction+auctionEndDate`. Add for products: `listingType+status+createdAt`, `listingType+storeId+status+createdAt`, `listingType+category+createdAt`, `listingType+auctionEndDate`, `listingType+prizeRevealStatus+prizeRevealWindowEnd`. Add for bundles collection: `storeId+status+createdAt`, `category+status+createdAt`, `isFeatured+status+createdAt`. Run `firebase-merge.mjs` then `firebase-delete-indexes.mjs` then deploy. `npx tsc --noEmit` → 0 errors. |
-| SB1-J | Routes — all new store/admin/public routes | ✅ | S20 2026-05-12 | Added all 14 ROUTES entries to `appkit/src/next/routing/route-map.ts`: `PUBLIC.BUNDLES`, `BUNDLE_DETAIL(slug)`, `PRIZE_DRAWS`, `PRIZE_DRAW_DETAIL(slug)`, `SELLER_GUIDE_BUNDLES`, `SELLER_GUIDE_PRIZE_DRAWS`; `STORE.BUNDLES`/`BUNDLES_NEW`/`BUNDLES_EDIT(id)`, same trio for prize draws; `ADMIN.BUNDLES`/`BUNDLES_EDIT(id)`, same pair for prize draws. Routes ship before pages — consumers can link to these now even though the pages 404 until S21+. ~~Original spec:~~ **File:** `appkit/src/next/routing/route-map.ts`. Add store routes: `STORE_BUNDLES`, `STORE_BUNDLES_NEW`, `STORE_BUNDLES_EDIT(id)`, `STORE_PRIZE_DRAWS`, `STORE_PRIZE_DRAWS_NEW`, `STORE_PRIZE_DRAWS_EDIT(id)`. Add admin routes: `ADMIN_BUNDLES`, `ADMIN_BUNDLES_EDIT(id)`, `ADMIN_PRIZE_DRAWS`, `ADMIN_PRIZE_DRAWS_EDIT(id)`. Add public routes: `BUNDLES`, `BUNDLE_DETAIL(slug)`, `PRIZE_DRAWS`, `PRIZE_DRAW_DETAIL(slug)`. Add seller guide routes: `SELLER_GUIDE_BUNDLES`, `SELLER_GUIDE_PRIZE_DRAWS`. `npx tsc --noEmit` → 0 errors. |
+| SB1-J | Routes — all new store/admin/public routes | ✅ | S20 2026-05-12 | Added all 14 ROUTES entries to `appkit/src/next/routing/route-map.ts`: `PUBLIC.BUNDLES`, `BUNDLE_DETAIL(slug)`, `PRIZE_DRAWS`, `PRIZE_DRAW_DETAIL(slug)`, `SELLER_GUIDE_BUNDLES`, `SELLER_GUIDE_PRIZE_DRAWS`; `STORE.BUNDLES`/`BUNDLES_NEW`/`BUNDLES_EDIT(id)`, same trio for prize draws; `ADMIN.BUNDLES`/`BUNDLES_EDIT(id)`, same pair for prize draws. Routes ship before pages — consumers can link to these now even though the pages 404 until S21+. **⚠️ Tier DX (2026-05-12)**: `SELLER_GUIDE_BUNDLES` + `SELLER_GUIDE_PRIZE_DRAWS` will be remapped in **DX34b** to external `docs.letitrip.in/sellers/{bundles,prize-draws}` URLs (with 308 redirect from `/seller-guide/*` for back-compat). Current in-app paths stay valid until DX34b lands. ~~Original spec:~~ **File:** `appkit/src/next/routing/route-map.ts`. Add store routes: `STORE_BUNDLES`, `STORE_BUNDLES_NEW`, `STORE_BUNDLES_EDIT(id)`, `STORE_PRIZE_DRAWS`, `STORE_PRIZE_DRAWS_NEW`, `STORE_PRIZE_DRAWS_EDIT(id)`. Add admin routes: `ADMIN_BUNDLES`, `ADMIN_BUNDLES_EDIT(id)`, `ADMIN_PRIZE_DRAWS`, `ADMIN_PRIZE_DRAWS_EDIT(id)`. Add public routes: `BUNDLES`, `BUNDLE_DETAIL(slug)`, `PRIZE_DRAWS`, `PRIZE_DRAW_DETAIL(slug)`. Add seller guide routes: `SELLER_GUIDE_BUNDLES`, `SELLER_GUIDE_PRIZE_DRAWS`. `npx tsc --noEmit` → 0 errors. |
 | SB1-K | API constants — bundles + prize draws | ✅ | S20 2026-05-12 | Added `API_ROUTES.BUNDLES = { LIST, BY_ID(id) }` + `API_ROUTES.PRIZE_DRAWS = { LIST, BY_ID(id), REVEAL(id) }` to `src/constants/api.ts`. ~~Original spec:~~ **File:** `src/constants/api.ts`. Add: `BUNDLES: "/api/bundles"`, `BUNDLE: (id) => "/api/bundles/${id}"`, `PRIZE_DRAWS: "/api/prize-draws"`, `PRIZE_DRAW: (id) => "/api/prize-draws/${id}"`, `PRIZE_DRAW_REVEAL: (id) => "/api/prize-draws/${id}/reveal"`. `npx tsc --noEmit` → 0 errors. |
 | SB1-L | Firebase Functions — 7 scheduled/callable functions | L | ⏳ | Add to `appkit/functions/` or `functions/src/`: `scheduledPrizeRevealOpen` (every 5 min), `scheduledPrizeRevealClose` (every 5 min), `scheduledPrizeRevealExpiry` (every 6h — auto-refund unrevealed orders past deadline), `scheduledPrizeRevealReminder` (daily 10:00 IST — notify expiring reveals), `scheduledBundleStockSync` (daily 10:00 IST — check all bundles, mark OOS if any item sold out), `triggerEventRaffle` (HTTP callable + scheduled at event end), `assignSpinPrize` (HTTP callable — spin-the-wheel prize). All RNG uses `crypto.randomInt()`. GitHub permalink auto-set on prize draw create. |
 
@@ -1365,9 +1470,9 @@ Rules to keep top-of-mind every task:
 
 | # | Task | Complexity | Status | Notes |
 |---|------|-----------|--------|-------|
-| SB5-A | Navigation constants — bundles + prize draws in all nav groups | M | ⏳ | **File:** `src/constants/navigation.tsx`. Add to `MAIN_NAV_ITEMS` after pre-orders: Bundles + Prize Draws. Add to `STORE_NAV_GROUPS` Listings group: Bundles (Package2 icon) + Prize Draws (Gift icon). Add to `ADMIN_NAV_GROUPS` Catalog group: Bundles + Prize Draws. Add to `FOOTER_LINK_GROUPS` Shop column + Learn column (Bundle Guide + Prize Draw Guide links). `npx tsc --noEmit` → 0 errors. |
+| SB5-A | Navigation constants — bundles + prize draws in all nav groups | M | ⏳ | **File:** `src/constants/navigation.tsx`. Add to `MAIN_NAV_ITEMS` after pre-orders: Bundles + Prize Draws. Add to `STORE_NAV_GROUPS` Listings group: Bundles (Package2 icon) + Prize Draws (Gift icon). Add to `ADMIN_NAV_GROUPS` Catalog group: Bundles + Prize Draws. Add to `FOOTER_LINK_GROUPS` Shop column + Learn column (Bundle Guide + Prize Draw Guide links). **⚠️ Tier DX (2026-05-12)**: "Bundle Guide" / "Prize Draw Guide" links in `FOOTER_LINK_GROUPS` Learn column must resolve to external `docs.letitrip.in/sellers/{bundles,prize-draws}` URLs (use `EXTERNAL_URLS.DOCS` from DX34) with `target="_blank" rel="noopener"`. Do not link to in-app `/seller-guide/*` paths. `npx tsc --noEmit` → 0 errors. |
 | SB5-B | FAQ seed — 6 new bundle + prize draw entries | S | ⏳ | **File:** `appkit/src/seed/faqs.seed.ts`. Add 6 entries (category "Listings"): `faq-what-is-bundle`, `faq-how-create-bundle`, `faq-what-is-prize-draw`, `faq-prize-draw-fairness`, `faq-prize-draw-refund`, `faq-prize-draw-reveal`. `npx tsc --noEmit` → 0 errors. |
-| SB5-C | Seller guide pages — bundles + prize draws | M | ⏳ | **New pages:** `src/app/[locale]/seller-guide/bundles/page.tsx`, `src/app/[locale]/seller-guide/prize-draws/page.tsx`. Walkthrough content for each listing type. Routes added via SB1-J. `npx tsc --noEmit` → 0 errors. |
+| SB5-C | ~~Seller guide pages — bundles + prize draws~~ | M | 🚫 | **SUPERSEDED by DX17 (2026-05-12)** — content folds into `docs.letitrip.in/sellers/listings` with sub-pages `docs.letitrip.in/sellers/bundles` and `docs.letitrip.in/sellers/prize-draws`. In-app `/seller-guide/*` paths become 308 redirects via DX34b. ~~Original spec:~~ **New pages:** `src/app/[locale]/seller-guide/bundles/page.tsx`, `src/app/[locale]/seller-guide/prize-draws/page.tsx`. Walkthrough content for each listing type. Routes added via SB1-J. |
 | SB5-D | Homepage sections seed + brand sections | M | ⏳ | **File:** `appkit/src/seed/homepage-sections.seed.ts`. Check existing section types first. Add: `section-featured-bundles`, `section-prize-draws`, `section-brand-hot-wheels` (brandSlug: "brand-hot-wheels"), `section-brand-pokemon` (brandSlug: "brand-pokemon-company"). Reuse existing section types where possible. `npx tsc --noEmit` → 0 errors. |
 | SB5-E | Seed data — listingType backfill + 2 prize draw docs + 3 bundle docs | L | ⏳ | **File:** `appkit/src/seed/products.seed.ts`. Add `listingType: "standard"/"auction"/"pre-order"` to all 70 existing products. Remove boolean flags. Add 2 prize draw product docs: `prize-pokemon-mystery-box-june` (10 items, 500 paise/entry, 50 max), `prize-hot-wheels-treasure-hunt` (8 items, 29900 paise/entry, 100 max). **New file:** `appkit/src/seed/bundles.seed.ts`. Add 3 bundle docs: `bundle-pokemon-starter-pack` (3 items, 149900 paise), `bundle-hot-wheels-5-pack` (5 items, 219900 paise), `bundle-beyblade-starter-set` (4 items, 349900 paise). Update `appkit/src/seed/manifest.ts` and `src/app/api/demo/seed/route.ts` to include bundles collection. `npx tsc --noEmit` → 0 errors. |
 
@@ -1573,6 +1678,9 @@ Rules to keep top-of-mind every task:
 | OG3 | `user/[slug]/opengraph-image.tsx` | S | ⏳ | Public user profile card — display name + avatar + role badge (verified seller / buyer). **Verify with author whether `/user/[slug]` is a public route before implementing** — store profiles already covered by stores OG. |
 | OG4 | Sub-listing detail OG | S | ⏳ | Verify route exists first (`sub-listings/[slug]/page.tsx` or similar). If yes: scaffold OG with parent listing context + sublisting title. If no: close as N/A with one-line note. |
 | OG5 | Audit script: `appkit/scripts/verify-og-coverage.mjs` | M | ⏳ | Walks `src/app/[locale]/**/page.tsx`, lists every `[slug]`/`[id]` dynamic detail route, checks for sibling `opengraph-image.tsx`, exits non-zero on missing. Wire into CI gate alongside `verify-entries.mjs`. Output format: one line per missing OG. Verification: run on current tree → must report only the OG1–OG4 known gaps + every new resource not yet shipped. |
+| OG-FIX1 | Edge-runtime build break — `node:fs` / `crypto` in OG routes | M | ⏳ | **Production blocker.** Verified S23 2026-05-12: `npm run build` fails at `Collecting page data` with `Failed to load external module node:fs: Native module not found: node:fs` originating from `/[locale]/blog/[slug]/opengraph-image` (and likely all sibling edge OG routes). Root cause: OG routes declare `runtime = "edge"` but import from `@mohasinac/appkit/server`, whose chain pulls in `appkit/dist/features/auth/token-store.js` (`import crypto from "crypto"`) and `consent-otp.js` (`import { createHmac, randomInt } from "crypto"`). Build also surfaces 2 edge-runtime warnings from the same chain via `/api/stores/[storeSlug]/reviews/route.ts`, `/api/checkout/route.ts`, `src/actions/checkout.actions.ts` (callers not declared edge so they're warnings, not errors). **Fix paths to evaluate**: (a) switch OG routes off edge to Node runtime — simplest, costs cold-start latency; (b) add per-feature thin OG data getters in `appkit/src/_internal/server/og/` that import only the bare minimum (no auth/checkout chain) — best long-term; (c) carve `appkit/server` into smaller edge-safe entry points. Last touched in `22a4f3c5e refactor(og): tighten consumer shims` — predates this session. Verification: `npm run build` exits 0 + every `/<route>/opengraph-image` returns `200 image/png` against `curl -sI`. |
+| OG-FIX2 | `outputFileTracingIncludes` moved out of `experimental` | XS | ⏳ | Build warning: `Unrecognized key(s) in object: 'outputFileTracingIncludes' at "experimental"`. Next 16 moved this option to the top-level config. One-line move in `next.config.js` (or in `defineNextConfig` inside `appkit/src/configs/next.ts` if that's where the wrapper sets it). Non-blocking but noisy in every build. |
+| DEV-1 | `watch:css` produces degraded `dist/tailwind-utilities.css` | S | ⏳ | Discovered S23 2026-05-12 via the Stop hook: when `npm run dev` is left running, appkit's `watch:css` overwrites `dist/tailwind-utilities.css` with a build missing the `md:` / `lg:` breakpoint utilities (Tailwind scans `dist/` before TSC has finished emitting, so the `min-width:768px` / `min-width:1024px` class strings aren't seen and get purged). `verify-css-build` then fails on next `npm run check`. One-command recovery: `npm --prefix ./appkit run build`. **Fix paths**: (a) point `watch:css` at `src/**` (not `dist/**`), (b) gate `watch:css` on a first-pass TSC completion via a small wrapper, or (c) restore the build CSS on dev shutdown via the `killTree` hook in `scripts/dev-next.mjs`. Tracked so the next audit failure has a one-link explanation. |
 
 ---
 
@@ -1587,5 +1695,189 @@ Rules to keep top-of-mind every task:
 | EMG3 | Gift cards / e-vouchers | M | ⏳ | **Triage 2026-05-12 (S45):** **keep holding, pair with EMG1.** Only signal so far is FAQ copy. If/when graduated, ship alongside EMG1 in a single **Tier PAY** arc since both touch checkout payment-method picker, ordersRepository payment-method enum, and Razorpay integration. **Discovery:** referenced in seed FAQ copy. Server feature: `_internal/server/features/gift-cards/{data,service,actions,index}.ts`. Consumer wiring: cart redemption + admin issue page + buyer purchase page. *OG + sitemap:* per-gift-card-design OG if shareable URLs are added. *Error handling:* invalid code → inline form error; expired → toast; insufficient balance → partial-redemption notice. *Verification:* TBD when first design note arrives. |
 | EMG4 | Live chat / agent handoff (escalation from copilot) | L | 🎯 | **Triage 2026-05-12 (S45):** **ready-to-graduate.** Architecture is clear (reuse D5/VC7 RTDB ping-channel + extend `_internal/server/features/copilot/`); admin side already exists at `src/app/[locale]/admin/copilot/page.tsx`. When scheduled, lift into its own **Tier CHAT** session (or extend Tier D5/VC7 messages). Lower priority than EMG1 — EMI unlocks revenue; live chat is a support nicety. **Discovery:** `admin/copilot` page exists at `src/app/[locale]/admin/copilot/page.tsx`; user-side live-chat does not. Reuse RTDB ping-channel pattern from D5/VC7 messages (per `project_messages_rtdb` memory). Server feature: extend `_internal/server/features/copilot/`. Consumer wiring: floating-bubble component on every `[locale]/...` page + admin agent inbox at `[locale]/admin/copilot/inbox/page.tsx`. *OG + sitemap:* **N/A**. *Verification:* end-to-end handoff test (buyer opens bubble → message → admin sees in inbox → reply → buyer sees reply). |
 | EMG5 | Referral / affiliate (speculative) | M | 🚫 | **Triage 2026-05-12 (S45):** **deleted-from-active-tracking.** Per the row's own self-description ("may delete on first review if not part of the roadmap") + no design notes, FAQ mentions, or revenue case have surfaced. Row retained for history; not counted in remaining-tasks total. Re-add as a fresh EMG row if a future business case appears. |
+
+---
+
+## Tier SSR-Merge — SSR Rearchitecture Folded Into Existing Tiers (2026-05-12)
+
+> Rows from the wound-down `ssr-arch-tracker.md` and `ssrprompt.md` merged here. Each task ID encodes the destination tier (`3-*` → Tier 3, `X-*` → Tier X, etc.). Follow the layered template defined in `CLAUDE.md` § "SSR Architecture". Pre-release status (no data) means schema/contract changes can be made without backwards-compat shims.
+
+### → Tier 0 (Bug Fixes)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 0-P20 | Remove `as unknown as SectionConfig` cast on carousel section config | ⏳ | Promoted from `newchange.md` DEFERRED (2026-05-07). Linked to CF1. *Layered:* Types + Validation. *Verification:* `tsc --noEmit` 0/0 + carousel admin form save round-trip. |
+
+### → Tier 3 (Infrastructure)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 3-shell-adopt | `LayoutShellClient.tsx` → slim ~30-line wrapper around appkit `<AppShell>` | ⏳ | `<AppShell>` already in appkit. Pass `renderNav` / `renderHeader` / `renderFooter` slots; remove duplicated grid CSS. |
+| 3-layout-ssr | `[locale]/layout.tsx` SSR loading — category tree + session from cookie | ⏳ | Parallel server-side fetches; remove client `useEffect` fetches. *Verification:* JS-disabled page render shows nav populated. |
+| 3-nextconfig-cleanup | Remove `serverExternalPackages` / `outputFileTracingIncludes` / `webpack.externals` appkit entries from `next.config.js` | ⏳ | Unblocks after `X-index-demolish`. Replaces `S1-configs` next-config portion. |
+| 3-tailwind-cleanup | Remove appkit `content` glob + `safelist` from `tailwind.config.js`; adopt `defineTailwindConfig()` | ⏳ | Replaces `S1-configs` tailwind portion. |
+
+### → Tier 5 (Admin Core CRUD)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 5-settings-split-branding | Split `AdminSiteSettingsView` (776 LOC) — branding group | ⏳ | New `_internal/client/features/admin/settings/BrandingEditor.tsx`. |
+| 5-settings-split-appearance | Split `AdminSiteSettingsView` — appearance + theme group | ⏳ | |
+| 5-settings-split-fees | Split `AdminSiteSettingsView` — fees + payouts group | ⏳ | |
+| 5-settings-split-integrations | Split `AdminSiteSettingsView` — integrations + API keys group | ⏳ | |
+| 5-settings-split-rest | Split `AdminSiteSettingsView` — remaining groups (announcementBanner / watermark / shipping / auctionConfig / platformLimits / legalPages / contactSocial / seoDefaults) | ⏳ | One commit per group. |
+| 5-analytics-lift | Lift `components/admin/AdminAnalyticsClient.tsx` → `_internal/client/features/admin/AnalyticsView.tsx` | ⏳ | |
+
+### → Tier 6 (Admin Finance & CMS)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 6-media-server | Add `media` server actions — `requestUploadUrl(ctx)`, `finalizeMedia(ctx)` | ⏳ | New `_internal/server/features/media/{actions,data}.ts`. |
+| 6-support-server | Add `support` server actions — `createTicket(ctx)`, `replyToTicket(ctx)` | ⏳ | Schemas exist; add `_internal/server/features/support/actions.ts`. |
+
+### → Tier 8 (User Account)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 8-auth-lift-login | Lift `LoginPageClient.tsx` → `_internal/client/features/auth/LoginView.tsx` | ⏳ | |
+| 8-auth-lift-register | Lift `RegisterPageClient.tsx` → `_internal/client/features/auth/RegisterView.tsx` | ⏳ | |
+| 8-auth-lift-forgot | Lift `ForgotPasswordPageClient.tsx` → `_internal/client/features/auth/ForgotPasswordView.tsx` | ⏳ | |
+| 8-auth-lift-reset | Lift `ResetPasswordPageClient.tsx` → `_internal/client/features/auth/ResetPasswordView.tsx` | ⏳ | |
+| 8-auth-lift-verify | Lift `VerifyEmailPageClient.tsx` → `_internal/client/features/auth/VerifyEmailView.tsx` | ⏳ | |
+| 8-account-lift-profile | Lift `ProfileClient.tsx` → `_internal/client/features/account/ProfileView.tsx` | ⏳ | |
+| 8-account-lift-addresses | Lift `UserAddressesClient.tsx` → `_internal/client/features/account/AddressesView.tsx` | ⏳ | |
+| 8-account-lift-add | Lift `AddAddressClient.tsx` → `_internal/client/features/account/AddAddressView.tsx` | ⏳ | |
+| 8-account-lift-edit | Lift `EditAddressClient.tsx` → `_internal/client/features/account/EditAddressView.tsx` | ⏳ | |
+| 8-fonttoggle-lift | Lift `FontToggleClient.tsx` → `_internal/client/preferences/FontToggle.tsx` | ⏳ | |
+
+### → Tier HS (Homepage Sections CMS)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| HS6 | Demolish `AdminSectionsView.tsx` (2,768 LOC) into 21 per-type editors | ⏳ | One file per section type at `_internal/client/features/homepage/sections/<Type>Editor.tsx`. Form state client-side; saves call appkit action `updateHomepageSection(id, patch)`. Each editor ≤150 LOC. One section type per commit. |
+| HS7-adslots | Lift `components/homepage/AdSlots.tsx` → `_internal/client/ads/AdSlot.tsx` | ⏳ | |
+| HS7-newsletter | Lift `HomepageNewsletterForm.tsx` → `_internal/client/features/homepage/NewsletterForm.tsx` | ⏳ | |
+| HS7-adruntime | Lift `AdRuntimeInitializer.tsx` → `_internal/client/ads/AdRuntimeInitializer.tsx` | ⏳ | |
+
+### → Tier CF (Carousel & Feed)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| CF2 | Split `AdminCarouselEditorView` (597 LOC) — slide-editor vs list-shell | ⏳ | New `_internal/client/features/admin/carousel/{SlideEditor,CarouselListShell}.tsx`. |
+
+### → Tier W (Cart & Wishlist Integrity)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| W-route-lift-cart | Lift `CartRouteClient.tsx` → `_internal/client/features/cart/CartRouteView.tsx` | ⏳ | |
+| W-route-lift-checkout | Lift `CheckoutRouteClient.tsx` → `_internal/client/features/checkout/CheckoutRouteView.tsx` | ⏳ | |
+| W-route-lift-success | Lift `CheckoutSuccessRouteClient.tsx` → `_internal/client/features/checkout/CheckoutSuccessView.tsx` | ⏳ | |
+
+### → Tier LL (Listing Layouts)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| LL-dashboard-admin | Adopt `<DashboardScaffold>` in admin dashboard layout | ⏳ | Scaffold already in appkit. |
+| LL-dashboard-store | Adopt `<DashboardScaffold>` in store dashboard layout | ⏳ | |
+| LL-dashboard-user | Adopt `<DashboardScaffold>` in user dashboard layout | ⏳ | |
+| LL-scaffold-listing | Extract `<ListingScaffold>` (responsive sticky-rail filters + grid + toolbar) | ⏳ | New `_internal/client/scaffolds/ListingScaffold.tsx`. Replaces ad-hoc layouts in 4 listing views. |
+| LL-scaffold-detail | Extract `<DetailScaffold>` (sticky purchase rail on lg+, inline below) | ⏳ | New `_internal/client/scaffolds/DetailScaffold.tsx`. |
+
+### → Tier Q (Query/Sieve)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| Q1-funcs-audit | Audit `letitrip.in/functions/src/index.ts` — confirm every Cloud Function is one-line `bindToFirebase.{schedule\|documentWritten\|https}(...)` | ⏳ | Verify step after pre-merge functions rewrite. |
+| Q1-funcs-dryrun | `firebase deploy --only functions --dry-run` parity test | ⏳ | Same function names, regions, triggers as pre-migration. |
+| Q1-ops | `firebase deploy --only functions` + set `FIREBASE_FUNCTION_LISTING_URL` + `LETITRIP_INTERNAL_SECRET` in Vercel env | ⏳ | Promoted from `newchange.md` DEFERRED. |
+| Q3-pre-orders | Rewire `/api/pre-orders/route.ts` through `listingProcessor` with `listingType==pre-order` filter | ⏳ | Promoted from `newchange.md` DEFERRED. Recommended path: treat pre-orders as products with `listingType==pre-order` (listingType migration complete). |
+
+### → Tier V (UX Completeness)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| V-initialX-sweep | Sweep every `src/app/[locale]/**/page.tsx` and confirm it passes `initialX` to its view (no double-fetch) | ⏳ | One row per page that still double-fetches. Start with `admin/products/page.tsx`, `admin/products/[id]/page.tsx`, `user/orders/page.tsx`. Audit produces follow-ups for any other gap. |
+
+### → Tier X (Code Quality)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| X-copilot-classify | Audit `features/copilot/` — classify as pure client tool OR add server actions for mutations | ⏳ | Decision row. |
+| X-index-demolish | Demolish `appkit/src/index.ts` (8,933 LOC) — split into thin `client-entry.ts` + `server-entry.ts` proxies | ⏳ | Pre-release safe. Rename consumer imports in a single sweep. *Verification:* `verify-entries.mjs` + `audit-violations.mjs` exit 0. |
+| X-dead-hooks | Delete dead REST hooks (`use<X>` REST → server fn migration) for every feature with server-side data layer | ⏳ | Couple with V-initialX-sweep findings. |
+| X-api-attrition | Delete every `src/app/api/**/route.ts` with no non-React consumer | ⏳ | Run after V-initialX-sweep + X-dead-hooks land. |
+| X-eslint-additive | Additive spread of `defineEslintConfig()` into `eslint.config.mjs` (NEVER wholesale replace — 315 lines of `lir/*` rules must survive) | ⏳ | Replaces `S1-configs` eslint portion. |
+| X-audit-baseline | Drive `audit-ssr-in-appkit` baseline 8 → 0 | ⏳ | Each unit of the baseline is a separate fix-and-decrement commit. |
+| X-cli-close | Close `appkit/src/cli/index.ts` move (premise stale — file has zero firebase-admin imports) | ⏳ | Reclassify as ✅ no-op OR delete CLI bin if truly unused. |
+| X-opts-lint | Custom eslint rule — every appkit public export with parameters accepts a final `opts?: XOptions` parameter | ⏳ | Codifies encapsulation contract. |
+| X-slots-lint | Custom eslint rule — every appkit view export accepts at least one `renderXxx` slot prop | ⏳ | Codifies override seam contract. |
+| X-smoke-gate | Wire `smoke-ssr.mjs` / `smoke-bundle.mjs` / `smoke-theme.mjs` into `npm run check` | ⏳ | Scripts exist; not gated. |
+
+### → Tier FI (Product Feature Icons & Badges)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| FI6-2 | Wrap secondary listing surfaces in `ProductFeaturesProvider` — `SearchResultsClient`, `/wishlist/page.tsx`, `PromotionsProductsClient`, `StoreDetailLayoutView`, `RelatedProductsCarousel` | ⏳ | Promoted from `newchange.md` DEFERRED. Mechanical: add `listPlatform()` + Provider in each page/server boundary. |
+
+### → Tier OG (OpenGraph Image Coverage)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| OG6 | Migrate `src/app/sitemap.ts` (416 LOC) to `listSitemapX()` aggregator pulling each feature's `data.ts:listSitemapX` export | ⏳ | Sitemap becomes thin aggregator. *Verification:* `curl /sitemap.xml` returns same URL count + structure. |
+| OG7 | Create or migrate `src/app/[locale]/robots.ts` to appkit helper | ⏳ | |
+| OG8 | Create or migrate `src/app/[locale]/manifest.ts` to appkit helper | ⏳ | |
+
+### → Tier IX (Component / Util / Constant Index)
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| IX-SSR-AUDIT | One-shot audit of `_internal/server/features/<f>/` directories — confirm each has `data.ts` / `adapters.ts` / `actions.ts` / `index.ts` per the layered template | ⏳ | Audit produces a punch-list of gaps; each gap becomes a follow-up row under the feature's tier. |
+| IX-DUP-AUDIT | Duplication sweep — run the Duplication Decision Framework (in `CLAUDE.md`) on every cross-tier overlap | ⏳ | Each CONSOLIDATE-class finding becomes its own follow-up row under the appropriate tier. Run AFTER Tier RA audits land. |
+| IX-appkit-docs | Document `appkit.config.js` consumer surface in `appkit/README.md` — every option with description + example | ⏳ | |
+| IX-override-doc | Add the 6-level Override Hierarchy reference in `appkit/README.md` (config → opts → slots → adapter wrap → call repo directly → fork) | ⏳ | |
+
+---
+
+## Tier RA — Retrofit Audit (SSR-Design Conformance) *(audits ✅ tasks against the layered template)*
+
+> One audit row per existing tier that has ✅ rows. Each audit walks the tier and confirms each feature against the SSR-design checklist below. Audit rows are **read-only**; any gap flips the original ✅ to ⚠️ and adds a concrete fix row under the original tier (one commit = one work unit).
+>
+> **Checklist applied per feature:**
+> ```
+> □ TEMPLATE     _internal/server/features/<feature>/ has data.ts / adapters.ts / actions.ts / index.ts (where applicable)
+> □ CACHE        Every data fn shared between page+generateMetadata is wrapped in React.cache
+> □ SHIM         Every consumer page.tsx ≤30 lines (no Firestore query in page)
+> □ INITIAL      Every detail page passes initialX to its view component (no double-fetch)
+> □ OG           Every detail route has opengraph-image.tsx as ≤30-line shim → appkit renderer
+> □ NO-HARDCODE  No "LetItRip" / "letitrip.in" / currency / route strings inside _internal/
+> □ OPTS         Every public appkit function takes opts?: XOptions
+> □ SLOTS        Every appkit view accepts at least one renderXxx slot
+> □ EXPORTS      Server fns in server-entry.ts; client fns in client-entry.ts; no firebase-admin reachable from client-entry
+> □ NO-DUP       Run the Duplication Decision Framework on every cross-tier overlap
+> ```
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| RA-Tier1 | Retrofit audit — Tier 1 Rich Text System | ⏳ | |
+| RA-Tier2 | Retrofit audit — Tier 2 Product Custom Fields & Detail Sections | ⏳ | |
+| RA-Tier3 | Retrofit audit — Tier 3 Infrastructure | ⏳ | |
+| RA-Tier4 | Retrofit audit — Tier 4 Seed Data Overhaul | ⏳ | Seed-only; mostly N/A on checklist but verify schema files match `_internal/shared/features/<x>/` types. |
+| RA-TierHS | Retrofit audit — Tier HS Homepage Sections CMS | ⏳ | |
+| RA-TierCF | Retrofit audit — Tier CF Carousel & Feed | ⏳ | |
+| RA-Tier5 | Retrofit audit — Tier 5 Admin Core CRUD | ⏳ | |
+| RA-Tier6 | Retrofit audit — Tier 6 Admin Finance & CMS | ⏳ | |
+| RA-Tier7 | Retrofit audit — Tier 7 Store/Seller | ⏳ | |
+| RA-Tier8 | Retrofit audit — Tier 8 User Account | ⏳ | |
+| RA-TierW | Retrofit audit — Tier W Cart & Wishlist Integrity | ⏳ | |
+| RA-TierWL | Retrofit audit — Tier WL Wishlist / History / Cart Caps | ⏳ | |
+| RA-TierGP | Retrofit audit — Tier GP Grouped Listings | ⏳ | |
+| RA-TierSC | Retrofit audit — Tier SC Sub-listing Categories | ⏳ | |
+| RA-TierSR | Retrofit audit — Tier SR Global Search Redesign | ⏳ | |
+| RA-TierRC | Retrofit audit — Tier RC Routes & Navigation Centralization | ⏳ | |
+| RA-TierARCH | Retrofit audit — Tier ARCH Store Identity Architecture | ⏳ | |
+| RA-TierEX | Retrofit audit — Tier EX Extended Homepage Sections | ⏳ | |
+| RA-TierFI | Retrofit audit — Tier FI Product Feature Icons & Badges | ⏳ | |
+| RA-TierAX | Retrofit audit — Tier AX Action System & URL Patterns | ⏳ | |
+| RA-TierSB | Retrofit audit — Tier SB Bundle / Prize Draw / Event Raffle | ⏳ | |
 
 ---
