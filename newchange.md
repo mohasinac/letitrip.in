@@ -41,6 +41,46 @@
 
 ---
 
+### [CRUD] S1 — UX unblock: become-seller wired; stale memory swept (2026-05-12)
+
+**Scope**: clear the highest-impact "blank page" UX issues per re-sequenced S1. Verify-first audit (CLAUDE.md Rule #4) collapsed the scope significantly versus what `project_listing_toolbars.md` and `project_slot_shell_pattern.md` advertised.
+
+**1. Listing toolbars — no change needed.** All 4 public listing pages (`/auctions`, `/products`, `/pre-orders`, `/stores`) are already toolbar-wired via `ListingToolbar` + `Pagination` + filter drawer inside their `*IndexListing` client components — work was done Session 85 and memory wasn't updated. Confirmed by reading each `*IndexListing.tsx` and grepping for the toolbar/pagination imports. MEMORY.md index updated.
+
+**2. Slot-shell pages — only become-seller was blank.** Cross-referenced every appkit view exporting `renderXxx?` props against `src/app/**/page.tsx`. Result: `/user/become-seller` was `<BecomeSellerView />` with 0/3 props — fully blank. All other slot-shell consumers either pass their main-content slot (degrade gracefully on optional slots) or use non-slot-shell `*Client`/`*Panel` components entirely.
+
+**3. Wired become-seller**:
+| file | change |
+|---|---|
+| `src/app/[locale]/user/become-seller/page.tsx` | rewritten as `"use client"` page wiring `renderGuide` (intro copy, "Apply" button hooked to `useBecomeSeller.mutate`, sign-in fallback link), `renderSuccess` (post-application card + dashboard link), `renderAlreadySeller` (existing-seller redirect). Uses `useAuth()` to detect already-seller (`role==="seller" \|\| role==="admin"`) on mount. All wrappers via appkit (`<Stack>`, `<Heading>`, `<Text>`, `<Ul>`, `<Li>`, `<Button asChild>`). All routes via `ROUTES.AUTH.LOGIN` / `ROUTES.STORE.DASHBOARD`. |
+
+Refactor checklist applied:
+- ROUTES ✅ — no hardcoded paths
+- TOKENS ✅ — Tailwind semantic tokens / `text-primary` only
+- WRAPPERS ✅ — `<Ul>`/`<Li>` (caught by lir/no-raw-html-elements lint)
+- SSR LAYERING — N/A (consumer-side wiring only)
+- REPO HOOKS — N/A
+- ROLE GATE — N/A (page is for unauthenticated→buyer flow)
+- SEED — N/A
+- INDICES — N/A
+- HOBBY CAPS — N/A (no server fetch)
+- CHECK ✅ — `npm run check` exit 0 (498 pre-existing warnings, 0 errors)
+
+**4. Memory swept**: `MEMORY.md` index entries for slot-shell + listing-toolbar updated. `project_slot_shell_pattern.md` prepended with 2026-05-12 verification block (historical audit preserved below).
+
+**5. Tracker updates**: S1 row marked ✅ with done note. New `S1-polish` row added to track the optional slots (admin alerts/charts/recent-activity, user-notifications filters/toolbar, seller-analytics charts/top-products) — these are *feature* work needing new APIs, not wiring, so deferred.
+
+**Files touched**:
+- `src/app/[locale]/user/become-seller/page.tsx` (rewrite)
+- `crud-tracker.md` (S1 row + new S1-polish row)
+- `prompt.md` (LAST/CURRENT/NEXT rotation)
+- `newchange.md` (this entry)
+- `MEMORY.md` + `project_slot_shell_pattern.md` (sweep)
+
+**Deferred**: S1-polish (see tracker). Smoke-test of `/user/become-seller` 3 states (guide / success / already-seller) at 375px + dark mode left to user before prod deploy — change is small and TS+lint clean, but visual confirm per Rule #2.
+
+---
+
 ### [CRUD] S23-followup — Dev heap probe + appkit 2.6.0 /jobs carve + prod deploy (2026-05-12)
 
 **Scope**: get the SB3 + Hobby work to production. Three independent blockers surfaced in order.

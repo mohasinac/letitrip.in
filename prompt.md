@@ -73,31 +73,30 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S23 SB3 Bundles + Hobby parity + 2.6.0 publish + prod deploy (2026-05-12)
+### ✅ LAST COMPLETED — S1 UX unblock: become-seller wired + stale memory swept (2026-05-12)
 
-- **SB3 Bundles UI/API shipped end-to-end**: `appkit/src/features/bundles/` (constants barrel + 7 components: `BundleItemsPicker`, `BundleForm`, `SellerBundleCreateView`, `SellerBundleEditView`, `AdminBundleEditorView`, `BundlesListingView`, `BundleDetailPageView`). `/api/bundles*` routes with auth gate + `syncReverseRefs()` maintaining `partOfBundleIds`/`partOfBundleTitles` on child products. Public + seller pages live. **Partial pending** (folded into new S4): SB3-D order-side stock sync, SB3-G admin pages, SB3-J Zod hardening, SB1-L 7 Firebase Functions.
-- **Vercel Hobby parity in dev**: `NODE_OPTIONS=--max-old-space-size=2048` (probe-derived — DEV-2) + `VERCEL_HOBBY_TIER=1` + cap env exports in `scripts/dev-next.mjs`. CLAUDE.md Rule #6 corrected for the real Vercel config (Fluid Compute Standard: 1 vCPU, **2 GB function memory**, 8 GB build machine, Node 22.x, iad1).
-- **OG-FIX1/2 ✅**: 9 OG routes dropped `runtime = "edge"` (their `@mohasinac/appkit/server` chain reaches `node:crypto` via `features/auth/{token-store,consent-otp}`); `appkit/src/configs/next.ts` moved `outputFileTracingIncludes` out of `experimental` per Next 16.
-- **DEV-3/4/5 ✅ — prod deploy live on `https://www.letitrip.in`**: `.next/` build cache (41 GB) blocked first upload → `.vercelignore` now excludes build + forensics artifacts. Build failed on `firebase-functions/v2/*` module-not-found → carved `@mohasinac/appkit/jobs` subpath in **appkit 2.6.0**, moved `bindToFirebase` + 22 job handlers out of `server-entry.ts`. `functions/src/index.ts` switched to `@mohasinac/appkit/jobs`. Letitrip's Next bundle no longer references `firebase-functions`. `vercel deploy --prod` succeeds; SB3 + S23 work is in production.
-- **Tracker re-sequenced**: old S1–S45 + S60–S93 numbering collapsed to clean S1–S11 + post-beta backlog. Plan: `~/.claude/plans/update-and-plan-the-delegated-bumblebee.md`.
+- **Verify-first audit (Rule #4) collapsed S1 scope**: All 4 public listing pages (`/auctions`, `/products`, `/pre-orders`, `/stores`) already fully toolbar-wired since Session 85 via `ListingToolbar` + `Pagination` + filter drawer inside the `*IndexListing` client components — `project_listing_toolbars.md` and the memory index were stale claiming them broken. No code change needed there.
+- **`/user/become-seller` was the only truly blank page**: `<BecomeSellerView />` was called with 0/3 render props. Now `"use client"` page wires `renderGuide` (intro copy + apply button + sign-in link), `renderSuccess` (post-application card + dashboard link), `renderAlreadySeller` (already-seller redirect card) using `useBecomeSeller` mutation + `useAuth` for initial state. Uses `<Ul>`/`<Li>`/`<Stack>`/`<Heading>`/`<Text>`/`<Button asChild>` wrappers and `ROUTES.AUTH.LOGIN` / `ROUTES.STORE.DASHBOARD` constants (refactor-checklist clean).
+- **Partial-wired views are not bugs**: `AdminDashboardView` (1/5), `UserNotificationsView` (2/6), `UserOrdersView` (1/2), `SellerAnalyticsView` (2/4) — all pass their main content slots; missing slots render `null` and would require new admin/seller APIs (alerts feed, recent-activity, charts hook, top-products) to be meaningful. Filed as **S1-polish** in tracker.
+- **Memory swept**: MEMORY.md index entries for slot-shell + listing-toolbar updated to current truth; `project_slot_shell_pattern.md` prepended with 2026-05-12 verification block above the historical audit.
 
-### 🔄 CURRENT — none (awaiting S1 kickoff)
+### 🔄 CURRENT — none (awaiting S2 kickoff)
 
 ### ⏳ NEXT UP — new S1-onward sequence (impact + dependency ordered)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S1** | Slot-shell wiring (~20 blank pages) + listing toolbars (auctions/products/pre-orders/stores) | Site appears half-finished today — highest-impact UX unblock |
-| 2 | **S2** | Cart + Checkout end-to-end (Razorpay live, Firestore-backed cart, order creation server action) | No purchases possible today |
-| 3 | **S3** | `listingType` boolean removal — 36-file consumer sweep + 7-file `_internal/` sweep + `/api/pre-orders` fix + index cleanup | Unblocks every future product/listing change |
-| 4 | **S4** | SB3 closeout (D/G/J) + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy | Closes Bundles + ships missing Functions |
-| 5 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
-| 6 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
-| 7 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks, one large session, one deploy) | Self-contained feature surface |
-| 8 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
-| 9 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
-| 10 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
-| 11 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
+| 1 | **S2** | Cart + Checkout end-to-end (Razorpay live, Firestore-backed cart, order creation server action) | No purchases possible today |
+| 2 | **S3** | `listingType` boolean removal — 36-file consumer sweep + 7-file `_internal/` sweep + `/api/pre-orders` fix + index cleanup | Unblocks every future product/listing change |
+| 3 | **S4** | SB3 closeout (D/G/J) + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy | Closes Bundles + ships missing Functions |
+| 4 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
+| 5 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
+| 6 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks, one large session, one deploy) | Self-contained feature surface |
+| 7 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
+| 8 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
+| 9 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
+| 10 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
+| 11 | **S1-polish** | Optional slot-shell polish slots deferred from S1 (admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products). Feature work — new endpoints + hooks. | Pull when prioritised |
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
 AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)
