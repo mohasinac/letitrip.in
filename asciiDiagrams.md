@@ -9277,3 +9277,106 @@ Same pattern in products-preorders-seed-data.ts ("pre-order") and
 products-standard-seed-data.ts ("standard"). Inner entries keep their
 legacy isAuction/isPreOrder fields until Phase 4 schema cleanup lands.
 ```
+
+## S23 — SB3 Bundle Listings UI + API (2026-05-12)
+
+### Component tree (appkit/src/features/bundles/components)
+
+```
+constants/index.ts ─────────── single source of truth (caps, options, types)
+                                  │
+       ┌──────────────────────────┼──────────────────────────┐
+       v                          v                          v
+BundleItemsPicker          BundleForm                BundlesListingView
+  • useProducts({           • Sectioned shell           • Filter toolbar
+    storeId,                  (Basics / Items /           (store / category /
+    listingType,               Pricing / Discovery /        sort)
+    status:"published"})       Media / Limits)           • Cards: savings %
+  • First-item              • <Field> = <Label>+child      badge, item count,
+    type-lock                 (avoids smart-FormField      OOS overlay
+  • Modal store-              `name` requirement)        • appkit Pagination
+    product picker          • Auto-derived            BundleDetailPageView
+  • 3..16 cap                 bundleOriginalTotal       • Hero + savings badge
+                            • Savings badge             • Items grid (with
+                            • All colours via             sold overlay)
+                              var(--appkit-color-*)     • OOS guard
+                                                        • NonRefundableConsentModal
+                                                          → onBuy(bundle)
+                                                            → /cart?bundleId=…
+       ┌────────────────────────────┐
+       v                            v
+SellerBundleCreateView    SellerBundleEditView   AdminBundleEditorView
+  Thin wrapper             Thin wrapper           Thin wrapper + store
+  around BundleForm        around BundleForm      ownership chip
+```
+
+### API + reverse refs
+
+```
+POST /api/bundles              PUT /api/bundles/[id]
+  ↓                              ↓
+  Validate 3..16 +               Auth + owner-or-admin
+  same listingType               ↓
+  ↓                              syncReverseRefs(prev, next):
+  Auto-id bundle-{slug}-{rand}     diff product IDs
+  ↓                                ↓
+  bundlesRepository.create        on add → productRepository.update(p, {
+  ↓                                 partOfBundleIds:   [...old, bundleId],
+  syncReverseRefs([], productIds)   partOfBundleTitles:[...old, title]
+                                   })
+                                   on remove → strip from both arrays
+                                  ↓
+                                  Set dedupe + warn-on-fail (never blocks)
+
+DELETE /api/bundles/[id]
+  ↓
+  syncReverseRefs(prev, []) → clears all partOfBundleIds entries for this bundle
+  ↓
+  bundlesRepository.delete
+```
+
+### Page wiring
+
+```
+/[locale]/bundles/page.tsx (RSC, revalidate=60)
+  → bundlesRepository.findAll().filter(status published|out_of_stock)
+  → BundlesListingView
+
+/[locale]/bundles/[slug]/page.tsx (RSC)
+  → bundlesRepository.findBySlug(slug) | notFound()
+  → BundleDetailClient (client wrapper)
+     → BundleDetailPageView
+        onBuy → router.push(ROUTES.USER.CART + ?bundleId=…)
+
+/[locale]/store/bundles/page.tsx (client)
+  → fetch /api/bundles?includeAll=true → list
+
+/[locale]/store/bundles/new/page.tsx (client)
+  → SellerBundleCreateView
+     onSubmit → POST /api/bundles → ROUTES.STORE.BUNDLES
+
+/[locale]/store/bundles/[id]/edit/page.tsx (client)
+  → GET /api/bundles/[id] + /api/store/me
+  → SellerBundleEditView
+     onSubmit → PUT /api/bundles/[id] → ROUTES.STORE.BUNDLES
+```
+
+### Dev-server Vercel Hobby parity (S23 infra)
+
+```
+npm run dev → npm run dev:only
+  ↓
+  cross-env NODE_OPTIONS=--max-old-space-size=1024 VERCEL_HOBBY_TIER=1
+  ↓
+  node scripts/dev-next.mjs
+    ├─ Memory guard: refuse if free RAM < 2 GB (DEV_SKIP_MEM_CHECK=1 to bypass)
+    └─ if VERCEL_HOBBY_TIER=1, export to child env:
+         VERCEL_FUNCTION_MEMORY_MB     = 1024
+         VERCEL_FUNCTION_TIMEOUT_S     = 10
+         VERCEL_BACKGROUND_TIMEOUT_S   = 60
+         VERCEL_MAX_PAYLOAD_BYTES      = 4.5 MB
+         VERCEL_MAX_IMAGE_BYTES        = 50 MB
+       Override via DEV_FUNCTION_MEMORY_MB etc.
+  ↓
+  spawn `node node_modules/next/dist/bin/next dev --webpack`
+```

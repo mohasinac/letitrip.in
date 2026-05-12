@@ -60,6 +60,43 @@
 
 ---
 
+### [CRUD] S23 — SB3 bundle listings full stack + Vercel Hobby dev parity (2026-05-12)
+
+**Scope**: deliver the SB3 bundle UI/API surface end-to-end + wire local dev to mirror the production Hobby caps.
+
+**SB3 — Bundles**:
+- New appkit feature surface in `appkit/src/features/bundles/`:
+  - `constants/index.ts` — `BUNDLE_VALIDATION` (MIN/MAX items, picker cap, image cap), `BUNDLES_CURRENCY`, `BUNDLE_STATUS_OPTIONS`, `BUNDLE_ITEM_TYPE_OPTIONS`, `BUNDLE_ITEM_TYPE_LABEL`, `BUNDLE_SORT_OPTIONS`, `BundleSort` type.
+  - `components/BundleItemsPicker.tsx` — data-driven candidate fetch via `useProducts({ storeId, listingType })`, first-item type-lock with disabled `Select`, modal store-product picker with title-prefix search, sold overlay, 3..16 cap. Auctions and prize-draws are excluded at the query layer.
+  - `components/BundleForm.tsx` — sectioned (Basics / Items / Pricing / Discovery / Media / Limits & Promotion); inline `<Field>` wrapper around `<Label>` + child to work around the smart-FormField `name` requirement. Auto-derived `bundleOriginalTotal` + savings badge. All colours/spacing via tokens.
+  - `components/SellerBundleCreateView.tsx`, `SellerBundleEditView.tsx`, `AdminBundleEditorView.tsx` — thin shells wrapping `BundleForm`.
+  - `components/BundlesListingView.tsx` — filter toolbar (store / category slug / sort) backed by `BUNDLE_SORT_OPTIONS`; cards show savings %, item count, struck-through original total, OOS overlay; appkit `Pagination` (`currentPage`/`onPageChange`).
+  - `components/BundleDetailPageView.tsx` — hero, savings badge, price + original, non-refundable note, OOS guard, optional video, item grid with per-item type badge + sold overlay; `NonRefundableConsentModal` mediates "Buy Bundle" → `onBuy(bundle)`.
+- Bundle components barrel + main `appkit/src/index.ts` exports + `appkit/src/server.ts` `bundlesRepository`/`BundlesRepository` re-export.
+- API routes:
+  - `src/app/api/bundles/route.ts` — `GET` filters drafts/archived unless `?includeAll=true`; `POST` validates 3..16 items + same-`listingType` + auto-generates `bundle-{slug}-{rand6}` id + calls `syncReverseRefs()`.
+  - `src/app/api/bundles/[id]/route.ts` — `GET` returns full doc, `PUT` requires auth + owner-or-admin gate + re-runs reverse refs against the diff, `DELETE` clears all reverse refs.
+  - `syncReverseRefs()` — diffs prev↔next product IDs, patches `partOfBundleIds` / `partOfBundleTitles` per child, idempotent via Set dedupe, best-effort warn-on-fail (so a partial sync never blocks the bundle write).
+- Page files: store (`page.tsx` list, `new/page.tsx`, `[id]/edit/page.tsx`) + public (`bundles/page.tsx` RSC list, `[slug]/page.tsx` + `BundleDetailClient.tsx`).
+- SeedPanel `pendingItems` updated to reflect SB3 closures.
+
+**Vercel Hobby parity (infra)**:
+- `package.json` `dev:only` sets `NODE_OPTIONS=--max-old-space-size=1024` + `VERCEL_HOBBY_TIER=1`.
+- `scripts/dev-next.mjs` exports the Hobby ceilings as env (`VERCEL_FUNCTION_MEMORY_MB`/`_TIMEOUT_S`/`_BACKGROUND_TIMEOUT_S`/`_MAX_PAYLOAD_BYTES`/`_MAX_IMAGE_BYTES`) so route-handler middleware can read + enforce them. Memory guard refuses to start if free RAM < 2 GB (override `DEV_SKIP_MEM_CHECK=1`).
+- `CLAUDE.md` — new top-level **Rule #6 — Code Within Vercel Hobby Tier Limits** with the cap table + 6 hard rules. Persisted to memory in `project_vercel_hobby_limits.md`.
+- `appkit/src/configs/index.ts` — added explicit `.js` extensions on relative imports so ESM `dist` resolves under CJS `require()` from `next.config.js`. `appkit/package.json` `./configs` adds `"default"` condition. Dev server now boots cleanly.
+
+**Deferred (parked, tracker ⚠️)**:
+- SB3-D order-side stock sync (flip `bundleItems[].isSold` when a child product sells via `/api/orders` POST or status PATCH).
+- SB3-G admin pages (`src/app/[locale]/admin/bundles/page.tsx` + `/[id]/edit/page.tsx`).
+- SB3-J full Zod schema (currently inline guards) + tighter ownership via `storeRepository`.
+
+**Quality gate**: `npm run check:types` exits 0 in both repos. `npm run check:audits` exits 0. Lint shows 192 pre-existing errors elsewhere in the codebase — zero in the SB3 files (only `lir/no-fetch-in-ui` warnings on the client pages, an existing pattern). Dev server boots in ~600 ms with the new memory guard banner.
+
+**Files changed**: see `git diff --stat`. ~17 new files, ~5 modified.
+
+---
+
 ### Session S22 Phase 3+4 — 2026-05-12 — [CRUD] Full SB1-G removal cascade — booleans dropped everywhere
 
 **Scope:** Lane B was idle so I executed the full Phase 3 + Phase 4 cascade in one pass. Removed `isAuction` / `isPreOrder` from every schema, type, Zod input, repository, route, component, and seed file in both repos. Cart-item snapshot migrated to `listingType`. 34 legacy boolean-combo composite indexes dropped. `normalizeListingType` signature tightened to `Pick<"listingType">` only. CLAUDE.md J13 rule updated.

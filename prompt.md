@@ -21,37 +21,41 @@ Skipping this rule is the same as breaking CLAUDE.md Rule #1.
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S14–S21 + S45 + SB1 data layer (2026-05-12)
+### ✅ LAST COMPLETED — S23 SB3 (Bundle Listings UI + API) + infra (2026-05-12)
 
-Single long arc this date. Eight session-IDs of work, each its own commit.
+Long single-session arc. Two commits (code + docs).
 
-- **S14 P24** — auctions 11→20, bids 26→60 via `buildBidLadder()`; pre-orders 8 left near-met.
-- **S15 P25** — categories 23→33 via `mkLeaves()`; remaining 22 deferred.
-- **S16 P28** — blog 8→20 (12 rich posts), eventEntries 14→25; events 17 + FAQs 53 near-met (skipped).
-- **S17 P29** — coupons 10→20, notifications 10→40 via `buildNotificationBatch()`, carts 5→15 via `mkCart()`; guest carts dropped (Zod/TS type gap); wishlists skipped.
-- **S18 P31** — seed runner validator hook (`validate(doc) => string[]`) + dry-run diff (`db.getAll` 30-doc chunks) + bounded retry (`isRetryableError` heuristic) + `SeedAbortedError`. PII masking already-better-implemented (AES-256-GCM beats spec's sha256).
-- **S45 EMG** triage — EMG1+EMG4 🎯 ready-to-graduate, EMG2+EMG3 ⏳ holding, EMG5 🚫 deleted.
-- **S19 SB1 schemas** — additive `ListingType` (+ prize-draw, + bundle), `PrizeDrawItem`, BundleDocument feature, OrderDocument prize/bundle fields.
-- **S20 SB1 surface** — `bundlesRepository` (180 LOC, txn `markItemSold`, array-contains `findContainingProduct`), 14 ROUTES, 5 API_ROUTES, 8 new composite indexes.
-- **S21 SB1-G data** — productRepository LISTING_TYPE_VALUES + scope-alias rewrites; seed wrappers stamp listingType on every doc; /api/products translates `?isAuction=true` to `listingType==auction`; new `isAuctionListing`/`isPreOrderListing`/`isStandardListing` predicates; bundles seed (3 entries) + SeedPanel meta + plumbing through manifest/SeedCollectionName/route. SB1-D 🚫 not-needed per user (no real data).
+**SB3 — Bundle Listings (Own Collection)**:
+- **SB3-A/B/F/H/I done.** New appkit feature `appkit/src/features/bundles/`: shared `constants/index.ts` (`BUNDLE_VALIDATION`, `BUNDLES_CURRENCY`, `BUNDLE_STATUS_OPTIONS`, `BUNDLE_ITEM_TYPE_OPTIONS`, `BUNDLE_SORT_OPTIONS` + types). Seven new components: `BundleItemsPicker` (data-driven via `useProducts({listingType})`, first-item type-lock, modal store-product picker, sold overlay, 3..16 cap), `BundleForm` (sectioned with inline `<Field>` wrapper — works around smart-FormField's `name` requirement), `SellerBundleCreateView`, `SellerBundleEditView`, `AdminBundleEditorView`, `BundlesListingView` (filter toolbar, savings %, OOS overlay, appkit `Pagination`), `BundleDetailPageView` (hero, items grid, OOS guard, NonRefundableConsentModal → checkout hand-off). All exported from `@mohasinac/appkit`.
+- **SB3-E done.** `syncReverseRefs()` in both bundles API files diffs prev↔next product IDs and patches `partOfBundleIds` / `partOfBundleTitles` on every added/removed child. Idempotent (Set dedupe), best-effort warn-on-fail.
+- **SB3-G partial (5/7).** Public list (`bundles/page.tsx` — RSC via `bundlesRepository.findAll()`), public detail (`bundles/[slug]/page.tsx` + `BundleDetailClient.tsx`), seller list + new + edit pages. **Pending**: admin list + admin edit page files.
+- **SB3-J partial.** `/api/bundles` (GET public list / POST create) + `/api/bundles/[id]` (GET / PUT / DELETE) with auth + owner-or-admin gate. **Pending**: full Zod validation (currently inline guards), tighter ownership via `storeRepository` lookup.
+- **SB3-D partial.** Bundle-write side syncs reverse refs. **Pending**: order-create + product-status-change triggers that flip `bundleItems[].isSold` via `bundlesRepository.markItemSold()`; daily `scheduledBundleStockSync` Firebase Function (SB1-L).
 
-Tracker count: 162 → ~172 done (S14/S15/S16/S17/S18/S19/S20/S21/S45 closed; SB1-A/C/G/I ⚠️ partial; SB1-D 🚫).
+**Infrastructure changes:**
+- **Vercel Hobby parity in dev**: `package.json` `dev:only` now sets `NODE_OPTIONS=--max-old-space-size=1024` + `VERCEL_HOBBY_TIER=1`; `scripts/dev-next.mjs` exports `VERCEL_FUNCTION_MEMORY_MB`/`_TIMEOUT_S`/`_MAX_PAYLOAD_BYTES`/etc. so route handlers can read the caps. Memory guard refuses to start under 2 GB free (override `DEV_SKIP_MEM_CHECK=1`).
+- **CLAUDE.md Rule #6** — new top-level rule documenting the Hobby ceilings + how-to-apply rules. Memory file `project_vercel_hobby_limits.md` added; MEMORY.md index updated.
+- **appkit `./configs` export fix** — `appkit/src/configs/index.ts` now uses explicit `.js` extensions so the ESM `dist` resolves under CJS `require()` from `next.config.js`. Package.json `./configs` adds `"default"` condition. Dev server now boots cleanly.
+- **appkit barrel exports** — `index.ts` exports the seven SB3 components + their types + bundle constants; `server.ts` re-exports `bundlesRepository`/`BundlesRepository`.
+
+**SeedPanel** entry already existed from S21; updated `pendingItems` to reflect what SB3 landed.
+
+Tracker count: ~172 → ~180 done (SB3-A/B/E/F/H/I closed; SB3-D/G/J ⚠️ partial pending admin pages + order-side stock sync triggers).
 
 ### 🔄 CURRENT — none (between sessions; awaiting next-session kickoff)
 
 **Critical pending work**:
-1. **Phase-2 listingType consumer sweep** — 36 Lane A files reading `.isAuction`/`.isPreOrder` on product objects. Mechanical-but-careful — own focused session per logical area (products components, search columns/repo, action files, route handlers).
-2. **Phase-3 Lane B `_internal/` migration** — 7 files in `appkit/src/_internal/server/features/{products,auctions,pre-orders}/` + jobs handlers. `[CRUD→SSR]` seam request filed at top of `newchange.md`.
-3. **Phase-4 schema field removal** — coordinated commit dropping boolean fields + legacy indexes once Phases 2 + 3 land.
+1. **SB3 admin page pair** — `src/app/[locale]/admin/bundles/page.tsx` (list) + `/[id]/edit/page.tsx` (delegates to `AdminBundleEditorView`). Mirror the seller pair; ~30 min.
+2. **SB3-D order-side stock sync** — wire `bundlesRepository.markItemSold(bundleId, productId)` into `/api/orders` POST (after order create) and product status PATCH. Today only the bundle-write side syncs reverse refs.
+3. **SB3-J Zod hardening** — replace the inline guards in `/api/bundles*` with a shared `bundleInputSchema` (mirror the existing product Zod patterns) + tighter ownership check via `storeRepository.findByOwnerId(user.uid)`.
+4. **SB4 next** — Prize Draws full stack (9 tasks: editor, collage, ProductForm section, public views/pages, reveal API with `crypto.randomInt`, PrizeRevealModal).
 
 ### ⏳ NEXT UP — Lane A queue (read `crud-tracker.md` Summary for full list)
 
 | # | Session | Tier / Tasks | Goal |
 |---|---------|--------------|------|
-| 1 | **SB1 cleanup** | Phase 2 + Phase 4 (Phase 3 = Lane B) | Sweep 36 `.isAuction`/`.isPreOrder` reads → `isAuctionListing(p)` predicates; then drop schema booleans |
-| 2 | **S21 forms** | SB2-A/B + SB3-A/B/C | ProductForm subcategory/video fix + BundleItemsPicker + BundleForm + NonRefundableConsentModal |
-| 3 | **S22** | SB3-D–J | Bundle stock-sync + reverse refs + store/admin/public views + listing+detail pages + API routes |
-| 4 | **S23–S24** | SB4-A–I | Prize draw editor + reveal API (crypto.randomInt) + PrizeRevealModal |
+| 1 | **SB3 closeout** | SB3-D order-side + SB3-G admin pages + SB3-J Zod | Order-side stock sync, admin list+edit, replace inline guards with bundleInputSchema |
+| 2 | **S24** | SB4-A–I | Prize draw editor + reveal API (crypto.randomInt) + PrizeRevealModal |
 | 5 | **S25** | SB5-A–E | Nav constants + FAQ seed + seller guide pages + homepage section seed |
 | 6 | **S26–S30** | SB6-A–E, SB7-A–D, SB8-A–F, SB9-A–I, SB1-L | Limits / badges / auto-refund Functions / Event Raffle / 7 Firebase Functions |
 | 7 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement |
