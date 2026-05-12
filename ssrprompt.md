@@ -21,15 +21,16 @@ Skipping this rule is the same as breaking CLAUDE.md Rule #1.
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — Functions handlers completion + bindHttps adapter (2026-05-12)
+### ✅ LAST COMPLETED — S4-funcs end-to-end (handlers + bindHttps + consumer rewrite) (2026-05-12)
 
-- 12 new handlers ported into `appkit/src/_internal/server/jobs/handlers/`: mediaTmpCleanup, pendingOrderTimeout, productStatsSync, positionsReconcile, payoutBatch, weeklyPayoutEligibility, onCategoryWrite, onProductWrite, onStoreWrite, adminAnalytics, storeAnalytics, listingProcessor
-- `runtime/adapters/firebase.ts` extended with `bindHttps` (shared-secret `x-internal-secret` auth, method-allowlist, ValidationError-shaped errors → 4xx); `bindToFirebase.https` exposed
-- Razorpay credentials read via `ctx.env(...)`; brand name in payoutBatch routed through `ctx.env("APP_BRAND_NAME")` to keep `_internal/` brand-agnostic
-- handlers/index.ts barrel extended; `npm run check:types` exits 0 in both repos; `audit-ssr-in-appkit` holds at baseline 8
-- All 22 functions in `letitrip.in/functions/src/` now have appkit handler counterparts — appkit side of the migration is feature-complete
+- 12 new handlers ported to appkit (mediaTmpCleanup, pendingOrderTimeout, productStatsSync, positionsReconcile, payoutBatch, weeklyPayoutEligibility, onCategoryWrite, onProductWrite, onStoreWrite, adminAnalytics, storeAnalytics, listingProcessor) — appkit side now feature-complete (22 of 22)
+- `runtime/adapters/firebase.ts` + `bindHttps` (shared-secret `x-internal-secret`, method allowlist, ValidationError → 4xx); `bindToFirebase.https` exposed; appkit `server-entry.ts` re-exports all handlers + new types
+- `letitrip.in/functions/src/index.ts` rewritten as a thin barrel — every Cloud Function is one `bindToFirebase.{schedule|documentCreated|documentUpdated|documentWritten|https}(...)` line; 22 consumer source files + `lib/appkit.ts` re-export shim deleted
+- `_internal/` stays brand-agnostic: Razorpay creds + `APP_BRAND_NAME` flow through `ctx.env(...)`
+- Quality gates: tsc clean across appkit, letitrip.in, AND functions/; audit-violations / verify-entries / verify-css-build all 0; `audit-ssr-in-appkit` holds at baseline 8
+- Commits: appkit `b108601` (server layers + handlers) + `afcebf5` (server-entry exports + bindHttps); parent `9169acca5` (tracker) + `857a0b41d` (functions rewrite)
 
-### 🔄 CURRENT — none (between sessions; appkit submodule has uncommitted prior work + this session's changes; awaiting commit decision)
+### 🔄 CURRENT — none (between sessions)
 
 **Next action when a session starts**: pick the first ⏳ from NEXT below, mark it 🔄 here AND in `ssr-arch-tracker.md`, add a `[ACTIVE-FEATURES]` line in `newchange.md`.
 

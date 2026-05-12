@@ -109,7 +109,7 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 | S1 | Foundation — entries, tokens, config helpers, CLI, i18n contract | ✅ Done |
 | S2 | Reference feature (products) + SEO data layer | ✅ Done |
 | S3 | Catalog & Listings + ListingScaffold + DetailScaffold | 🔄 In progress — data layers done; consumer wiring pending |
-| S4 | Transactional core + functions migration batch 1 | ⚠️ Server layers + handlers done; consumer-side `functions/src/index.ts` rewiring pending |
+| S4 | Transactional core + functions migration batch 1 | ✅ Server layers + handlers + consumer rewiring all complete (2026-05-12) |
 | S5 | Per-user surfaces + Homepage + Search | ⚠️ Server layers + handlers done; consumer wiring pending |
 | S6 | Seller + Admin + Content + scaffolds completion | ⚠️ Handlers ported (listingProcessor / adminAnalytics / storeAnalytics / onProductWrite / onCategoryWrite / onStoreWrite / mediaTmpCleanup); admin demolition + scaffold extraction still pending |
 | S7 | Cross-cutting + lift-from-letitrip + Cleanup & Verify | ⏳ Pending |
@@ -456,7 +456,7 @@ Each feature in `_internal/server/features/<feature>/` ships a **full vertical**
 
 ### Final Functions Migration
 
-- [ ] `letitrip.in/functions/src/index.ts` → 3-line `bindToFirebase(handlers)` only
+- [x] `letitrip.in/functions/src/index.ts` → thin `bindToFirebase(...)` shim barrel ✅ (2026-05-12 — every Cloud Function is a one-line bind against an appkit handler; 22 source files in `functions/src/{jobs,triggers,callable}/` + `lib/appkit.ts` re-export shim deleted; consumer keeps only framework glue: `config/`, `constants/messages.ts`, `utils/`, `lib/{errors,pii}.ts`)
 - [x] All remaining handlers moved into appkit `_internal/server/jobs/handlers/` ✅ (2026-05-12 — 22 of 22 handlers ported; runtime adapter gained `bindHttps` for shared-secret callables)
 
 ### Final Cleanup (CC-9, CC-10)
