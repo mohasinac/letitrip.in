@@ -1,9 +1,12 @@
-﻿# LetiTrip — CRUD & Pages Tracker
+﻿# LetItRip — CRUD & Pages Tracker
 
-> **Single tracker for CRUD + SSR rearchitecture.** SSR rows are folded into existing tiers (Tier 3 / 5 / 6 / 8 / HS / CF / W / LL / Q / V / X / FI / OG / IX) plus a new **Tier RA** retrofit audit, all grouped under § Tier SSR-Merge at the end of this file. SSR architectural rules live in `CLAUDE.md` § "SSR Architecture" and `prompt.md` § "SSR & Appkit Architecture". The lane-split experiment (Lane A/B + `ssr-arch-tracker.md` + `ssrprompt.md`) was wound down 2026-05-12.
+> **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-05-12 — **Tier DX added (Unified Docs Portal at `docs.letitrip.in`)** consolidating Tier GD (22 tasks → SUPERSEDED) + SB5-C (SUPERSEDED) + Tier IX deeper-docs role. 38 new DX rows across 7 phases (~48 hrs). Tier IX renamed → "Component Quick-Reference Index". Sessions S40–S43 SUPERSEDED. SB1-J + SB5-A annotated for route remap (DX34b). Plan: `~/.claude/plans/say-what-is-better-glimmering-whale.md`. _Earlier 2026-05-12: Tracker shape rewrite + SSR merge — every pending tier carries the SSR-arch layered template; ~33 SSR-folded tasks + Tier RA (~21 retrofit audit rows) + Tier IX duplication/docs rows added._
-> Update after every completed task OR every 30 minutes during a session. `prompt.md` LAST/CURRENT/NEXT block MUST also be updated before every commit.
+> **Last updated:** 2026-05-12 — **Tracker re-sequenced.** Old S1–S45 + S60–S93 numbering collapsed into a clean **S1–S11 roadmap** ordered by impact + dependency. Each session is large, prod-deployable, and absorbs related pending work + its seed/index/functions deploys. Completed-session history moved to the **COMPLETED SESSIONS ARCHIVE** at the bottom of this file. Tier tables (1300+ lines of feature spec) kept intact — they remain the source of truth for task scope. Plan: `~/.claude/plans/update-and-plan-the-delegated-bumblebee.md`.
+>
+> _Earlier 2026-05-12 history: Tier DX added (38 docs-portal rows) · SSR rearch S4+S5 closed (`_internal/server/features/` layers for cart/orders/promotions/reviews/wishlist/history/homepage) · Tier WL (wishlist+history+cart caps) · TS tech-debt sweep · CLAUDE.md Rule #6 (Vercel Hobby caps)._
+>
+> Update after every completed task OR every 30 minutes. `prompt.md` LAST/CURRENT/NEXT block MUST also be updated before every commit.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions found in later sessions)
 
 ## Index
@@ -58,6 +61,7 @@
 - [Tier EMG — Emerging Patterns](#tier-emg--emerging-patterns-holding-bay-for-codecopy-mentions-without-tasks)
 - [Tier SSR-Merge — SSR Rearchitecture Folded Into Existing Tiers](#tier-ssr-merge--ssr-rearchitecture-folded-into-existing-tiers-2026-05-12)
 - [Tier RA — Retrofit Audit](#tier-ra--retrofit-audit-ssr-design-conformance-audits--tasks-against-the-layered-template)
+- [⬇️  COMPLETED SESSIONS ARCHIVE](#️--completed-sessions-archive--)
 
 ---
 
@@ -65,12 +69,29 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 527 *(was 489; +38 Tier DX rows added 2026-05-12)* |
+| Total tasks | 527 |
 | ✅ Done | 162 |
-| 🔄 In Progress | 1 *(DX38 — tracker + CLAUDE.md updates landed this session; prompt.md / ssrprompt.md still pending)* |
+| 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 322 *(326 - 22 GD - 1 SB5-C marked superseded + 38 new DX - 1 DX38 in-progress = 340; trimming for EMG/sessions counted elsewhere — approximate)* |
-| 🚫 Superseded | 42 *(19 prior + 22 Tier GD GD1–GD22 + 1 SB5-C — all 2026-05-12 to Tier DX)* |
+| ⏳ Remaining | 323 *(mapped to S1–S11 + post-beta backlog — see § Session Roadmap)* |
+| 🚫 Superseded | 42 |
+
+### Session-bucket mapping (where pending work goes)
+
+| New session | Pending work absorbed |
+|-------------|-----------------------|
+| **S1** | Slot-shell render-prop wiring (~20 page files) + listing toolbars (auctions/products/pre-orders/stores) — `ProductFilters`/`Pagination`/`AuctionsView`/`ProductsView`/`SlottedListingView` |
+| **S2** | Cart + Checkout end-to-end — Firestore-backed cart (replace localStorage guest), Razorpay init+verify, order-creation server action, cart 50-cap (Tier WL) |
+| **S3** | `listingType` boolean removal — 36-file consumer sweep + 7-file `_internal/server/features/` sweep + remove `isAuction`/`isPreOrder` fields + `/api/pre-orders` fix (Q3-pre-orders) + index drop/add |
+| **S4** | SB3-D order-side stock sync + SB3-G admin bundles pages + SB3-J Zod hardening + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy |
+| **S5** | Seed scale P24–P31 (auctions/pre-orders/categories/orders/blog/events/coupons/notifications/runner) + ARCH1/6/7 sellerId strip + index re-deploy |
+| **S6** | Tier OG (OG1–OG5) + FI6-2 secondary surfaces + Q6-views infinite-scroll wiring (4 listing views) |
+| **S7** | Tier SB Prize Draws: SB4 (editor/reveal/modal) + SB5 (nav/FAQ/seed) + SB6 (per-user limits) + SB7 (badges + tabs) + SB8 (reveal expiry/auto-refund + Functions) |
+| **S8** | SB9 Event Raffles (schema + Functions + winner page + spin wheel) + SB10/Tier TC tab constants + SB11 homepage sections |
+| **S9** | Tier RBAC end-to-end (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag in S1–S8 code |
+| **S10** | Tier BAN (BAN1–9) + Tier SCAM (SCAM2/4/6/7/8/9) |
+| **S11** | Quality baseline: X-audit-baseline 8→0 + TS9 hex sweep (154 hits) + TS17 ops + RA-Tier audits applied inline + 3-nextconfig-cleanup + 3-tailwind-cleanup + X-eslint-additive + X-cli-close |
+| **Post-beta backlog** | Tier AK (DI refactor) · Tier AP (GoF patterns) · Tier LP (custom ESLint rules) · Tier DX (38 docs-portal rows) · Tier PAY (EMG1 EMI) · Tier CHAT (EMG4 live chat) · EMG2/EMG3 holding |
 
 ---
 
@@ -208,116 +229,44 @@ Rules to keep top-of-mind every task:
 | BAN chain | BAN1 → BAN2 → BAN3 → BAN4 → BAN5 + BAN6 → BAN7 + BAN8 + BAN9 |
 | GD chain | GD1–GD11 (independent); GD12 depends on RBAC8; GD13–GD22 (independent) |
 
-### Ordered Sessions — Pending (S1–S43)
+### Active Roadmap — S1 onward (re-sequenced 2026-05-12)
 
-| Session | Phase | Task IDs | Goal | Must-have-before |
-|---------|-------|----------|------|-----------------|
-| **S1** | Zero-risk | SL6, ARCH9, VD3, HS4-E, A1-ext | Slug/cross-ref integrity audit + field renames + per-store Google Reviews deferred integration + admin store picker in product form | — | ✅ **Done 2026-05-11** — SL6 (cross-ref audit + 3 fixes), ARCH9 (sellerId→ownerId), VD3 (subsumed by SEO5), HS4-E (googleReviews on StoreDocument + SellerStorefrontView + store About page), A1-ext (already present). |
-| **S2** | Zero-risk | D2, D3, LL4, LL5 | User account: addresses CRUD + order cancellation + saved-addresses listing view + orders listing view | S1 done | ✅ **Done 2026-05-11** |
-| **S3** | Zero-risk | VC2, VC4 | Invoice PDF download + user settings tabs (payment/notifications) | Sessions 76–93 stable | ✅ **Done 2026-05-11** — VC2 (print invoice page + Download Invoice button), VC4 (Account/Privacy/Appearance tabs, email change, data export) |
-| **S4** | Zero-risk | G1, G2, O1 | Store product templates CRUD + slug management page | Session 77 product forms done | ✅ **Done 2026-05-11** |
-| **S5** | Zero-risk | UX4, UX8, UX9 | PreviewPane wiring + admin quick-edit drawer + InlineSelectCreate refinements | UX1–UX3 done | ✅ **Done 2026-05-11** |
-| **S6** | Zero-risk | ARCH1, ARCH6, ARCH7 | Strip sellerId from all public API responses + response shape audit | — |
-| **S44** | Wishlist+History+Caps | WL1, WL2, WL3, WL4, WL5, WL6, WL7, WL8 | Top-level `wishlists` (userId FK) + 20-item block-cap; new `history` (auth+guest) with 50-item FIFO + `/user/history` page; 50-distinct-items cart cap; seed + indexes + CLAUDE.md | — | ✅ **Done 2026-05-11** |
-| **S7** | Homepage | EX5, SB11-A, SB11-B, SB11-C, SB11-D, SB11-E, SB11-F, SB11-G | Collection Cards unified section type + 3 new section types (featured-bundles / prize-draws / event-raffles) + disabled seed docs | EX1–EX4 done (S93) |
-| **S8** ✅ | Feature Icons | FI1, FI2, FI3, FI4, FI5, FI6 | productFeatures collection + seed + admin CRUD + store CRUD + product form integration + card/detail badges | Done 2026-05-11 |
-| **S9** | UX + RTDB | BK3, D5, VC7 | Compare overlay (desktop table + mobile swipe) + Messages RTDB listener + Conversations view | BK1+BK2 done | ✅ **Done 2026-05-11** |
-| **S10** | Infra | I6, I7 | PDF invoice uploader + Media CDN watermark proxy | VA8 done (required by I7) | ✅ **Done 2026-05-11** |
-| **S11** | Infra | O5 | Shiprocket auto-create shipment on order ship action | Server-only; deferred until infra stable | ✅ **Done 2026-05-11** |
-| **S12** ✅ | Query | Q5, Q2, Q4 | Done 2026-05-11. Q5: 5 new indices; Q2: `parseListingParams` helper across 5 listing routes; Q4: `parseListingSearchParams` across 4 views. Cursor thread-through ready for S13. |
-| **S13** ✅ | Query | Q1, Q3, Q6 | Done 2026-05-12. Q1 listingProcessor Function (deployed, 20 collections supported) + Q3 /api/products thin proxy + Q6 useInfiniteScroll primitive. Sieve `aliases` (productRepository.FILTER_ALIASES: listingType / scope / promoted / featuredPublic) ship with the same session. Function deploy + indexes + rules pushed via `firebase deploy`. **Deferred**: Q3-pre-orders (spec decision) + Q6-views (useProducts → useInfiniteQuery refactor) + Vercel `FIREBASE_FUNCTION_LISTING_URL` env. | — |
-| **TS** ✅ | Tech-Debt | TS1–TS19 | Done 2026-05-12 — verify-first audit closed TS2/3/4/5/6/8/18 as already done; deferred TS9 (154 hex hits, scope blown). Implemented TS1/10/11/12/13/14/15/16/19; TS7 partial (wishlist client-page wrap deferred); TS17 user-ops pending. tsc 0/0. | S13 done |
-| **Arch-S4** ✅ | SSR Rearch | — | Done 2026-05-12 — `_internal/server/features/` layers for **cart** (service + actions: upsertCartItem, mergeGuestItems, clearCart, removeFromCart), **orders** (data: getOrder/listOrdersForBuyer/listOrdersForSeller; service: assertions + cancellable/returnable checks; actions: updateOrderStatus/cancelOrder/requestReturn; domain errors: OrderNotFoundError, OrderOwnershipError, OrderNotCancellableError, OrderReturnWindowError), **promotions** (data: getCouponByCode/validateCoupon/listCoupons; service: isValidCoupon; actions: createCoupon/updateCoupon/deleteCoupon/applyCouponToOrder). All use `requireRoleUser()` guards + React.cache() for reads. Config constants extracted (ORDERS_PAGE_SIZE, ORDER_RETURN_WINDOW_DAYS, etc.). tsc 0/0. | TS done |
-| **Arch-S5** ✅ | SSR Rearch | — | Done 2026-05-12 — `_internal/server/features/` layers for **reviews** (data: getReviewsForProduct/getReviewsForStore/hasUserPurchasedProduct; actions: createReview/replyToReview/deleteReview/markReviewHelpful), **wishlist** (data: getWishlistForUser → `{ items, meta }`; actions: addToWishlist/removeFromWishlist/clearWishlist/mergeGuestWishlist), **history** (data: getHistoryForUser → `{ items, meta }`; actions: addToHistory/mergeGuestHistory/clearHistory), **homepage** (data: getHomepageInitial/getHomepageSections/getHeroCarouselSlides using HOMEPAGE_FEATURED_REVIEWS_LIMIT + HOMEPAGE_RECENT_BLOG_POSTS_LIMIT constants). Repositories barrel updated with historyRepository + WishlistFullError exports. NotFoundError made backward-compat (id optional). Schema expansions: addToCartSchema full snapshot fields; reviews schema uses all config constants. tsc 0/0. | Arch-S4 done |
-| **S14** | Seed | P24 | Auctions 6→20 + pre-orders 5→10 + bids 20→120+ | P22 done |
-| **S15** | Seed | P25 | Categories 23→55+ with real cover images | P23 products (cross-refs needed) |
-| **S16** | Seed | P28 | Blog 8→20+ + Events 8→15+ + FAQs 21→55+ + Event entries 2→25+ | P25+P26 |
-| **S17** | Seed | P29, P30 | Coupons 5→20+ + notifications 10→40+ + wishlists/carts scale + messages/sublistingCategories/groupedListings seed | P27 orders needed |
-| **S18** | Seed | P31 | Seed runner: Zod validation + PII masking + dry-run diff + error handling | P14–P17 done |
-| **S19** | Bundle | SB1-A, SB1-B, SB1-C, SB1-D, SB1-E, SB1-F, SB1-G | listingType enum migration + ProductDocument/BundleDocument schema + Zod + migration script + OrderDocument extension + repository boolean→listingType refactor | — |
-| **S20** | Bundle | SB1-H, SB1-I, SB1-J, SB1-K, SB1-L | bundlesRepository + Firestore indexes + ROUTES constants + API_ROUTES constants + 7 Firebase Functions | S19 done |
-| **S21** | Bundle | SB2-A, SB2-B, SB3-A, SB3-B, SB3-C | ProductForm subcategory/video fix + BundleItemsPicker + BundleForm + NonRefundableConsentModal | S20 done |
-| **S22** | Bundle | SB3-D, SB3-E, SB3-F, SB3-G, SB3-H, SB3-I, SB3-J | Bundle stock-sync + reverse refs + store/admin/public views + listing page + detail page + API routes | S21 done |
-| **S23** | Prize Draw | SB4-A, SB4-B, SB4-C, SB4-D, SB4-E | PrizeDrawItemsEditor + Collage component + ProductForm prize-draw section + extend seller views + store/admin/public page files | S22 done |
-| **S24** | Prize Draw | SB4-F, SB4-G, SB4-H, SB4-I | Prize draw listing + detail page + reveal API (crypto.randomInt) + PrizeRevealModal | S23 done |
-| **S25** | Bundle Nav | SB5-A, SB5-B, SB5-C, SB5-D, SB5-E | Nav constants + FAQ seed + seller guide pages + homepage section seed + listingType backfill seed | S24 done |
-| **S26** | Bundle Limits | SB6-A, SB6-B, SB6-C, SB6-D, SB6-E | Per-user purchase limits + ordersRepository methods + order API enforcement + UI badges + form inputs | S22 done |
-| **S27** | Bundle Badges | SB7-A, SB7-B, SB7-C, SB7-D | "In bundle" badges on cards/detail pages + category/store/admin listing-type filter tabs | S22 done |
-| **S28** | Prize Auto | SB8-A, SB8-B, SB8-C, SB8-D, SB8-E, SB8-F | Prize draw reveal deadline + auto-refund function + pool exhaustion + notifications + reminder email + UI badges | S24 done |
-| **S29** | Event Raffle | SB9-A through SB9-I | Event Raffle system — schema + Firebase Functions + winner page + SpinWheelView + admin editor | S22 done |
-| **S30** | Tab Constants | SB10-A, SB10-B, SB10-C, SB10-D, TC1, TC2, TC3, TC4 | TabConfig interface + dashboard/public tab constants files + migrate view components off inline arrays | S22 done |
-| **S31** | RBAC-1 | RBAC1, RBAC2, RBAC10 | Permission constants + server resolver + proxy middleware gate | — |
-| **S32** | RBAC-2 | RBAC3, RBAC7 | Admin layout SSR gate + sidebar filtered by permissions | S31 done |
-| **S33** | RBAC-3 | RBAC4, RBAC5 | Section-level layout files + API route guards | S32 done |
-| **S34** | RBAC-4 | RBAC6, RBAC8, RBAC9 | Team management page + store capabilities + Firestore security rules | S33 done |
-| **S35** | BAN-1 | BAN1, BAN2, BAN3 | Ban schema + soft-ban enforcement middleware + hard-ban cascade | — |
-| **S36** | BAN-2 | BAN4, BAN5, BAN6 | Support ticket API + guest checkout block + admin ban management UI | S35 done |
-| **S37** | BAN-3 | BAN7, BAN8, BAN9 | Support ticket management pages + Firebase Functions for ticket/ban lifecycle | S36 done |
-| **S38** | SCAM-1 | SCAM2, SCAM4 | Admin scammer management UI + scam-specific FAQ entries | RBAC8 done (S34) |
-| **S39** | SCAM-2 | SCAM6, SCAM7, SCAM8, SCAM9 | Registration acknowledgement + SEO/JSON-LD + Firebase notifications + RBAC wiring | S38 done |
-| **S40** | ~~Guides Store~~ | ~~GD1–GD6~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX16–DX21 (`docs.letitrip.in/sellers/*`). See plan `~/.claude/plans/say-what-is-better-glimmering-whale.md`. | — |
-| **S41** | ~~Guides Buyer~~ | ~~GD7–GD11~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX11–DX15 (`docs.letitrip.in/help/*`). | — |
-| **S42** | ~~Guides Admin~~ | ~~GD12–GD16~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX22–DX25 (`docs.letitrip.in/employees/*`). GD12 capability-gate UX moves to in-app residual DX32. | — |
-| **S43** | ~~Guides Admin+~~ | ~~GD17–GD22~~ | 🚫 **SUPERSEDED by Tier DX** — content folds into DX26–DX31 (`docs.letitrip.in/employees/*`). | — |
-| **S44** | OG coverage | OG1, OG2, OG3, OG4, OG5 | Backlog OpenGraph coverage for existing detail routes (categories / faq / user / sub-listing) + audit script → files: `src/app/[locale]/<x>/opengraph-image.tsx` + `appkit/scripts/verify-og-coverage.mjs` | — |
-| **S45** ✅ | EMG triage | EMG1–EMG5 review | **Done 2026-05-12.** EMG1 EMI 🎯 ready-to-graduate (pair with EMG3 in new Tier PAY when scheduled). EMG2 Loyalty ⏳ keep-holding (skeleton policy). EMG3 Gift cards ⏳ keep-holding pair-with-EMG1. EMG4 Live chat 🎯 ready-to-graduate as Tier CHAT (lower priority than EMG1). EMG5 Referral 🚫 deleted-from-active-tracking (no design note, no signal). |
+**Ordering principle:** impact + dependency. S1–S2 fix what's broken in the live site, S3–S4 unblock future product/listing work, S5–S6 fill coverage gaps, S7–S8 close the largest pending feature surface (Bundle/Prize/Raffle), S9–S10 land governance, S11 closes tech-debt baseline. Every session ends prod-deployable with seed + indices + functions deployed in the same commit cohort.
 
-> **Goal-column suffix convention (S14+):** every row's Goal column ends with `→ files: _internal/server/features/<x>/` (or the appropriate `_internal/<segment>/` path) so the implementer knows the new SSR layout target without re-reading the layered-shape banner. Earlier rows in this table predate the suffix convention and stay as-is.
+| # | Session | Scope | Absorbs (old task IDs) | Prod artifacts |
+|---|---------|-------|------------------------|----------------|
+| **S1** | UX unblock — slot-shell wiring + listing toolbars | Wire `renderXxx` slot props on ~20 page files (per memory `project_slot_shell_pattern.md`). Wire `ProductFilters` + `Pagination` + `AuctionsView`/`ProductsView`/`SlottedListingView` on `/auctions`, `/products`, `/pre-orders`, `/stores`. Refactor checklist on every touched file. | listing-toolbar regression items · blank-pages follow-ups (Tier LL fixes folded inline) | UI only · smoke-test 4 listing pages + 6+ detail pages |
+| **S2** | Cart + Checkout end-to-end (Razorpay live) | Replace localStorage-only guest cart with `cartsRepository` (Firestore) + signed-cookie guest-ID merge on login. `/api/checkout/init` → Razorpay order; `/api/checkout/verify` → signature + order creation server action in `_internal/server/features/orders/actions.ts`. `listingType`-aware stock decrement, `notifications` fire, `couponUsage` write. Cart 50-cap guard. | Tier W (cart integrity gaps) · Tier WL cart cap · memory `project_cart_checkout.md` items · the "transactional bindings are next" stub | seed (carts) · verify orders index `buyerId+createdAt` exists · Razorpay env keys via `siteSettings.integrations` admin UI |
+| **S3** | `listingType` boolean removal (SB1-G final) | 36-file consumer sweep → `isAuctionListing()` / `isPreOrderListing()` / `normalizeListingType()`. 7-file `_internal/server/features/` sweep (service.ts, data.ts, onProductWrite.ts, etc.). Remove `isAuction` / `isPreOrder` fields from `ProductDocument` + `CartItem` + all schemas + seeds. Fix `/api/pre-orders` to query `listingType=="pre-order"` (Q3-pre-orders). | SB1-G consumer sweep remainder · SB1-G Lane B `_internal/` migration · Q3-pre-orders · J13 final cleanup | indices (drop legacy boolean comps + verify `listingType+...` exists) · seed shape (if any seed still emits booleans) |
+| **S4** | SB3 closeout + SB1-L Functions + Q1-ops | SB3-D order-side stock sync (wire `bundlesRepository.markItemSold()` into orders POST + product status PATCH). SB3-G admin bundles pages (`/admin/bundles` list + `/[id]/edit`). SB3-J Zod hardening on `/api/bundles*`. SB1-L: 7 Firebase Functions for bundles (per S20 plan). Q1-ops: deploy `listingProcessor` Function; flip `/api/products` off the local fallback. | SB3-D · SB3-G · SB3-J · SB1-L · Q1-ops | `firebase deploy --only functions` (8 functions: 7 bundle + listingProcessor) |
+| **S5** | Seed scale + ARCH cleanup + index alignment | P24 auctions 6→20, P25 pre-orders, P26 categories 23→55, P27 orders, P28 blog, P29 coupons, P30 events/entries, P31 seed runner. ARCH1/ARCH6/ARCH7 strip `sellerId` from public API responses (was old S6 — folded here since same response shapes). | P24–P31 · old S6 (ARCH1/6/7) · old S14–S18 | indices re-deploy · seed Firestore via `/demo/seed` |
+| **S6** | OG coverage + secondary surfaces + infinite scroll | OG1–OG5 OpenGraph for categories, FAQ, user profile, sub-listing detail + `verify-og-coverage.mjs` audit script. FI6-2: wrap SearchResults, WishlistPage, Promotions, StoreDetail, Related in `ProductFeaturesProvider` with `listPlatform()` at page boundary. Q6-views: wire `useInfiniteScroll` into the 4 listing views. | OG1–OG5 · FI6-2 · Q6-views | none new (renderer + UI) |
+| **S7** | Prize Draws complete (large session) | SB4-A–I prize draw editor, collage, forms, reveal modal, `/api/prize-draws*`. SB5-A/B/D/E nav + FAQs + homepage seed + product seed (SB5-C superseded by Tier DX). SB6-A–E per-user purchase limits (reuses `couponUsage` counter pattern from S2). SB7-A–D bundle + prize-draw badges on cards + category listing tabs. SB8-A–F prize reveal expiry + auto-refund + notifications + badges (scheduled Function). | SB4 · SB5 (minus SB5-C) · SB6 · SB7 · SB8 | indices (prize-draws + entries) · 2+ Functions (reveal expiry scheduler, auto-refund) · seed prize-draws + nav + FAQs |
+| **S8** | Event Raffles + tab constants + homepage sections | SB9-A–I event raffle schema, Firebase Functions (winner picker, spin animation backend), winner page, spin wheel UI. SB10-A–D + TC1–4 tab configuration constants (apply to listing types touched in S1). SB11-A–G homepage sections for bundles, prize-draws, event raffles. | SB9 · SB10 · Tier TC · SB11 | indices (raffles + entries) · 2+ Functions (winner picker scheduled) · seed homepage sections + raffles |
+| **S9** | RBAC complete + inline retrofit | RBAC1 permission constants, RBAC2 server resolver, RBAC3 dashboard gates, RBAC4–6 team management, RBAC7–9 Firestore rules, RBAC10 audit. **Inline retrofit**: every `requireRole()` call with `// TODO(RBAC)` tag left by S1–S8 is replaced with `hasPermission(user, PERM.*)` in the same files. | RBAC1–10 · `TODO(RBAC)` tags from S1–S8 | Firestore rules deploy · seed roles + permissions baseline · no new indices |
+| **S10** | BAN + SCAM | BAN1–9 ban schema, enforcement middleware, support ticket limits, admin UI, lifecycle Cloud Function (auto-expire soft bans). SCAM2/4/6–9 scam awareness page, registration acknowledgement gate, SEO + JSON-LD, RBAC wiring for scam admin actions. | BAN1–9 · SCAM2 · SCAM4 · SCAM6–9 | indices (bans by `userId+status`, scammers by `phoneIndex`/`upiIndex`) · 1 Function (ban expiry scheduler) · seed scam registry baseline |
+| **S11** | Quality baseline + RA audits inline | Drive `audit-ssr-in-appkit` baseline 8→0 (X-audit-baseline). TS9 hex sweep (154 hits) — token-replace pass. TS17 user-ops. RA-Tier sample audits on the tiers we just touched (RA-Tier4 seed, RA-TierSB bundle/prize, RA-TierRBAC) — fix rows applied **inline** to the tier they audit. `X-cli-close`, `3-nextconfig-cleanup`, `3-tailwind-cleanup`, `X-eslint-additive`. | X-audit-baseline · TS9 · TS17 · RA-Tier* (sample) · X-cli-close · 3-nextconfig-cleanup · 3-tailwind-cleanup · X-eslint-additive | none (audit + cleanup only) · ends with `npm run check:audits` baseline at 0 |
 
-> **XL/L task guidance**: CF1 = 6 sub-parts, one commit each. VA8 = commit ①–⑥ then ⑦–⑫. HS2 = 3–4 builders per commit. X7b/X8b = one CSS file per commit. Never batch large tasks into one commit.
+### Post-beta backlog (NOT in S1–S11; pull only when explicitly scheduled)
+
+| Tier | Scope | Notes |
+|------|-------|-------|
+| **Tier AK** | DI refactor + provider registry + SOLID extractions (AK1–AK3, 16 sub-tasks) | Architectural; needs separate planning |
+| **Tier AP** | Formalize GoF patterns (AP1–AP16) | Design exercise |
+| **Tier LP** | Migrate audit scripts to custom ESLint rules (LP1–LP3, 16 sub-tasks) | Tooling cleanup |
+| **Tier DX** | Unified docs portal `docs.letitrip.in` (38 tasks across 7 phases) | Non-blocking for app launch |
+| **Tier PAY** *(new)* | EMG1 → EMI / installment payment at checkout (pair with EMG3 gift cards) | Captured in EMG triage 2026-05-12 |
+| **Tier CHAT** *(new)* | EMG4 → Live chat / agent handoff (reuse RTDB messaging from D5/VC7) | Lower priority than Tier PAY |
+| EMG2 / EMG3 | Loyalty + gift cards (holding bay) | Re-evaluate if business case emerges |
+
+> **Completed sessions archive** (S60–S93, Arch-S4/S5, old S1–S5, S7–S13, S44 WL, TS, S45) is at the bottom of this file under § COMPLETED SESSIONS ARCHIVE. New sessions append above the archive, not into it.
+
+> **XL/L task guidance**: CF1 = 6 sub-parts, one commit each. VA8 = commit ①–⑥ then ⑦–⑫. HS2 = 3–4 builders per commit. X7b/X8b = one CSS file per commit. Never batch large tasks into one commit. S7 is the exception — large by design (one prod deploy of the full prize-draw surface), but each sub-task (SB4-A, SB4-B…) is still committed individually.
 
 ---
 
-### Completed Sessions Archive (S60–S93)
-
-| Session | Phase | Task IDs | Outcome |
-|---------|-------|----------|---------|
-| **60** | Foundation | F2, E2, K4+L3+L4+L5, J10, J11, J12, X1, SL5, SL6, E7 | ✅ Done 2026-05-06 |
-| **61** | Seed-1 Core | P11, P12, P13, P14, P15 | ✅ Done |
-| **62** | Seed-2 Listings | P16, P17, P18 | ✅ Done |
-| **63** | Seed-3 System | P19, P21, P22, P20, P10 | ✅ Done |
-| **64** | Infrastructure | E3+E4, H1, I4, I8, I5, SL4, E6 | ✅ Done |
-| **65** | Carousel | CF1 | ✅ Done |
-| **66** | Sections-1 | HS1, HS2, HS3 | ✅ Done |
-| **67** | Sections-2 | HS4, HS5 | ✅ Done |
-| **68** | Admin-1 | X2, A1, VA2, I1 | ✅ Done |
-| **69** | Admin-2 | A3, VA6, A4, VA4 | ✅ Done |
-| **70** | Admin-3 | A5, VA5, F5, VA7, VA8 | ✅ Done |
-| **71** | Admin-Finance | M1, VA19, M3, VA13, I3 | ✅ Done |
-| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11, LL11–LL15 | ✅ Done 2026-05-09 |
-| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | ✅ Done 2026-05-10 |
-| **74** | Quality | X3, X4, X5, X6 | ✅ Done |
-| **75** | Quality | X3, X4, X5, X6 | ✅ Done 2026-05-10 |
-| **76-listing** | Listing View Migration | — | ✅ Done 2026-05-10 — 16 admin views to ListingToolbar+useUrlTable+DataTable |
-| **76** | Alpha: Public Catalogue | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | ✅ Done 2026-05-10 |
-| **76-infra** | Hotfix + Firebase Reset | J13, J14, J15, INFRA1, INFRA2 | ✅ Done 2026-05-10 — firebase-reset.mjs + firebase-delete-indexes.mjs |
-| **77-ux** | UX Foundation | UX1, UX2, UX3, UX4, UX5, UX9 | ✅ Done — FormShell+QuickFormDrawer+StepForm+PreviewPane+MediaPickerDrawer+InlineSelectCreate |
-| **77** | Alpha: Seller Products | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | ✅ Done |
-| **78** | Alpha: User Account | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | ✅ Done 2026-05-10 |
-| **79** | Alpha: Cart Integrity | W1, W2, W3, W4, R1 | ✅ Done 2026-05-10 |
-| **80-arch** | Store Identity + Seed QA | ARCH3 + seed QA | ✅ Done 2026-05-10 |
-| **80** | Alpha: Store Settings | UX7, C6, C7, O3, VB3, VB10, LL8 | ✅ Done 2026-05-10 |
-| **🚀** | **ALPHA RELEASE** | — | ✅ Sessions 76–80 complete — browse → cart → checkout → orders; seller can list |
-| **81** | Alpha: Store Finance | C3, VB1, C4, VB2, LL7, VB7, LL9, LL10 | ✅ Done 2026-05-10 |
-| **82** | SEO & Lighthouse | SEO1–SEO7 | ✅ Done 2026-05-10 |
-| **83** | Content | VD8 | ✅ Partial — VD9+VD10 deferred |
-| **84** | Custom Fields | L1, L2, L3 | ✅ Done |
-| **85** | Sub-listing | SC1, SC2, SC3, SC4 | ✅ Done 2026-05-10 |
-| **86** | Grouped | GP1, GP2 | ✅ Done |
-| **87** | Social Feed | S4, S1, S2, S3, S5 | ✅ Done 2026-05-10 |
-| **88** | Search + Routes | RC2, SR1, SR2, SR3, RC1, RC3, RC4 | ✅ Done 2026-05-10 |
-| **89-a** | UX Polish | VD12, J16, J17, D1 (wishlist filter) | ✅ Done 2026-05-11 |
-| **89-b** | FAQ + WhatsApp | FAQSection rewrite, WhatsApp redesign, @types/react dedup | ✅ Done 2026-05-11 |
-| **90** | Action System | AX1 | ✅ Done 2026-05-11 — ACTION constants + useActionDispatch + panelStore |
-| **90-colors** | Colors | X7a, X7b | ✅ Done |
-| **91** | Layout Tokens | X8a, X8b | ✅ Done 2026-05-11 |
-| **92** | Action URLs + Bars | AX2, AX3 | ✅ Done 2026-05-11 — usePanelUrlSync + 8 inline admin editors + FormActionBar |
-| **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | ✅ Done 2026-05-11 — stats live queries + multi-carousel + CTA filter chips + multi-row products + YouTube cards |
-| **Arch-S4** | SSR Rearch | — | ✅ Done 2026-05-12 — cart/orders/promotions `_internal/server/features/` layers with data.ts+service.ts+actions.ts+index.ts. Domain errors. Config constants. |
-| **Arch-S5** | SSR Rearch | — | ✅ Done 2026-05-12 — reviews/wishlist/history/homepage `_internal/server/features/` layers. Repositories barrel updated. NotFoundError backward-compat. Schema expansions (cart snapshot fields, reviews config constants). |
-
----
-
+<!-- COMPLETED SESSIONS ARCHIVE moved to the bottom of this file (after Tier LP) -->
+<!-- Marker kept here so future sessions know history lives below -->
 ## Tier 0-pre — Slug Format Enforcement *(foundational, do before seed data and forms)*
 
 | # | Task | Complexity | Status | Part | Notes |
@@ -1681,6 +1630,10 @@ Rules to keep top-of-mind every task:
 | OG-FIX1 | Edge-runtime build break — `node:fs` / `crypto` in OG routes | M | ✅ S23-follow-up 2026-05-12 — applied fix path (a): dropped `export const runtime = "edge"` from all 9 OG routes via the new `scripts/strip-og-edge.mjs` helper. Routes now default to Node runtime; the 2 edge-runtime warnings from `appkit/dist/features/auth/{token-store,consent-otp}.js` (via /api/stores reviews + /api/checkout + checkout.actions) also disappeared. `npm run build` exits 0; zero warnings. Long-term path (b) — thin `_internal/server/og/` getters — can revisit when cold-start latency becomes a problem. Original notes: | **Production blocker.** Verified S23 2026-05-12: `npm run build` fails at `Collecting page data` with `Failed to load external module node:fs: Native module not found: node:fs` originating from `/[locale]/blog/[slug]/opengraph-image` (and likely all sibling edge OG routes). Root cause: OG routes declare `runtime = "edge"` but import from `@mohasinac/appkit/server`, whose chain pulls in `appkit/dist/features/auth/token-store.js` (`import crypto from "crypto"`) and `consent-otp.js` (`import { createHmac, randomInt } from "crypto"`). Build also surfaces 2 edge-runtime warnings from the same chain via `/api/stores/[storeSlug]/reviews/route.ts`, `/api/checkout/route.ts`, `src/actions/checkout.actions.ts` (callers not declared edge so they're warnings, not errors). **Fix paths to evaluate**: (a) switch OG routes off edge to Node runtime — simplest, costs cold-start latency; (b) add per-feature thin OG data getters in `appkit/src/_internal/server/og/` that import only the bare minimum (no auth/checkout chain) — best long-term; (c) carve `appkit/server` into smaller edge-safe entry points. Last touched in `22a4f3c5e refactor(og): tighten consumer shims` — predates this session. Verification: `npm run build` exits 0 + every `/<route>/opengraph-image` returns `200 image/png` against `curl -sI`. |
 | OG-FIX2 | `outputFileTracingIncludes` moved out of `experimental` | XS | ✅ S23-follow-up 2026-05-12 — `appkit/src/configs/next.ts` `defineNextConfig` now reads `outputFileTracingIncludes` as a top-level override key, merges the firebase-admin/lib/database forcing as the default, and emits it at the top of the returned config (not under `experimental`). `NextConfigOverride` interface gained the typed field. `npm run build` no longer prints the "Unrecognized key" warning. Original notes: | Build warning: `Unrecognized key(s) in object: 'outputFileTracingIncludes' at "experimental"`. Next 16 moved this option to the top-level config. One-line move in `next.config.js` (or in `defineNextConfig` inside `appkit/src/configs/next.ts` if that's where the wrapper sets it). Non-blocking but noisy in every build. |
 | DEV-1 | `watch:css` produces degraded `dist/tailwind-utilities.css` | S | ⏳ | Discovered S23 2026-05-12 via the Stop hook: when `npm run dev` is left running, appkit's `watch:css` overwrites `dist/tailwind-utilities.css` with a build missing the `md:` / `lg:` breakpoint utilities (Tailwind scans `dist/` before TSC has finished emitting, so the `min-width:768px` / `min-width:1024px` class strings aren't seen and get purged). `verify-css-build` then fails on next `npm run check`. One-command recovery: `npm --prefix ./appkit run build`. **Fix paths**: (a) point `watch:css` at `src/**` (not `dist/**`), (b) gate `watch:css` on a first-pass TSC completion via a small wrapper, or (c) restore the build CSS on dev shutdown via the `killTree` hook in `scripts/dev-next.mjs`. Tracked so the next audit failure has a one-link explanation. |
+| DEV-2 | Dev heap cap probe: 1024 MB OOMs, 2048 MB stable | S | ✅ S23-followup 2026-05-12 — new `scripts/probe-dev-heap-cap.mjs` boots `next dev --webpack` at incremental caps (1024 → 1536 → 2048 …) with light load (6 routes rotated every 4 s for 2 min/cap), distinguishing natural OOM from deliberate-kill. Results on this codebase: 1024 MB OOMs (peak RSS 1457 MB), 1536 MB survives (peak RSS 1887 MB), 2048 MB over-permissive (V8 grows to fill). Per "minimum no-crash + 512 MB headroom" rule → **2048 MB**. Applied to `package.json` `dev:only` NODE_OPTIONS, `scripts/dev-next.mjs` HOBBY_LIMITS.MEMORY_MB, `scripts/next-memory-forensics.js` HEAP_CAP_MB default. CLAUDE.md Rule #6 + `memory/project_vercel_hobby_limits.md` rewritten for Fluid Compute Standard reality (2 GB per-function, 8 GB build machine). |
+| DEV-3 | Vercel `.next/` upload OOM blocked deploy | XS | ✅ S23-followup 2026-05-12 — first `vercel --prod` attempt blew up the CLI with `Array buffer allocation failed` because 41 GB of `.next/` build cache + leaked heap snapshots sat in the upload tree. `.vercelignore` now excludes `.next/`, `memory-forensics-*`, `*.heapsnapshot`, `probe-results.json`. Subsequent upload was 2.2 MB. |
+| DEV-4 | Vercel build broken on `firebase-functions/v2/*` (Module not found) | M | ✅ S23-followup 2026-05-12 — appkit's `server-entry.ts` re-exported `bindToFirebase` + 22 job handlers from `_internal/server/jobs/index`, which imports `firebase-functions/v2/{https,scheduler,firestore}`. Local webpack dev externalised those via `defineNextConfig`'s `externals` callback; **Vercel's prod build uses Turbopack** which won't externalize an uninstalled package. Two failed published versions chased this (2.5.0 had the issue; 2.5.1 added `firebase-functions` to `FIREBASE_EXTERNAL_PACKAGES` but Turbopack ignored it). **Fix: carved `@mohasinac/appkit/jobs` subpath** in 2.6.0 — bindToFirebase + handler re-exports moved there, server-entry.ts dropped the block. `functions/src/index.ts` updated to import from `@mohasinac/appkit/jobs`. Letitrip's Next bundle never reaches `firebase-functions` now. |
+| DEV-5 | Prod deploy live on `www.letitrip.in` | XS | ✅ S23-followup 2026-05-12 — after DEV-3 + DEV-4 fixes, `vercel deploy --prod --yes` succeeded. Deployment `letitrip-pmnjd95r1-mohasin-ahamed-chinnapattans-projects.vercel.app` aliased to `https://www.letitrip.in`; `curl -sI` returns `HTTP/1.1 200 OK` + Next 16 font + CSS preload chain. SB3 (Bundle Listings) + all S23 work is now in production. |
 
 ---
 
@@ -1996,5 +1949,91 @@ Rules to keep top-of-mind every task:
 | LP3-check-audits-rewire | Update `package.json` — `check:audits` becomes `eslint --rule "lir/audit-*:error" --no-eslintrc .` after LP1 lands. Delete migrated scripts. | ⏳ | Stop hook wiring stays. |
 | LP3-baseline-policy | Document baseline-drift policy for LP1-audit-ssr migrated rules in `appkit/README.md` — grandfathered files warn, new violations error. | ⏳ | |
 | LP3-rule-docs | One markdown page per rule under `appkit/eslint-plugin/docs/<rule>.md` with "Don't / Do / Why" examples. | ⏳ | Improves IDE hover + onboarding. |
+
+---
+
+═══════════════════════════════════════════════════════════════════════════════
+## ⬇️  COMPLETED SESSIONS ARCHIVE  ⬇️
+═══════════════════════════════════════════════════════════════════════════════
+
+> Everything below this divider is history. New sessions append into § Active Roadmap at the top of this file — never into this archive. Use this section to look up what a past session shipped, not to schedule new work.
+
+### Sessions 60–93 + Arch-S4/S5 + S44 WL + TS + S45 EMG + old S1–S13 (all completed by 2026-05-12)
+
+| Session | Phase | Task IDs | Outcome |
+|---------|-------|----------|---------|
+| **60** | Foundation | F2, E2, K4+L3+L4+L5, J10, J11, J12, X1, SL5, SL6, E7 | ✅ Done 2026-05-06 |
+| **61** | Seed-1 Core | P11, P12, P13, P14, P15 | ✅ Done |
+| **62** | Seed-2 Listings | P16, P17, P18 | ✅ Done |
+| **63** | Seed-3 System | P19, P21, P22, P20, P10 | ✅ Done |
+| **64** | Infrastructure | E3+E4, H1, I4, I8, I5, SL4, E6 | ✅ Done |
+| **65** | Carousel | CF1 | ✅ Done |
+| **66** | Sections-1 | HS1, HS2, HS3 | ✅ Done |
+| **67** | Sections-2 | HS4, HS5 | ✅ Done |
+| **68** | Admin-1 | X2, A1, VA2, I1 | ✅ Done |
+| **69** | Admin-2 | A3, VA6, A4, VA4 | ✅ Done |
+| **70** | Admin-3 | A5, VA5, F5, VA7, VA8 | ✅ Done |
+| **71** | Admin-Finance | M1, VA19, M3, VA13, I3 | ✅ Done |
+| **72** | Admin-Moderate | N3, VA12, B1, VA10, B2, VA9, N2, VA11, LL11–LL15 | ✅ Done 2026-05-09 |
+| **73** | Admin-Misc | B5, VA16, B6, VA14, B7, VA15, VA17, VA18, LL16, LL17 | ✅ Done 2026-05-10 |
+| **74** | Quality | X3, X4, X5, X6 | ✅ Done |
+| **75** | Quality | X3, X4, X5, X6 | ✅ Done 2026-05-10 |
+| **76-listing** | Listing View Migration | — | ✅ Done 2026-05-10 — 16 admin views to ListingToolbar+useUrlTable+DataTable |
+| **76** | Alpha: Public Catalogue | VD7, VD11, VD4, VD5, VD6, VD1, VD2 | ✅ Done 2026-05-10 |
+| **76-infra** | Hotfix + Firebase Reset | J13, J14, J15, INFRA1, INFRA2 | ✅ Done 2026-05-10 — firebase-reset.mjs + firebase-delete-indexes.mjs |
+| **77-ux** | UX Foundation | UX1, UX2, UX3, UX4, UX5, UX9 | ✅ Done — FormShell+QuickFormDrawer+StepForm+PreviewPane+MediaPickerDrawer+InlineSelectCreate |
+| **77** | Alpha: Seller Products | UX6, O1, O2+C5, C1, VB8, C2, VB9, LL6 | ✅ Done |
+| **78** | Alpha: User Account | D1+VC6, VC1, VC3, VC5, LL1, LL2, LL3 | ✅ Done 2026-05-10 |
+| **79** | Alpha: Cart Integrity | W1, W2, W3, W4, R1 | ✅ Done 2026-05-10 |
+| **80-arch** | Store Identity + Seed QA | ARCH3 + seed QA | ✅ Done 2026-05-10 |
+| **80** | Alpha: Store Settings | UX7, C6, C7, O3, VB3, VB10, LL8 | ✅ Done 2026-05-10 |
+| **🚀** | **ALPHA RELEASE** | — | ✅ Sessions 76–80 complete — browse → cart → checkout → orders; seller can list |
+| **81** | Alpha: Store Finance | C3, VB1, C4, VB2, LL7, VB7, LL9, LL10 | ✅ Done 2026-05-10 |
+| **82** | SEO & Lighthouse | SEO1–SEO7 | ✅ Done 2026-05-10 |
+| **83** | Content | VD8 | ✅ Partial — VD9+VD10 deferred |
+| **84** | Custom Fields | L1, L2, L3 | ✅ Done |
+| **85** | Sub-listing | SC1, SC2, SC3, SC4 | ✅ Done 2026-05-10 |
+| **86** | Grouped | GP1, GP2 | ✅ Done |
+| **87** | Social Feed | S4, S1, S2, S3, S5 | ✅ Done 2026-05-10 |
+| **88** | Search + Routes | RC2, SR1, SR2, SR3, RC1, RC3, RC4 | ✅ Done 2026-05-10 |
+| **89-a** | UX Polish | VD12, J16, J17, D1 (wishlist filter) | ✅ Done 2026-05-11 |
+| **89-b** | FAQ + WhatsApp | FAQSection rewrite, WhatsApp redesign, @types/react dedup | ✅ Done 2026-05-11 |
+| **90** | Action System | AX1 | ✅ Done 2026-05-11 — ACTION constants + useActionDispatch + panelStore |
+| **90-colors** | Colors | X7a, X7b | ✅ Done |
+| **91** | Layout Tokens | X8a, X8b | ✅ Done 2026-05-11 |
+| **92** | Action URLs + Bars | AX2, AX3 | ✅ Done 2026-05-11 — usePanelUrlSync + 8 inline admin editors + FormActionBar |
+| **93** | Extended Sections | EX1, EX2, EX3, EX4, YT1 | ✅ Done 2026-05-11 — stats live queries + multi-carousel + CTA filter chips + multi-row products + YouTube cards |
+| **old-S1** | Zero-risk audit | SL6, ARCH9, VD3, HS4-E, A1-ext | ✅ Done 2026-05-11 |
+| **old-S2** | Zero-risk | D2, D3, LL4, LL5 | ✅ Done 2026-05-11 — addresses CRUD + order cancellation + listing views |
+| **old-S3** | Zero-risk | VC2, VC4 | ✅ Done 2026-05-11 — Invoice PDF + user settings tabs |
+| **old-S4** | Zero-risk | G1, G2, O1 | ✅ Done 2026-05-11 — store product templates + slug mgmt |
+| **old-S5** | Zero-risk | UX4, UX8, UX9 | ✅ Done 2026-05-11 — PreviewPane + quick-edit drawer |
+| **old-S7** | Homepage | EX5, SB11-A–G | ✅ Done — Collection Cards + 3 new homepage section types |
+| **old-S8** | Feature Icons | FI1–FI6 | ✅ Done 2026-05-11 — productFeatures collection + CRUD + badges |
+| **old-S9** | UX + RTDB | BK3, D5, VC7 | ✅ Done 2026-05-11 — compare overlay + Messages RTDB |
+| **old-S10** | Infra | I6, I7 | ✅ Done 2026-05-11 — PDF uploader + Media CDN watermark proxy |
+| **old-S11** | Infra | O5 | ✅ Done 2026-05-11 — Shiprocket auto-create |
+| **old-S12** | Query | Q5, Q2, Q4 | ✅ Done 2026-05-11 — indices + param standardization |
+| **old-S13** | Query | Q1, Q3, Q6 | ✅ Done 2026-05-12 — listingProcessor Function + /api/products thin-proxy + useInfiniteScroll. Q3-pre-orders/Q6-views/Q1-ops deferred → new S3/S6/S4. |
+| **old-S44 (WL)** | Wishlist+History+Caps | WL1–WL8 | ✅ Done 2026-05-11 — top-level wishlists 20-cap + history 50-FIFO + cart 50-cap |
+| **TS** | Tech-Debt | TS1–TS19 | ✅ Done 2026-05-12 — verify-first sweep; TS9 deferred (154 hex hits → new S11); TS7 partial; TS17 ops pending |
+| **Arch-S4** | SSR Rearch | — | ✅ Done 2026-05-12 — cart/orders/promotions `_internal/server/features/` layers (data/service/actions/index). Domain errors. Config constants. |
+| **Arch-S5** | SSR Rearch | — | ✅ Done 2026-05-12 — reviews/wishlist/history/homepage `_internal/server/features/` layers. Repositories barrel updated. NotFoundError backward-compat. |
+| **old-S45 (EMG)** | EMG triage | EMG1–EMG5 review | ✅ Done 2026-05-12 — EMG1 → Tier PAY ready · EMG4 → Tier CHAT ready · EMG2/3 holding · EMG5 deleted |
+| **S23 (SB3)** | Bundle UI/API | SB3-A/B/E/F/H/I + partials | ✅ Done 2026-05-12 — bundles feature shipped; SB3-D/G/J + SB1-L → new S4 |
+
+### Superseded sessions (moved out of working set)
+
+| Old session | Replaced by | Note |
+|-------------|-------------|------|
+| **old-S6** (ARCH1/6/7 sellerId strip) | new **S5** | Folded into seed-scale session since same response shapes touched |
+| **old-S14–S18** (P24–P31 seed scale) | new **S5** | One large seed deploy |
+| **old-S19–S22** (SB1/SB2/SB3) | new **S4** (closeout) + S23 (already done) | Bulk landed; closeout in new S4 |
+| **old-S23–S30** (SB4–SB10 prize/raffle/limits/badges/tabs) | new **S7** + **S8** | Two large feature sessions instead of 8 small |
+| **old-S31–S34** (RBAC-1..-4) | new **S9** | Single complete RBAC session + inline retrofit |
+| **old-S35–S37** (BAN-1..-3) | new **S10** | Bundled with SCAM |
+| **old-S38–S39** (SCAM-1..-2) | new **S10** | Bundled with BAN |
+| **old-S40–S43** (Guides GD1–GD22) | Tier DX (post-beta backlog) | Already superseded 2026-05-12 |
+| **old-S44** (OG1–OG5) | new **S6** | Bundled with FI6-2 + infinite scroll |
 
 ---

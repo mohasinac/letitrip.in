@@ -41,6 +41,34 @@
 
 ---
 
+### [CRUD] S23-followup — Dev heap probe + appkit 2.6.0 /jobs carve + prod deploy (2026-05-12)
+
+**Scope**: get the SB3 + Hobby work to production. Three independent blockers surfaced in order.
+
+**1. Dev heap cap was wrong (DEV-2)**: my earlier S23 commit set `NODE_OPTIONS=--max-old-space-size=1024` to mirror an imagined Hobby per-function cap. The live Vercel dashboard shows this project actually runs on **Fluid Compute Standard: 1 vCPU, 2 GB function memory, 8 GB build machine, Node 22.x, iad1**. Also, dev-server heap ≠ per-function heap. New `scripts/probe-dev-heap-cap.mjs` boots `next dev --webpack` at incremental caps with light load (6 routes rotated every 4 s for 2 min/cap), distinguishing natural OOM from deliberate-kill. Measured: 1024 MB OOMs (peak RSS 1457 MB), 1536 MB survives (peak RSS 1887 MB). Per "minimum + 512 MB headroom" → **2048 MB**. Applied to `package.json` `dev:only`, `scripts/dev-next.mjs` HOBBY_LIMITS.MEMORY_MB, `scripts/next-memory-forensics.js` HEAP_CAP_MB default. CLAUDE.md Rule #6 + `memory/project_vercel_hobby_limits.md` rewritten.
+
+**2. Vercel `.next/` upload OOM (DEV-3)**: first `vercel --prod` blew up the CLI with `Array buffer allocation failed` because 41 GB of `.next/` build cache + leaked heap snapshots sat in the upload tree. `.vercelignore` now excludes `.next/`, `memory-forensics-*`, `*.heapsnapshot`, `probe-results.json`. Upload shrank to 2.2 MB.
+
+**3. Vercel build broke on `firebase-functions/v2/*` (DEV-4)**: appkit's `server-entry.ts` re-exported `bindToFirebase` + 22 job handlers from `_internal/server/jobs/index`, which imports `firebase-functions/v2/{https,scheduler,firestore}`. Local webpack dev externalised them via `defineNextConfig`'s `externals` callback; **Vercel's prod build uses Turbopack** which won't externalize an uninstalled package. Two failed published versions chased this (2.5.0 had the issue; 2.5.1 added `firebase-functions` to `FIREBASE_EXTERNAL_PACKAGES` but Turbopack ignored it). **Right fix**: carved `@mohasinac/appkit/jobs` subpath in **2.6.0** — `bindToFirebase` + 22 handler re-exports + their types moved to new `appkit/src/jobs.ts`, server-entry.ts dropped the block, `appkit/package.json` exports added `./jobs`. `functions/src/index.ts` migrated to `import { … } from "@mohasinac/appkit/jobs"`. Letitrip's Next bundle never reaches `firebase-functions` now.
+
+**Also during this followup (OG-FIX1/2)**: dropped `runtime = "edge"` from 9 OG image routes (their `@mohasinac/appkit/server` chain reaches `node:crypto` via `features/auth/{token-store,consent-otp}` — incompatible with edge). `appkit/src/configs/next.ts` moved `outputFileTracingIncludes` out of `experimental` per Next 16 (no more "Unrecognized key" warning).
+
+**Prod deploy ✅**: `vercel deploy --prod --yes` succeeded. Deployment `letitrip-pmnjd95r1-mohasin-ahamed-chinnapattans-projects.vercel.app` aliased to **`https://www.letitrip.in`**. `curl -sI` returns `HTTP/1.1 200 OK` with Next 16 font + CSS preload chain. SB3 (Bundle Listings) + all S23 work is in production.
+
+**Important architecture lesson** (added to memory): Next 16's `next build` defaults to **Turbopack**, even when `next dev` is `--webpack`. Turbopack's `serverExternalPackages` requires the package to actually exist in `node_modules`; webpack's `externals` callback (commonjs marker) does not. Any future "module not found" in production-only build will likely be the same pattern — fix is to carve the offender into a separate subpath imported only by consumers who actually have the dep.
+
+**Files touched**:
+- `appkit/src/jobs.ts` (new), `appkit/src/server-entry.ts` (removed jobs block), `appkit/src/configs/next.ts` (FIREBASE_EXTERNAL_PACKAGES + outputFileTracingIncludes top-level), `appkit/src/configs/index.ts` (.js extensions for ESM ↔ CJS), `appkit/package.json` (`./jobs` export, version 2.6.0).
+- `functions/src/index.ts` (`from "@mohasinac/appkit/jobs"`).
+- `package.json` (`@mohasinac/appkit: ^2.6.0`, `dev:only` 2048 MB), `package-lock.json` (resolves to registry tarball, no local link), `.vercelignore`.
+- `scripts/dev-next.mjs`, `scripts/next-memory-forensics.js`, `scripts/probe-dev-heap-cap.mjs` (new), `scripts/strip-og-edge.mjs` (earlier in S23).
+- 9 OG `opengraph-image.tsx` routes.
+- `CLAUDE.md` Rule #6, memory/project_vercel_hobby_limits.md, memory/project_bundles_feature.md.
+
+**Gate**: `npm run check` exits 0 both repos; `npm run build` exits 0 locally; `vercel --prod` exits 0.
+
+---
+
 ### [CRUD] S23 — SB3 bundle listings full stack + Vercel Hobby dev parity (2026-05-12)
 
 **Scope**: deliver the SB3 bundle UI/API surface end-to-end + wire local dev to mirror the production Hobby caps.
