@@ -2,11 +2,31 @@
 
 > **Append new session entries below the DEFERRED section, newest first.**
 > After completing a task that defers or skips any spec component, add it to DEFERRED below AND log the session entry.
+> **Parallel lanes**: Lane A (CRUD, `prompt.md` / `crud-tracker.md`) and Lane B (SSR, `ssrprompt.md` / `ssr-arch-tracker.md`) run in separate worktrees. Each session must (a) check `[ACTIVE-FEATURES]` before starting a task, (b) prefix its session log entry with `[CRUD]` or `[SSR]`. Lane plan: `~/.claude/plans/what-do-you-think-abundant-turing.md`.
 
 ## Index
 
+- [🛤️ Active Features (lane coordination)](#️-active-features--lane-coordination-read-before-touching-any-feature)
 - [⚠️ Deferred / Skipped Items](#️-deferred--skipped-items--read-before-each-session)
 - [Session Log (newest first)](#session-log-newest-first)
+
+---
+
+## 🛤️ ACTIVE FEATURES — LANE COORDINATION (READ BEFORE TOUCHING ANY FEATURE)
+
+> Each running session prepends one line for the feature it is currently editing, and removes it in the commit that closes the task. If your target appears here under the *other* lane, pick a different task — do not push through. Use `[CRUD→SSR]` / `[SSR→CRUD]` lines below for cross-lane seam requests (new appkit function needed, new repository method, new domain type).
+
+```
+[ACTIVE-FEATURES]
+- (none — both lanes idle)
+
+[SEAM-REQUESTS]
+- (none)
+```
+
+**Format**:
+- Active line: `- <feature> → Lane A (<tier> <task-id>)` or `→ Lane B (<S#> <task-name>)`
+- Seam request: `- YYYY-MM-DD [SSR→CRUD] <one-line>` or `[CRUD→SSR]`
 
 ---
 
@@ -37,6 +57,44 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S14+S15 — 2026-05-12 — [CRUD] Seed scale: P24 auctions/bids + P25 categories + P30 verify
+
+**Scope:** Verify-first sweep on S13 (clean, no code needed); P24 seed scale for auctions and bids; P25 seed scale (partial) for categories; P30 verified-already-done per Rule #4. P31 deferred per Rule #1 because Lane B's untracked WIP (`appkit/src/_internal/server/jobs/`, `src/app/sitemap.ts`) is currently breaking the `audit:ssr-in-appkit` gate (+1 over baseline 8) — adding more code on top of broken state would obscure regressions, so stop here.
+
+| Area | What was done |
+|------|---------------|
+| **S13 verification** | Re-read `functions/src/callable/listingProcessor.ts` (20-collection LISTERS table + cursor + secret auth + 30s timeout + asia-south1), `src/app/api/products/route.ts` (thin proxy with env-gated fallback to `productRepository.list`), `appkit/src/react/hooks/useInfiniteScroll.ts` (exported via `appkit/client.ts:80-85`), `appkit/src/providers/db-firebase/sieve.ts` (FILTER_ALIASES + `expandFilterAliases` plumbed). All four deliverables intact. `npm run check:types` clean both repos; `npm run check:audits` clean (3 of 4 audits pass, `audit-ssr-in-appkit` reported 8 at-baseline at start). |
+| **S14 P24 — auctions** | `appkit/src/seed/products-auctions-seed-data.ts` 11 → 20. Added: Lugia Neo Genesis PSA 9 (active 60h), Funko Stan Lee Glow Chase (active 96h), Beyblade Spriggan Requiem Tournament Limited (active 5d), Trophy Pikachu Worlds 2006 (upcoming 4d), Hot Wheels Super TH 2024 full set (upcoming 10d), S.H.Figuarts Goku UI (ended-winner 3d ago), Shadowless Blastoise BGS 8.5 (ended-winner 14d ago), Vintage Tomica Skyline reserve-not-met (ended-no-winner 10d ago), Yu-Gi-Oh! Thousand Dragon zero-bids (ended-no-winner 5d ago). All `id===slug` with `auction-` prefix; isAuction:true. |
+| **S14 P24 — bids** | `appkit/src/seed/bids-seed-data.ts` 26 → 60. New `buildBidLadder(spec)` helper inside the file — strict-increasing bid amounts, status flags (`active`/`outbid`/`won`), `isWinning` flipped on the correct index for active vs ended (`winningIndex=-1` for reserve-not-met), `previousBidAmount` chained, dates spread linearly from `daysAgoForFirst` to `closedDaysAgo` (or now for active). Six ladders added covering Lugia/Funko/Spriggan (active) and Goku/Blastoise/Skyline (ended). |
+| **S14 — pre-orders** | **Skipped** per user guidance ("we already have lots of seed data, skip near-met"). Current 8 vs spec 10 is acceptable. |
+| **S15 P25 — categories** | `appkit/src/seed/categories-seed-data.ts` 23 → 33. New `mkLeaves(specs[])` helper at module scope (hoisted) keeps the per-leaf footprint ~25 LOC vs the ~50 LOC of the original explicit-object style. Added 10 tier-1 leaves under existing roots: 3 under Trading Cards (one-piece-cards / magic-cards / flesh-blood-cards), 2 under Diecast (matchbox-cars / corgi-cars), 3 under Action Figures (anime-figures / funko-pops / superhero-figures), 2 under Model Kits (gundam-master-grade / gundam-perfect-grade). Parents' `childrenIds[]` updated in lockstep. New 4 root categories (cosplay / board-games / comics-manga / model-kits-hobbies) deferred — adding new roots changes navigation/menu surface and needs its own session. |
+| **P30 verification** | Verified already done — `conversations-seed-data.ts` (35), `sublisting-categories-seed-data.ts` (12), `grouped-listings-seed-data.ts` (8) all exported, in `manifest.ts`, in the `SeedCollectionName` union (both `actions/demo-seed-actions.ts` and `/api/demo/seed/route.ts`), and have `COLLECTION_META` entries in `SeedPanel.tsx`. Tracker flipped ⏳ → ✅. The `messages` collection in the spec is realised as `conversations` (per D5/VC7 RTDB architecture). |
+| **P31 stub** | **Deferred** — Lane B has untracked WIP in `appkit/src/_internal/server/jobs/` and the related `src/app/sitemap.ts` that is currently raising +1 audit-ssr-in-appkit regression (hardcoded `LetItRip` in `_internal/server/jobs/runtime/adapters/firebase.ts:188` and a missing `@mohasinac/appkit/server` import in `sitemap.ts`). Both are read-only for Lane A per lane discipline. Adding a Zod validator stub on top of this state would obscure that regression and conflict with whatever Lane B is finishing. |
+
+**Files changed (Lane A only):**
+- `appkit/src/seed/products-auctions-seed-data.ts` — +9 auctions
+- `appkit/src/seed/bids-seed-data.ts` — +34 bids + `buildBidLadder()` helper
+- `appkit/src/seed/categories-seed-data.ts` — +10 leaves + 3 parent `childrenIds[]` updates + `mkLeaves()` helper
+- `crud-tracker.md` — P24/P25/P30 status notes
+
+**Gates run:**
+- `npm run check:types` — 0 errors in both repos. ✅
+- `npm run check:audits` — 3 of 4 pass; `audit-ssr-in-appkit` reports 9 > baseline 8 (+1 regression). **The regression is entirely in Lane B WIP files** (untracked `_internal/server/jobs/runtime/adapters/firebase.ts:188` + working-tree-modified `src/app/sitemap.ts`), not in any file touched this session. Lane A's seed-data changes don't add violations to `_internal/`.
+- `npm run check:lint` — not run; 192 pre-existing lint errors in `user/*Client.tsx` baseline are unrelated to this session.
+
+**DEFERRED for follow-up:**
+
+| Date | Task | What was deferred | Status |
+|------|------|-------------------|--------|
+| 2026-05-12 | P24 bids | Spec target 120+; shipped 60. Active ladders for the 6 pre-existing active auctions (Charizard / Exodia / Camaro / Mew / Blue-Eyes / Deora / Miku 100) keep their existing 26 records — adding more would just inflate counts without changing test coverage. | ⏳ — open follow-up |
+| 2026-05-12 | P24 pre-orders | 8 → 10. Skipped per user pragmatic guidance. | ⏳ — open follow-up |
+| 2026-05-12 | P25 categories | Shipped 23 → 33; spec 55+. Remaining: 4 new roots + ~12 more leaves. | ⏳ — open follow-up |
+| 2026-05-12 | P30 sublistings | Currently 12, spec 20+. P30 marked ✅ on overall wiring; counts can be padded in a follow-up. | ⏳ — open follow-up |
+| 2026-05-12 | P31 | Zod validator + PII masking + dry-run diff + retry deferred; cannot proceed until Lane B WIP is committed and the `audit-ssr-in-appkit` regression is cleared. | ⏳ — blocked on Lane B |
+| 2026-05-12 | Lint baseline | 192 pre-existing lint errors in `src/components/user/*Client.tsx` (raw `<p>`/`<h1>`/`<button>` in `ProfilePageClient`, `UserAddressesClient`, `EditAddressClient`, `FontToggleClient`). Predates S13. | ⏳ — own session |
 
 ---
 
