@@ -2,31 +2,12 @@
 
 > **Append new session entries below the DEFERRED section, newest first.**
 > After completing a task that defers or skips any spec component, add it to DEFERRED below AND log the session entry.
-> **Parallel lanes**: Lane A (CRUD, `prompt.md` / `crud-tracker.md`) and Lane B (SSR, `ssrprompt.md` / `ssr-arch-tracker.md`) run in separate worktrees. Each session must (a) check `[ACTIVE-FEATURES]` before starting a task, (b) prefix its session log entry with `[CRUD]` or `[SSR]`. Lane plan: `~/.claude/plans/what-do-you-think-abundant-turing.md`.
+> **Lane-split wound down 2026-05-12** — single tracker (`crud-tracker.md`) and single prompt (`prompt.md`); SSR rows folded into existing tiers + new Tier SSR-Merge / Tier RA. Historical `[CRUD]` / `[SSR]` session-log prefixes left as-is for audit trail. No `[ACTIVE-FEATURES]` coordination needed.
 
 ## Index
 
-- [🛤️ Active Features (lane coordination)](#️-active-features--lane-coordination-read-before-touching-any-feature)
 - [⚠️ Deferred / Skipped Items](#️-deferred--skipped-items--read-before-each-session)
 - [Session Log (newest first)](#session-log-newest-first)
-
----
-
-## 🛤️ ACTIVE FEATURES — LANE COORDINATION (READ BEFORE TOUCHING ANY FEATURE)
-
-> Each running session prepends one line for the feature it is currently editing, and removes it in the commit that closes the task. If your target appears here under the *other* lane, pick a different task — do not push through. Use `[CRUD→SSR]` / `[SSR→CRUD]` lines below for cross-lane seam requests (new appkit function needed, new repository method, new domain type).
-
-```
-[ACTIVE-FEATURES]
-- (none — both lanes idle)
-
-[SEAM-REQUESTS]
-- (none — SB1-G fully landed S22 Phase 4 2026-05-12; previous [CRUD→SSR] request resolved with Lane B idle)
-```
-
-**Format**:
-- Active line: `- <feature> → Lane A (<tier> <task-id>)` or `→ Lane B (<S#> <task-name>)`
-- Seam request: `- YYYY-MM-DD [SSR→CRUD] <one-line>` or `[CRUD→SSR]`
 
 ---
 
@@ -40,19 +21,19 @@
 | 2026-05-08 | A3/VA6 + A4/VA4 | Session 70 added `/admin/blog/new/`, `/admin/blog/[id]/`, `/admin/coupons/new/`, `/admin/coupons/[id]/` alongside existing `[[...action]]` catch-alls — creates Next.js "same specificity" route collision error. Multiple other admin routes likely affected (products, bids, carousel, categories, orders, reviews, sections, users). | ✅ Fully resolved Session 88 — all 10 remaining `[[...action]]` catch-all folders removed from admin routes; dedicated `/page.tsx` list pages created for each. Zero catch-alls remain. | RC4 ✅ |
 | 2026-05-08 | SP1/P10 | Seed data source-of-truth policy formalised: SeedPanel SP1/P10 documentation (slugPattern, mediaFields, PII fields, column metadata) is canonical for all 23 collections. Seed files must be updated in-session with any schema change. P23–P31 sessions expand counts only. | ✅ Policy adopted — no code change needed | Noted in prompt.md + crud-tracker.md |
 | 2026-05-07 | P10 Part A | Per-collection API endpoints (`/api/demo/seed/[collection]/route.ts`) not built — monolithic route handles per-collection calls correctly via body param. | ✅ Intentionally resolved — no per-collection route needed | — |
-| 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ⚠️ Tech debt — open | CF1 (Session 65) must fix carousel schema to resolve |
+| 2026-05-07 | P20 | Carousel section config cast `as unknown as SectionConfig` to silence TS — underlying type mismatch not fixed | ✅ Migrated to `crud-tracker.md` as `0-P20` (Tier SSR-Merge → Tier 0 Bug Fixes, 2026-05-12) | — |
 | 2026-05-07 | J7/J9 | Notes said "remaining: P5 seed data" — P5 was superseded. Notes updated to "resolved by P16" | ✅ Notes fixed — no code change needed | — |
 | 2026-05-07 | P10 Part B | Full SeedPanel UI redesign (collapsible groups, per-collection API calls, progress bar) was never built in Session 63 — task was silently marked ✅ | ✅ Fixed 2026-05-07 | — |
 | 2026-05-07 | P10 Part C | SeedPanel: per-resource accordion cards, wrong uiPath values (`/account/*`, `/admin/homepage`, `/admin/settings`), no live polling | ✅ Fixed 2026-05-07 — uiPaths corrected, 15s auto-poll added, per-card expand triggers refresh | — |
 | 2026-05-07 | HS4 + HS5 | Google Business Reviews integration (HS4) and Custom Cards section component (HS5) were planned for Session 67 but not started — no code exists for either | ✅ Done 2026-05-08 — Session 67-b | — |
 | 2026-05-08 | HS4-D | Per-store Google Reviews: user requested GoogleReviewsSection also available on store About page, configurable per store — not part of HS4 spec (homepage only) | ✅ Done S1 2026-05-11 — see HS4-E | HS4-E ✅ |
-| 2026-05-11 | FI6 secondary surfaces | Cross-store listing pages other than /products, /auctions, /pre-orders do not yet wrap children in `ProductFeaturesProvider`, so feature badges don't render on cards there. Surfaces: SearchResultsClient, wishlist page, PromotionsProductsClient, StoreDetailLayoutView, RelatedProductsCarousel. Fix is mechanical (add `listPlatform()` + Provider in the corresponding page/server boundary). | ⏳ Open | Track as FI6-2; pick up in a follow-up session. |
-| 2026-05-11 | S9 WIP imports break tsc | Untracked scaffolding for D5/VC7 (Messages/Conversations) imports yet-to-ship appkit symbols: `getConversation`, `sendMessage`, `MESSAGE_MAX_LENGTH`, `listConversationsForBuyer`, `ChatList`, `ChatWindow`, `MessagesView`. Files: `src/app/api/user/conversations/*`, `src/app/[locale]/user/messages/page.tsx`. Main repo tsc has errors only in those files. Appkit tsc clean. | ⏳ Open | S9 — finish the appkit-side messages feature exports + ship the consumer routes together. |
-| 2026-05-12 | Q3-pre-orders | `/api/pre-orders/route.ts` not wired through `listingProcessor` in S13. Current handler delegates to appkit `preOrdersGET` which uses a `db.getRepository("preorders")` path against a separate collection that doesn't exist in this seed. Spec decision needed: (a) rewrite the handler to treat pre-orders as `products` with `isPreOrder==true` and forward to `listingProcessor`, or (b) add a real `preorders` collection. | ⏳ Open | Follow-up session — bundle with Q6-views wiring. |
-| 2026-05-12 | Q6-views | `useInfiniteScroll` primitive shipped; full wiring into the 4 listing views deferred. `useProducts` hook uses `useQuery` — switching to `useInfiniteQuery` is a real refactor (cursor accumulator, key invalidation, SSR hydration) with regression surface across ProductsIndexListing, AuctionsListView, PreOrdersListView, StoreProductsPageView. | ⏳ Open | Follow-up session — own session with browser verification per view. |
-| 2026-05-12 | Q1-ops | `listingProcessor` Function not yet deployed. Until `firebase deploy --only functions` is run and `FIREBASE_FUNCTION_LISTING_URL` is set in Vercel env, `/api/products` keeps using the local `productRepository.list` fallback (works fine, just no Firebase-side offload yet). | ⏳ Open | Ops step — user runs deploy + sets env. |
-| 2026-05-12 | S1-cli | `appkit/src/cli/index.ts` not moved to `_internal/server/cli/`. `withFeatures` still at original path. Non-blocking — consumer uses `withFeatures` from `@mohasinac/appkit/cli` which still resolves. | ⏳ Open | Complete before or during S2. |
-| 2026-05-12 | S1-configs | Consumer config files (`next.config.js`, `postcss.config.js`, `tailwind.config.js`, `eslint.config.js`, `tsconfig.json`) not yet rewritten to use `defineXxx()` helpers. Helpers are published and ready; consumer files are functional but not using them. | ⏳ Open | Complete before or during S2. |
+| 2026-05-11 | FI6 secondary surfaces | Cross-store listing pages other than /products, /auctions, /pre-orders do not yet wrap children in `ProductFeaturesProvider`, so feature badges don't render on cards there. Surfaces: SearchResultsClient, wishlist page, PromotionsProductsClient, StoreDetailLayoutView, RelatedProductsCarousel. Fix is mechanical (add `listPlatform()` + Provider in the corresponding page/server boundary). | ✅ Migrated to `crud-tracker.md` as `FI6-2` (2026-05-12) | — |
+| 2026-05-11 | S9 WIP imports break tsc | Untracked scaffolding for D5/VC7 (Messages/Conversations) imports yet-to-ship appkit symbols: `getConversation`, `sendMessage`, `MESSAGE_MAX_LENGTH`, `listConversationsForBuyer`, `ChatList`, `ChatWindow`, `MessagesView`. Files: `src/app/api/user/conversations/*`, `src/app/[locale]/user/messages/page.tsx`. Main repo tsc has errors only in those files. Appkit tsc clean. | ✅ Closed 2026-05-12 — shipped per (ex-)Lane B S6/S7 messages migration (`messages` feature in `_internal/server/features/messages/` + 4 API routes + 2 client hooks + buyer page). | — |
+| 2026-05-12 | Q3-pre-orders | `/api/pre-orders/route.ts` not wired through `listingProcessor` in S13. Current handler delegates to appkit `preOrdersGET` which uses a `db.getRepository("preorders")` path against a separate collection that doesn't exist in this seed. Spec decision needed: (a) rewrite the handler to treat pre-orders as `products` with `isPreOrder==true` and forward to `listingProcessor`, or (b) add a real `preorders` collection. | ✅ Migrated to `crud-tracker.md` as `Q3-pre-orders` (Tier SSR-Merge → Tier Q, 2026-05-12). Recommended path: (a) treat as `products` with `listingType==pre-order` now that listingType migration is complete. | — |
+| 2026-05-12 | Q6-views | `useInfiniteScroll` primitive shipped; full wiring into the 4 listing views deferred. `useProducts` hook uses `useQuery` — switching to `useInfiniteQuery` is a real refactor (cursor accumulator, key invalidation, SSR hydration) with regression surface across ProductsIndexListing, AuctionsListView, PreOrdersListView, StoreProductsPageView. | ✅ Still tracked under existing Q6 row in `crud-tracker.md` (Tier Q). | — |
+| 2026-05-12 | Q1-ops | `listingProcessor` Function not yet deployed. Until `firebase deploy --only functions` is run and `FIREBASE_FUNCTION_LISTING_URL` is set in Vercel env, `/api/products` keeps using the local `productRepository.list` fallback (works fine, just no Firebase-side offload yet). | ✅ Migrated to `crud-tracker.md` as `Q1-ops` (Tier SSR-Merge → Tier Q, 2026-05-12). | — |
+| 2026-05-12 | S1-cli | `appkit/src/cli/index.ts` not moved to `_internal/server/cli/`. `withFeatures` still at original path. Non-blocking — consumer uses `withFeatures` from `@mohasinac/appkit/cli` which still resolves. | ✅ Migrated to `crud-tracker.md` as `X-cli-close` (Tier SSR-Merge → Tier X, 2026-05-12). Premise stale per (ex-)Lane B verification — file has zero firebase-admin imports. | — |
+| 2026-05-12 | S1-configs | Consumer config files (`next.config.js`, `postcss.config.js`, `tailwind.config.js`, `eslint.config.js`, `tsconfig.json`) not yet rewritten to use `defineXxx()` helpers. Helpers are published and ready; consumer files are functional but not using them. | ✅ Split into `3-nextconfig-cleanup` + `3-tailwind-cleanup` + `X-eslint-additive` rows in `crud-tracker.md` Tier SSR-Merge (2026-05-12). | — |
 
 ---
 

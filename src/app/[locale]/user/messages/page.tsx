@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-13: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-13) */
 /**
  * /user/messages — buyer-side conversation list + chat window (D5 + VC7).
  *

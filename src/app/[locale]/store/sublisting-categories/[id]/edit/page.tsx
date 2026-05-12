@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-05: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-05) */
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";

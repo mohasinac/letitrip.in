@@ -4,7 +4,7 @@
 >
 > **Brand name**: **LetItRip** — always this exact casing in UI copy, messages, and documentation. Domain is letitrip.in but the brand display name is LetItRip. Never write "LetiTrip", "Letitrip", or "Let It Rip".
 >
-> **🛤️ Parallel lanes**: This repo runs two Claude sessions in separate worktrees. Lane A (CRUD) uses `prompt.md` + `crud-tracker.md`. Lane B (SSR) uses `ssrprompt.md` + `ssr-arch-tracker.md`. Coordination via the `[ACTIVE-FEATURES]` block at the top of `newchange.md` (read before touching any feature). Lane plan: `~/.claude/plans/what-do-you-think-abundant-turing.md`. Both prompts must be updated before every commit and at session end.
+> **Tracker** → `crud-tracker.md` (SSR rearchitecture rows folded in 2026-05-12). **Working prompt** → `prompt.md`. The lane-split experiment with `ssr-arch-tracker.md` / `ssrprompt.md` was wound down 2026-05-12 — reunified into the single tracker + prompt. SSR architectural rules live below in § "SSR Architecture"; duplication keep-vs-consolidate criteria in § "Duplication Decision Framework".
 
 ## Index
 
@@ -25,6 +25,8 @@
 - [CSS Variable Reference](#css-variable-reference-sticky-positioning)
 - [appkit Export Rules](#appkit-export-rules)
 - [Appkit Publish & Deploy Rules](#appkit-publish--deploy-rules)
+- [SSR Architecture](#ssr-architecture)
+- [Duplication Decision Framework](#duplication-decision-framework)
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 
@@ -427,6 +429,100 @@ When the user says "publish appkit" or "release appkit":
 **Vercel deploy**: Auto-deploy on push is disabled (`vercel.json` → `"deploymentEnabled": false` for all branches). Run `vercel --prod` manually only when the user asks to deploy.
 
 **Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` after switching to npm, the lockfile still points to the local directory. Delete it and re-run `npm install`.
+
+---
+
+## SSR Architecture
+
+> Folded in from the wound-down `ssr-arch-tracker.md` / `ssrprompt.md` on 2026-05-12. These are non-negotiable rules for every new feature and every Tier RA retrofit.
+
+### Guiding Principle — code defaults to appkit
+
+Default home for SSR + feature code: **`appkit/src/_internal/server/features/<feature>/`** (server) or **`appkit/src/_internal/client/features/<feature>/`** (client). Consumer `letitrip.in/` files are thin shims (≤30 lines) when the Next.js framework forces a specific path (`page.tsx`, `layout.tsx`, `route.ts`, `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, `manifest.ts`, `middleware.ts` / `proxy.ts`).
+
+### Layered template per feature
+
+```
+appkit/src/_internal/server/features/<feature>/
+├── data.ts        // getXForDetail(slug, opts?), listX(opts?) — wrap in React.cache when shared between page+generateMetadata
+├── adapters.ts    // toClientX(doc) — Firestore doc → API/client shape
+├── actions.ts     // "use server" mutations, validation, repo calls
+├── metadata.ts    // buildXMetadata(doc, opts?) → Metadata
+├── og.tsx         // renderXOgImage(doc, opts?) → ImageResponse  (when applicable)
+└── index.ts       // barrel — re-export public surface
+
+appkit/src/_internal/shared/features/<feature>/
+├── config.ts      // page sizes, limits, defaults
+├── types.ts       // TS types shared client+server
+└── schema.ts      // Zod validators
+```
+
+### Encapsulation + Override Contract
+
+Every public function takes an optional final `opts?: XOptions` parameter (even if empty today). Every view component accepts at least one `renderXxx` slot prop. Override hierarchy (least → most invasive):
+
+1. **Config / tokens** — `siteSettings.theme`, `LabelsProvider` partial map, `appkit.config.js`.
+2. **Options object** — `renderXOgImage(doc, { theme, headline, layout: "compact" })`.
+3. **Render-prop slots** — `<XDetailView renderActions={(ctx) => <MyActions/>}>`.
+4. **Adapter wrap** — `const myToClient = (doc) => decorate(toClientX(doc))`.
+5. **Replace the call** — call repository directly; skip the helper.
+6. **Fork via patch** — only when the seam doesn't exist yet. File a tracker entry; ship the seam in appkit.
+
+### `React.cache` discipline
+
+Every data-fetch function exposed to a page+`generateMetadata` pair MUST be wrapped in `React.cache`:
+
+```ts
+import { cache } from "react";
+export const getXForDetail = cache(async (slug: string) => { ... });
+```
+
+### Audit baseline
+
+`scripts/audit-ssr-in-appkit.mjs` runs as part of `npm run check`. Baseline is **8** (S2-deferred root files); only regressions block. Goal: drive to **0** (tracker row `X-audit-baseline`).
+
+### Red flags
+
+- A `_transform.ts` / `_adapter.ts` next to an API route → lift to `_internal/server/features/<feature>/adapters.ts`.
+- An `opengraph-image.tsx` with >40 lines of layout JSX → extract renderer to appkit.
+- A `page.tsx` with non-trivial Firestore querying → move to `data.ts`.
+- Duplicate fetch logic in `page.tsx` + an API route → both should call the same appkit function.
+- Hardcoded `"LetItRip"` / `"letitrip.in"` / currency / route strings inside `_internal/` → pipe through `appkit.config.js` / `ROUTES` / `LabelsProvider`.
+
+---
+
+## Duplication Decision Framework
+
+> Run this against every cross-tier / cross-feature overlap before extracting OR before leaving duplication in place.
+
+### Keep the duplication when ANY of these holds
+
+1. **Different domain semantics.** E.g. admin sidebar nav vs store sidebar nav: shared structure, different meaning. Unifying would require >3 conditional props.
+2. **Rule of Three.** Only 2 copies today. Extract on the 3rd, not the 2nd. Two copies is observation; three is a pattern.
+3. **Lifetime is short.** One copy is being deprecated within 2 sessions.
+4. **Lane / API boundary.** One copy lives in appkit's public surface (consumer-overridable); the other lives in `_internal/` (project-specific). Consolidating breaks the override seam.
+5. **Customization point.** The duplicate *is* the override seam (consumer wraps appkit primitive with project-specific behavior).
+
+### Consolidate when ANY of these holds
+
+1. **≥3 copies** — Rule of Three trigger.
+2. **Bug-fix multiplier** — a single bug fix would require >1 commits across copies.
+3. **Same prop surface** — copies accept the same parameters and return the same shape.
+4. **Migration artifact** — duplication only exists because of pre-layered structure.
+5. **Test-burden multiplier** — same logic tested N times in N test files.
+
+### Where the consolidated version goes
+
+- Used by ≥2 features → `appkit/src/_internal/client/` or `appkit/src/ui/` (client); `appkit/src/_internal/server/` (server).
+- Used by exactly 1 feature → `appkit/src/_internal/{client|server}/features/<feature>/`.
+- Used only in `letitrip.in/` and not generic → keep in `src/components/` until a second consumer appears.
+
+### Specific call-out — sidebar layouts
+
+The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, public `LayoutShellClient`):
+- **Keep** the 4 wrappers — genuinely different domain semantics.
+- **Consolidate** the structural shell into appkit's `<AppShell>` — each wrapper passes its `renderNav` / `renderHeader` slots to one shared `<AppShell>` underneath.
+- Tracked as `3-shell-adopt` + `LL-dashboard-*` in `crud-tracker.md`.
 
 ---
 

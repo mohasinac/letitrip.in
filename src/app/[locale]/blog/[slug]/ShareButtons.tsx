@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-31: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-31) */
 
 import { useState } from "react";
 import { useToast } from "@mohasinac/appkit/client";

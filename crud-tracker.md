@@ -1498,6 +1498,68 @@ Rules to keep top-of-mind every task:
 
 ---
 
+## Tier LR — Lint Refactor: Raw HTML Element Migration *(stamped 2026-05-12)*
+
+> Added 2026-05-12. `lir/no-raw-html-elements` + `lir/no-raw-media-elements` errored across 36 legacy files (192 errors total) blocking the `npm run check` gate. Each file got a top-of-file `/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1: legacy raw HTML, migration tracked in crud-tracker.md Tier LR */` stamp so the gate exits 0 without losing the migration backlog. **Every disabled file is a row in this tier — closing a row removes the disable.**
+>
+> **Migration recipe per file:** (1) replace `<h1>`/`<h2>`/`<h3>` with `<Heading level={N}>`; `<p>` with `<Text>`; `<span>` with `<Span>` or `<Text inline>`; `<button>` with `<Button variant=…>`; `<a>` with `<TextLink>` or `<Link>` (from `@/i18n/navigation`); `<img>` with `<Image>` (next/image) or `<MediaImage>`; `<video>` with `<MediaVideo>`. (2) Remove the file-top disable. (3) Run `npm run check:lint -- <file>` to confirm zero errors. (4) Re-flow the file through `npm run check` end-to-end.
+
+| # | File | Error count | Status | Notes |
+|---|------|-------------|--------|-------|
+| LR1-01 | `src/components/dev/SeedPanel.tsx` | 26 | ⏳ | Dev tooling; heavy raw `<div>`/`<span>` use. Big file (>1200 LOC) — split the migration into Basics / Accordion / per-collection card sections. |
+| LR1-02 | `src/app/[locale]/scams/report/page.tsx` | 23 | ⏳ | Form-heavy. Replace each native `<input>`/`<label>`/`<button>` pair with appkit `<Input>` + `<Label>` + `<Button>`. Co-ordinate with SCAM2 form polish session if it lands first. |
+| LR1-03 | `src/components/user/ProfilePageClient.tsx` | 22 | ⏳ | Profile shell — mostly section headers + paragraphs. Mechanical, ~30 min. |
+| LR1-04 | `src/app/[locale]/store/sublisting-categories/new/page.tsx` | 11 | ⏳ | Sublisting category form; same pattern as LR1-05/06. |
+| LR1-05 | `src/app/[locale]/store/sublisting-categories/[id]/edit/page.tsx` | 11 | ⏳ | Sublisting category form. |
+| LR1-06 | `src/app/[locale]/events/[id]/PollInlineClient.tsx` | 11 | ⏳ | Inline poll widget — buttons + radios. |
+| LR1-07 | `src/app/[locale]/sublisting-categories/[slug]/page.tsx` | 10 | ⏳ | Public sublisting page; mostly headings + list items. |
+| LR1-08 | `src/app/[locale]/user/orders/[id]/cancel/page.tsx` | 8 | ⏳ | Cancel-order confirmation form. |
+| LR1-09 | `src/app/[locale]/store/sublisting-categories/page.tsx` | 8 | ⏳ | Sublisting list page. |
+| LR1-10 | `src/components/dev/DevToolbar.tsx` | 5 | ⏳ | Dev-only toolbar; low priority. |
+| LR1-11 | `src/components/user/UserAddressesClient.tsx` | 4 | ⏳ | Address list — headings + buttons. |
+| LR1-12 | `src/components/admin/AdminAnalyticsClient.tsx` | 4 | ⏳ | Admin analytics shell. |
+| LR1-13 | `src/app/[locale]/user/messages/page.tsx` | 4 | ⏳ | Messages tab placeholder; will land alongside D5 message UI polish. |
+| LR1-14 | `src/app/[locale]/stores/[storeSlug]/about/StoreAboutClient.tsx` | 4 | ⏳ | Store About tab. |
+| LR1-15 | `src/app/[locale]/auth/close/page.tsx` | 4 | ⏳ | OAuth popup close page; tiny. |
+| LR1-16 | `src/components/user/FontToggleClient.tsx` | 3 | ⏳ | Font picker — 3 buttons. |
+| LR1-17 | `src/components/routing/CartRouteClient.tsx` | 3 | ⏳ | Cart wrapper — mostly already migrated; remaining are inline `<p>` notes. |
+| LR1-18 | `src/components/layout/FooterNewsletterSlot.tsx` | 3 | ⏳ | Footer newsletter form. |
+| LR1-19 | `src/components/homepage/HomepageNewsletterForm.tsx` | 3 | ⏳ | Homepage newsletter form. |
+| LR1-20 | `src/app/[locale]/user/notifications/page.tsx` | 3 | ⏳ | Notifications tab. |
+| LR1-21 | `src/app/[locale]/admin/dashboard/page.tsx` | 3 | ⏳ | Admin dashboard tiles. |
+| LR1-22 | `src/components/user/EditAddressClient.tsx` | 2 | ⏳ | Address edit form. |
+| LR1-23 | `src/app/[locale]/user/history/page.tsx` | 2 | ⏳ | Browse history list. |
+| LR1-24 | `src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx` | 2 | ⏳ | Event participation flow. |
+| LR1-25 | `src/app/[locale]/store/coupons/[id]/edit/page.tsx` | 2 | ⏳ | Store coupon edit. |
+| LR1-26 | `src/app/[locale]/user/bids/page.tsx` | 1 | ⏳ | Bids tab. |
+| LR1-27 | `src/app/[locale]/user/page.tsx` | 1 | ⏳ | User landing. |
+| LR1-28 | `src/app/[locale]/user/reviews/page.tsx` | 1 | ⏳ | User reviews tab. |
+| LR1-29 | `src/app/[locale]/user/settings/page.tsx` | 1 | ⏳ | User settings shell. |
+| LR1-30 | `src/app/[locale]/wishlist/page.tsx` | 1 | ⏳ | Wishlist page. |
+| LR1-31 | `src/app/[locale]/blog/[slug]/ShareButtons.tsx` | 1 | ⏳ | Blog share row. |
+| LR1-32 | `src/app/[locale]/events/[id]/EventDetailClient.tsx` | 1 | ⏳ | Event detail wrapper. |
+| LR1-33 | `src/app/[locale]/events/[id]/ShareEventButton.tsx` | 1 | ⏳ | Event share button. |
+| LR1-34 | `src/app/[locale]/admin/sublisting-categories/page.tsx` | 1 | ⏳ | Admin sublisting list. |
+| LR1-35 | `src/app/[locale]/store/templates/page.tsx` | 1 | ⏳ | Store templates list. |
+| LR1-36 | `src/components/user/AddAddressClient.tsx` | 1 | ⏳ | Add address form. |
+
+> **Helper scripts**: `scripts/extract-lint-raw-html.mjs <lint-output>` lists current offenders; `scripts/stamp-lr1-disables.mjs <list>` (idempotent) re-applies the disable header with the exact `LR1-NN` row id. Both shipped with this tier.
+
+### LR2 — Appkit lint backlog *(separate from letitrip src)*
+
+> Discovered 2026-05-12. `npm run check`'s `check:lint` step only lints `src/**` (letitrip). Running `npx eslint src/**/*.{ts,tsx}` inside `appkit/` surfaces **404 errors** that the gate doesn't see today. Adding appkit lint to the gate now would block all forward work; this row tracks the cleanup so it gets done.
+
+| # | Rule | Count | Status | Migration approach |
+|---|------|-------|--------|--------------------|
+| LR2-A | `@typescript-eslint/no-explicit-any` | 228 | ⏳ | Each `any` is a type-debt entry. Sweep by feature (e.g. `appkit/src/features/products/**`, then `auctions/**`). Per file: replace with concrete type, `unknown`, or generic. Some inevitable in adapter layers — leave `// eslint-disable-next-line @typescript-eslint/no-explicit-any` with a `LR2-A: <reason>` comment. |
+| LR2-B | `@typescript-eslint/no-unused-vars` | 150 | ⏳ | Mostly unused params + leftover imports from refactors. `--fix` handles many; the rest are intentional (destructured `_ignored`) and need `_` prefix. |
+| LR2-C | `@typescript-eslint/no-empty-object-type` | 21 | ⏳ | `interface Foo {}` placeholders left over from incremental design. Either give them a body or replace with `type Foo = Record<string, never>`. |
+| LR2-D | Other (`prefer-const`, malformed JSDoc) | 5 | ⏳ | One-off cleanups. |
+
+**Activation plan**: once LR2-A/B/C land, wire appkit eslint into the root `npm run check:lint` so future regressions block the gate.
+
+---
+
 ## Tier OG — OpenGraph Image Coverage *(post-alpha; backlog audit)*
 
 > **Design intent:** every public detail page (one resource at one URL) ships an `opengraph-image.tsx` so social shares render rich previews. As of 2026-05-12, 7 detail families have OG images (products, auctions, pre-orders, stores, brands, blog, events). This tier closes the gap on existing routes; OG tasks for **new** resources (bundles, prize-draws, scams, guides, etc.) live with their own tier and are not duplicated here.

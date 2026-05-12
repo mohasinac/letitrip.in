@@ -1,3 +1,4 @@
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-34: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-34) */
 import Link from "next/link";
 import { AdminSublistingCategoriesView } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";

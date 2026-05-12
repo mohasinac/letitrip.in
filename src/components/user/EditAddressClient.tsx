@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-22: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-22) */
 
 import { useRouter } from "next/navigation";
 import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";

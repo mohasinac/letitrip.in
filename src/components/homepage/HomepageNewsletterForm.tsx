@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-19: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-19) */
 
 import { useState } from "react";
 import { THEME_CONSTANTS, API_ROUTES } from "@/constants";

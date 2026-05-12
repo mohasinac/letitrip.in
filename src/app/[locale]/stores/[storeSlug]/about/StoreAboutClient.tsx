@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-14: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-14) */
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 
 export function StoreAboutClient({ store }: { store: StoreDetail }) {

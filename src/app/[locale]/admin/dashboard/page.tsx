@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-21: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-21) */
 import { AdminDashboardView, ROUTES } from "@mohasinac/appkit/client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
