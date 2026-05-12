@@ -10,6 +10,7 @@
 - [🛑 Rule #2 — ✅ Does Not Mean Working](#-rule-2---does-not-mean-working)
 - [🛑 Rule #3 — Schema/Logic Changes Must Update Older Functionality](#-rule-3--schemalogic-changes-must-update-older-functionality)
 - [🛑 Rule #4 — Never Fix Without Verifying It Is Actually Broken](#-rule-4--never-fix-without-verifying-it-is-actually-broken)
+- [🛑 Rule #5 — Definition of Done: All Quality Gates Pass](#-rule-5--definition-of-done-all-quality-gates-pass)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
@@ -72,6 +73,38 @@ Before touching any code in response to a bug report, plan note, or memory entry
 3. **Check when the file was last modified** — `git log -1 -- <file>` tells you whether it was already fixed in a recent session.
 
 **Why:** All 8 bugs documented in the appkit bug catalog (BUG-1 through BUG-8) were verified in Session 89 and found to be already fixed. Acting on stale bug reports caused unnecessary re-implementation risk. Plan files and memory entries describe what was true when written — not necessarily what is true now.
+
+---
+
+## 🛑 RULE #5 — DEFINITION OF DONE: ALL QUALITY GATES PASS
+
+Before reporting any code change as complete, run the full quality gate set:
+
+```
+npm run check
+```
+
+This runs (in order, fail-fast):
+1. `tsc --noEmit` in `appkit/` (`check:types:appkit`)
+2. `tsc --noEmit` in `letitrip.in/` (`check:types:app`)
+3. `appkit/scripts/audit-violations.mjs` — `_internal/` boundary check
+4. `appkit/scripts/verify-entries.mjs` — client entry firebase-admin free
+5. `appkit/scripts/verify-css-build.mjs` — compiled CSS class completeness
+6. `scripts/audit-ssr-in-appkit.mjs` — route-shim thresholds + sidecar files + brand strings inside `_internal/`
+7. `eslint src` — full lir/* rule set
+
+For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then full check).
+
+**Subset commands** for fast iteration:
+- `npm run check:types` — both repos' tsc only
+- `npm run check:audits` — all 4 audit scripts (~2s total)
+- `npm run check:lint` — eslint only
+
+**Stop hook automation**: `.claude/settings.json` runs the 4 fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. The `audit-ssr-in-appkit` script uses a baseline-drift policy (currently 8 known violations from S2-deferred root files) — only regressions block. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
+
+**Pre-commit**: the `pre-commit` npm script is wired to `npm run check`. If you have a git hook runner installed, use it.
+
+**A task is not complete until `npm run check` exits 0.** Do not mark a task ✅ in any tracker, do not write a session summary, do not propose a commit, until the full gate passes.
 
 ---
 

@@ -1,6 +1,6 @@
 ﻿# LetiTrip — CRUD & Pages Tracker
 
-> **Last updated:** 2026-05-12 — Arch-S4+S5 ✅ appkit `_internal/server/features/` layers (cart, orders, promotions, reviews, wishlist, history, homepage). 162 done, 262 remaining.
+> **Last updated:** 2026-05-12 — Tracker shape rewrite: every pending tier now carries the SSR-arch layered template (Constants / Types / Validation / Data / Service / Actions / Repository / Orchestration / Views / Consumer wiring / OG + sitemap / Error handling / Verification). New tiers added: **Tier OG** (OpenGraph backlog audit, +5 tasks) and **Tier EMG** (Emerging Patterns holding bay, +5 including EMI). 162 done, 272 remaining (was 262).
 > Update after every completed task OR every 30 minutes during a session.
 > Status: ⏳ pending | 🔄 in progress | ✅ done | ❌ blocked | ⚠️ done-but-verify (regressions reported in parallel sessions)
 
@@ -51,6 +51,8 @@
 - [Tier SB — Bundle & Prize Draw Listings + Event Raffle System](#tier-sb--bundle--prize-draw-listings--event-raffle-system)
   - [SB11 — Homepage Sections: Bundles, Prize Draws & Event Raffles](#sb11--homepage-sections-bundles-prize-draws--event-raffles)
 - [Tier TC — Tab Configuration Constants System](#tier-tc--tab-configuration-constants-system)
+- [Tier OG — OpenGraph Image Coverage](#tier-og--opengraph-image-coverage-post-alpha-backlog-audit)
+- [Tier EMG — Emerging Patterns](#tier-emg--emerging-patterns-holding-bay-for-codecopy-mentions-without-tasks)
 
 ---
 
@@ -58,11 +60,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Total tasks | 424 |
+| Total tasks | 434 |
 | ✅ Done | 162 |
 | 🔄 In Progress | 0 |
 | ❌ Blocked | 0 |
-| ⏳ Remaining | 262 |
+| ⏳ Remaining | 272 *(includes Tier OG +5 and Tier EMG +5 added 2026-05-12)* |
 | 🚫 Superseded | 19 (P1+P2 → P13+P14; old-P10–P14 → new P13+P14+P16+P20; P3–P9 → P10–P22; A6+F3+VA1 → CF1; F1 → HS1–HS5; N1 → VA8; M3+VA13 → ARCH4) |
 
 ---
@@ -119,6 +121,47 @@
 ---
 
 ## 🗺️ Session Roadmap *(read this at the start of every session)*
+
+### 📐 Task Shape *(mandatory from S14 onward)*
+
+> Every new feature task added or rewritten from S14 onward must be expressed as the layered shape below — the same shape the SSR rearch (`ssr-arch-tracker.md`) already uses. Reference implementation: `appkit/src/_internal/server/features/products/` (Arch-S2). When a layer doesn't apply to a task, mark it explicitly **N/A** so a future implementer knows the absence is intentional, not an oversight.
+
+| Layer | File / location |
+|-------|-----------------|
+| Constants | `appkit/src/_internal/shared/features/<x>/config.ts` |
+| Types | `appkit/src/_internal/shared/features/<x>/types.ts` |
+| Validation (Zod) | `appkit/src/_internal/shared/features/<x>/schema.ts` |
+| Data layer (reads, `React.cache`) | `appkit/src/_internal/server/features/<x>/data.ts` |
+| Business logic / assertions / domain errors | `appkit/src/_internal/server/features/<x>/service.ts` |
+| Actions (`"use server"` mutations) | `appkit/src/_internal/server/features/<x>/actions.ts` |
+| Repository (Firestore I/O) | `appkit/src/_internal/server/features/<x>/repository.ts` *(or existing `appkit/src/repositories/<x>`)* |
+| Orchestration (jobs/triggers) | `appkit/src/_internal/server/jobs/handlers/<name>.ts` registered via `bindToFirebase()` |
+| Barrel | `appkit/src/_internal/server/features/<x>/index.ts` |
+| Views (presentational) | `appkit/src/_internal/client/features/<x>/<X>View.tsx` |
+| Consumer wiring | `src/app/[locale]/.../page.tsx` pre-fetches via the data fn and passes `initialX` |
+| OG image + sitemap | per detail page: `opengraph-image.tsx`; per listing: `listSitemap<X>()` in `data.ts` |
+| Error handling | which UI surfaces handle each domain error (toast, inline, 404, 403) |
+| Verification | SSR `curl` check + `tsc` 0/0 + `audit-violations` + viewport sweep + dark-mode repaint |
+
+**Per-task template (for every ⏳ row from S14 onward):**
+
+```
+Constants        → _internal/shared/features/<x>/config.ts (list keys)
+Types            → _internal/shared/features/<x>/types.ts (list type names)
+Validation       → _internal/shared/features/<x>/schema.ts (list Zod schemas)
+Data layer       → _internal/server/features/<x>/data.ts (list exported fns)
+Business logic   → _internal/server/features/<x>/service.ts (list assertions + domain errors)
+Actions          → _internal/server/features/<x>/actions.ts (list "use server" fns)
+Repository       → _internal/server/features/<x>/repository.ts OR existing appkit/src/repositories/<x>
+Orchestration    → _internal/server/jobs/handlers/<name>.ts (Firestore triggers / scheduled jobs)
+Views            → _internal/client/features/<x>/<X>View.tsx (list view components)
+Consumer wiring  → src/app/[locale]/.../page.tsx files that pre-fetch + pass initialX
+OG + sitemap     → per detail page: opengraph-image.tsx; per listing: listSitemap<X>()
+Error handling   → which UI surfaces handle each domain error (toast, inline, 404, 403)
+Verification     → SSR curl check + tsc 0/0 + audit-violations + viewport sweep + dark-mode repaint
+```
+
+**Cross-reference rule:** whenever a tier rewrite touches a domain `ssr-arch-tracker.md` is also tracking (cart, orders, reviews, wishlist, history, homepage, search, products, categories, brands, auctions, pre-orders, stores, blog, events), update the matching ssr-arch row from ⏳ → ✅ in the same commit.
 
 ### Session Start Checklist
 
@@ -210,7 +253,11 @@ Rules to keep top-of-mind every task:
 | **S40** | Guides Store | GD1, GD2, GD3, GD4, GD5, GD6 | Store guides hub + listings guide + orders guide + finance guide + capabilities guide + settings guide | — |
 | **S41** | Guides Buyer | GD7, GD8, GD9, GD10, GD11 | Buyer help hub + shopping guide + auctions/pre-orders guide + orders/returns guide + account/safety guide | — |
 | **S42** | Guides Admin | GD12, GD13, GD14, GD15, GD16 | Capability-gated guide cards + admin guide hub + users + catalog + stores | RBAC8 done (S34) |
-| **S43** | Guides Admin+ | GD17, GD18, GD19, GD20, GD21, GD22 | Admin orders/finance/content/site/team/analytics/trust guides | S42 done |
+| **S43** | Guides Admin+ | GD17, GD18, GD19, GD20, GD21, GD22 | Admin orders/finance/content/site/team/analytics/trust guides → files: `_internal/server/features/guides/` + `_internal/client/features/guides/` | S42 done |
+| **S44** | OG coverage | OG1, OG2, OG3, OG4, OG5 | Backlog OpenGraph coverage for existing detail routes (categories / faq / user / sub-listing) + audit script → files: `src/app/[locale]/<x>/opengraph-image.tsx` + `appkit/scripts/verify-og-coverage.mjs` | — |
+| **S45** | EMG triage | EMG1–EMG5 review | Review Emerging Patterns rows → graduate any to its own session OR delete if no longer relevant. EMG features become their own session when scheduled (EMG1 EMI is the first candidate). | — |
+
+> **Goal-column suffix convention (S14+):** every row's Goal column ends with `→ files: _internal/server/features/<x>/` (or the appropriate `_internal/<segment>/` path) so the implementer knows the new SSR layout target without re-reading the layered-shape banner. Earlier rows in this table predate the suffix convention and stay as-is.
 
 > **XL/L task guidance**: CF1 = 6 sub-parts, one commit each. VA8 = commit ①–⑥ then ⑦–⑫. HS2 = 3–4 builders per commit. X7b/X8b = one CSS file per commit. Never batch large tasks into one commit.
 
@@ -387,6 +434,8 @@ Rules to keep top-of-mind every task:
 ---
 
 ## Tier 4 — Seed Data Overhaul *(do before all feature work — gives live data for every task)*
+
+> **📐 Layered shape (S14+ pending P-series only):** seed-only changes — most layers **N/A**. *Constants/Types/Validation*: extend only if a new field shape lands (then update `appkit/src/_internal/shared/features/<x>/{config,types,schema}.ts`). *Data layer / Business logic / Actions / Repository / Orchestration / Views / Consumer wiring / OG + sitemap / Error handling*: **N/A**. *Verification*: `/demo/seed` POST returns success NDJSON; `GET /api/demo/seed` counts match target; `tsc --noEmit` 0/0 in both repos; SeedPanel `FieldDef[]`/PII/`mediaFields`/`slugPattern` updated in lockstep with any schema change.
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -868,6 +917,21 @@ Rules to keep top-of-mind every task:
 
 ## Tier RBAC — Permission-Based Access Control *(low priority)*
 
+> **📐 Layered shape (S14+):** auth is cross-cutting — server code lives at `appkit/src/_internal/server/auth/` (new sub-tree), not as a `features/<x>/` entry.
+> - **Constants:** `_internal/shared/features/auth/config.ts` — `PERMISSIONS`, `PERMISSION_GROUPS`.
+> - **Types:** `_internal/shared/features/auth/types.ts` — `Permission`, `PermissionGroup`, `RoleResolution`.
+> - **Validation:** `_internal/shared/features/auth/schema.ts` — Zod for permission patches.
+> - **Data layer:** `_internal/server/auth/permissions/{resolver,data}.ts` — `resolvePermissions(uid)`, `getEmployee(uid)`.
+> - **Business logic:** `_internal/server/auth/middleware.ts` — `assertPermission()`, `assertRole()`; errors `ForbiddenError`, `RoleMismatchError`.
+> - **Actions:** `_internal/server/features/team/actions.ts` — `inviteEmployee`, `updateEmployeePermissions`, `revokeEmployee` (`"use server"`).
+> - **Repository:** extend `usersRepository` for `permissions[]` + `permissionGroup`.
+> - **Orchestration:** Cloud Function on user role change → `setCustomUserClaims(uid, { admin: true })` (jobs handler `_internal/server/jobs/handlers/onUserRoleChange.ts`).
+> - **Views:** `TeamManagementView`, `EmployeeEditorView`, gated `AdminLayoutShell` variants.
+> - **Consumer wiring:** `[locale]/admin/layout.tsx` SSR gate; per-section `[locale]/admin/<x>/layout.tsx`; `[locale]/admin/team/page.tsx`; `src/proxy.ts` first-gate.
+> - **OG + sitemap:** **N/A** (admin-only).
+> - **Error handling:** anonymous → `notFound()`; logged-in but missing perm → `/unauthorized` page (403); team API → typed JSON `{ error, code }`.
+> - **Verification:** anonymous → 404 on every gated route; permission-table snapshot test; Firestore rules dry-run via emulator; `tsc` 0/0; `audit-violations` exit 0.
+
 > **Design intent**: Implement a granular, permission-based access control system layered on top of the existing role system. This enables hiring interns/employees (e.g. content moderator, finance manager, ad manager, SEO manager, blog poster, event handler, review manager, site manager) who each get a tailored subset of admin panel access — without ever granting them the full `admin` role. All permission checks are SSR-enforced (Server Components + API route guards) so users cannot manipulate their own access via browser devtools.
 >
 > **Core model**: `admin` role = full access (bypasses all checks). New `employee` role = access determined entirely by `permissions: Permission[]` field on their `UserDocument`. Roles are bundles of permissions at setup time; each individual employee can have custom overrides on top of their preset group.
@@ -957,6 +1021,21 @@ Rules to keep top-of-mind every task:
 
 ## Tier BAN — User Moderation & Trust *(low priority)*
 
+> **📐 Layered shape (S14+):**
+> - **Constants:** `_internal/shared/features/moderation/config.ts` — `BAN_TYPES`, `BAN_REASONS`, `SUPPORT_TICKET_LIMITS`, `BANNED_ACTIONS`.
+> - **Types:** `_internal/shared/features/moderation/types.ts` — `BanDocument`, `UserSoftBan`, `BannedAction`, `SupportTicketDocument`, `SupportTicketStatus`.
+> - **Validation:** `_internal/shared/features/moderation/schema.ts` — Zod for ban patches + ticket creation/response.
+> - **Data layer:** `_internal/server/features/moderation/data.ts` — `getBanFor(uid)`, `listTickets(uid)`, `getTicketSummary()`.
+> - **Business logic:** `_internal/server/features/moderation/service.ts` — `assertNotHardBanned(uid)`, `assertNotSoftBannedFor(uid, action)`, `assertSupportTicketLimit(uid)`; errors `HardBanError`, `SoftBanError`, `SupportTicketLimitError`.
+> - **Actions:** `_internal/server/features/moderation/actions.ts` — `createBan`, `liftBan`, `cascadeHardBan`, `createTicket`, `respondToTicket` (`"use server"`).
+> - **Repository:** new `bansRepository`, `supportTicketsRepository` in `appkit/src/_internal/server/features/moderation/repository.ts`.
+> - **Orchestration:** `_internal/server/jobs/handlers/{banLifecycle,supportTicketSla,banExpiryCleanup}.ts`.
+> - **Views:** `AdminBansView`, `AdminTicketsView`, `UserSupportPageView`, `UserBanNoticePageView`, guest-checkout block component.
+> - **Consumer wiring:** `[locale]/admin/bans/page.tsx`, `[locale]/admin/tickets/page.tsx`, `[locale]/user/support/page.tsx`, `[locale]/banned/page.tsx`; checkout page guest-block.
+> - **OG + sitemap:** **N/A**.
+> - **Error handling:** hard-ban → session cleared + redirect to `/banned`; soft-ban → mutate API rejects with inline form error; ticket-over-limit → toast "You have 2 active tickets — close one first".
+> - **Verification:** soft-banned user can read but every gated mutate returns 403; hard-ban cascade clears all sessions + cancels active bids + suspends listings; ticket lifecycle Function dry-run; `tsc` 0/0.
+
 > **Design intent**: Give LetItRip admins fine-grained control over user behaviour without needing the nuclear option of a full account ban for every infraction. A soft ban restricts specific actions (writing reviews, joining events, placing bids, etc.) while letting the user continue browsing. A hard ban disables the Firebase Auth account entirely and cascades to suspend listings, cancel active bids, and revoke sessions. The support ticket system is built here because it is the primary channel through which bans get contested and resolved.
 >
 > **Soft ban model**: `UserDocument.softBans: UserSoftBan[]` — an array of scoped restrictions. Each entry has `action: BannedAction`, `reason: string`, `bannedBy: string` (employee uid), `bannedAt: Date`, `expiresAt?: Date` (null = permanent). Supported `BannedAction` values: `write_reviews`, `write_blog_comments`, `join_events`, `place_bids`, `create_listings`, `send_messages`, `create_support_tickets`, `report_scammers`. A user may have multiple simultaneous soft bans of different types.
@@ -989,6 +1068,21 @@ Rules to keep top-of-mind every task:
 ---
 
 ## Tier SCAM — Scam Awareness System *(low priority)*
+
+> **📐 Layered shape (S14+):**
+> - **Constants:** `_internal/shared/features/scams/config.ts` — `SCAM_TYPES` (already exists; ensure exported from this path), `SCAM_CATEGORIES`, `SCAM_SEVERITY_LEVELS`.
+> - **Types:** `_internal/shared/features/scams/types.ts` — `ScamDocument`, `ScamProfile`, `ScamReport`, `ScamType`, `ScamCategory`.
+> - **Validation:** `_internal/shared/features/scams/schema.ts` — Zod for scam profile create/patch + report submission.
+> - **Data layer:** `_internal/server/features/scams/data.ts` — `getScamProfile(slug)` (React.cache), `listScams({ filters })`, `listSitemapScams()`.
+> - **Business logic:** `_internal/server/features/scams/service.ts` — `assertScamRegisterAllowed(uid)`, `acknowledgeScamRegistration(uid)`; errors `ScamProfileNotFoundError`, `ScamReportRateLimitError`.
+> - **Actions:** `_internal/server/features/scams/actions.ts` — `createScamProfile`, `updateScamProfile`, `submitScamReport`, `verifyScamReport` (`"use server"`; gated by RBAC `scam_moderator` / `trust_and_safety`).
+> - **Repository:** existing `scammerRepository` (re-home reference under feature barrel).
+> - **Orchestration:** `_internal/server/jobs/handlers/scamNotificationDispatch.ts` (notifies followers/community on new verified profile).
+> - **Views:** `AdminScammersView`, `ScamProfilePublicView`, `ScamRegistrationAcknowledgementModal`, FAQ entries (content seed only — no view component).
+> - **Consumer wiring:** `[locale]/admin/scammers/page.tsx`, `[locale]/scams/[slug]/page.tsx`, `[locale]/scams/page.tsx` (list).
+> - **OG + sitemap:** `src/app/[locale]/scams/[slug]/opengraph-image.tsx` (1200×630, profile card with masked identifier + scam type badges); `listSitemapScams()` exported and wired into `src/app/sitemap.ts`.
+> - **Error handling:** missing profile → `notFound()`; admin-only mutate → 403 with typed error code; report rate-limit → toast.
+> - **Verification:** SSR HTML for `/scams/<slug>` contains profile + JSON-LD `Person` markup; `curl -sI .../opengraph-image` → 200 image/png; admin CRUD `tsc` 0/0; viewport sweep + dark-mode repaint.
 
 > **Design intent**: A publicly visible, SEO-optimised scam database that (1) educates the collectibles community about how they get cheated, (2) names known bad actors with evidence, and (3) is mandatory reading for all new registrants. Admin employees verify and publish scammer profiles. The system is deeply integrated with the RBAC tier — only `scam_moderator` and `trust_and_safety` employees can verify profiles; any authenticated user can submit a report.
 >
@@ -1097,6 +1191,21 @@ Rules to keep top-of-mind every task:
 
 ## Tier WA — WhatsApp Business Integration *(low priority — post-alpha)*
 
+> **📐 Layered shape (S14+ remaining tasks):** WA1–WA4 are ✅ in legacy paths; any new WA work and any WA migration to the new layout follows this shape:
+> - **Constants:** `_internal/shared/features/whatsapp/config.ts` — Meta Cloud API base URL, batch size (50), version pin.
+> - **Types:** `_internal/shared/features/whatsapp/types.ts` — `WaBusinessSendInput`, `CatalogSyncProduct`, `CatalogSyncResult`, `PurchaseAnnouncementInput`.
+> - **Validation:** `_internal/shared/features/whatsapp/schema.ts` — Zod for store WhatsApp settings PUT body.
+> - **Data layer:** `_internal/server/features/whatsapp/data.ts` — `getWaConfigForStore(storeId)` (decrypted token never leaves server).
+> - **Business logic:** `_internal/server/features/whatsapp/service.ts` — `assertWaCapability(storeId)` (RBAC `whatsapp_catalog_sync`); errors `WaCapabilityMissingError`, `WaCatalogSyncError`.
+> - **Actions:** `_internal/server/features/whatsapp/actions.ts` — `updateStoreWaSettings`, `syncStoreCatalog`, `sendOrderAnnouncement` (`"use server"`).
+> - **Repository:** extends existing `storeRepository` for `whatsappConfig` block.
+> - **Orchestration:** `_internal/server/jobs/handlers/{onOrderCreate.waAnnounce,catalogSyncScheduled}.ts`.
+> - **Views:** `StoreWhatsAppSettingsView`, group-share-link button component.
+> - **Consumer wiring:** `[locale]/store/whatsapp/page.tsx` (already exists in legacy path; re-wire SSR via data fn).
+> - **OG + sitemap:** **N/A**.
+> - **Error handling:** capability missing → 403 with admin-contact CTA; sync failure → toast + retry button; token expired → re-auth banner.
+> - **Verification:** Meta Cloud API sandbox round-trip; capability gate test (capability removed → 403); `tsc` 0/0.
+
 > **Design intent**: Allow store owners to sync their standard products to their own WhatsApp Business Catalog (per-store Meta credentials). Platform admin receives a WhatsApp message (Meta Cloud API) whenever a new order is placed — announcement also sent to the store owner. Group posting is not possible via API; a wa.me share link is provided instead. Full plan in `C:\Users\mohsi\.claude\plans\plan-and-add-support-compressed-snowflake.md`.
 
 | # | Task | Complexity | Status | Notes |
@@ -1113,6 +1222,21 @@ Rules to keep top-of-mind every task:
 ---
 
 ## Tier GD — In-App Guide Pages *(low priority — post-alpha)*
+
+> **📐 Layered shape (S14+):** pure RSC content — no Firestore reads, no mutations.
+> - **Constants:** `_internal/shared/features/guides/config.ts` — `GUIDE_SLUGS`, `GUIDE_CATEGORIES`, `GUIDE_AUDIENCES` (admin / store / buyer).
+> - **Types:** `_internal/shared/features/guides/types.ts` — `GuideEntry`, `GuideCategory`, `GuideSection`.
+> - **Validation:** **N/A** (static content).
+> - **Data layer:** `_internal/server/features/guides/data.ts` — `listGuides({ audience })`, `getGuide(slug)`, `listSitemapGuides()` (all read static module — no Firestore).
+> - **Business logic:** **N/A** (read-only).
+> - **Actions:** **N/A**.
+> - **Repository:** **N/A** — content lives at `_internal/shared/features/guides/content/<slug>.mdx` (or `.tsx` if richer).
+> - **Orchestration:** **N/A**.
+> - **Views:** `GuideHubView`, `GuidePageView`, `GuideSidebar` (audience-scoped TOC).
+> - **Consumer wiring:** `src/app/[locale]/help/page.tsx` (buyer hub), `src/app/[locale]/help/<slug>/page.tsx`; `src/app/[locale]/admin/guide/<slug>/page.tsx`; `src/app/[locale]/store/guide/<slug>/page.tsx` — all pure RSC, capability/permission filtered for admin/store hubs.
+> - **OG + sitemap:** per-guide `src/app/[locale]/help/<slug>/opengraph-image.tsx` (1200×630, audience badge + title); `listSitemapGuides()` exported and wired into `src/app/sitemap.ts`.
+> - **Error handling:** missing slug → `notFound()`; admin guide accessed without permission → render skeleton with "You don't have access to this guide" notice (do NOT 403, since the index entry should still render).
+> - **Verification:** Lighthouse SEO ≥ 95 per guide; viewport sweep + dark-mode repaint; `tsc` 0/0; `npm run build` succeeds with all new RSC pages compiled.
 
 > **Design intent**: Rich, section-based guide pages embedded in all three dashboards (admin, store, buyer) and the public help center. Unlike the FAQ system (short Q&A answers), guides are long-form reference documents with step-by-step walkthroughs, field-by-field form explanations, status lifecycle diagrams, capability/permission upgrade prompts, and plain-language summaries written for non-technical users. Goal: any user — seller, buyer, or internal employee — should be able to understand every feature, form, and workflow without leaving the app.
 >
@@ -1153,6 +1277,34 @@ Rules to keep top-of-mind every task:
 
 ## Sessions SB1–SB10 — Bundle & Prize Draw Listings + Event Raffle System
 > Added: 2026-05-11
+
+> **📐 Layered shape (mandatory for every SB row):** every SB-series task above the `Status` column must, when implemented, conform to the shape below. Existing single-line `Notes` columns predate the SSR rearch and stay as-is for reference; the layered breakdown below is the **authoritative spec** for implementation.
+>
+> **Constants:** `_internal/shared/features/{bundles,prize-draws,event-raffles}/config.ts` — `BUNDLE_MAX_ITEMS`, `BUNDLE_MAX_PER_USER_DEFAULT`, `PRIZE_DRAW_MIN_ITEMS`, `PRIZE_DRAW_MAX_ITEMS`, `PRIZE_DRAW_REVEAL_DEADLINE_DAYS_DEFAULT`, `EVENT_RAFFLE_TYPES`, `SPIN_PRIZE_MAX`.
+>
+> **Types:** `_internal/shared/features/{bundles,prize-draws,event-raffles}/types.ts` — `BundleDocument`, `BundleItem`, `PrizeDrawDocument`, `PrizeDrawItem`, `EventRaffleConfig`, `SpinPrize`, `ListingType` (extended union: `"standard" | "auction" | "pre-order" | "prize-draw" | "bundle"`).
+>
+> **Validation:** `_internal/shared/features/{bundles,prize-draws,event-raffles}/schema.ts` — Zod discriminated union on `listingType`; `prizeDrawItemSchema` (min 3, max 16); `bundleItemSchema` (min 2 child products); `spinPrizeSchema` (weighted; sum of weights normalised server-side).
+>
+> **Data layer:** `_internal/server/features/{bundles,prize-draws,event-raffles}/data.ts` — `getBundle(slug)`, `listBundles({ filters, page, pageSize })`, `getPrizeDraw(slug)`, `listPrizeDraws()`, `getEventRaffle(eventId)`, `listSitemapBundles()`, `listSitemapPrizeDraws()`, `listSitemapEventRaffles()`. All reads use `React.cache`.
+>
+> **Business logic:** `_internal/server/features/{bundles,prize-draws,event-raffles}/service.ts` — `assertBundleStock(bundleId, qty)`, `assertBundlePerUserLimit(uid, bundleId)`, `assertPrizeDrawNotExpired(drawId)`, `assertPrizeDrawCapacity(drawId)`, `assertRafflePoolNonEmpty(eventId)`, `assertSpinNotUsed(uid, eventId)`. Domain errors: `BundleStockError`, `BundleNonRefundableConsentMissingError`, `BundlePerUserLimitError`, `PrizeDrawExpiredError`, `PrizeDrawCapacityError`, `RafflePoolExhaustedError`, `SpinAlreadyUsedError`.
+>
+> **Actions:** `_internal/server/features/{bundles,prize-draws,event-raffles}/actions.ts` — `createBundle`, `updateBundle`, `deleteBundle`, `purchaseBundle`, `revealPrize`, `triggerEventRaffle`, `assignSpinPrize` (`"use server"`).
+>
+> **Repository:** new `bundlesRepository`, `prizeDrawsRepository`, `eventRafflesRepository` in `appkit/src/_internal/server/features/<x>/repository.ts` — extending `BaseRepository` (override `createWithId` per recurrent root-cause #9). Migration script for `listingType` discriminator move (SB1-A) replaces the legacy `isAuction`/`isPreOrder` boolean pair across all collections.
+>
+> **Orchestration:** `_internal/server/jobs/handlers/{onBundlePurchase,prizeDrawAutoRefund,prizeDrawReveal,eventRaffleSpin,eventRaffleWinnerNotify,bundleStockSync}.ts` — registered via `bindToFirebase()` per Arch-S6.
+>
+> **Views:** `_internal/client/features/{bundles,prize-draws,event-raffles}/<X>View.tsx` — `BundleDetailView`, `BundlesListView`, `BundleItemsPicker`, `BundleForm`, `NonRefundableConsentModal`, `PrizeDrawDetailView`, `PrizeDrawItemsEditor`, `PrizeRevealModal`, `Collage`, `EventRaffleWinnerView`, `SpinWheelView`.
+>
+> **Consumer wiring:** `src/app/[locale]/bundles/page.tsx`, `src/app/[locale]/bundles/[slug]/page.tsx`, `src/app/[locale]/prize-draws/page.tsx`, `src/app/[locale]/prize-draws/[slug]/page.tsx`, `src/app/[locale]/events/[slug]/winner/page.tsx`, plus store/admin sub-pages — every page pre-fetches via the data fn and passes `initialBundle` / `initialPrizeDraw` / `initialEventRaffle`.
+>
+> **OG + sitemap:** `src/app/[locale]/bundles/[slug]/opengraph-image.tsx`, `src/app/[locale]/prize-draws/[slug]/opengraph-image.tsx`, `src/app/[locale]/events/[slug]/winner/opengraph-image.tsx`. Sitemap data fns wired into `src/app/sitemap.ts`.
+>
+> **Error handling:** stock-out → inline form error + cart-line removal; expired prize draw → 410 page; raffle pool empty → admin notification + buyer 404; non-refundable consent missing → checkout-blocking modal; per-user limit exceeded → toast + `Add to wishlist` CTA.
+>
+> **Verification:** SSR HTML for bundle/prize-draw/raffle detail contains title + price + items; `auto-refund` job dry-run; `crypto.randomInt`-based reveal/spin reproducible only with stored seed; viewport sweep xs → 2xl + dark-mode repaint on every new page; `tsc` 0/0; `audit-violations` exit 0.
 
 ### SB1 — listingType Migration + Schema + Infrastructure
 
@@ -1341,3 +1493,35 @@ Rules to keep top-of-mind every task:
 | BR5 | Wire admin override from siteSettings | XS | ✅ | BR 2026-05-12 — `src/app/[locale]/layout.tsx` reads `siteSettings?.logo?.url` server-side and passes to `LayoutShellClient`. Empty / missing falls back to the SVG wordmark. |
 | BR6 | Seed default to empty `logo.url` | XS | ✅ | BR 2026-05-12 — `appkit/src/seed/site-settings-seed-data.ts` `logo.url` switched from `/favicon.svg` (tab icon, wrong asset) to `""` so the SVG wordmark renders by default on a fresh seed. Admin can upload via `/admin/site-settings`. |
 | BR7 | Fix Next 15 `params` Promise typing on admin carousel detail page | XS | ✅ | BR 2026-05-12 — incidental TS sweep fix: `src/app/[locale]/admin/carousels/[id]/page.tsx` updated `Props.params` to `Promise<{ id: string }>` and `await params` once at the top. Clears the only remaining `npx tsc --noEmit` error in the root repo. |
+
+---
+
+## Tier OG — OpenGraph Image Coverage *(post-alpha; backlog audit)*
+
+> **Design intent:** every public detail page (one resource at one URL) ships an `opengraph-image.tsx` so social shares render rich previews. As of 2026-05-12, 7 detail families have OG images (products, auctions, pre-orders, stores, brands, blog, events). This tier closes the gap on existing routes; OG tasks for **new** resources (bundles, prize-draws, scams, guides, etc.) live with their own tier and are not duplicated here.
+>
+> **📐 Layered shape (S14+):** OG tasks are pure consumer-wiring + verification — most layers **N/A**. *Data layer*: reuse the existing per-feature `data.ts` getter (`getCategoryBySlug`, `faqRepository.getBySlug`, etc.). *Consumer wiring*: the new `opengraph-image.tsx` file itself, edge runtime, `ImageResponse` 1200×630. *OG + sitemap*: this row IS the OG task; sitemap entries already exist on the listing data fns. *Error handling*: missing resource → fall back to default OG image at `src/app/opengraph-image.tsx`. *Verification*: `curl -sI http://localhost:3000/<route>/opengraph-image` → `200 image/png` + visual check in Twitter/Facebook debugger; `npm run build` includes the new edge route.
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| OG1 | `categories/[slug]/[tab]/sort/[sortKey]/page/[page]/opengraph-image.tsx` | S | ⏳ | Cover image background + category name + product count badge. Data: existing `getCategoryBySlug` from `_internal/server/features/categories/data.ts`. Edge runtime. Verification: `curl -sI .../opengraph-image` → 200 image/png. |
+| OG2 | `faq/[slug]/opengraph-image.tsx` | S | ⏳ | Q&A snippet card — question as title, first 240 chars of answer as body. Data: existing `faqRepository.getBySlug`. Verify the route file path matches actual implementation (FAQ slug route may live elsewhere — confirm before scaffolding). |
+| OG3 | `user/[slug]/opengraph-image.tsx` | S | ⏳ | Public user profile card — display name + avatar + role badge (verified seller / buyer). **Verify with author whether `/user/[slug]` is a public route before implementing** — store profiles already covered by stores OG. |
+| OG4 | Sub-listing detail OG | S | ⏳ | Verify route exists first (`sub-listings/[slug]/page.tsx` or similar). If yes: scaffold OG with parent listing context + sublisting title. If no: close as N/A with one-line note. |
+| OG5 | Audit script: `appkit/scripts/verify-og-coverage.mjs` | M | ⏳ | Walks `src/app/[locale]/**/page.tsx`, lists every `[slug]`/`[id]` dynamic detail route, checks for sibling `opengraph-image.tsx`, exits non-zero on missing. Wire into CI gate alongside `verify-entries.mjs`. Output format: one line per missing OG. Verification: run on current tree → must report only the OG1–OG4 known gaps + every new resource not yet shipped. |
+
+---
+
+## Tier EMG — Emerging Patterns *(holding bay for code/copy mentions without tasks)*
+
+> **Process note:** whenever a session notices a feature, payment method, integration, or content type that is referenced in code or copy but has no implementation task, **append a row here in the same session — do not wait for triage**. EMG is the holding bay until a feature graduates into its own tier or scheduled session. Re-scan triggers: any new mention surfaced by `grep` for keywords (`EMI`, `installment`, `gift card`, `loyalty`, `live chat`, `affiliate`, `referral`, `crypto`, `subscription`, `B2B`, `wholesale`); any FAQ or seed-copy mention of a flow with no code path; any partial implementation in `letitrip.in/functions/src/` not surfaced in the public app. Each row carries the full layered shape (or explicit **N/A**) so it is implementation-ready when scheduled.
+
+| # | Task | Complexity | Status | Notes |
+|---|------|-----------|--------|-------|
+| EMG1 | EMI / installment payment at checkout | L | ⏳ | **Discovery:** `appkit/src/seed/faq-seed-data.ts` line 571 ("UPI, COD, EMI"); `src/components/dev/SeedPanel.tsx:874` ("Payment Methods FAQs (UPI, COD, EMI)"). **Verified 2026-05-12:** zero implementation across `appkit/src/` and `src/` (grep `EMI\|installment` → only seed copy). Razorpay supports EMI via `payment_capture` config + EMI plans; Bajaj Finserv is a viable alt provider. **📐 Layered shape:** *Constants:* `_internal/shared/features/payments/config.ts` — `EMI_MIN_CART_VALUE_PAISE`, `EMI_PROVIDERS`, `EMI_TENURES_MONTHS`. *Types:* `_internal/shared/features/payments/types.ts` — `EmiPlan`, `EmiOption`, `PaymentMethodWithEmi`. *Validation:* `_internal/shared/features/payments/schema.ts` — Zod for EMI selection at checkout. *Data layer:* `_internal/server/features/payments/data.ts` — `getEmiPlansForAmount(amountPaise)`. *Business logic:* `_internal/server/features/payments/service.ts` — `assertEmiEligible(cartTotal)`; error `EmiNotEligibleError`. *Actions:* extend `createOrder` to accept EMI plan; new `recordEmiSelection`. *Repository:* extend `ordersRepository` `paymentMethod` enum to include `EMI_*`. *Orchestration:* `_internal/server/jobs/handlers/onEmiOrderCreate.ts` (server-side polling for EMI capture confirmation); reuse Razorpay webhook for capture event. *Views:* `EmiOptionsList` (checkout panel), `EmiBadge` on product card ("EMI from ₹X/mo"). *Consumer wiring:* `CheckoutRouteClient.tsx` payment-method picker; `ProductDetailPageView` EMI badge. *OG + sitemap:* **N/A**. *Error handling:* ineligible cart → option hidden + tooltip; provider failure → fallback to standard payment + toast. *Verification:* Razorpay test EMI flow end-to-end (test card); product card badge renders only when `price ≥ EMI_MIN_CART_VALUE_PAISE`; `tsc` 0/0. |
+| EMG2 | Loyalty / store credit | M | ⏳ | **Discovery:** `loyalty` exists as skeleton folder per `CLAUDE.md` ("loyalty stays skeleton" — appkit Export Rules section). Holding row; full layered breakdown added when first design note arrives. *Constants/Types/Validation:* TBD. *Server feature:* `_internal/server/features/loyalty/{data,service,actions,index}.ts` when scheduled. *Repository:* new `loyaltyRepository`. *Views/Consumer wiring:* TBD. *OG + sitemap:* **N/A**. *Verification:* TBD. |
+| EMG3 | Gift cards / e-vouchers | M | ⏳ | **Discovery:** referenced in seed FAQ copy. Server feature: `_internal/server/features/gift-cards/{data,service,actions,index}.ts`. Consumer wiring: cart redemption + admin issue page + buyer purchase page. *OG + sitemap:* per-gift-card-design OG if shareable URLs are added. *Error handling:* invalid code → inline form error; expired → toast; insufficient balance → partial-redemption notice. *Verification:* TBD when first design note arrives. |
+| EMG4 | Live chat / agent handoff (escalation from copilot) | L | ⏳ | **Discovery:** `admin/copilot` page exists at `src/app/[locale]/admin/copilot/page.tsx`; user-side live-chat does not. Reuse RTDB ping-channel pattern from D5/VC7 messages (per `project_messages_rtdb` memory). Server feature: extend `_internal/server/features/copilot/`. Consumer wiring: floating-bubble component on every `[locale]/...` page + admin agent inbox at `[locale]/admin/copilot/inbox/page.tsx`. *OG + sitemap:* **N/A**. *Verification:* end-to-end handoff test (buyer opens bubble → message → admin sees in inbox → reply → buyer sees reply). |
+| EMG5 | Referral / affiliate (speculative) | M | ⏳ | **Discovery:** none yet — placed as a stub so it is a deliberate future call, not an oversight. Author may delete on first review if not part of the roadmap. Layered shape TBD when the first design note arrives. |
+
+---

@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getBrandForDetail, renderBrandOg } from "@mohasinac/appkit/server";
+import { getSublistingCategoryForDetail, renderSublistingCategoryOg } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 export const runtime = "edge";
@@ -10,9 +10,9 @@ type Props = { params: Promise<{ slug: string }> };
 
 export default async function Image({ params }: Props) {
   const { slug } = await params;
-  const doc = await getBrandForDetail(slug).catch(() => null);
+  const doc = await getSublistingCategoryForDetail(slug).catch(() => null);
   return new ImageResponse(
-    renderBrandOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderSublistingCategoryOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
     { ...size },
   );
 }

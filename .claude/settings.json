@@ -5,10 +5,27 @@
       "Bash(git -C \"d:\\\\proj\\\\letitrip.in\" diff --stat HEAD)",
       "Bash(node scripts/dev-next.mjs --help)",
       "Bash(mkdir -p \"d:/proj/letitrip.in/src/app/api/store/reviews\" && mkdir -p \"d:/proj/letitrip.in/src/app/api/store/reviews/[id]/reply\")",
-      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('type:', p.type || 'commonjs'\\)\")"
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('type:', p.type || 'commonjs'\\)\")",
+      "Bash(npm run check)",
+      "Bash(npm run check:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:fix)",
+      "Bash(npm run audit:ssr-in-appkit)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/claude-hooks/check-on-stop.mjs"
+          }
+        ]
+      }
     ]
   }
 }

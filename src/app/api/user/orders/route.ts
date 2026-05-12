@@ -1,23 +1,15 @@
 import { withProviders } from "@/providers.config";
-/**
- * User Orders API — Collection
- *
- * GET /api/user/orders — List the authenticated user's orders
- *
- * Supports optional status filter via `?status=pending|confirmed|shipped|...`
- * Returns orders ordered by date descending.
- *
- * Note: Order creation is intentionally omitted here — orders are created
- * server-side when a checkout session is completed (future payment integration).
- */
-
-import { orderRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { getSearchParams, getStringParam } from "@mohasinac/appkit";
-import type { OrderStatus } from "@mohasinac/appkit";
-import { OrderStatusValues } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import {
+  orderRepository,
+  successResponse,
+  createRouteHandler,
+  getSearchParams,
+  getStringParam,
+  serverLogger,
+  type OrderStatus,
+  OrderStatusValues,
+  orderDocumentToOrder,
+} from "@mohasinac/appkit";
 
 const VALID_STATUSES: OrderStatus[] = [
   OrderStatusValues.PENDING,
@@ -28,38 +20,39 @@ const VALID_STATUSES: OrderStatus[] = [
   OrderStatusValues.RETURNED,
 ];
 
-/**
- * GET /api/user/orders
- *
- * Returns all orders for the authenticated user.
- * Optional query param: ?status=<OrderStatus>
- */
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  handler: async ({ user, request }) => {
-    const searchParams = getSearchParams(request);
-    const statusParam = getStringParam(searchParams, "status");
-    const filters =
-      statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
-        ? `status==${statusParam}`
-        : undefined;
-    const result = await orderRepository.listForUser(user!.uid, {
-      filters,
-      sorts: "-orderDate",
-      page: "1",
-      pageSize: "5000",
-    });
-    const orders = result.items;
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, request }) => {
+      const searchParams = getSearchParams(request);
+      const statusParam = getStringParam(searchParams, "status");
+      const pageParam = getStringParam(searchParams, "page") ?? "1";
+      const perPageParam = getStringParam(searchParams, "perPage") ?? "12";
 
-    serverLogger.info("Orders listed", {
-      userId: user!.uid,
-      count: result.total,
-    });
+      const filters =
+        statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
+          ? `status==${statusParam}`
+          : undefined;
 
-    return successResponse({
-      orders,
-      total: result.total,
-    });
-  },
-}));
+      const result = await orderRepository.listForUser(user!.uid, {
+        filters,
+        sorts: "-orderDate",
+        page: pageParam,
+        pageSize: perPageParam,
+      });
 
+      serverLogger.info("Orders listed", {
+        userId: user!.uid,
+        count: result.total,
+      });
+
+      return successResponse({
+        items: result.items.map(orderDocumentToOrder),
+        total: result.total,
+        page: result.page,
+        perPage: result.pageSize,
+        totalPages: result.totalPages,
+      });
+    },
+  }),
+);

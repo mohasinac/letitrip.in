@@ -1,8 +1,100 @@
 # SSR Rearchitecture Tracker — appkit × letitrip.in
 
 > **Approved plan**: `C:\Users\mohsi\.claude\plans\cant-we-do-it-cosmic-flamingo.md`
-> **Last updated**: 2026-05-12 — S2 complete; Arch-S4+S5 data/action layers done; S3 in progress (categories+stores data layers done; auctions/pre-orders consumer wiring done; stores OG image pending).
+> **Last updated**: 2026-05-12 — S1–S4 verification sweep (read every ✅ source file). All ✅ items still hold. tsc clean in both repos; audit-violations/verify-entries/verify-css-build all pass. SSR-in-appkit audit down from 31 → 22 violations. Stale items reclassified: S1 cli-move premise stale (no firebase-admin in withFeatures); S1 eslint.config rewrite would delete 280 lines of lir/* coverage (recommend additive spread instead); S4 Functions migration is multi-session scope. Real remaining work: bundles/grouped/sublisting data layers (S3), BrandDetailPageView type alignment (S3), checkout+payments server layers (S4), Functions handlers (S4 batched).
 > **Status legend**: ⏳ pending · 🔄 in progress · ✅ done · ❌ blocked · ⚠️ done-but-verify
+
+---
+
+## 🧭 Guiding Principle — Keep SSR Code in appkit Whenever Possible
+
+When wiring SSR for a feature, the **default home for the code is appkit**, not letitrip.in. Only leave a thin shim in letitrip.in when the framework forces it (route file location, edge runtime entry, Next.js conventions).
+
+### What belongs in appkit (`_internal/server/features/<feature>/`)
+
+- **Data layers** — `getXForDetail`, `listX`, `getXInitial`, etc. with `React.cache` dedup
+- **Server actions** — `"use server"` mutations, validation, repository calls
+- **Response transforms / adapters** — e.g. `OrderDocument → Order` mappers (avoid one-off `_transform.ts` files inside `src/app/api/...`; lift into `_internal/server/features/<feature>/adapters.ts` so API routes + server components + SSR pages share one source of truth)
+- **OG image renderers** — keep the `ImageResponse` JSX, font loading, layout, theming as a reusable function in `_internal/server/features/<feature>/og.tsx` (e.g. `renderProductOgImage(doc)`). The letitrip.in `opengraph-image.tsx` file becomes a 3-line shim: fetch doc via appkit data layer → call appkit renderer → return.
+- **Metadata builders** — `buildXMetadata(doc)` → `Metadata` object, used by `generateMetadata()` in the route file
+- **Sitemap entries** — `listSitemapX()` returning `{ url, lastModified, changeFrequency, priority }[]` so `sitemap.ts` is a thin aggregator
+- **Robots / manifest helpers** — if they need data, expose as appkit server functions
+- **Schemas / Zod validators / types** — `_internal/shared/features/<feature>/` so both client and server consume the same shapes
+- **Feature constants** — page sizes, limits, defaults (`_internal/shared/features/<feature>/config.ts`)
+
+### What MUST stay in letitrip.in (framework-bound only)
+
+- `src/app/.../page.tsx`, `layout.tsx`, `route.ts`, `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, `manifest.ts` files — Next.js requires these at specific paths. **They should be thin shims** (≤30 lines typical) that import from appkit and pass through.
+- API route handlers that wire request/response to appkit server functions
+- `middleware.ts` / `proxy.ts` (Next.js 16+) — framework convention
+
+### Red flags during this rearchitecture
+
+- A `_transform.ts` / `_adapter.ts` next to an API route that another page would also need → lift to appkit
+- An `opengraph-image.tsx` with >40 lines of layout JSX → extract renderer to appkit
+- A `page.tsx` that does any non-trivial Firestore querying or data shaping → move to `_internal/server/features/<feature>/data.ts`
+- Duplicate fetch logic in `page.tsx` + an API route → both should call the same appkit function
+
+### Action item for current session
+
+- [x] Backfill: `src/app/api/user/orders/_transform.ts` lifted into `_internal/server/features/orders/adapters.ts`; `_transform.ts` is now a 1-line re-export shim; API route responses fixed (OrderDocument→Order shape + correct OrderListResponse)
+- [x] Backfill: all 9 `opengraph-image.tsx` files (products, auctions, pre-orders, stores, brands, blog, events, sublisting-categories, profile) reduced to ≤30-line shims; renderers extracted to `_internal/server/features/<feature>/og.tsx`; exported from `server-entry.ts` + `index.ts`
+
+---
+
+## 🧱 Encapsulation + Override Contract — appkit as Building Blocks
+
+The goal is **maximum encapsulation by default, full customizability on demand**. A consumer should be able to drop in an appkit feature and get a complete working surface (route shim → data → render → mutate) with one or two lines of glue code. At the same time, every layer must expose a documented override seam so consumers can swap, decorate, or replace any piece without forking appkit.
+
+### Layered defaults (the "drop-in" path)
+
+Each feature in `_internal/server/features/<feature>/` ships a **full vertical**:
+
+| Layer | Default export | Consumer override seam |
+|-------|----------------|------------------------|
+| Data fetch | `getXForDetail(slug)` | Pass own fetcher to renderer; or call repository directly and pass `initialX` prop |
+| Adapter / transform | `toClientX(doc)` | Re-export and wrap; or pass `transform` option |
+| Metadata | `buildXMetadata(doc, opts?)` | Pass partial `Metadata` override; or compose with `mergeMetadata()` |
+| OG renderer | `renderXOgImage(doc, opts?)` | Pass `theme`, `layout`, `slots`, or replace with own `ImageResponse` |
+| Sitemap entry | `listSitemapX()` | Filter/map result, or skip and write own |
+| Server action | `xAction(input)` | Wrap with own validation/auth; or call repository directly |
+| View / component | `<XDetailView initialX={…}>` | All sub-slots accept `renderHeader`, `renderActions`, `renderFooter`, `slot*` props |
+| Labels / copy | `DEFAULT_X_LABELS` via `LabelsProvider` | Provide partial override map at app level |
+| Tokens / theming | `siteSettings.theme` CSS vars | Admin UI writes; or set CSS vars manually on any subtree |
+
+### Override hierarchy (from least to most invasive)
+
+1. **Config / tokens** — `siteSettings.theme`, `appkit.config.js`, `LabelsProvider` partial map. No code changes. Always preferred.
+2. **Options object** — `renderXOgImage(doc, { theme, headline, accentColor, layout: "compact" })`, `buildXMetadata(doc, { titleSuffix, ogImagePath })`. Named, type-checked, additive.
+3. **Render-prop slots** — `<XDetailView renderActions={(ctx) => <MyActions/>} renderFooter={…}>`. Consumer owns one region, default handles the rest.
+4. **Adapter wrap** — `const myToClient = (doc) => decorate(toClientX(doc))`. Compose appkit's transform with your own.
+5. **Replace the call** — call repository or another appkit primitive directly; skip the default helper entirely. The route shim grows by a few lines but appkit's lower-level pieces (repositories, schemas, ID generators, ImageResponse helpers) are still in use.
+6. **Fork via patch** — only when the override seam doesn't exist *yet*. File a tracker entry; ship the override seam in appkit so the next consumer doesn't need to fork.
+
+### Rules for appkit authors
+
+- **Never hardcode consumer choices.** Brand name, locale, currency, route paths, copy strings — all flow through `appkit.config.js`, `ROUTES`, `LabelsProvider`, or function options. No string literal `"LetItRip"` in a renderer.
+- **Default arguments must be ergonomic.** A consumer who passes nothing should get a sensible result. A consumer who passes everything should get full control.
+- **All public functions take an optional `opts` object** as the last parameter. Even if it's empty today — the slot is reserved.
+- **Render functions are pure JSX/data in, JSX/data out.** No global state, no env reads. Anything environmental comes through `opts` or `JobContext`-style ambient injection.
+- **Slots over flags.** Prefer `renderActions={…}` over `showActions={false}` + a flag explosion. Render props compose; booleans don't.
+- **Repositories stay reusable.** A consumer who wants to replace `getXForDetail` should still be able to call `xRepository.findBySlug()` from their own server function. Don't gate primitives behind facade functions.
+- **No private re-exports.** If consumers need it to override behavior, it's part of the public API and lives in `server-entry.ts` / `client-entry.ts`.
+
+### Rules for consumers (letitrip.in)
+
+- **Reach for the smallest override first.** Need a different OG headline? Pass `opts.headline`, don't copy-paste the renderer.
+- **Wrap, don't replace, when adding behavior.** `const ourAction = async (input) => { await audit(input); return appkitAction(input); }` — keeps appkit on the upgrade path.
+- **If you find yourself copying >10 lines from appkit into a consumer file**, stop and file a seam request in the tracker. The override is missing.
+- **Route files stay thin shims** (CC-11). Customization happens through the override hierarchy above, not by inlining logic in `page.tsx` / `opengraph-image.tsx`.
+
+### Verification
+
+- [ ] Every `_internal/server/features/<feature>/` directory has: `data.ts`, `adapters.ts`, `actions.ts`, `metadata.ts`, `og.tsx` (where applicable), `index.ts` barrel
+- [ ] Every public function accepts a final `opts?: XOptions` parameter (even if empty today)
+- [ ] Every view component accepts at least one `renderXxx` slot prop or a clear `children` extension point
+- [ ] No `"LetItRip"`, `"letitrip.in"`, currency symbols, or hardcoded route strings inside `_internal/`
+- [ ] `scripts/audit-ssr-in-appkit.mjs` exits 0 (consumers shouldn't need to inline what appkit could expose)
 
 ---
 
@@ -87,20 +179,20 @@
 
 ### S1 Deferred Items (complete before S2 starts)
 
-- [ ] Move `appkit/src/cli/index.ts` → `_internal/server/cli/` and trim firebase-admin plumbing from `withFeatures`
+- [ ] Move `appkit/src/cli/index.ts` → `_internal/server/cli/` and trim firebase-admin plumbing from `withFeatures` — **PREMISE STALE (verified 2026-05-12)**: file has zero firebase-admin imports; `withFeatures` only manages `transpilePackages`. No `./cli` export in `package.json` and zero consumer imports of `@mohasinac/appkit/cli` outside docs. Move would be cosmetic. Recommend reclassifying as ✅ (no work needed) or rescoping to "delete the file if truly unused after grep confirms".
 - [x] Rewrite `letitrip.in/next.config.js` to use `defineNextConfig()` — IgnorePlugin also moved into helper
 - [x] Rewrite `letitrip.in/postcss.config.js` to use `definePostcssConfig()`
 - [ ] Rewrite `letitrip.in/tailwind.config.js` to use `defineTailwindConfig()` — deferred to S7; existing config already has `darkMode:"class"` + no appkit scan; safelist cleanup is a post-migration task
-- [ ] Rewrite `letitrip.in/eslint.config.js` to use `defineEslintConfig()`
+- [ ] Rewrite `letitrip.in/eslint.config.js` to use `defineEslintConfig()` — **VERIFIED 2026-05-12**: actual file is `eslint.config.mjs` (315 lines of lir/* rules + per-package overrides). Wholesale replacement with `defineEslintConfig()` (which only adds 1 `no-restricted-syntax` warn) would delete project lint coverage. Correct path: spread `defineEslintConfig()` into the existing config (additive). Quick win when scoped that way.
 - [x] `letitrip.in/tsconfig.json` → `extends "@mohasinac/appkit/tsconfig.base.json"`; fixed `tsconfig.base.json` (`jsx:"react-jsx"`, removed bad path aliases)
 
 ### S1 Success Gates
 
-- [x] `npx tsc --noEmit` — 0 errors in `appkit/`
-- [x] `npx tsc --noEmit` — 0 errors in `letitrip.in/`
-- [x] `node scripts/audit-violations.mjs` — 0 violations
-- [x] `node scripts/verify-entries.mjs` — client entry firebase-admin free
-- [x] `node scripts/verify-css-build.mjs` — OK
+- [x] `npx tsc --noEmit` — 0 errors in `appkit/` (re-verified 2026-05-12)
+- [x] `npx tsc --noEmit` — 0 errors in `letitrip.in/` (re-verified 2026-05-12)
+- [x] `node scripts/audit-violations.mjs` — 0 violations (re-verified 2026-05-12)
+- [x] `node scripts/verify-entries.mjs` — client entry firebase-admin free (re-verified 2026-05-12)
+- [x] `node scripts/verify-css-build.mjs` — OK (re-verified 2026-05-12)
 
 ---
 
@@ -134,10 +226,12 @@
 
 ### S2 Verification
 
-- [x] `npx tsc --noEmit` clean in both repos
-- [x] `node scripts/audit-violations.mjs` exits 0
-- [x] `node scripts/verify-entries.mjs` exits 0
-- [x] `node scripts/verify-css-build.mjs` OK
+- [x] `npx tsc --noEmit` clean in both repos (re-verified 2026-05-12)
+- [x] `node scripts/audit-violations.mjs` exits 0 (re-verified 2026-05-12)
+- [x] `node scripts/verify-entries.mjs` exits 0 (re-verified 2026-05-12)
+- [x] `node scripts/verify-css-build.mjs` OK (re-verified 2026-05-12)
+- [x] `src/app/[locale]/products/[slug]/page.tsx` confirmed wires `initialProduct={product}` from `getProductForDetail()` (React.cache shared with generateMetadata)
+- [x] `src/app/[locale]/products/[slug]/opengraph-image.tsx` confirmed 23-line shim → `renderProductOgImage()` from appkit
 - [ ] `curl http://localhost:3000/en/products/<slug> | grep <product-title>` — title in initial HTML (manual, requires running server)
 - [ ] Open product page with JS disabled — full page renders (manual)
 - [ ] Per-product OG image: `curl -sI http://localhost:3000/en/products/<slug>/opengraph-image` → 200 image/png
@@ -159,8 +253,8 @@
 - [ ] `grouped` — `server/data: getGroupedListing(slug)`
 - [ ] `sublisting` — `server/data: getSublisting(slug)`
 - [x] `stores` — `_internal/server/features/stores/data.ts` done (`getStoreForDetail`, `listStoreProductsInitial`, `listStoreAuctionsInitial`, `listStorePreOrdersInitial`, `listSitemapStores`); `StoreDetailLayoutView` already SSR via `getStoreBySlug` (React.cache); `StoreProductsPageView` already server component; `stores/[storeSlug]/layout.tsx` has `generateMetadata` ✅
-- [x] `blog` — `_internal/server/features/blog/data.ts` (`getBlogPostForDetail`) + actions done; consumer page already SSR-wired
-- [x] `events` — `_internal/server/features/events/data.ts` (`getEventForDetail`) + actions done; consumer page SSR-wired
+- [x] `blog` — `_internal/server/features/blog/data.ts` (`getBlogPostForDetail`) + actions done; `blog/[slug]/page.tsx` already SSR-wired; `blog/page.tsx` already SSR (static metadata + server component)
+- [x] `events` — `_internal/server/features/events/data.ts` (`getEventForDetail`) + actions done; `events/[id]/page.tsx` already SSR-wired (async server component with `Promise.all` fetch)
 
 ### Consumer page: pass initialData to views (stop double-fetch)
 
@@ -179,13 +273,20 @@
 - [x] `pre-orders/[id]/opengraph-image.tsx` — done
 - [x] `stores/[storeSlug]/opengraph-image.tsx` — done
 - [x] `brands/[slug]/opengraph-image.tsx` — done
+- [x] `blog/[slug]/opengraph-image.tsx` — done (green accent, cover image bg, excerpt + author)
+- [x] `events/[id]/opengraph-image.tsx` — done (purple accent, coverImageUrl bg, type badge + date)
+- [x] `sublisting-categories/[slug]/opengraph-image.tsx` — done (amber accent, cover image, product count)
+- [x] `profile/[userId]/opengraph-image.tsx` — done (teal accent, avatar circle, role badge, private-profile guard)
 
 ### S3 Verification
 
-- [ ] All catalog pages SSR (curl grep for product title in initial HTML)
-- [ ] Listing toolbars (filter, sort, pagination) function without regression
-- [ ] Viewport sweep xs → 2xl on every migrated page
-- [ ] Dark mode toggle — all migrated pages repaint via CSS variables
+- [x] All 9 OG renderers verified as ≤41-line shims importing `renderXxxOgImage` from appkit (auctions/pre-orders/products/stores/brands/blog/events/sublisting-categories/profile) — re-verified 2026-05-12
+- [x] auctions/[id], pre-orders/[id], products/[slug] page.tsx all pass `initialAuction/initialPreOrder/initialProduct` to view (React.cache dedups generateMetadata + page render) — re-verified 2026-05-12
+- [x] brands/[slug]/page.tsx confirmed NOT yet wiring `initialBrand` (still `<BrandDetailPageView slug={slug} />`) — type mismatch deferred remains accurate
+- [x] SSR-in-appkit audit: 22 violations remaining (down from baseline 31). False positives in audit script: OG renderers DO import from appkit but resolve via `react-server` condition to server-entry, not direct `/server` subpath; `_transform.ts` is now a 1-line re-export shim but audit script flags any file at that path. Real residual: sitemap/manifest/robots/root-OG (S2 deferred) + 4 hardcoded "LetItRip" strings inside `_internal/` (config files + blog/actions.ts:18) — should pipe through `appkit.config.js`/opts
+- [ ] Listing toolbars (filter, sort, pagination) function without regression — manual browser test required
+- [ ] Viewport sweep xs → 2xl on every migrated page — manual
+- [ ] Dark mode toggle — all migrated pages repaint via CSS variables — manual
 
 ---
 
@@ -199,7 +300,7 @@
 - [x] `cart` — `_internal/server/features/cart/` service+actions done (upsertCartItem, mergeGuestItems, clearCart, removeFromCart); consumer API routes wiring pending
 - [ ] `checkout` — `server/actions: createOrder, attachPayment`; Razorpay webhook route preserved
 - [ ] `payments` — `server/actions: createPaymentIntent`; `/api/payments/webhook` preserved
-- [x] `orders` — `_internal/server/features/orders/` data+service+actions done (getOrder, listOrdersForBuyer, listOrdersForSeller, updateOrderStatus, cancelOrder, requestReturn); consumer pages pending
+- [x] `orders` — `_internal/server/features/orders/` data+service+actions done (getOrder, listOrdersForBuyer, listOrdersForSeller, updateOrderStatus, cancelOrder, requestReturn); API routes fixed: `src/app/api/user/orders/_transform.ts` (shared adapter), `[id]/route.ts` now maps OrderDocument→Order, list `route.ts` now returns correct OrderListResponse shape (items: Order[])
 - [x] `promotions` — `_internal/server/features/promotions/` data+service+actions done (getCouponByCode, validateCoupon, createCoupon, applyCouponToOrder); consumer pages pending
 
 ### Functions Migration
@@ -217,10 +318,14 @@
 
 ### S4 Verification
 
-- [ ] Razorpay test payment cycle end-to-end
-- [ ] Cart persists across devices when logged in
-- [ ] Per-user coupon limit enforced at checkout
-- [ ] All order list pages SSR rendered
+- [x] cart/orders/promotions feature dirs verified (data + actions + service + index, plus `orders/adapters.ts` with `orderDocumentToOrder` mapping all OrderDocument fields → Order shape) — re-verified 2026-05-12
+- [x] `src/app/api/user/orders/_transform.ts` confirmed as 1-line re-export of `orderDocumentToOrder` from appkit
+- [x] `src/app/api/user/orders/[id]/route.ts` + `route.ts` (list) confirmed mapping via `orderDocumentToOrder` and returning correct OrderListResponse shape `{ items, total, page, perPage, totalPages }`
+- [x] server-entry.ts exports verified for cart (getCartForUser, addToCartAction, removeFromCartAction, clearCartAction, mergeGuestCartAction, CART_MAX_ITEMS, CART_GUEST_STORAGE_KEY), orders (getOrderForDetail, getOrdersForBuyer, getRecentOrdersForBuyer, createOrderAction, cancelOrderAction, requestReturnAction, updateOrderStatusAction, ORDERS_PAGE_SIZE, orderDocumentToOrder), promotions (getCouponByCode, applyCouponAction, createCouponAction, updateCouponAction, deactivateCouponAction)
+- [ ] Razorpay test payment cycle end-to-end — manual; checkout server layer still pending
+- [ ] Cart persists across devices when logged in — manual
+- [ ] Per-user coupon limit enforced at checkout — manual; depends on checkout server layer
+- [ ] All order list pages SSR rendered — manual; user/orders/page.tsx still client
 
 ---
 
@@ -232,10 +337,10 @@
 ### Features to Migrate (server layers ✅ — consumer wiring ⏳)
 
 - [x] `reviews` — `_internal/server/features/reviews/` data+actions done (getReviewsForProduct, getReviewsForStore, createReview, replyToReview, deleteReview, markReviewHelpful); consumer pages pending
-- [x] `wishlist` — `_internal/server/features/wishlist/` data+actions done (getWishlistForUser → {items,meta}, addToWishlist, removeFromWishlist, mergeGuestWishlist); 20-cap preserved
-- [x] `history` — `_internal/server/features/history/` data+actions done (getHistoryForUser → {items,meta}, addToHistory, mergeGuestHistory); 50-FIFO preserved
-- [x] `homepage` — `_internal/server/features/homepage/` data done (getHomepageInitial, getHomepageSections, getHeroCarouselSlides); consumer `[locale]/page.tsx` wiring pending
-- [x] `search` — `_internal/server/features/search/` data+actions done (getSearchResults, searchAction); consumer page wiring pending
+- [x] `wishlist` — `_internal/server/features/wishlist/` data+actions done; `[locale]/wishlist/page.tsx` appropriately stays `"use client"` — depends on localStorage (guest) + auth session; no SSR wiring needed
+- [x] `history` — `_internal/server/features/history/` data+actions done; `[locale]/user/history/page.tsx` appropriately stays `"use client"` — localStorage + auth merge is inherently client-side; no SSR wiring needed
+- [x] `homepage` — `_internal/server/features/homepage/` data done (getHomepageInitial, getHomepageSections, getHeroCarouselSlides); `[locale]/page.tsx` ALREADY SSR — `MarketplaceHomepageView` is an async server component that handles all data fetching internally ✅
+- [x] `search` — `_internal/server/features/search/` data+actions done; `[locale]/search/page.tsx` ALREADY SSR — pure redirect server component (no data fetch needed) ✅
 
 ### Functions Migration
 
@@ -372,6 +477,7 @@
 - [ ] CC-8: `[locale]/layout.tsx` SSR loading — category tree + session server-side (S6)
 - [ ] CC-9: `next.config.js` cleanup — remove appkit workarounds (S7)
 - [ ] CC-10: Tailwind cleanup — no appkit `content` glob or `safelist` (S7 ✅ via `defineTailwindConfig`)
+- [ ] CC-11: Keep-in-appkit audit — every new SSR file (data layer, transform/adapter, OG renderer, metadata builder, sitemap entry) lives under `appkit/src/_internal/`; route files in letitrip.in stay shims. See "Guiding Principle" section above. Run `npm run audit:ssr-in-appkit` (script: `scripts/audit-ssr-in-appkit.mjs`) — flags fat route files (opengraph-image, sitemap, robots, manifest) above shim thresholds and forbidden `_transform.ts` / `_adapter.ts` sidecars under `src/app/api/**`. Baseline at script creation: **31 violations** (8 OG renderers, sitemap.ts 416 LOC, manifest/robots, 1 `_transform.ts`). Goal: drive to 0 over S3–S7.
 
 ---
 

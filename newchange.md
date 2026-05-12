@@ -40,6 +40,75 @@
 
 ---
 
+### Session Tracker-Shape — 2026-05-12 — SSR-arch layered template + Tier OG + Tier EMG (docs only)
+
+**Scope:** Rewrite all pending crud-tracker tasks (S14 onward) so they conform to the same layered file shape `ssr-arch-tracker.md` already enforces (Constants / Types / Validation / Data / Service / Actions / Repository / Orchestration / Views / Consumer wiring / OG + sitemap / Error handling / Verification). Add a backlog OpenGraph audit tier and an Emerging Patterns holding bay so code/copy mentions without implementation tasks (verified today: **EMI** referenced in seed FAQ + SeedPanel with zero implementation) are tracked instead of invisible. Three tracker files touched, no source code changed.
+
+| Area | What was done |
+|------|---------------|
+| **crud-tracker.md → Header** | Last-updated note rewritten to call out the layered template + Tier OG + Tier EMG. Summary task counts updated 162/424 → 162/434 (added 5 OG + 5 EMG). |
+| **crud-tracker.md → Index** | Added entries for **Tier OG — OpenGraph Image Coverage** and **Tier EMG — Emerging Patterns**. |
+| **crud-tracker.md → Session Roadmap** | New **📐 Task Shape (mandatory from S14 onward)** section between the Roadmap header and Session Start Checklist. Contains: full layer table mapping each layer to its `appkit/src/_internal/<segment>/features/<x>/<file>.ts` location; per-task fenced template for ⏳ rows; cross-reference rule that ssr-arch-tracker rows for shared domains (cart, orders, reviews, wishlist, history, homepage, search, products, categories, brands, auctions, pre-orders, stores, blog, events) get flipped ⏳ → ✅ in the same commit as the matching crud-tracker rewrite. |
+| **crud-tracker.md → Tier 4 (Seed)** | Layered shape note added: most layers **N/A** (seed-only); Verification gate clarified (`/demo/seed` POST + `GET /api/demo/seed` count match + `tsc` 0/0 + SeedPanel `FieldDef[]`/PII/`mediaFields`/`slugPattern` lockstep). |
+| **crud-tracker.md → Tier RBAC** | Layered shape note added — auth is cross-cutting so server code lives at `_internal/server/auth/` (new sub-tree), not as a `features/<x>/` entry. Lists all 13 layers with concrete file paths, exported fns, and domain errors (`ForbiddenError`, `RoleMismatchError`). |
+| **crud-tracker.md → Tier BAN** | Layered shape note added — `_internal/server/features/moderation/` server feature + `bansRepository` + `supportTicketsRepository` + jobs `banLifecycle`, `supportTicketSla`, `banExpiryCleanup`. Domain errors `HardBanError`, `SoftBanError`, `SupportTicketLimitError`. |
+| **crud-tracker.md → Tier SCAM** | Layered shape note added — `_internal/server/features/scams/` server feature + existing `scammerRepository` re-homed under feature barrel + job `scamNotificationDispatch`. **OG + sitemap explicit:** `src/app/[locale]/scams/[slug]/opengraph-image.tsx` + `listSitemapScams()` wired into `src/app/sitemap.ts`. |
+| **crud-tracker.md → Tier WA** | Layered shape note added covering WA migration shape for any new work — extends existing `storeRepository` for `whatsappConfig` + jobs `onOrderCreate.waAnnounce`, `catalogSyncScheduled`. |
+| **crud-tracker.md → Tier GD** | Layered shape note added — pure RSC content: server `data.ts` reads static module (no Firestore); per-guide `opengraph-image.tsx` + `listSitemapGuides()`; consumer wiring includes `[locale]/help/[slug]`, `[locale]/admin/guide/[slug]`, `[locale]/store/guide/[slug]`. |
+| **crud-tracker.md → Tier SB** | Authoritative layered breakdown added covering bundles, prize-draws, event-raffles, spin-wheel — Constants (`BUNDLE_MAX_ITEMS`, `PRIZE_DRAW_MIN_ITEMS`, `EVENT_RAFFLE_TYPES`, etc.), Types (`BundleDocument`, `PrizeDrawItem`, `EventRaffleConfig`, `SpinPrize`, extended `ListingType`), Zod discriminated union, repositories, jobs (`onBundlePurchase`, `prizeDrawAutoRefund`, `prizeDrawReveal`, `eventRaffleSpin`, `eventRaffleWinnerNotify`, `bundleStockSync`), views, consumer pages, OG + sitemap, error handling, verification. Existing `Notes` columns kept for reference; the new layered block is the **authoritative spec**. |
+| **crud-tracker.md → Tier OG (new)** | New tier with 5 ⏳ tasks: OG1 categories OG, OG2 faq OG, OG3 user OG (verify route exists first), OG4 sub-listing OG (verify route exists first), OG5 audit script `appkit/scripts/verify-og-coverage.mjs` (CI gate). Tier-level shape note clarifies most layers are N/A — OG tasks are pure consumer-wiring + verification. |
+| **crud-tracker.md → Tier EMG (new)** | New tier with process note (re-scan triggers, when to append a row) + 5 seed rows: **EMG1 EMI/installment payment** (full layered breakdown, citations to `appkit/src/seed/faq-seed-data.ts:571` and `src/components/dev/SeedPanel.tsx:874`), **EMG2 Loyalty/store credit** (holding row), **EMG3 Gift cards/e-vouchers**, **EMG4 Live chat/agent handoff**, **EMG5 Referral/affiliate** (speculative stub). |
+| **crud-tracker.md → Ordered Sessions table** | Added **S44 OG coverage** (OG1–OG5) and **S45 EMG triage** (EMG1–EMG5 review) rows at the bottom. Goal-column suffix convention noted: every S14+ row's Goal column ends with `→ files: _internal/server/features/<x>/`. (Earlier rows pre-date the convention and stay as-is.) |
+| **prompt.md → SESSION STATE → 🔜 Current** | Added **📐 New from 2026-05-12** paragraph announcing the Task Shape banner, Tier OG, Tier EMG, and the cross-reference rule. Implementer must read these before any new feature work. |
+| **prompt.md → Next sessions table** | Added **S44** (OG1–OG5) and **S45** (EMG1–EMG5 triage) rows. |
+| **newchange.md** | This entry. |
+
+**Files changed (3, all docs):** `crud-tracker.md`, `prompt.md`, `newchange.md`. **No source code changes.** **No status toggles** on any existing crud-tracker row. **No edits** to `ssr-arch-tracker.md`. **No edits** to `prompt.md` LAST COMPLETED or PLAN SNAPSHOT blocks.
+
+**Why now:** the SSR rearch (Arch-S2/S3/S4/S5 ✅) has established the new server-code layout, but every pending crud-tracker session still describes the legacy `appkit/src/features/<x>/` shape. Without rewriting the pending tasks before the next implementation session (S14 P24 starts shortly), the next session would author code in the wrong location and we would pay a second migration cost task-for-task. The OG and EMG additions close two latent backlogs surfaced while drafting this rewrite — OG image coverage (only 7 of ~12 detail-page families have one) and emerging features mentioned in copy with no code path (EMI is the verified example today).
+
+**Deferred:** none. Implementing the OG and EMG tasks themselves is future session work (S44 and S45 in the Ordered Sessions table) — that is tracker state, not deferral.
+
+---
+
+### Session Arch-S3 (cont. 2) — 2026-05-12 — OG renderers extracted to appkit + orders adapter lift
+
+**Scope:** Complete the two guiding-principle backfill action items from `ssr-arch-tracker.md`.
+
+| Area | What was done |
+|------|---------------|
+| Orders adapter lift | `_internal/server/features/orders/adapters.ts` created with `orderDocumentToOrder()`; exported from feature index, `server-entry.ts`, and `index.ts`. `src/app/api/user/orders/_transform.ts` reduced to a 1-line re-export shim. |
+| OG renderers — 9 new files | `render<Feature>OgImage()` extracted from all 9 letitrip.in `opengraph-image.tsx` files into `appkit/src/_internal/server/features/<feature>/og.tsx` (products, auctions, pre-orders, stores, brands, blog, events, sublisting-categories, profile). Used `ReactElement` return type with `import type { ReactElement } from "react"`. |
+| New feature dirs | `_internal/server/features/sublisting-categories/` and `_internal/server/features/profile/` created with `og.tsx` + `index.ts` (OG renderer only — features not yet fully migrated). |
+| appkit exports | All 9 renderers + data interfaces added to `server-entry.ts` and `index.ts` (required for TS path alias resolution via `dist/server-entry.d.ts`). |
+| 9 letitrip.in shims | Each `opengraph-image.tsx` file now ≤30 lines: `await params` → fetch data → extract fields → `new ImageResponse(render<X>OgImage({...}, siteName), size)`. |
+| Build | `appkit/tsconfig.build.json` compile: 0 errors. `dist/` regenerated. `letitrip.in` tsc: 0 errors. |
+| Tracker | Both action items in `ssr-arch-tracker.md` checked off. |
+
+**Files changed (appkit):** `_internal/server/features/{products,auctions,pre-orders,stores,brands,blog,events}/og.tsx` (new), `_internal/server/features/sublisting-categories/{og.tsx,index.ts}` (new), `_internal/server/features/profile/{og.tsx,index.ts}` (new), feature `index.ts` files (7 updated), `server-entry.ts`, `index.ts`.
+
+**Files changed (letitrip.in):** all 9 `opengraph-image.tsx` files reduced to shims; `_transform.ts` reduced to 1-line re-export.
+
+**Gates:** `appkit tsc` 0 errors · `letitrip.in tsc --noEmit` 0 errors.
+
+---
+
+### Session Arch-S3 (cont.) — 2026-05-12 — OG images completion + order routes fix
+
+**Scope:** Complete remaining OG images; fix OrderDocument → Order type mismatch in user-facing order routes.
+
+| Area | What was done |
+|------|---------------|
+| OG images | Added `src/app/[locale]/blog/[slug]/opengraph-image.tsx` (green accent, cover bg, excerpt + author); `events/[id]/opengraph-image.tsx` (purple accent, type badge + date); `sublisting-categories/[slug]/opengraph-image.tsx` (amber accent, cover image, product count); `profile/[userId]/opengraph-image.tsx` (teal accent, avatar circle, role badge, private-profile guard) |
+| Order list route fix | `src/app/api/user/orders/route.ts` was returning `{ orders: OrderDocument[], total }`. Rewrote to return `{ items: Order[], total, page, perPage, totalPages }` matching `OrderListResponse` — `useOrders` hook reads `.items`, so the old shape caused the user orders list to always show empty |
+| Order detail route fix | `src/app/api/user/orders/[id]/route.ts` was returning raw `OrderDocument`. Now transforms to `Order` via shared `_transform.ts` adapter — `useOrder` hook accesses `orderStatus`/`address`/`total` fields that exist on `Order` but not `OrderDocument` |
+| Shared transform | `src/app/api/user/orders/_transform.ts` — `orderDocumentToOrder(doc)` using `NonNullable<Order["items"]>` and `NonNullable<Order["address"]>` derived types to avoid the `OrderItem` naming collision (main index exports account-feature `OrderItem`, not orders-feature `OrderItem`) |
+| Tracker | `ssr-arch-tracker.md` updated; S3 OG images all ✅ |
+
+**Gates:** `npx tsc --noEmit` 0 errors × 2 repos.
+
+---
+
 ### Sessions Arch-S4 + Arch-S5 — 2026-05-12 — _internal/server/features/ layers (cart/orders/promotions/reviews/wishlist/history/homepage)
 
 **Scope:** S4+S5 of the SSR rearchitecture plan. Created the full `_internal/server/features/` stack for 8 feature domains.

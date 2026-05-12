@@ -1,18 +1,18 @@
 import { ImageResponse } from "next/og";
-import { getBrandForDetail, renderBrandOg } from "@mohasinac/appkit/server";
+import { getPublicUserProfile, renderProfileOg } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 export const runtime = "edge";
 export const contentType = "image/png";
 export const size = { width: 1200, height: 630 };
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ userId: string }> };
 
 export default async function Image({ params }: Props) {
-  const { slug } = await params;
-  const doc = await getBrandForDetail(slug).catch(() => null);
+  const { userId } = await params;
+  const doc = await getPublicUserProfile(userId).catch(() => null);
   return new ImageResponse(
-    renderBrandOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderProfileOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
     { ...size },
   );
 }

@@ -38,6 +38,8 @@
 ### 🔜 Current — S14 (next session)
 
 > S13 done. Q1+Q3+Q6 shipped with Q3-pre-orders, Q6-views, and Q1-ops (Firebase deploy + Vercel env) deferred (see newchange.md). Roadmap continues at S14 (P24 — auctions 6→20 + pre-orders 5→10 + bids 20→120+ seed scale). After that, S15–S18 (more seed scale) then S19+ (SB Bundle/Prize Draw).
+>
+> **📐 New from 2026-05-12** — `crud-tracker.md` now carries a global **Task Shape (mandatory from S14 onward)** banner + per-tier layered shape blocks (Constants / Types / Validation / Data / Service / Actions / Repository / Orchestration / Views / Consumer wiring / OG + sitemap / Error handling / Verification) matching `ssr-arch-tracker.md`. **Two new tiers** added: **Tier OG** (OpenGraph image backlog audit — categories, faq, user, sub-listing, audit script) and **Tier EMG** (Emerging Patterns holding bay — first row **EMG1 EMI / installment payment** captures the seed-FAQ mention with no implementation). Two new sessions in the Next sessions table: **S44** (Tier OG) and **S45** (Tier EMG triage). Read these before starting any new feature work — every new task from S14 onward must conform to the layered shape and target `appkit/src/_internal/server/features/<x>/`.
 
 ### 🔜 Next sessions (S1–S13 shown; full table in crud-tracker.md)
 
@@ -63,6 +65,8 @@
 | **S31–S37** | RBAC1–RBAC10, BAN1–BAN9 | Permission gates + ban enforcement | high |
 | **S38–S39** | SCAM2,4,6,7,8,9 | Admin scammer UI + SEO + notifications | medium |
 | **S40–S43** | GD1–GD22 | In-app guide pages (store/buyer/admin) | zero |
+| **S44** | OG1–OG5 | OpenGraph backlog: categories / faq / user / sub-listing detail OG + audit script | zero |
+| **S45** | EMG1–EMG5 triage | Emerging Patterns review: graduate EMG1 (EMI) and any others to their own session, or delete if no longer relevant | zero |
 
 ---
 
