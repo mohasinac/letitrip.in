@@ -60,6 +60,47 @@
 
 ---
 
+### Session S16+S17 — 2026-05-12 — [CRUD] Content + promo seed: P28 blog/entries + P29 coupons/notifs/carts
+
+**Scope:** Continue seed-scale roadmap. Lane B WIP cleared between sessions so the audit gate is back at baseline 8. tsc + audits clean; lint is the pre-existing 192-error baseline in `user/*Client.tsx` (unrelated).
+
+| Area | What was done |
+|------|---------------|
+| **P28 blog 8→20** | `appkit/src/seed/blog-posts-seed-data.ts` +12 posts. Topics: SV-era set review (featured), Hot Wheels TH hunting strategy, first-time seller tips, anime bootleg detection (featured), Gunpla beginner tools, Yu-Gi-Oh! investment cards 2026, Funko vaulting strategy, Beyblade X tournament rules, RLC membership cost-benefit, display & storage UV/humidity/theft (featured), pre-order supply-chain anatomy, LetItRip year-in-review (featured). Each ~40 LOC with rich HTML body, cover image, tags, SEO meta. All `blog-` prefixed, `id === slug`. |
+| **P28 events** | **Already at spec** — 17 vs ≥15. No change. |
+| **P28 FAQs** | **Skipped per user "skip near-met" guidance** — 53 vs ≥55 (96%). |
+| **P28 eventEntries 14→25** | `appkit/src/seed/events-seed-data.ts` +11 entries — additional swap-meet attendees (APPROVED/PENDING), additional Pokémon-poll voters (APPROVED + comments), additional Yu-Gi-Oh!-poll voters across all venues (APPROVED + one FLAGGED — needed to use FLAGGED rather than the non-existent REJECTED enum value; `rejectionReason` field also dropped since not in the type). |
+| **P29 coupons 10→20** | `appkit/src/seed/coupons-seed-data.ts` +10 coupons — NEWUSER5 (₹50 first-order), FLASH24 (expired 30% flash), REFERRAL200, PREPAID5, AUCTION25, SUMMER15 (upcoming), BIGBANG2026 (₹1k off ₹10k+), GUNDAMGALAXY12 / VINTAGEVAULT8 (expired) / RETROVAULT10 (store-scoped). All states: active, expired, upcoming, fully-used, partially-used. **Bug caught during tsc:** initially used `sellerId` on store coupons — schema uses `storeId`. Fixed across 3 entries. |
+| **P29 notifications 10→40** | `appkit/src/seed/notifications-seed-data.ts` +30 via new `buildNotificationBatch(specs[])` helper. Covers every `NOTIFICATION_FIELDS.TYPE_VALUES` enum value (ORDER_PLACED/CONFIRMED/SHIPPED/DELIVERED/CANCELLED, BID_PLACED/OUTBID/WON/LOST, OFFER_RECEIVED/RESPONDED/EXPIRED/COUNTER_ACCEPTED, REVIEW_APPROVED/REPLIED, PRODUCT_AVAILABLE, PROMOTION, SYSTEM, WELCOME, REFUND_INITIATED). Auto-flags HIGH priority for bids, OFFER_RECEIVED, ORDER_DELIVERED. Each spec is a single-line row → 1 NotificationDocument. |
+| **P29 carts 5→15 auth** | `appkit/src/seed/cart-seed-data.ts` +10 via new `mkCart(userId, ageDays, items)` helper. Scenarios: multi-item cross-store, single-item, pre-order-in-cart, auction-in-cart, ETB bundles. Deterministic itemIds keep seed idempotent. **Guest carts dropped** — `sessionId` exists on Zod input schema but not on `CartDocument` TS interface. Guest behavior is exercised at runtime via localStorage merge tests; documented inline. |
+| **P29 wishlists** | **Skipped** — current 8 docs with capped items is sufficient under the one-doc-per-user pattern. |
+| **P31** | **Still deferred** — Lane B WIP that blocked S15 is cleared now, but P31 is a dedicated runtime feature (Zod validator + PII masking + dry-run diff + retry pipeline in the seed runner) that warrants its own session, not a tail-on to data scale. |
+
+**Files changed (Lane A only):**
+- `appkit/src/seed/blog-posts-seed-data.ts` — +12 posts (~480 LOC)
+- `appkit/src/seed/events-seed-data.ts` — +11 entries
+- `appkit/src/seed/coupons-seed-data.ts` — +10 coupons; `sellerId` → `storeId` fix
+- `appkit/src/seed/notifications-seed-data.ts` — +30 via `buildNotificationBatch()` helper
+- `appkit/src/seed/cart-seed-data.ts` — +10 carts via `mkCart()` helper; guest-cart variant dropped (type mismatch)
+- `crud-tracker.md` — P28 ✅, P29 ⚠️ (carts partial — 5→15 vs spec 20)
+
+**Gates run:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 audits pass; `audit-ssr-in-appkit` at baseline 8 (Lane B WIP cleared since S15). ✅
+- `npm run check:lint` — 192 pre-existing errors unrelated to seed-scale work (raw-HTML violations in `user/*Client.tsx`, `SeedPanel.tsx`, `scams/report/page.tsx`, etc.). Untouched.
+
+**DEFERRED for follow-up:**
+
+| Date | Task | What was deferred | Status |
+|------|------|-------------------|--------|
+| 2026-05-12 | P28 FAQs | 53 → 55+. Skipped at 96% per "near-met" guidance. | ⏳ — optional bump |
+| 2026-05-12 | P29 carts | 15 auth carts vs spec 20. Guest cart variant blocked by Zod-vs-TS type mismatch (`sessionId` on schema only). | ⏳ — fix type or add at runtime |
+| 2026-05-12 | P29 wishlists | 8 docs unchanged. Items per doc can be expanded, but the spec target of "40+ entries" is ambiguous under the one-doc-per-user shape. | ⏳ — needs spec clarification |
+| 2026-05-12 | P31 | Zod validator + PII masking + dry-run diff + retry. Lane B WIP cleared; deferred for its own session per layered-shape requirement. | ⏳ — own session |
+| 2026-05-12 | Lint baseline | 192 errors in 25+ files (mostly raw-HTML violations). Pre-existed S13. | ⏳ — own session |
+
+---
+
 ### Session S14+S15 — 2026-05-12 — [CRUD] Seed scale: P24 auctions/bids + P25 categories + P30 verify
 
 **Scope:** Verify-first sweep on S13 (clean, no code needed); P24 seed scale for auctions and bids; P25 seed scale (partial) for categories; P30 verified-already-done per Rule #4. P31 deferred per Rule #1 because Lane B's untracked WIP (`appkit/src/_internal/server/jobs/`, `src/app/sitemap.ts`) is currently breaking the `audit:ssr-in-appkit` gate (+1 over baseline 8) — adding more code on top of broken state would obscure regressions, so stop here.
