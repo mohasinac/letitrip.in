@@ -60,6 +60,25 @@
 
 ---
 
+### Session S45 — 2026-05-12 — [CRUD] EMG triage (docs only)
+
+**Scope:** Review the 5 Emerging Patterns rows added 2026-05-12 in the Tracker-Shape session. Mark each ready-to-graduate (🎯), keep-holding (⏳), or delete-from-active (🚫). No code touched.
+
+| Row | Decision | Rationale |
+|-----|----------|-----------|
+| **EMG1 EMI** | 🎯 ready-to-graduate | Full layered shape already in the row. Razorpay supports it natively. Recommend pairing with EMG3 in a new **Tier PAY** arc when scheduled. First candidate for graduation. |
+| **EMG2 Loyalty** | ⏳ keep-holding | `loyalty` skeleton in appkit is the documented placeholder ("loyalty stays skeleton" — CLAUDE.md). Re-evaluate when a business rule or FAQ copy mention surfaces. |
+| **EMG3 Gift cards** | ⏳ keep-holding, pair-with-EMG1 | Only signal so far is FAQ copy. If graduated, ship alongside EMG1 in Tier PAY since both touch checkout + ordersRepository payment-method enum + Razorpay. |
+| **EMG4 Live chat** | 🎯 ready-to-graduate | Architecture is clear — reuse D5/VC7 RTDB ping-channel + extend `_internal/server/features/copilot/`. Admin side already exists. Lower priority than EMG1 (chat is support nicety; EMI unlocks revenue). |
+| **EMG5 Referral** | 🚫 deleted-from-active-tracking | Per the row's own self-description ("may delete on first review"). No design notes, FAQ mentions, or revenue case. Row retained for history; not in remaining-tasks total. |
+
+**Files changed (docs only):**
+- `crud-tracker.md` — 5 EMG rows annotated with triage decisions; S45 row marked ✅; Remaining counter 272 → 271 (EMG5 deletion)
+
+**Gates:** No code change → tsc/audits untouched. Lint baseline unchanged.
+
+---
+
 ### Session S18 — 2026-05-12 — [CRUD] Seed runner enhancements: P31 (A/C/D done, B already-better)
 
 **Scope:** P31 data-layer-only — validator hook, dry-run diff, retry/error capture. PII masking already-better-implemented per Rule #4. SeedPanel UI polish deferred to its own commit.
