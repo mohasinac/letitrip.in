@@ -13,6 +13,7 @@
 - [🛑 Rule #3 — Schema/Logic Changes Must Update Older Functionality](#-rule-3--schemalogic-changes-must-update-older-functionality)
 - [🛑 Rule #4 — Never Fix Without Verifying It Is Actually Broken](#-rule-4--never-fix-without-verifying-it-is-actually-broken)
 - [🛑 Rule #5 — Definition of Done: All Quality Gates Pass](#-rule-5--definition-of-done-all-quality-gates-pass)
+- [🛑 Rule #6 — Code Within Vercel Hobby Tier Limits](#-rule-6--code-within-vercel-hobby-tier-limits)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
@@ -107,6 +108,32 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 **Pre-commit**: the `pre-commit` npm script is wired to `npm run check`. If you have a git hook runner installed, use it.
 
 **A task is not complete until `npm run check` exits 0.** Do not mark a task ✅ in any tracker, do not write a session summary, do not propose a commit, until the full gate passes.
+
+---
+
+## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY TIER LIMITS
+
+This project deploys to Vercel **Hobby** — the free plan. Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs` so anything that breaks in production breaks here first.
+
+| Limit | Ceiling | Env var | Implication for new code |
+|------|---------|---------|--------------------------|
+| Function memory | **1024 MB** | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. |
+| Sync function timeout | **10 s** | `VERCEL_FUNCTION_TIMEOUT_S` | A request that fans out to many Firestore reads must batch + early-return. No N+1 loops over hundreds of docs in one handler. Offload long work to a Firebase Function. |
+| Background function timeout | **60 s** | `VERCEL_BACKGROUND_TIMEOUT_S` | The hard ceiling for any handler we mark `runtime: "nodejs"` and let run async. Anything heavier belongs in `functions/`. |
+| Request payload | **4.5 MB** | `VERCEL_MAX_PAYLOAD_BYTES` | Never accept raw image bytes in JSON. Use the `/api/media` signed-URL upload flow. |
+| Image optimization input | **50 MB** | `VERCEL_MAX_IMAGE_BYTES` | Reject `next/image` sources larger than this; pre-resize on upload. |
+| Build output (per function) | 250 MB compressed | — | Don't pull large native modules into `src/app/api/**`; isolate to `functions/`. |
+
+**Hard rules when writing new code:**
+
+1. **API routes**: paginate every list endpoint (`pageSize <= 50`), never `findAll().map()` without a bound. Return early on auth/validation failures.
+2. **Server actions / RSC data fetches**: budget yourself to ~3 sequential Firestore round-trips. Parallelise the rest with `Promise.all`. If you need more, hand off to a Firebase Function and return a job ID.
+3. **Heavy work** (PDFs, sharp transforms, batch settlements, prize raffles, payout runs) belongs in `functions/` — never in a Next.js API route. The 10 s timeout will kill it in production even when local seems fine.
+4. **Uploads**: bytes never go through Next.js. Client → signed URL → Firebase Storage → media slug returned. The 4.5 MB request cap makes any direct upload route a regression waiting to happen.
+5. **Caching**: every public GET should set `Cache-Control: public, max-age=…, s-maxage=…, stale-while-revalidate=…` so Hobby's compute quota survives traffic.
+6. **Logging**: don't `console.log` per-row inside loops — Hobby's log buffer drops at ~4 KB/s. Aggregate before logging.
+
+**Verification**: run `npm run dev` and watch the `[dev-next] Vercel Hobby parity ON` banner — that confirms the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 1024 MB ceiling is in effect.
 
 ---
 

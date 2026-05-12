@@ -1067,10 +1067,9 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       "bundle-beyblade-x-launch-pack-2025 — out_of_stock (one item sold), standard, 3 items",
     ],
     pendingItems: [
-      "Real bundle-image-* uploads (S22)",
-      "S21 BundleItemsPicker / BundleForm / NonRefundableConsentModal not yet built",
-      "Public /bundles listing + /bundles/[slug] detail pages (S22)",
-      "Admin /admin/bundles moderation list (S22)",
+      "Real bundle-image-* uploads (S23+)",
+      "Admin /admin/bundles moderation list pages (SB3-G admin pair pending)",
+      "SB3-D stock-sync triggers wired into /api/orders POST + /api/products PATCH (currently best-effort only on bundle write)",
     ],
     uiPath: "/store/bundles",
     fields: [
