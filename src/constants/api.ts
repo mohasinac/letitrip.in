@@ -112,6 +112,16 @@ export const API_ROUTES = {
   SCAMS: {
     REPORTS: "/api/scams/reports",
   },
+  // SB1-K — bundles + prize draws (additive; route handlers land in later SB sessions)
+  BUNDLES: {
+    LIST: "/api/bundles",
+    BY_ID: (id: string) => `/api/bundles/${id}`,
+  },
+  PRIZE_DRAWS: {
+    LIST: "/api/prize-draws",
+    BY_ID: (id: string) => `/api/prize-draws/${id}`,
+    REVEAL: (id: string) => `/api/prize-draws/${id}/reveal`,
+  },
   USER: {
     PROFILE: "/api/user/profile",
     ADDRESSES: "/api/user/addresses",

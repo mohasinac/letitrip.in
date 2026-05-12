@@ -60,6 +60,46 @@
 
 ---
 
+### Session S20 — 2026-05-12 — [CRUD] SB1 surface area: repository + ROUTES + API_ROUTES + indexes
+
+**Scope:** Land the data + constants surface so future SB sessions can wire API routes, pages, and Firebase Functions against stable references. **No** Firebase Functions (SB1-L) — those need real implementation, not scaffolds. **No** UI work — every page is its own commit cycle with Rule #5 form gates (mobile/dark/tokens/focus/loading).
+
+| Sub | Status | What was done |
+|-----|--------|---------------|
+| **SB1-H** bundlesRepository | ✅ | New `appkit/src/features/bundles/repository/bundles.repository.ts` (180 LOC). Extends `BaseRepository<BundleDocument>`. Methods: `findAll`, `findByStore(storeId, status?)`, `findByCategory`, `findFeatured`, `findBySlug`, `findContainingProduct` (array-contains on `partOfBundleProductIds`), `create` (auto-derives `partOfBundleProductIds` from `bundleItems[]`), `markItemSold(bundleId, productId)` (transactional — flips item `isSold` then re-derives bundle `status`; idempotent), `checkBundleStock` (read-only). Exported via `appkit/src/repositories/index.ts` barrel. |
+| **SB1-I** Firestore indexes | ⚠️ additive | Added all 8 new indexes to `appkit/firebase/base/firestore.indexes.json` — 5 product `listingType+...` composites + 3 bundles composites (storeId+status+createdAt, categorySlug+status+createdAt, isFeatured+status+createdAt). **Did NOT remove** the 5 boolean-combo indexes (`isAuction+...`, `isPreOrder+...`) — they still back the live queries until SB1-G ships. Ran `firebase-merge.mjs` so the consumer-side file matches. **Ops follow-up:** `firebase deploy --only firestore:indexes` not run this session. |
+| **SB1-J** ROUTES | ✅ | Added 14 entries to `appkit/src/next/routing/route-map.ts`: public bundles/prize-draws + their seller-guide pages; full store CRUD trio per resource; admin moderation list + edit per resource. Routes land before pages — consumers can `<Link href={ROUTES.STORE.BUNDLES}>` today; pages return 404 until built in S21+. |
+| **SB1-K** API_ROUTES | ✅ | Added `API_ROUTES.BUNDLES = { LIST, BY_ID(id) }` + `API_ROUTES.PRIZE_DRAWS = { LIST, BY_ID(id), REVEAL(id) }` to `src/constants/api.ts`. |
+| **SB1-L** Firebase Functions | ⏳ deferred | 7 functions (`scheduledPrizeRevealOpen`/`Close`/`Expiry`/`Reminder`, `scheduledBundleStockSync`, `triggerEventRaffle`, `assignSpinPrize`) all use `crypto.randomInt()` and require GitHub permalink generation for prize-draw commit-reveal proof. Each is non-trivial production code — own session. |
+
+**Files changed:**
+- `appkit/src/features/bundles/repository/bundles.repository.ts` (NEW)
+- `appkit/src/features/bundles/repository/index.ts` (NEW barrel)
+- `appkit/src/repositories/index.ts` — export bundlesRepository
+- `appkit/src/next/routing/route-map.ts` — 14 ROUTES entries
+- `src/constants/api.ts` — BUNDLES + PRIZE_DRAWS endpoint blocks
+- `appkit/firebase/base/firestore.indexes.json` — 8 new composite indexes
+- `firestore.indexes.json` (root, derived) — refreshed via `firebase-merge.mjs`
+- `crud-tracker.md` — SB1-H/J/K ✅, SB1-I ⚠️ additive, SB1-L ⏳ deferred
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 audits pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- `npm run check:lint` — pre-existing 192-error baseline unchanged.
+
+**DEFERRED:**
+
+| Task | Why | Path forward |
+|------|-----|--------------|
+| SB1-L Firebase Functions (7 total) | Each function needs real RNG (`crypto.randomInt()`), GitHub API integration for commit-reveal proof, scheduled-job error handling, and production-grade idempotency. Not a scaffold session. | Own session per logical pair: (a) prize-reveal lifecycle, (b) bundle-stock-sync + event-raffle scheduling. |
+| Index removal (boolean-combo) | Live queries still use `where("isAuction"...)`. Pair with SB1-G repository refactor. | SB1-D + SB1-G + boolean removal land together in one focused session. |
+| Index deploy | `firebase deploy --only firestore:indexes` is an ops action. | User runs when ready. |
+| S21+ feature build | Bundle UI, prize-draw editor, public listing pages, admin moderation — each touches forms (Rule #5 gates: mobile/dark/tokens/focus/loading) and needs browser verification. | One session per logical surface (S21 = forms, S22 = listing+detail, S23 = prize-draw editor, S24 = reveal API + modal, S25–S30 = nav/limits/badges/auto-flow/raffle). |
+
+**S20 net result:** Repository, routes, API endpoints, and indexes are in place so subsequent SB sessions can wire pages without reaching back to schema or barrel work. The migration to drop the boolean flags is still bounded behind SB1-D + SB1-G.
+
+---
+
 ### Session S19 — 2026-05-12 — [CRUD] SB1 schemas: additive listingType + bundle + prize-draw + order extensions
 
 **Scope:** SB1 (Bundle/Prize Draw foundation) — schema layer only, additive throughout. SB1-D migration script and SB1-G repository boolean→listingType refactor deferred because Rule #3 (schema/logic change must update all callers in same session) requires the data layer + every query + every seed update + index changes to land together — that's its own session, not a tail-on.
