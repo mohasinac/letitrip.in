@@ -47,7 +47,7 @@ import {
   storeAnalyticsHandler,
   // Adapter
   bindToFirebase,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/jobs";
 
 const REGION = "asia-south1";
 

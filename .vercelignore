@@ -1,2 +1,9 @@
 .npmrc
 react-library/.npmrc
+
+# Build artifacts that should never go to the upload — they're regenerated on Vercel.
+.next
+# Forensics + heap snapshots from scripts/next-memory-forensics.js / probe-dev-heap-cap.mjs.
+memory-forensics-*
+*.heapsnapshot
+probe-results.json
