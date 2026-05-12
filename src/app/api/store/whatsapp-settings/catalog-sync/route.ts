@@ -14,6 +14,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  isStandardListing,
 } from "@mohasinac/appkit";
 import { syncProductsToCatalog } from "@mohasinac/appkit/server";
 import type { CatalogSyncProduct } from "@mohasinac/appkit/server";
@@ -56,11 +57,11 @@ export const POST = withProviders(
         return errorResponse("Access token is missing or corrupted.", 400);
       }
 
-      // Fetch all store products then filter in-app for published standard items
-      // (J13: isAuction + isPreOrder must be explicit false — Firestore != does not match absent fields)
+      // Fetch all store products then filter in-app for published standard items.
+      // SB1-G — canonical isStandardListing() handles both listingType and legacy booleans.
       const storeProducts = await productRepository.findByStore(store.storeSlug);
       const publishedStandard = storeProducts.filter(
-        (p) => p.status === "published" && !p.isAuction && !p.isPreOrder,
+        (p) => p.status === "published" && isStandardListing(p),
       );
 
       const products: CatalogSyncProduct[] = publishedStandard.map((p) => ({

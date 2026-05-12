@@ -60,6 +60,35 @@
 
 ---
 
+### Session S22 — 2026-05-12 — [CRUD] SB1-G consumer sweep done — 5 batches across 41 files
+
+**Scope:** Replace every Lane A `.isAuction`/`.isPreOrder` read on product objects with the canonical `isAuctionListing()` / `isPreOrderListing()` / `isStandardListing()` / `normalizeListingType()` accessors. Cart-item denormalized snapshots intentionally untouched (parallel schema concern).
+
+| Batch | Files | What changed |
+|-------|-------|--------------|
+| **1+2** type/action/hook/repo | 10 files | admin/wishlist/search/products type declarations get `listingType` + `@deprecated` markers on booleans. `product-actions.ts` rewritten with named clause constants (`PUBLISHED_CLAUSE`, `AUCTIONS_PUBLISHED`, `PREORDERS_PUBLISHED`) + new `listingTypeClauseFromLegacy()` helper; recovered `getRelatedProducts` + `getStoreStorefrontProducts` that the rewrite had dropped. `bid-actions.ts` `isAuctionListing()` for AUCTION_NOT_FOUND validation. `useAuctions.ts` bids-query gated by `isAuctionListing()`. `useProducts.ts` URL params accept canonical `listingType`. `search.repository.ts` + `search-actions.ts` build `listingType==X` clauses. |
+| **3** components | 10 files | `ProductForm.tsx` Checkbox onChange writes both fields; `AdminProductEditorView.tsx` `modeFromProduct` uses `normalizeListingType`, `applyMode` writes both, EMPTY_PRODUCT sets `listingType: "standard"`. `ProductGrid.tsx` / `CompareOverlay.tsx` / `SublistingCarouselSection.tsx` / `ShowGroupSection.tsx` / `MarketplaceAuctionCard.tsx` / `PublicProfileView.tsx` / `SellerProductsView.tsx` all switched to predicates. |
+| **4** filter strings + repos + api | 13 files | All `isAuction==X` / `isPreOrder==X` clauses rewritten to `listingType==auction|pre-order|standard`. Files: `BrandDetailPageView`, `CategoryDetailPageView`, `Store{Detail,Products,Auctions,PreOrders}PageView`, `ProductsIndexPageView`, `AuctionsListView`, `PreOrdersListView`, `GroupSettingsPanel`, `stores/api/[storeSlug]/{auctions,products}/route.ts`, `store-query-actions.ts`, `useRelatedProducts.ts`, `auctions.repository.ts`, `features/products/api/route.ts` (Zod listingType enum extended + `SAFE_PRODUCT_FILTER_FIELDS` adds `listingType` + buildFilters translates legacy params), `seo/json-ld.ts`. |
+| **5** root pages + API routes | 10 files | `cart/route.ts` + `cart/merge/route.ts` use `isAuctionListing(product)` for cart-item snapshot writes. `user/wishlist/route.ts` uses `normalizeListingType` to tag `productType`. `wishlist/page.tsx` filter logic uses predicates. `products/group/[groupId]/route.ts` uses `isPreOrderListing(p)`. All 4 admin+store group routes use `isAuctionListing` + write `listingType: "standard"` on new children. `sublisting-categories/[slug]/page.tsx` predicates for badge rendering. `whatsapp-settings/catalog-sync/route.ts` uses `isStandardListing` for filter. `payment/preorder/route.ts` uses `isPreOrderListing` for validation. `validation/request-schemas.ts` adds `listingType` Zod field. |
+| **barrels** | 3 files | `appkit/src/index.ts` re-exports the predicates alongside `normalizeListingType`. `appkit/src/client.ts` adds the same predicates (client-safe pure functions). `features/products/types/index.ts` adds `ProductListParams.listingType`. |
+
+**Files changed:** 41 (20 appkit + 16 root + 3 barrels + 2 trackers/docs)
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- appkit dist rebuilt twice (after barrel changes + final).
+
+**What's still pending (Phase 3 + Phase 4):**
+
+| Task | Why blocked |
+|------|-------------|
+| Lane B `_internal/` sweep — 7 files in `server/features/{products,auctions,pre-orders}/service.ts`, `server/features/products/data.ts`, `server/jobs/handlers/{onProductWrite,countersReconcile}.ts`, `shared/features/products/types.ts` | Lane A is READ-ONLY on `_internal/`. `[CRUD→SSR]` seam request stands at top of newchange.md. |
+| Schema field removal coordinated commit | Blocked on Lane B sweep. Drops `isAuction?`/`isPreOrder?` from ProductDocument + ProductItem + Zod + PRODUCT_FIELDS + PRODUCT_INDEXED_FIELDS + DEFAULT_PRODUCT_DATA; strips boolean lines from raw seed entries; removes 5 legacy boolean-combo indexes; tightens `normalizeListingType` `Pick<>` to `"listingType"` only; updates CLAUDE.md J13. |
+| Cart-item snapshot schema | `CartItem.isAuction`/`isPreOrder` are denormalized snapshots set at add-to-cart time, not product reads. Migrating to `cartItem.listingType` is a parallel cart-side schema concern. |
+
+---
+
 ### Session S21 — 2026-05-12 — [CRUD] SB1-G data layer: productRepository + seeds + /api/products + listing-type predicates
 
 **Scope:** Migrate the data-layer + central utility off the boolean discriminator. The 36-file consumer sweep + Lane B `_internal/` cleanup land in dedicated follow-up sessions; this commit puts the canonical infrastructure in place.

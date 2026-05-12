@@ -32,6 +32,7 @@ import {
   orderRepository,
   productRepository,
   addressRepository,
+  isPreOrderListing,
 } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { ValidationError, NotFoundError } from "@mohasinac/appkit";
@@ -87,7 +88,7 @@ export const POST = withProviders(createRouteHandler<
     // 3. Fetch product for order line-item data
     const product = await productRepository.findById(productId);
     if (!product) throw new NotFoundError("Product not found");
-    if (!product.isPreOrder)
+    if (!isPreOrderListing(product))
       throw new ValidationError("Product is not a pre-order item");
 
     // 4. Fetch user address

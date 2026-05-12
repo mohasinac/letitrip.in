@@ -152,6 +152,10 @@ const productBaseSchema = z.object({
   seoTitle: z.string().max(60).optional(),
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
+  // SB1-G — canonical discriminator. Legacy booleans kept transitional.
+  listingType: z
+    .enum(["fixed", "standard", "auction", "pre-order", "prize-draw", "bundle"])
+    .optional(),
   isAuction: z.boolean().optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),

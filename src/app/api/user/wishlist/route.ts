@@ -7,7 +7,10 @@ import { withProviders } from "@/providers.config";
  */
 
 import { wishlistRepository } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import {
+  productRepository,
+  normalizeListingType,
+} from "@mohasinac/appkit";
 import { WishlistFullError } from "@mohasinac/appkit";
 import { WISHLIST_MAX } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
@@ -72,13 +75,16 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
       return errorResponse(ERROR_MESSAGES.PRODUCT.NOT_FOUND, 404);
     }
 
-    const isAuction = (product as { isAuction?: boolean }).isAuction === true;
-    const isPreOrder = (product as { isPreOrder?: boolean }).isPreOrder === true;
-    const productType: "product" | "auction" | "preorder" = isAuction
-      ? "auction"
-      : isPreOrder
-        ? "preorder"
-        : "product";
+    // SB1-G — canonical listingType drives the snapshot's `productType` tag.
+    const lt = normalizeListingType(
+      product as {
+        listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+        isAuction?: boolean;
+        isPreOrder?: boolean;
+      },
+    );
+    const productType: "product" | "auction" | "preorder" =
+      lt === "auction" ? "auction" : lt === "pre-order" ? "preorder" : "product";
 
     const snapshot = {
       title: (product as { title?: string }).title,

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { sublistingCategoriesRepository, ROUTES } from "@mohasinac/appkit";
+import {
+  sublistingCategoriesRepository,
+  ROUTES,
+  isAuctionListing,
+  isPreOrderListing,
+} from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 function fmt(paise: number, currency = "INR"): string {
@@ -124,8 +129,13 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 : typeof l.mainImage === "string"
                   ? l.mainImage
                   : null;
-              const isAuction = l.isAuction === true;
-              const isPreOrder = l.isPreOrder === true;
+              // SB1-G — canonical predicates handle both listingType + legacy.
+              const isAuction = isAuctionListing(
+                l as { listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"; isAuction?: boolean; isPreOrder?: boolean },
+              );
+              const isPreOrder = isPreOrderListing(
+                l as { listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"; isAuction?: boolean; isPreOrder?: boolean },
+              );
               const href = isAuction
                 ? String(ROUTES.PUBLIC.AUCTION_DETAIL(listingSlug))
                 : isPreOrder

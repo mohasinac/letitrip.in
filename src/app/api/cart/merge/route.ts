@@ -13,7 +13,7 @@ import { z } from "zod";
 import { handleApiError } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { cartRepository } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -55,7 +55,7 @@ export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_
         quantity: safeQty,
         storeId: product.storeId,
         storeName: product.storeName ?? "",
-        isAuction: product.isAuction ?? false,
+        isAuction: isAuctionListing(product),
       });
     }
 

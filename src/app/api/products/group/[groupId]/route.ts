@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository, isPreOrderListing } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
 export const GET = withProviders(async (
@@ -20,7 +20,8 @@ export const GET = withProviders(async (
     currency: p.currency,
     images: p.images,
     slug: p.slug ?? p.id,
-    isPreOrder: p.isPreOrder ?? false,
+    listingType: p.listingType,
+    isPreOrder: isPreOrderListing(p),
     isGroupParent: p.isGroupParent ?? false,
     groupTitle: p.groupTitle,
     condition: p.condition,

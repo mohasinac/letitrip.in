@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 
 /** POST — start a group (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
@@ -9,7 +9,7 @@ export const POST = withProviders(createApiHandler({
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
     if (!product) return ApiErrors.notFound("Product not found");
-    if (product.isAuction) return ApiErrors.badRequest("Auctions cannot be in groups");
+    if (isAuctionListing(product)) return ApiErrors.badRequest("Auctions cannot be in groups");
     if (product.groupId) return ApiErrors.badRequest("Product is already in a group");
 
     const slug = product.slug ?? product.id;

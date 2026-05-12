@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository, storeRepository } from "@mohasinac/appkit";
+import { productRepository, storeRepository, isAuctionListing } from "@mohasinac/appkit";
 
 /** POST — start a group (this product becomes parent) */
 export const POST = withProviders(createRouteHandler({
@@ -14,7 +14,7 @@ export const POST = withProviders(createRouteHandler({
     const product = await productRepository.findById(productId);
     if (!product) return ApiErrors.notFound("Product not found");
     if (product.storeId !== store.id) return ApiErrors.forbidden("Not your product");
-    if (product.isAuction) return ApiErrors.badRequest("Auctions cannot be in groups");
+    if (isAuctionListing(product)) return ApiErrors.badRequest("Auctions cannot be in groups");
     if (product.groupId) return ApiErrors.badRequest("Product is already in a group");
 
     const slug = product.slug ?? product.id;

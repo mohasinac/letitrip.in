@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 
 /** POST /api/admin/products/[id]/group/children — add child (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
@@ -10,7 +10,7 @@ export const POST = withProviders(createApiHandler({
     const parent = await productRepository.findById(parentDocId);
     if (!parent) return ApiErrors.notFound("Parent product not found");
     if (!parent.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
-    if (parent.isAuction) return ApiErrors.badRequest("Auctions cannot be in groups");
+    if (isAuctionListing(parent)) return ApiErrors.badRequest("Auctions cannot be in groups");
 
     const body = await request.json() as {
       mode: "create" | "link";
@@ -39,8 +39,10 @@ export const POST = withProviders(createApiHandler({
         images: [],
         stockQuantity: 1,
         status: "published",
+        // SB1-G — write both legacy booleans + canonical listingType.
         isAuction: false,
         isPreOrder: false,
+        listingType: "standard",
         currency: parent.currency ?? "INR",
         featured: false,
         shippingInfo: parent.shippingInfo,
@@ -53,7 +55,7 @@ export const POST = withProviders(createApiHandler({
       if (!body.childId) return ApiErrors.badRequest("childId required");
       const child = await productRepository.findById(body.childId);
       if (!child) return ApiErrors.notFound("Listing not found");
-      if (child.isAuction) return ApiErrors.badRequest("Auctions cannot be linked");
+      if (isAuctionListing(child)) return ApiErrors.badRequest("Auctions cannot be linked");
       if (child.groupId) return ApiErrors.badRequest("Listing is already in a group");
 
       await productRepository.linkChildToGroup(parent, child);

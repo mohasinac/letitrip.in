@@ -15,6 +15,8 @@ import {
   Row,
   Button,
   useToast,
+  isAuctionListing,
+  isPreOrderListing,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 
@@ -103,12 +105,13 @@ export default function WishlistPage() {
       });
     }
 
-    // Type filter
+    // Type filter — SB1-G canonical predicates handle both listingType and legacy booleans.
     if (applied.type !== "all") {
       result = result.filter((item) => {
-        if (applied.type === "auction")  return item.product?.isAuction  === true;
-        if (applied.type === "preorder") return item.product?.isPreOrder === true;
-        return item.product?.isAuction !== true && item.product?.isPreOrder !== true;
+        const p = item.product;
+        if (applied.type === "auction") return isAuctionListing(p);
+        if (applied.type === "preorder") return isPreOrderListing(p);
+        return !isAuctionListing(p) && !isPreOrderListing(p);
       });
     }
 
@@ -281,7 +284,8 @@ export default function WishlistPage() {
                   mainImage: item.product?.images?.[0] ?? item.productImage,
                   status:    item.product?.status    ?? ("published" as const),
                   featured:  item.product?.isFeatured ?? false,
-                  isAuction: item.product?.isAuction  ?? false,
+                  listingType: item.product?.listingType,
+                  isAuction: isAuctionListing(item.product),
                   slug,
                 }}
               />
