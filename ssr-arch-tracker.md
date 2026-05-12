@@ -1,7 +1,7 @@
 # SSR Rearchitecture Tracker — appkit × letitrip.in
 
 > **Approved plan**: `C:\Users\mohsi\.claude\plans\cant-we-do-it-cosmic-flamingo.md`
-> **Last updated**: 2026-05-12 — S2 complete; Arch-S4+S5 data/action layers done; S3 consumer wiring in progress.
+> **Last updated**: 2026-05-12 — S2 complete; Arch-S4+S5 data/action layers done; S3 in progress (categories+stores data layers done; auctions/pre-orders consumer wiring done; stores OG image pending).
 > **Status legend**: ⏳ pending · 🔄 in progress · ✅ done · ❌ blocked · ⚠️ done-but-verify
 
 ---
@@ -151,22 +151,22 @@
 
 ### Features to Migrate
 
-- [ ] `categories` — `server/data: listCategories, getCategoryTree, getCategoryForDetail`; SSR category tree in `[locale]/layout.tsx`
-- [x] `brands` — `_internal/server/features/brands/data.ts` (`getBrandForDetail`) + actions done; `BrandDetailPageView` `initialBrand?` prop needed; consumer page passes slug only
-- [x] `auctions` — `_internal/server/features/auctions/data.ts` (`getAuctionForDetail`) done; `AuctionDetailPageView` `initialAuction?` prop needed
-- [x] `pre-orders` — `_internal/server/features/pre-orders/data.ts` (`getPreOrderForDetail`) done; `PreOrderDetailPageView` `initialPreOrder?` prop needed
+- [x] `categories` — `_internal/server/features/categories/data.ts` done (`getCategoryForDetail`, `listRootCategories`, `listFeaturedCategories`, `listMenuCategories`, `getCategoryTree`, `listSitemapCategories`); nav uses static `MAIN_NAV_ITEMS` (no client fetch to replace); CC-8 layout wiring deferred to S6
+- [x] `brands` — `_internal/server/features/brands/data.ts` (`getBrandForDetail`) + actions done; `BrandDetailPageView.initialBrand?` deferred — view calls `categoriesRepository.getCategoryBySlug` (CategoryDocument), `getBrandForDetail` returns BrandDocument; type alignment needed before prop can be added
+- [x] `auctions` — `_internal/server/features/auctions/data.ts` + `AuctionDetailPageView.initialAuction?` prop + `auctions/[id]/page.tsx` wired ✅
+- [x] `pre-orders` — `_internal/server/features/pre-orders/data.ts` + `PreOrderDetailPageView.initialPreOrder?` prop + `pre-orders/[id]/page.tsx` wired ✅
 - [ ] `bundles` — `server/data: getBundle(slug)` with items pre-resolved
 - [ ] `grouped` — `server/data: getGroupedListing(slug)`
 - [ ] `sublisting` — `server/data: getSublisting(slug)`
-- [ ] `stores` — `server/data: getStoreForDetail(slug), listStoreProducts`; `StoreDetailLayoutView` wired with `initialData`
+- [x] `stores` — `_internal/server/features/stores/data.ts` done (`getStoreForDetail`, `listStoreProductsInitial`, `listStoreAuctionsInitial`, `listStorePreOrdersInitial`, `listSitemapStores`); `StoreDetailLayoutView` already SSR via `getStoreBySlug` (React.cache); `StoreProductsPageView` already server component; `stores/[storeSlug]/layout.tsx` has `generateMetadata` ✅
 - [x] `blog` — `_internal/server/features/blog/data.ts` (`getBlogPostForDetail`) + actions done; consumer page already SSR-wired
 - [x] `events` — `_internal/server/features/events/data.ts` (`getEventForDetail`) + actions done; consumer page SSR-wired
 
 ### Consumer page: pass initialData to views (stop double-fetch)
 
-- [ ] `AuctionDetailPageView` — add `initialAuction?` prop; update `auctions/[id]/page.tsx` to pass fetched doc
-- [ ] `PreOrderDetailPageView` — add `initialPreOrder?` prop; update `pre-orders/[id]/page.tsx`
-- [ ] `BrandDetailPageView` — add `initialBrand?` prop; update `brands/[slug]/page.tsx`
+- [x] `AuctionDetailPageView` — `initialAuction?` prop added; `auctions/[id]/page.tsx` passes fetched doc ✅
+- [x] `PreOrderDetailPageView` — `initialPreOrder?` prop added; `pre-orders/[id]/page.tsx` passes fetched doc ✅
+- [ ] `BrandDetailPageView` — `initialBrand?` deferred; type mismatch (view uses CategoryDocument via `categoriesRepository`, but `getBrandForDetail` returns BrandDocument from `brandsRepository`)
 
 ### New Scaffolds (appkit)
 
@@ -176,8 +176,8 @@
 ### Per-feature opengraph-image.tsx
 
 - [x] `auctions/[id]/opengraph-image.tsx` — done
-- [ ] `pre-orders/[id]/opengraph-image.tsx`
-- [ ] `stores/[slug]/opengraph-image.tsx`
+- [x] `pre-orders/[id]/opengraph-image.tsx` — done
+- [x] `stores/[storeSlug]/opengraph-image.tsx` — done
 - [x] `brands/[slug]/opengraph-image.tsx` — done
 
 ### S3 Verification
