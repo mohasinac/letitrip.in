@@ -96,11 +96,57 @@ process.on("warning", (w) => {
 });
 
 // ---------------------------------------------------------------------------
-// Spawn Next.js server — mirrors dev-next.mjs exactly
+// Spawn Next.js server — mirrors dev-next.mjs (+ Hobby parity)
 // ---------------------------------------------------------------------------
+//
+// Memory & timeout caps mirror `scripts/dev-next.mjs` + CLAUDE.md Rule #6.
+// The forensics run exercises the same Vercel Hobby ceiling the production
+// build is bound to, so any leak found here is a leak that ships.
+//
+// Override individual caps with the matching DEV_* env vars (same names
+// dev-next.mjs reads).
+
+const HOBBY_LIMITS = {
+  MEMORY_MB: 1024,
+  FUNCTION_TIMEOUT_S: 10,
+  BACKGROUND_TIMEOUT_S: 60,
+  MAX_PAYLOAD_BYTES: 4.5 * 1024 * 1024,
+  MAX_IMAGE_BYTES: 50 * 1024 * 1024,
+};
+
+const HEAP_CAP_MB = Number(
+  process.env.DEV_FUNCTION_MEMORY_MB ?? HOBBY_LIMITS.MEMORY_MB,
+);
+// RSS exceeds heap (native, buffers, code). A 1.5x cap gives a reasonable
+// "this is bigger than the budget" alarm without false-positives during
+// startup compile.
+const HIGH_RSS_FLAG_MB = Math.round(HEAP_CAP_MB * 1.5);
+// Pre-flight free RAM gate — same value the dev-next.mjs guard uses.
+const MIN_FREE_RAM_GB = 2;
+
+// ---------------------------------------------------------------------------
+// Pre-flight: refuse to start under the same conditions dev-next.mjs refuses.
+// ---------------------------------------------------------------------------
+
+if (!process.env.DEV_SKIP_MEM_CHECK) {
+  const freeGb = os.freemem() / 1024 ** 3;
+  if (freeGb < MIN_FREE_RAM_GB) {
+    log(
+      `Aborting: only ${freeGb.toFixed(2)} GB free (need ${MIN_FREE_RAM_GB} GB). ` +
+        `Override DEV_SKIP_MEM_CHECK=1 to bypass.`,
+    );
+    process.exit(1);
+  }
+  log(`Memory check passed: ${freeGb.toFixed(2)} GB free.`);
+}
 
 log("STARTING NEXT FORENSICS");
 log(`Output dir: ${OUT_DIR}`);
+log(
+  `Hobby parity — heap cap ${HEAP_CAP_MB} MB, RSS flag threshold ${HIGH_RSS_FLAG_MB} MB, ` +
+    `function timeout ${HOBBY_LIMITS.FUNCTION_TIMEOUT_S} s, ` +
+    `payload cap ${(HOBBY_LIMITS.MAX_PAYLOAD_BYTES / 1024 / 1024).toFixed(2)} MB.`,
+);
 
 const child = spawn(
   process.execPath,
@@ -110,8 +156,24 @@ const child = spawn(
     shell: false,
     env: {
       ...process.env,
+      // Mirror Hobby parity exports from dev-next.mjs so route-handler
+      // middleware reads the same caps under forensics.
+      VERCEL_TIER: process.env.VERCEL_TIER ?? "hobby",
+      VERCEL_FUNCTION_MEMORY_MB: String(HEAP_CAP_MB),
+      VERCEL_FUNCTION_TIMEOUT_S: String(
+        process.env.DEV_FUNCTION_TIMEOUT_S ?? HOBBY_LIMITS.FUNCTION_TIMEOUT_S,
+      ),
+      VERCEL_BACKGROUND_TIMEOUT_S: String(
+        process.env.DEV_BACKGROUND_TIMEOUT_S ?? HOBBY_LIMITS.BACKGROUND_TIMEOUT_S,
+      ),
+      VERCEL_MAX_PAYLOAD_BYTES: String(
+        process.env.DEV_MAX_PAYLOAD_BYTES ?? HOBBY_LIMITS.MAX_PAYLOAD_BYTES,
+      ),
+      VERCEL_MAX_IMAGE_BYTES: String(
+        process.env.DEV_MAX_IMAGE_BYTES ?? HOBBY_LIMITS.MAX_IMAGE_BYTES,
+      ),
       NODE_OPTIONS: [
-        "--max-old-space-size=4096",
+        `--max-old-space-size=${HEAP_CAP_MB}`,
         "--inspect=9230",
         "--heapsnapshot-near-heap-limit=5",
       ].join(" "),
@@ -203,8 +265,10 @@ function dumpSelfMemory() {
   };
   metric({ type: "forensics_memory", ...data });
 
-  if (data.freeSystemMB < 1000) {
-    flag(`SYSTEM MEMORY LOW: ${data.freeSystemMB}MB free`);
+  // Live free-RAM warn: looser than the pre-flight 2 GB gate so we only
+  // flag a real regression mid-run (compaction churn, RSS bleed).
+  if (data.freeSystemMB < 1500) {
+    flag(`SYSTEM MEMORY LOW: ${data.freeSystemMB}MB free (gate is ${MIN_FREE_RAM_GB} GB)`);
   }
 }
 
@@ -227,10 +291,10 @@ function dumpRealProcessMemory() {
       const parts = line.split(",");
       const wss = parseInt(parts.find((p) => /^\d{6,}$/.test(p.trim())) || "0", 10);
       const rssMB = mb(wss);
-      metric({ type: "server_rss", rssMB });
-      log(`SERVER RSS: ${rssMB}MB`);
-      if (rssMB > 1500) {
-        flag(`HIGH SERVER RSS: ${rssMB}MB`);
+      metric({ type: "server_rss", rssMB, heapCapMB: HEAP_CAP_MB });
+      log(`SERVER RSS: ${rssMB}MB (cap ${HEAP_CAP_MB}MB, flag >${HIGH_RSS_FLAG_MB}MB)`);
+      if (rssMB > HIGH_RSS_FLAG_MB) {
+        flag(`HIGH SERVER RSS: ${rssMB}MB > ${HIGH_RSS_FLAG_MB}MB threshold`);
       }
     }
   } catch (e) {
