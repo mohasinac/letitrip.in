@@ -106,8 +106,11 @@ process.on("warning", (w) => {
 // Override individual caps with the matching DEV_* env vars (same names
 // dev-next.mjs reads).
 
+// Vercel Fluid Compute Standard ceilings on Hobby (per dashboard 2026-05-12).
+// 2048 MB = function memory and also the empirically-derived dev heap cap
+// (see scripts/probe-dev-heap-cap.mjs results in crud-tracker.md DEV-2).
 const HOBBY_LIMITS = {
-  MEMORY_MB: 1024,
+  MEMORY_MB: 2048,
   FUNCTION_TIMEOUT_S: 10,
   BACKGROUND_TIMEOUT_S: 60,
   MAX_PAYLOAD_BYTES: 4.5 * 1024 * 1024,

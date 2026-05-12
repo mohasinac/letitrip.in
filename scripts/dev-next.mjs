@@ -23,18 +23,31 @@ import os from "os";
 const MIN_FREE_RAM_GB = 2;
 const BYTES_PER_GB = 1024 ** 3;
 
-// ── Vercel Hobby plan ceilings ────────────────────────────────────────────
+// ── Vercel Hobby plan ceilings (with Fluid Compute enabled) ───────────────
+//
+// Per the project's live Vercel dashboard: Fluid Compute Standard tier,
+// 1 vCPU, 2 GB function memory, 8 GB build machine, Node 22.x, iad1.
+// Sync timeout 10 s, background 60 s. Payload + image caps match Hobby
+// across all compute tiers.
+//
+// The 2 GB function memory is also the empirically-derived minimum heap
+// cap for `next dev --webpack` on this codebase: probe-dev-heap-cap.mjs
+// 2026-05-12 showed 1024 MB OOMs under load (peak RSS 1457 MB), 1536 MB
+// runs without OOM (peak RSS 1887 MB), and 1536 + 512 MB headroom rounds
+// up to the 2048 MB cap NODE_OPTIONS uses in package.json `dev:only`.
 const HOBBY_LIMITS = {
-  // Function memory (MB) — also enforced by NODE_OPTIONS in package.json.
-  MEMORY_MB: 1024,
-  // Sync function timeout (seconds). Hobby caps at 10s.
+  // Function memory (MB) — Fluid Compute Standard. Also the dev heap cap.
+  MEMORY_MB: 2048,
+  // Sync function timeout (seconds).
   FUNCTION_TIMEOUT_S: 10,
-  // Background function timeout (seconds). Hobby caps at 60s.
+  // Background function timeout (seconds).
   BACKGROUND_TIMEOUT_S: 60,
-  // Request body cap (bytes). Hobby is 4.5 MB.
+  // Request body cap (bytes).
   MAX_PAYLOAD_BYTES: 4.5 * 1024 * 1024,
   // Image optimization input cap.
   MAX_IMAGE_BYTES: 50 * 1024 * 1024,
+  // Build machine memory (MB) — for reference; not enforced locally.
+  BUILD_MACHINE_MB: 8 * 1024,
 };
 
 if (!process.env.DEV_SKIP_MEM_CHECK) {

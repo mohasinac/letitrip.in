@@ -113,18 +113,20 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 ---
 
-## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY TIER LIMITS
+## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY (FLUID COMPUTE) TIER LIMITS
 
-This project deploys to Vercel **Hobby** — the free plan. Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs` so anything that breaks in production breaks here first.
+This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, 8 GB build machine, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs` so anything that breaks in production breaks here first.
 
 | Limit | Ceiling | Env var | Implication for new code |
 |------|---------|---------|--------------------------|
-| Function memory | **1024 MB** | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. |
+| Function memory | **2048 MB** (Fluid Standard) | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. **This is also the empirically-derived dev-server heap cap** (probe-dev-heap-cap.mjs 2026-05-12 showed 1024 MB OOMs the dev server under load; 1536 MB survives but exceeds the cap in RSS; 1536 + 512 MB headroom = 2048 MB). `package.json` `dev:only` sets `NODE_OPTIONS=--max-old-space-size=2048`. |
 | Sync function timeout | **10 s** | `VERCEL_FUNCTION_TIMEOUT_S` | A request that fans out to many Firestore reads must batch + early-return. No N+1 loops over hundreds of docs in one handler. Offload long work to a Firebase Function. |
 | Background function timeout | **60 s** | `VERCEL_BACKGROUND_TIMEOUT_S` | The hard ceiling for any handler we mark `runtime: "nodejs"` and let run async. Anything heavier belongs in `functions/`. |
 | Request payload | **4.5 MB** | `VERCEL_MAX_PAYLOAD_BYTES` | Never accept raw image bytes in JSON. Use the `/api/media` signed-URL upload flow. |
 | Image optimization input | **50 MB** | `VERCEL_MAX_IMAGE_BYTES` | Reject `next/image` sources larger than this; pre-resize on upload. |
-| Build output (per function) | 250 MB compressed | — | Don't pull large native modules into `src/app/api/**`; isolate to `functions/`. |
+| Build machine memory | 8 GB (reference, not enforced locally) | — | The Vercel build machine has plenty of room — `next build` won't OOM under normal conditions. Build output per function still caps at 250 MB compressed; don't pull large native modules into `src/app/api/**`. |
+| Fluid Active CPU | 4 h / 30 d on Hobby | dashboard | Cache aggressively. Every cold start counts. |
+| Function invocations | 1 M / 30 d on Hobby | dashboard | Same reasoning — caching > invoking. |
 
 **Hard rules when writing new code:**
 
@@ -132,10 +134,10 @@ This project deploys to Vercel **Hobby** — the free plan. Every API route, ser
 2. **Server actions / RSC data fetches**: budget yourself to ~3 sequential Firestore round-trips. Parallelise the rest with `Promise.all`. If you need more, hand off to a Firebase Function and return a job ID.
 3. **Heavy work** (PDFs, sharp transforms, batch settlements, prize raffles, payout runs) belongs in `functions/` — never in a Next.js API route. The 10 s timeout will kill it in production even when local seems fine.
 4. **Uploads**: bytes never go through Next.js. Client → signed URL → Firebase Storage → media slug returned. The 4.5 MB request cap makes any direct upload route a regression waiting to happen.
-5. **Caching**: every public GET should set `Cache-Control: public, max-age=…, s-maxage=…, stale-while-revalidate=…` so Hobby's compute quota survives traffic.
+5. **Caching**: every public GET should set `Cache-Control: public, max-age=…, s-maxage=…, stale-while-revalidate=…` so the Hobby compute quota survives traffic. Cold-start prevention is **disabled** on this project, so every uncached miss is a real cold start.
 6. **Logging**: don't `console.log` per-row inside loops — Hobby's log buffer drops at ~4 KB/s. Aggregate before logging.
 
-**Verification**: run `npm run dev` and watch the `[dev-next] Vercel Hobby parity ON` banner — that confirms the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 1024 MB ceiling is in effect.
+**Verification**: run `npm run dev` and watch the `[dev-next] Vercel Hobby parity ON — memory=2048 MB …` banner — that confirms the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 2048 MB ceiling is in effect.
 
 ---
 

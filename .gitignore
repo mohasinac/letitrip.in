@@ -126,3 +126,4 @@ GEMINI.md
 /memory-forensics-*
 .env.vercel-check
 .env.verify-check
+*.heapsnapshot
