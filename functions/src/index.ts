@@ -1,83 +1,211 @@
 /**
  * Firebase Cloud Functions — LetItRip
  *
- * Entry point. All scheduled jobs and Firestore triggers are exported here
- * so the Firebase CLI can discover and deploy them.
+ * Thin binding barrel. Every job/trigger/HTTPS endpoint imports its pure
+ * handler from `@mohasinac/appkit/server` and wraps it with the appkit
+ * Firebase runtime adapter (`bindToFirebase.{schedule,documentWritten,https}`).
  *
- * Plan: Blaze (pay-as-you-go). All jobs are tuned to stay within the monthly
- * free allotment (2 M invocations, 400 K GB-seconds, 3 Cloud Scheduler jobs
- * free → $0.10/job/month beyond). Current totals:
+ * Adding a new function: write the pure handler in
+ * `appkit/src/_internal/server/jobs/handlers/<name>.ts` and add a single
+ * binding line here. The handler stays portable; only the binding is
+ * Firebase-specific.
  *
- *   Cloud Scheduler jobs : 14  (11 billable  ≈ $1.10/month)
- *   Invocations/month    : ~15 K  (well under 2 M free tier)
- *   GB-seconds/month     : ~12 K  (well under 400 K free tier)
- *
- * ┌─────────────────────────────────────────────────────────────────────────┐
- * │  Scheduled Jobs (Cloud Scheduler + Cloud Run)                           │
- * ├─────────────────────────────────────────────────────────────────────────┤
- * │  auctionSettlement      — every 15 min    settle ended auctions          │
- * │  pendingOrderTimeout    — every 2 hrs     cancel stale orders            │
- * │  couponExpiry           — 00:05 UTC       deactivate old coupons         │
- * │  offerExpiry            — 00:15 UTC       expire stale offers            │
- * │  productStatsSync       — 01:00 UTC       recompute product avg ratings  │
- * │  dailyDataCleanup       — 02:00 UTC       purge sessions + tokens        │
- * │  countersReconcile      — 03:00 UTC       rebuild category & store stats │
- * │  positionsReconcile     — 03:30 UTC       rebuild DFS positions + subtreeSizes│
- * │  payoutBatch            — 06:00 UTC       dispatch seller payouts        │
- * │  cartPrune              — Sun 04:00 UTC   remove stale carts             │
- * │  notificationPrune      — Mon 01:00 UTC   remove old read notifications  │
- * │  weeklyPayoutEligibility— Sat 05:00 UTC   create payout records          │
- * │  autoPayoutEligibility  — 04:45 UTC       auto-payout (7-day window)     │
- * │  cleanupRtdbEvents      — every 5 min     purge stale RTDB auth/pay nodes│
- * │  mediaTmpCleanup        — 04:30 UTC       delete orphaned tmp uploads    │
- * ├─────────────────────────────────────────────────────────────────────────┤
- * │  Firestore Triggers                                                     │
- * ├─────────────────────────────────────────────────────────────────────────┤
- * │  onBidPlaced        — bids/{id} onCreate                                │
- * │  onOrderCreate      — orders/{id} onCreate  → WA announcement           │
- * │  onOrderStatusChange— orders/{id} onUpdate                              │
- * │  onProductWrite     — products/{id} onWrite                             │
- * │                       → optional external search sync (disabled)        │
- * │                       → category metrics (productCount/auctionCount)    │
- * │                       → store stats (totalProducts)                     │
- * │  onReviewWrite      — reviews/{id} onWrite                              │
- * │                       → product avgRating / reviewCount                 │
- * │                       → store totalReviews / averageRating              │
- * │  onCategoryWrite    — categories/{id} onWrite                           │
- * │                       → DFS position + subtreeSize maintenance           │
- * │  onStoreWrite       — stores/{id} onWrite                               │
- * │                       → external store index sync (disabled)            │
- * └─────────────────────────────────────────────────────────────────────────┘
+ * Plan: Blaze (pay-as-you-go). Scheduler invocations + memory tuned to stay
+ * within free tier (2 M invocations, 400 K GB-seconds). Cloud Scheduler
+ * has 3 free job slots → $0.10/job/month beyond. 14 schedules ⇒ ~$1.10/mo.
  */
 
+import {
+  // Scheduled-job handlers
+  auctionSettlementHandler,
+  autoPayoutEligibilityHandler,
+  cartPruneHandler,
+  cleanupRtdbEventsHandler,
+  countersReconcileHandler,
+  couponExpiryHandler,
+  dailyDataCleanupHandler,
+  mediaTmpCleanupHandler,
+  notificationPruneHandler,
+  offerExpiryHandler,
+  payoutBatchHandler,
+  pendingOrderTimeoutHandler,
+  positionsReconcileHandler,
+  productStatsSyncHandler,
+  weeklyPayoutEligibilityHandler,
+  // Firestore-trigger handlers
+  onBidPlacedHandler,
+  onCategoryWriteHandler,
+  onOrderCreateHandler,
+  onOrderStatusChangeHandler,
+  onProductWriteHandler,
+  onReviewWriteHandler,
+  onStoreWriteHandler,
+  // HTTPS / callable handlers
+  adminAnalyticsHandler,
+  listingProcessorHandler,
+  promotionsHandler,
+  storeAnalyticsHandler,
+  // Adapter
+  bindToFirebase,
+} from "@mohasinac/appkit";
+
+const REGION = "asia-south1";
+
 // ── Scheduled jobs ────────────────────────────────────────────────────────
-export { auctionSettlement } from "./jobs/auctionSettlement";
-export { pendingOrderTimeout } from "./jobs/pendingOrderTimeout";
-export { couponExpiry } from "./jobs/couponExpiry";
-export { offerExpiry } from "./jobs/offerExpiry";
-export { productStatsSync } from "./jobs/productStatsSync";
-export { dailyDataCleanup } from "./jobs/dailyDataCleanup";
-export { countersReconcile } from "./jobs/countersReconcile";
-export { positionsReconcile } from "./jobs/positionsReconcile";
-export { payoutBatch } from "./jobs/payoutBatch";
-export { cartPrune } from "./jobs/cartPrune";
-export { notificationPrune } from "./jobs/notificationPrune";
-export { weeklyPayoutEligibility } from "./jobs/weeklyPayoutEligibility";
-export { autoPayoutEligibility } from "./jobs/autoPayoutEligibility";
-export { cleanupRtdbEvents } from "./jobs/cleanupRtdbEvents";
-export { mediaTmpCleanup } from "./jobs/mediaTmpCleanup";
+export const auctionSettlement = bindToFirebase.schedule(
+  "auctionSettlement",
+  auctionSettlementHandler,
+  { schedule: "every 15 minutes", timeZone: "UTC", region: REGION, timeoutSeconds: 300, memory: "256MiB", maxInstances: 1 },
+);
+
+export const pendingOrderTimeout = bindToFirebase.schedule(
+  "pendingOrderTimeout",
+  pendingOrderTimeoutHandler,
+  { schedule: "0 */2 * * *", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const couponExpiry = bindToFirebase.schedule(
+  "couponExpiry",
+  couponExpiryHandler,
+  { schedule: "5 0 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const offerExpiry = bindToFirebase.schedule(
+  "offerExpiry",
+  offerExpiryHandler,
+  { schedule: "15 0 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const productStatsSync = bindToFirebase.schedule(
+  "productStatsSync",
+  productStatsSyncHandler,
+  { schedule: "0 1 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const dailyDataCleanup = bindToFirebase.schedule(
+  "dailyDataCleanup",
+  dailyDataCleanupHandler,
+  { schedule: "0 2 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 300, memory: "256MiB", maxInstances: 1 },
+);
+
+export const countersReconcile = bindToFirebase.schedule(
+  "countersReconcile",
+  countersReconcileHandler,
+  { schedule: "0 3 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const positionsReconcile = bindToFirebase.schedule(
+  "positionsReconcile",
+  positionsReconcileHandler,
+  { schedule: "30 3 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const payoutBatch = bindToFirebase.schedule(
+  "payoutBatch",
+  payoutBatchHandler,
+  { schedule: "0 6 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const cartPrune = bindToFirebase.schedule(
+  "cartPrune",
+  cartPruneHandler,
+  { schedule: "0 4 * * 0", timeZone: "UTC", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const notificationPrune = bindToFirebase.schedule(
+  "notificationPrune",
+  notificationPruneHandler,
+  { schedule: "0 1 * * 1", timeZone: "UTC", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const weeklyPayoutEligibility = bindToFirebase.schedule(
+  "weeklyPayoutEligibility",
+  weeklyPayoutEligibilityHandler,
+  { schedule: "0 5 * * 6", timeZone: "UTC", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const autoPayoutEligibility = bindToFirebase.schedule(
+  "autoPayoutEligibility",
+  autoPayoutEligibilityHandler,
+  { schedule: "45 4 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const cleanupRtdbEvents = bindToFirebase.schedule(
+  "cleanupRtdbEvents",
+  cleanupRtdbEventsHandler,
+  { schedule: "every 5 minutes", region: REGION, timeoutSeconds: 60, memory: "256MiB", maxInstances: 1 },
+);
+
+export const mediaTmpCleanup = bindToFirebase.schedule(
+  "mediaTmpCleanup",
+  mediaTmpCleanupHandler,
+  { schedule: "30 4 * * *", timeZone: "Asia/Kolkata", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
 
 // ── Firestore triggers ────────────────────────────────────────────────────
-export { onBidPlaced } from "./triggers/onBidPlaced";
-export { onOrderCreate } from "./triggers/onOrderCreate";
-export { onOrderStatusChange } from "./triggers/onOrderStatusChange";
-export { onProductWrite } from "./triggers/onProductWrite";
-export { onReviewWrite } from "./triggers/onReviewWrite";
-export { onCategoryWrite } from "./triggers/onCategoryWrite";
-export { onStoreWrite } from "./triggers/onStoreWrite";
+export const onBidPlaced = bindToFirebase.documentCreated(
+  "onBidPlaced",
+  onBidPlacedHandler,
+  { document: "bids/{bidId}", region: REGION },
+);
 
-// ── HTTPS endpoints (server-to-server, secured by internal secret) ────────
-export { adminAnalytics } from "./callable/adminAnalytics";
-export { storeAnalytics } from "./callable/storeAnalytics";
-export { promotionsApi } from "./callable/promotions";
-export { listingProcessor } from "./callable/listingProcessor";
+export const onOrderCreate = bindToFirebase.documentCreated(
+  "onOrderCreate",
+  onOrderCreateHandler,
+  { document: "orders/{orderId}", region: REGION },
+);
+
+export const onOrderStatusChange = bindToFirebase.documentUpdated(
+  "onOrderStatusChange",
+  onOrderStatusChangeHandler,
+  { document: "orders/{orderId}", region: REGION },
+);
+
+export const onProductWrite = bindToFirebase.documentWritten(
+  "onProductWrite",
+  onProductWriteHandler,
+  { document: "products/{productId}", region: REGION },
+);
+
+export const onReviewWrite = bindToFirebase.documentWritten(
+  "onReviewWrite",
+  onReviewWriteHandler,
+  { document: "reviews/{reviewId}", region: REGION },
+);
+
+export const onCategoryWrite = bindToFirebase.documentWritten(
+  "onCategoryWrite",
+  onCategoryWriteHandler,
+  { document: "categories/{categoryId}", region: REGION },
+);
+
+export const onStoreWrite = bindToFirebase.documentWritten(
+  "onStoreWrite",
+  onStoreWriteHandler,
+  { document: "stores/{storeId}", region: REGION },
+);
+
+// ── HTTPS endpoints (server-to-server, x-internal-secret auth) ────────────
+export const adminAnalytics = bindToFirebase.https(
+  "adminAnalytics",
+  adminAnalyticsHandler,
+  { region: REGION, timeoutSeconds: 120, memory: "512MiB", maxInstances: 10, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+export const storeAnalytics = bindToFirebase.https(
+  "storeAnalytics",
+  storeAnalyticsHandler,
+  { region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 20, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+export const promotionsApi = bindToFirebase.https(
+  "promotionsApi",
+  promotionsHandler,
+  { region: REGION, timeoutSeconds: 60, memory: "256MiB", maxInstances: 10, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+export const listingProcessor = bindToFirebase.https(
+  "listingProcessor",
+  listingProcessorHandler,
+  { region: REGION, timeoutSeconds: 30, memory: "256MiB", maxInstances: 20, minInstances: 0, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
