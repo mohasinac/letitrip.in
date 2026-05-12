@@ -60,6 +60,37 @@
 
 ---
 
+### Session S18 — 2026-05-12 — [CRUD] Seed runner enhancements: P31 (A/C/D done, B already-better)
+
+**Scope:** P31 data-layer-only — validator hook, dry-run diff, retry/error capture. PII masking already-better-implemented per Rule #4. SeedPanel UI polish deferred to its own commit.
+
+| Area | What was done |
+|------|---------------|
+| **Types — `appkit/src/seed/types.ts`** | Extended `SeedCollection` with optional `validate?: (doc) => string[]` hook. Extended `SeedConfig` with `strictValidation?: boolean`, `maxBatchAttempts?: number` (default 2), `onValidationError?` callback. Extended `SeedResult` with required `validationErrors: SeedValidationError[]`, `retriedBatches: number`, and optional `dryRunDiff?: SeedDryRunDiff[]` (populated only when `dryRun=true`). New `SeedAbortedError` thrown when strict mode hits a validation failure. |
+| **Runner — `appkit/src/seed/runner.ts`** | (A) Validator gate runs before any Firestore write — invalid docs are excluded from `validDocs`, surfaced in `validationErrors[]`, optionally fire `onValidationError(...)`. Strict mode throws `SeedAbortedError` on first failure. (C) Dry-run branch uses `db.getAll(refs[])` in 30-doc RPC chunks (Firestore limit) to bucket existing docs as `toUpdate` and new IDs as `toCreate`; validator-skipped IDs flow to `toSkip`. (D) Each `batch.commit()` runs inside a bounded retry loop gated by `isRetryableError()` heuristic — matches DEADLINE_EXCEEDED / UNAVAILABLE / ECONNRESET / ETIMEDOUT / `retry` substring. Successful retries counted in `SeedResult.retriedBatches`. Non-retryable errors propagate immediately. |
+| **PII — already-better-implemented** | Spec asked for sha256-hashed emails + masked phones + name-initial in seed documents. Existing `encryptPiiFields` (AES-256-GCM ciphertext + HMAC-SHA256 blind indices written to `<field>Index`) is **stronger** — reversible by the application for invoice/shipping flows + searchable via blind indices. Downgrading would break order fulfilment. Documented in P31 tracker note. The `?unmask=true` route + SeedPanel "Show PII" toggle deferred — current UX already shows masked indices to admins. |
+| **Consumer compatibility** | `runSeed` call sites in `appkit/src/seed/test-utils.ts` and the demo seed action don't destructure the new `validationErrors`/`retriedBatches` fields, so the additive type change is backwards compatible. Verified by `npm run check:types` clean both repos. |
+
+**Files changed (Lane A only):**
+- `appkit/src/seed/types.ts` — extended types + `SeedAbortedError` + 2 new exported interfaces (`SeedDryRunDiff`, `SeedValidationError`)
+- `appkit/src/seed/runner.ts` — validator gate, dry-run diff branch, retry loop, return-shape extension
+- `crud-tracker.md` — P31 ⚠️ partial (A/C/D done; B reasoned-out; UI deferred)
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 audits pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- `npm run check:lint` — 192 pre-existing errors unrelated to this commit.
+
+**DEFERRED for follow-up:**
+
+| Date | Task | What was deferred | Status |
+|------|------|-------------------|--------|
+| 2026-05-12 | P31-B `?unmask=true` route | API route + `DEMO_SEED_KEY` header check + SeedPanel "Show PII" toggle. PII is encrypted at rest so the UI value here is admin visibility of raw values, not security. | ⏳ — follow-up |
+| 2026-05-12 | P31 SeedPanel dry-run preview | Wire `SeedResult.dryRunDiff` into per-collection accordion card showing `toCreate`/`toUpdate`/`toSkip` ID lists. Data layer is ready; UI is its own commit. | ⏳ — follow-up |
+| 2026-05-12 | Per-collection Zod validators | The validator hook is in place but no collection plugs in a Zod schema yet. Each collection's `data.ts` (or its `actions/demo-seed-actions.ts` builder) can call `validate: (doc) => parseResult.success ? [] : [...]` when ready. | ⏳ — incremental, per-feature |
+
+---
+
 ### Session S16+S17 — 2026-05-12 — [CRUD] Content + promo seed: P28 blog/entries + P29 coupons/notifs/carts
 
 **Scope:** Continue seed-scale roadmap. Lane B WIP cleared between sessions so the audit gate is back at baseline 8. tsc + audits clean; lint is the pre-existing 192-error baseline in `user/*Client.tsx` (unrelated).
