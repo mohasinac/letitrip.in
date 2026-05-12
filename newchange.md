@@ -21,7 +21,7 @@
 - (none — both lanes idle)
 
 [SEAM-REQUESTS]
-- (none)
+- 2026-05-12 [CRUD→SSR] SB1-G migrate `_internal/server/features/{products,auctions,pre-orders}/service.ts`, `_internal/server/features/products/data.ts`, `_internal/server/jobs/handlers/{onProductWrite,countersReconcile}.ts`, `_internal/shared/features/products/types.ts` from `.isAuction`/`.isPreOrder` reads to `listingType` (use `normalizeListingType()` or `isAuctionListing()`/`isPreOrderListing()` from `@mohasinac/appkit`). Once done, schema fields can drop — coordinated commit removes `isAuction?`/`isPreOrder?` from `ProductDocument` + `ProductItem` + Zod + `PRODUCT_FIELDS` + `PRODUCT_INDEXED_FIELDS` + `DEFAULT_PRODUCT_DATA` + the 5 legacy boolean-combo indexes in `firestore.indexes.json`.
 ```
 
 **Format**:
@@ -57,6 +57,46 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S21 — 2026-05-12 — [CRUD] SB1-G data layer: productRepository + seeds + /api/products + listing-type predicates
+
+**Scope:** Migrate the data-layer + central utility off the boolean discriminator. The 36-file consumer sweep + Lane B `_internal/` cleanup land in dedicated follow-up sessions; this commit puts the canonical infrastructure in place.
+
+| Area | What was done |
+|------|---------------|
+| **Seed wrappers** | `appkit/src/seed/products-{auctions,preorders,standard}-seed-data.ts` — inner array renamed to `_rawProductsXSeedData`, export becomes `_raw...map(p => ({ ...p, listingType: "X" as const }))`. Stamps `listingType: "auction"` / `"pre-order"` / `"standard"` on every fresh doc. Inner entries untouched — boolean fields retained pending schema cleanup. |
+| **productRepository** | `appkit/src/features/products/repository/products.repository.ts`: added `PRODUCT_FIELDS.LISTING_TYPE`, new `LISTING_TYPE_VALUES` enum (AUCTION / PRE_ORDER / STANDARD / PRIZE_DRAW / BUNDLE). `SIEVE_CLAUSE_IS_AUCTION/PREORDER/STANDARD` now resolve to `listingType==X`. `buildListingKindClause()` returns a single `listingType{op}{value}` clause instead of the boolean-combo pair. `scope` Sieve alias paths (publicProducts/publicAuctions/publicPreorders) updated. Direct repo methods rewritten: `findAuctions`, `findPreOrders`, `findActivePreOrders`, `findByGroupId`, `findActiveAuctions`, and the sold-auction sweep query in `findEndedAuctions`. JSDoc on the `listingType` Sieve alias updated to show the new expansion. |
+| **listing-type util** | `appkit/src/features/products/utils/listing-type.ts`: added `isAuctionListing()` / `isPreOrderListing()` / `isStandardListing()` convenience predicates. `normalizeListingType()` still accepts the legacy boolean fallback in its `Pick<>` signature — tightened in a follow-up after Lane B migrates. Predicates re-exported from `appkit/src/features/products/index.ts`. |
+| **/api/products route** | `src/app/api/products/route.ts`: `SAFE_PRODUCT_FILTER_FIELDS` adds `"listingType"`. `?isAuction=true` / `?isPreOrder=true` query params translated into `listingType==auction` / `==pre-order` / `==standard` clauses. Public URL API stable for backwards-compat. |
+| **SB1-D** | 🚫 not-required per user 2026-05-12 — no real data in the environment. Seed wrappers stamp `listingType` on every fresh doc. |
+| **Schema field removal** | **Deferred to coordinated commit.** Lane B `_internal/server/features/{products,auctions,pre-orders}` has hard runtime reads of `.isAuction`/`.isPreOrder` — see `[CRUD→SSR]` seam request at the top of this file. Once Lane B's migration lands, a single commit drops `isAuction?`/`isPreOrder?` from `ProductDocument` + `ProductItem` + Zod + `PRODUCT_FIELDS` + `PRODUCT_INDEXED_FIELDS` + `DEFAULT_PRODUCT_DATA`, strips the boolean lines from raw seed entries, and removes the 5 legacy boolean-combo `firestore.indexes.json` entries. |
+
+**Files changed:**
+- `appkit/src/seed/products-auctions-seed-data.ts` — map-wrapper export
+- `appkit/src/seed/products-preorders-seed-data.ts` — map-wrapper export
+- `appkit/src/seed/products-standard-seed-data.ts` — map-wrapper export
+- `appkit/src/features/products/repository/products.repository.ts` — listingType queries + LISTING_TYPE_VALUES enum
+- `appkit/src/features/products/utils/listing-type.ts` — 3 new predicates
+- `appkit/src/features/products/index.ts` — export new predicates
+- `src/app/api/products/route.ts` — translate query params to listingType clauses
+- `crud-tracker.md` — SB1-D 🚫, SB1-G ⚠️ partial (data done, consumer sweep deferred)
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- `npm run check:lint` — pre-existing 192-error baseline unchanged.
+
+**DEFERRED:**
+
+| Task | Scope | Why follow-up |
+|------|-------|---------------|
+| Lane A consumer sweep | 20 appkit files + 16 root files reading `.isAuction`/`.isPreOrder` on product objects. Examples: `ProductForm.tsx` (7), `CompareOverlay.tsx` (4), `ProductGrid.tsx`, `useProducts`, `useAuctions`, `bid-actions`, `coupons.repository`, `order-splitter`, `search.repository`, `SeedPanel`, multiple `/api/products/group/...` routes. | 36 files of mechanical-but-careful edits. Each `.isAuction`/`.isPreOrder` read → `isAuctionListing(p)` / `isPreOrderListing(p)`. Need to verify no behavioral change per file. Own focused session. |
+| Lane B `_internal/` sweep | 7 files: `server/features/{products,auctions,pre-orders}/service.ts`, `server/features/products/data.ts`, `server/jobs/handlers/{onProductWrite,countersReconcile}.ts`, `shared/features/products/types.ts`. | Lane A is READ-ONLY on `_internal/`. See `[CRUD→SSR]` seam request at top of this file. |
+| Schema field removal | Drop `isAuction?`/`isPreOrder?` from `ProductDocument`/`ProductItem`/Zod/`PRODUCT_FIELDS`/`PRODUCT_INDEXED_FIELDS`/`DEFAULT_PRODUCT_DATA`. Strip boolean lines from `_rawProductsX` seed entries. Remove 5 legacy boolean-combo `firestore.indexes.json` entries. Tighten `normalizeListingType` `Pick<>` to `"listingType"` only. Update CLAUDE.md J13 rule. | Coordinated commit AFTER Lane A consumer sweep + Lane B `_internal/` sweep both ship. |
+| Cart-item snapshot fields | `appkit/src/features/cart/schemas/firestore.ts` keeps `CartItem.isAuction: boolean` + `isPreOrder: boolean` as required fields. These are denormalized snapshots, not product reads — separate schema concern. | Optional follow-up — migrate to `cartItem.listingType` snapshot. |
+| S21 spec (BundleForm, BundleItemsPicker, NonRefundableConsentModal, ProductForm subcategory/video fix) | Original session content. Not started this turn. | Own session — each is a real form needing Rule #5 gates. |
 
 ---
 

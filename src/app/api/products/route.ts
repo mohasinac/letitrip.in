@@ -76,6 +76,10 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "storeId",
   "title",
   "price",
+  // SB1-G — canonical discriminator. Boolean flags kept in allow-list for any
+  // consumer that hasn't migrated yet; both shapes resolve to the same docs
+  // because seed wrappers set both fields.
+  "listingType",
   "isAuction",
   "isPreOrder",
   "featured",
@@ -138,10 +142,22 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   }
   const inStock = param(url, "inStock");
   if (inStock === "true") parts.push("stockQuantity>0");
+  // SB1-G — translate legacy boolean query params to the canonical
+  // `listingType` discriminator. Public ?isAuction=true/?isPreOrder=true URLs
+  // keep working; internally we route through the single-field clause that
+  // the new composite indexes back. Also accept `?listingType=auction` (etc).
+  const listingTypeParam = param(url, "listingType");
   const isAuction = param(url, "isAuction");
-  if (isAuction !== null) parts.push(`isAuction==${isAuction}`);
   const isPreOrder = param(url, "isPreOrder");
-  if (isPreOrder !== null) parts.push(`isPreOrder==${isPreOrder}`);
+  if (listingTypeParam) {
+    parts.push(`listingType==${listingTypeParam}`);
+  } else if (isAuction === "true") {
+    parts.push(`listingType==auction`);
+  } else if (isPreOrder === "true") {
+    parts.push(`listingType==pre-order`);
+  } else if (isAuction === "false" && isPreOrder === "false") {
+    parts.push(`listingType==standard`);
+  }
   const featured = param(url, "featured");
   if (featured === "true") parts.push("featured==true");
   const isPromoted = param(url, "isPromoted");
