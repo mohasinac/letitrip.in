@@ -60,6 +60,47 @@
 
 ---
 
+### Session S19 — 2026-05-12 — [CRUD] SB1 schemas: additive listingType + bundle + prize-draw + order extensions
+
+**Scope:** SB1 (Bundle/Prize Draw foundation) — schema layer only, additive throughout. SB1-D migration script and SB1-G repository boolean→listingType refactor deferred because Rule #3 (schema/logic change must update all callers in same session) requires the data layer + every query + every seed update + index changes to land together — that's its own session, not a tail-on.
+
+| Sub | Status | What was done |
+|-----|--------|---------------|
+| **SB1-A** ListingType enum | ⚠️ additive | Extended `ListingType` in `appkit/src/features/products/types/index.ts` to include `"prize-draw"` + `"bundle"`. `listingType?` was already optional on `ProductItem` from a previous session — no schema break. **Did NOT remove** `isAuction?`/`isPreOrder?` booleans; full replacement is SB1-D+G's gated scope. |
+| **SB1-B** ProductDocument schema | ✅ | Added all spec fields to `appkit/src/features/products/schemas/firestore.ts` as **optional**: `listingType`, `maxPerUser`, `partOfBundleIds`, `partOfBundleTitles`, prize-draw fields (`prizeDrawItems[]`, `pricePerEntry`, `prizeMaxEntries`, `prizeCurrentEntries`, `prizeRevealWindowStart/End`, `prizeRevealStatus`, `prizeRevealDeadlineDays`, `prizeGithubFileUrl`). New `PrizeDrawItem` interface exported alongside `ProductDocument`. |
+| **SB1-C** Zod schema | ⚠️ additive | Extended `listingType` enum in `appkit/src/features/products/schemas/index.ts` + appended optional Zod fields matching SB1-B. **Did NOT convert to discriminated union** — would force every seed/test to declare a branch. Stays flat-with-optional until SB1-D/G migrate the data layer. |
+| **SB1-D** Migration script | ⏳ deferred | `appkit/scripts/migrate-listing-type.mjs` not written this session. Once written it must run BEFORE the boolean flags can be dropped (Rule #3). Live data also needs the migration applied per environment. |
+| **SB1-E** BundleDocument | ✅ | New `appkit/src/features/bundles/schemas/firestore.ts` (102 LOC) + barrel `schemas/index.ts`. Exports `BUNDLES_COLLECTION` constant + `BundleStatus`, `BundleItemListingType`, `BundleItem`, `BundleDocument` types + `BUNDLE_INDEXED_FIELDS`. Wired into `appkit/src/features/bundles/index.ts` barrel. Homogeneous-bundles-only constraint baked into types (auctions/prize-draws excluded). No consumers yet. |
+| **SB1-F** OrderDocument extensions | ✅ | Appended 6 optional fields (`prizeWon`, `prizeRevealDeadline`, `prizeRevealExpired`, `prizeDrawProductId`, `isNonRefundable`, `bundleId`) to `OrderDocument` in `appkit/src/features/orders/schemas/firestore.ts`. tsc clean both repos. |
+| **SB1-G** Repository refactor | ⏳ deferred | Spec mandates replacing every `where("isAuction", "==", ...)` with `where("listingType", "==", ...)`. Would orphan all existing seed docs (they don't have `listingType` set) and require backfill via SB1-D + composite-index changes in `appkit/firebase/base/firestore.indexes.json`. Single-session gated work — must land together. |
+
+**Files changed:**
+- `appkit/src/features/products/types/index.ts` — ListingType enum extension
+- `appkit/src/features/products/schemas/firestore.ts` — ProductDocument additive fields + `PrizeDrawItem` export
+- `appkit/src/features/products/schemas/index.ts` — Zod additive fields
+- `appkit/src/features/bundles/schemas/firestore.ts` (NEW)
+- `appkit/src/features/bundles/schemas/index.ts` (NEW barrel)
+- `appkit/src/features/bundles/index.ts` — export schemas barrel
+- `appkit/src/features/orders/schemas/firestore.ts` — OrderDocument additive fields
+- `crud-tracker.md` — SB1 row statuses (B/E/F ✅, A/C ⚠️ additive, D/G ⏳ deferred)
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 audits pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- `npm run check:lint` — pre-existing 192-error baseline unchanged.
+
+**DEFERRED:**
+
+| Task | Why | Path forward |
+|------|-----|--------------|
+| SB1-D migration script | Required before boolean flags can be removed. Must run per environment. | Own session — write `migrate-listing-type.mjs` with `--dry-run` flag, run against staging, then prod. |
+| SB1-G repository refactor | Replacing `where("isAuction")` with `where("listingType")` orphans every existing seed doc (no `listingType` set). Needs SB1-D backfill first. | Pair SB1-G with SB1-D in the same session. Also requires: composite index updates, `productRepository.FILTER_ALIASES` update, `listingProcessor` Function update, seed-data-runner pass to set `listingType` on all 9 product seed files, `J13` rule update in CLAUDE.md. |
+| Boolean flag removal (`isAuction`, `isPreOrder`) | Once SB1-D + SB1-G land + seed data is regenerated, the booleans can be removed in a final cleanup session. | Last step of the SB1 arc. |
+
+**S19 net result:** All new code paths (bundles, prize-draws) have a complete type + schema foundation. Existing code paths are unchanged. The migration is bounded behind two clearly-scoped follow-up sessions instead of being rushed into one risky commit.
+
+---
+
 ### Session S45 — 2026-05-12 — [CRUD] EMG triage (docs only)
 
 **Scope:** Review the 5 Emerging Patterns rows added 2026-05-12 in the Tracker-Shape session. Mark each ready-to-graduate (🎯), keep-holding (⏳), or delete-from-active (🚫). No code touched.
