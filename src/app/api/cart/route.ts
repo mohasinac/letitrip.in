@@ -13,7 +13,7 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { cartRepository } from "@mohasinac/appkit";
-import { productRepository, isAuctionListing } from "@mohasinac/appkit";
+import { productRepository, normalizeListingType } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
@@ -83,7 +83,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       quantity,
       storeId: product.storeId,
       storeName: product.storeName ?? "",
-      isAuction: isAuctionListing(product),
+      listingType: normalizeListingType(product),
     });
 
     return successResponse(

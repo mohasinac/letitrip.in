@@ -21,7 +21,7 @@
 - (none — both lanes idle)
 
 [SEAM-REQUESTS]
-- 2026-05-12 [CRUD→SSR] SB1-G migrate `_internal/server/features/{products,auctions,pre-orders}/service.ts`, `_internal/server/features/products/data.ts`, `_internal/server/jobs/handlers/{onProductWrite,countersReconcile}.ts`, `_internal/shared/features/products/types.ts` from `.isAuction`/`.isPreOrder` reads to `listingType` (use `normalizeListingType()` or `isAuctionListing()`/`isPreOrderListing()` from `@mohasinac/appkit`). Once done, schema fields can drop — coordinated commit removes `isAuction?`/`isPreOrder?` from `ProductDocument` + `ProductItem` + Zod + `PRODUCT_FIELDS` + `PRODUCT_INDEXED_FIELDS` + `DEFAULT_PRODUCT_DATA` + the 5 legacy boolean-combo indexes in `firestore.indexes.json`.
+- (none — SB1-G fully landed S22 Phase 4 2026-05-12; previous [CRUD→SSR] request resolved with Lane B idle)
 ```
 
 **Format**:
@@ -57,6 +57,34 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### Session S22 Phase 3+4 — 2026-05-12 — [CRUD] Full SB1-G removal cascade — booleans dropped everywhere
+
+**Scope:** Lane B was idle so I executed the full Phase 3 + Phase 4 cascade in one pass. Removed `isAuction` / `isPreOrder` from every schema, type, Zod input, repository, route, component, and seed file in both repos. Cart-item snapshot migrated to `listingType`. 34 legacy boolean-combo composite indexes dropped. `normalizeListingType` signature tightened to `Pick<"listingType">` only. CLAUDE.md J13 rule updated.
+
+| Phase | Layer | Files |
+|-------|-------|-------|
+| **3a** Lane B `_internal/` | `server/features/{products,auctions,pre-orders}/service.ts`, `server/features/products/{data,actions}.ts`, `server/jobs/handlers/{onProductWrite,countersReconcile}.ts`, `shared/features/products/{types,schema}.ts` | All read predicates via `isAuctionListing` / `isPreOrderListing`; counters split off `data.listingType === "auction"`; `SitemapProduct.isAuction` field replaced with `SitemapProduct.listingType`; `auctionInputSchema` / `preOrderInputSchema` use `listingType: z.literal("auction" \| "pre-order")` as locked discriminator. |
+| **3b** Cart-item snapshot | `appkit/src/features/cart/schemas/firestore.ts`, `cart/repository/cart.repository.ts`, `cart/actions/cart-actions.ts`, `_internal/shared/features/cart/schema.ts`, `src/app/api/cart/{route,merge/route,coupon/route}.ts`, `src/components/routing/CartRouteClient.tsx`, `seed/cart-seed-data.ts`, `features/orders/utils/order-splitter.ts`, `features/promotions/repository/coupons.repository.ts`, `features/promotions/hooks/useCouponValidate.ts`, `features/seller/actions/offer-actions.ts`, `src/actions/{cart,coupon,pre-order}.actions.ts` | `CartItem.{isAuction,isPreOrder}` booleans replaced with required `listingType` snapshot. `mkCart` seed helper auto-derives from slug-prefix. `order-splitter` keys off `listingType`. Coupon `applicableToAuctions` filter uses `item.listingType === "auction"`. |
+| **4a-b** Schema + Zod + constants | `appkit/src/features/products/schemas/firestore.ts`, `products/schemas/index.ts`, `products/types/index.ts`, `products/api/{route,[id]/route}.ts`, `src/validation/request-schemas.ts`, `admin/types/product.types.ts`, `wishlist/types/index.ts`, `search/types/index.ts`, `seo/json-ld.ts` | `isAuction?` / `isPreOrder?` REMOVED from `ProductDocument` + `ProductItem` + admin/wishlist/search subtypes + ProductListParams + ProductJsonLdInput. `PRODUCT_FIELDS`/`PRODUCT_INDEXED_FIELDS`/`DEFAULT_PRODUCT_DATA`/`PRODUCT_UPDATABLE_FIELDS`/`PRODUCT_PUBLIC_FIELDS` rebuilt around `listingType`. `ListingType` union tightened to 5 canonical tokens (legacy `"fixed"` dropped). All product/search Zod enums tightened to the same. `productCreateSchema` refine rewritten to read `data.listingType === "auction"`. |
+| **4c** Seed cleanup | `seed/products-{auctions,preorders,standard}-seed-data.ts` | Stripped 230 boolean-flag lines from raw entries via bulk replace_all. JSDoc headers updated to "listingType: X". |
+| **4d** Component props | `CompareOverlay`, `SublistingCarouselSection`, `ShowGroupSection`, `MarketplaceAuctionCard`, `stores/types`, `auctions/types`, `search/columns` | `@deprecated` isAuction / isPreOrder props all REMOVED. `StoreAuctionItem` extends `Omit<StoreProductItem, "listingType">`. `AuctionItem.listingType: "auction"` literal. `searchResultAdminColumns` now has a `listingType` column. |
+| **4e** Write sites | `ProductForm`, `AdminProductEditorView` (`applyMode` + `EMPTY_PRODUCT`), all 4 group-children routes, store auction+pre-order new/edit pages, listing components (`AuctionsIndexListing`/`ProductsIndexListing`/`PreOrdersIndexListing`/`StoreProducts/Auctions/PreOrdersListing`/`CategoryProductsListing`), `AuctionDetailPageView.renderRelated`, `PublicProfileView`, wishlist page | All writes emit only `listingType: "auction" \| "pre-order" \| "standard"`; legacy boolean writes gone. |
+| **4f** Predicate signature | `appkit/src/features/products/utils/listing-type.ts` | `normalizeListingType` / `isAuctionListing` / `isPreOrderListing` / `isStandardListing` signatures tightened to `{ listingType?: ListingType }` only — no boolean fallback param. |
+| **4g** Indexes | `appkit/firebase/base/firestore.indexes.json` (+ root via `firebase-merge.mjs`) | **34 legacy composites dropped** programmatically (any index whose `fields[]` included `isAuction` or `isPreOrder`). 304 → 270 indexes. `firebase deploy --only firestore:indexes` is an ops follow-up. |
+| **4h** CLAUDE.md J13 | `CLAUDE.md` | Rule rewritten — `listingType` is required on every product doc; predicates exported from `@mohasinac/appkit` and `@mohasinac/appkit/client`. Recurrent-root-cause row #1 updated to flag use-`listingType`-not-the-dropped-booleans. |
+| **misc** QA + tooling | `appkit/scripts/sieve-audit.mjs`, `scripts/qa/{smoke-pages-api,smoke-all-pages}.mjs` | All hardcoded `isAuction==true` / `isAuction === true` updated to `listingType==auction` / `listingType === "auction"`. |
+
+**Files changed (this turn alone):** 50+ across both repos + scripts + docs.
+
+**Gates:**
+- `npm run check:types` — 0 errors both repos. ✅
+- `npm run check:audits` — all 4 pass; `audit-ssr-in-appkit` at baseline 8. ✅
+- appkit dist rebuilt twice during the cascade.
+
+**Net result — SB1-G fully closed.** The boolean discriminators are gone from the schema; every read goes through canonical predicates; every write goes through `listingType`. Composite indexes are clean. Cart-item snapshots track `listingType` for order-splitter + coupon-eligibility decisions.
 
 ---
 

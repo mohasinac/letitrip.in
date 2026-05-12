@@ -37,8 +37,14 @@ const cartItemSchema = z.object({
   storeId: z.string(),
   price: z.number().positive(),
   quantity: z.number().int().min(1),
-  isPreOrder: z.boolean(),
-  isAuction: z.boolean(),
+  // SB1-G Phase 4 — canonical listing-kind snapshot.
+  listingType: z.enum([
+    "standard",
+    "auction",
+    "pre-order",
+    "prize-draw",
+    "bundle",
+  ]),
 });
 
 const validateCouponForCartSchema = z.object({

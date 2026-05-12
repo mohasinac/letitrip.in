@@ -46,7 +46,7 @@ export default async function Page({ params }: Props) {
         currency: auction.currency ?? "INR",
         mainImage: auction.mainImage,
         images: auction.images,
-        isAuction: true,
+        listingType: "auction",
         auctionEndDate: auction.auctionEndDate instanceof Date
           ? auction.auctionEndDate
           : auction.auctionEndDate

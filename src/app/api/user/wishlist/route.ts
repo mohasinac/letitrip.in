@@ -75,12 +75,10 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
       return errorResponse(ERROR_MESSAGES.PRODUCT.NOT_FOUND, 404);
     }
 
-    // SB1-G — canonical listingType drives the snapshot's `productType` tag.
+    // SB1-G Phase 4 — canonical listingType drives the snapshot's `productType` tag.
     const lt = normalizeListingType(
       product as {
         listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
-        isAuction?: boolean;
-        isPreOrder?: boolean;
       },
     );
     const productType: "product" | "auction" | "preorder" =

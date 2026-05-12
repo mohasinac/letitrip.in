@@ -129,13 +129,12 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 : typeof l.mainImage === "string"
                   ? l.mainImage
                   : null;
-              // SB1-G — canonical predicates handle both listingType + legacy.
-              const isAuction = isAuctionListing(
-                l as { listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"; isAuction?: boolean; isPreOrder?: boolean },
-              );
-              const isPreOrder = isPreOrderListing(
-                l as { listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"; isAuction?: boolean; isPreOrder?: boolean },
-              );
+              // SB1-G Phase 4 — canonical predicates over listingType only.
+              const lAsLT = l as {
+                listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+              };
+              const isAuction = isAuctionListing(lAsLT);
+              const isPreOrder = isPreOrderListing(lAsLT);
               const href = isAuction
                 ? String(ROUTES.PUBLIC.AUCTION_DETAIL(listingSlug))
                 : isPreOrder

@@ -94,8 +94,7 @@ export const POST = withProviders(
         storeId: item.storeId,
         price: item.lockedPrice ?? item.price,
         quantity: item.quantity,
-        isPreOrder: item.isPreOrder ?? false,
-        isAuction: item.isAuction ?? false,
+        listingType: item.listingType,
       }));
 
       const result = await validateCouponForCart(user!.uid, normalised, cartItems);

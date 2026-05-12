@@ -232,8 +232,8 @@ async function resolveValues() {
   const categories = extractItems(categoriesProbe.body);
 
   const firstProduct = products.find((x) => x && typeof x === "object") ?? {};
-  const firstAuction = products.find((x) => x?.isAuction === true) ?? firstProduct;
-  const firstPreOrder = products.find((x) => x?.isPreOrder === true) ?? firstProduct;
+  const firstAuction = products.find((x) => x?.listingType === "auction") ?? firstProduct;
+  const firstPreOrder = products.find((x) => x?.listingType === "pre-order") ?? firstProduct;
   const firstStore = stores.find((x) => x && typeof x === "object") ?? {};
   const firstBlog = blogs.find((x) => x && typeof x === "object") ?? {};
   const firstEvent = events.find((x) => x && typeof x === "object") ?? {};

@@ -121,7 +121,7 @@ async function runPageSmoke(baseUrl) {
 
   const firstProduct = products.find((item) => item && typeof item === "object") ?? null;
   const firstAuctionProduct =
-    products.find((item) => item && typeof item === "object" && item.isAuction === true) ??
+    products.find((item) => item && typeof item === "object" && item.listingType === "auction") ??
     null;
   const firstPreOrder = preOrders.find((item) => item && typeof item === "object") ?? null;
   const firstStore = stores.find((item) => item && typeof item === "object") ?? null;
@@ -503,7 +503,7 @@ async function runApiSmoke(baseUrl) {
 
   const firstProduct = products.find((item) => item && typeof item === "object") ?? null;
   const firstAuctionProduct =
-    products.find((item) => item && typeof item === "object" && item.isAuction === true) ??
+    products.find((item) => item && typeof item === "object" && item.listingType === "auction") ??
     null;
   const firstPreOrder = preOrders.find((item) => item && typeof item === "object") ?? null;
 
@@ -627,8 +627,8 @@ async function runApiSmoke(baseUrl) {
 
     await compareApiVariants({
       name: "GET /api/products sieve check (auction flag)",
-      variantA: "/api/products?pageSize=12&isAuction=true&sorts=-createdAt",
-      variantB: "/api/products?pageSize=12&isAuction=false&sorts=-createdAt",
+      variantA: "/api/products?pageSize=12&listingType=auction&sorts=-createdAt",
+      variantB: "/api/products?pageSize=12&listingType=standard&sorts=-createdAt",
       allowIdenticalWhenEmpty: false,
     });
 

@@ -35,8 +35,14 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1).max(99),
   storeId: z.string().min(1),
   storeName: z.string().min(1),
-  isAuction: z.boolean().optional(),
-  isPreOrder: z.boolean().optional(),
+  // SB1-G Phase 4 — canonical listing-kind snapshot.
+  listingType: z.enum([
+    "standard",
+    "auction",
+    "pre-order",
+    "prize-draw",
+    "bundle",
+  ]),
   /** Set when item originates from an accepted Make-an-Offer */
   offerId: z.string().optional(),
   /** Locked offer price — used in verify route at checkout */

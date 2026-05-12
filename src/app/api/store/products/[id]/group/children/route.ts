@@ -48,9 +48,6 @@ export const POST = withProviders(createApiHandler({
         images: [],
         stockQuantity: 1,
         status: "published",
-        // SB1-G — write both legacy booleans + canonical listingType.
-        isAuction: false,
-        isPreOrder: false,
         listingType: "standard",
         currency: parent.currency ?? "INR",
         featured: false,

@@ -36,9 +36,15 @@ interface ServerCartItem {
   sellerId?: string;
   sellerName?: string;
   sellerSlug?: string;
-  isAuction?: boolean;
-  isPreOrder?: boolean;
+  /** Canonical listing-kind snapshot from CartItemDocument (SB1-G Phase 4). */
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
 }
+
+/** Local helper — derives the per-item `listingType` snapshot used by cart UI rendering. */
+type CartItemWithListingType = CartItem & {
+  itemId?: string;
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+};
 
 interface AppliedCoupon {
   code: string;
@@ -53,7 +59,7 @@ interface SellerGroup {
   sellerId: string;
   sellerName: string;
   sellerSlug?: string;
-  items: (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[];
+  items: CartItemWithListingType[];
 }
 
 interface ServerCartResponse {
@@ -74,20 +80,21 @@ interface ValidateResponse {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Derive the product detail URL from productId slug prefix. */
-function getProductHref(productId: string, isAuction?: boolean, isPreOrder?: boolean): string {
-  if (isAuction ?? productId.startsWith("auction-")) {
+/** Derive the product detail URL from the canonical listingType (with slug-prefix fallback). */
+function getProductHref(
+  productId: string,
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle",
+): string {
+  if (listingType === "auction" || productId.startsWith("auction-")) {
     return String(ROUTES.PUBLIC.AUCTION_DETAIL(productId));
   }
-  if (isPreOrder ?? productId.startsWith("preorder-")) {
+  if (listingType === "pre-order" || productId.startsWith("preorder-")) {
     return String(ROUTES.PUBLIC.PRE_ORDER_DETAIL(productId));
   }
   return String(ROUTES.PUBLIC.PRODUCT_DETAIL(productId));
 }
 
-function groupBySeller(
-  items: (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[],
-): SellerGroup[] {
+function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
     const meta = item.meta as unknown as Record<string, unknown>;
@@ -104,14 +111,13 @@ function groupBySeller(
 
 function serverItemsToCartItems(
   items: ServerCartItem[],
-): (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[] {
+): CartItemWithListingType[] {
   return items.map((item) => ({
     id: item.itemId ?? item.productId,
     itemId: item.itemId,
     productId: item.productId,
     quantity: item.quantity,
-    isAuction: item.isAuction,
-    isPreOrder: item.isPreOrder,
+    listingType: item.listingType,
     meta: {
       productId: item.productId,
       title: item.productTitle,
@@ -129,13 +135,17 @@ function serverItemsToCartItems(
 
 function guestItemsToCartItems(
   items: ReturnType<typeof useGuestCart>["items"],
-): (CartItem & { itemId?: string; isAuction?: boolean; isPreOrder?: boolean })[] {
+): CartItemWithListingType[] {
   return items.map((item) => ({
     id: item.productId,
     productId: item.productId,
     quantity: item.quantity,
-    isAuction: item.productId.startsWith("auction-"),
-    isPreOrder: item.productId.startsWith("preorder-"),
+    // Guest carts don't carry a listingType snapshot — derive from slug prefix.
+    listingType: item.productId.startsWith("auction-")
+      ? "auction"
+      : item.productId.startsWith("preorder-")
+        ? "pre-order"
+        : "standard",
     meta: {
       productId: item.productId,
       title: item.productTitle ?? item.productId,
@@ -762,7 +772,7 @@ function SellerGroupSection({
         {group.items.map((item) => {
           const iid = item.itemId ?? item.id;
           const isChecked = !effectiveSelected || effectiveSelected.has(iid);
-          const productHref = getProductHref(item.productId, item.isAuction, item.isPreOrder);
+          const productHref = getProductHref(item.productId, item.listingType);
 
           return (
             <Div key={item.id} className="flex items-start gap-3">

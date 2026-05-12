@@ -152,11 +152,10 @@ const productBaseSchema = z.object({
   seoTitle: z.string().max(60).optional(),
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
-  // SB1-G — canonical discriminator. Legacy booleans kept transitional.
+  // SB1-G Phase 4 — canonical discriminator (booleans removed).
   listingType: z
-    .enum(["fixed", "standard", "auction", "pre-order", "prize-draw", "bundle"])
+    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle"])
     .optional(),
-  isAuction: z.boolean().optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),
   reservePrice: z.number().positive().optional(),
@@ -165,7 +164,6 @@ const productBaseSchema = z.object({
   autoExtendable: z.boolean().optional(),
   auctionExtensionMinutes: z.number().int().positive().optional(),
   auctionShippingPaidBy: z.enum(["seller", "winner"]).optional(),
-  isPreOrder: z.boolean().optional(),
   preOrderDeliveryDate: dateStringSchema.optional(),
   preOrderDepositPercent: z.number().min(0).max(100).optional(),
   preOrderDepositAmount: z.number().nonnegative().optional(),
@@ -178,7 +176,9 @@ const productBaseSchema = z.object({
 
 export const productCreateSchema = productBaseSchema
   .refine(
-    (data) => !data.isAuction || (data.auctionEndDate && data.startingBid),
+    (data) =>
+      data.listingType !== "auction" ||
+      (data.auctionEndDate && data.startingBid),
     { message: "Auction items must have end date and starting bid" },
   )
   .refine(

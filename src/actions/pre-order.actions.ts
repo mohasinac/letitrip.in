@@ -51,7 +51,7 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
     quantity: 1,
     storeId,
     storeName,
-    isPreOrder: true,
+    listingType: "pre-order",
   });
 
   redirect("/checkout");

@@ -12,13 +12,13 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, isAuction: false, isPreOrder: true, status: "draft" });
+    await sellerUpdateProductAction(id, { ...draft, listingType: "pre-order", status: "draft" });
     redirect(String(ROUTES.STORE.PRE_ORDERS));
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, isAuction: false, isPreOrder: true, status: "published" });
+    await sellerUpdateProductAction(id, { ...draft, listingType: "pre-order", status: "published" });
     redirect(String(ROUTES.STORE.PRE_ORDERS));
   }
 

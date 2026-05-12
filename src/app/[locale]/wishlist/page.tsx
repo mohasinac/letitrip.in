@@ -285,7 +285,6 @@ export default function WishlistPage() {
                   status:    item.product?.status    ?? ("published" as const),
                   featured:  item.product?.isFeatured ?? false,
                   listingType: item.product?.listingType,
-                  isAuction: isAuctionListing(item.product),
                   slug,
                 }}
               />
