@@ -32,6 +32,7 @@ const ERRORS = {
 export const GET = withProviders(
   createApiHandler({
     roles: ["admin"],
+    permission: "admin:media:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const prefix = url.searchParams.get("prefix") ?? "";

@@ -19,6 +19,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:faqs:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const faq = await faqsRepository.findById(id);
@@ -31,6 +32,7 @@ export const GET = withProviders(
 const updateHandler = createRouteHandler<(typeof updateFaqSchema)["_output"]>({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:faqs:read",
   schema: updateFaqSchema,
   handler: async ({ body, params }) => {
     const id = (params as { id: string }).id;
@@ -51,6 +53,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:faqs:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await faqsRepository.findById(id);

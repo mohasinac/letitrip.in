@@ -45,6 +45,7 @@ const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
+  permission: "admin:payouts:write",
   handler: async () => {
     const eligibleOrders = await orderRepository.listAll({
       filters:

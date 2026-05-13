@@ -19,6 +19,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator", "seller"],
+    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -53,6 +54,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:categories:write",
     schema: createSchema,
     handler: async ({ body, user }) => {
       const id = categoriesRepository.generateSublistingId(body!.name);

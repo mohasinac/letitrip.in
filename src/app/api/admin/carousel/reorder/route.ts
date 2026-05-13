@@ -14,6 +14,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:carousel:write",
     schema: reorderSchema,
     handler: async ({ body }) => {
       const { slideIds } = body!;

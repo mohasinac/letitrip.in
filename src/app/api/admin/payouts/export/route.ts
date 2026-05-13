@@ -16,6 +16,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:payouts:read",
     handler: async () => {
       const result = await payoutRepository.list({
         sorts: "-createdAt",

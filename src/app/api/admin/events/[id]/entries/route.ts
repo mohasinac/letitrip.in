@@ -13,13 +13,15 @@ import {
 import { eventEntryRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { requireRoleFromRequest } from "@/lib/firebase/auth-server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(
+export const GET = withProviders(async function GET(
   request: Request,
   context: RouteContext,
 ): Promise<Response> {
+  await requireRoleFromRequest(request, ["admin", "employee"]);
   const { id: eventId } = await context.params;
   const searchParams = getSearchParams(request);
   const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -68,4 +70,4 @@ export async function GET(
     totalPages: 1,
     hasMore: false,
   }));
-}
+});

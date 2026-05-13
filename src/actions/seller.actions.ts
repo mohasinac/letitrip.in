@@ -71,6 +71,7 @@ import type { OrderDocument } from "@mohasinac/appkit";
 import type { CouponDocument } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { getStoreCapabilities } from "@mohasinac/appkit/server";
 
 // --- Become Seller ------------------------------------------------------------
 
@@ -211,6 +212,22 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
   const parsed = productCreateSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+
+  // Capability gate — admin bypasses
+  if (user.role !== "admin") {
+    const store = await getSellerStore(user.uid);
+    if (store) {
+      const caps = await getStoreCapabilities(store.id);
+      const lt = (parsed.data as Record<string, unknown>).listingType;
+      if (lt === "auction" && !caps.includes("host_auctions")) {
+        throw new AuthorizationError("Your store is not approved to create auction listings.");
+      }
+      if (lt === "pre-order" && !caps.includes("host_preorders")) {
+        throw new AuthorizationError("Your store is not approved to create pre-order listings.");
+      }
+    }
+  }
+
   return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, unknown>);
 }
 

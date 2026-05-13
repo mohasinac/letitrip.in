@@ -16,6 +16,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:newsletter:read",
     handler: async () => {
       const result = await newsletterRepository.list({
         sorts: "-createdAt",

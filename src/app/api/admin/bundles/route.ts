@@ -35,6 +35,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request!.url);
       const activeOnlyParam = url.searchParams.get("activeOnly");
@@ -55,6 +56,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:categories:write",
     schema: bundleCreateSchema,
     handler: async ({ body, user }) => {
       if (!body) return ApiErrors.badRequest("Body required");

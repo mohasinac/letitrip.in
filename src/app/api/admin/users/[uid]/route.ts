@@ -20,6 +20,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:users:read",
     handler: async ({ params }) => {
       const uid = (params as { uid: string }).uid;
       const user = await userRepository.findById(uid);
@@ -33,6 +34,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateUserSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:users:write",
     schema: updateUserSchema,
     handler: async ({ body, params, user }) => {
       const uid = (params as { uid: string }).uid;
@@ -46,6 +48,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:users:delete",
     handler: async ({ params, user }) => {
       const uid = (params as { uid: string }).uid;
       await adminDeleteUser(user!.uid, uid);

@@ -13,6 +13,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const scope = url.searchParams.get("scope") as
@@ -37,6 +38,7 @@ export const POST = withProviders(
   createRouteHandler<ProductFeatureAdminCreatePayload>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:categories:write",
     schema: productFeatureAdminCreateSchema,
     handler: async ({ body }) => {
       try {

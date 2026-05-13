@@ -20,6 +20,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:analytics:view",
     handler: async ({ request }) => {
       const functionUrl = process.env.FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;

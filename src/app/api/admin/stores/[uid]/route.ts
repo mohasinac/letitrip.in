@@ -22,6 +22,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:stores:read",
     handler: async ({ params }) => {
       const uid = (params as { uid: string }).uid;
       const user = await userRepository.findById(uid);
@@ -38,6 +39,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateStoreSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:stores:write",
     schema: updateStoreSchema,
     handler: async ({ body, params }) => {
       const uid = (params as { uid: string }).uid;

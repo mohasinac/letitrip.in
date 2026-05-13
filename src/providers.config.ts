@@ -81,6 +81,18 @@ export function initProviders(): Promise<void> {
       }),
       storage: firebaseStorageProvider,
       style: tailwindAdapter,
+      rbac: {
+        getPermissions: async (uid: string) => {
+          const { getServerPermissions } = await import("@mohasinac/appkit/server");
+          const resolved = await getServerPermissions(uid);
+          return resolved.permissions;
+        },
+        isAdmin: async (uid: string) => {
+          const { getServerPermissions } = await import("@mohasinac/appkit/server");
+          const resolved = await getServerPermissions(uid);
+          return resolved.isAdmin;
+        },
+      },
       // Uncomment when @mohasinac/payment-razorpay is available (Phase 10):
       // payment: createRazorpayProvider({ keyId: process.env.RAZORPAY_KEY_ID! }),
       // Uncomment when @mohasinac/shipping-shiprocket is available (Phase 10):

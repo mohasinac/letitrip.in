@@ -30,6 +30,7 @@ import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
+  permission: "admin:newsletter:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

@@ -20,6 +20,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:events:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const events = await eventRepository.list({ filters: `id==${id}`, page: "1", pageSize: "1" });
@@ -34,6 +35,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateEventSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:events:write",
     schema: updateEventSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -53,6 +55,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:events:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       await eventRepository.changeStatus(id, EVENT_FIELDS.STATUS_VALUES.CANCELLED as any);

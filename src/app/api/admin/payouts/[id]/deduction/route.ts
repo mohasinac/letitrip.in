@@ -33,6 +33,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof deductionSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:payouts:write",
     schema: deductionSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

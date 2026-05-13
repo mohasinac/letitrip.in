@@ -15,6 +15,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof refundSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:orders:write",
     schema: refundSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

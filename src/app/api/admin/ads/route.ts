@@ -94,6 +94,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const q = (url.searchParams.get("q") || "").trim().toLowerCase();
@@ -180,6 +181,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof adsConfigPatchSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:write",
     schema: adsConfigPatchSchema,
     handler: async ({ body }) => {
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
@@ -210,6 +212,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof adInventoryItemSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:write",
     schema: adInventoryItemSchema,
     handler: async ({ body, user }) => {
       if (!body) {

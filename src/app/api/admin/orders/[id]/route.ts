@@ -21,6 +21,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:orders:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
@@ -34,6 +35,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:orders:write",
     schema: updateOrderSchema,
     handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;

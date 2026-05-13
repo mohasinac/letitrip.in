@@ -1,16 +1,16 @@
 /**
- * next-intl Proxy — with crash-safe error handling
+ * next-intl Proxy — with crash-safe error handling + RBAC first gate
  *
  * Intercepts every non-asset, non-API request and:
  * 1. Detects the user's locale from the Accept-Language header / cookie / URL prefix.
  * 2. Redirects/rewrites the URL to include the correct locale prefix where needed.
  * 3. Sets the locale on the request so getLocale() / getMessages() work in server components.
+ * 4. (RBAC10) For /admin/* routes: decodes the session cookie JWT payload and
+ *    redirects non-admin / non-employee users to /unauthorized before the page renders.
+ *    This is a cheap first gate — the RSC layouts (RBAC3/RBAC4) do the full
+ *    per-section permission check. No Firestore read here (Edge-safe).
  *
- * If the proxy itself throws (e.g. bad locale data, corrupted cookies, next-intl
- * internal error), the catch block logs the error and redirects to a static
- * `/error.html` that lives in /public — completely independent of the app framework.
- * Because `/error.html` has a file extension, it is excluded by the matcher and
- * will never re-enter the proxy, so redirect loops are impossible.
+ * If the proxy itself throws, the catch block redirects to a static /error.html.
  *
  * Must be at src/proxy.ts (Next.js 16 discovers it automatically).
  */
@@ -22,11 +22,48 @@ import { routing } from "./i18n/routing";
 /** The next-intl locale proxy — created once, reused per request. */
 const intlMiddleware = createMiddleware(routing);
 
+// Routes that never need RBAC gating even under /admin or /store
+const RBAC_BYPASS = new Set(["/unauthorized", "/error.html", "/auth/login"]);
+
+/** Decode JWT payload without signature verification — Edge-safe. */
+function decodeSessionRole(cookie: string | undefined): string | null {
+  if (!cookie) return null;
+  try {
+    const parts = cookie.split(".");
+    if (parts.length < 2) return null;
+    // base64url → base64
+    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(b64);
+    const payload = JSON.parse(json) as { role?: string };
+    return payload.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function middleware(request: NextRequest): NextResponse {
   try {
+    const { pathname } = request.nextUrl;
+
+    // ── RBAC first gate ────────────────────────────────────────────────────
+    if (
+      pathname.startsWith("/admin") &&
+      !RBAC_BYPASS.has(pathname)
+    ) {
+      const sessionCookie = request.cookies.get("__session")?.value;
+      const role = decodeSessionRole(sessionCookie);
+
+      if (role !== "admin" && role !== "employee") {
+        const target = role
+          ? new URL("/unauthorized", request.url)
+          : new URL(`/auth/login?next=${encodeURIComponent(pathname)}`, request.url);
+        return NextResponse.redirect(target, { status: 302 });
+      }
+    }
+
+    // ── next-intl locale proxy ─────────────────────────────────────────────
     return intlMiddleware(request);
   } catch (error) {
-    // ---- Log the crash (Edge-compatible — no file I/O, structured JSON for Cloud Logging) ----
     const err = error instanceof Error ? error : new Error(String(error));
     console.error(
       JSON.stringify({
@@ -39,7 +76,6 @@ export default function middleware(request: NextRequest): NextResponse {
       }),
     );
 
-    // ---- Redirect to /error.html (static, outside middleware matcher) ----
     const errorUrl = new URL("/error.html", request.url);
     errorUrl.searchParams.set("from", request.nextUrl.pathname);
     return NextResponse.redirect(errorUrl, { status: 302 });
@@ -47,21 +83,7 @@ export default function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  /**
-   * Match all request paths EXCEPT:
-   * - Next.js internals (_next/static, _next/image)
-   * - Public folder assets (favicon.svg, sw.js, manifest, images, icons…)
-   * - API routes  (/api/…)
-   */
   matcher: [
-    /*
-     * Match all pathnames except:
-     *   - /api (API routes)
-     *   - /_next (Next.js internals)
-     *   - /…. (hidden files / dot-prefixed paths)
-     *   - files with an extension (e.g. .svg, .png, .ico, .webp, .js, .css)
-     */
     "/((?!api|_next|_vercel|.*\\..*).*)",
   ],
 };
-

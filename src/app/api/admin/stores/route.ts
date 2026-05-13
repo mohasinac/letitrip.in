@@ -20,6 +20,7 @@ import type { SieveModel } from "@mohasinac/appkit";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:stores:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

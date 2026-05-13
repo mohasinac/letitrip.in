@@ -66,6 +66,7 @@ const createBlogPostSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:blog:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
@@ -146,6 +147,7 @@ export const GET = withProviders(createRouteHandler({
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:blog:write",
   schema: createBlogPostSchema,
   handler: async ({ body, user }) => {
     const { publishedAt, ...rest } = body!;

@@ -29,6 +29,7 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:sections:write",
     handler: async ({ request, params, user }) => {
       const id = params?.id as string | undefined;
 
@@ -94,6 +95,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:sections:delete",
     handler: async ({ params, user }) => {
       const id = params?.id as string | undefined;
 

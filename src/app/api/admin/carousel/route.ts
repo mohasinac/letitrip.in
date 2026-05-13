@@ -86,6 +86,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:carousel:read",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -115,6 +116,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:carousel:write",
     schema: createSlideSchema,
     handler: async ({ body, user }) => {
       const slide = await carouselRepository.create({

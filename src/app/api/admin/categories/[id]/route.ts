@@ -25,6 +25,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const category = await categoriesRepository.findById(id);
@@ -38,6 +39,7 @@ export const PUT = withProviders(
   createRouteHandler<(typeof updateCategorySchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:categories:write",
     schema: updateCategorySchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -57,6 +59,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:categories:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await categoriesRepository.findById(id);

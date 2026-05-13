@@ -12,6 +12,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:site:read",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
       const credentialsMasked = await siteSettingsRepository.getCredentialsMasked();
@@ -24,6 +25,7 @@ export const PUT = withProviders(
   createRouteHandler<(typeof siteGroupSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:site:write",
     schema: siteGroupSchema,
     handler: async ({ body }) => {
       const updated = await siteSettingsRepository.updateSingleton(body! as any);

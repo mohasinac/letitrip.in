@@ -17,6 +17,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:bids:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);
@@ -30,6 +31,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateBidSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:bids:write",
     schema: updateBidSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -48,6 +50,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:bids:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);

@@ -61,6 +61,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:read",
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;
       if (!id) {
@@ -84,6 +85,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof adPatchSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:write",
     schema: adPatchSchema,
     handler: async ({ params, body, user }) => {
       const id = (params as { id?: string } | undefined)?.id;
@@ -174,6 +176,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:delete",
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;
       if (!id) {

@@ -41,6 +41,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:navigation:read",
     handler: async () => {
       const items = await getNavItems();
       return successResponse({ items, total: items.length });
@@ -52,6 +53,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof navItemSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:navigation:write",
     schema: navItemSchema,
     handler: async ({ body }) => {
       const b = body!;

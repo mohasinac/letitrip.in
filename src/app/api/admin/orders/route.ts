@@ -26,6 +26,7 @@ import { serverLogger } from "@mohasinac/appkit";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:orders:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

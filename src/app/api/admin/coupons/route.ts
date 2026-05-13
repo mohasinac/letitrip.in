@@ -67,6 +67,7 @@ const couponCreateSchema = z.object({
  */
 export const GET = withProviders(createRouteHandler({
   roles: ["admin", "moderator"],
+  permission: "admin:coupons:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -102,6 +103,7 @@ export const GET = withProviders(createRouteHandler({
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin"],
+  permission: "admin:coupons:write",
   handler: async ({ request, user }) => {
     const body = await request.json();
 

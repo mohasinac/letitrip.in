@@ -40,6 +40,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:coupons:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.getCouponByCode(id).catch(() => null);
@@ -53,6 +54,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:coupons:write",
     schema: updateCouponSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -88,6 +90,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:coupons:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       await couponsRepository.deactivateCoupon(id);

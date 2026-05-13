@@ -12,6 +12,7 @@ import { reviewRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({
   roles: ["admin", "moderator"],
+  permission: "admin:reviews:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

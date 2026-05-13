@@ -32,6 +32,7 @@ import { PAYOUT_FIELDS } from "@mohasinac/appkit";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:payouts:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

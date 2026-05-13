@@ -15,6 +15,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:events:write",
     schema: updateStatusSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

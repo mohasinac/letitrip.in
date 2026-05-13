@@ -10,6 +10,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:notifications:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await notificationRepository.findById(id);

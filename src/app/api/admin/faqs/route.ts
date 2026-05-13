@@ -27,6 +27,7 @@ const createFaqSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:faqs:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const category = getStringParam(searchParams, "category");
@@ -67,6 +68,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof createFaqSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:faqs:write",
     schema: createFaqSchema,
     handler: async ({ body }) => {
       const b = body!;

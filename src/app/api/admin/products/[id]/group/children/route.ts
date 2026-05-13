@@ -5,6 +5,7 @@ import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 /** POST /api/admin/products/[id]/group/children — add child (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
   roles: ["admin"],
+  permission: "admin:products:write",
   handler: async ({ request, params }) => {
     const parentDocId = (params as { id: string }).id;
     const parent = await productRepository.findById(parentDocId);

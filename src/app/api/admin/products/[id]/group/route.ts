@@ -5,6 +5,7 @@ import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 /** POST — start a group (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
   roles: ["admin"],
+  permission: "admin:products:write",
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
@@ -21,6 +22,7 @@ export const POST = withProviders(createApiHandler({
 /** PATCH — update groupTitle (admin) */
 export const PATCH = withProviders(createApiHandler({
   roles: ["admin"],
+  permission: "admin:products:write",
   handler: async ({ request, params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
@@ -36,6 +38,7 @@ export const PATCH = withProviders(createApiHandler({
 /** DELETE — dissolve the group (admin) */
 export const DELETE = withProviders(createApiHandler({
   roles: ["admin"],
+  permission: "admin:products:delete",
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);

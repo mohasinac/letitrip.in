@@ -22,6 +22,7 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
 export const GET = withProviders(createRouteHandler({
   roles: ["admin", "moderator"],
+  permission: "admin:sessions:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const userId = getStringParam(searchParams, "userId");

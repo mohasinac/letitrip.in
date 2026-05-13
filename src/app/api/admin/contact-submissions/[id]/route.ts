@@ -15,6 +15,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:contact:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);
@@ -28,6 +29,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateSubmissionSchema)["_output"]>({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:contact:write",
     schema: updateSubmissionSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -54,6 +56,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:contact:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);

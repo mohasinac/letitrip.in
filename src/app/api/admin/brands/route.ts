@@ -33,6 +33,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:brands:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -65,6 +66,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof createBrandSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:brands:write",
     schema: createBrandSchema,
     handler: async ({ body }) => {
       const slug = body!.slug || `brand-${slugify(body!.name)}`;

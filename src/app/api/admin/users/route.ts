@@ -29,6 +29,7 @@ import { USER_FIELDS } from "@mohasinac/appkit";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:users:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

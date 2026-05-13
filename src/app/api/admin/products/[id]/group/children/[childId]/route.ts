@@ -5,6 +5,7 @@ import { productRepository } from "@mohasinac/appkit";
 /** DELETE /api/admin/products/[id]/group/children/[childId] — unlink a child (admin) */
 export const DELETE = withProviders(createApiHandler({
   roles: ["admin"],
+  permission: "admin:products:delete",
   handler: async ({ params }) => {
     const { id: parentDocId, childId } = params as { id: string; childId: string };
 

@@ -33,6 +33,7 @@ export const PUT = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:navigation:write",
     schema: updateNavItemSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -51,6 +52,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
     roles: ["admin"],
+    permission: "admin:navigation:write",
     schema: updateNavItemSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -69,6 +71,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:navigation:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const items = await getNavItems();

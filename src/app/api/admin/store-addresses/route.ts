@@ -9,6 +9,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:store-addresses:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const limit = Math.min(Number(url.searchParams.get("limit") ?? "500"), 1000);

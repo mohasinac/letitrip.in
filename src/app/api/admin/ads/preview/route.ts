@@ -41,6 +41,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:ads:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const placementId = url.searchParams.get("placementId");

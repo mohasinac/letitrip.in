@@ -28,6 +28,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = String(params?.id ?? "");
       if (!id) return ApiErrors.badRequest("Bundle id is required");
@@ -42,6 +43,7 @@ export const PUT = withProviders(
   createRouteHandler<(typeof bundleUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:categories:write",
     schema: bundleUpdateSchema,
     handler: async ({ body, params, user }) => {
       const id = String(params?.id ?? "");
@@ -61,6 +63,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:categories:delete",
     handler: async ({ params, user }) => {
       const id = String(params?.id ?? "");
       if (!id) return ApiErrors.badRequest("Bundle id is required");

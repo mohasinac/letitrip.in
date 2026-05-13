@@ -10,6 +10,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:events:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const result = await triggerEventRaffleAction({ eventId: id });

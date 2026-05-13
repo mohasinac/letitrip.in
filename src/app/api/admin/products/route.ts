@@ -23,6 +23,7 @@ import {
  */
 export const GET = withProviders(createApiHandler({
   roles: ["admin", "moderator"],
+  permission: "admin:products:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -60,6 +61,7 @@ export const GET = withProviders(createApiHandler({
 export const POST = withProviders(createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
+  permission: "admin:products:write",
     handler: async ({ request, user }) => {
     const body = await request.json();
     const validation = validateRequestBody(productCreateSchema, body);

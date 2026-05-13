@@ -11,6 +11,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin", "moderator"],
+    permission: "admin:events:read",
     handler: async ({ params }) => {
       const eventId = (params as { id: string }).id;
       const events = await eventRepository.list({ filters: `id==${eventId}`, page: "1", pageSize: "1" });

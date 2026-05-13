@@ -35,6 +35,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:sections:read",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
 
@@ -110,6 +111,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: ["admin"],
+    permission: "admin:sections:write",
     handler: async ({ request, user }) => {
       const body = await request.json();
       const validation = validateRequestBody(sectionCreateSchema, body);
