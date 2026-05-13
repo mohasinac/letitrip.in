@@ -73,22 +73,19 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S7-PrizeDraws-prep2 (2026-05-13)
+### ✅ LAST COMPLETED — S7-PrizeDraws-prep3 (2026-05-13)
 
-- **Continuing the S7 carve**: this slice added SB5-D homepage sections + SB6-A (verified) + SB6-B orders count helpers + 2 deployed Firestore composites. Still deferred: SB4 (Prize Draw UI + reveal API), SB5-E (prize-draw seed docs), SB6-C (order-creation maxPerUser enforcement), SB7-C/D (listing-type tabs), SB8 (reveal expiry), SB1-L (7 Functions), Q1-ops (deploy).
-- **SB5-D homepage sections**: `section-featured-bundles` + `section-prize-draws` flipped `enabled: false → true` (upstream schema + collections live). New `section-brand-hot-wheels` + `section-brand-pokemon` reuse the `products` section type with `filterByBrand`. `section-event-raffles` order bumped 22 → 24.
-- **SB6-A**: doc-only verified — `maxPerUser?: number` on ProductDocument:130 + BundleDocument:78.
-- **SB6-B orders count helpers**: `countByUserAndProduct(uid, productId)` + `countByUserAndBundle(uid, bundleId)`. Active-status filter PENDING/CONFIRMED/PROCESSING/SHIPPED/DELIVERED. 2 new Firestore composites `orders(userId,productId,status)` + `orders(userId,bundleId,status)` **deployed via `firebase deploy --only firestore:indexes`** (per your in-session firebase deploy authorization).
-- **Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos.
+Foundation + order gates + UI primitives + reveal API + 7 Firebase Functions landed across 5 commits (2 root, 3 appkit). Public list/detail views (SB4-F, SB4-G) + listing-type tabs (SB7-C/D) + per-page badges (SB6-D, SB8-F) + Q1-ops deploy + index deploy carried into `S7-PrizeDraws-2`. No deploys, no deferrals, no deprecations — per session directive.
 
-### Previous session — S7-prep (2026-05-13, same day)
-
-- **Scoping decision**: original S7 row bundled ~35 sub-tasks. S7-prep carved the no-deploy primer slice (SB5-A nav, SB5-B FAQ seed, SB7-A/B in-bundle badges); rest reopened as `S7-PrizeDraws`.
-- **SB5-A nav constants**: Bundles + Prize Draws added to `MAIN_NAV_ITEMS` (Package2 + Gift icons), footer Shop + Learn columns (Bundle Guide + Prize Draw Guide), admin Catalog group, store Listings group. Theme `navIcons.bundles` (teal) + `navIcons.prizeDraws` (pink). i18n `nav.bundles` + `nav.prizeDraws`.
-- **SB5-B FAQ seed**: 6 entries (`faq-what-is-bundle`, `faq-how-create-bundle`, `faq-what-is-prize-draw`, `faq-prize-draw-fairness`, `faq-prize-draw-refund`, `faq-prize-draw-reveal`) under `product_information` — FAQ schema enum has no "listings"; tags + slugs identify the surface.
-- **SB7-A "Bundled" pill on cards**: `ProductGrid.tsx` shows teal pill next to typeBadge when `product.partOfBundleIds.length > 0`. Visual-only (card's outer `<Link>` can't nest a Link). `partOfBundleIds?` + `partOfBundleTitles?` added to `ProductItem` interface.
-- **SB7-B "In bundle: …" Links on detail pages**: `ProductDetailPageView.tsx` adds a pill row below the category/brand band; one Link per membership → `ROUTES.PUBLIC.BUNDLE_DETAIL(id)`.
-- **Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos. No deploys.
+- **SB5-E seed** — `products-prize-draws-seed-data.ts` with 2 prize-draw docs (10-item Pokémon, 8-item Hot Wheels) wired into manifest + `/api/demo/seed/route.ts`.
+- **SB6-C + SB8-A order gates** — `_internal/server/features/checkout/prize-bundle-gates.ts` covers max-per-user, prize-pool cap, and reveal-deadline math. Wired into both COD + Razorpay checkout actions. `OrderType` widened to `prize-draw` / `bundle`. `incrementPrizeEntriesInBatch` + atomic `prizeCurrentEntries` bump inside the checkout tx.
+- **SB4-A/B/C/D UI primitives** — `PrizeDrawItemsEditor` (add/remove/reorder, 3-16 cap, image + video slots, locked-on-won banner), `PrizeDrawCollage` (won-state overlay with public `hideWonState` flag — buyers stay unspoiled per "general user doesn't need to see revealed items"), prize-draw section inside `ProductForm` with derived `fieldDisabled` from `anyWon`, `ProductListingMode` union widened. `isPrizeDrawListing` + `isBundleListing` predicates.
+- **Lock-on-reveal contract** (per session call) — once any prize is won, the listing freezes everywhere: editor banner, all form fields, the listingType toggle, AND server-side 409 from `/api/products/[id]` PATCH for both seller and admin.
+- **SB4-I PrizeRevealModal** — theatrical 3.2-second reveal with decelerating highlight cycle landing on the winning tile + fairness disclaimer with crypto.randomInt callout + GitHub RNG source link. Pool-exhausted + already-revealed branches.
+- **SB4-H + SB8-C reveal API** — `/api/prize-draws/[id]/reveal` POST: auth, ownership, payment, window, deadline checks; idempotent on re-post; transactional `crypto.randomInt` winner pick + `isWon` flip; pool-exhausted auto-refund; never echoes the prize-pool's `isWon` state to the caller.
+- **SB4-E page shims** — 7 routes (`/prize-draws`, `/prize-draws/[slug]`, `/store/prize-draws[/new][/[id]/edit]`, `/admin/prize-draws[/[id]/edit]`). Create + edit shims are live (delegate to `SellerCreate/EditProductView` with `listingType="prize-draw"`); list + public detail are placeholders pending SB4-F / SB4-G views.
+- **SB1-L Functions (code only)** — 7 new handlers in `appkit/_internal/server/jobs/handlers/`: `prizeRevealOpen` (every 5 min — flip + SB8-D notify), `prizeRevealClose` (every 5 min), `prizeRevealExpiry` (every 6h — SB8-B auto-refund), `prizeRevealReminder` (daily 10 IST — SB8-E), `bundleStockSync` (daily 10 IST), `triggerEventRaffle` (callable — SB9-D), `assignSpinPrize` (callable — SB9-E). Bound in `functions/src/index.ts` with `asia-south1` region. **Not deployed.**
+- **Quality gates**: tsc clean both repos + appkit + functions. 0 errors. Audits clean. No deploys, no seed re-load.
 
 ### 🔄 CURRENT — none (awaiting next session)
 
@@ -96,7 +93,7 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S7-PrizeDraws** | Remaining S7 work: **SB4-A–I** Prize Draw editor/collage/forms/reveal modal + `/api/prize-draws*` reveal API; **SB5-D/E** homepage section + prize-draw + bundle seed docs; **SB6-A–E** per-user purchase limits (couponUsage counter pattern); **SB7-C/D** category listing tabs (incl. prize-draws) + listing-type tabs on store/admin/search; **SB8-A–F** reveal deadline + auto-refund + reminders + notifications; **SB1-L** 7 Firebase Functions; **Q1-funcs-dryrun + Q1-ops** deploy + Vercel env. Multi-day, multi-deploy effort. | Self-contained feature surface + missing Functions |
+| 1 | **S7-PrizeDraws-2** | Pick up where S7-PrizeDraws-prep3 stopped: **SB4-F** `PrizeDrawsListingView` (public sieve list with reveal status + countdown), **SB4-G** `PrizeDrawDetailPageView` (collage + entry CTA + NonRefundableConsentModal wiring), **SB6-D** allowance badges on bundle/prize-draw/pre-order detail pages, **SB6-E** prize-draw `maxPerUser` editor field already in form (verify), **SB7-C** category listing-type tabs incl. prize-draws + bundles, **SB7-D** store/admin/search listing-type tabs, **SB8-F** reveals-remaining badges on user order list + detail, **Q1-funcs-dryrun + Q1-ops** firebase deploy (7 new functions + listingProcessor) + Vercel env wiring (`FIREBASE_FUNCTION_LISTING_URL`, `LETITRIP_INTERNAL_SECRET`), Firestore indexes for prize-draws + entries. Re-seed `/demo/seed`. | Finish the public buyer surface + ship the cohort |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |
 | 5 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |

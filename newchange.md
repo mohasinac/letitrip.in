@@ -41,6 +41,30 @@
 
 ---
 
+### S7-PrizeDraws-prep3 — foundation + order gates + UI primitives + reveal + Functions (2026-05-13)
+
+Third carve of S7. Per session directive "do all, no deployments, no deferrments, no deprecations", grinded straight through the 9-phase plan (phases 4/6/7 carved out as `S7-PrizeDraws-2` mid-session by user choice — see prompt.md). 5 commits across appkit + root. tsc clean both repos. **No deploys.**
+
+| Sub-task | Files |
+|---|---|
+| SB5-E | `appkit/src/seed/products-prize-draws-seed-data.ts` (new) — 2 prize-draw docs (`prize-pokemon-mystery-box-june` + `prize-hot-wheels-treasure-hunt`) with 18 prize-item rows total, full schema (pricePerEntry, prizeMaxEntries, reveal-window dates, maxPerUser, prizeGithubFileUrl). `appkit/src/seed/manifest.ts` + `index.ts` + `appkit/src/index.ts` re-export. `src/app/api/demo/seed/route.ts` products union extended. |
+| SB6-C + SB8-A | New `appkit/src/_internal/server/features/checkout/prize-bundle-gates.ts` — `enforceMaxPerUserForCart` (pre-tx) + `enforcePrizePoolCap` (in-tx) + `computePrizeRevealDeadline`. Wired into BOTH `createCheckoutOrderAction` (COD/UPI) + `verifyAndPlaceRazorpayOrderAction` — pre-tx product fetch, cap check, in-tx pool check, `prizeCurrentEntries` increment, prize/bundle order-level fields (`prizeDrawProductId`, `isNonRefundable`, `prizeRevealDeadline`). |
+| Order plumbing | `appkit/src/features/orders/utils/order-splitter.ts` — `OrderType` widened to include `"prize-draw"` and `"bundle"`; prize-draws route to single-item groups (one reveal per order). `appkit/src/features/products/repository/products.repository.ts` — `incrementPrizeEntriesInBatch` + `productRef` helper. |
+| SB4-A | `appkit/src/features/products/components/PrizeDrawItemsEditor.tsx` (new, ~250 LOC) — add/remove/reorder, 3–16 cap, 1–2 image slots via `ImageUpload`, optional video, condition + estimated value. Once any item has `isWon=true`, the entire editor freezes (add disabled, all per-item buttons locked, red "Draw locked" banner). |
+| SB4-B | `appkit/src/features/products/components/PrizeDrawCollage.tsx` (new) — responsive 2/3/4-col grid, `#N` badges, optional onClick, won-overlay with the new `hideWonState` prop (public buyers pass true so seeing sold prizes doesn't kill demand — per in-session call). |
+| SB4-C | `appkit/src/features/products/components/ProductForm.tsx` — prize-draw section with all fields (pricePerEntry, prizeMaxEntries, reveal window dates, deadline days, maxPerUser, read-only GitHub URL, embedded items editor). IIFE derives `fieldDisabled = isReadonly \|\| anyWon` so the entire section freezes on a reveal. |
+| SB4-D | `appkit/src/features/seller/components/SellerProductShell.tsx` — `ProductListingMode` union extended with `"prize-draw"`. `appkit/src/features/products/utils/listing-type.ts` — new `isPrizeDrawListing` + `isBundleListing` predicates. `appkit/src/features/products/types/index.ts` — prize-draw fields + maxPerUser on `ProductItem`. |
+| Server-side lock | `appkit/src/features/products/api/[id]/route.ts` PATCH — returns 409 if listingType is prize-draw and any prize is already won. Applies to seller + admin both. Clone-into-new-listing is the path forward. |
+| SB4-H + SB8-C | `src/app/api/prize-draws/[id]/reveal/route.ts` (new) — POST handler with auth + ownership + payment + window + deadline validation, idempotent on re-post, transactional `crypto.randomInt` winner pick + `isWon` flip on product, `order.prizeWon` write. Pool-exhausted → auto-refund + `{ refunded: true, reason: "pool_exhausted" }`. Never echoes the pool's `isWon` state to the caller. |
+| SB4-I | `appkit/src/features/products/components/PrizeRevealModal.tsx` (new) — modal with `idle / revealing / won / refunded / error` phases. On reveal: calls the API (server already picked the winner via crypto.randomInt), runs a 3.2-sec decelerating highlight cycle across the collage (80 ms → 360 ms easing), lands on the winning tile, shows the prize card. Persistent fairness disclaimer with the GitHub RNG source link. |
+| SB4-E | 7 page files under `src/app/[locale]/{,store/,admin/}prize-draws/...`. Store + admin **create + edit** pages are live (delegate to `SellerCreate/EditProductView` with `listingType="prize-draw"`). List + public detail are placeholders pending SB4-F/G (carried to S7-PrizeDraws-2). |
+| SB1-L (code-only) | 7 new handlers in `appkit/src/_internal/server/jobs/handlers/`: `prizeRevealOpen` (every 5 min — flip + SB8-D buyer notifications), `prizeRevealClose`, `prizeRevealExpiry` (SB8-B auto-refund every 6h), `prizeRevealReminder` (SB8-E daily 10 IST), `bundleStockSync` (daily 10 IST), `triggerEventRaffle` (callable, SB9-D), `assignSpinPrize` (callable, SB9-E). Wired into `functions/src/index.ts` with `asia-south1` region. **Not deployed.** |
+| Quality | tsc 0 errors (appkit + app + functions). 4 audits clean. 499 warnings (no regressions). |
+
+**DEFERRED to S7-PrizeDraws-2** (not "skipped" — carved by mid-session call): SB4-F public sieve list, SB4-G public detail page, SB6-D allowance badges, SB7-C/D listing-type tabs, SB8-F reveals-remaining badge. Plus Q1-funcs-dryrun + Q1-ops firebase deploy + Vercel env + indexes deploy + seed re-load.
+
+---
+
 ### S7-PrizeDraws-prep2 — SB5-D + SB6-A/B + index deploy (2026-05-13)
 
 Second carve from the S7 cohort, immediately after S7-prep. No risky changes — all schema/seed/repo additions with one matching index deploy.
