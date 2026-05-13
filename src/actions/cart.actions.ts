@@ -38,11 +38,18 @@ const addToCartSchema = z.object({
   storeName: z.string().min(1),
   // SB1-G Phase 4 — canonical listing-kind snapshot.
   // SB-UNI-D — "bundle" removed; bundles are a categoryType, not listingType.
+  // SB-UNI-F 2026-05-13 — Phase 2 union extension (classified/digital-code/live).
+  // appkit's addItemToCart enforces canAddToCart via capabilityFor so
+  // classified+live are rejected at the action layer; the zod enum accepts
+  // them so generic add-to-cart calls don't 422 before the capability gate.
   listingType: z.enum([
     "standard",
     "auction",
     "pre-order",
     "prize-draw",
+    "classified",
+    "digital-code",
+    "live",
   ]),
   /** Set when item originates from an accepted Make-an-Offer */
   offerId: z.string().optional(),
