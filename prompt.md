@@ -201,26 +201,21 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### ✅ LAST COMPLETED — S-dashboard-quality-pass: appkit wrappers + CSS vars + prize-draws shim (2026-05-14)
+### ✅ LAST COMPLETED — S-prod-fix: Firebase Lambda tracing + media watermark proxy + store encryption + seed auth gate (2026-05-14)
 
-Appkit wrappers + CSS var quality pass on files from S-dashboard-listing-audit. `npm run check` exits 0. Appkit published v2.6.5. Deployed to Vercel prod.
+All prod 500s fixed. `npm run check` exits 0. **Deploy pending** — requires `vercel --prod` + `firebase deploy --only firestore:indexes` + `/demo/seed` Load All.
 
-- **store/prize-draws/page.tsx** — stub missed in S-dashboard-listing-audit; wired to `SellerPrizeDrawsView`.
-- **store/sublisting-categories/page.tsx** — full rewrite: raw HTML (div/span/p/h1/button/input + `eslint-disable`) → appkit primitives (Div/Row/Text/Heading/Button/Select/Badge). CSS vars throughout.
-- **store/templates/page.tsx** — CSS var pass: all `zinc-{n} dark:zinc-{n}` pairs → `--appkit-color-border/surface/border-subtle/error-*` tokens.
-- **appkit v2.6.5** — includes SellerPreOrdersView + SellerPrizeDrawsView + AdminPrizeDrawsView + CSS var pass on AdminPrizeDrawsView + client.ts exports for all 3 views. Published to npm.
-- No schema, seed, Firebase index, or SieveJS changes this session.
+- **Fix 0** — `appkit/src/configs/next.ts`: replaced piecemeal `build/src/**` paths with broad `/**` org-level globs (`firebase-admin/**`, `@google-cloud/**`, `google-auth-library/**`, `google-gax/**`, `gtoken/**`, `jws/**`, `gaxios/**`). Fixed merge strategy (array-union per route key, not object-spread that replaced defaults). Default `remotePatterns` restricted to Firebase Storage + localhost; consumers extend. `next.config.js` thinned to zero overrides.
+- **Fix 3** — Seed panel auth gate: `RoleGuard` on `demo/layout.tsx`, admin role check on `seed/route.ts` GET+POST, `isAdminUser(user)` in `LayoutShellClient.tsx`.
+- **Fix 4** — External media watermark: `MEDIA_ENDPOINTS.EXT` + `EXT_URL` in appkit `api-endpoints.ts`. New `appkit/src/utils/media-url.ts` `resolveMediaUrl()` normalises Firebase Storage → `/media/<path>`, external URLs → `/api/media/ext?url=`. `getMediaUrl()` updated. Shared `src/app/api/media/_watermark.ts` extracts all watermark helpers. New `src/app/api/media/ext/route.ts` with SSRF guard (loopback + RFC-1918 + GCP metadata rejected), 8s AbortSignal, 10 MB body cap, watermark applied.
+- **Fix 5** — `STORE_SECRET_FIELDS` constant in `pii-schemas.ts`. `StoreRepository` gains `encryptSecrets`/`decryptSecrets` helpers + `mapDoc`/`update`/`create`/`changeSlug` overrides for `whatsappConfig.accessToken` (AES-256-GCM via `encryptSecret`/`decryptSecret`).
+- **Pre-existing TS errors fixed** — `support.repository.ts` (`.count()` → `.select().get()`, implicit-any reduce, `prepareForFirestore(message as unknown as Record<string, unknown>)`)  · `checkSoftBan.ts` + `server.ts` (`BannedAction` sourced from `permissions/constants` not re-exported `schemas/firestore`) · `hard-ban/route.ts` (`getProviders` → `getAdminAuth` + `findAll(obj)` → `findActiveByUser` / `findByOwnerId` / `findByStore` / `findBy`) · `unban/route.ts` (same `getProviders` fix) · `LayoutShellClient.tsx` (cast `user` for `isAdminUser`) · `support/tickets/route.ts` (`order.buyerId` → `order.userId`) · appkit dist rebuilt (v2.6.5, still file:./appkit).
 
-### ✅ Previous — S-SBUNI-RULES follow-up: payout deduction + quality pass (2026-05-14)
+### ✅ Previous — S9: RBAC1–10 complete (2026-05-14)
 
-REFUND_COPY constants module + component quality pass + payout deduction architecture. `npm run check` exits 0. Appkit published v2.6.4. Deployed to Vercel prod.
+Full permission system shipped in one commit. `npm run check` exits 0. RBAC2–10 all wired (server permissions, admin layout RSC, section layouts, route handler permission gate, team management, nav filter, store capabilities, Firestore rules, Edge JWT role gate).
 
-- **REFUND_COPY module** — single source of truth for all user-facing strings in refund/shipping/sibling-payment UI.
-- **Component quality pass** — `RefundHistoryTable` / `RefundRequestView` / `OrderSiblingPayments` / `ShippingPicker` rewritten with REFUND_COPY + appkit primitives.
-- **Payout deduction** — `PayoutRefundDeduction` + `applyRefundDeductionAction` + `POST /api/admin/payouts/[id]/deduction`. `netAmount` field on payouts.
-- **appkit v2.6.4** published to npm. `vercel --prod` deployed.
-
-### 🔄 CURRENT — S9: RBAC complete (RBAC1–10) + inline TODO(RBAC) retrofit
+### 🔄 CURRENT — Deploy S-prod-fix: `vercel --prod` + indexes + seed
 
 ### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
 

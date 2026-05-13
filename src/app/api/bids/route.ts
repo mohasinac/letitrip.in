@@ -9,7 +9,9 @@ import {
   getSearchParams,
   getStringParam,
   getNumberParam,
+  userRepository,
 } from "@mohasinac/appkit";
+import { isSoftBanned } from "@mohasinac/appkit/server";
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),
@@ -38,6 +40,14 @@ export const POST = withProviders(
     auth: true,
     schema: placeBidSchema,
     handler: async ({ user, body }) => {
+      const userDoc = await userRepository.findById(user!.uid);
+      if (userDoc && isSoftBanned(userDoc, "place_bids")) {
+        const ban = userDoc.softBans?.find((b) => b.action === "place_bids");
+        return errorResponse(
+          `Your account is restricted from placing bids. Reason: ${ban?.reason ?? "Policy violation"}. Contact support if you believe this is an error.`,
+          403,
+        );
+      }
       const result = await placeBid(user!.uid, user!.email ?? "", body!);
       return successResponse(result, "Bid placed", 201);
     },

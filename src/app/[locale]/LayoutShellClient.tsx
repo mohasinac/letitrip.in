@@ -12,6 +12,7 @@ import {
   ROUTES,
   Div,
   Search,
+  isAdminUser,
   useSession,
   useToast,
   type AppLayoutShellProps,
@@ -114,7 +115,7 @@ export default function LayoutShellClient({
         title: "Support",
         items: [
           ...SIDEBAR_SUPPORT_LINKS,
-          ...(seedPanelEnabled && user?.role === "admin"
+          ...(seedPanelEnabled && isAdminUser(user as { role?: import("@mohasinac/appkit").UserRole } | undefined)
             ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
             : []),
         ],

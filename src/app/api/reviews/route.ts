@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { reviewRepository, createReview, successResponse, errorResponse } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { createRouteHandler, userRepository } from "@mohasinac/appkit";
+import { isSoftBanned } from "@mohasinac/appkit/server";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -166,6 +167,14 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, request }) => {
+      const userDoc = await userRepository.findById(user!.uid);
+      if (userDoc && isSoftBanned(userDoc, "write_reviews")) {
+        const ban = userDoc.softBans?.find((b) => b.action === "write_reviews");
+        return errorResponse(
+          `Your account is restricted from writing reviews. Reason: ${ban?.reason ?? "Policy violation"}. Contact support if you believe this is an error.`,
+          403,
+        );
+      }
       const body = await request.json().catch(() => ({}));
       const result = await createReview(user!.uid, body as any);
       return successResponse(result, "Review submitted", 201);

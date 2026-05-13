@@ -54,6 +54,10 @@ import {
   bundleStockSyncHandler,
   triggerEventRaffleHandler,
   assignSpinPrizeHandler,
+  // BAN9 — support ticket lifecycle + ban audit
+  onSupportTicketCreateHandler,
+  onSupportTicketUpdateHandler,
+  onUserBanChangeHandler,
   // Adapter
   bindToFirebase,
 } from "@mohasinac/appkit/jobs";
@@ -279,4 +283,27 @@ export const assignSpinPrize = bindToFirebase.https(
   "assignSpinPrize",
   assignSpinPrizeHandler,
   { region: REGION, timeoutSeconds: 30, memory: "256MiB", maxInstances: 10, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+// ── BAN9 — support ticket lifecycle + user ban audit trail ────────────────
+// onSupportTicketCreate  — confirm to user + (future) auto-assign routing
+// onSupportTicketUpdate  — notify user on status changes (resolved/closed/waiting)
+// onUserBanChange        — append audit entries to users/{uid}/banHistory
+
+export const onSupportTicketCreate = bindToFirebase.documentCreated(
+  "onSupportTicketCreate",
+  onSupportTicketCreateHandler,
+  { document: "supportTickets/{ticketId}", region: REGION },
+);
+
+export const onSupportTicketUpdate = bindToFirebase.documentUpdated(
+  "onSupportTicketUpdate",
+  onSupportTicketUpdateHandler,
+  { document: "supportTickets/{ticketId}", region: REGION },
+);
+
+export const onUserBanChange = bindToFirebase.documentUpdated(
+  "onUserBanChange",
+  onUserBanChangeHandler,
+  { document: "users/{uid}", region: REGION },
 );

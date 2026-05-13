@@ -1,5 +1,6 @@
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { getAdminDb, getAdminAuth } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import {
@@ -405,7 +406,12 @@ async function resolveAuthConflicts(
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
+  const user = await getUserFromRequest(request);
+  if (!user || user.role !== "admin") {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+  }
+
   const { siteSettingsRepository } = await import("@mohasinac/appkit");
   const settings = await siteSettingsRepository.getSingleton().catch(() => null);
   // Default true when siteSettings doc doesn't exist yet (chicken-and-egg on first run)
@@ -447,6 +453,11 @@ export async function GET(_request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const user = await getUserFromRequest(request);
+  if (!user || user.role !== "admin") {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+  }
+
   // Gate: seedPanel feature flag must be enabled in site settings
   const { siteSettingsRepository } = await import("@mohasinac/appkit");
   const settings = await siteSettingsRepository.getSingleton().catch(() => null);
