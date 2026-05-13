@@ -6,7 +6,6 @@ import {
   getBundleForDetail,
   listBundleMembers,
 } from "@mohasinac/appkit/server";
-import { addBundleToCartAction } from "@/actions/cart.actions";
 
 export const revalidate = 120;
 
@@ -43,7 +42,7 @@ export default async function Page({
     <BundleDetailView
       bundle={bundle}
       members={members}
-      onAddToCart={addBundleToCartAction}
+
     />
   );
 }

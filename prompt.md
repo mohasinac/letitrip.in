@@ -201,9 +201,15 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### 🔄 CURRENT — none (S-SBUNI-5 + S8 both closed; awaiting next session)
+### ✅ LAST COMPLETED — S-SBUNI-RULES phases 1–3: RULES + SCHEMA + CONSUMERS (2026-05-13)
 
-Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-5** (bundle checkout finalize: BundleDetailView CTA wire + per-member stock decrement + order grouping).
+Per-type checkout rule registry + schema + full consumer rewire. `npm run check` exits 0. No new Firestore indices or Functions needed for these 3 phases. Phases 4–6 (SHIPPING / CART-UI / REFUNDS) carried to next session.
+
+- **RULES** — 14 new files under `appkit/src/_internal/shared/checkout/rules/`: `types.ts`, `_defaults.ts`, `_limits.ts`, `_registry.ts`, `index.ts`, + 7 rule files (standard / auction / preorder / prize-draw / offer / bundle / classified / digital-code / live). `CHECKOUT_RULES: Record<ListingType, ListingCheckoutRule>` + `CATEGORY_CHECKOUT_RULES`. Registry functions exported from `@mohasinac/appkit`: `getListingRule`, `runSyncPreflight`, `getSplitKey`, etc. Constants: `CART_MAX_ITEMS=50`, `CHECKOUT_MAX_ORDERS_PER_TX=20`, `PRIZE_DRAW_MAX_REVEALS_PER_ORDER=3`, `BUNDLE_MAX_QTY_PER_TX=1`.
+- **SCHEMA** — `OrderDocument` gains `paymentBatchId?`, `refunds?: OrderRefundEvent[]`, `contestable?: boolean`, `shippingProofUrl?` + related fields. `CartItemDocument` gains `chosenShippingProviderId?`, `chosenShippingFeeInPaise?`. `StoreDocument` gains `shippingConfig?: StoreShippingConfig` with `ShippingProviderConfig[]`. `ProductDocument` gains `shipping?: { allowedProviderIds?, overrides? }`. Media contexts extended: `shipping-proof` + `refund-proof` (image-or-pdf guard in contextGuards.ts, filename patterns in id-generators.ts).
+- **CONSUMERS** — `order-splitter.ts` fully rewired to rule registry (`splitKey`, `splitMultipleOrders`, `orderType`). `actions.ts` (both COD + Razorpay paths): `enforcePrizePoolCap` → `runSyncPreflight`; `orderItems` map → `rule.decorateOrderItem`; `prizeDrawFields` → `rule.decorateOrderDoc`; Razorpay batch decrement `prizeBump` → `rule.stockDecrementExtras`. `/api/cart/route.ts` `if (listingType === "auction")` → `rule.cartEligible`. `enforcePrizePoolCap` removed from `prize-bundle-gates.ts`. `addBundleToCart` deleted from appkit + consumer (bundles now direct-checkout-only — `BundleDetailView` falls back to "coming soon" until CART-UI phase). Pre-existing `NavbarLayout.tsx` `Ul ref` error fixed (plain `<ul>`).
+
+### 🔄 CURRENT — S-SBUNI-RULES phases 4–6: SHIPPING + CART-UI + REFUNDS (deferred from phase 1–3 session)
 
 ### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
 

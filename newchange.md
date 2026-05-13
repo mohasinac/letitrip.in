@@ -41,6 +41,20 @@
 
 ---
 
+### S-SBUNI-RULES (phases 1–3) — checkout rule registry + schema + consumer rewire (2026-05-13)
+
+First 3 of 7 planned phases for S-SBUNI-RULES. `npm run check` exits 0. Phases 4–6 (SHIPPING / CART-UI / REFUNDS) deferred to next session; they're additive and don't block this commit.
+
+**RULES (phase 1)** — 14 new files: `appkit/src/_internal/shared/checkout/rules/{types,_defaults,_limits,_registry,index,standard.rule,auction.rule,preorder.rule,prize-draw.rule,offer.rule,bundle.rule,classified.rule,digital-code.rule,live.rule}.ts`. `CHECKOUT_RULES: Record<ListingType, ListingCheckoutRule>` keyed on all 7 listing types. `CATEGORY_CHECKOUT_RULES` for bundle. Registry exports: `getListingRule`, `runSyncPreflight`, `getSplitKey`, `pickOrderType`, etc. Limits: `CART_MAX_ITEMS=50`, `CHECKOUT_MAX_ORDERS_PER_TX=20`, `PRIZE_DRAW_MAX_REVEALS_PER_ORDER=3`. Prize-draw `splitMultipleOrders` chunks qty into ≤3 batches. Offer rule keyed off `item.isOffer` flag (not listingType). Bundle + classified + live stubs.
+
+**SCHEMA (phase 2)** — `OrderDocument`: `paymentBatchId?`, `refunds?: OrderRefundEvent[]`, `contestable?: boolean`, `shippingProofUrl/MimeType/UploadedAt/UploadedBy?`. `CartItemDocument`: `chosenShippingProviderId?`, `chosenShippingFeeInPaise?`. `StoreDocument`: `shippingConfig?: StoreShippingConfig` (providers array with id/name/type/fee/ETA/isActive). `ProductDocument`: `shipping?: { allowedProviderIds?, overrides? }`. Media: `contextGuards.ts` handles `image-or-pdf` guard for `shipping-proof` / `refund-proof`; `id-generators.ts` adds filename slug patterns for both.
+
+**CONSUMERS (phase 3)** — `order-splitter.ts` fully rule-registry-dispatched. Both checkout action paths (COD + Razorpay) rewired: `runSyncPreflight` replaces `enforcePrizePoolCap`; `decorateOrderItem` / `decorateOrderDoc` / `stockDecrementExtras` replace all inline `isPrizeDrawLine` branches. `/api/cart/route.ts` uses `getListingRule(lt).cartEligible` instead of hand-rolled per-type check. `addBundleToCart` deleted (appkit + consumer + index.ts export + bundles page prop). `prize-bundle-gates.ts` stripped of `enforcePrizePoolCap`. Pre-existing `NavbarLayout.tsx` `Ul ref` type error fixed.
+
+**Deferred** — SHIPPING (ShippingPicker UI + cart integration + PATCH route + admin config), CART-UI (tabbed cart + bundle direct-checkout CTA), REFUNDS (full refund API + buyer/seller UI), SMOKE (seed + index updates for new schema fields).
+
+---
+
 ### S-SBUNI-Phase5-7 — SB-UNI-P + S + W-1 + 3 prod deploys (2026-05-13)
 
 Continued the SB-UNI sprint. 3 more rows closed (P ✅ · W-1 ✅ · S ⚠️ helpers-only) + W-5 explicitly deferred. Then **deployed firebase indices + functions + vercel --prod** end-to-end. 2 commits + 3 deploys.

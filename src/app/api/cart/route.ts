@@ -19,6 +19,7 @@ import { createRouteHandler } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
 import { CART_MAX_ITEMS } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
+import { getListingRule } from "@mohasinac/appkit";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({
@@ -60,9 +61,18 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     }
 
     const listingType = normalizeListingType(product);
-    if (listingType === "auction") {
+    const rule = getListingRule(listingType);
+    if (!rule.cartEligible) {
+      const hint =
+        listingType === "auction"
+          ? "Place a bid on the auction page instead."
+          : listingType === "classified"
+            ? 'Use "Contact Seller" to arrange a meetup.'
+            : listingType === "live"
+              ? "Jurisdiction check required — buy from the listing page."
+              : "This listing type cannot be added to the cart.";
       return ApiErrors.badRequest(
-        "Auctions can't be added to cart. Place a bid on the auction page instead.",
+        `Listings of type "${listingType}" cannot be added to the cart. ${hint}`,
       );
     }
 
