@@ -41,6 +41,27 @@
 
 ---
 
+### S-SBUNI-1 — Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
+
+First slice of the Tier SB-UNI cohort. Phase 0 X3 (schemaVersion infra) was started and rolled back after user push-back — pre-launch, no live data, no migration consumers, so version handles + migrations.ts shells were dead weight. Captured the principle in `feedback_no_speculative_infra.md`. Phase 1 D/V/E/A carried forward to next session.
+
+| Commit | Scope |
+|---|---|
+| `feat(listing-types): capability registry + assertNever (SB-UNI X1)` | `_internal/shared/listing-types/capabilities.ts` — `LISTING_TYPE_CAPABILITIES` map with 6 facts per type; `capabilityFor`/`canAddToCart`/`canBid`/`supportsShipping`/`requiresVendorVerified`/`requiresJurisdictionCheck`/`hasInstantFulfillment` accessors; `assertNever` exhaustive-switch helper. Barrel-exported. |
+| `feat(listing-types): plugin folder scaffold + registry (SB-UNI X2)` | 4 folders × 5 stub files: `standard/`, `auction/`, `pre-order/`, `prize-draw/` each containing `config.ts` (concrete: listingType + capability + slugPrefix + cartLine) and `schema.ts` / `ctas.ts` / `og.tsx` / `seed-factory.ts` placeholders. `_registry.ts` aggregates. |
+| `feat(categories): fold sublistings into categories via categoryType discriminator (SB-UNI B)` (appkit + main) | `CategoryType` union dropped unused "concern"/"collection", added "sublisting"/"bundle". CategoryDocument gains `categoryType?` + `itemCode?` + brand-* fields. New repo methods: `listByType`, `findBySlugAndType`, `getSublistingListings`, `deleteWithSublistingUnlink`, `generateSublistingId`. 12 sublisting rows merged into `categoriesSeedData`. **Deleted** `features/sublisting/`, `features/products/repository/sublisting-categories.repository.ts`, `features/products/schemas/sublisting-categories.ts`, `seed/sublisting-categories-seed-data.ts`. 5 API routes (`/api/sublisting-categories/[slug]`, `/listings`, admin GET/POST, admin [id] PUT/DELETE, store equivalents) repointed at `categoriesRepository`. Indices `(categoryType, isActive, order)` + `(categoryType, createdAt)` replace the 2 dropped sublistingCategories composites. |
+| `feat(categories): fold brands into categories via categoryType discriminator (SB-UNI C)` (appkit + main) | **Deleted entire `appkit/src/features/brands/` folder**: schemas, repository, actions, seed file. 25 brand entries transformed into Partial<CategoryDocument> rows with `categoryType:"brand"` + `brandWebsite`/`brandCountry`/`brandFounded`/`brandBannerImage` + `display.coverImage` (carrying old logoURL). New `categoriesRepository.findActiveBrands()`. `_internal/server/features/brands/actions.ts` rewritten — translates BrandInput wire-format (logoURL/bannerURL/website/country/founded) to CategoryDocument storage fields. Homepage `getHomepageInitial` consumes `findActiveBrands()`. 3 API routes (`/api/brands`, admin GET/POST, admin [id]) repointed. SeedPanel "brands" CollectionMeta dropped. Indices unchanged — categories composites cover the new query shape. |
+
+**Infra deploys fired**: `firebase deploy --only firestore:indexes` succeeded; 2 orphaned `sublistingCategories` indexes remain in Firestore (warning, not blocking — they cost nothing without documents and can be `--force` cleaned later). No functions changes, no storage rules changes.
+
+**Required follow-up before exercising sublisting / brand surfaces**: hit `POST /demo/seed` to wipe the deleted collections (`sublistingCategories`, `brands`) and reseed `categories` with the 25 brand rows + 12 sublisting rows now baked in. **No `vercel --prod` per standing user instruction.**
+
+**Phase 1 carried to next session**: D (bundles re-architect, L), V (grouped re-scope + 3-folder delete + `onProductStockChange` Function, L), E (discriminator audit cleanup, S), A (addresses unification, M). Sequence per plan: D → V → E → A.
+
+**Files touched** — appkit: 17 modified, 4 deleted (features/sublisting/, products/repository/sublisting-categories.repository.ts, products/schemas/sublisting-categories.ts, seed/{sublisting,brands}-seed-data.ts), 11 created (capabilities + 4 plugin folders × 5 files + _registry). Main: 13 route/page/seed/SeedPanel files modified + 1 (firestore.indexes.json) re-merged. 8 commits across the two repos.
+
+---
+
 ### SB-UNI-Z1/Z2/Z3 — Media upload reliability (2026-05-13)
 
 CLAUDE.md Rule #6 fix: the legacy `POST /api/media/upload` buffered every byte through the Vercel Lambda, capping at the platform's 4.5 MB request limit and silently breaking the route's claimed 50 MB video ceiling. Replaced with a signed-URL flow that bypasses Vercel entirely.

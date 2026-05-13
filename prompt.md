@@ -73,7 +73,23 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — SB-UNI-Z1/Z2/Z3 Media upload reliability (2026-05-13)
+### ✅ LAST COMPLETED — S-SBUNI-1 Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
+
+First slice of Tier SB-UNI. 8 commits. `firebase deploy --only firestore:indexes` fired; `npm run check` exits 0.
+
+- **X1 capability registry** — `_internal/shared/listing-types/capabilities.ts` exports `LISTING_TYPE_CAPABILITIES` + 6 accessors + `assertNever`. Future-expansion Pattern 1 + 2.
+- **X2 plugin folder scaffold** — `_internal/shared/listing-types/{standard,auction,pre-order,prize-draw}/` each with `config.ts` (concrete: listingType + capability + slugPrefix + cartLine) + 4 stub files (schema/ctas/og/seed-factory) marked TODO for later phases. `_registry.ts` aggregates.
+- **X3 schemaVersion infra — 🚫 dropped per user push-back.** Pre-launch / no live data, so version handles + migrations.ts shells were dead weight. Captured in memory `feedback_no_speculative_infra.md` — skip future-proofing infra whose only stated payoff is "prevents future migration pain" until a real consumer exists.
+- **B sublistings → categories.categoryType:"sublisting"** — 12 sublisting rows merged into `categoriesSeedData`. **Deleted** `features/sublisting/`, `features/products/repository/sublisting-categories.repository.ts`, `features/products/schemas/sublisting-categories.ts`, `seed/sublisting-categories-seed-data.ts`. 5 API routes repointed at `categoriesRepository`. New methods: `listByType`, `findBySlugAndType`, `getSublistingListings`, `deleteWithSublistingUnlink`, `generateSublistingId`. Indices `(categoryType, isActive, order)` + `(categoryType, createdAt)` shipped.
+- **C brands → categories.categoryType:"brand"** — **Entire `features/brands/` folder DELETED**. 25 brand rows transformed into `Partial<CategoryDocument>` entries with `categoryType:"brand"` + `brandWebsite`/`brandCountry`/`brandFounded`/`brandBannerImage` + `display.coverImage` (was logoURL). New `categoriesRepository.findActiveBrands()`. `createBrandAction`/`updateBrandAction`/`deleteBrandAction` rewritten to translate BrandInput → CategoryDocument fields. Homepage data + listingProcessor + 3 API routes + SeedPanel repointed.
+
+**Required user follow-up**: hit `POST /demo/seed` to wipe the deleted `sublistingCategories` + `brands` collections and reseed `categories` with the merged rows. The orphan `sublistingCategories` indexes left in Firestore can be `firebase deploy --only firestore:indexes --force`-cleaned at any future deploy. **No `vercel --prod` per standing instruction.**
+
+**Phase 1 carried to next session** — D (bundles re-architect, L), V (grouped re-scope + 3-folder delete + `onProductStockChange` Function, L), E (discriminator cleanup, S), A (addresses unification, M). Sequence per plan: D → V → E → A.
+
+---
+
+### ✅ Previous — SB-UNI-Z1/Z2/Z3 Media upload reliability (2026-05-13)
 
 Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byte through the Vercel Lambda (4.5 MB request cap) which made the route's claimed 50 MB video ceiling unreachable in prod. Replaced with a signed-URL flow that bypasses the Lambda entirely. 6 commits.
 
@@ -89,13 +105,13 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 
 ### 🔄 CURRENT — none (awaiting next session)
 
-Next up: **S-SBUNI** (Tier SB-UNI Phase 0 + Phase 1 — `assertNever` + capability registry + addresses/sublistings/brands/bundles fold into `categories`), now that the Rule #6 media-upload prerequisite is closed.
+Next up: **S-SBUNI-2** — Phase 1 D (bundles re-architect to `categoryType:"bundle"` + drop `"bundle"` from ListingType + drop CartItem.listingType "bundle"; L) → V (re-scope `GroupedListingDocument` to theme-group + delete 3 duplicate bundle folders + new `onProductStockChange` Firebase Function; L) → E (discriminator audit cleanup; S) → A (top-level `addresses` with `ownerType`; M). All carry-forwards from S-SBUNI-1.
 
 ### ⏳ NEXT UP — single SB-UNI session (Z1–Z3 closed 2026-05-13)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI** *(new, single session)* | **Tier SB-UNI Phase 0 + Phase 1** — Future-expansion infra (X1 `assertNever` + `LISTING_TYPE_CAPABILITIES` registry; X2 listing-type plugin folders under `_internal/shared/listing-types/`; X3 `schemaVersion` field + per-feature `migrations.ts` shells) + collection unification (B sublistings → `categoryType:"sublisting"`; C brands → `categoryType:"brand"`; D bundles → `categoryType:"bundle"` with `bundleQueryRule` + drop `listingType:"bundle"` + `CartItem.listingType` "bundle"; V `GroupedListingDocument` re-scope (drop bundle-pricing fields, add `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus`) + delete duplicate `appkit/src/features/bundles/` + `_internal/server/features/bundles/` + `_internal/shared/features/bundles/` folders + new `onProductStockChange` Function; E discriminator audit cleanup incl. `moderator` role grep + listingType helpers + index field-name drift fix; A addresses top-level with `ownerType` + delete user+store subcollections). Sequence: X1 → X2 → X3 → B → C → D → V → E → A. Seed-only, no live data, **delete-outright** (no compat shims). Flips F2/VB7/LL4/LL17/VD6/I1/SB1-A/SB3-D/SB3-G/SB3-J/SB11/GP1/GP2 to ⚠️ done-but-verify with re-point notes. | Single prod-deployable cohort — see plan + Tier SB-UNI section in `crud-tracker.md` for full design |
+| 1 | **S-SBUNI-2** *(carries S-SBUNI-1 leftovers)* | Phase 1 D + V + E + A. **D** bundles re-architect: drop `"bundle"` from `ProductDocument.listingType` AND `CartItem.listingType`; add `bundlePriceInPaise` + `bundleQueryRule` + `bundleStockStatus` + `bundleQueryResolvedAt` to category schema; repoint SB3-D/SB3-G/SB3-J; new `AdminBundleEditorView`. **V** grouped re-scope: drop `bundlePrice`/`originalPrice`/`discountPercent`/`currency`; add `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus`; DELETE `appkit/src/features/bundles/` + `_internal/server/features/bundles/` + `_internal/shared/features/bundles/`; new `onProductStockChange` Firebase Function. **E** discriminator cleanup (drop "bundle" from ListingType union; "moderator" role grep; productQueryHelpers `prizeDraws`+`standardListings`; 5 boolean accessors; `category` vs `categorySlug` index drift fix; CLAUDE.md users-row). **A** top-level `addresses` with `ownerType:"user"\|"store"` + new `addressesRepository`; drop both subcollections + repos. Flips SB1-A/SB3-D/SB3-G/SB3-J/SB11/GP1/GP2/VB7/LL4/LL17 to ⚠️ done-but-verify. | Phase 1 closeout — see crud-tracker.md `### Phase 1 — Collection Unification (S-SBUNI)` for full design |
 | – | **Tier SB-UNI follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready |
 | 2 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 3 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
