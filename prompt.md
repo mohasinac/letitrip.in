@@ -73,7 +73,24 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-BUGFIX Functions deploy + appkit 2.6.3 release + smoke refactor (2026-05-13)
+### ✅ LAST COMPLETED — S-SBUNI-3 Phase 1 A + E + bundle UI public read paths (2026-05-13)
+
+Two SB-UNI cleanup rows closed plus restored the public bundle read surface deleted in SB-UNI-V. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. Operational follow-ups outstanding: `POST /demo/seed` + `firebase deploy --only firestore:indexes`. No `vercel --prod` per standing instruction.
+
+- **SB-UNI-E discriminator cleanup** — 3 drifted `UserRole` definitions (4/5/4 roles) consolidated onto the canonical 5-role union in `features/auth/types`; `moderator` kept (33+ usages). New `features/auth/role-predicates.ts` exports `isAdminUser` / `isSellerUser` / `isModeratorUser` / `isEmployeeUser` / `isBuyerUser`. `productQueryHelpers` gains `prizeDraws` + `standardListings`. `isPrizeDrawListing` surfaced through public barrels. `NonRefundableListingType` narrowed to `"prize-draw"`. Sitemap data-layer's `"bundle"` literal dropped. 6 orphan `bundles` composite indices dropped from base indexes file.
+- **SB-UNI-A addresses unification** — new top-level `addresses` collection with `ownerType: "user"|"store"` + `ownerId`. New `AddressesRepository extends BaseRepository` (createWithId + update PII-encryption overrides). 2 old repos + 2 old action files deleted (thin shim actions kept). 5 API routes + `/api/user/export` + `/api/payment/preorder` + `_internal/server/features/{account,checkout}` + checkout-actions rewired. Seed route + manifest + SeedPanel merge both legacy arrays into one ownerType-tagged write/purge branch. 2 new composites: `(ownerType, ownerId, createdAt desc)` + `(ownerType, ownerId, isDefault)`. CLAUDE.md addresses-row rewritten.
+- **Bundle UI rebuild (public read paths)** — `/bundles/[slug]/page.tsx` rebuilt (was 404 since V); new `BundleDetailView` in appkit (cover + price + stock badge + description + members grid, add-to-cart explicitly disabled w/ aria-live hint). New `_internal/server/features/bundles/{data,metadata,index}.ts` (`getBundleForDetail` / `listBundleMembers` / `listFeaturedBundles` wrapped in `React.cache`; `buildBundleMetadata(doc, opts)` brand-agnostic). `FeaturedBundlesSection` un-stubbed — was returning `null` since V. `SectionData` gains `bundles?: CategoryDocument[]`; homepage view fetches via `listFeaturedBundles(8)` gated by section presence.
+
+**Required user follow-ups** (no code action this session): `POST /demo/seed` to wipe legacy subcollections + reseed top-level addresses; `firebase deploy --only firestore:indexes` for the two new addresses composites.
+
+**Spun out to S-SBUNI-4** (carry-overs):
+- Bundle admin editor (list / new / edit pages) — needs the multi-select product picker UI design call.
+- Bundle cart-line `{bundleCategorySlug, qty}` + N-product order-line checkout expansion.
+- Bundle OG renderer — covered by the existing 5-baseline OG follow-up.
+
+---
+
+### ✅ Previous — S-BUGFIX Functions deploy + appkit 2.6.3 release + smoke refactor (2026-05-13)
 
 Three production-deployable bugs caught by `scripts/qa/smoke-prod.mjs` closed in a single cohort, plus a substantial smoke-test refactor centralising constants. `appkit@2.6.2 → 2.6.3` published (one publish only, per "don't publish multiple appkit"). Indices + Functions + Vercel re-deployed.
 
@@ -89,6 +106,12 @@ Three production-deployable bugs caught by `scripts/qa/smoke-prod.mjs` closed in
 **Required user follow-up (NOT a code task)**: `gcloud secrets add-iam-policy-binding LETITRIP_INTERNAL_SECRET --member="serviceAccount:949266230223-compute@developer.gserviceaccount.com" --role="roles/secretmanager.secretAccessor" --project=letitrip-in-app` (tracker row Q1-iam). Until granted, every HTTPS Function returns 401 and `/api/products` serves from the J22 local-repo fallback. Smoke `15-firebase-functions.mjs` flips 5/18 → ~13/18 once granted. Plus: prod Firestore data is empty — `POST /demo/seed` re-run pending.
 
 ---
+
+<!-- Older session entries trimmed per "keep only 1 LAST" rule. Historical detail
+preserved in newchange.md.
+
+Older entries trimmed: S-BUGFIX, S-SBUNI-2 (Phase 1 D + V), S-SBUNI-1
+(Phase 0 X1+X2 + Phase 1 B + C), SB-UNI-Z1/Z2/Z3 (media upload reliability).
 
 ### ✅ Previous — S-SBUNI-2 Phase 1 D + V (bundles re-architect) (2026-05-13)
 
@@ -139,16 +162,17 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Deferred (Z3 follow-up, carried separately):** `kind: "image"|"video"|"pdf"|"auto"` prop on `MediaUploadField` auto-deriving `accept` + `maxSizeMB` — pulled out to keep blast radius small.
 
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
+-->
 
 ### 🔄 CURRENT — none (awaiting next session)
 
-Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-3** (Phase 1 E + A + bundle UI rebuild — see below).
+Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-4** (bundle admin editor + cart-line + N-product checkout — see below).
 
-### ⏳ NEXT UP — single SB-UNI session (Z1–Z3 closed 2026-05-13)
+### ⏳ NEXT UP — bundle UI write paths + Phase 2+ (S-SBUNI-3 closed 2026-05-13)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-3** *(carries S-SBUNI-2 leftovers)* | Phase 1 E + A + bundle UI rebuild. **E** discriminator cleanup ("moderator" role grep; productQueryHelpers `prizeDraws`+`standardListings`; 5 boolean accessors; `category` vs `categorySlug` index drift fix; CLAUDE.md users-row). **A** top-level `addresses` with `ownerType:"user"\|"store"` + new `addressesRepository`; drop both subcollections + 2 repos. **Bundle UI rebuild** — admin editor with multi-select product picker + public bundle detail/listing pages against the new CategoryDocument shape. Optional: cart-line `{bundleCategorySlug, qty}` + checkout expansion to N product order lines. | Phase 1 closeout — see newchange.md S-SBUNI-2 entry for what carried over |
+| 1 | **S-SBUNI-4** *(carries S-SBUNI-3 leftovers)* | **Bundle admin editor** — admin list / new / [id]/edit pages backed by `categoriesRepository` with `categoryType:"bundle"` guard. Centerpiece: multi-select product picker UI (typeahead + paginated checkbox list — design call needed). Plus **cart-line `{bundleCategorySlug, qty}`** + checkout expansion to N product order lines so buyers can actually buy bundles (BundleDetailView currently shows a "coming soon" notice on the CTA). Plus the bundle OG renderer follow-up to drive `verify-og-coverage.mjs` baseline. | Closes the public-rebuilt bundle surface from S-SBUNI-3 with the missing write paths |
 | – | **Tier SB-UNI follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready |
 | 2 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 3 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |

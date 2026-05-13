@@ -41,6 +41,48 @@
 
 ---
 
+### S-SBUNI-3 — Phase 1 A + E + bundle UI public read paths (2026-05-13)
+
+Closed two SB-UNI cleanup rows + restored the public bundle read surface deleted in SB-UNI-V. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. **Operational follow-ups outstanding:** `POST /demo/seed` + `firebase deploy --only firestore:indexes`. No `vercel --prod` per standing instruction.
+
+**SB-UNI-E (Slice E — discriminator cleanup)** — `73195ef` appkit + `dde79d77` main:
+- 3 drifted `UserRole` definitions (4/5/4 roles across `security/authorization.ts` + `features/auth/types` + `src/types/input-types.ts`) consolidated to the canonical 5-role union. `moderator` is actively used (33+ files) — kept.
+- New `appkit/src/features/auth/role-predicates.ts` exporting `isAdminUser` / `isSellerUser` / `isModeratorUser` / `isEmployeeUser` / `isBuyerUser`. Mirrors the listing-type accessor pattern.
+- `productQueryHelpers` gains `prizeDraws` + `standardListings` clauses.
+- `isPrizeDrawListing` already existed in `utils/listing-type.ts` but was missing from public barrels — added to index.ts + client.ts + products/index.ts.
+- `NonRefundableListingType` narrowed to `"prize-draw"` only (bundle UI deleted in SB-UNI-V); COPY map's `bundle` branch dropped.
+- Sitemap data-layer's leftover `"bundle"` literal-comparison dropped.
+- 6 orphan `bundles` collection composite indices dropped from `appkit/firebase/base/firestore.indexes.json` (collection deleted in SB-UNI-D/V).
+- CLAUDE.md users-row inventory now lists the canonical 5-role union + references the new predicates.
+
+**SB-UNI-A (Slice A — addresses unification)** — `240c95c` appkit + `dcf2b449` main:
+- New top-level `addresses` collection. Discriminated by `ownerType: "user"|"store"` + `ownerId`. Replaced both subcollections (`users/{uid}/addresses` + `stores/{slug}/addresses`).
+- New `appkit/src/features/addresses/{schemas,repository,server,index}.ts`. `AddressesRepository extends BaseRepository` with `createWithId` + `update` PII-encryption overrides (Pattern #9 — never bypass repo hooks for PII).
+- Deleted: `account/repository/address.repository.ts` + `stores/repository/store-address.repository.ts`. The two action files kept as thin shims so existing callers (src/actions/*, _internal data layers, checkout flow) work unchanged.
+- 5 API routes rewired: `/api/user/addresses{,/[id],/[id]/set-default}` + `/api/store/addresses{,/[id]}` + `/api/store/storefront/addresses`. `findById` now takes one arg + an ownerType/ownerId guard at the call site.
+- `/api/user/export` (GDPR data dump) + `/api/payment/preorder` + `_internal/server/features/{account,checkout}` + `features/checkout/actions/checkout-actions.ts` swept.
+- Seed: route + manifest + SeedPanel merge user + store seed arrays into one top-level write/purge branch tagged with `ownerType` + `ownerId`.
+- 2 new composite indices: `(ownerType, ownerId, createdAt desc)` + `(ownerType, ownerId, isDefault)`.
+- CLAUDE.md addresses-row rewritten.
+
+**Bundle UI rebuild (public read paths)** — `9614072` appkit + `586a150e` main:
+- Public detail rebuilt: `/bundles/[slug]/page.tsx` (thin shim) + new `BundleDetailView` in appkit. Cover + name + price + stock badge + description + members grid. "Add to cart" CTA explicitly disabled with an aria-live hint — bundle cart-line + N-product order expansion is on the carry-over list.
+- New `_internal/server/features/bundles/{data,metadata,index}.ts`: `getBundleForDetail` / `listBundleMembers` / `listFeaturedBundles` wrapped in `React.cache`; `buildBundleMetadata(bundle, opts)` with `siteName`/`siteUrl` flowing through opts so appkit `_internal/` stays brand-agnostic (audit baseline preserved at 8).
+- `FeaturedBundlesSection` un-stubbed — was returning `null` since SB-UNI-V. Now renders a horizontal grid of bundle cards from `sectionData.bundles`. `MarketplaceHomepageView` gains a `listFeaturedBundles(8)` call gated by `activeTypes.has("featured-bundles")`.
+- `SectionData` type gains `bundles?: CategoryDocument[]`.
+
+**Deferred to S-SBUNI-4** (explicit carry-overs):
+- Bundle admin editor (list / new / edit pages) — needs the multi-select product picker UI design call.
+- Bundle OG renderer — covered by the existing 5-baseline OG follow-up cohort.
+- Bundle cart-line `{bundleCategorySlug, qty}` + N-product order-line expansion in checkout-actions.
+- Phase 1 carry: SB-UNI-A's wishlist/cart row-selection UX work spun out separately (already shipped by user in parallel commits `47aafd6` + `e7a10a23`).
+
+**Required user follow-ups** (not code tasks):
+- `POST /demo/seed` — wipe legacy subcollections (`users/{uid}/addresses` + `stores/{slug}/addresses`) + reseed top-level `addresses` collection with the merged ownerType-tagged dataset.
+- `firebase deploy --only firestore:indexes` — push two new `addresses` composites; the 6 orphan `bundles` composites can be dropped by adding `--force`.
+
+---
+
 ### S-BUGFIX — Functions deploy + appkit 2.6.3 release + smoke refactor (2026-05-13)
 
 Three production-deployable code bugs caught by `scripts/qa/smoke-prod.mjs` were closed in a single shipped cohort, plus a substantial smoke-test refactor centralising constants. `appkit@2.6.2 → 2.6.3` published. Indices + Functions + Vercel all re-deployed.
