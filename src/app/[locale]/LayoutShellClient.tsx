@@ -29,27 +29,31 @@ import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from
 import { SEARCH_LABELS } from "@/constants/search";
 
 const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
-  { value: "products",   label: "Products" },
-  { value: "auctions",   label: "Auctions" },
-  { value: "pre-orders", label: "Pre-Orders" },
-  { value: "stores",     label: "Stores" },
-  { value: "categories", label: "Categories" },
-  { value: "brands",     label: "Brands" },
-  { value: "events",     label: "Events" },
-  { value: "blog",       label: "Blog" },
-  { value: "faqs",       label: "FAQs" },
+  { value: "products",    label: "Products" },
+  { value: "auctions",    label: "Auctions" },
+  { value: "pre-orders",  label: "Pre-Orders" },
+  { value: "prize-draws", label: "Prize Draws" },
+  { value: "bundles",     label: "Bundles" },
+  { value: "stores",      label: "Stores" },
+  { value: "categories",  label: "Categories" },
+  { value: "brands",      label: "Brands" },
+  { value: "events",      label: "Events" },
+  { value: "blog",        label: "Blog" },
+  { value: "faqs",        label: "FAQs" },
 ];
 
 const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
-  products:     "/products",
-  auctions:     "/auctions",
-  "pre-orders": "/pre-orders",
-  stores:       "/stores",
-  categories:   "/categories",
-  brands:       "/brands",
-  events:       "/events",
-  blog:         "/blog",
-  faqs:         "/faqs",
+  products:      "/products",
+  auctions:      "/auctions",
+  "pre-orders":  "/pre-orders",
+  "prize-draws": "/prize-draws",
+  bundles:       "/bundles",
+  stores:        "/stores",
+  categories:    "/categories",
+  brands:        "/brands",
+  events:        "/events",
+  blog:          "/blog",
+  faqs:          "/faqs",
 };
 
 export default function LayoutShellClient({

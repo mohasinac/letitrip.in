@@ -7,15 +7,17 @@ export const metadata: Metadata = {
 };
 
 const ROUTE_MAP: Record<SearchResourceType, string> = {
-  products:     "/products",
-  auctions:     "/auctions",
-  "pre-orders": "/pre-orders",
-  stores:       "/stores",
-  categories:   "/categories",
-  brands:       "/brands",
-  events:       "/events",
-  blog:         "/blog",
-  faqs:         "/faqs",
+  products:      "/products",
+  auctions:      "/auctions",
+  "pre-orders":  "/pre-orders",
+  "prize-draws": "/prize-draws",
+  bundles:       "/bundles",
+  stores:        "/stores",
+  categories:    "/categories",
+  brands:        "/brands",
+  events:        "/events",
+  blog:          "/blog",
+  faqs:          "/faqs",
 };
 
 const VALID_TYPES = new Set<string>(Object.keys(ROUTE_MAP));

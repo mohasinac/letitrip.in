@@ -76,7 +76,7 @@
 | ⏳ Remaining | 323 *(mapped to S1–S11 + post-beta backlog — see § Session Roadmap)* |
 | 🚫 Superseded | 42 |
 
-### Session-bucket mapping (where pending work goes)
+### Session-bucket mapping (where pending work goes) — **Tier SB-UNI absorbed 2026-05-13** (program shifts S5–S18; previous S6–S11 work pushed back to S16+)
 
 | New session | Pending work absorbed |
 |-------------|-----------------------|
@@ -84,14 +84,19 @@
 | **S2** | Cart + Checkout end-to-end — Firestore-backed cart (replace localStorage guest), Razorpay init+verify, order-creation server action, cart 50-cap (Tier WL) |
 | **S3** | `listingType` boolean removal — 36-file consumer sweep + 7-file `_internal/server/features/` sweep + remove `isAuction`/`isPreOrder` fields + `/api/pre-orders` fix (Q3-pre-orders) + index drop/add |
 | **S4** | SB3-D order-side stock sync + SB3-G admin bundles pages + SB3-J Zod hardening + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy |
-| **S5** | Seed scale P24–P31 (auctions/pre-orders/categories/orders/blog/events/coupons/notifications/runner) + ARCH1/6/7 sellerId strip + index re-deploy |
-| **S6** | Tier OG (OG1–OG5) + FI6-2 secondary surfaces + Q6-views infinite-scroll wiring (4 listing views) |
-| **S7** | Tier SB Prize Draws: SB4 (editor/reveal/modal) + SB5 (nav/FAQ/seed) + SB6 (per-user limits) + SB7 (badges + tabs) + SB8 (reveal expiry/auto-refund + Functions) |
-| **S8** | SB9 Event Raffles (schema + Functions + winner page + spin wheel) + SB10/Tier TC tab constants + SB11 homepage sections |
-| **S9** | Tier RBAC end-to-end (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag in S1–S8 code |
-| **S10** | Tier BAN (BAN1–9) + Tier SCAM (SCAM2/4/6/7/8/9) |
-| **S11** | Quality baseline: X-audit-baseline 8→0 + TS9 hex sweep (154 hits) + TS17 ops + RA-Tier audits applied inline + 3-nextconfig-cleanup + 3-tailwind-cleanup + X-eslint-additive + X-cli-close |
-| **Post-beta backlog** | Tier AK (DI refactor) · Tier AP (GoF patterns) · Tier LP (custom ESLint rules) · Tier DX (38 docs-portal rows) · Tier PAY (EMG1 EMI) · Tier CHAT (EMG4 live chat) · EMG2/EMG3 holding |
+| **S5** | **Tier SB-UNI Phase 0 + Phase 1** — X1 capability registry + X2 listing-type plugin folders + X3 schemaVersion field + B sublistings→categories + C brands→categories + D bundles→categoryType (drops `listingType:"bundle"`) + V GroupedListingDocument re-scope + duplicate bundles/ folder deletion + E discriminator audit cleanup + A addresses top-level. Carries the original S5 seed-scale P24–P31 + ARCH sweeps in the same cohort. Seed-only, no live data, delete-outright. |
+| **S6** | **Tier SB-UNI Phase 9** — Z1 signed-URL media upload flow (resolves Rule #6 violation) + Z2 MIME widening + Z3 limits centralized. Prereq for Phase 8. |
+| **S7** | **Tier SB-UNI Phase 2 + Phase 3a** — F: `ListingType` extended with `classified`/`digital-code`/`live`. G: TCGPlayer grading fields. H: eBay hybrid auction+BIN. |
+| **S8** | **Tier SB-UNI Phase 3b** — I classified fields + J digital-code fields + K live-item fields + X4 feature flags. |
+| **S9** | **Tier SB-UNI Phase 4a** — L Part 1: Catalog/Offer split schema + repos + admin "Promote to catalog" tooling. |
+| **S10** | **Tier SB-UNI Phase 4b + Phase 7 part 1** — L Part 2: catalog PDP wiring + slug-prefix split + migration tooling. W-1 CTA registry shell + X5 telemetry sink. |
+| **S11** | **Tier SB-UNI Phase 5 + Phase 6a + Phase 8 shell** — M classified-chat + N digital-code reveal + O live-jurisdiction + P SeedPanel/seed sweep + Y-1 FormShell primitive. |
+| **S12** | **Tier SB-UNI Phase 8a** — Y-2 seller listing forms + Y-3 admin taxonomy editors adopt FormShell. |
+| **S13** | **Tier SB-UNI Phase 8b** — Y-4 cart/checkout adopt FormShell + optimistic UI + Y-5 content editors. |
+| **S14** | **Tier SB-UNI Phase 8c + Phase 7 sweeps** — Y-6 user forms + Y-7 admin ops + W-2 CTA public sweep + W-3 dashboard sweep. |
+| **S15** | **Tier SB-UNI Phase 7 enforce + Phase 9 polish** — W-4 admin sweep + W-5 ESLint rule + Z4 HEVC hint + Z5 MediaUploadField error UX. Tier SB-UNI closeout. |
+| **S16+** | **Post-SB-UNI backlog** — Tier OG (OG1–OG5) + FI6-2 + Q6-views infinite-scroll (was S6) · Tier SB Prize Draws cleanup (was S7) · SB9/SB10/SB11 Event Raffles + tab constants + homepage sections (was S8) · RBAC1–10 (was S9) · BAN/SCAM (was S10) · Quality baseline X-audit-baseline 8→0 + TS9 hex sweep + RA-Tier audits (was S11). |
+| **Post-beta backlog** | Tier AK (DI refactor) · Tier AP (GoF patterns) · Tier LP (custom ESLint rules) · Tier DX (38 docs-portal rows) · Tier PAY (EMG1 EMI) · Tier CHAT (EMG4 live chat) · EMG2/EMG3 holding · Tier AO (add-on cross-sell at checkout — reuses existing `groupedListings`; planned separately) |
 
 ---
 
