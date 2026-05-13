@@ -41,6 +41,48 @@
 
 ---
 
+### S4 — SB3 closeout (D/G/J); SB1-L + Q1-ops deferred to S7 (2026-05-13)
+
+**Scope (final)**: SB3-D + SB3-G + SB3-J. The original tracker row also listed SB1-L (7 Firebase Functions) + Q1-ops (listingProcessor deploy); deferred to S7 because:
+- 4 of the 7 SB1-L Functions are prize-draw-specific (`scheduledPrizeRevealOpen/Close/Expiry/Reminder`)
+- Bundle stock-sync (`scheduledBundleStockSync`), event raffle, and spin prize all belong to feature surfaces that S7 will close
+- Q1-ops Vercel env wiring should ship in the same deploy cohort as the Functions
+- Decoupling SB3 closeout from a multi-function deploy lets SB3 ship clean without index drift or env-var coordination
+
+Three commit pairs (each appkit + letitrip).
+
+**SB3-D — bundle stock-sync hook**
+
+| file | scope |
+|---|---|
+| `appkit/src/features/products/api/[id]/route.ts` | fire-and-forget `syncBundlesForUnavailableProduct` after PATCH transitions status → sold/out_of_stock/discontinued, and on every DELETE (soft-delete sets discontinued) |
+| `appkit/src/_internal/server/jobs/handlers/onProductWrite.ts` | cross-cutting `syncBundlesOnUnavailableTransition` runs after the existing counter-update block; covers order-side stock decrement, admin tools, scripts |
+
+Idempotent — `bundlesRepository.markItemSold(bundleId, productId)` is a no-op for already-sold items.
+
+**SB3-G — admin bundles pages**
+
+| file | scope |
+|---|---|
+| `src/app/[locale]/admin/bundles/page.tsx` | client list via `/api/bundles?includeAll=true`; rows show storeName/storeId; edit link → admin edit |
+| `src/app/[locale]/admin/bundles/[id]/edit/page.tsx` | wraps appkit's `AdminBundleEditorView`; PUT → `ROUTES.ADMIN.BUNDLES` on success |
+
+**SB3-J — Zod hardening + store-owner check**
+
+| file | scope |
+|---|---|
+| `appkit/src/features/bundles/schemas/zod.ts` | new — `bundleCreateInputSchema`, `bundleUpdateInputSchema`, `BUNDLE_ITEM_MIN/MAX`, types |
+| `appkit/src/features/bundles/schemas/index.ts` | re-export |
+| `appkit/src/index.ts` | barrel — `BundleCreateInput`, `BundleUpdateInput`, schemas, constants |
+| `src/app/api/bundles/route.ts` | POST uses Zod schema; new `assertOwnerOrAdmin(user, storeId)` does two-step lookup (`user.uid` → `storeRepository.findByOwnerId` → compare `store.id` to bundle's `storeId`); fixes the silent always-403 bug for non-admin owner PUTs in the prior version; dropped every `as any` cast |
+| `src/app/api/bundles/[id]/route.ts` | PUT uses partial Zod schema; DELETE now allows owner (not admin-only); same `assertOwnerOrAdmin` helper |
+
+**Quality gates**: `npm run check` → 0 errors, 499 warnings (+3 from baseline — new admin pages' `<img>` LCP nags, accepted). tsc clean both repos.
+
+**Deploys**: none. SB1-L Functions + Q1-ops deferred to S7.
+
+---
+
 ### S3 — listingType boolean removal (SB1-G final) + Q3-pre-orders rewire (2026-05-13)
 
 **Scope**: close SB1-G by removing every consumer reference to the legacy `isAuction` / `isPreOrder` boolean fields and routing all listing-kind discrimination through the canonical `listingType` discriminator. Also: rewire `/api/pre-orders` to query products with `listingType==pre-order` (Q3-pre-orders).

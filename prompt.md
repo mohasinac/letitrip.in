@@ -73,25 +73,23 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S3 listingType boolean removal (SB1-G final) (2026-05-13)
+### ✅ LAST COMPLETED — S4 SB3 closeout (D/G/J); SB1-L + Q1-ops deferred to S7 (2026-05-13)
 
-- **Verify-first audit (Rule #4) found the heavy pieces already migrated**: schema field removal on `ProductDocument` / `CartItemDocument` / `AuctionItemDocument` was complete from a prior partial session; `listingType+...` Firestore composite indices were already in place; legacy `isAuction+...` / `isPreOrder+...` composites already absent; seed wrappers already emit `listingType` only.
-- **Real remaining work** — boundaries: consumer query strings, URL filter clauses, auth-route Zod schemas, `IS_AUCTION` / `IS_PRE_ORDER` field-name constants, plus the Q3-pre-orders rewire (the `/api/pre-orders` route was still hitting a never-seeded `preorders` collection through appkit's `preOrdersGET`).
-- **C1 (paired appkit + letitrip commits)**: consumer sweep across 10 appkit files + 5 letitrip files. Products repo + api/route + admin filter view + homepage hooks + auctions/search/products Zod schemas + sitemap + bids route + product-group response now all use the canonical `listingType` discriminator. `/api/pre-orders` GET now calls `productRepository.list` directly with `listingType==pre-order` injected; POST dropped (no client consumers). Public `?isAuction=true` URL param removed (zero live callers).
-- **C2 (paired commits)**: dropped `IS_AUCTION` / `IS_PRE_ORDER` from `src/constants/field-names.ts` (added `LISTING_TYPE`); renamed local `SIEVE_CLAUSE_IS_*` → `SIEVE_CLAUSE_LT_*` in products repo for naming accuracy; refreshed stale doc comments.
-- **C3**: no work — Firestore indices already clean. Zero `isAuction|isPreOrder` references in indexes.json files; 5 `listingType+...` composites present.
-- **Quality gates**: `npm run check` 0 errors, 496 warnings (stable). tsc clean both repos. No deploys needed.
+- **Scoping decision**: SB1-L's 7 Firebase Functions are mostly Prize-Draw-specific (`scheduledPrizeRevealOpen/Close/Expiry/Reminder`) + event raffle + spin prize + bundle stock-sync. Moved entire SB1-L cohort + Q1-ops `listingProcessor` deploy into **S7** (Prize Draws) so the Functions deploy ships as one cohesive cohort with the Prize-Draw surface. This session covered SB3 closeout (D/G/J) cleanly.
+- **SB3-D (bundle stock-sync hook)**: when a product transitions to sold/out_of_stock/discontinued via `appkit/src/features/products/api/[id]/route.ts` PATCH/DELETE, fire-and-forget `bundlesRepository.markItemSold(bundleId, productId)` per `partOfBundleIds[]` entry. `onProductWriteHandler` also runs the sync as a cross-cutting trigger (covers order-side stock decrement that bottoms at availableQuantity=0, admin tools, scripts). Idempotent re-marking.
+- **SB3-G (admin bundle pages)**: `src/app/[locale]/admin/bundles/page.tsx` (list every bundle across stores via `?includeAll=true`, shows storeName/storeId per row) + `/[id]/edit/page.tsx` (wraps appkit's `AdminBundleEditorView`, PUTs to `/api/bundles/[id]`).
+- **SB3-J (Zod hardening + owner check)**: new appkit `bundleCreateInputSchema` + `bundleUpdateInputSchema` (3..16 items, homogeneous listingType, per-item shape). New `assertOwnerOrAdmin(user, storeId)` helper does the proper two-step lookup (`user.uid` → `storeRepository.findByOwnerId` → compare `store.id`); old check compared bundle slug to Auth UID and always 403'd non-admins. DELETE now allows owner, not admin-only. Dropped every `as any` cast.
+- **Quality gates**: `npm run check` 0 errors, 499 warnings (up 3 — new pages' `<img>` LCP nags). tsc clean both repos. No deploys.
 
-### 🔄 CURRENT — none (awaiting S4 kickoff)
+### 🔄 CURRENT — none (awaiting S5 kickoff)
 
 ### ⏳ NEXT UP — new S1-onward sequence (impact + dependency ordered)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S4** | SB3 closeout (D/G/J) + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy | Closes Bundles + ships missing Functions |
-| 2 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
-| 3 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
-| 4 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks, one large session, one deploy) | Self-contained feature surface |
+| 1 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
+| 2 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
+| 3 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks) **PLUS SB1-L 7 Firebase Functions + Q1-ops listingProcessor deploy** (moved from S4 — 4 of 7 SB1-L Functions are prize-draw-specific so this is one cohesive deploy cohort) | Self-contained feature surface + missing Functions |
 | 5 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 6 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
 | 7 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
