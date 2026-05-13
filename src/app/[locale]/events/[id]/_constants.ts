@@ -16,6 +16,8 @@ export const EVENT_LABELS = {
   TAB_OVERVIEW: "Overview",
   TAB_PARTICIPATE: "Participate",
   TAB_LEADERBOARD: "Leaderboard",
+  TAB_WINNER: "Winner",
+  TAB_SPIN: "Spin",
   HEADER_START: "Start:",
   HEADER_END: "End:",
   HEADER_PARTICIPANTS: "Participants:",
@@ -34,6 +36,7 @@ export const EVENT_META = {
   TITLE_SUFFIX: "— LetItRip Events",
   PARTICIPATE_TITLE: (title: string) => `Participate — ${title}`,
   LEADERBOARD_TITLE: (title: string) => `Leaderboard — ${title}`,
+  WINNER_TITLE: (title: string) => `Winner — ${title}`,
   NOT_FOUND_TITLE: "Event Not Found",
   DESCRIPTION_MAX_LEN: 155,
   LEADERBOARD_VISIBLE_LIMIT: 10,
@@ -45,6 +48,8 @@ export const EVENT_TYPE_BADGE: Record<string, string> = {
   poll: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
   survey: "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
   feedback: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  raffle: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
+  spin_wheel: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
 } as const;
 
 export const EVENT_STATUS_BADGE: Record<string, string> = {
@@ -62,6 +67,8 @@ export const EVENT_TYPE = {
   OFFER: "offer",
   SURVEY: "survey",
   FEEDBACK: "feedback",
+  RAFFLE: "raffle",
+  SPIN_WHEEL: "spin_wheel",
 } as const;
 
 export const EVENT_STATUS = {

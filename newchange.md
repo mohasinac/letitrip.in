@@ -41,6 +41,40 @@
 
 ---
 
+### S-SBUNI-5 — Bundle checkout finalize: CTA + per-member stock + order grouping + dynamic-rule (2026-05-13)
+
+Closes Phase 1 of Tier SB-UNI. Bundle commerce loop is end-to-end functional. 8 commits across appkit (5) + main (3). Quality gate ends 0 errors. **No new infra deploys this session** — schema fields already shipped in S-SBUNI-4, no new indices, no new Functions.
+
+**Slice CTA — BundleDetailView wire** (`9adeeea` appkit + `ebdc89ea` main):
+- New `BundleAddToCartCta` client island — qty input clamped 1..10, Add button w/ isLoading state, inline error + `useToast` feedback. Out-of-stock bundles render disabled CTA + hint.
+- `BundleDetailView` gains optional `onAddToCart` prop. When supplied, renders the new CTA; when omitted, the legacy "coming soon" notice still renders as graceful degradation.
+- `BUNDLE_COPY.detail.cta*` strings (ctaAddToCart / ctaAdding / ctaOutOfStock / ctaSuccess / ctaSignInRequired / ctaErrorFallback / qtyLabel / qtyAriaLabel).
+- New `addBundleToCartAction({ bundleSlug, quantity })` in `src/actions/cart.actions.ts` (requireAuthUser + per-uid rate-limit + zod-validated + delegates to appkit `addBundleToCart`).
+- `/bundles/[slug]/page.tsx` passes the action as the `onAddToCart` prop.
+
+**Slice CHECKOUT — per-member stock decrement** (`6677bfa` appkit):
+- New `_internal/server/features/checkout/bundle-expansion.ts` — `getCartItemMemberIds`, `getExpandedDecrements(cartItems)`, `validateCartItemStock(item, productById, decrements)`. Pure functions; one place owns the bundle-fan-out logic.
+- `_internal/server/features/checkout/actions.ts` COD path: pre-tx fetch via `getExpandedDecrements` (unique product set; pairs back via "first member" for `enforceMaxPerUserForCart`); in-tx validation walks each cart line through `validateCartItemStock` with the cart-cumulative decrement map; in-tx decrement walks `expansion.decrements` so each unique product receives ONE `tx.update`.
+- Razorpay-paid path: same expansion model. `productByIdPaid` Map fetched once per unique member id; `validateCartItemStock` replaces the per-line `availableQuantity < quantity` check (now decrement-aware so two cart lines touching the same product fail correctly when sum exceeds stock); batch decrement walks the same map.
+- OrderItem mapping (both paths) forwards `bundleCategorySlug` + `bundleProductIds`. Bundle cart-lines use `item.price` (locked `bundlePriceInPaise`) for unitPrice / cartSubtotal / groupTotal / coupon-eligible-total via `unitPriceFor(item, product)` helper. Regular lines keep using `product.price`.
+- Prize-pool cap skipped for bundle cart-lines (bundles always have `listingType:"standard"`).
+
+**Slice ORDER-UI — bundle grouping in order detail** (`1813751` appkit + `a3cc14218` main):
+- New `appkit/src/features/orders/utils/bundle-grouping.ts` — `groupOrderItemsByBundle(items)` returns ordered `BundleOrderGroup` discriminated union (`single` or `bundle`). Handles both possible bundle row shapes: S-SBUNI-4 single-row form + future N-row expansion.
+- `BUNDLE_COPY.orderDetail.*` — `bundleHeader(name)` / `bundleItemCount(n)` / `expandLabel` / `collapseLabel`.
+- `src/app/[locale]/user/orders/view/[id]/page.tsx` renderItems rewritten around the helper. Bundle groups render under "Bundle: <name>" header + member-count chip inside a bordered card; member rows nest via the same `renderItemRow` helper that handles regular rows + prize-draw badges.
+
+**Slice ADMIN-DYN — dynamic-rule editor** (`45a3b25` appkit + `f378d4ed` main):
+- New `BundleDynamicRuleEditor` — filter inputs (categorySlug / brandSlug / tags / listingType) + orderBy Select + numeric limit (clamped 1..`BUNDLE_MAX_ITEMS`). `DEFAULT_DYNAMIC_RULE = { type:"dynamic", filter:{}, orderBy:"createdAt-desc", limit:6 }`.
+- `AdminBundleEditorView`: new `ruleType` + `dynamicRule` fields on FormState. Rule-type Select toggles between `BundleItemsPicker` (static) and `BundleDynamicRuleEditor` (dynamic). `handleSave` branches: static path writes `{ type:"static", productIds }` + `bundleProductIds: form.productIds`; dynamic path writes `form.dynamicRule` + `bundleProductIds: []` (Function resolver populates the mirror).
+- `BUNDLE_COPY.adminEditor.ruleType*` + `BUNDLE_COPY.adminEditor.dynamic.*` — copy for the toggle + the 6 dynamic-field inputs.
+
+**Phase 1 status**: all SB-UNI Phase 1 rows now closed (A, B, C, D, E, V, Bundle-UI, Bundle-Checkout). Phase 2+ (ListingType union expansion: classified/digital-code/live) remains as independent pull-when-prioritised cohorts.
+
+**No operational follow-ups** for this session — no schema changes, no new indices, no new Functions, no seed re-run.
+
+---
+
 ### S-SBUNI-4 — Bundle write paths: OG renderer + cart-line foundation + admin editor (2026-05-13)
 
 Carries S-SBUNI-3's deferred work to a partial close. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. **No deploys required** — no new Firestore indices, Functions, or seed data shape changes.

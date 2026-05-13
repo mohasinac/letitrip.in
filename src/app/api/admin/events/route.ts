@@ -36,8 +36,24 @@ const mediaFieldSchema = z.object({
 // ---------------------------------------------------------------------------
 // Validation schema for event creation
 // ---------------------------------------------------------------------------
+const spinPrizeSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  couponId: z.string().optional(),
+  weight: z.number().min(0),
+  isActive: z.boolean(),
+});
+
 const createEventSchema = z.object({
-  type: z.enum(["sale", "offer", "poll", "survey", "feedback"]),
+  type: z.enum([
+    "sale",
+    "offer",
+    "poll",
+    "survey",
+    "feedback",
+    "raffle",
+    "spin_wheel",
+  ]),
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   description: z.string().default(""),
   startsAt: z.string().datetime({ offset: true }),
@@ -106,6 +122,17 @@ const createEventSchema = z.object({
       anonymous: z.boolean(),
     })
     .optional(),
+  hasRaffle: z.boolean().optional(),
+  raffleType: z
+    .enum(["top_n_scorers", "top_n_participants", "open_raffle", "spin_wheel"])
+    .optional(),
+  raffleTopN: z.number().min(0).optional(),
+  rafflePrize: z.string().optional(),
+  rafflePrizeCouponId: z.string().optional(),
+  spinPrizes: z.array(spinPrizeSchema).max(20).optional(),
+  spinMaxPerUser: z.number().min(0).optional(),
+  spinWindowStart: z.string().datetime({ offset: true }).optional(),
+  spinWindowEnd: z.string().datetime({ offset: true }).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -195,6 +222,19 @@ export const POST = withProviders(createRouteHandler({
       pollConfig: body.pollConfig,
       surveyConfig: body.surveyConfig as SurveyConfig | undefined,
       feedbackConfig: body.feedbackConfig as FeedbackConfig | undefined,
+      hasRaffle: body.hasRaffle,
+      raffleType: body.raffleType,
+      raffleTopN: body.raffleTopN,
+      rafflePrize: body.rafflePrize,
+      rafflePrizeCouponId: body.rafflePrizeCouponId,
+      spinPrizes: body.spinPrizes,
+      spinMaxPerUser: body.spinMaxPerUser,
+      spinWindowStart: body.spinWindowStart
+        ? new Date(body.spinWindowStart)
+        : undefined,
+      spinWindowEnd: body.spinWindowEnd
+        ? new Date(body.spinWindowEnd)
+        : undefined,
       status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
       createdBy: user.uid,
     });

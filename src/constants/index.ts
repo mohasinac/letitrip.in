@@ -75,6 +75,37 @@ export { SEARCH_LABELS } from "./search";
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";
 
+// Dashboard tab configuration (SB10-B / Tier TC2)
+export {
+  STORE_LISTINGS_TABS,
+  STORE_ORDERS_TABS,
+  STORE_REVIEWS_TABS,
+  ADMIN_PRODUCTS_TABS,
+  ADMIN_ORDERS_TABS,
+  ADMIN_USERS_TABS,
+  ADMIN_STORES_TABS,
+  ADMIN_EVENTS_TABS,
+  ADMIN_BLOG_TABS,
+  ADMIN_PAYOUTS_TABS,
+  USER_ORDERS_TABS,
+  USER_PROFILE_TABS,
+} from "./dashboard-tabs";
+export type {
+  DashboardTab,
+  StoreListingsTabId,
+  StoreOrdersTabId,
+  StoreReviewsTabId,
+  AdminProductsTabId,
+  AdminOrdersTabId,
+  AdminUsersTabId,
+  AdminStoresTabId,
+  AdminEventsTabId,
+  AdminBlogTabId,
+  AdminPayoutsTabId,
+  UserOrdersTabId,
+  UserProfileTabId,
+} from "./dashboard-tabs";
+
 // Schema field name & status constants
 export {
   PRODUCT_FIELDS,

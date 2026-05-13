@@ -73,19 +73,40 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-SBUNI-4 Bundle write paths: OG renderer + cart-line foundation + admin editor (2026-05-13)
+### ✅ LAST COMPLETED — S-SBUNI-5 Bundle checkout finalize (closes Phase 1) (2026-05-13)
 
-6 commits across appkit + main. Quality gate ends 0 errors. **No deploys required** — no new indices, Functions, or seed data shape changes this session.
+Bundle commerce loop end-to-end functional. 8 commits across appkit (5) + main (3). Quality gate ends 0 errors. **No new infra deploys this session** — schema fields already shipped in S-SBUNI-4, no new indices, no new Functions.
 
-- **Slice OG** — new `_internal/server/features/bundles/og.tsx` + opengraph-image shim at `/bundles/[slug]`. Bundle-specific accents over the category layout: header pill says "Bundle"; chip row carries price + item count + stock-status badge. `verify-og-coverage.mjs` baseline 6→5 (`bundles/[slug]` dropped from `OG_KNOWN_GAPS`).
-- **Slice C (foundation)** — `CartItemDocument` + `AddToCartInput` + `OrderItem` gain `bundleCategorySlug?: string` + `bundleProductIds?: string[]`. New `addBundleToCart(userId, bundleSlug, quantity)` server action fetches via `categoriesRepository.findBySlugAndType`, validates price/stock/members, delegates to `cartRepository.addItem`. **BundleDetailView CTA NOT wired** — `"coming soon"` notice stays accurate; checkout-side stock decrement is the missing piece, carried to S-SBUNI-5.
-- **Slice ADMIN** — full admin CRUD. New `BundleItemsPicker` (multi-select w/ debounced typeahead + chip-tray + min/max bounds), `AdminBundleEditorView` (unified create+edit form, static-rule only), `AdminBundlesView` (simple list table). API routes `/api/admin/bundles{,/[id]}` with zod validation + `categoryType:"bundle"` guard. 3 admin pages. `ROUTES.ADMIN.BUNDLES_NEW` + `API_ROUTES.ADMIN.BUNDLES*` added.
+- **Slice CTA** — `BundleAddToCartCta` client island (qty input clamped 1..10 + Add button w/ isLoading + inline error + `useToast` feedback; out-of-stock bundles render disabled CTA). `BundleDetailView` gains optional `onAddToCart` prop. New `addBundleToCartAction({ bundleSlug, quantity })` in `src/actions/cart.actions.ts` (requireAuthUser + per-uid rate-limit + zod). `/bundles/[slug]/page.tsx` passes the action.
+- **Slice CHECKOUT** — new `_internal/server/features/checkout/bundle-expansion.ts` (`getCartItemMemberIds` / `getExpandedDecrements` / `validateCartItemStock`). Both COD pre-tx/in-tx loops + Razorpay-paid path rewired around the helper. Per-product decrement collapses to ONE update per unique member (cumulative-decrement aware so two cart lines sharing a member don't double-count or pass when summed demand exceeds stock). `unitPriceFor(item, product)` helper picks `item.price` (locked bundlePriceInPaise) for bundle lines, `product.price` for regular lines — used in cartSubtotal / groupTotal / coupon-eligible-total / cartSubtotalRs.
+- **Slice ORDER-UI** — new `appkit/src/features/orders/utils/bundle-grouping.ts` exports `groupOrderItemsByBundle(items)` returning ordered `BundleOrderGroup` discriminated union. `/user/orders/view/[id]` renderItems rewritten — bundle groups render under "Bundle: <name>" header + member-count chip inside a bordered card; member rows nest via the same renderItemRow helper that handles regular rows + prize-draw badges.
+- **Slice ADMIN-DYN** — new `BundleDynamicRuleEditor` (filter inputs categorySlug/brandSlug/tags/listingType + orderBy Select + numeric limit clamped 1..BUNDLE_MAX_ITEMS). `AdminBundleEditorView` ruleType Select toggles between `BundleItemsPicker` (static) and the dynamic editor. handleSave branches on ruleType. `BUNDLE_COPY.adminEditor.ruleType*` + `dynamic.*` strings centralised.
 
-**Deferred to S-SBUNI-5**:
-- BundleDetailView CTA wire to `addBundleToCart` (foundation shipped).
-- Per-member stock decrement at order paid (2 sites in `_internal/server/features/checkout/actions.ts`).
-- Order-detail UI grouping (N expanded order-lines back under a "Bundle: <name>" header).
-- Bundle admin dynamic-rule editing.
+**Phase 1 of Tier SB-UNI now closed.** All SB-UNI Phase 1 rows complete: A · B · C · D · E · V · Bundle-UI · Bundle-Checkout. Phase 2+ (ListingType union: classified / digital-code / live · catalog/offer split · per-type checkout / FormShell / CTA registry) remains independent pull-when-prioritised cohorts.
+
+---
+
+### ✅ Previous (parallel) — S8 Event Raffles + dashboard tab constants (2026-05-13)
+
+S8 cohort closed (SB9 fully + SB10-B/D fully + SB10-C partial). Quality gate ends 0 errors in both appkit and root; `npm run check:audits` clean. **Deploy held** — new Firestore indices + admin/spin API routes sit with the S7 prize-draws ops cohort.
+
+- **SB9 schema (A/B/C)** — `EventType` extended with `"raffle" | "spin_wheel"`. `EventDocument` gains 12 raffle/spin fields (config + result + spin-prizes block); new `RaffleType` and `SpinPrize` interfaces exported from types. `EventEntryDocument` gains `raffleEligible` + `spinUsed` + `spinPrizeId` + `spinPrizeCouponCode` + `spinWonAt`. `EventItem` mirrors with string dates. `EVENT_FIELDS.TYPE_VALUES.RAFFLE` / `SPIN_WHEEL` + `EventCard` icons (🎟️/🎡) added.
+- **SB9-D/E surface** — prep3 handlers already wrapped in jobs/handlers; this session added `triggerEventRaffleAction` + `assignSpinPrizeAction` in `_internal/server/features/raffle/actions.ts` (build a JobContext around `getAdminDb` and call `runTriggerEventRaffle` / `runAssignSpinPrize`). Re-exported from `@mohasinac/appkit/server`. Next.js routes: `POST /api/admin/events/[id]/trigger-raffle` (admin only) + `POST /api/events/[id]/spin` (auth).
+- **SB9-F winner page** — `EventRaffleWinnerView` in appkit (winner card + prize + pool size + fairness-proof URL link with shape-agnostic `RaffleWinnerEvent` interface accepting both `EventItem`/`EventDocument`). Page shim at `src/app/[locale]/events/[id]/winner/page.tsx` + new `ROUTES.PUBLIC.EVENT_WINNER`.
+- **SB9-G spin wheel** — `SpinWheelView` client component with 3.2s CSS keyframe decelerating spin, `onSpin` callback contract, in-window enforcement, already-spun guard, coupon-code reveal in won-prize card.
+- **SB9-H admin editor** — Raffle config section in `AdminEventEditorView`: hasRaffle toggle (auto-enabled for raffle/spin_wheel types), raffleType select, top-N input, prize description, coupon ID, full spin-prizes editor (label/coupon/weight/isActive/remove + add row), spin window pickers, "Trigger Raffle Now" button calling the new admin route, read-only winner display after trigger. `/api/admin/events` schema widened to accept raffle/spin_wheel types + raffle/spin fields.
+- **SB9-I indices** — 3 new composites: `eventEntries (eventId, status, points DESC)`, `eventEntries (eventId, status, createdAt)`, `events (hasRaffle, status, raffleWinnerUserId)`. `firebase-merge.mjs` run.
+- **SB10-B/D** — `src/constants/dashboard-tabs.ts` exports all 12 spec'd tab sets (STORE_LISTINGS reuses appkit's SELLER_LISTING_TABS; STORE/USER/ADMIN orders share the same shape). `src/constants/index.ts` re-exports them. Main appkit barrel now also exposes `CATEGORY_PAGE_TABS` / `STORE_PAGE_TABS` / `SELLER_LISTING_TABS` / `SEARCH_RESULT_TABS`.
+- **SB10-C (partial ⚠️)** — `StoreDetailLayoutView` listing-type rows refactored to derive from `STORE_PAGE_TABS` + a `STORE_LISTING_HREF` map. Long tail (admin/seller/blog/event listing views + user profile tabs) still has inline arrays — pull as files are touched.
+
+**Required user follow-ups** (no code action this session):
+- `firebase deploy --only firestore:indexes` — 3 new SB9 composites (folds into S7 prize-draws ops cohort).
+- `firebase deploy --only functions` — `triggerEventRaffle` / `assignSpinPrize` callable handlers already in prep3 code; Next.js routes use the in-Vercel JobContext path so the deploy is only needed if you also want the Firebase callable endpoint exposed.
+- No `vercel --prod` per standing instruction.
+
+**Deferred / spun out**:
+- SB10-C full sweep — remaining inline tab arrays in admin/seller/user views.
+- Pre-existing uncommitted `BundleItemsPicker.tsx` had a `size="xs"` Button prop type error from prior session; resolved during this session's appkit rebuild via fresh tsbuildinfo.
 
 ---
 
@@ -180,7 +201,7 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### 🔄 CURRENT — none (awaiting next session)
+### 🔄 CURRENT — none (S-SBUNI-5 + S8 both closed; awaiting next session)
 
 Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-5** (bundle checkout finalize: BundleDetailView CTA wire + per-member stock decrement + order grouping).
 
@@ -188,10 +209,8 @@ Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Functi
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-5** *(carries S-SBUNI-4 leftovers)* | **Bundle checkout finalize** — wire `BundleDetailView` CTA to `addBundleToCart` (foundation shipped in S-SBUNI-4); add per-member stock decrement at order paid (2 sites in `_internal/server/features/checkout/actions.ts` — the pre-tx stock check loop + the in-tx stock update loop, both need to iterate `bundleProductIds` when present); add order-detail UI grouping (collapse N expanded order-lines back under a "Bundle: <name>" header). Plus bundle admin **dynamic-rule editing** (API accepts dynamic rules; the form in S-SBUNI-4 only writes static). | Closes the cart→order path for bundles so buyers can actually buy them. The other pieces from S-SBUNI-4 (OG renderer + admin editor + cart-line foundation) all landed. |
-| – | **Tier SB-UNI follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready |
-| 2 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
-| 3 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
+| 1 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end — next natural slot now that Phase 1 SB-UNI + S8 are closed |
+| – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. Plus SB10-C tab-constants tail sweep (admin/seller/blog/event listing views still have inline arrays per S8 deferred note). | Each is its own cohort — slot when ready. **Phase 1 is fully closed (S-SBUNI-5 2026-05-13).** |
 | 4 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
 | 5 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |

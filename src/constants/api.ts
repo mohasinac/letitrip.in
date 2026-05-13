@@ -28,6 +28,8 @@ export const API_ROUTES = {
     ENTRIES: (id: string) => `/api/events/${id}/entries`,
     LEADERBOARD: (id: string, limit?: number) =>
       `/api/events/${id}/leaderboard${limit !== undefined ? `?limit=${limit}` : ""}`,
+    // SB9-E spin assignment (user-authenticated)
+    SPIN: (id: string) => `/api/events/${id}/spin`,
   },
   ADMIN: {
     USERS: "/api/admin/users",
@@ -64,6 +66,8 @@ export const API_ROUTES = {
     AD_BY_ID: (id: string) => `/api/admin/ads/${id}`,
     EVENTS: "/api/admin/events",
     EVENT_BY_ID: (id: string) => `/api/admin/events/${id}`,
+    // SB9-D — admin manual raffle trigger
+    EVENT_TRIGGER_RAFFLE: (id: string) => `/api/admin/events/${id}/trigger-raffle`,
     NEWSLETTER: "/api/admin/newsletter",
     NEWSLETTER_BY_ID: (id: string) => `/api/admin/newsletter/${id}`,
     CONTACT_SUBMISSIONS: "/api/admin/contact-submissions",

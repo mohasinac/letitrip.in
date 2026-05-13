@@ -5100,10 +5100,125 @@ Tab visibility (computed in layout):
   Overview      : always
   Participate   : !isPoll && isActive
   Leaderboard   : leaderboard.length > 0
+  Winner        : hasRaffle && raffleWinnerUserId    (SB9-F)
+  Spin          : type=="spin_wheel" && in spin window  (SB9-G client island)
 
 Global ScrollToTop (src/components/ScrollToTop.tsx) listens to usePathname
 from @/i18n/navigation and scrolls window to (0,0) on every route change.
 Tab links use scroll={false} so the global handler is the single source of truth.
+```
+
+---
+
+## Public > Event Winner ✅ (SB9-F — S8 2026-05-13)
+
+```
+src/app/[locale]/events/[id]/winner/page.tsx
+└─ EventRaffleWinnerView (appkit)        ← shape-agnostic RaffleWinnerEvent input
+       (accepts both EventDocument[Date] and EventItem[string-date] shapes)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🎟️ Raffle Winner                                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ╭─────────────────────────────────────────────────────────────────────╮    │
+│  │ WINNER                                                                │   │
+│  │ Priya Patel                                                           │   │
+│  │                                                                       │   │
+│  │ PRIZE                                                                 │   │
+│  │ ₹10,000 platform store credit + exclusive LetItRip merch pack        │   │
+│  │                                                                       │   │
+│  │ Entries in pool: 184       2026-05-13 16:42 IST                       │   │
+│  ╰─────────────────────────────────────────────────────────────────────╯    │
+│                                                                              │
+│  Verifiable randomness                                                       │
+│  https://github.com/letitrip-in/proof-of-fairness/blob/main/raffles/…       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Not-yet-drawn state: dashed-border card "The raffle has not been drawn yet."
+
+Data path:
+  Page → getEventCached(id)  (React.cache via _data.ts)
+       → EventRaffleWinnerView({ event })
+
+Route constant: ROUTES.PUBLIC.EVENT_WINNER(id)
+```
+
+---
+
+## Public > Spin the Wheel ✅ (SB9-G — S8 2026-05-13)
+
+```
+SpinWheelView (appkit, "use client")
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  🎡 Spin the Wheel                                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                            ╭───────────╮                                     │
+│                       ╱ ─ ─│           │─ ─ ╲                                │
+│                      │     │    🎁    │     │     ← CSS @keyframes 2160°    │
+│                       ╲ ─ ─│           │─ ─ ╱        3.2s decel              │
+│                            ╰───────────╯                                     │
+│                                                                              │
+│         You won:                                                             │
+│         ₹500 off coupon                                                      │
+│         Coupon code: SPIN-500-XYZ                                            │
+│                                                                              │
+│                       [ Spin ]                                               │
+│                                                                              │
+│  (disabled when: spinning · already used · outside window · no prizes)       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Spin flow:
+  Button click → onSpin(eventId)  ── caller plugs API_ROUTES.EVENTS.SPIN(id)
+              → setTimeout(ANIMATION_MS = 3200) reveals result
+              → server `assignSpinPrizeAction` (one spin per user, weighted RNG)
+
+Weighted random algo (server):
+  totalWeight = Σ activePrizes.weight
+  roll = crypto.randomInt(0, totalWeight)
+  cumulative-sum walk → pick prize where roll < cumulative
+```
+
+---
+
+## Admin > Event Editor (Raffle section) ✅ (SB9-H — S8 2026-05-13)
+
+```
+AdminEventEditorView   (+ S8 raffle section, gated by hasRaffle/raffle types)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Type: [raffle ▾]    [Title]    [Description (RichText)]                     │
+│  Starts / Ends datetimes                                                     │
+│  Sale / Offer / Poll / Survey / Feedback config (per type)                   │
+│                                                                              │
+│  ── Raffle & Spin Wheel ─────────────────────────────────────────[Attach ⏵] │
+│  Raffle type [open_raffle ▾]      Top N [10]                                 │
+│  Prize description [₹10,000 store credit + exclusive merch pack]            │
+│  Coupon ID for winner [coupon-vip-2026]                                      │
+│                                                                              │
+│  (if spin_wheel)                                                             │
+│  ┌─── Spin prizes (weighted random) ───────────────────────────────┐         │
+│  │  Label          Coupon ID         Wt    on/off   ×              │         │
+│  │  ₹50 off        coupon-spin-50    60    ●        ×              │         │
+│  │  ₹100 off       coupon-spin-100   25    ●        ×              │         │
+│  │  Mystery        —                  1    ●        ×              │         │
+│  │  [+ Add spin prize]                                              │         │
+│  │  Max spins/user [1]   Window [start] [end]                       │         │
+│  └────────────────────────────────────────────────────────────────┘         │
+│                                                                              │
+│  ┌─── Raffle not yet triggered  ───────────────────────[Trigger Raffle Now]┐│
+│  │  Pool size: —                                                            ││
+│  │  (after trigger) Winner: Priya Patel · 184 entries · fairness URL        ││
+│  └─────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────┘
+
+API endpoints (constants):
+  ADMIN_ENDPOINTS.EVENT_TRIGGER_RAFFLE(id)   POST /api/admin/events/{id}/trigger-raffle
+  EVENT_ENDPOINTS.SPIN(id)                   POST /api/events/{id}/spin (user-auth)
+
+Server-action seam (appkit/server.ts):
+  triggerEventRaffleAction({ eventId })   → runTriggerEventRaffle (JobContext built from getAdminDb)
+  assignSpinPrizeAction({ eventId, uid }) → runAssignSpinPrize
+
+Same pure runners are bound as Firebase callables in functions/src/index.ts.
 ```
 
 ---
