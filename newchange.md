@@ -41,6 +41,38 @@
 
 ---
 
+### S-SBUNI-Phase5-7 — SB-UNI-P + S + W-1 + 3 prod deploys (2026-05-13)
+
+Continued the SB-UNI sprint. 3 more rows closed (P ✅ · W-1 ✅ · S ⚠️ helpers-only) + W-5 explicitly deferred. Then **deployed firebase indices + functions + vercel --prod** end-to-end. 2 commits + 3 deploys.
+
+**SB-UNI-P (SeedPanel + seed sweep, M)** — `7a2e6852` main:
+- `src/components/dev/SeedPanel.tsx` products card sweep — listingType note widened to the SB-UNI-F 7-member union, 18 new field rows documenting Phase 3 (G/H/I/J/K) + Phase 4 L cohort 1 additions (grading/card/classified/digitalCode/liveItem/catalogProductId/buyItNowPriceInPaise/bidsHaveStarted).
+- `SeedCollectionName` union already excluded the SB-UNI-A/B/C/D/V-deleted collections from prior sessions; no further work needed there.
+
+**SB-UNI-S (cart listingType awareness — helpers only, M ⚠️)** — `29c88ef` appkit + `7a2e6852` main:
+- `appkit/src/_internal/shared/listing-types/cart-shipping.ts` (NEW) — `cartRequiresShipping(items)` / `cartIsDigitalOnly(items)` / `cartIsChatOnly(items)`. Reads `supportsShipping` / `hasInstantFulfillment` / `canAddToCart` off the capability registry.
+- Surfaced via `@mohasinac/appkit` + `@mohasinac/appkit/client`.
+- ⚠️ Full checkout-side address-skip wire **deferred**: `placeOrderAction` upstream requires `addressId` because the consent-OTP flow keys off it. Wiring `addressId: null` for digital-only carts is invasive (touches OTP path + order schema). Helpers ship now so the UI can already conditionally render the address step. Phase 6 SB-UNI-N (digital-code reveal flow) carries the wire.
+
+**SB-UNI-W-1 (CTA registry shell, M)** — `29c88ef` appkit:
+- `appkit/src/_internal/shared/actions/action-registry.ts` (NEW) — `ACTIONS` tree keyed by 23 ActionResource buckets. `ActionDef` carries label / ariaLabel? / description / kind / target? / permissions? / listingTypeScope? / categoryTypeScope? / iconKey? / confirmation?.
+- Helpers: `action(tree, resource, id)` / `act(resource, id)` / `canPerformAction(def, role)` / `actionsForListingType(tree, type)` / `actionLabel(def)`.
+- Sparse seed entries: PRODUCT.add-to-cart, PRODUCT.buy-now, AUCTION.place-bid, AUCTION.buy-it-now (SB-UNI-H scoped), CLASSIFIED.contact-seller (SB-UNI-M target), BUNDLE.add-bundle-to-cart, CART.clear-cart (w/ confirmation), CHECKOUT.place-order.
+- Phase 7 W-2..W-4 sweeps fill the remaining buckets surface-by-surface.
+
+**SB-UNI-W-5 (lint rule) SKIPPED** — the `lir/prefer-action-registry` rule lives in the sibling `eslint-plugin-letitrip` package outside this repo; cross-repo lint-rule additions aren't right for this session. Carries with the W-2..W-4 sweep.
+
+**Prod deploys (3, end-to-end)**:
+1. `firebase deploy --only firestore:indexes --project letitrip-in-app` — successful. 9 stale Firestore-side indexes flagged by CLI (likely orphans from collections deleted via SB-UNI-V); not force-cleaned to keep this safe.
+2. `firebase deploy --only functions --project letitrip-in-app` — all functions in `asia-south1` deployed: adminAnalytics, assignSpinPrize, autoPayoutEligibility, cleanupRtdbEvents, couponExpiry, countersReconcile, dailyDataCleanup, listingProcessor, mediaTmpCleanup, notificationPrune, offerExpiry, payoutBatch, pendingOrderTimeout, positionsReconcile, prizeRevealClose, prizeRevealExpiry, prizeRevealOpen, prizeRevealReminder, productStatsSync, promotionsApi, storeAnalytics, triggerEventRaffle, weeklyPayoutEligibility, + onProductStockChange Firestore trigger.
+3. `vercel --prod --yes` — successful. Production URL: `https://letitrip-lj9tlg8n4-mohasin-ahamed-chinnapattans-projects.vercel.app` (auto-aliases to letitrip.in via Vercel DNS).
+
+**Q1-iam grant STILL PENDING** — Cloud Run compute SA `949266230223-compute@developer.gserviceaccount.com` still lacks `roles/secretmanager.secretAccessor` on `LETITRIP_INTERNAL_SECRET`. Every HTTPS Function returns 401 in prod; `/api/products` runs from the J22 local-repo fallback. User has to run the `gcloud` command outside this session.
+
+**Remaining SB-UNI ⏳ tasks (17 of 20)**: Phase 4 cohort 2 (L migration) · Phase 5 SB-UNI-M (classified-chat full flow) + N (digital-code reveal) + O (live-item jurisdiction) · Phase 6 Q (per-type detail views) + R (per-type forms) + T (search facets) · Phase 7 SB-UNI-W-2/W-3/W-4 (3-wave CTA sweep) + W-5 (lint rule) · Phase 8 SB-UNI-Y-1..Y-7 (FormShell + 7-cluster migration).
+
+---
+
 ### S-SBUNI-Phase2-9 — Tier SB-UNI sprint: F + X4 + X5 + Phase 3 (G/H/I/J/K) + L cohort 1 + Z4 + Z5 (2026-05-13)
 
 Best-effort sprint through Phase 2 → Phase 9 of Tier SB-UNI per user direction. **11 of the 31 remaining SB-UNI rows flipped** in one session; 20 still pending (Phase 5/6/7/8 cohorts that need net-new UI surfaces). 9 commits across appkit (7) + main (2). Quality gate exits 0 errors in appkit (`tsc --noEmit`); pre-existing parallel-session uncommitted WIP in admin views (AdminUsersView/AdminOrdersView/etc.) triggers tsc errors on a fresh full build but that breakage is upstream of this session.
