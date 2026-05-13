@@ -861,16 +861,15 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     description: "FAQ entries across Help Centre categories. Homepage-eligible FAQs shown in the FAQ section.",
     slugPattern: "faq-*  (e.g. faq-how-does-bidding-work)",
     seededItems: [
-      "21 FAQs across categories: Ordering & Checkout, Shipping & Delivery, Returns & Refunds, Auction Bidding, Selling on LetItRip, Authenticity & Grading",
-      "5 FAQs marked isHomepageEligible=true",
-      "Rich text answers with links",
-      "sortOrder per category",
+      "59 FAQs across 7 categories: general, orders_payment, shipping_delivery, returns_refunds, product_information, account_security, technical_support",
+      "Homepage-eligible FAQs marked showOnHomepage=true (8 entries)",
+      "Footer-eligible FAQs marked showInFooter=true (5 entries)",
+      "Rich HTML answers (200–800 words each) with cross-FAQ links",
+      "SB5-B (S7-prep): 6 bundles + prize-draw entries (faq-what-is-bundle, faq-how-create-bundle, faq-what-is-prize-draw, faq-prize-draw-fairness, faq-prize-draw-refund, faq-prize-draw-reveal)",
     ],
     pendingItems: [
-      "34 more FAQs to reach target 55",
-      "Pre-order FAQs category",
-      "Account & Security FAQs",
-      "Payment Methods FAQs (UPI, COD, EMI)",
+      "Optional: dedicated 'listings' category (currently bucketed under product_information)",
+      "Optional: Tier DX migration — answers reference docs.letitrip.in once that surface ships",
     ],
     uiPath: "/support",
     fields: [

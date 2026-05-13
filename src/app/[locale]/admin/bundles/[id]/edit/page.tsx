@@ -13,6 +13,16 @@ import { useEffect, useState } from "react";
 import { ROUTES, AdminBundleEditorView } from "@mohasinac/appkit";
 import type { BundleDocument, BundleFormValue } from "@mohasinac/appkit";
 import { Container, Section, Text } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
+
+interface BundleDetailResponse {
+  data?: { bundle?: BundleDocument };
+  bundle?: BundleDocument;
+}
+
+interface BundleErrorResponse {
+  error?: { message?: string };
+}
 
 export default function Page() {
   const router = useRouter();
@@ -20,20 +30,26 @@ export default function Page() {
   const id = String(params?.id ?? "");
   const [bundle, setBundle] = useState<BundleDocument | null>(null);
   const [loading, setLoading] = useState(true);
+  const bundlesListHref = String(ROUTES.ADMIN.BUNDLES);
+  const bundleByIdHref = API_ROUTES.BUNDLES.BY_ID(id);
 
   useEffect(() => {
     let mounted = true;
-    fetch(`/api/bundles/${id}`)
-      .then((r) => (r.ok ? r.json() : null))
+    fetch(bundleByIdHref)
+      .then(
+        (r) => (r.ok ? (r.json() as Promise<BundleDetailResponse>) : null),
+      )
       .then((res) => {
         if (!mounted) return;
         setBundle(res?.data?.bundle ?? res?.bundle ?? null);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [bundleByIdHref]);
 
   if (loading) {
     return (
@@ -55,23 +71,25 @@ export default function Page() {
   }
 
   const handleSubmit = async (value: BundleFormValue) => {
-    const res = await fetch(`/api/bundles/${id}`, {
+    const res = await fetch(bundleByIdHref, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(value),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
+      const err = (await res
+        .json()
+        .catch(() => ({}))) as BundleErrorResponse;
       throw new Error(err?.error?.message ?? "Failed to save bundle");
     }
-    router.push(String(ROUTES.ADMIN.BUNDLES));
+    router.push(bundlesListHref);
   };
 
   return (
     <AdminBundleEditorView
       bundle={bundle}
       onSubmit={handleSubmit}
-      onCancel={() => router.push(String(ROUTES.ADMIN.BUNDLES))}
+      onCancel={() => router.push(bundlesListHref)}
     />
   );
 }

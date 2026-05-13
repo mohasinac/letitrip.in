@@ -3,8 +3,7 @@
  * Admin bundles list page — SB3-G.
  *
  * Lists every bundle across every store. Admin can edit any of them via the
- * sibling edit page. Uses `?includeAll=true` so draft/archived statuses are
- * surfaced (the seller-facing list also does this for the seller's own).
+ * sibling edit page. `?includeAll=true` surfaces draft / archived statuses.
  */
 import { Link } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
@@ -20,16 +19,36 @@ import {
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
+
+interface BundlesListResponse {
+  data?: { items?: BundleDocument[] };
+  items?: BundleDocument[];
+}
+
+const formatBundlePriceInr = (paise: number | undefined): string =>
+  `₹${((paise ?? 0) / 100).toLocaleString("en-IN")}`;
 
 export default function Page() {
   const [bundles, setBundles] = useState<BundleDocument[]>([]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetch("/api/bundles?includeAll=true")
-      .then((r) => r.json())
-      .then((r) => setBundles(r?.data?.items ?? r?.items ?? []))
-      .finally(() => setLoading(false));
+    let mounted = true;
+    fetch(`${API_ROUTES.BUNDLES.LIST}?includeAll=true`)
+      .then((r) => r.json() as Promise<BundlesListResponse>)
+      .then((r) => {
+        if (!mounted) return;
+        setBundles(r?.data?.items ?? r?.items ?? []);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
+
   return (
     <Section>
       <Container>
@@ -54,9 +73,7 @@ export default function Page() {
                       <Badge variant="secondary">{b.status}</Badge>
                       <Text>{b.storeName}</Text>
                       <Text>{b.bundleItems?.length ?? 0} items</Text>
-                      <Text>
-                        ₹{((b.bundlePrice ?? 0) / 100).toLocaleString("en-IN")}
-                      </Text>
+                      <Text>{formatBundlePriceInr(b.bundlePrice)}</Text>
                     </Row>
                   </Stack>
                   <Button asChild variant="ghost">
