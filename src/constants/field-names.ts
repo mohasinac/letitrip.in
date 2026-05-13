@@ -46,7 +46,9 @@ export const PRODUCT_FIELDS = {
   INSURANCE: "insurance",
   INSURANCE_COST: "insuranceCost",
   SHIPPING_PAID_BY: "shippingPaidBy",
-  IS_AUCTION: "isAuction",
+  // SB1-G — canonical listing-kind discriminator (replaces removed
+  // `isAuction` / `isPreOrder` booleans).
+  LISTING_TYPE: "listingType",
   AUCTION_END_DATE: "auctionEndDate",
   STARTING_BID: "startingBid",
   CURRENT_BID: "currentBid",
@@ -58,7 +60,6 @@ export const PRODUCT_FIELDS = {
   AUCTION_EXTENSION_MINUTES: "auctionExtensionMinutes",
   AUCTION_ORIGINAL_END_DATE: "auctionOriginalEndDate",
   AUCTION_SHIPPING_PAID_BY: "auctionShippingPaidBy",
-  IS_PRE_ORDER: "isPreOrder",
   PRE_ORDER_DELIVERY_DATE: "preOrderDeliveryDate",
   PRE_ORDER_DEPOSIT_PERCENT: "preOrderDepositPercent",
   PRE_ORDER_DEPOSIT_AMOUNT: "preOrderDepositAmount",
