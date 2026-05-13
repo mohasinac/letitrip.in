@@ -41,6 +41,26 @@
 
 ---
 
+### S7-prep — SB5-A/B + SB7-A/B landed; rest of S7 reopened as S7-PrizeDraws (2026-05-13)
+
+**Scope decision.** Original S7 row bundled SB4 (Prize Draw editor + reveal API), SB5 (nav/FAQ/seed), SB6 (per-user limits), SB7 (badges + tabs), SB8 (reveal expiry + notifications), SB1-L (7 Firebase Functions), Q1-ops (deploy) — ~35 sub-tasks, multi-day, multi-deploy. **S7-prep** carved out the no-deploy primer slice: nav constants, FAQ seed, in-bundle badges. The rest reopened as `S7-PrizeDraws` in NEXT-UP.
+
+**Four commit pairs (each appkit + letitrip).**
+
+| Sub-task | Files |
+|---|---|
+| SB5-A | `src/constants/navigation.tsx` — Bundles + Prize Draws in MAIN_NAV / FOOTER (Shop + Learn) / ADMIN Catalog / STORE Listings; `src/constants/theme.ts` — navIcons.bundles + navIcons.prizeDraws; `messages/en.json` — nav.bundles + nav.prizeDraws |
+| SB5-B | `appkit/src/seed/faq-seed-data.ts` — 6 new entries (`faq-what-is-bundle`, `faq-how-create-bundle`, `faq-what-is-prize-draw`, `faq-prize-draw-fairness`, `faq-prize-draw-refund`, `faq-prize-draw-reveal`) under `product_information` category — FAQ schema enum has no "listings" bucket; tags + slugs identify the surface. Re-seed via `/demo/seed` to surface |
+| SB7-A | `appkit/src/features/products/components/ProductGrid.tsx` — teal "Bundled" pill next to typeBadge when `product.partOfBundleIds.length > 0`. Visual-only (card's outer `<Link>` blocks a nested `<Link>`); tooltip shows first bundle title |
+| SB7-B | `appkit/src/features/products/components/ProductDetailPageView.tsx` — pill row below the category/brand band; one `<Link>` per bundle membership → `ROUTES.PUBLIC.BUNDLE_DETAIL(id)` |
+| (types) | `appkit/src/features/products/types/index.ts` — adds `partOfBundleIds?` + `partOfBundleTitles?` to `ProductItem` interface to match the existing `ProductDocument` schema fields |
+
+**Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos. No deploys.
+
+**Deferred to S7-PrizeDraws**: SB4-A–I (Prize Draw UI + reveal API), SB5-D/E (homepage seed + prize-draw/bundle seed docs), SB6-A–E (per-user limits), SB7-C/D (listing-type tabs), SB8-A–F (reveal expiry/auto-refund + Functions), SB1-L (7 Firebase Functions), Q1-funcs-dryrun + Q1-ops (deploy).
+
+---
+
 ### S5 (no-op) + S6 partial — OG1/OG5/FI6-2 landed; Q6-views deferred (2026-05-13)
 
 **S5 closed ✅ doc-only.** Verify-first audit found every sub-task already done or deferred-by-design in earlier sessions:

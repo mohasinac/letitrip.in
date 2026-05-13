@@ -73,22 +73,22 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S5 (no-op) + S6 partial (2026-05-13)
+### ✅ LAST COMPLETED — S7-prep (2026-05-13)
 
-- **S5 closed ✅ doc-only**: verify-first audit showed every sub-task already done or deferred-by-design from earlier sessions. P24/P26/P27/P28/P30 ✅ in S14–S16/Session 81+; P25/P29/P31 ⚠️ partial deliberately ("skip padding for padding's sake" per user 2026-05-12); ARCH1/6/7 ✅ S6 2026-05-11. Root + base Firestore indexes in sync (270/270, listingType+... composites present).
-- **S6 partial**: OG1 + OG5 + FI6-2 landed. OG2/3/4 verified-N/A. **Q6-views deferred to S6-followup** (useQuery→useInfiniteQuery refactor on 4 listing views is substantial; the `useInfiniteScroll` primitive is shipped and ready).
-- **OG1**: new `appkit/src/_internal/server/features/categories/og.tsx` two-layer renderer (cover-image bg + 140-char description + product-count chip). Page shim at `src/app/[locale]/categories/[slug]/opengraph-image.tsx`. Exported via both `server.ts` and `server-entry.ts`.
-- **OG5**: new `appkit/scripts/verify-og-coverage.mjs` audit. Walks consumer `src/app/[locale]/**/page.tsx`, gates on NEW public dynamic-leaf detail pages missing OG. Two exempt sets — `OG_EXEMPT_ROUTES` (pagination wrappers, token-gated previews) + `OG_KNOWN_GAPS` (5 baseline: `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`). Wired into `npm run check:audits` + Stop hook. Filed `OG-coverage-followup` to drive baseline to 0.
-- **FI6-2**: `wishlist/layout.tsx` (was identity passthrough; now async + Provider wrap). `stores/[storeSlug]/layout.tsx` extended with `Promise.all([getStoreBySlug, listPlatform])` and Provider wrap. SearchResultsClient verified-N/A (orphan source; /search pages are pure redirectors). RelatedProductsCarousel verified-N/A (props pass-through from detail pages). Promotions already wraps.
+- **Scoping decision**: original S7 row bundled ~35 sub-tasks across SB4/5/6/7/8 + SB1-L (7 Functions) + Q1-ops deploy. Multi-day, multi-deploy effort. **S7-prep** carved the low-risk no-deploy primer slice; the rest reopened as `S7-PrizeDraws` in NEXT-UP.
+- **SB5-A nav constants**: Bundles + Prize Draws added to `MAIN_NAV_ITEMS` (Package2 + Gift icons), footer Shop + Learn columns (Bundle Guide + Prize Draw Guide), admin Catalog group, store Listings group. Theme `navIcons.bundles` (teal) + `navIcons.prizeDraws` (pink). i18n `nav.bundles` + `nav.prizeDraws`.
+- **SB5-B FAQ seed**: 6 entries (`faq-what-is-bundle`, `faq-how-create-bundle`, `faq-what-is-prize-draw`, `faq-prize-draw-fairness`, `faq-prize-draw-refund`, `faq-prize-draw-reveal`) under `product_information` — FAQ schema enum has no "listings"; tags + slugs identify the surface.
+- **SB7-A "Bundled" pill on cards**: `ProductGrid.tsx` shows teal pill next to typeBadge when `product.partOfBundleIds.length > 0`. Visual-only (card's outer `<Link>` can't nest a Link). `partOfBundleIds?` + `partOfBundleTitles?` added to `ProductItem` interface.
+- **SB7-B "In bundle: …" Links on detail pages**: `ProductDetailPageView.tsx` adds a pill row below the category/brand band; one Link per membership → `ROUTES.PUBLIC.BUNDLE_DETAIL(id)`.
 - **Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos. No deploys.
 
-### 🔄 CURRENT — none (awaiting S7 kickoff)
+### 🔄 CURRENT — none (awaiting next session)
 
 ### ⏳ NEXT UP — new S1-onward sequence (impact + dependency ordered)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks) **PLUS SB1-L 7 Firebase Functions + Q1-ops listingProcessor deploy** (moved from S4 — 4 of 7 SB1-L Functions are prize-draw-specific so this is one cohesive deploy cohort) | Self-contained feature surface + missing Functions |
+| 1 | **S7-PrizeDraws** | Remaining S7 work: **SB4-A–I** Prize Draw editor/collage/forms/reveal modal + `/api/prize-draws*` reveal API; **SB5-D/E** homepage section + prize-draw + bundle seed docs; **SB6-A–E** per-user purchase limits (couponUsage counter pattern); **SB7-C/D** category listing tabs (incl. prize-draws) + listing-type tabs on store/admin/search; **SB8-A–F** reveal deadline + auto-refund + reminders + notifications; **SB1-L** 7 Firebase Functions; **Q1-funcs-dryrun + Q1-ops** deploy + Vercel env. Multi-day, multi-deploy effort. | Self-contained feature surface + missing Functions |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |
 | 5 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
