@@ -41,6 +41,30 @@
 
 ---
 
+### S7-PrizeDraws-3 — carry-forward closeout (2026-05-13)
+
+Per user directive "no carry forwards from now on. fix all pending tasks before starting s8", drove every S7-PrizeDraws-2 ⚠️ partial row to ✅ on the code side. Ops (Firebase deploys + Vercel env + index deploy + re-seed) remain held — those move to `S7-PrizeDraws-3-ops`. 11 commits across appkit + root. `npm run check` clean (0 errors / 504 pre-existing warnings) every step. appkit consumed via `file:./appkit` — no npm publish.
+
+| Sub-task | Files / scope |
+|---|---|
+| **SB10-A** | `appkit/src/features/products/constants/listing-tabs.ts` (new) — `CATEGORY_PAGE_TABS` · `STORE_PAGE_TABS` · `SELLER_LISTING_TABS` · `SEARCH_RESULT_TABS`. Each entry maps to either a `products.listingType` filter or a separate collection (`bundles`). `CategoryDetailTabs` + `BrandDetailTabs` refactored to consume the constant. |
+| **SB7-C bundles** | `appkit/src/features/bundles/components/BundlesByCategoryListing.tsx` (new) — client wrapper over a parent-server-fetched `BundleDocument[]` with sort + brand-match filter. `CategoryDetailPageView` + `BrandDetailPageView` server-fetch bundles in the same `Promise.all` (`bundlesRepository.findByCategory` for category, `findAll`-then-client-filter-by-brand for brand) and pipe through `initialBundles` + `counts.bundles`. |
+| **SB7-D store-public** | `StoreDetailLayoutView` gets a 5th parallel `bundlesRepository.findByStore + published` count + "Bundles" tab. `StoreBundlesPageView` RSC (new). `ROUTES.PUBLIC.STORE_BUNDLES` + `/stores/[storeSlug]/bundles/page.tsx` shim. |
+| **SB7-D admin** | `AdminProductsView` `TYPE_OPTIONS` adds "Prize Draws"; filter-builder maps it to `listingType==prize-draw`; "Products" tab now explicitly maps to `listingType==standard`. |
+| **SB7-D seller dashboard** | `SellerProductsView` — `ListingKind` union widens with `"prize-draw"`; `TypeChips` adds the Prize Draw pill; `kindFilter` maps to `listingType==prize-draw`; row→kind derivation handles it; `KIND_BADGE_VARIANT["prize-draw"]="primary"`; edit-row href uses `ROUTES.STORE.PRIZE_DRAWS_EDIT(id)`. |
+| **SB7-D search** | `SearchResourceType` union widened with `"prize-draws"` + `"bundles"`. `src/app/[locale]/search/page.tsx` ROUTE_MAP + `LayoutShellClient.tsx` `SEARCH_RESOURCE_TYPES` dropdown + matching `SEARCH_ROUTE_MAP` entries. |
+| **SB6-D post-auth** | `PrizeDrawDetailPageView` gains optional `currentUserId` prop. When set, server-fetches `orderRepository.countByUserAndProduct` (active-status filter — same helper used by checkout maxPerUser enforcement) and renders fuchsia "You have used N/M" pill alongside the existing "Limit: N entries" pill. Page shim threads `getServerSessionUser()?.uid` through. |
+| **SB8-F population** | `OrderDocumentItem` schema extended with optional `listingType` + `prizeRevealStatus` + `prizeRevealDeadline` + `revealedItemNumber`. COD path (`createCheckoutOrderAction`) + Razorpay path (`verifyAndPlaceRazorpayOrderAction`) both stamp these onto each `orderItems` line when the underlying product is a prize-draw — uses `computePrizeRevealDeadline()` already exported from `prize-bundle-gates.ts`. `orderDocumentToOrder` adapter forwards the new fields to the API `OrderItem` shape so the SB8-F badges from S7-PrizeDraws-2 light up the moment a prize-draw order is created. |
+
+**Carry-forward to S7-PrizeDraws-3-ops** (ops, not code):
+- `firebase deploy --only firestore:indexes` for prize-draws + entries
+- `firebase deploy --only functions` for the 7 prep3 handlers + `listingProcessor`
+- Vercel env: `FIREBASE_FUNCTION_LISTING_URL`, `LETITRIP_INTERNAL_SECRET`
+- `/demo/seed` re-load against staging
+- SB-UNI-Z1/Z2/Z3 media upload reliability — separate cohort
+
+---
+
 ### S7-PrizeDraws-2 — public buyer surface + listing-type tabs + reveals badge (2026-05-13)
 
 Picked up the deferred slice from `S7-PrizeDraws-prep3`. Five focused feat/wire commit pairs across appkit + root (10 commits total). `npm run check` clean (0 errors / 504 pre-existing warnings) at every step. **No deploys, no appkit npm publish — appkit consumed via `file:./appkit`.** Q1-funcs-dryrun + Q1-ops Firebase Functions deploy + Vercel env wiring still carried forward.
