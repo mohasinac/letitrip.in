@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Container, Heading, Text } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**
@@ -25,11 +26,13 @@ export const revalidate = 120;
 
 export default function Page() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Prize Draws</h1>
-      <p className="text-[var(--appkit-color-text-muted)]">
+    <Container className="px-4 py-8">
+      <Heading level={1} className="text-3xl font-bold mb-4">
+        Prize Draws
+      </Heading>
+      <Text className="text-[var(--appkit-color-text-muted)]">
         Listing UI ships with SB4-F — page shim wired so the route resolves.
-      </p>
-    </div>
+      </Text>
+    </Container>
   );
 }
