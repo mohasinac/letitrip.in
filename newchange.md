@@ -41,6 +41,57 @@
 
 ---
 
+### S-SBUNI-Phase2-9 — Tier SB-UNI sprint: F + X4 + X5 + Phase 3 (G/H/I/J/K) + L cohort 1 + Z4 + Z5 (2026-05-13)
+
+Best-effort sprint through Phase 2 → Phase 9 of Tier SB-UNI per user direction. **11 of the 31 remaining SB-UNI rows flipped** in one session; 20 still pending (Phase 5/6/7/8 cohorts that need net-new UI surfaces). 9 commits across appkit (7) + main (2). Quality gate exits 0 errors in appkit (`tsc --noEmit`); pre-existing parallel-session uncommitted WIP in admin views (AdminUsersView/AdminOrdersView/etc.) triggers tsc errors on a fresh full build but that breakage is upstream of this session.
+
+**SB-UNI-F (Phase 2 union extension)** — `6e10abd` appkit + `a0bee812` main:
+- `ListingType` union grows from 4 to 7 members (`standard|auction|pre-order|prize-draw|classified|digital-code|live`).
+- New predicates `isClassifiedListing` / `isDigitalCodeListing` / `isLiveListing` + query helpers `classifieds()` / `digitalCodes()` / `liveItems()` on `productQueryHelpers`.
+- 3 new plugin folders under `_internal/shared/listing-types/{classified,digital-code,live}/` (5 files each: config/schema/ctas/og/seed-factory). `_registry.ts` extended. Capability map gains 3 rows: classified → chat-only (`canAddToCart:false`); digital-code → no shipping + instant-fulfillment; live → vendor-verified + jurisdiction check.
+- `addItemToCart` now gates on `canAddToCart(input.listingType)` from the capability registry — classified + live throw ValidationError at the action layer.
+- 12-file narrow-union sweep widened every `listingType?: "standard"|"auction"|"pre-order"|"prize-draw"` inline literal to the new 7-member union (CouponCartItem / OrderItem / MarketplaceAuctionCardData / product types / wishlist / search / cart-seed / coupon repo / promotion hook / etc.).
+- CLAUDE.md slug-prefix table picks up `classified-` / `digitalcode-` / `live-` rows.
+
+**SB-UNI-X4 + X5 (infra companions)** — `a0822ef` appkit:
+- X4 — `siteSettings.featureFlags.{listingTypes,categoryTypes}` schema map. Phase 2 types seeded as `false` by default (Phase 3 surfaces ship before flipping them on). New helpers `isListingTypeEnabled` / `isCategoryTypeEnabled` / `enabledListingTypes` / `enabledCategoryTypes`. "Missing = enabled" semantics for legacy data.
+- X5 — `actionTracker.emit(actionId, ctx, success?)` fire-and-forget telemetry sink. Default no-op + console.debug in dev; silent in prod browser. `setActionTrackerSink` lets Phase 7 (W-1 CTA registry) swap in Sentry/GA/custom.
+
+**SB-UNI Phase 3 (G/H/I/J/K) — schema batch** — `d1d4983` appkit:
+- **H (S)** — `buyItNowPriceInPaise` + `bidsHaveStarted` on `ProductDocument`. `ProductRepository.updateBidInBatch` flips `bidsHaveStarted:true` on any bid landing (PDP hides BIN button per eBay rule).
+- **G (M)** — `ProductGrading { service:PSA|BGS|CGC|SGC|OTHER, grade, certNumber?, slabImageMedia?, attributes? }` + `ProductCardMetadata { setName, setYear?, cardNumber?, rarity?, language? }`. Composite indices `(grading.service, grading.grade DESC, createdAt DESC)` + `(card.setName, card.cardNumber, status)`.
+- **I (M)** — `ProductClassifiedMeta { meetupArea:{city, locality?, pincode?}, contactMethod?, acceptsShipping?, negotiable? }`. Composite `(listingType, classified.meetupArea.city, createdAt DESC)`. Add-to-cart already rejects via capability gate.
+- **J (L — schema-only slice)** — `ProductDigitalCodeMeta { codeDeliveryMethod, codePoolSize?, codesAvailable?, redemptionInstructions?, expiresAt? }`. Encrypted `products/{id}/codes/{codeId}` subcollection + reveal flow deferred to Phase 5 SB-UNI-N.
+- **K (L — schema-only slice)** — `ProductLiveItemMeta { species, ageMonths?, sex, careInfo?, transport:{method, handlingFeeInPaise?, insuranceIncluded?}, jurisdictionAllowed[], vendorVerified?, cites? }`. Composite `(listingType, liveItem.species, status)`. Vendor-verification admin workflow + carrier handoff deferred to Phase 5 SB-UNI-O.
+
+**SB-UNI-L cohort 1 (Phase 4 foundation slice)** — `e318eb5` appkit:
+- New `appkit/src/features/products/schemas/catalog-product.ts` exporting `CatalogProductDocument` + `CATALOG_COLLECTION = "catalogProducts"` + `CATALOG_PUBLIC_FIELDS` + `CATALOG_UPDATABLE_FIELDS` + `CatalogProductCreateInput` / `CatalogProductUpdateInput` + `CatalogIdentifiers { gtin?, mpn?, externalId? }`.
+- `ProductDocument.catalogProductId?: string` optional offer→catalog link. When set, the offer participates in catalog aggregation at `/catalog/{slug}`; when unset, the offer stays standalone at `/products/{slug}`.
+- 3 new composite indices: `(catalogProductId, price, condition)` on products + `(brandSlug, categorySlug, minOfferPriceInPaise)` + `(card.setName, card.cardNumber)` on catalogProducts.
+- New slug prefix `catalog-` added to CLAUDE.md.
+- Cohort 2 (`CatalogProductRepository` + admin "Promote to catalog" flow + `/catalog/{slug}` PDP routing + offer↔catalog reconciliation Function) deferred.
+
+**SB-UNI-Z4 + Z5 (Phase 9 polish)** — `b02a4ce` + `154ae03` appkit:
+- Z4 — `VIDEO_CONVERSION_HINTS` gains HEVC/H265 + HEIC/HEIF entries. Files upload fine via signed-URL; the hint nudges uploaders toward MP4(H.264)/WebM/JPEG/WebP for in-browser preview compatibility.
+- Z5 — `MediaUploadField` gains `kind?: "image"|"video"|"pdf"|"auto"` prop that auto-derives `accept` + `maxSizeMB` from a small registry. Explicit `accept`/`maxSizeMB` props still win; saves per-context boilerplate. Carries the deferred Z3 follow-up.
+
+**Phase 1 already closed (S-SBUNI-1..5 prior sessions)**: A · B · C · D · E · V · Bundle-UI · Bundle-Checkout.
+
+**Remaining ⏳ SB-UNI tasks (20 of 31, carry to future sessions)**:
+- **Phase 4 cohort 2** (SB-UNI-L migration) — CatalogProductRepository + admin "Promote to catalog" + /catalog/{slug} PDP + catalog seed data + offer↔catalog reconciliation Function.
+- **Phase 5** (SB-UNI-M/N/O — 3 tasks) — classified-chat flow + digital-code reveal flow + live-item jurisdiction + transport.
+- **Phase 6** (SB-UNI-P/Q/R/S/T — 5 tasks) — SeedPanel sweep + per-type detail/list views + per-type create/edit forms + cart awareness + search facets.
+- **Phase 7** (SB-UNI-W-1..W-5 — 5 tasks) — CTA registry + 5-wave sweep + lint rule.
+- **Phase 8** (SB-UNI-Y-1..Y-7 — 7 tasks) — FormShell + 7-cluster migration.
+
+**Required user follow-ups** (no code action this session): 
+- `firebase deploy --only firestore:indexes` — 7 new composites need pushing (4 from G/H/I/K, 3 from L). Folds into the outstanding S-SBUNI-3 addresses-composites + S8 SB9 raffle-composites deploys.
+- `POST /demo/seed` — schema fields are all optional (no required-field migration); old products keep working. Phase 6 SB-UNI-P refreshes the seed data with the new fields.
+
+**Pre-existing parallel-session breakage observed** (NOT this session's work): uncommitted WIP in `appkit/src/features/admin/components/Admin{Users,Orders,Blog,Payouts,Products,Stores}View.tsx` from the S8 sprint has tsc errors where `{ id, label }` tab objects are compared to strings. Out of scope here — will resolve when the S8 follow-up commits land.
+
+---
+
 ### S-SBUNI-5 — Bundle checkout finalize: CTA + per-member stock + order grouping + dynamic-rule (2026-05-13)
 
 Closes Phase 1 of Tier SB-UNI. Bundle commerce loop is end-to-end functional. 8 commits across appkit (5) + main (3). Quality gate ends 0 errors. **No new infra deploys this session** — schema fields already shipped in S-SBUNI-4, no new indices, no new Functions.

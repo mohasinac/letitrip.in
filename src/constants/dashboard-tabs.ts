@@ -131,3 +131,19 @@ export const USER_PROFILE_TABS = [
 ] as const satisfies readonly DashboardTab[];
 
 export type UserProfileTabId = (typeof USER_PROFILE_TABS)[number]["id"];
+
+// Admin filter-chip tab sets — exported from appkit
+// (`@mohasinac/appkit/admin/filter-tabs`) so admin views consume the same
+// shape. Re-exported here for consumer code that also imports from
+// `@/constants`. Keep the import path stable.
+export {
+  ALL_TAB,
+  ADMIN_PRODUCT_STATUS_TABS,
+  ADMIN_PRODUCT_LISTING_TYPE_TABS,
+  ADMIN_BLOG_STATUS_TABS,
+  ADMIN_USER_STATUS_TABS,
+  ADMIN_USER_ROLE_TABS,
+  ADMIN_STORE_STATUS_TABS,
+  ADMIN_PAYOUT_STATUS_TABS,
+  ADMIN_ORDER_STATUS_TABS,
+} from "@mohasinac/appkit";
