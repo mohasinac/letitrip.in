@@ -18,6 +18,7 @@ import {
   MIME_TO_EXT,
   PDF_MAGIC,
   classifyMime,
+  getConversionHint,
 } from "@mohasinac/appkit/server";
 
 /**
@@ -91,10 +92,16 @@ export const POST = withProviders(createRouteHandler({
       buffer.length >= PDF_MAGIC.length &&
       buffer.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
     if (!detected || classifyMime(detected.mime) === null) {
-      return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
-        allowed: ALLOWED_TYPES_LABEL,
-        detected: detected?.mime ?? "unknown",
-      });
+      const hint = detected ? getConversionHint(detected.mime) : null;
+      return errorResponse(
+        hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE,
+        400,
+        {
+          allowed: ALLOWED_TYPES_LABEL,
+          detected: detected?.mime ?? "unknown",
+          ...(hint ? { hint } : {}),
+        },
+      );
     }
     if (detected.mime === "application/pdf" && !looksLikePdf) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
