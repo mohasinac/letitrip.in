@@ -41,6 +41,60 @@
 
 ---
 
+### S2 — Cart + Checkout end-to-end (route extraction + notifications) (2026-05-13)
+
+**Scope**: Close S2 per the re-sequenced plan — Firestore-backed cart, Razorpay live, order-creation server action, notifications fire, indices verified.
+
+**Verify-first audit (Rule #4) collapsed the scope.** S2 as written claimed several deliverables that were already done:
+
+| Tracker deliverable | Reality (verified by reading source) |
+|---|---|
+| Firestore-backed cart (cartsRepository) | ✅ Already in place — `CartRepository` at `appkit/src/features/cart/repository/cart.repository.ts` (315 lines, full CRUD + coupons + selection + TTL) |
+| Guest → authed cart merge | ✅ Already in place — `useGuestCartMerge` + `POST /api/cart/merge`. Architecture is localStorage-side guest mirror + server merge on login, **not** signed-cookie guest doc as the tracker prescribed. The tracker was aspirational. |
+| 50-cap guard | ✅ Already in place — `CART_FULL` 409 in `/api/cart/route.ts:73-82` |
+| listingType-aware add (auction block) | ✅ Already in place — `/api/cart/route.ts:62-67` |
+| Razorpay client flow | ✅ Already wired (TS18 audit verified Session S45 2026-05-12) |
+| `orders(userId, createdAt desc)` index | ✅ Already exists (index 0 of orders composites) |
+| Razorpay keys via `siteSettings.integrations` | ✅ Already plumbed via `resolveKeys()` in `appkit/src/core/integration-keys.ts:57` (Firestore → env fallback, 60 s cache) |
+| `createOrderAction` in `_internal/server/features/orders/actions.ts` | ⚠️ Stub — but `createCheckoutOrderAction` already extracted at `appkit/src/_internal/server/features/checkout/actions.ts:61` (twin of /api/checkout COD path) |
+| Notifications fire | ⚠️ WIP on disk — order_placed fan-out for buyer + seller was uncommitted in both checkout + payment-verify routes |
+| Razorpay-side action extraction | ❌ Missing — no twin for `/api/payment/verify`'s 503-line handler |
+| Routes delegate to actions | ❌ Routes still carried 1100+ lines of inline business logic |
+
+**Three commits landed:**
+
+**C1 — `feat(orders): emit order_placed notifications on checkout + payment verify`**
+- `src/app/api/checkout/route.ts` + `src/app/api/payment/verify/route.ts` — committed in-tree WIP buyer + seller `order_placed` notification fan-out (storeOwnerId resolved via two-step lookup, `onOrderStatusChange` Cloud Function only fires on status transitions so order creation never produced an in-app row for either party).
+
+**C2 — `feat(orders): route handlers delegate to appkit checkout actions`** (+ paired appkit commit `feat(checkout): add verifyAndPlaceRazorpayOrderAction + notification emit`)
+- `appkit/src/_internal/server/features/checkout/actions.ts` — adds `verifyAndPlaceRazorpayOrderAction` (signature verify + amount cross-check + cart re-validation + stock decrement + cart clear + multi-order create + RTDB success signal). Extracted `emitOrderPlacedNotifications` helper used by both checkout actions. `createCheckoutOrderAction` extended to capture `storeOwnerId` per group and call the notif emit.
+- `appkit/src/_internal/server/features/checkout/index.ts` + `appkit/src/server-entry.ts` — re-exports.
+- `src/app/api/checkout/route.ts` — 614 → 45 lines; delegates to `createCheckoutOrderAction`.
+- `src/app/api/payment/verify/route.ts` — 503 → 53 lines; delegates to `verifyAndPlaceRazorpayOrderAction`.
+- `package.json` — switched `@mohasinac/appkit` back to `file:./appkit` for local dev (was `^2.6.1` from previous prod-smoke session); appkit gitlink bumps to 21638cc.
+
+**C3 — no code changes** (verify-first found all C3 items already in place: orders index, Razorpay siteSettings keys, carts seed file, SeedPanel cart FieldDef).
+
+**Files changed**
+| file | scope |
+|---|---|
+| `src/app/api/checkout/route.ts` | 614 → 45 lines, thin delegator |
+| `src/app/api/payment/verify/route.ts` | 503 → 53 lines, thin delegator |
+| `appkit/src/_internal/server/features/checkout/actions.ts` | +verifyAndPlaceRazorpayOrderAction (~290 lines) + emit helper + notif wiring in createCheckoutOrderAction |
+| `appkit/src/_internal/server/features/checkout/index.ts` | re-export new action + input type |
+| `appkit/src/server-entry.ts` | re-export new action for consumer routes |
+| `package.json` / `package-lock.json` | appkit dep switched to file:./appkit |
+
+**Quality gates**: `npm run check` → 0 errors, 496 warnings (was 498, dropped 2 with route shrink). tsc clean both repos.
+
+**Smoke**: dev server boots Ready + Hobby parity banner; GET / 200. POST checkout + payment-verify need browser-driven end-to-end validation (sign in → add to cart → checkout consent OTP → COD or Razorpay test card → coupon flow → listingType=auction add-to-cart block). Deferred to user verification before any `vercel --prod`.
+
+**Deploy status**: nothing deployed. firebase indexes already up to date (no new indices). No functions touched. `vercel --prod` held per user instruction.
+
+**Deferred to follow-up**: none — S2 complete per tracker description (modulo the user-side browser smoke).
+
+---
+
 ### [CRUD] S1 — UX unblock: become-seller wired; stale memory swept (2026-05-12)
 
 **Scope**: clear the highest-impact "blank page" UX issues per re-sequenced S1. Verify-first audit (CLAUDE.md Rule #4) collapsed the scope significantly versus what `project_listing_toolbars.md` and `project_slot_shell_pattern.md` advertised.
