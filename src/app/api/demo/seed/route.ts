@@ -31,6 +31,7 @@ import {
   productsStandardSeedData,
   productsAuctionsSeedData,
   productsPreOrdersSeedData,
+  productsPrizeDrawsSeedData,
   ordersSeedData,
   reviewsSeedData,
   cartsSeedData,
@@ -170,7 +171,12 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   brands: brandsSeedData,
   categories: categoriesSeedData,
   stores: storesSeedData,
-  products: [...productsStandardSeedData, ...productsAuctionsSeedData, ...productsPreOrdersSeedData],
+  products: [
+    ...productsStandardSeedData,
+    ...productsAuctionsSeedData,
+    ...productsPreOrdersSeedData,
+    ...productsPrizeDrawsSeedData,
+  ],
   orders: ordersSeedData,
   reviews: reviewsSeedData,
   bids: bidsSeedData,
@@ -354,11 +360,12 @@ async function countExistingForCollection(
   if (colName === "faqs") {
     const { generateFAQId } = await import("@mohasinac/appkit");
     const refs = (seedData as any[]).map((faq: any) => {
-      const id = generateFAQId({
-        category: faq.category,
-        question: faq.question,
-      });
-      return db.collection(COLLECTION_MAP[colName]).doc(id);
+      // Mirror the write path: prefer top-level slug, then seed id, then generate.
+      const docId =
+        faq.slug ??
+        faq.id ??
+        generateFAQId({ category: faq.category, question: faq.question });
+      return db.collection(COLLECTION_MAP[colName]).doc(docId);
     });
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
