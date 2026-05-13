@@ -19,7 +19,6 @@ import {
   type SearchResourceType,
   type SearchResourceTypeOption,
 } from "@mohasinac/appkit/client";
-import Link from "next/link";
 import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
 import { FooterNewsletterSlot } from "@/components/layout/FooterNewsletterSlot";
 import { API_ROUTES } from "@/constants";
@@ -142,33 +141,6 @@ export default function LayoutShellClient({
       />
     ) : null;
 
-  // Wishlist heart icon (always visible, guests + authenticated)
-  const wishlistIcon = (
-    <Link
-      href={String(ROUTES.USER.WISHLIST)}
-      aria-label="Wishlist"
-      className="flex items-center justify-center w-9 h-9 rounded-lg text-zinc-600 hover:text-red-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-slate-800 transition-colors"
-    >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-      </svg>
-    </Link>
-  );
-
-  // Notification bell hidden per product decision — only show wishlist
-  const notificationSlot = <>{wishlistIcon}</>;
-
-  // Seed & Docs slot — admin only, gated by the seedPanel feature flag
-  const devSlot =
-    seedPanelEnabled && user?.role === "admin" ? (
-      <Link
-        href={String(ROUTES.DEMO.SEED)}
-        className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
-        title="Seed & Docs"
-      >
-        🌱 Seed
-      </Link>
-    ) : undefined;
 
   const shellUser: AppLayoutShellProps["user"] = user
     ? {
@@ -274,8 +246,6 @@ export default function LayoutShellClient({
       showThemeToggle
       showThemeToggleInSidebar
       sidebarLocaleSlot={sidebarLocaleSlot}
-      titleBarNotificationSlot={notificationSlot}
-      titleBarDevSlot={devSlot}
       sidebarProfileLabels={{
         sectionTitle: tNav("profile"),
         profile: tNav("myProfile"),
