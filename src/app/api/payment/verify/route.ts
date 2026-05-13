@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   verifyPaymentSignatureWithKeys, fetchRazorpayOrder, paiseToRupees, } from "@mohasinac/appkit";
 import {
-  unitOfWork, siteSettingsRepository, offerRepository, userRepository, storeRepository, } from "@mohasinac/appkit";
+  unitOfWork, siteSettingsRepository, offerRepository, userRepository, storeRepository, notificationRepository, } from "@mohasinac/appkit";
 import { failedCheckoutRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -268,10 +268,11 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
 
       // -- Shipping fee (same logic as checkout route) ----------------------
       let shippingFee = 0;
+      let storeOwnerId: string | undefined;
       const storeId = firstItem.storeId;
       if (storeId) {
         const store = await storeRepository.findById(storeId);
-        const storeOwnerId = store?.ownerId;
+        storeOwnerId = store?.ownerId;
         const sellerUser = storeOwnerId ? await userRepository.findById(storeOwnerId) : null;
         const shippingConfig = sellerUser?.shippingConfig;
         if (shippingConfig?.isConfigured) {
@@ -410,6 +411,46 @@ export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_out
           items: orderItems,
         });
       }
+
+      // In-app notifications (fire-and-forget) — onOrderStatusChange Cloud
+      // Function only fires on status transitions, not on creates, so emit
+      // buyer + seller "order_placed" rows here. Online path creates orders
+      // with status=CONFIRMED so this is the only notification gate they hit.
+      const notifProductTitle =
+        orderItems.length > 1
+          ? `${orderItems.length} items`
+          : firstItem.productTitle;
+      const buyerNotif = notificationRepository
+        .create({
+          userId: user!.uid,
+          type: "order_placed",
+          priority: "normal",
+          title: "Order placed",
+          message: `Your order for ${notifProductTitle} has been placed.`,
+          relatedId: order.id,
+          relatedType: "order",
+          actionUrl: `/user/orders/view/${order.id}`,
+        })
+        .catch((err: unknown) =>
+          serverLogger.warn("Failed to create buyer order_placed notification", { err, orderId: order.id }),
+        );
+      const sellerNotif = storeOwnerId
+        ? notificationRepository
+            .create({
+              userId: storeOwnerId,
+              type: "order_placed",
+              priority: "high",
+              title: "New order received",
+              message: `New paid order from ${userName || "a buyer"} for ${notifProductTitle}.`,
+              relatedId: order.id,
+              relatedType: "order",
+              actionUrl: `/store/orders/${order.id}/view`,
+            })
+            .catch((err: unknown) =>
+              serverLogger.warn("Failed to create seller order_placed notification", { err, orderId: order.id }),
+            )
+        : Promise.resolve();
+      void Promise.all([buyerNotif, sellerNotif]);
     }
 
     // 8+9. Atomically deduct stock, clear the cart, and consume the consent OTP doc

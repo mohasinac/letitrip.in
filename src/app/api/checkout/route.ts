@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
-  unitOfWork, siteSettingsRepository, userRepository, storeRepository, couponsRepository, } from "@mohasinac/appkit";
+  unitOfWork, siteSettingsRepository, userRepository, storeRepository, couponsRepository, notificationRepository, } from "@mohasinac/appkit";
 import { failedCheckoutRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -339,10 +339,11 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       // -- Shipping fee ------------------------------------------------------
       // Two-step lookup: storeId (slug) → store.ownerId (Auth UID) → user shippingConfig
       let shippingFee = 0;
+      let storeOwnerId: string | undefined;
       const storeId = firstItem.storeId;
       if (storeId) {
         const store = await storeRepository.findById(storeId);
-        const storeOwnerId = store?.ownerId;
+        storeOwnerId = store?.ownerId;
         if (storeOwnerId) {
           const sellerUser = await userRepository.findById(storeOwnerId);
           const shippingConfig = sellerUser?.shippingConfig;
@@ -505,6 +506,46 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
           items: orderItems,
         });
       }
+
+      // 7a. In-app notifications (fire-and-forget) — onOrderStatusChange Cloud
+      //     Function only fires on status transitions (not creates), so place a
+      //     buyer "order_placed" + seller "new order received" row here.
+      const notifProductTitle =
+        orderItems.length > 1
+          ? `${orderItems.length} items`
+          : firstItem.productTitle;
+      const buyerNotif = notificationRepository
+        .create({
+          userId: uid,
+          type: "order_placed",
+          priority: "normal",
+          title: "Order placed",
+          message: `Your order for ${notifProductTitle} has been placed.`,
+          relatedId: order.id,
+          relatedType: "order",
+          actionUrl: `/user/orders/view/${order.id}`,
+        })
+        .catch((err: unknown) =>
+          serverLogger.warn("Failed to create buyer order_placed notification", { err, orderId: order.id }),
+        );
+      const sellerNotif = storeOwnerId
+        ? notificationRepository
+            .create({
+              userId: storeOwnerId,
+              type: "order_placed",
+              priority: "high",
+              title: "New order received",
+              message: `New order from ${userName || "a buyer"} for ${notifProductTitle}.`,
+              relatedId: order.id,
+              relatedType: "order",
+              actionUrl: `/store/orders/${order.id}/view`,
+            })
+            .catch((err: unknown) =>
+              serverLogger.warn("Failed to create seller order_placed notification", { err, orderId: order.id }),
+            )
+        : Promise.resolve();
+      // Track so the response is not blocked but failures still surface in logs
+      void Promise.all([buyerNotif, sellerNotif]);
     }
 
     // 8a. Record coupon usage (fire-and-forget — never blocks the order response)
