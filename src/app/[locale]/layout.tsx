@@ -17,6 +17,7 @@ import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
+import { ScrollToTop } from "@/components/ScrollToTop";
 type Props = {
   children: ReactNode;
   params: Promise<unknown>;
@@ -41,6 +42,7 @@ export default async function Layout({ children, params }: Props) {
       now={new Date()}
     >
       <ClientProviderInitializer />
+      <ScrollToTop />
       <ZodSetup />
       <ThemeProvider>
         <SessionProvider initialUser={null}>

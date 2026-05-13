@@ -5065,22 +5065,45 @@ generateMetadata: title = "{name} | LetItRip", description = category.descriptio
 
 ---
 
-## Public > Event Detail ✅ (reference impl for render props)
+## Public > Event Detail ✅ (J23 — route-per-tab, mirrors /faqs/[category])
 
 ```
+src/app/[locale]/events/[id]/
+├─ layout.tsx         ── fetches event + leaderboard (React.cache via _data.ts)
+│                       renders <EventHeader> + <EventTabBar> + {children}
+├─ page.tsx           ── Overview  (description RichText + inline poll)
+├─ participate/
+│   └─ page.tsx       ── Participate form (redirects polls + ended → Overview)
+├─ leaderboard/
+│   └─ page.tsx       ── Leaderboard (top N entries, empty state)
+├─ _data.ts           ── getEventCached / getLeaderboardCached
+├─ _constants.ts      ── EVENT_TAB · EVENT_LABELS · EVENT_TYPE_BADGE · …
+├─ _helpers.ts        ── eventIsActive · formatEventDate · stripHtmlAndTrim · …
+├─ EventHeader.tsx    ── server (cover via MediaImage, badges, share)
+├─ EventTabBar.tsx    ── client (i18n <Link>, scroll={false}, usePathname highlight)
+└─ ShareEventButton / PollInlineClient
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  [🖼 cover banner]                                                            │
-│  Pokémon TCG Tournament — June 2026   [TOURNAMENT] [LIVE]                   │
-│  Jun 15, 2026  ·  Online  ·  234 entries / 500 max                          │
-│  Organized by: LetiTrip Official                                             │
+│  [🖼 cover banner — MediaImage size="card", aspect-[16/7]]                   │
+│  Pokémon TCG Tournament — June 2026   [tournament] [active]                  │
+│  Start: 15 Jun 2026   End: 17 Jun 2026   Participants: 234                   │
+│  Share: [🔗]                                                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  TABS: [About] [Rules] [Schedule] [Results]                                  │
-│  TAB: About — [RichTextRenderer for description]                             │
-│               [Register Button — PlaceBidForm-style modal]                  │
-│  TAB: Rules  — [RichTextRenderer]                                            │
-│  TAB: Schedule — event timeline                                              │
-│  TAB: Results — winner entries (if ended)                                   │
+│  [Overview] [Participate] [Leaderboard]   ← <Link>s, active = primary border │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  /events/{id}            → <RichText> + (if poll) inline "Cast Your Vote"   │
+│  /events/{id}/participate → form (poll/ended → 302 to /events/{id})         │
+│  /events/{id}/leaderboard → ranked entries OR "No entries… yet"             │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Tab visibility (computed in layout):
+  Overview      : always
+  Participate   : !isPoll && isActive
+  Leaderboard   : leaderboard.length > 0
+
+Global ScrollToTop (src/components/ScrollToTop.tsx) listens to usePathname
+from @/i18n/navigation and scrolls window to (0,0) on every route change.
+Tab links use scroll={false} so the global handler is the single source of truth.
 ```
 
 ---

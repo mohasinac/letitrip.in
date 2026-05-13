@@ -1,19 +1,34 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-24: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-24) */
+/* eslint-disable lir/no-raw-html-elements -- LR1-24: legacy <input>/<label> in poll form — migration tracked in crud-tracker.md Tier LR (row LR1-24) */
 
 import { useState } from "react";
-import Link from "next/link";
-import { Button, Div, Heading, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Link } from "@/i18n/navigation";
+import { Button, Div, Heading, RichText, Text, Textarea } from "@mohasinac/appkit/ui";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
-import type { EventDocument } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
 
-interface Props {
-  event: EventDocument;
-  hasLeaderboard?: boolean;
+export interface ParticipateEventInput {
+  id: string;
+  title: string;
+  description?: string;
+  endsAt?: string | number | Date | null;
+  type?: string;
+  pollConfig?: {
+    options: { id: string; label: string }[];
+    allowMultiSelect: boolean;
+    allowComment: boolean;
+    requireLogin?: boolean;
+  };
 }
 
-export function EventParticipateClient({ event, hasLeaderboard }: Props) {
+interface Props {
+  event: ParticipateEventInput;
+  hasLeaderboard?: boolean;
+  /** When true, the event title/description block at the top is suppressed (the parent already renders it). */
+  embedded?: boolean;
+}
+
+export function EventParticipateClient({ event, hasLeaderboard, embedded = false }: Props) {
   const { user } = useSession();
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -91,24 +106,30 @@ export function EventParticipateClient({ event, hasLeaderboard }: Props) {
     <EventParticipateView
       isLoading={isLoading}
       isSubmitted={isSubmitted}
-      renderEventInfo={() => (
-        <Div className="space-y-1">
-          <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            Participate in {event.title}
-          </Heading>
-          {event.description ? (
-            <Text className="text-zinc-600 dark:text-zinc-400">{event.description}</Text>
-          ) : null}
-          {event.endsAt ? (
-            <Text className="text-sm text-zinc-500 dark:text-zinc-400">
-              Ends:{" "}
-              {new Date(event.endsAt).toLocaleDateString("en-IN", {
-                dateStyle: "medium",
-              })}
-            </Text>
-          ) : null}
-        </Div>
-      )}
+      renderEventInfo={
+        embedded
+          ? undefined
+          : () => (
+              <Div className="space-y-1">
+                <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                  Participate in {event.title}
+                </Heading>
+                {event.description ? (
+                  <Div className="text-zinc-600 dark:text-zinc-400">
+                    <RichText html={event.description} />
+                  </Div>
+                ) : null}
+                {event.endsAt ? (
+                  <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Ends:{" "}
+                    {new Date(event.endsAt).toLocaleDateString("en-IN", {
+                      dateStyle: "medium",
+                    })}
+                  </Text>
+                ) : null}
+              </Div>
+            )
+      }
       renderForm={
         pollConfig?.options?.length
           ? () => (

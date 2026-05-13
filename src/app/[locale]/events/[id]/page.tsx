@@ -1,116 +1,49 @@
-import {
-  getEventForDetail,
-  getEventLeaderboard,
-} from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { generateMetadata as _gm } from "@/constants/seo.server";
-import { EventDetailClient } from "./EventDetailClient";
-
-export const revalidate = 60;
+import { Div, Heading, RichText } from "@mohasinac/appkit/ui";
+import { EVENT_LABELS } from "./_constants";
+import { eventIsActive } from "./_helpers";
+import { getEventCached } from "./_data";
+import { PollInlineClient } from "./PollInlineClient";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const event = await getEventForDetail(id);
-  if (!event) return { title: "Event Not Found" };
-  const e = event as unknown as Record<string, unknown>;
-  const coverImage =
-    typeof e.imageUrl === "string" ? e.imageUrl
-    : typeof e.bannerImage === "string" ? e.bannerImage
-    : undefined;
-  return _gm({
-    title: `${event.title} — LetItRip Events`,
-    description: (typeof event.description === "string" ? event.description : "").slice(0, 155) ||
-      `Join ${event.title} on LetItRip.`,
-    image: coverImage,
-    path: `/events/${id}`,
-    type: "article",
-  });
-}
-
-const TYPE_BADGE: Record<string, string> = {
-  sale:     "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  offer:    "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
-  poll:     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-  survey:   "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
-  feedback: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+type PollConfig = {
+  options: { id: string; label: string }[];
+  allowMultiSelect: boolean;
+  allowComment: boolean;
+  requireLogin?: boolean;
 };
-
-const STATUS_BADGE: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  ended:  "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
-  draft:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-};
-
-function formatDate(value: unknown): string {
-  if (!value) return "";
-  try {
-    return new Date(value as unknown as string).toLocaleDateString("en-IN", {
-      dateStyle: "medium",
-    });
-  } catch {
-    return String(value);
-  }
-}
 
 export default async function Page({ params }: Props) {
-  const { locale, id } = await params;
-  const [event, leaderboard] = await Promise.all([
-    getEventForDetail(id),
-    getEventLeaderboard(id).catch(() => []),
-  ]);
+  const { id } = await params;
+  const event = await getEventCached(id);
   if (!event) notFound();
 
-  const safeLeaderboard = (leaderboard as any[]).map((entry) => ({
-    id: String(entry.id ?? ""),
-    userDisplayName: entry.userDisplayName ?? undefined,
-    points: entry.points ?? undefined,
-  }));
-
-  const e = event as unknown as Record<string, unknown>;
-  const coverImage =
-    typeof e.imageUrl === "string" ? e.imageUrl
-    : typeof e.bannerImage === "string" ? e.bannerImage
-    : null;
-
-  const eventType   = (event.type   as string | undefined) ?? "";
-  const eventStatus = (event.status as string | undefined) ?? "";
-  const typeBadgeCls   = TYPE_BADGE[eventType]   ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
-  const statusBadgeCls = STATUS_BADGE[eventStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
-
-  const totalEntries = (event as any).stats?.totalEntries as number | undefined;
-  const now    = Date.now();
-  const endsAt = event.endsAt ? new Date(event.endsAt as unknown as string).getTime() : null;
-  const isActive = eventStatus === "active" || (endsAt !== null && endsAt > now);
-
-  const pollCfg = (event as any).pollConfig as {
-    options: { id: string; label: string }[];
-    allowMultiSelect: boolean;
-    allowComment: boolean;
-    requireLogin?: boolean;
-  } | undefined;
+  const description =
+    typeof event.description === "string" ? event.description : "";
+  const isActive = eventIsActive(event);
+  const pollConfig = (event as { pollConfig?: PollConfig }).pollConfig;
 
   return (
-    <EventDetailClient
-      eventId={id}
-      locale={locale}
-      coverImage={coverImage}
-      eventType={eventType}
-      eventStatus={eventStatus}
-      typeBadgeCls={typeBadgeCls}
-      statusBadgeCls={statusBadgeCls}
-      totalEntries={totalEntries}
-      isActive={isActive}
-      title={event.title ?? ""}
-      description={typeof event.description === "string" ? event.description : ""}
-      startsAtFormatted={formatDate(event.startsAt)}
-      endsAtFormatted={formatDate(event.endsAt)}
-      pollConfig={pollCfg}
-      leaderboard={safeLeaderboard}
-    />
+    <Div className="space-y-6">
+      {description ? <RichText html={description} /> : null}
+      {pollConfig?.options?.length ? (
+        <Div className="space-y-3">
+          <Heading
+            level={2}
+            className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+          >
+            {EVENT_LABELS.OVERVIEW_POLL_HEADING}
+          </Heading>
+          <PollInlineClient
+            eventId={id}
+            pollConfig={pollConfig}
+            isActive={isActive}
+          />
+        </Div>
+      ) : null}
+    </Div>
   );
 }
