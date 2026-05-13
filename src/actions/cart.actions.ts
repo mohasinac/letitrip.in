@@ -16,6 +16,7 @@ import {
 import { ValidationError, AuthorizationError } from "@mohasinac/appkit";
 import {
   addItemToCart,
+  addBundleToCart,
   updateCartItem,
   removeCartItem,
   clearCart,
@@ -85,6 +86,39 @@ export async function addToCartAction(
     );
 
   return addItemToCart(user.uid, parsed.data) as Promise<CartDocument>;
+}
+
+// SB-UNI-5 2026-05-13 — bundle add-to-cart wrapper. Foundation lived in
+// appkit since S-SBUNI-4; this is the consumer-side server action with
+// auth + rate-limit. Per-member stock decrement at order paid is wired in
+// _internal/server/features/checkout/actions.ts (same session).
+const addBundleToCartSchema = z.object({
+  bundleSlug: z.string().min(1).max(120),
+  quantity: z.number().int().min(1).max(10).default(1),
+});
+
+export async function addBundleToCartAction(
+  input: z.infer<typeof addBundleToCartSchema>,
+): Promise<CartDocument> {
+  const user = await requireAuthUser();
+  const rl = await rateLimitByIdentifier(
+    `cart:add-bundle:${user.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = addBundleToCartSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid input",
+    );
+
+  return addBundleToCart(
+    user.uid,
+    parsed.data.bundleSlug,
+    parsed.data.quantity,
+  ) as Promise<CartDocument>;
 }
 
 export async function updateCartItemAction(
