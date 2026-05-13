@@ -9380,3 +9380,207 @@ npm run dev → npm run dev:only
   ↓
   spawn `node node_modules/next/dist/bin/next dev --webpack`
 ```
+
+---
+
+## S7-PrizeDraws-prep3 — Prize Draws surface (2026-05-13) ✅ (foundation + reveal API + Functions, code-only)
+
+### Component tree (appkit/src/features/products/components)
+
+```
+PrizeDrawItemsEditor (SB4-A)              PrizeDrawCollage (SB4-B)
+  - 3..16 cap                               - Responsive grid (2/3/4 cols)
+  - Add / remove / reorder                  - #N badge + title + est value
+  - 1-2 image slots per item                - Optional highlightItemNumber
+    via ImageUpload                           used by the reveal animation
+  - Optional video upload                   - Optional hideWonState prop:
+  - Locks globally once any                   public buyer surfaces pass
+    item.isWon === true                       true so prior wins do not
+                                              spoil demand
+                  |
+                  +------> PrizeRevealModal (SB4-I)
+                              - idle -> revealing -> won / refunded / error
+                              - Phase 1: server picks winner via
+                                crypto.randomInt BEFORE any animation
+                              - Phase 2: theatrical 3.2 s decelerating
+                                highlight cycle (80 ms -> 360 ms easing)
+                              - Phase 3: lands on winner, prize card
+                              - Persistent fairness disclaimer with
+                                GitHub proof-of-fairness link
+
+ProductForm (SB4-C)
+  - IIFE derives anyWon + fieldDisabled
+  - Whole prize-draw section freezes on any reveal
+  - Hard-locked: pricePerEntry / prizeMaxEntries /
+    revealWindowStart / revealWindowEnd / revealDeadlineDays /
+    maxPerUser / prizeDrawItems[]
+```
+
+### Order-side gates (appkit/src/_internal/server/features/checkout/prize-bundle-gates.ts)
+
+```
+enforceMaxPerUserForCart(userId, items)    <- pre-tx
+   - aggregates by productId
+   - orderRepository.countByUserAndProduct  (SB6-B helper)
+   - throws ValidationError code=MAX_PER_USER + violations[]
+
+enforcePrizePoolCap(productSnapshot, qty)  <- in-tx
+   - only fires when listingType==prize-draw
+   - throws code=PRIZE_POOL_FULL when current+qty > max
+
+computePrizeRevealDeadline(product, now)   <- SB8-A
+   - if windowStart > now:
+       deadline = min(windowStart + deadlineDays, windowEnd)
+   - else:
+       deadline = min(now + deadlineDays, windowEnd)
+```
+
+```
+createCheckoutOrderAction (COD/UPI-manual)        verifyAndPlaceRazorpayOrderAction
+  - enforceMaxPerUserForCart  (pre-tx)              - enforceMaxPerUserForCart
+  - runTransaction                                  - enforcePrizePoolCap (loop)
+      - enforcePrizePoolCap (stock loop)            - runBatch
+      - tx.update product:                              - updateInBatch product:
+            availableQuantity -= qty                       availableQuantity -= qty
+            if prize-draw:                                 if prize-draw:
+              prizeCurrentEntries += qty                     prizeCurrentEntries += qty
+      - tx.update cart (remove ordered)             - orders.create per group
+      - tx.delete consentOtp                          prizeFields = {
+  - orders.create per group                              prizeDrawProductId,
+      prizeFields = {                                    isNonRefundable: true,
+        prizeDrawProductId,                              prizeRevealDeadline,
+        isNonRefundable: true,                         }
+        prizeRevealDeadline,
+      }
+```
+
+### Reveal flow (SB4-H + SB4-I + SB8-C)
+
+```
+[Buyer] /user/orders/view/<orderId>
+   |
+   | "Reveal my prize"
+   v
+PrizeRevealModal.handleRevealClick
+   |
+   |  POST /api/prize-draws/<productId>/reveal { orderId }
+   v
+src/app/api/prize-draws/[id]/reveal/route.ts
+   |
+   +-- Pre-tx fail-fast:
+   |       order exists + owned by uid
+   |       product.listingType == "prize-draw"
+   |       order.prizeDrawProductId == productId
+   |       order.paymentStatus == PAID
+   |       status not CANCELLED / REFUNDED
+   |       order.prizeWon empty (idempotency)
+   |       windowStart <= now <= windowEnd
+   |       deadline >= now
+   |
+   +-- runTransaction:
+         re-read product + order
+         re-check order.prizeWon (in-tx idempotency)
+         unwon = items.filter(!isWon)
+         if unwon.length === 0:                 SB8-C
+             tx.update(order, REFUNDED + isNonRefundable=false)
+             return { refunded: true, reason: "pool_exhausted" }
+         else:
+             pick = crypto.randomInt(0, unwon.length)
+             items[pickIndex].isWon = true
+             tx.update(product, { prizeDrawItems: items })
+             tx.update(order, { prizeWon: { itemNumber, title, images, wonAt } })
+             return { kind: "revealed", prizeWon, item }
+
+[Animation only after success]
+   v
+PrizeDrawCollage receives highlightItemNumber that cycles random tiles,
+decelerates, finally lands on prizeWon.itemNumber.
+```
+
+### Server-side edit lock (in addition to the UI lock)
+
+```
+PATCH /api/products/[id]   (appkit/src/features/products/api/[id]/route.ts)
+   |
+   +- load product
+   +- ownerOrModeratorOrAdmin check
+   |
+   +- if listingType === "prize-draw" && items.some(isWon)
+   |     -> 409 "This prize-draw listing is locked..."
+   |        (seller + admin both blocked; clone-into-new-listing
+   |         is the path forward)
+   |
+   +- repo.update(...)
+```
+
+### SB1-L Firebase Functions cohort (7 - code only)
+
+```
+functions/src/index.ts             handler module
+--------------------------------------------------------------------
+prizeRevealOpen     every 5 min  -> prizeRevealOpenHandler
+                                    - flip pending -> open
+                                    - SB8-D: notify all paid
+                                      unrevealed buyers
+
+prizeRevealClose    every 5 min  -> prizeRevealCloseHandler
+                                    - flip open -> closed
+
+prizeRevealExpiry   every 6 h    -> prizeRevealExpiryHandler  (SB8-B)
+                                    - paid + active status
+                                      + deadline < now
+                                    - mark REFUNDED + notify
+                                      "prize_reveal_expired"
+
+prizeRevealReminder daily 10 IST -> prizeRevealReminderHandler (SB8-E)
+                                    - deadline in next 24h
+                                    - notify "prize_reveal_reminder"
+
+bundleStockSync     daily 10 IST -> bundleStockSyncHandler
+                                    - scan active bundles
+                                    - flip isSold=true if any item
+                                      is in UNAVAILABLE statuses
+
+triggerEventRaffle  HTTPS call    -> triggerEventRaffleHandler (SB9-D)
+                                    - raffleType in
+                                        top_n_scorers
+                                        top_n_participants
+                                        open_raffle
+                                    - crypto.randomInt(0, pool.length)
+                                    - write raffleWinner* on event
+
+assignSpinPrize     HTTPS call    -> assignSpinPrizeHandler (SB9-E)
+                                    - weighted crypto.randomInt over
+                                      event.spinPrizes[].weight
+                                    - one-spin-per-user via
+                                      entry.spinUsed flag
+                                    - optional couponId -> emit code
+
+All 7 secret-gated via LETITRIP_INTERNAL_SECRET; region asia-south1.
+NOT deployed - Q1-funcs-dryrun + Q1-ops queued for S7-PrizeDraws-2.
+```
+
+### Firestore indexes added (appkit/firebase/base/firestore.indexes.json)
+
+```
+products  (listingType, prizeRevealStatus, prizeRevealWindowEnd)    close handler
+products  (listingType, prizeRevealStatus, prizeRevealWindowStart)  open handler  (NEW)
+orders    (prizeDrawProductId, paymentStatus, status)               SB8-D notify  (NEW)
+orders    (paymentStatus, prizeRevealDeadline)                      expiry sweep (NEW)
+```
+
+### Public-vs-seller view contract for prizeDrawItems[].isWon
+
+```
+                  hideWonState   adapter strip   visible "Won" overlay
+---------------------------------------------------------------------
+Seller editor         false           no                yes
+Admin editor          false           no                yes
+Winner reveal modal   false           no                yes (own only)
+Public listing card   true            yes               no
+Public detail page    true            yes               no
+```
+
+This pair (UI prop + adapter strip - adapter lands with SB4-G) ensures
+the general buyer never sees that their favourite prize is gone, which
+would suppress demand.
