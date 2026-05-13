@@ -352,6 +352,65 @@ Views with no filter drawer (sort-only):
 
 ---
 
+## Shared > FilterChipGroup + admin/seller filter-tabs ✅ (SB10-C completion, S8 2026-05-13)
+
+```
+appkit/src/ui/components/FilterChipGroup.tsx
+  └─ FilterChipGroup({ label, tabs, value, onChange, allId?="All", className? })
+        - Renders a labelled wrap-group of pill buttons.
+        - `allId` is the sentinel id (default "All"); empty-string variant
+           supported via `EMPTY_TAB` + `allId=""`.
+        - Active-chip style uses var(--appkit-color-primary); inactive
+           uses zinc/slate tokens.
+
+appkit/src/features/admin/constants/filter-tabs.ts
+  └─ `ALL_TAB`, `EMPTY_TAB` sentinels +
+       Admin (10): PRODUCT_STATUS · PRODUCT_LISTING_TYPE · ORDER_STATUS
+                   · PAYOUT_STATUS · BLOG_STATUS · USER_STATUS · USER_ROLE
+                   · STORE_STATUS · REVIEW_STATUS · REVIEW_RATING
+                   · BID_STATUS · CONTACT_STATUS · NEWSLETTER_STATUS
+                   · EVENT_ENTRY_STATUS · EVENT_STATUS · CART_OWNERSHIP
+                   · COUPON_TYPE
+       Seller (5): PRODUCT_STATUS · AUCTION_STATUS · ORDER_STATUS
+                   · OFFER_STATUS · BID_STATUS
+  └─ All re-exported via main appkit barrel + mirrored in
+       src/constants/dashboard-tabs.ts.
+
+Migrated views (14 view files, 17 chip groups):
+┌──────────────────────────────┬─────────────────────────────────────────┐
+│ AdminProductsView            │ STATUS + TYPE                            │
+│ AdminOrdersView              │ STATUS (+ QuickEditMenu form options)    │
+│ AdminPayoutsView             │ STATUS                                   │
+│ AdminBlogView                │ STATUS + Featured (inline {id,label})    │
+│ AdminUsersView               │ STATUS + ROLE                            │
+│ AdminStoresView              │ STATUS                                   │
+│ AdminReviewsView             │ STATUS + RATING                          │
+│ AdminBidsView                │ STATUS                                   │
+│ AdminContactView             │ STATUS                                   │
+│ AdminNewsletterView          │ STATUS                                   │
+│ AdminAllEventEntriesView     │ STATUS                                   │
+│ AdminEventsView (events/)    │ STATUS + TYPE (legacy values w/ TODO)    │
+│ AdminCartsView               │ TYPE (ownership)                         │
+│ AdminCouponsView             │ TYPE                                     │
+│ SellerOrdersView             │ STATUS                                   │
+│ SellerProductsView           │ STATUS                                   │
+│ SellerPayoutsView            │ STATUS (reuses ADMIN_PAYOUT_STATUS_TABS) │
+│ SellerOffersView             │ STATUS                                   │
+│ SellerAuctionsView           │ STATUS                                   │
+│ SellerBidsView               │ STATUS (EMPTY_TAB sentinel + STATUS_LABELS│
+│                              │   table now derived from the constant)    │
+└──────────────────────────────┴─────────────────────────────────────────┘
+
+Before vs after (per chip group):
+  18-line inline render block        →  6-line <FilterChipGroup … /> call
+  hard-coded label/value pairs        →  named constant from filter-tabs.ts
+  `bg-primary` raw class               →  bg-[var(--appkit-color-primary)]
+                                          centralised in one component
+  state-shape duplication (opt → id)  →  removed; sentinel collapses to ""
+```
+
+---
+
 ## Shared > MediaUploadField ✅
 
 ```
