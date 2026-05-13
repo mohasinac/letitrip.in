@@ -201,17 +201,16 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### ✅ LAST COMPLETED — S-SBUNI-RULES phases 1–6: full rule registry end-to-end (2026-05-13)
+### ✅ LAST COMPLETED — S-dashboard-listing-audit: dashboard listing audit + stub pages (2026-05-14)
 
-Per-type checkout rule registry + schema + consumer rewire + shipping + cart-UI + refunds. `npm run check` exits 0.
+Audit of all user/admin/store dashboard listing pages. `npm run check` exits 0.
 
-- **RULES** — 14 new files under `appkit/src/_internal/shared/checkout/rules/`. `CHECKOUT_RULES` registry + `getListingRule`/`runSyncPreflight`/`getSplitKey` exported from `@mohasinac/appkit`.
-- **SCHEMA** — `OrderDocument` gains `paymentBatchId?`, `refunds?: OrderRefundEvent[]`, `contestable?: boolean`, `shippingProofUrl?`. `CartItemDocument` gains `chosenShippingProviderId?`, `chosenShippingFeeInPaise?`. `StoreDocument` gains `shippingConfig?: StoreShippingConfig`. Media contexts: `shipping-proof` + `refund-proof`.
-- **CONSUMERS** — `order-splitter.ts` + checkout `actions.ts` fully rewired to rule registry. `/api/cart` → `rule.cartEligible`. `BundleDetailView` now uses `BundleBuyNowCta` (direct-checkout, no cart).
-- **SHIPPING** — `ShippingPicker` client component (resolves flat/percent/freeAbove fee). `cartRepository.updateItemShipping()` + `updateCartItemShipping()` domain fn. `CartView` gains `renderGroups` + `CartOrderGroup` slot. Two stores seeded with `shippingConfig`.
-- **REFUNDS** — `ordersRepository.postRefundEvent()` + `findByPaymentBatchId()`. `processRefundAction` server action (razorpay|manual discriminated union, `confirmIrrevocable:true` guard, `isNonRefundable` guard). `RefundHistoryTable` + `RefundRequestView` components. `POST /api/orders/[id]/refund` + `POST /api/store/orders/[id]/shipping-proof` routes. `OrderSiblingPayments` component (`paymentBatchId` siblings link). Seed: orders-08/27 get refund events; orders-03/05 share `paymentBatchId`. Firestore index: `orders(paymentBatchId, createdAt)`.
+- **New appkit views**: `SellerPreOrdersView` + `SellerPrizeDrawsView` + `AdminPrizeDrawsView` — each with `useUrlTable`, `ListingToolbar`, `DataTable`, status filter drawer, sort, search. Added `SELLER_PRE_ORDER_STATUS_TABS` + `SELLER_PRIZE_DRAW_STATUS_TABS` to `filter-tabs.ts`. Exported from all barrels.
+- **SB4-E closed**: `store/prize-draws/page.tsx` + `admin/prize-draws/page.tsx` stubs → thin shims mounting the new views. `store/pre-orders/page.tsx` stub → `<SellerPreOrdersView />`.
+- **Templates page (Phase 2a)**: added `useUrlTable` + sort dropdown (Name A–Z / Z–A) + condition filter dropdown + search-on-Enter. Client-side — API has no q/sort params.
+- **Sublisting-categories page (Phase 2b)**: dropped `pageSize=200` → `pageSize=25` + server-side sort + proper pagination (prev/next with `total` from API). `useUrlTable` for sort+page URL persistence. Local search kept client-side (API has no q param).
 
-**Required user follow-ups**: `POST /demo/seed` + `firebase deploy --only firestore:indexes`.
+**No schema changes. No indices needed. No seed reload needed.**
 
 ### 🔄 CURRENT — S9: RBAC complete (RBAC1–10) + inline TODO(RBAC) retrofit
 

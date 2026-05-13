@@ -1,9 +1,10 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-09: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-09) */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ROUTES } from "@mohasinac/appkit";
+import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 
 interface CategoryRow {
@@ -15,18 +16,40 @@ interface CategoryRow {
   createdBy?: string;
 }
 
+const PAGE_SIZE = 25;
+
+const SORT_OPTIONS = [
+  { value: "name", label: "Name A–Z" },
+  { value: "-name", label: "Name Z–A" },
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt", label: "Oldest" },
+];
+
 export default function Page() {
+  const table = useUrlTable({ defaults: { sort: "name", pageSize: String(PAGE_SIZE) } });
+
   const [rows, setRows] = useState<CategoryRow[]>([]);
+  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const load = () => {
+  const sort = table.get("sort") || "name";
+  const page = table.getNumber("page", 1);
+
+  const load = useCallback(() => {
     setLoading(true);
-    fetch(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?pageSize=200&sorts=name`)
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(PAGE_SIZE),
+      sorts: sort,
+    });
+    fetch(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?${params.toString()}`)
       .then((r) => r.json())
       .then((res) => {
-        const items: unknown[] = (res as any)?.data?.items ?? [];
+        const data = (res as any)?.data;
+        const items: unknown[] = data?.items ?? [];
+        setTotal(typeof data?.total === "number" ? data.total : items.length);
         setRows(
           items.map((item: any) => ({
             id: String(item.id ?? ""),
@@ -40,9 +63,9 @@ export default function Page() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, [page, sort]);
 
-  useEffect(load, []);
+  useEffect(load, [load]);
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`))
@@ -66,6 +89,8 @@ export default function Page() {
       )
     : rows;
 
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
       {/* Header */}
@@ -87,14 +112,26 @@ export default function Page() {
         </Link>
       </div>
 
-      {/* Search */}
-      <input
-        type="search"
-        placeholder="Search by name or item code…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
-      />
+      {/* Toolbar */}
+      <div className="mb-4 flex items-center gap-3">
+        <input
+          type="search"
+          placeholder="Search by name or item code…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
+        />
+        <select
+          value={sort}
+          onChange={(e) => { table.set("sort", e.target.value); }}
+          className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
+          aria-label="Sort categories"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
@@ -178,11 +215,34 @@ export default function Page() {
         </div>
       )}
 
-      <p className="mt-3 text-xs text-zinc-400 dark:text-zinc-500">
-        {filtered.length} categor{filtered.length !== 1 ? "ies" : "y"}
-        {search && ` matching "${search}"`}
-        {" · "}You can edit or delete categories you created. Contact support to modify others.
-      </p>
+      <div className="mt-3 flex items-center justify-between">
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+          {total} categor{total !== 1 ? "ies" : "y"} total
+          {search && ` · ${filtered.length} matching "${search}"`}
+          {" · "}You can edit or delete categories you created. Contact support to modify others.
+        </p>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => table.setPage(page - 1)}
+              disabled={page <= 1}
+              className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 disabled:opacity-40 hover:border-zinc-400 transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-xs text-zinc-500">{page} / {totalPages}</span>
+            <button
+              type="button"
+              onClick={() => table.setPage(page + 1)}
+              disabled={page >= totalPages}
+              className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 disabled:opacity-40 hover:border-zinc-400 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

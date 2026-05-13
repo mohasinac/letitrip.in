@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-35: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-35) */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Div,
@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
+import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 
 interface TemplateRow {
@@ -48,9 +49,16 @@ const CONDITION_OPTIONS = [
   { value: "used", label: "Used" },
 ];
 
+const SORT_OPTIONS = [
+  { value: "name-az", label: "Name A–Z" },
+  { value: "name-za", label: "Name Z–A" },
+];
+
 export default function Page() {
+  const table = useUrlTable({ defaults: { sort: "name-az" } });
+  const [searchInput, setSearchInput] = useState(table.get("q") || "");
+
   const [rows, setRows] = useState<TemplateRow[]>([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<"create" | "edit">("create");
@@ -60,7 +68,11 @@ export default function Page() {
   const [savingError, setSavingError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const load = () => {
+  const q = table.get("q");
+  const sort = table.get("sort") || "name-az";
+  const condition = table.get("condition");
+
+  const load = useCallback(() => {
     setLoading(true);
     fetch(API_ROUTES.STORE.TEMPLATES)
       .then((r) => r.json())
@@ -79,9 +91,13 @@ export default function Page() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, []);
 
-  useEffect(load, []);
+  useEffect(load, [load]);
+
+  const commitSearch = useCallback(() => {
+    table.set("q", searchInput.trim());
+  }, [searchInput, table]);
 
   function openCreate() {
     setDraft(EMPTY_DRAFT);
@@ -159,9 +175,13 @@ export default function Page() {
     }
   }
 
-  const filtered = search.trim()
-    ? rows.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()))
-    : rows;
+  const filtered = useMemo(() => {
+    let result = rows;
+    if (q) result = result.filter((r) => r.name.toLowerCase().includes(q.toLowerCase()));
+    if (condition) result = result.filter((r) => r.condition === condition);
+    if (sort === "name-za") return [...result].sort((a, b) => b.name.localeCompare(a.name));
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
+  }, [rows, q, sort, condition]);
 
   return (
     <>
@@ -180,13 +200,37 @@ export default function Page() {
           </Button>
         </Row>
 
-        <Input
-          placeholder="Search templates…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="mb-4"
-          aria-label="Search templates"
-        />
+        <Row gap="sm" className="mb-4" align="center">
+          <Div className="flex-1">
+            <Input
+              placeholder="Search templates…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && commitSearch()}
+              aria-label="Search templates"
+            />
+          </Div>
+          <select
+            value={sort}
+            onChange={(e) => table.set("sort", e.target.value)}
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            aria-label="Sort templates"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <select
+            value={condition}
+            onChange={(e) => table.set("condition", e.target.value)}
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            aria-label="Filter by condition"
+          >
+            {CONDITION_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </Row>
 
         {loading ? (
           <Div className="flex items-center justify-center py-16">
@@ -196,14 +240,14 @@ export default function Page() {
           <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-16 text-center">
             <Text className="text-3xl mb-2">📋</Text>
             <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              {search ? "No templates match your search" : "No templates yet"}
+              {q || condition ? "No templates match your filters" : "No templates yet"}
             </Text>
             <Text variant="secondary" className="mt-1 text-xs">
-              {search
-                ? "Try a different keyword"
+              {q || condition
+                ? "Try clearing your search or filters"
                 : "Create a template to pre-fill category, brand, condition and more when listing."}
             </Text>
-            {!search && (
+            {!q && !condition && (
               <Button variant="primary" size="sm" className="mt-4" onClick={openCreate}>
                 Create Template
               </Button>
@@ -260,7 +304,7 @@ export default function Page() {
 
         <Text variant="secondary" className="mt-3 text-xs">
           {filtered.length} template{filtered.length !== 1 ? "s" : ""}
-          {search && ` matching "${search}"`}
+          {(q || condition) && " (filtered)"}
         </Text>
       </Div>
 
