@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
-import { Container, Heading, Text } from "@mohasinac/appkit/client";
+import { PrizeDrawDetailPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**
- * Public Prize Draw detail page (SB4-E).
+ * Public Prize Draw detail page (SB4-E + SB4-G).
  *
- * Placeholder until SB4-G `PrizeDrawDetailPageView` lands. Slug-based route
- * matches the product slug (e.g. `prize-pokemon-mystery-box-june`).
+ * Delegates to the appkit `PrizeDrawDetailPageView` which:
+ *   - Server-fetches the product by slug/id
+ *   - Strips `isWon` from prizeDrawItems[] (public buyers stay unspoiled)
+ *   - Renders the full PrizeDrawCollage + entry-fee + reveal-window panel
+ *   - Wires "Enter Draw" → NonRefundableConsentModal → add to guest cart
+ *   - Surfaces the prizeGithubFileUrl "View RNG source" link
  */
 
 interface PageProps {
   params: Promise<{ slug: string; locale: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   return _gm({
     title: `${slug} — Prize Draw — LetItRip`,
@@ -26,14 +32,5 @@ export const revalidate = 120;
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  return (
-    <Container className="px-4 py-8">
-      <Heading level={1} className="text-3xl font-bold mb-4">
-        Prize Draw: {slug}
-      </Heading>
-      <Text className="text-[var(--appkit-color-text-muted)]">
-        Detail UI ships with SB4-G — page shim wired so the route resolves.
-      </Text>
-    </Container>
-  );
+  return <PrizeDrawDetailPageView id={slug} />;
 }
