@@ -45,6 +45,14 @@ import {
   listingProcessorHandler,
   promotionsHandler,
   storeAnalyticsHandler,
+  // SB1-L — S7 PrizeDraws cohort (7 functions)
+  prizeRevealOpenHandler,
+  prizeRevealCloseHandler,
+  prizeRevealExpiryHandler,
+  prizeRevealReminderHandler,
+  bundleStockSyncHandler,
+  triggerEventRaffleHandler,
+  assignSpinPrizeHandler,
   // Adapter
   bindToFirebase,
 } from "@mohasinac/appkit/jobs";
@@ -208,4 +216,57 @@ export const listingProcessor = bindToFirebase.https(
   "listingProcessor",
   listingProcessorHandler,
   { region: REGION, timeoutSeconds: 30, memory: "256MiB", maxInstances: 20, minInstances: 0, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+// ── S7 PrizeDraws cohort (SB1-L) ─────────────────────────────────────────
+// Scheduled jobs:
+//   prizeRevealOpen     every 5 min  — flip pending→open + notify (SB8-D)
+//   prizeRevealClose    every 5 min  — flip open→closed
+//   prizeRevealExpiry   every 6 hrs  — auto-refund unrevealed past deadline (SB8-B)
+//   prizeRevealReminder daily 10 IST — nudge buyers <24h to deadline (SB8-E)
+//   bundleStockSync     daily 10 IST — flip bundle isSold if any item OOS
+// Callables (internal secret-gated):
+//   triggerEventRaffle  — pick raffle winner via crypto.randomInt (SB9-D)
+//   assignSpinPrize     — weighted random spin prize + coupon issue (SB9-E)
+
+export const prizeRevealOpen = bindToFirebase.schedule(
+  "prizeRevealOpen",
+  prizeRevealOpenHandler,
+  { schedule: "every 5 minutes", region: REGION, timeoutSeconds: 120, memory: "256MiB", maxInstances: 1 },
+);
+
+export const prizeRevealClose = bindToFirebase.schedule(
+  "prizeRevealClose",
+  prizeRevealCloseHandler,
+  { schedule: "every 5 minutes", region: REGION, timeoutSeconds: 60, memory: "256MiB", maxInstances: 1 },
+);
+
+export const prizeRevealExpiry = bindToFirebase.schedule(
+  "prizeRevealExpiry",
+  prizeRevealExpiryHandler,
+  { schedule: "0 */6 * * *", timeZone: "UTC", region: REGION, timeoutSeconds: 300, memory: "256MiB", maxInstances: 1 },
+);
+
+export const prizeRevealReminder = bindToFirebase.schedule(
+  "prizeRevealReminder",
+  prizeRevealReminderHandler,
+  { schedule: "0 10 * * *", timeZone: "Asia/Kolkata", region: REGION, timeoutSeconds: 300, memory: "256MiB", maxInstances: 1 },
+);
+
+export const bundleStockSync = bindToFirebase.schedule(
+  "bundleStockSync",
+  bundleStockSyncHandler,
+  { schedule: "5 10 * * *", timeZone: "Asia/Kolkata", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const triggerEventRaffle = bindToFirebase.https(
+  "triggerEventRaffle",
+  triggerEventRaffleHandler,
+  { region: REGION, timeoutSeconds: 60, memory: "256MiB", maxInstances: 5, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
+export const assignSpinPrize = bindToFirebase.https(
+  "assignSpinPrize",
+  assignSpinPrizeHandler,
+  { region: REGION, timeoutSeconds: 30, memory: "256MiB", maxInstances: 10, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
 );
