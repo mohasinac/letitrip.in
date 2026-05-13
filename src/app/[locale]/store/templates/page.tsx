@@ -188,10 +188,10 @@ export default function Page() {
       <Div className="mx-auto max-w-4xl px-4 py-6">
         <Row justify="between" align="start" className="mb-6" gap="md">
           <Div>
-            <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            <Heading level={1} className="text-2xl font-bold">
               Product Templates
             </Heading>
-            <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            <Text variant="secondary" className="mt-1 text-sm">
               Save common field sets as templates to pre-fill new listings faster.
             </Text>
           </Div>
@@ -213,7 +213,7 @@ export default function Page() {
           <select
             value={sort}
             onChange={(e) => table.set("sort", e.target.value)}
-            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
             aria-label="Sort templates"
           >
             {SORT_OPTIONS.map((o) => (
@@ -223,7 +223,7 @@ export default function Page() {
           <select
             value={condition}
             onChange={(e) => table.set("condition", e.target.value)}
-            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
             aria-label="Filter by condition"
           >
             {CONDITION_OPTIONS.map((o) => (
@@ -237,9 +237,9 @@ export default function Page() {
             <Text variant="secondary" className="text-sm">Loading…</Text>
           </Div>
         ) : filtered.length === 0 ? (
-          <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-16 text-center">
+          <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
             <Text className="text-3xl mb-2">📋</Text>
-            <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+            <Text className="text-sm font-semibold">
               {q || condition ? "No templates match your filters" : "No templates yet"}
             </Text>
             <Text variant="secondary" className="mt-1 text-xs">
@@ -254,16 +254,16 @@ export default function Page() {
             )}
           </Div>
         ) : (
-          <Div className="divide-y divide-zinc-100 dark:divide-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+          <Div className="divide-y divide-[var(--appkit-color-border-subtle)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
             {filtered.map((t) => (
               <Row
                 key={t.id}
                 align="center"
                 gap="md"
-                className="bg-white dark:bg-zinc-900/60 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-border-subtle)] transition-colors"
               >
                 <Div className="flex-1 min-w-0">
-                  <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
+                  <Text className="text-sm font-medium truncate">
                     {t.name}
                   </Text>
                   <Row gap="xs" className="mt-0.5 flex-wrap">
@@ -327,7 +327,7 @@ export default function Page() {
       >
         <Stack gap="md">
           {savingError && (
-            <Div className="rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+            <Div className="rounded-lg border border-[var(--appkit-color-error)] bg-[var(--appkit-color-error-surface)] px-3 py-2 text-sm text-[var(--appkit-color-error-text)]">
               {savingError}
             </Div>
           )}
@@ -370,13 +370,13 @@ export default function Page() {
           />
 
           <Div>
-            <Text className="mb-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <Text className="mb-1.5 text-sm font-medium">
               Condition (optional)
             </Text>
             <select
               value={draft.condition}
               onChange={(e) => setDraft((d) => ({ ...d, condition: e.target.value }))}
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
               aria-label="Condition"
             >
               {CONDITION_OPTIONS.map((o) => (

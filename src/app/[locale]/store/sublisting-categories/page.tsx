@@ -1,9 +1,18 @@
-"use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-09: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-09) */
+﻿"use client";
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { ROUTES } from "@mohasinac/appkit";
+import {
+  Badge,
+  Button,
+  Div,
+  Heading,
+  Input,
+  Row,
+  Select,
+  Text,
+} from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
 
@@ -13,7 +22,6 @@ interface CategoryRow {
   itemCode?: string;
   description?: string;
   productCount?: number;
-  createdBy?: string;
 }
 
 const PAGE_SIZE = 25;
@@ -57,7 +65,6 @@ export default function Page() {
             itemCode: item.itemCode ? String(item.itemCode) : undefined,
             description: item.description ? String(item.description) : undefined,
             productCount: typeof item.productCount === "number" ? item.productCount : 0,
-            createdBy: item.createdBy ? String(item.createdBy) : undefined,
           })),
         );
       })
@@ -68,7 +75,9 @@ export default function Page() {
   useEffect(load, [load]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`))
+    if (
+      !confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`)
+    )
       return;
     setDeletingId(id);
     try {
@@ -92,157 +101,152 @@ export default function Page() {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+    <Div className="mx-auto max-w-4xl px-4 py-6">
+      <Row justify="between" align="start" className="mb-6" gap="md">
+        <Div>
+          <Heading level={1} className="text-2xl font-bold">
             Sub-listing Categories
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          </Heading>
+          <Text variant="secondary" className="mt-1 text-sm">
             Group your listings of the same collectible across conditions, grades, or prices.
             Buyers browsing one listing will see all others in the group.
-          </p>
-        </div>
-        <Link
-          href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}
-          className="shrink-0 rounded-lg bg-[var(--appkit-color-primary,#6366f1)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-        >
-          + New Category
-        </Link>
-      </div>
+          </Text>
+        </Div>
+        <Button variant="primary" size="sm" asChild>
+          <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}>+ New Category</Link>
+        </Button>
+      </Row>
 
-      {/* Toolbar */}
-      <div className="mb-4 flex items-center gap-3">
-        <input
-          type="search"
-          placeholder="Search by name or item code…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
-        />
-        <select
+      <Row gap="sm" className="mb-4" align="center">
+        <Div className="flex-1">
+          <Input
+            placeholder="Search by name or item code…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search sub-listing categories"
+          />
+        </Div>
+        <Select
           value={sort}
-          onChange={(e) => { table.set("sort", e.target.value); }}
-          className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
+          onChange={(e) => table.set("sort", e.target.value)}
           aria-label="Sort categories"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-      </div>
+          options={SORT_OPTIONS}
+        />
+      </Row>
 
       {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <span className="text-sm text-zinc-400">Loading…</span>
-        </div>
+        <Div className="flex items-center justify-center py-16">
+          <Text variant="secondary" className="text-sm">
+            Loading…
+          </Text>
+        </Div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-16 text-center">
-          <span className="text-3xl mb-2">🏷️</span>
-          <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+        <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
+          <Text className="text-3xl mb-2">🏷️</Text>
+          <Text className="text-sm font-semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}
-          </p>
-          <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+          </Text>
+          <Text variant="secondary" className="mt-1 text-xs">
             {search
               ? "Try a different keyword"
               : "Create your first category to group listings of the same item."}
-          </p>
+          </Text>
           {!search && (
-            <Link
-              href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}
-              className="mt-4 rounded-lg bg-[var(--appkit-color-primary,#6366f1)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-            >
-              Create Category
-            </Link>
+            <Button variant="primary" size="sm" className="mt-4" asChild>
+              <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}>Create Category</Link>
+            </Button>
           )}
-        </div>
+        </Div>
       ) : (
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+        <Div className="divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
           {filtered.map((cat) => (
-            <div
+            <Row
               key={cat.id}
-              className="flex items-center gap-4 bg-white dark:bg-zinc-900/60 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+              align="center"
+              gap="md"
+              className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-surface-raised)] transition-colors"
             >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
-                    {cat.name}
-                  </span>
+              <Div className="flex-1 min-w-0">
+                <Row gap="xs" align="center" className="flex-wrap">
+                  <Text className="text-sm font-medium truncate">{cat.name}</Text>
                   {cat.itemCode && (
-                    <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+                    <Badge variant="secondary" className="text-[10px]">
                       {cat.itemCode}
-                    </span>
+                    </Badge>
                   )}
                   {typeof cat.productCount === "number" && (
-                    <span className="rounded-full bg-[var(--appkit-color-primary,#6366f1)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--appkit-color-primary,#6366f1)]">
+                    <Badge variant="primary" className="text-[10px]">
                       {cat.productCount} listing{cat.productCount !== 1 ? "s" : ""}
-                    </span>
+                    </Badge>
                   )}
-                </div>
+                </Row>
                 {cat.description && (
-                  <p className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500 truncate">
+                  <Text variant="secondary" className="mt-0.5 text-xs truncate">
                     {cat.description}
-                  </p>
+                  </Text>
                 )}
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <Link
-                  href={String(ROUTES.PUBLIC.SUBLISTING_CATEGORY(cat.id))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
-                >
-                  View
-                </Link>
-                <Link
-                  href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}
-                  className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors"
-                >
-                  Edit
-                </Link>
-                <button
-                  type="button"
+              </Div>
+
+              <Row gap="xs" align="center" className="shrink-0">
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={String(ROUTES.PUBLIC.SUBLISTING_CATEGORY(cat.id))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}>
+                    Edit
+                  </Link>
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  isLoading={deletingId === cat.id}
                   onClick={() => handleDelete(cat.id, cat.name)}
-                  disabled={deletingId === cat.id}
-                  className="rounded-lg border border-red-200 dark:border-red-900/40 px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                 >
-                  {deletingId === cat.id ? "…" : "Delete"}
-                </button>
-              </div>
-            </div>
+                  Delete
+                </Button>
+              </Row>
+            </Row>
           ))}
-        </div>
+        </Div>
       )}
 
-      <div className="mt-3 flex items-center justify-between">
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+      <Row justify="between" align="center" className="mt-3">
+        <Text variant="secondary" className="text-xs">
           {total} categor{total !== 1 ? "ies" : "y"} total
           {search && ` · ${filtered.length} matching "${search}"`}
-          {" · "}You can edit or delete categories you created. Contact support to modify others.
-        </p>
+          {" · "}You can edit or delete categories you created.
+        </Text>
+
         {totalPages > 1 && (
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
+          <Row gap="xs" align="center" className="shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => table.setPage(page - 1)}
               disabled={page <= 1}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 disabled:opacity-40 hover:border-zinc-400 transition-colors"
             >
               Previous
-            </button>
-            <span className="text-xs text-zinc-500">{page} / {totalPages}</span>
-            <button
-              type="button"
+            </Button>
+            <Text variant="secondary" className="text-xs px-1">
+              {page} / {totalPages}
+            </Text>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => table.setPage(page + 1)}
               disabled={page >= totalPages}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300 disabled:opacity-40 hover:border-zinc-400 transition-colors"
             >
               Next
-            </button>
-          </div>
+            </Button>
+          </Row>
         )}
-      </div>
-    </div>
+      </Row>
+    </Div>
   );
 }
