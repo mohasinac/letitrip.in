@@ -12,6 +12,7 @@
   - [Standard Admin Listing View Pattern](#shared--standard-admin-listing-view-pattern-)
   - [MediaUploadField](#shared--mediauploadfield-)
   - [PageLoader](#shared--pageloader-)
+c  - [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-)
 - **Card Components & List Views** *(all collections)*
   - [Card Inventory Table](#card-components--card-inventory-table)
   - [BaseListingCard (compound primitive)](#card-components--baselistingcard-compound-primitive)
@@ -842,6 +843,149 @@ Usage: loading.tsx files — all 15 under src/app/[locale]/ use <PageLoader />
 
 ---
 
+## Shared > Layout System — C2 Breakpoint Map ✅
+
+> Source of truth for how every page header and bottom bar is assembled.
+> Breakpoint governing everything: **`lg` = 1024 px**.
+> Components: `TitleBarLayout` · `NavbarLayout` · `BottomNavLayout` · `AppLayoutShell` · `DashboardLayoutClient`
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STICKY HEADER  (ref={headerRef} → writes --header-height to :root)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TB1 — h-14 — ALL widths (always rendered)
+┌──────────────────────────────────────────────────────────────────────┐
+│ LEFT        │  CENTRE (md+)   │  RIGHT                              │
+│ [SiteLogo]  │  [navSlot?]     │  [devSlot?][compare lg+][notif?]    │
+│             │                 │  [♡ lg+][🛒 lg+][👤 lg+]           │
+│             │                 │  [🔍 search][deals?][theme?][☰]     │
+└──────────────────────────────────────────────────────────────────────┘
+ • compare: hidden below lg (desktop-only feature)
+ • ♡ wishlist / 🛒 cart / 👤 profile: hidden below lg here → live in TB2 on mobile
+ • ☰ hamburger: always shown (unless hideSidebarToggle=true in dashboard contexts)
+
+TB2 — h-10 — MOBILE ONLY (flex lg:hidden) — same sticky wrapper as TB1
+┌──────────────────────────────────────────────────────────────────────┐
+│                                [♡ wishlist]  [🛒 cart]  [👤 profile]│
+└──────────────────────────────────────────────────────────────────────┘
+ • Only rendered when at least one of wishlist/cart/profile href is provided
+ • Mirrors what TB1 hides below lg — no duplication, two contexts
+
+MNB-1 — h-10 — DESKTOP ONLY (hidden lg:block)
+┌──────────────────────────────────────────────────────────────────────┐
+│ [← ▸] [Products][Auctions][Pre-Orders][Brands][Events][Blog][FAQs] [▸ →]│
+└──────────────────────────────────────────────────────────────────────┘
+ • Scroll arrows appear automatically on overflow (ResizeObserver)
+ • Items scrollBy ±240px per arrow click
+ • Active item: bottom border + primary colour; highlighted item: pill outline
+
+PROMO STRIP (optional, above TB1 when titleBarPromoStripText is set)
+┌──────────────────────────────────────────────────────────────────────┐
+│  primary→secondary gradient  "Today only: …"  (dismissable client)  │
+└──────────────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  FIXED BOTTOM  (lg:hidden — mobile only)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BN-1 — h-16 fixed bottom — MOBILE ONLY (lg:hidden) — z-40
+┌──────────────────────────────────────────────────────────────────────┐
+│ [🏠 Home]  [🛍 Shop]  [🔍 Search]  [🛒 Cart]  [👤 Profile/Login]  │
+└──────────────────────────────────────────────────────────────────────┘
+ Default 5-slot layout. When navItems prop is provided:
+┌──────────────────────────────────────────────────────────────────────┐
+│ [navItems[0]] [navItems[1]] [navItems[2]] [navItems[3]]  [☰ More]   │
+└──────────────────────────────────────────────────────────────────────┘
+ • "More" tap → public SidebarLayout OR dashboard drawer, depending on context
+ • Profile slot: avatar + role label when authenticated; generic icon when guest
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PUBLIC SIDEBAR  (SidebarLayout — slides in from RIGHT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Trigger: TB1 ☰ (handleTogglePublicSidebar) or BN-1 "More" (when no dashboard nav registered).
+Opening the public sidebar closes any open dashboard drawer (and vice-versa).
+CSS: fixed inset-y-0 right-0 · w-80 · translate-x-full → translate-x-0 when open
+
+                              ┌──────────────────────────────────────┐
+authenticated header →        │ [Avatar + role badge]  [✕]           │
+  OR  "Navigation"  [✕] →    │  displayName  ·  email               │
+                              │ ────────────────────────────────────│
+                              │  PROFILE  ▾  (CollapsibleNavGroup)   │
+                              │    My Profile · Orders · Wishlist    │
+                              │    Settings                          │
+                              │ ────────────────────────────────────│
+only when user.stats →        │  [24 Orders] [3 Reviews]  (stat grid)│
+                              │ ────────────────────────────────────│
+admin / seller only →         │  DASHBOARD  ▾                        │
+                              │    Admin Dashboard · Store Dashboard │
+                              │ ────────────────────────────────────│
+                              │  consumer sidebarSections[]          │
+                              │    Browse ▾  (defaultOpen=true)      │
+                              │      Home · Products · Auctions …    │
+                              │    Support ▾                         │
+                              │      About · Contact · Help          │
+                              │ ────────────────────────────────────│
+guest only →                  │  [Login]   (solid btn)               │
+                              │  [Register] (ghost)                  │
+                              │ ────────────────────────────────────│
+                              │  [🌙/☀ theme toggle] (if enabled)   │
+                              │  [Logout] (red, authenticated only)  │
+                              └──────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DASHBOARD SIDEBAR  (admin / store / user areas)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DashboardLayoutClient registers toggle via DashboardNavContext.
+TB1 ☰ and BN-1 "More" forward to this drawer when a dashboard nav IS registered.
+
+  Desktop (≥ md) → LEFT slide-over rail  (fixed left-0, translateX(-100% + 1.25rem) when closed)
+                   Always-visible 1.25rem primary-coloured toggle tab stays on screen.
+  Mobile  (< md) → BOTTOM sheet  (BottomSheet component, slides up from bottom)
+
+variant="admin"  →  AdminSidebar
+variant="store"  →  StoreSidebar
+variant="user"   →  UserSidebar
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PIXEL HEIGHTS  (actual measured values → --header-height)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Desktop (lg+):  TB1 56px  +  MNB-1 40px            =  ~96 px header
+  Mobile  (<lg):  TB1 56px  +  TB2 40px               =  ~96 px header
+                  (MNB-1 hidden; TB2 shown — same total height either way)
+  + Promo strip:  adds ~28px above TB1 when shown
+
+  --header-height is set by ResizeObserver on the sticky <header> wrapper.
+  All sticky offsets throughout the app: style={{ top: "var(--header-height, 0px)" }}
+  Main content: mb-28 (has bottom actions) or mb-16 (no actions) on mobile, md:mb-0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HAMBURGER ROUTING TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Context             TB1 ☰ click                  BN-1 "More" tap
+  ─────────────────── ──────────────────────────   ─────────────────────────────────────
+  Public pages        public SidebarLayout          public SidebarLayout
+                      (slides from RIGHT)           (slides from RIGHT)
+  Admin / Store /     DashboardLayoutClient drawer   DashboardLayoutClient drawer
+    User pages        desktop → LEFT rail            desktop → LEFT rail
+                      mobile  → BOTTOM sheet         mobile  → BOTTOM sheet
+  (opening one closes the other — mutual exclusion)
+```
+
+Key implementation files:
+- `TitleBarLayout.tsx` — TB1 + TB2 + promo strip
+- `TitleBar.tsx` — domain shell: injects cartCount/wishlistCount/dashboardNav
+- `NavbarLayout.tsx` — MNB-1 with scroll arrows
+- `BottomNavLayout.tsx` + `BottomNavbar.tsx` — BN-1
+- `AppLayoutShell.tsx` — assembles everything + public SidebarLayout
+- `DashboardLayoutClient.tsx` — dashboard drawer state + DashboardNavContext registration
+
+---
+
 # UX PATTERNS — FORM SHELLS
 
 > Every create/edit interaction across admin, store, and user areas uses one of these three shells. Never navigate to a new page for a form — use a shell to keep the user in context with a fast, overlay-based experience.
@@ -1212,44 +1356,66 @@ COMPONENT API (appkit/src/ui/components/InlineSelectCreate.tsx — extends H1):
 
 ## Admin > Layout Shell
 
+> C2 layout system — see [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-) for full strip breakdown.
+> Dashboard sidebar is managed by `DashboardLayoutClient variant="admin"` + `AdminSidebar`.
+> TB1 ☰ and BN-1 "More" forward to the AdminSidebar drawer via `DashboardNavContext`.
+
 ```
+DESKTOP (lg+) — persistent rail + sticky double header
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  LetiTrip Admin   [🔔 notif]  [👤 Admin Name ▾]                              │
-├──────────┬─────────────────────────────────────────────────────────────────  │
-│ SIDEBAR  │  MAIN CONTENT AREA                                                 │
-│          │                                                                    │
-│ ▸ Dashboard       Breadcrumb: Admin › Current Page                            │
-│ ▸ Products                                                                    │
-│ ▸ Auctions        [Page Header + Action Buttons]                              │
-│ ▸ Pre-Orders                                                                  │
-│ ▸ Brands          [Content]                                                   │
-│ ▸ Categories                                                                  │
-│ ─────────                                                                     │
-│ ▸ Orders                                                                      │
-│ ▸ Reviews                                                                     │
-│ ▸ Bids                                                                        │
-│ ─────────                                                                     │
-│ ▸ Stores                                                                      │
-│ ▸ Users                                                                       │
-│ ▸ Coupons                                                                     │
-│ ▸ Payouts                                                                     │
-│ ─────────                                                                     │
-│ ▸ Blog                                                                        │
-│ ▸ Events                                                                      │
-│ ▸ FAQs                                                                        │
-│ ▸ Carousel                                                                    │
-│ ▸ Sections                                                                    │
-│ ▸ Ads                                                                         │
-│ ▸ Navigation                                                                  │
-│ ─────────                                                                     │
-│ ▸ Analytics                                                                   │
-│ ▸ Payouts                                                                     │
-│ ▸ Media                                                                       │
-│ ─────────                                                                     │
-│ ▸ Site Settings                                                                │
-│ ▸ Feature Flags                                                                │
-│ ▸ Seed & Docs                                                                  │
-└──────────┴─────────────────────────────────────────────────────────────────  ┘
+│ TB1  h-14  [LetItRip logo]               [notif🔔] [👤 Admin lg+] [🔍] [☰] │
+│ MNB-1 h-10 [Products][Auctions][Pre-Orders][Brands][Events][Blog][FAQs]      │
+├──────────┬───────────────────────────────────────────────────────────────────┤
+│ AdminSidebar (persistent ≥md, overlay <md)                                   │
+│          │  MAIN CONTENT AREA                                                 │
+│ [Logo]   │                                                                    │
+│ ──────── │  Breadcrumb: Admin › Current Page                                 │
+│ Catalogue│                                                                    │
+│  ▸ Products       [Page Heading]    [+ New Product] [Export]                 │
+│  ▸ Auctions                                                                   │
+│  ▸ Pre-Orders     [Content — list / editor / detail]                         │
+│  ▸ Brands                                                                     │
+│  ▸ Categories                                                                 │
+│ ──────── │                                                                    │
+│ Commerce │                                                                    │
+│  ▸ Orders                                                                     │
+│  ▸ Reviews                                                                    │
+│  ▸ Bids                                                                       │
+│ ──────── │                                                                    │
+│ Sellers  │                                                                    │
+│  ▸ Stores                                                                     │
+│  ▸ Users                                                                      │
+│  ▸ Coupons                                                                    │
+│  ▸ Payouts                                                                    │
+│ ──────── │                                                                    │
+│ Content  │                                                                    │
+│  ▸ Blog                                                                       │
+│  ▸ Events                                                                     │
+│  ▸ FAQs                                                                       │
+│  ▸ Carousel                                                                   │
+│  ▸ Sections                                                                   │
+│  ▸ Navigation                                                                 │
+│ ──────── │                                                                    │
+│ System   │                                                                    │
+│  ▸ Analytics                                                                  │
+│  ▸ Media                                                                      │
+│  ▸ Site Settings                                                              │
+│  ▸ Feature Flags                                                              │
+│  ▸ Seed & Docs                                                                │
+└──────────┴───────────────────────────────────────────────────────────────────┘
+
+MOBILE (<lg) — BottomSheet + double-row header + fixed bottom nav
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TB1  h-14  [logo]                         [notif🔔][🔍][☰ → BottomSheet]   │
+│ TB2  h-10                                 [♡ wishlist][🛒 cart][👤 profile] │
+│ (MNB-1 hidden)                                                               │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  MAIN CONTENT                                                                 │
+│  (AdminSidebar BottomSheet slides up from BOTTOM when ☰ or BN-1 "More")     │
+└──────────────────────────────────────────────────────────────────────────────┘
+│ BN-1  h-16  fixed bottom                                                     │
+│ [🏠 Home]  [🛍 Shop]  [🔍 Search]  [🛒 Cart]  [☰ More → BottomSheet]      │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -3316,29 +3482,56 @@ SideDrawer (read-only display + actions):
 
 ## Store > Layout Shell
 
+> C2 layout system — see [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-) for full strip breakdown.
+> Dashboard sidebar is managed by `DashboardLayoutClient variant="store"` + `StoreSidebar`.
+> TB1 ☰ and BN-1 "More" forward to the StoreSidebar drawer via `DashboardNavContext`.
+
 ```
+DESKTOP (lg+) — persistent rail + sticky double header
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  LetiTrip  [My Store: CardGame Hub ▾]  [🔔]  [👤 Seller Name ▾]             │
-├──────────┬───────────────────────────────────────────────────────────────────│
-│ SIDEBAR  │  MAIN CONTENT AREA                                                 │
-│          │                                                                    │
-│ ▸ Dashboard                                                                   │
-│ ▸ Products                                                                    │
-│ ▸ Auctions                                                                    │
-│ ▸ Pre-Orders                                                                  │
-│ ──────────                                                                    │
-│ ▸ Orders                                                                      │
-│ ▸ Coupons                                                                     │
-│ ▸ Offers                                                                      │
-│ ──────────                                                                    │
-│ ▸ Payouts                                                                     │
-│ ▸ Analytics                                                                   │
-│ ──────────                                                                    │
-│ ▸ Storefront                                                                  │
-│ ▸ Shipping                                                                    │
-│ ▸ Payout Settings                                                             │
-│ ▸ Addresses                                                                   │
+│ TB1  h-14  [LetItRip logo]               [notif🔔] [👤 Seller lg+][🔍][☰]  │
+│ MNB-1 h-10 [Products][Auctions][Pre-Orders][Brands][Events][Blog][FAQs]      │
+├──────────┬───────────────────────────────────────────────────────────────────┤
+│StoreSidebar (persistent ≥md, overlay <md)                                    │
+│          │  MAIN CONTENT AREA                                                 │
+│ [Logo]   │                                                                    │
+│ Store:   │  Breadcrumb: Store › Current Page                                 │
+│ CardGame │                                                                    │
+│ ──────── │  [Page Heading]    [Action Buttons]                               │
+│ Listings │                                                                    │
+│  ▸ Dashboard      [Content]                                                  │
+│  ▸ Products                                                                   │
+│  ▸ Auctions                                                                   │
+│  ▸ Pre-Orders                                                                 │
+│ ──────── │                                                                    │
+│ Commerce │                                                                    │
+│  ▸ Orders                                                                     │
+│  ▸ Coupons                                                                    │
+│  ▸ Offers                                                                     │
+│ ──────── │                                                                    │
+│ Finance  │                                                                    │
+│  ▸ Payouts                                                                    │
+│  ▸ Analytics                                                                  │
+│ ──────── │                                                                    │
+│ Settings │                                                                    │
+│  ▸ Storefront                                                                 │
+│  ▸ Shipping                                                                   │
+│  ▸ Payout Settings                                                            │
+│  ▸ Addresses                                                                  │
 └──────────┴───────────────────────────────────────────────────────────────────┘
+
+MOBILE (<lg) — BottomSheet + double-row header + fixed bottom nav
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TB1  h-14  [logo]                         [notif🔔][🔍][☰ → BottomSheet]   │
+│ TB2  h-10                                 [♡ wishlist][🛒 cart][👤 profile] │
+│ (MNB-1 hidden)                                                               │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  MAIN CONTENT                                                                 │
+│  (StoreSidebar BottomSheet slides up from BOTTOM when ☰ or BN-1 "More")     │
+└──────────────────────────────────────────────────────────────────────────────┘
+│ BN-1  h-16  fixed bottom                                                     │
+│ [🏠 Home]  [🛍 Shop]  [🔍 Search]  [🛒 Cart]  [☰ More → BottomSheet]      │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -3896,27 +4089,49 @@ Firebase trigger: onOrderCreate (orders/{orderId} onCreate)
 
 ## User > Layout Shell
 
+> C2 layout system — see [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-) for full strip breakdown.
+> Dashboard sidebar is managed by `DashboardLayoutClient variant="user"` + `UserSidebar`.
+> TB1 ☰ and BN-1 "More" forward to the UserSidebar drawer via `DashboardNavContext`.
+
 ```
+DESKTOP (lg+) — persistent rail + sticky double header
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  LetiTrip  [🔍]  [🛒 Cart]  [♡ Wishlist]  [🔔]  [👤 Ravi ▾]                │
-├──────────┬───────────────────────────────────────────────────────────────────│
-│ SIDEBAR  │  MAIN CONTENT AREA                                                 │
-│          │                                                                    │
-│ 👤 Ravi Kumar                                                                 │
-│ buyer · ★4.9                                                                  │
-│ ──────────                                                                    │
-│ ▸ My Orders                                                                   │
-│ ▸ Wishlist                                                                    │
-│ ▸ Addresses                                                                   │
-│ ▸ Offers                                                                      │
-│ ▸ Notifications                                                               │
-│ ▸ Messages                                                                    │
-│ ──────────                                                                    │
-│ ▸ Profile                                                                     │
-│ ▸ Settings                                                                    │
-│ ──────────                                                                    │
-│ ▸ Become a Seller                                                             │
+│ TB1  h-14  [LetItRip logo]   [notif🔔][♡ lg+][🛒 cart lg+][👤 Ravi lg+][🔍]│
+│ MNB-1 h-10 [Products][Auctions][Pre-Orders][Brands][Events][Blog][FAQs]      │
+├──────────┬───────────────────────────────────────────────────────────────────┤
+│UserSidebar (persistent ≥md, overlay <md)                                     │
+│          │  MAIN CONTENT AREA                                                 │
+│ 👤 Ravi  │                                                                    │
+│ Kumar    │  Breadcrumb: Account › Current Page                               │
+│ buyer    │                                                                    │
+│ ──────── │  [Page Heading]                                                   │
+│ Account  │                                                                    │
+│  ▸ My Orders      [Content]                                                  │
+│  ▸ Wishlist                                                                   │
+│  ▸ History                                                                    │
+│  ▸ Addresses                                                                  │
+│  ▸ Notifications                                                              │
+│  ▸ Messages                                                                   │
+│ ──────── │                                                                    │
+│ Settings │                                                                    │
+│  ▸ Profile                                                                    │
+│  ▸ Settings                                                                   │
+│ ──────── │                                                                    │
+│  ▸ Become a Seller                                                            │
 └──────────┴───────────────────────────────────────────────────────────────────┘
+
+MOBILE (<lg) — BottomSheet + double-row header + fixed bottom nav
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TB1  h-14  [logo]                             [notif🔔][🔍][☰ → BottomSheet]│
+│ TB2  h-10                                     [♡ wishlist][🛒 cart][👤]     │
+│ (MNB-1 hidden)                                                               │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  MAIN CONTENT                                                                 │
+│  (UserSidebar BottomSheet slides up from BOTTOM when ☰ or BN-1 "More")      │
+└──────────────────────────────────────────────────────────────────────────────┘
+│ BN-1  h-16  fixed bottom                                                     │
+│ [🏠 Home]  [🛍 Shop]  [🔍 Search]  [🛒 Cart]  [☰ More → BottomSheet]      │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -4121,39 +4336,34 @@ Delete:      two-step — confirmDeleteId state → confirm banner → useDelete
 
 ## Public > Layout Shell + Footer ✅
 
+> C2 layout system — see [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-) for full strip breakdown.
+> Component: `AppLayoutShell` → `TitleBar` → `MainNavbar` → `BottomNavbar` + `FooterLayout`
+> No dashboard sidebar on public pages — public sidebar (`SidebarLayout`) is used instead.
+
 ```
-HEADER (sticky, --header-height written to :root)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DESKTOP (lg+)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STICKY HEADER (ref={headerRef} → --header-height ≈ 96px)
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  [LetItRip logo]  [🔍 Search]  ···nav items···  [♡ Wishlist]  [🛒 Cart]     │
-│                   [Products][Auctions][Pre-Orders][Categories][Stores][Blog] │
+│ TB1  h-14                                                                    │
+│  [LetItRip logo]          [compare][notif?][♡ wishlist][🛒 cart][👤][🔍][☰]│
+├──────────────────────────────────────────────────────────────────────────────┤
+│ MNB-1  h-10  (hidden below lg)                                               │
+│  [← ▸] [Products][Auctions][Pre-Orders][Brands][Events][Blog][FAQs] [▸ →]  │
 └──────────────────────────────────────────────────────────────────────────────┘
 
-MOBILE SIDEBAR (slide-in from left, sidebarTitle="Menu")
-┌──────────────────────────────────┐
-│ Menu                         [✕] │
-│ ─────────────────────────────── │
-│ ▸ Browse (defaultOpen)           │
-│   [🏠] Home                      │
-│   [🛍] Products                  │
-│   [🔨] Auctions                  │
-│   [📅] Pre-Orders                │
-│   [🏪] Stores  …                 │
-│ ─────────────────────────────── │
-│ ▸ Support                        │
-│   About  · Contact  · Help       │
-│   (+ Seed & Docs if seedPanel on)│
-│ ─────────────────────────────── │
-│ [Login] (solid)                  │
-│ [Register] (outline)             │
-│ ─────────────────────────────── │
-│ [🌙 Theme toggle]  [🌐 Locale]  │
-└──────────────────────────────────┘
-
-FOOTER (FooterLayout — src: appkit/src/features/layout/FooterLayout.tsx)
+MAIN CONTENT
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│  TRUST BAR (showTrustBar=true, 5 items, collapses to 2-col on mobile)        │
-│  🚚 Free Shipping    ↩️ Easy Returns    🔒 Secure Payments    📞 24/7 Support  │
-│  ✓ 100% Authentic                                                            │
+│  container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-6               │
+│  {children}                                                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+FOOTER
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  TRUST BAR (5 items, 5-col grid)                                             │
+│  🚚 Free Shipping  ↩️ Easy Returns  🔒 Secure Payments  📞 24/7  ✓ Authentic │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │  BRAND COL (lg:col-span-2)      │  LINK GROUPS (lg:col-span-3)              │
 │  LetItRip (h5)                  │  Shop    Support   Sellers  Learn  Legal  │
@@ -4162,22 +4372,81 @@ FOOTER (FooterLayout — src: appkit/src/features/layout/FooterLayout.tsx)
 │                                 │  Auctions  FAQs      Guide   Pre-Ord  PP  │
 │  [newsletter form slot]         │  Pre-Ord   Contact   Fees    Offers   CP  │
 │  "Get deals & drops…"           │  Promotions Track    Payouts Blog     RP  │
-│  [email input] [Subscribe]      │  Stores    About     Store   Events   SP  │
+│  [email input]  [Subscribe]     │  Stores    About     Store   Events   SP  │
 │                                 │  Categories          Dash                 │
-│                                 │  (mobile: each group = accordion toggle)  │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  BOTTOM BAR                                                                  │
 │  © 2026 LetItRip. All rights reserved.                                       │
-│  [Sitemap] · [Robots.txt] · [Security]    Made with ♥ for collectors        │
+│  [Sitemap] · [Robots.txt] · [Security]       Made with ♥ for collectors     │
 └──────────────────────────────────────────────────────────────────────────────┘
 
-Key decisions:
-- Trust bar items + social links + bottom utility links → src/constants/footer.tsx
-- Brand strings (name, description, social URLs) → src/constants/brand.ts
-- Newsletter slot → FooterNewsletterSlot component (calls POST /api/newsletter/subscribe)
-- Bottom links: /sitemap.xml · /robots.txt · /security (SEO utility, crawlable)
-- Accordion toggle uses appkit Button variant="ghost" (not raw <button>)
-- --header-height CSS var used for sticky offset throughout the app
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MOBILE (<lg)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STICKY HEADER (ref={headerRef} → --header-height ≈ 96px)
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TB1  h-14                                                                    │
+│  [LetItRip logo]                              [notif?]  [🔍]  [☰ sidebar]  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ TB2  h-10  (flex lg:hidden)                                                  │
+│                                          [♡ wishlist]  [🛒 cart]  [👤]     │
+│ (MNB-1 hidden)                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+MAIN CONTENT  (mb-16 to clear BN-1; mb-28 when BottomActions bar is shown)
+
+FIXED BOTTOM
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ BN-1  h-16  (lg:hidden)                                                      │
+│  [🏠 Home]  [🛍 Shop]  [🔍 Search]  [🛒 Cart]  [☰ More → public sidebar]  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+FOOTER  (same as desktop, trust bar collapses to 2-col, link groups = accordion)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PUBLIC SIDEBAR  (SidebarLayout — slides in from RIGHT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Opens via TB1 ☰ or BN-1 "More". Authenticated header shows avatar + role badge.
+CSS: fixed inset-y-0 right-0 · w-80 · translate-x-full → translate-x-0 when open
+
+┌──────────────────────────────────────┐  ← authenticated
+│ [👤 avatar  role▼]  Ravi Kumar  [✕] │     guest: "Navigation" title + [✕]
+│  ravi@example.com                    │
+│ ────────────────────────────────── │
+│  PROFILE  ▾                          │
+│    My Profile · Orders · Wishlist    │
+│    Settings                          │
+│  [24 Orders] [3 Reviews] (stat grid) │  ← user.stats only
+│  DASHBOARD  ▾  (admin / seller only) │
+│    Admin Dashboard · Store Dashboard │
+│ ────────────────────────────────── │
+│  Browse  ▾  (defaultOpen=true)       │
+│    🏠 Home · 🛍 Products             │
+│    🔨 Auctions · 📅 Pre-Orders       │
+│    🏪 Stores  · 🏷 Categories …      │
+│  Support  ▾                          │
+│    About · Contact · Help            │
+│    (+ Seed & Docs when seedPanel on) │
+│ ────────────────────────────────── │
+│  [Login] (primary solid)             │  ← guest only
+│  [Register] (outline)                │
+│ ────────────────────────────────── │
+│  [🌙/☀ theme toggle] (if enabled)   │
+│  [🌐 locale switcher] (if provided)  │
+│  [Logout] (red — authenticated only) │
+└──────────────────────────────────────┘
+
+Key implementation notes:
+- Trust bar / social links / footer bottom links → src/constants/footer.tsx
+- Brand strings (name, tagline, social URLs) → src/constants/brand.ts
+- Newsletter slot → FooterNewsletterSlot (POST /api/newsletter/subscribe)
+- Bottom links: /sitemap.xml · /robots.txt · /security
+- Footer accordion (mobile) uses appkit Button variant="ghost" — not raw <button>
+- --header-height set by ResizeObserver on sticky <header> wrapper; all sticky
+  offsets use style={{ top: "var(--header-height, 0px)" }}
+- BackToTop button is rendered inside AppLayoutShell, floats bottom-right
+- UnsavedChangesModal is also mounted globally inside AppLayoutShell
 ```
 
 ---

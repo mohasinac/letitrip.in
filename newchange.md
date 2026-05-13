@@ -41,17 +41,23 @@
 
 ---
 
-### S-SBUNI-RULES (phases 1–3) — checkout rule registry + schema + consumer rewire (2026-05-13)
+### S-SBUNI-RULES (all 6 phases) — full checkout rule registry end-to-end (2026-05-13)
 
-First 3 of 7 planned phases for S-SBUNI-RULES. `npm run check` exits 0. Phases 4–6 (SHIPPING / CART-UI / REFUNDS) deferred to next session; they're additive and don't block this commit.
+All 6 phases complete. `npm run check` exits 0 (0 errors, 495 warnings). Required follow-ups: `POST /demo/seed` + `firebase deploy --only firestore:indexes`.
 
-**RULES (phase 1)** — 14 new files: `appkit/src/_internal/shared/checkout/rules/{types,_defaults,_limits,_registry,index,standard.rule,auction.rule,preorder.rule,prize-draw.rule,offer.rule,bundle.rule,classified.rule,digital-code.rule,live.rule}.ts`. `CHECKOUT_RULES: Record<ListingType, ListingCheckoutRule>` keyed on all 7 listing types. `CATEGORY_CHECKOUT_RULES` for bundle. Registry exports: `getListingRule`, `runSyncPreflight`, `getSplitKey`, `pickOrderType`, etc. Limits: `CART_MAX_ITEMS=50`, `CHECKOUT_MAX_ORDERS_PER_TX=20`, `PRIZE_DRAW_MAX_REVEALS_PER_ORDER=3`. Prize-draw `splitMultipleOrders` chunks qty into ≤3 batches. Offer rule keyed off `item.isOffer` flag (not listingType). Bundle + classified + live stubs.
+**RULES (phase 1)** — 14 new files: `appkit/src/_internal/shared/checkout/rules/{types,_defaults,_limits,_registry,index,standard.rule,auction.rule,preorder.rule,prize-draw.rule,offer.rule,bundle.rule,classified.rule,digital-code.rule,live.rule}.ts`. `CHECKOUT_RULES: Record<ListingType, ListingCheckoutRule>`. Registry exports: `getListingRule`, `runSyncPreflight`, `getSplitKey`, `pickOrderType`, etc. Limits: `CART_MAX_ITEMS=50`, `CHECKOUT_MAX_ORDERS_PER_TX=20`, `PRIZE_DRAW_MAX_REVEALS_PER_ORDER=3`.
 
-**SCHEMA (phase 2)** — `OrderDocument`: `paymentBatchId?`, `refunds?: OrderRefundEvent[]`, `contestable?: boolean`, `shippingProofUrl/MimeType/UploadedAt/UploadedBy?`. `CartItemDocument`: `chosenShippingProviderId?`, `chosenShippingFeeInPaise?`. `StoreDocument`: `shippingConfig?: StoreShippingConfig` (providers array with id/name/type/fee/ETA/isActive). `ProductDocument`: `shipping?: { allowedProviderIds?, overrides? }`. Media: `contextGuards.ts` handles `image-or-pdf` guard for `shipping-proof` / `refund-proof`; `id-generators.ts` adds filename slug patterns for both.
+**SCHEMA (phase 2)** — `OrderDocument`: `paymentBatchId?`, `refunds?: OrderRefundEvent[]`, `contestable?: boolean`, `shippingProofUrl/MimeType/UploadedAt/UploadedBy?`. `CartItemDocument`: `chosenShippingProviderId?`, `chosenShippingFeeInPaise?`. `StoreDocument`: `shippingConfig?: StoreShippingConfig`. Media contexts: `shipping-proof` + `refund-proof`.
 
-**CONSUMERS (phase 3)** — `order-splitter.ts` fully rule-registry-dispatched. Both checkout action paths (COD + Razorpay) rewired: `runSyncPreflight` replaces `enforcePrizePoolCap`; `decorateOrderItem` / `decorateOrderDoc` / `stockDecrementExtras` replace all inline `isPrizeDrawLine` branches. `/api/cart/route.ts` uses `getListingRule(lt).cartEligible` instead of hand-rolled per-type check. `addBundleToCart` deleted (appkit + consumer + index.ts export + bundles page prop). `prize-bundle-gates.ts` stripped of `enforcePrizePoolCap`. Pre-existing `NavbarLayout.tsx` `Ul ref` type error fixed.
+**CONSUMERS (phase 3)** — `order-splitter.ts` fully rule-registry-dispatched. Both checkout action paths (COD + Razorpay) rewired. `/api/cart/route.ts` uses `rule.cartEligible`. `addBundleToCart` deleted. `prize-bundle-gates.ts` stripped.
 
-**Deferred** — SHIPPING (ShippingPicker UI + cart integration + PATCH route + admin config), CART-UI (tabbed cart + bundle direct-checkout CTA), REFUNDS (full refund API + buyer/seller UI), SMOKE (seed + index updates for new schema fields).
+**SHIPPING (phase 4)** — New `ShippingPicker` client component (resolves flat/percent/freeAbove fee from `StoreShippingConfig.providers`). `cartRepository.updateItemShipping(userId, itemId, providerId, feeInPaise)`. `updateCartItemShipping()` domain action. `CartView` gains `renderGroups` slot + `CartOrderGroup` interface. Two stores seeded with `shippingConfig`: letitrip-official (standard + express shiprocket) + pokemon-palace (bubble-mailer + double-boxed self-courier + store-pickup).
+
+**CART-UI (phase 5)** — `BundleDetailView` CTA swapped: `BundleAddToCartCta` DELETED, replaced by `BundleBuyNowCta` (`onBuyNow` callback, direct-checkout semantics, `BUNDLE_COPY.detail.ctaBuyNow`). `OrderSiblingPayments` component renders `paymentBatchId`-linked sibling orders on order-detail page.
+
+**REFUNDS (phase 6)** — `ordersRepository.postRefundEvent(orderId, event, becomeRefunded?)` appends to `refunds[]`, sets `contestable: false`. `ordersRepository.findByPaymentBatchId(batchId)` queries `paymentBatchId` index. `processRefundAction` server action: discriminated union razorpay|manual, `confirmIrrevocable: true` guard, `isNonRefundable` guard, `amountInPaise ≤ totalPrice` guard. `RefundHistoryTable` (amber non-contestable banner + event rows with type/date/reason/txn-id). `RefundRequestView` (buyer-facing, 3 ack checkboxes, reason textarea). `POST /api/orders/[id]/refund` + `POST /api/store/orders/[id]/shipping-proof` routes.
+
+**SMOKE (phase 7)** — Orders-08/27 seeded with `contestable: false` + `refunds[]`. Orders-03/05 share `paymentBatchId: "batch-razorpay-demo-001"`. Two stores get `shippingConfig`. Firestore index `orders(paymentBatchId ASC, createdAt ASC)` added + firebase-merge run. `processRefundAction` exported from `@mohasinac/appkit/server` (via `appkit/src/server.ts`).
 
 ---
 

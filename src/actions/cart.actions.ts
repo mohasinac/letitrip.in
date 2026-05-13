@@ -21,6 +21,7 @@ import {
   clearCart,
   mergeGuestCart,
   getCart,
+  updateCartItemShipping,
 } from "@mohasinac/appkit";
 import type { CartDocument } from "@mohasinac/appkit";
 
@@ -152,6 +153,17 @@ export async function mergeGuestCartAction(
     );
 
   return mergeGuestCart(user.uid, parsed.data.items);
+}
+
+export async function updateCartItemShippingAction(
+  itemId: string,
+  providerId: string,
+  feeInPaise: number,
+): Promise<CartDocument> {
+  const user = await requireAuthUser();
+  const rl = await rateLimitByIdentifier(`cart:shipping:${user.uid}`, RateLimitPresets.API);
+  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  return updateCartItemShipping(user.uid, itemId, providerId, feeInPaise) as Promise<CartDocument>;
 }
 
 // --- Read Actions -------------------------------------------------------------
