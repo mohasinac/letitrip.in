@@ -128,7 +128,23 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-auth-nav: Login/Register cross-links + TitleBar auth buttons + avatar fix + role badge + employee role + seed users (2026-05-14)
+### ✅ LAST COMPLETED — S10 + Lambda-tracing: BAN6–BAN9 + SCAM2/4/6/7/8/9 partial + appkit v2.6.9 Vercel tracing fixes + quality pass (2026-05-14)
+
+- **Vercel Lambda tracing** — `appkit/src/configs/next.ts`: added `@grpc/**`, `protobufjs/**`, `@protobufjs/**`, `object-hash/**`, `proto3-json-serializer/**`, `long/**`, `node-fetch/**`, `abort-controller/**`, `retry-request/**`, `duplexify/**`, `uuid/**`, `lodash.camelcase/**` to `defaultOutputFileTracingIncludes["/api/**"]`. Fixes `MODULE_NOT_FOUND: object-hash` + `@protobufjs/*` sub-package errors in Vercel Lambda (google-gax transitive deps). appkit v2.6.8 → v2.6.9, deployed to prod.
+- **BAN6** — `AdminUserEditorView` Moderation section: hard-ban (impose + lift + reason), soft-ban list (action, reason, expiry, lift button) + add-soft-ban collapsible form. `AdminUsersView` maps `isHardBanned`/`softBanCount` to status column.
+- **BAN7** — `AdminSupportTicketsView` + `AdminSupportTicketDetailView` (SideDrawer). Filter chips: status/priority. Message thread + reply + status/priority selects. `/admin/support-tickets` page + layout + nav item.
+- **BAN8** — `UserSupportView` (new ticket form + list + detail SideDrawer). `/user/support` page + nav item.
+- **BAN9** — Firebase Functions: `onSupportTicketCreate` (confirmation notification), `onSupportTicketUpdate` (status-change notification), `onUserBanChange` (banHistory subcollection audit).
+- **SCAM2 partial** — `AdminScammersView` list page + GET/PATCH API routes (`/api/admin/scammers` + `[id]`). `admin/scammers/layout.tsx` with `admin:scammers:read` gate. Trust & Safety group in `ADMIN_NAV_GROUPS` with `requiredPermission`. `AdminScammerEditorView` deferred.
+- **SCAM4** — Added `"scam_awareness"` to `FAQCategory`; `FAQ_CATEGORY_LABELS`; 12 seed FAQs; `/scams/faqs` RSC page with JSON-LD.
+- **SCAM6** — `ScamAwarenessModal` (non-dismissible, 7 category cards, checkbox ack). `scamAwarenessAcknowledgedAt` on `SessionUser` + profile GET/PATCH. Wired in `LayoutShellClient` (`THIRTY_DAYS_MS` module-level constant, no `as any`).
+- **SCAM7** — Scam pages in sitemap (`/scams`, `/scams/types`, `/scams/faqs`, `/scams/report`, dynamic verified profiles). JSON-LD on `/scams/[id]` + `/scams/types`.
+- **SCAM8** — Firebase Functions: `onScamReportCreate` + `onScamReportUpdate`. Bindings in `functions/src/index.ts`.
+- **SCAM9 partial** — `admin/scammers/layout.tsx` + nav `requiredPermission` annotations in Trust & Safety + Help groups. Routes wired.
+- **Quality pass** — removed `as any` in profile route (`scamAwarenessAcknowledgedAt` now typed on `SessionUser`); auth page render-slot links via `ROUTES.*`; `registerHref` prop on `AppLayoutShell`.
+- `npm run check` exits 0. v2.6.9 deployed to Vercel prod.
+
+### ✅ Previous — S-auth-nav: Login/Register cross-links + TitleBar auth buttons + avatar fix + role badge + employee role + seed users (2026-05-14)
 
 - **LoginPageClient** — added `renderCreateAccountLink` (→ `/auth/register`) + `renderForgotPasswordLink` to `<LoginForm>`.
 - **RegisterPageClient** — added `renderLoginLink` (→ `/auth/login`) + `renderTermsLink` to `<RegisterForm>`.
@@ -139,17 +155,7 @@ After deploy: smoke-test the production URL for all touched routes.
 - **Seed users** — added `avatarMetadata` (url+position+zoom) to 3 existing users (Aryan Kapoor, Priya Patel, Siddharth Rao); added `user-deepak-verma` (moderator) + `user-simran-kaur` (employee) with avatarMetadata.
 - `appkit` rebuilt to v2.6.7 dist. `npm run check` exits 0.
 
-### ✅ Previous — S-prod-fix: Firebase Lambda tracing + media watermark proxy + store encryption + seed auth gate (2026-05-14)
-
-All prod 500s fixed. `npm run check` exits 0. **Deploy pending** — requires `vercel --prod` + `firebase deploy --only firestore:indexes` + `/demo/seed` Load All.
-
-- **Fix 0** — `appkit/src/configs/next.ts`: replaced piecemeal `build/src/**` paths with broad `/**` org-level globs (`firebase-admin/**`, `@google-cloud/**`, `google-auth-library/**`, `google-gax/**`, `gtoken/**`, `jws/**`, `gaxios/**`). Fixed merge strategy (array-union per route key, not object-spread that replaced defaults). Default `remotePatterns` restricted to Firebase Storage + localhost; consumers extend. `next.config.js` thinned to zero overrides.
-- **Fix 3** — Seed panel auth gate: `RoleGuard` on `demo/layout.tsx`, admin role check on `seed/route.ts` GET+POST, `isAdminUser(user)` in `LayoutShellClient.tsx`.
-- **Fix 4** — External media watermark: `MEDIA_ENDPOINTS.EXT` + `EXT_URL` in appkit `api-endpoints.ts`. New `appkit/src/utils/media-url.ts` `resolveMediaUrl()` normalises Firebase Storage → `/media/<path>`, external URLs → `/api/media/ext?url=`. `getMediaUrl()` updated. Shared `src/app/api/media/_watermark.ts` extracts all watermark helpers. New `src/app/api/media/ext/route.ts` with SSRF guard (loopback + RFC-1918 + GCP metadata rejected), 8s AbortSignal, 10 MB body cap, watermark applied.
-- **Fix 5** — `STORE_SECRET_FIELDS` constant in `pii-schemas.ts`. `StoreRepository` gains `encryptSecrets`/`decryptSecrets` helpers + `mapDoc`/`update`/`create`/`changeSlug` overrides for `whatsappConfig.accessToken` (AES-256-GCM via `encryptSecret`/`decryptSecret`).
-- **Pre-existing TS errors fixed** — `support.repository.ts` (`.count()` → `.select().get()`, implicit-any reduce, `prepareForFirestore(message as unknown as Record<string, unknown>)`)  · `checkSoftBan.ts` + `server.ts` (`BannedAction` sourced from `permissions/constants` not re-exported `schemas/firestore`) · `hard-ban/route.ts` (`getProviders` → `getAdminAuth` + `findAll(obj)` → `findActiveByUser` / `findByOwnerId` / `findByStore` / `findBy`) · `unban/route.ts` (same `getProviders` fix) · `LayoutShellClient.tsx` (cast `user` for `isAdminUser`) · `support/tickets/route.ts` (`order.buyerId` → `order.userId`) · appkit dist rebuilt (v2.6.5, still file:./appkit).
-
-### 🔄 CURRENT — Deploy: `vercel --prod` + `/demo/seed` reload (auth-nav session landed)
+### 🔄 CURRENT — Post-deploy: verify Firebase recovery + seed 26 collections + smoke-prod. SCAM9 full wiring (trust_and_safety/customer_support PERMISSION_GROUPS) deferred to S9 (RBAC cohort).
 
 ### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
 
