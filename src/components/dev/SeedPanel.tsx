@@ -55,6 +55,7 @@ const SYSTEM_COLLECTIONS: SeedCollectionName[] = [
 
 const MODERATION_COLLECTIONS: SeedCollectionName[] = [
   "scammerProfiles",
+  "supportTickets",
 ];
 
 const ALL_COLLECTIONS: SeedCollectionName[] = [
@@ -1111,6 +1112,43 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "evidence",      type: "array",     note: "/media/ proxy URLs only" },
       { name: "createdAt",     type: "timestamp", sortable: true, indexed: true },
       { name: "updatedAt",     type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
+  supportTickets: {
+    label: "Support Tickets",
+    icon: "🎫",
+    group: "moderation",
+    target: 10,
+    description: "User support tickets across all 8 categories (order_issue, billing_payment, account, listing_dispute, scam_report, refund_request, auction_dispute, general). Covers all 5 statuses. Enforces per-user active ticket limits (max 2 general + max 1 per eligible order). BAN9 Functions: onSupportTicketCreate notifies reporter + employees; onSupportTicketUpdate notifies on status change.",
+    slugPattern: "ticket-{userId}-{category}-{seq}  (e.g. ticket-rahul-order-001)",
+    seededItems: [
+      "ticket-rahul-order-001 — order_issue, in_progress, high, assigned to Simran Kaur",
+      "ticket-priya-refund-001 — refund_request, open, normal",
+      "ticket-arjun-account-001 — account, waiting_on_user, normal",
+      "ticket-meera-dispute-001 — listing_dispute, resolved, normal",
+      "ticket-rahul-auction-001 — auction_dispute, closed, low",
+      "ticket-kavya-general-001 — general, open, low",
+    ],
+    pendingItems: [],
+    uiPath: "/admin/support-tickets",
+    fields: [
+      { name: "userId",           type: "ref",       indexed: true },
+      { name: "userEmail",        type: "string",    note: "denormalized for admin display" },
+      { name: "userDisplayName",  type: "string",    note: "denormalized for admin display" },
+      { name: "category",         type: "enum",      filterable: true, indexed: true },
+      { name: "subject",          type: "string",    searchable: true },
+      { name: "description",      type: "string" },
+      { name: "orderId",          type: "ref",       note: "required when category=order_issue" },
+      { name: "status",           type: "enum",      filterable: true, indexed: true },
+      { name: "priority",         type: "enum",      filterable: true, indexed: true },
+      { name: "assignedTo",       type: "ref",       indexed: true },
+      { name: "assignedToName",   type: "string",    note: "denormalized" },
+      { name: "internalNotes",    type: "string",    note: "admin-only, never sent to user" },
+      { name: "messages",         type: "array",     note: "TicketMessage[]: id, authorId, authorRole, body, attachments?, createdAt" },
+      { name: "resolvedAt",       type: "timestamp" },
+      { name: "closedAt",         type: "timestamp" },
+      { name: "createdAt",        type: "timestamp", sortable: true, indexed: true },
+      { name: "updatedAt",        type: "timestamp", sortable: true, indexed: true },
     ],
   },
   productFeatures: {

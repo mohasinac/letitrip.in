@@ -128,44 +128,41 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S10 + Lambda-tracing: BAN6–BAN9 + SCAM2/4/6/7/8/9 partial + appkit v2.6.9 Vercel tracing fixes + quality pass (2026-05-14)
+### ✅ LAST COMPLETED — S10 fully closed: BAN1–9 + SCAM2/4/6/7/8/9 + tracker/prompt state sync (2026-05-14)
 
-- **Vercel Lambda tracing** — `appkit/src/configs/next.ts`: added `@grpc/**`, `protobufjs/**`, `@protobufjs/**`, `object-hash/**`, `proto3-json-serializer/**`, `long/**`, `node-fetch/**`, `abort-controller/**`, `retry-request/**`, `duplexify/**`, `uuid/**`, `lodash.camelcase/**` to `defaultOutputFileTracingIncludes["/api/**"]`. Fixes `MODULE_NOT_FOUND: object-hash` + `@protobufjs/*` sub-package errors in Vercel Lambda (google-gax transitive deps). appkit v2.6.8 → v2.6.9, deployed to prod.
-- **BAN6** — `AdminUserEditorView` Moderation section: hard-ban (impose + lift + reason), soft-ban list (action, reason, expiry, lift button) + add-soft-ban collapsible form. `AdminUsersView` maps `isHardBanned`/`softBanCount` to status column.
-- **BAN7** — `AdminSupportTicketsView` + `AdminSupportTicketDetailView` (SideDrawer). Filter chips: status/priority. Message thread + reply + status/priority selects. `/admin/support-tickets` page + layout + nav item.
-- **BAN8** — `UserSupportView` (new ticket form + list + detail SideDrawer). `/user/support` page + nav item.
-- **BAN9** — Firebase Functions: `onSupportTicketCreate` (confirmation notification), `onSupportTicketUpdate` (status-change notification), `onUserBanChange` (banHistory subcollection audit).
-- **SCAM2 partial** — `AdminScammersView` list page + GET/PATCH API routes (`/api/admin/scammers` + `[id]`). `admin/scammers/layout.tsx` with `admin:scammers:read` gate. Trust & Safety group in `ADMIN_NAV_GROUPS` with `requiredPermission`. `AdminScammerEditorView` deferred.
-- **SCAM4** — Added `"scam_awareness"` to `FAQCategory`; `FAQ_CATEGORY_LABELS`; 12 seed FAQs; `/scams/faqs` RSC page with JSON-LD.
-- **SCAM6** — `ScamAwarenessModal` (non-dismissible, 7 category cards, checkbox ack). `scamAwarenessAcknowledgedAt` on `SessionUser` + profile GET/PATCH. Wired in `LayoutShellClient` (`THIRTY_DAYS_MS` module-level constant, no `as any`).
-- **SCAM7** — Scam pages in sitemap (`/scams`, `/scams/types`, `/scams/faqs`, `/scams/report`, dynamic verified profiles). JSON-LD on `/scams/[id]` + `/scams/types`.
-- **SCAM8** — Firebase Functions: `onScamReportCreate` + `onScamReportUpdate`. Bindings in `functions/src/index.ts`.
-- **SCAM9 partial** — `admin/scammers/layout.tsx` + nav `requiredPermission` annotations in Trust & Safety + Help groups. Routes wired.
-- **Quality pass** — removed `as any` in profile route (`scamAwarenessAcknowledgedAt` now typed on `SessionUser`); auth page render-slot links via `ROUTES.*`; `registerHref` prop on `AppLayoutShell`.
-- `npm run check` exits 0. v2.6.9 deployed to Vercel prod.
+- **BAN1–5** — Schema (`softBans`, `hardBanReason`, `SupportTicketDocument`), `isSoftBanned` helper, hard-ban/unban/soft-ban API routes, support ticket API + limit enforcement, guest checkout block.
+- **BAN6** — `AdminUserEditorView` Moderation section: hard-ban (impose + lift + reason), soft-ban list + add-soft-ban form. `AdminUsersView` ban status column.
+- **BAN7** — `AdminSupportTicketsView` + `AdminSupportTicketDetailView` (SideDrawer). Message thread + reply + status/priority. `/admin/support-tickets` page + layout + nav.
+- **BAN8** — `UserSupportView` (ticket form + list + detail). `/user/support` page + nav item.
+- **BAN9** — Firebase Functions: `onSupportTicketCreate`, `onSupportTicketUpdate`, `onUserBanChange`.
+- **SCAM2** ⚠️ — `AdminScammersView` list page + GET/PATCH API (`/api/admin/scammers`). `admin/scammers/layout.tsx`. Trust & Safety nav group. Full-page editor still deferred.
+- **SCAM4** — `"scam_awareness"` `FAQCategory`; 12 seed FAQs; `/scams/faqs` RSC + JSON-LD.
+- **SCAM6** — `ScamAwarenessModal` (non-dismissible, checkbox ack). `scamAwarenessAcknowledgedAt` on `SessionUser` + profile GET/PATCH. `LayoutShellClient` 30-day gate.
+- **SCAM7** — Sitemap entries for all scam pages + dynamic verified profiles. JSON-LD on `/scams/[id]` + `/scams/types`.
+- **SCAM8** — Firebase Functions: `onScamReportCreate` + `onScamReportUpdate`. Bindings wired.
+- **SCAM9** — Section layouts (`admin/scammers/layout.tsx`, `admin/support-tickets/layout.tsx`), nav `requiredPermission` annotations, routes. `trust_and_safety`/`customer_support` PERMISSION_GROUPS already populated by S9 RBAC commit.
+- crud-tracker.md + prompt.md fully synced: RBAC1–10 ✅, BAN1–9 ✅, SCAM4/6/7/8/9 ✅, SCAM2 ⚠️, chain diagrams annotated.
 
-### ✅ Previous — S-auth-nav: Login/Register cross-links + TitleBar auth buttons + avatar fix + role badge + employee role + seed users (2026-05-14)
+### ✅ Previous — S-auth-nav + Lambda-tracing: Login/Register links + TitleBar auth + scam modal + appkit v2.6.9 (2026-05-14)
 
-- **LoginPageClient** — added `renderCreateAccountLink` (→ `/auth/register`) + `renderForgotPasswordLink` to `<LoginForm>`.
-- **RegisterPageClient** — added `renderLoginLink` (→ `/auth/login`) + `renderTermsLink` to `<RegisterForm>`.
-- **TitleBarLayout** — replaced `next/image` with `<img>` for profile avatar (any-domain support); added `loginHref`/`registerHref` props; shows "Sign in" + "Register" text buttons in TB1 desktop when user is not logged in.
-- **AppLayoutShell** — added `registerHref` prop; passes `loginHref`/`registerHref` to `TitleBar`; replaced full-text `RoleBadge` avatar overlay with a compact 16px colored dot indicator (role initial letter, no text overflow).
-- **LayoutShellClient** — passes `registerHref={ROUTES.AUTH.REGISTER}` to `AppLayoutShell`.
-- **RoleBadge + Badge** — added `employee` to labels/colors/variant cast; added `appkit-badge--employee` amber CSS (light + dark).
-- **Seed users** — added `avatarMetadata` (url+position+zoom) to 3 existing users (Aryan Kapoor, Priya Patel, Siddharth Rao); added `user-deepak-verma` (moderator) + `user-simran-kaur` (employee) with avatarMetadata.
-- `appkit` rebuilt to v2.6.7 dist. `npm run check` exits 0.
+- **LoginPageClient** — added `renderCreateAccountLink` + `renderForgotPasswordLink`.
+- **RegisterPageClient** — added `renderLoginLink` + `renderTermsLink`.
+- **TitleBarLayout** — `<img>` for avatar (any-domain); `loginHref`/`registerHref` props; guest "Sign in"/"Register" buttons.
+- **AppLayoutShell** — `registerHref` prop; compact 16px role-dot (no text overflow).
+- **RoleBadge + Badge** — `employee` amber CSS (light + dark).
+- **Vercel Lambda tracing** — google-gax transitive deps added to `defaultOutputFileTracingIncludes`. appkit v2.6.9.
+- `npm run check` exits 0. Deployed to Vercel prod.
 
-### 🔄 CURRENT — Post-deploy: verify Firebase recovery + seed 26 collections + smoke-prod. SCAM9 full wiring (trust_and_safety/customer_support PERMISSION_GROUPS) deferred to S9 (RBAC cohort).
+### 🔄 CURRENT — S11: Quality baseline (audit 8→0, TS9 hex sweep, RA-Tier audits inline)
 
-### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
+### ⏳ NEXT UP
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-RULES** *(one large prod-deployable session — single row under "Phase RULES" in `crud-tracker.md`; lands AFTER S-SBUNI-5 closes)* | **Per-type cart/checkout/order rule registry (XL — one session, single commit cohort).** Extracts every inline `listingType` / `categoryType` branch in cart-add / validate / preflight / splitter / checkout-actions / stock-decrement into one registry at `appkit/src/_internal/shared/checkout/rules/`. Internal sequence inside the session: RULES → SCHEMA → CONSUMERS → SHIPPING → CART-UI → REFUNDS → SMOKE. Brings: one Razorpay payment / N orders linked by `paymentBatchId` (internal ref — orders are the contract); per-store separation strict; **bundle moves to direct-checkout-only** (no cart entry, removes `addBundleToCart`); prize-draw splits orders when entries > `PRIZE_DRAW_MAX_REVEALS_PER_ORDER` (3) with own reveal flow per batch; pre-order reservation-quota preflight; auction/offer single-line / qty=1 / no merge; **full + partial refunds** with Razorpay + manual-with-proof override paths (terminal for contestability — once refunded, no dispute possible); **shipping provider choice moves into cart** per-store with per-item override (`<ShippingPicker>` per tab, subtotal includes chosen fee at cart-time, locked at checkout); `shipping-proof` + `refund-proof` media contexts via signed-URL flow (SB-UNI-Z1). Tabbed cart UI per orderType with `CHECKOUT_MAX_ORDERS_PER_TX = 20` cap. Buy ≠ refund transactions — separate ID spaces. **Full plan**: `~/.claude/plans/also-add-rules-for-golden-clarke.md`. | S-SBUNI-5's inline bundle work becomes the reference impl this refactor abstracts from. Phase 2+ listing types (`classified` / `digital-code` / `live`) then ship as one-rule-per-type additions with zero consumer-code edits — that's the payoff. |
-| 2 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end — next natural slot now that Phase 1 SB-UNI + S8 are closed |
-| – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready. **Phase 1 is fully closed (S-SBUNI-5 2026-05-13).** **SB10-C fully closed S8 follow-up 2026-05-13.** |
-| 4 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
-| 5 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
+| 1 | **S11** | Quality baseline — `audit-ssr-in-appkit` 8→0 + TS9 hex sweep (154 hits) + TS17 ops + RA-Tier audits inline + 3-nextconfig/tailwind/eslint cleanup | S9+S10 are closed; tech-debt closeout unblocks S-polish-pass |
+| 2 | **S-SBUNI-RULES** *(slot after S11)* | Per-type cart/checkout/order rule registry. Full plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md`. | S-SBUNI-5 reference impl available |
+| – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: `classified`/`digital-code`/`live`) · Phase 3–9 (G–Z5 per-type fields/checkout/forms/polish) · X4 feature flags + X5 telemetry. | Each is its own cohort. Phase 1 fully closed. |
+| – | **S-polish-pass** *(after S11)* | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. | After S11 — quality polish + test foundation |
 | 6 | **S-polish-pass** *(slot after S11)* | **10-phase listing quality polish pass.** Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL` of `crud-tracker.md`. **Foundational rules** (apply to every listing page this session): (a) no in-memory filtering — all list ops at query layer (Firestore + Sieve or listingProcessor); (b) URL params always human-readable in the browser address bar (`sort=newest&type=auction&page=2`), translated to Sieve DSL internally by `parseListingSearchParams`; (c) all URL state via `useUrlTable` (instant: sort/page/toggles/view) + `usePendingFilters` (deferred: filter drawer). **Phases:** PL1 `SearchableEntitySelect` new appkit component + form wiring (brand/store/category/sublisting/bundle product picker for supported listing types only) · PL2 `ListingToolbar.toggles` prop + `isSold`/sold-out URL-driven toolbar toggles on product/auction/pre-order/bundle listing views + `AdminBundlesView` full `ListingViewShell` upgrade · PL3 orphaned view shell audit + deletion (zero imports + not in future plan = delete) · PL4 missing admin editor pages (`/admin/users/[id]/edit`, `/admin/stores/[id]/edit`, `/admin/orders/[id]`) · PL5 bespoke admin page upgrades (carousels search/pagination, sublisting-categories scaffold, deals+featured sort+bulk) · PL6 in-memory filter elimination (wishlist page → query-layer API with Firestore composites, history tab → query or documented ≤50-row exception) + "coming soon" sweep · PL7 LR-tier 35-file migration (raw HTML → `<Div>/<Text>/<Heading>/<Button>/<MediaImage>/<Stack>/<Row>`) · PL8 Sieve/Firebase adapter fixes (double-query fix, incompatibility doc, `callListingProcessor` extraction to `src/lib/listing-processor.ts`, readable-param translation audit, `validateSieveFilters` to all public list routes) · PL9 listingProcessor extended to blog/events/stores/categories/faqs/coupons/store-products/store-auctions routes · PL10 Vitest setup + unit tests (filter-aliases, validateSieveFilters, listingProcessor, coupon expiry, order timeout, media cleanup, UI tests for ListingToolbar/SearchableEntitySelect/BulkActionBar). | After S11 — quality polish + test foundation |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]` (now category route post-SB-UNI-D), `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |

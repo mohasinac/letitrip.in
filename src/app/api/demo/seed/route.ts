@@ -53,6 +53,7 @@ import {
   conversationsSeedData,
   groupedListingsSeedData,
   scammersSeedData,
+  supportTicketsSeedData,
   productFeaturesSeedData,
 } from "@mohasinac/appkit";
 import {
@@ -84,6 +85,7 @@ import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
 // SB-UNI-V — BUNDLES_COLLECTION dropped; bundles in CATEGORIES_COLLECTION with categoryType:"bundle".
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
+import { SUPPORT_TICKET_COLLECTION } from "@mohasinac/appkit";
 import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_FEATURES_COLLECTION } from "@mohasinac/appkit";
 
@@ -115,6 +117,7 @@ type CollectionName =
   | "groupedListings"
   | "couponUsage"
   | "scammerProfiles"
+  | "supportTickets"
   | "productFeatures";
 
 interface SeedRequest {
@@ -152,6 +155,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   conversations: CONVERSATIONS_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
   scammerProfiles: SCAMMER_COLLECTION,
+  supportTickets: SUPPORT_TICKET_COLLECTION,
   productFeatures: PRODUCT_FEATURES_COLLECTION,
 };
 
@@ -203,6 +207,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   conversations: conversationsSeedData,
   groupedListings: groupedListingsSeedData,
   scammerProfiles: scammersSeedData,
+  supportTickets: supportTicketsSeedData,
   productFeatures: productFeaturesSeedData,
 };
 
