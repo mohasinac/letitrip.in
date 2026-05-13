@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Container, Heading, Text } from "@mohasinac/appkit/client";
+import { PrizeDrawsListingView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**
- * Public Prize Draws listing page (SB4-E).
+ * Public Prize Draws listing page (SB4-E + SB4-F).
  *
- * Renders a placeholder until SB4-F `PrizeDrawsListingView` is wired in
- * Phase 4. The route exists today so nav links + sitemap stay valid.
+ * Server-fetched sieve list of published `listingType === "prize-draw"`
+ * products. The view component lives in appkit so brand/icon overrides
+ * stay in `appkit.config.js` / token CSS.
  */
-
 export const metadata: Metadata = _gm({
   title: "Prize Draws — LetItRip",
   description:
@@ -24,15 +24,11 @@ export const metadata: Metadata = _gm({
 
 export const revalidate = 120;
 
-export default function Page() {
-  return (
-    <Container className="px-4 py-8">
-      <Heading level={1} className="text-3xl font-bold mb-4">
-        Prize Draws
-      </Heading>
-      <Text className="text-[var(--appkit-color-text-muted)]">
-        Listing UI ships with SB4-F — page shim wired so the route resolves.
-      </Text>
-    </Container>
-  );
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[]>>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  return <PrizeDrawsListingView searchParams={resolvedSearchParams} />;
 }
