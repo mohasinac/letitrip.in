@@ -73,7 +73,27 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-SBUNI-1 Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
+### ✅ LAST COMPLETED — S-SBUNI-2 Phase 1 D + V (bundles re-architect) (2026-05-13)
+
+Bundles moved from `listingType:"bundle"` to `categoryType:"bundle"`. `features/bundles/` (17 files, ~1900 LOC) + 2 `_internal` folders deleted outright. `GroupedListingDocument` re-scoped to theme-group semantics. New `onProductStockChange` Firebase Function deployed. 4 commits + indices deploy + functions deploy.
+
+- **D ListingType prune** — `ListingType` union shrinks to `standard|auction|pre-order|prize-draw`. 17 inline duplicates pruned via one-off sweep across appkit + main. CategoryDocument gains `bundlePriceInPaise`/`bundleQueryRule` (static or dynamic)/`bundleStockStatus`/`bundleQueryResolvedAt`/`bundleProductIds[]`. `LISTING_TYPE_CAPABILITIES`/`_registry`/`isBundleListing`/order-splitter/checkout actions all drop the bundle branch.
+- **V folder deletion** — `appkit/src/features/bundles/` entirely DELETED. `_internal/server/features/bundles/` + `_internal/shared/features/bundles/` DELETED. Bundle UI tree under `src/app/[locale]/bundles/`, `/admin/bundles/`, `/store/bundles/` + `src/app/api/bundles/` DELETED. `BUNDLE_*` constants rehomed in `_internal/shared/features/categories/bundle-config.ts`.
+- **V GroupedListingDocument re-scope** — pricing fields (`bundlePrice`/`originalPrice`/`discountPercent`/`currency`) dropped; `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus` added.
+- **V Firebase Function** — new `onProductStockChange` Firestore-onWrite trigger on products. Recomputes bundle `bundleStockStatus` + grouped `activeMemberCount`/`visibilityStatus` when a product's available/unavailable state flips. `bundleStockSync` scheduled handler updated to operate on bundle categories. Both deployed to `asia-south1`.
+- **V Consumer sweep** — BrandDetailPageView, CategoryDetailPageView, BrandDetailTabs, CategoryDetailTabs, StoreDetailLayoutView, StoreBundlesPageView all repointed at `categoriesRepository.listByType("bundle")` + new `CategoryBundlesListing` component (replaces deleted `BundlesByCategoryListing`). FeaturedBundlesSection homepage case returns null pending rebuild.
+- **V Seed migration** — 3 bundle rows (Pokémon TCG starter, Gunpla PG arrivals, Beyblade X launch pack) merged into `categoriesSeedData` as `Partial<CategoryDocument>` with `categoryType:"bundle"` + `bundleQueryRule.type:"static"`.
+- **V Indices** — added composite `(categoryType, createdByStoreId, isActive, createdAt)` for store-scoped bundle queries. Bundle-collection composites (6 entries) + sublistingCategories composites (2 entries) left as orphans; `firebase deploy --only firestore:indexes --force` cleanup deferred.
+
+**Required user follow-up**: hit `POST /demo/seed` to wipe orphan `bundles` collection + reseed `categories` with 3 bundle rows. **No `vercel --prod` per standing instruction.**
+
+**Spun out to S-SBUNI-3** (deferred from this session):
+- Bundle UI rebuild — admin editor with multi-select product picker + public bundle detail/listing pages against `CategoryDocument` shape. Was deleted outright in V to keep this session sized.
+- Bundle cart-line `{bundleCategorySlug, qty}` + checkout expansion to N product order lines (forward-looking; no add-to-cart-bundle UI exists today).
+
+---
+
+### ✅ Previous — S-SBUNI-1 Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
 
 First slice of Tier SB-UNI. 8 commits. `firebase deploy --only firestore:indexes` fired; `npm run check` exits 0.
 
@@ -105,13 +125,13 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 
 ### 🔄 CURRENT — none (awaiting next session)
 
-Next up: **S-SBUNI-2** — Phase 1 D (bundles re-architect to `categoryType:"bundle"` + drop `"bundle"` from ListingType + drop CartItem.listingType "bundle"; L) → V (re-scope `GroupedListingDocument` to theme-group + delete 3 duplicate bundle folders + new `onProductStockChange` Firebase Function; L) → E (discriminator audit cleanup; S) → A (top-level `addresses` with `ownerType`; M). All carry-forwards from S-SBUNI-1.
+Next up: **S-SBUNI-3** — Phase 1 E + A + bundle UI rebuild. **E** (discriminator audit cleanup; S) → **A** (top-level `addresses` with `ownerType`; M) → **bundle UI rebuild** (admin editor with multi-select product picker + public bundle detail/listing pages against `CategoryDocument`; M-L since deleted outright in S-SBUNI-2). Optional: bundle cart-line representation + checkout expansion to N product order lines (no add-to-cart-bundle UI exists today, so spec-only).
 
 ### ⏳ NEXT UP — single SB-UNI session (Z1–Z3 closed 2026-05-13)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-2** *(carries S-SBUNI-1 leftovers)* | Phase 1 D + V + E + A. **D** bundles re-architect: drop `"bundle"` from `ProductDocument.listingType` AND `CartItem.listingType`; add `bundlePriceInPaise` + `bundleQueryRule` + `bundleStockStatus` + `bundleQueryResolvedAt` to category schema; repoint SB3-D/SB3-G/SB3-J; new `AdminBundleEditorView`. **V** grouped re-scope: drop `bundlePrice`/`originalPrice`/`discountPercent`/`currency`; add `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus`; DELETE `appkit/src/features/bundles/` + `_internal/server/features/bundles/` + `_internal/shared/features/bundles/`; new `onProductStockChange` Firebase Function. **E** discriminator cleanup (drop "bundle" from ListingType union; "moderator" role grep; productQueryHelpers `prizeDraws`+`standardListings`; 5 boolean accessors; `category` vs `categorySlug` index drift fix; CLAUDE.md users-row). **A** top-level `addresses` with `ownerType:"user"\|"store"` + new `addressesRepository`; drop both subcollections + repos. Flips SB1-A/SB3-D/SB3-G/SB3-J/SB11/GP1/GP2/VB7/LL4/LL17 to ⚠️ done-but-verify. | Phase 1 closeout — see crud-tracker.md `### Phase 1 — Collection Unification (S-SBUNI)` for full design |
+| 1 | **S-SBUNI-3** *(carries S-SBUNI-2 leftovers)* | Phase 1 E + A + bundle UI rebuild. **E** discriminator cleanup ("moderator" role grep; productQueryHelpers `prizeDraws`+`standardListings`; 5 boolean accessors; `category` vs `categorySlug` index drift fix; CLAUDE.md users-row). **A** top-level `addresses` with `ownerType:"user"\|"store"` + new `addressesRepository`; drop both subcollections + 2 repos. **Bundle UI rebuild** — admin editor with multi-select product picker + public bundle detail/listing pages against the new CategoryDocument shape. Optional: cart-line `{bundleCategorySlug, qty}` + checkout expansion to N product order lines. | Phase 1 closeout — see newchange.md S-SBUNI-2 entry for what carried over |
 | – | **Tier SB-UNI follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready |
 | 2 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 3 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |

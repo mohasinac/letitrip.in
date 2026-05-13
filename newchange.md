@@ -41,6 +41,27 @@
 
 ---
 
+### S-SBUNI-2 — Phase 1 D + V (bundles re-architect + grouped re-scope) (2026-05-13)
+
+Bundles moved from a `listingType:"bundle"` discriminator to a `categoryType:"bundle"` discriminator on the categories collection. Entire `appkit/src/features/bundles/` folder (~1900 LOC, 17 files) plus two `_internal` folders deleted. Re-scoped `GroupedListingDocument` to theme-group semantics. New `onProductStockChange` Firebase Function deployed to `asia-south1`. 4 commits + indices deploy + functions deploy.
+
+| Commit | Scope |
+|---|---|
+| `feat(bundles): re-architect as categoryType:"bundle" + delete features/bundles/ (SB-UNI D + V)` (appkit) | **D** — `ListingType` union shrinks to `standard\|auction\|pre-order\|prize-draw`. 17 inline duplicates across appkit pruned via one-off sweep. CategoryDocument gains `bundlePriceInPaise` + `bundleQueryRule` (discriminated union: `static productIds[]` or `dynamic filter + limit`) + `bundleStockStatus` + `bundleQueryResolvedAt` + `bundleProductIds[]`. `LISTING_TYPE_CAPABILITIES` + `_registry` bundle row removed. `isBundleListing` helper removed. order-splitter / checkout actions drop `"bundle"` order-type. **V** — DELETED `features/bundles/` entirely; DELETED `_internal/server/features/bundles/` + `_internal/shared/features/bundles/`. 3 bundle rows merged into `categoriesSeedData` (Pokémon TCG starter / Gunpla PG arrivals / Beyblade X launch pack). `GroupedListingDocument` re-scoped: pricing fields dropped, `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus` added. New `onProductStockChangeHandler` (Firestore onWrite trigger on products) recomputes both bundle-category `bundleStockStatus` and grouped-listing `activeMemberCount`/`visibilityStatus`. `bundleStockSyncHandler` (scheduled safety net) updated to operate on categoryType:"bundle" rows. New `_internal/shared/features/categories/bundle-config.ts` rehomes `BUNDLE_MIN/MAX_ITEMS` + `BUNDLE_MAX_PER_USER_DEFAULT` + `BUNDLES_PAGE_SIZE` + `BUNDLES_FEATURED_LIMIT`. New `CategoryBundlesListing` component replaces deleted `BundlesByCategoryListing`. |
+| `feat(bundles): drop "bundle" listingType, delete bundle UI routes, wire onProductStockChange (SB-UNI D+V)` (main) | **Pruned union duplicates** in main repo's `src/actions/{cart,coupon}.actions.ts` Zod enums. **DELETED entire bundle UI surface**: `src/app/[locale]/bundles/` (page + [slug] + BundleDetailClient), `src/app/[locale]/admin/bundles/` (list + edit), `src/app/[locale]/store/bundles/` (new + edit), `src/app/api/bundles/` + `[id]/`. Admin bundle editor rebuild deferred. `src/app/api/demo/seed/route.ts` + `src/components/dev/SeedPanel.tsx` drop `bundles` collection name + meta block. `functions/src/index.ts` registers new `onProductStockChange` Firestore-onWrite Function. `firestore.indexes.json` adds composite `(categoryType, createdByStoreId, isActive, createdAt)` for store-scoped bundle listings; bundle-collection composites (6 entries) left as orphans. |
+| `firebase deploy --only firestore:indexes` | Indices deployed cleanly after one iteration (single-field array-contains composite for `bundleProductIds` was redundant — Firestore auto-indexes; dropped from source). 8 orphan indexes warning (2 sublistingCategories + 6 bundles collections); `--force` cleanup deferred. |
+| `firebase deploy --only functions` | `onProductStockChange` created in `asia-south1`; all 25+ existing functions updated in place. |
+
+**Operationally required follow-up (user-facing)**: hit `POST /demo/seed` to wipe the deleted `bundles` collection and reseed `categories` with the 3 new bundle rows + drop `bundle` listingType from any seeded products. **No `vercel --prod` per standing instruction.**
+
+**Carried to S-SBUNI-3** (next session):
+- E — discriminator audit cleanup (drop "bundle" union arities in remaining touch points, "moderator" role grep, productQueryHelpers + boolean accessors, `category`/`categorySlug` index field drift, CLAUDE.md users-row update).
+- A — top-level `addresses` collection with `ownerType:"user"\|"store"` + new `addressesRepository`; drop both subcollections + 2 repos.
+- Bundle UI rebuild (admin editor with multi-select picker + public bundle detail/listing) — was DELETED outright in V to keep this session sized; rebuild against `CategoryDocument` discriminator.
+- Bundle cart-line representation + checkout expansion to N product order lines (forward-looking; no add-to-cart-bundle UI exists yet).
+
+---
+
 ### S-SBUNI-1 — Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
 
 First slice of the Tier SB-UNI cohort. Phase 0 X3 (schemaVersion infra) was started and rolled back after user push-back — pre-launch, no live data, no migration consumers, so version handles + migrations.ts shells were dead weight. Captured the principle in `feedback_no_speculative_infra.md`. Phase 1 D/V/E/A carried forward to next session.
