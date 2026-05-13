@@ -73,7 +73,23 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-SBUNI-3 Phase 1 A + E + bundle UI public read paths (2026-05-13)
+### ✅ LAST COMPLETED — S-SBUNI-4 Bundle write paths: OG renderer + cart-line foundation + admin editor (2026-05-13)
+
+6 commits across appkit + main. Quality gate ends 0 errors. **No deploys required** — no new indices, Functions, or seed data shape changes this session.
+
+- **Slice OG** — new `_internal/server/features/bundles/og.tsx` + opengraph-image shim at `/bundles/[slug]`. Bundle-specific accents over the category layout: header pill says "Bundle"; chip row carries price + item count + stock-status badge. `verify-og-coverage.mjs` baseline 6→5 (`bundles/[slug]` dropped from `OG_KNOWN_GAPS`).
+- **Slice C (foundation)** — `CartItemDocument` + `AddToCartInput` + `OrderItem` gain `bundleCategorySlug?: string` + `bundleProductIds?: string[]`. New `addBundleToCart(userId, bundleSlug, quantity)` server action fetches via `categoriesRepository.findBySlugAndType`, validates price/stock/members, delegates to `cartRepository.addItem`. **BundleDetailView CTA NOT wired** — `"coming soon"` notice stays accurate; checkout-side stock decrement is the missing piece, carried to S-SBUNI-5.
+- **Slice ADMIN** — full admin CRUD. New `BundleItemsPicker` (multi-select w/ debounced typeahead + chip-tray + min/max bounds), `AdminBundleEditorView` (unified create+edit form, static-rule only), `AdminBundlesView` (simple list table). API routes `/api/admin/bundles{,/[id]}` with zod validation + `categoryType:"bundle"` guard. 3 admin pages. `ROUTES.ADMIN.BUNDLES_NEW` + `API_ROUTES.ADMIN.BUNDLES*` added.
+
+**Deferred to S-SBUNI-5**:
+- BundleDetailView CTA wire to `addBundleToCart` (foundation shipped).
+- Per-member stock decrement at order paid (2 sites in `_internal/server/features/checkout/actions.ts`).
+- Order-detail UI grouping (N expanded order-lines back under a "Bundle: <name>" header).
+- Bundle admin dynamic-rule editing.
+
+---
+
+### ✅ Previous — S-SBUNI-3 Phase 1 A + E + bundle UI public read paths (2026-05-13)
 
 Two SB-UNI cleanup rows closed plus restored the public bundle read surface deleted in SB-UNI-V. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. Operational follow-ups outstanding: `POST /demo/seed` + `firebase deploy --only firestore:indexes`. No `vercel --prod` per standing instruction.
 
@@ -166,13 +182,13 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 
 ### 🔄 CURRENT — none (awaiting next session)
 
-Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-4** (bundle admin editor + cart-line + N-product checkout — see below).
+Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-5** (bundle checkout finalize: BundleDetailView CTA wire + per-member stock decrement + order grouping).
 
-### ⏳ NEXT UP — bundle UI write paths + Phase 2+ (S-SBUNI-3 closed 2026-05-13)
+### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-4** *(carries S-SBUNI-3 leftovers)* | **Bundle admin editor** — admin list / new / [id]/edit pages backed by `categoriesRepository` with `categoryType:"bundle"` guard. Centerpiece: multi-select product picker UI (typeahead + paginated checkbox list — design call needed). Plus **cart-line `{bundleCategorySlug, qty}`** + checkout expansion to N product order lines so buyers can actually buy bundles (BundleDetailView currently shows a "coming soon" notice on the CTA). Plus the bundle OG renderer follow-up to drive `verify-og-coverage.mjs` baseline. | Closes the public-rebuilt bundle surface from S-SBUNI-3 with the missing write paths |
+| 1 | **S-SBUNI-5** *(carries S-SBUNI-4 leftovers)* | **Bundle checkout finalize** — wire `BundleDetailView` CTA to `addBundleToCart` (foundation shipped in S-SBUNI-4); add per-member stock decrement at order paid (2 sites in `_internal/server/features/checkout/actions.ts` — the pre-tx stock check loop + the in-tx stock update loop, both need to iterate `bundleProductIds` when present); add order-detail UI grouping (collapse N expanded order-lines back under a "Bundle: <name>" header). Plus bundle admin **dynamic-rule editing** (API accepts dynamic rules; the form in S-SBUNI-4 only writes static). | Closes the cart→order path for bundles so buyers can actually buy them. The other pieces from S-SBUNI-4 (OG renderer + admin editor + cart-line foundation) all landed. |
 | – | **Tier SB-UNI follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready |
 | 2 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 3 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |

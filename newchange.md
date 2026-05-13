@@ -41,6 +41,40 @@
 
 ---
 
+### S-SBUNI-4 — Bundle write paths: OG renderer + cart-line foundation + admin editor (2026-05-13)
+
+Carries S-SBUNI-3's deferred work to a partial close. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. **No deploys required** — no new Firestore indices, Functions, or seed data shape changes.
+
+**Slice OG (bundle OG renderer)** — `62525dd` appkit + `164d140c` main:
+- `_internal/server/features/bundles/og.tsx` (NEW) — `renderBundleOg(doc, opts)` + `renderBundleOgImage(data, siteName)`. Two-layer pattern mirroring `categories/og.tsx`. Bundle-specific accents: header pill says "Bundle"; chip row carries price (rupee-formatted from `bundlePriceInPaise`) + item count + a stock-status badge when `bundleStockStatus !== "in_stock"`.
+- `src/app/[locale]/bundles/[slug]/opengraph-image.tsx` (NEW) — Node-runtime shim wrapping `renderBundleOg` in `new ImageResponse(...)`. Same shape as the categories/brands shims.
+- `appkit/scripts/verify-og-coverage.mjs` — `"bundles/[slug]"` dropped from `OG_KNOWN_GAPS`. Baseline gaps 6→5.
+
+**Slice C (cart-line foundation)** — `afce7bc` appkit + `2e5e4aa7` main:
+- `CartItemDocument` + `AddToCartInput` + `OrderItem` gain `bundleCategorySlug?: string` + `bundleProductIds?: string[]`. When set, `productId` references the bundle category id, `price` carries the locked `bundlePriceInPaise`, and the member-id list is snapshotted at add-to-cart time.
+- `cartRepository.addItem` forwards the two new fields from input to persisted line when present.
+- New `addBundleToCart(userId, bundleSlug, quantity)` server action in `features/cart/actions/cart-actions.ts`. Fetches bundle via `categoriesRepository.findBySlugAndType`, validates price/stock/members, delegates to `cartRepository.addItem`. Exported via main `index.ts`.
+- **NOT shipped this session** (carried to S-SBUNI-5): BundleDetailView CTA wire, per-member stock decrement at order paid, order-detail UI grouping. The "Add to cart coming soon" notice on BundleDetailView stays accurate until the order-side fan-out lands.
+
+**Slice ADMIN (admin bundle editor)** — `871f40f` appkit + `388026b2` main:
+- `features/categories/components/BundleItemsPicker.tsx` (NEW) — multi-select product picker. Debounced search (250ms / ≥2 chars) hits a consumer-provided `fetchProducts(query)` callback. Selected ids render as chip-tray above the picker with inline remove. Enforces `BUNDLE_MIN_ITEMS` (3) / `BUNDLE_MAX_ITEMS` (16). `defaultBundleItemsFetch` exported for `/api/products` consumers.
+- `features/admin/components/AdminBundleEditorView.tsx` (NEW) — unified create + edit. Loads via `GET /api/admin/bundles/[id]` when `bundleId` is set. Form: name + description + bundlePriceInPaise (rupee input, ×100 on save) + isActive + cover-image URL + the picker. Static rule only — dynamic-rule editing deferred (API accepts dynamic, form only writes static).
+- `features/admin/components/AdminBundlesView.tsx` (NEW) — simple list table (name + price + member count + stock + active badges + edit link + "New" CTA). Intentionally lighter than `AdminCategoriesView` — no `ListingToolbar` / `SideDrawer` / panel-url sync because admin bundles are low cardinality.
+- `src/app/api/admin/bundles/route.ts` (NEW) — GET (list `categoryType:"bundle"`) + POST (create with `categoryType:"bundle"` guard, zod-validated body, dedupe by id). Roles: `ROLES_ADMIN_MOD`.
+- `src/app/api/admin/bundles/[id]/route.ts` (NEW) — GET / PUT / DELETE. Both PUT + DELETE refuse non-bundle category ids via the `loadBundleOrFail` guard. Roles: `ROLES_ADMIN_MOD` for GET/PUT, `ROLES_ADMIN_ONLY` for DELETE.
+- 3 admin pages: `/admin/bundles/page.tsx` (list shim) + `new/page.tsx` (editor with no `bundleId`) + `[id]/edit/page.tsx`.
+- `ROUTES.ADMIN.BUNDLES_NEW` added; `API_ROUTES.ADMIN.BUNDLES` + `BUNDLE_BY_ID` added.
+
+**Deferred to S-SBUNI-5**:
+- BundleDetailView CTA wire to `addBundleToCart` (foundation already shipped this session).
+- Per-member stock decrement at order paid (touches `_internal/server/features/checkout/actions.ts` in 2 places — the pre-tx stock check loop + the in-tx stock update loop).
+- Order-detail UI grouping (collapse N expanded order-lines back under a "Bundle: <name>" header).
+- Bundle admin dynamic-rule editing (API accepts dynamic; form only writes static this session).
+
+**No operational follow-ups** for this session — no schema-shape changes, no new indices, no new Functions, no seed re-run.
+
+---
+
 ### S-SBUNI-3 — Phase 1 A + E + bundle UI public read paths (2026-05-13)
 
 Closed two SB-UNI cleanup rows + restored the public bundle read surface deleted in SB-UNI-V. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. **Operational follow-ups outstanding:** `POST /demo/seed` + `firebase deploy --only firestore:indexes`. No `vercel --prod` per standing instruction.
