@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PrizeDrawDetailPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 /**
  * Public Prize Draw detail page (SB4-E + SB4-G).
@@ -32,5 +33,8 @@ export const revalidate = 120;
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  return <PrizeDrawDetailPageView id={slug} />;
+  const user = await getServerSessionUser();
+  return (
+    <PrizeDrawDetailPageView id={slug} currentUserId={user?.uid} />
+  );
 }
