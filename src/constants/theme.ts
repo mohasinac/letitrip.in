@@ -521,6 +521,8 @@ export const THEME_CONSTANTS = {
       events: "text-rose-500 dark:text-rose-400",
       blog: "text-cyan-500 dark:text-cyan-400",
       reviews: "text-yellow-500 dark:text-yellow-400",
+      bundles: "text-teal-500 dark:text-teal-400",
+      prizeDraws: "text-pink-500 dark:text-pink-400",
     },
     // Icon button hovers
     iconButton: {
