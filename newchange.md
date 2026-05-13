@@ -41,6 +41,28 @@
 
 ---
 
+### SB-UNI-Z1/Z2/Z3 — Media upload reliability (2026-05-13)
+
+CLAUDE.md Rule #6 fix: the legacy `POST /api/media/upload` buffered every byte through the Vercel Lambda, capping at the platform's 4.5 MB request limit and silently breaking the route's claimed 50 MB video ceiling. Replaced with a signed-URL flow that bypasses Vercel entirely.
+
+| Commit | Scope |
+|---|---|
+| `feat(media): centralise upload limits in shared/media/limits.ts (Z3)` (appkit) + `feat(media): consume centralised limits in upload route (Z3)` (main) | New `appkit/src/_internal/shared/media/limits.ts` — single source of truth for `MAX_*_BYTES`, `MAX_LABEL`, `ALLOWED_IMAGE_MIMES`/`ALLOWED_VIDEO_MIMES`/`ALLOWED_DOC_MIMES`, `MIME_TO_EXT`, `PDF_MAGIC`, plus `classifyMime` / `isAllowedMime` / `maxBytesFor` helpers. Barrel-exported from `client.ts` / `server.ts` / `index.ts`. Legacy upload route refactored to consume these instead of inline constants. |
+| `feat(media): widen video MIME allowlist + AVI/M2TS conversion hints (Z2)` (appkit) + `feat(media): surface AVI/M2TS conversion hint in upload errors (Z2)` (main) | `ALLOWED_VIDEO_MIMES` widened with `video/3gpp` · `video/3gpp2` · `video/x-matroska`. New `VIDEO_CONVERSION_HINTS` map + `getConversionHint(mime)` helper returns user-actionable strings ("AVI is not supported — please convert to MP4 or WebM") for known-but-rejected formats (`video/x-msvideo`, `video/MP2T`, `video/x-flv`, `video/x-ms-wmv`). Routes return the hint as the user-facing error + as a `hint` field in the response body. |
+| `feat(media): signed-URL upload flow replacing formData route (Z1)` (appkit) + `feat(media): sign + finalize routes; delete legacy upload route (Z1)` (main) | New `appkit/src/_internal/server/features/media/contextGuards.ts` — extracted per-context guardrails (product/review/auction/preorder/event/blog/rich-text index caps + image-only + pdf-only affinity + SEO filename generation). New `POST /api/media/sign` route — auth + rate-limit + caps + issues v4 signed PUT URL (15-min TTL). New `POST /api/media/finalize` route — pulls metadata, streams first 4 KB via `createReadStream({ start: 0, end: 4095 })`, runs `fileTypeFromBuffer` for magic-byte verification, rejects + deletes on declared-vs-detected mismatch, stamps `customMetadata.{uploadedBy,uploadedAt,finalized}`, returns 7-day signed read URL or public URL. `useMediaUpload` rewritten to `sign → fetch PUT → finalize` — hook surface preserved so MediaUploadField/MediaUploadList/ImageUpload/MediaPickerModal need no changes. Client-side `File.size`/MIME precheck added. `AvatarUpload.tsx` migrated from `mutateAsync(formData)` to `upload(file, folder, isPublic, context)`. Legacy `src/app/api/media/upload/route.ts` deleted. |
+
+**Files changed** — appkit: `_internal/shared/media/limits.ts` (new) · `_internal/server/features/media/contextGuards.ts` (new) · `features/media/hooks/useMedia.ts` · `features/media/AvatarUpload.tsx` · `features/admin/components/AdminMediaView.tsx` (helper text) · `features/media/upload/MediaUploadField.tsx` + `ImageUpload.tsx` (header comments) · `errors/messages.ts` · `constants/api-endpoints.ts` (`MEDIA_ENDPOINTS.UPLOAD` removed; `SIGN` + `FINALIZE` added) · `client.ts` / `server.ts` / `index.ts` (barrel exports). Main: `src/app/api/media/sign/route.ts` (new) · `src/app/api/media/finalize/route.ts` (new) · `src/app/api/media/upload/route.ts` (deleted). 6 commits total. `npm run check` exits 0 on every commit.
+
+**Deferred (carried as Z3 follow-up):** `kind: "image"|"video"|"pdf"|"auto"` prop on `MediaUploadField` auto-deriving `accept` + `maxSizeMB` display — pulled out to keep blast radius small; field components still accept explicit `maxSizeMB`.
+
+**Operational follow-up (NOT in this cohort, no commits, NOT a Rule #6 violation):**
+
+- **Firebase Storage rules** must allow signed-PUT writes to `tmp/<uid>/...` paths. Today's `storage.rules` permits writes to `tmp/{uid}/*` via the legacy upload route; the v4 signed PUT will work as long as the bucket-level signing permission is granted to the admin SDK service account (it already is — `firebase-adminsdk-*` has `roles/storage.admin`). If signed PUTs return 403 in production, check IAM on the bucket service account.
+- **Bucket CORS** must allow `PUT` from `https://letitrip.in` (and any preview domain) + `http://localhost:3000`. Apply via `gsutil cors set cors.json gs://<bucket>` with a config that allows `method: ["PUT"]`, `responseHeader: ["Content-Type"]`, `origin: ["https://letitrip.in","http://localhost:3000"]`.
+- **Smoke test** — once CORS is set, run a browser upload through `MediaUploadField` for each kind (image, video, pdf if invoice context) at 375px viewport. The sign + finalize flow has not yet been exercised end-to-end against live Firebase. **No `vercel --prod` per user instruction.**
+
+---
+
 ### S7-PrizeDraws-3-ops — Firebase + Vercel deploys (2026-05-13)
 
 Ops cohort fired after user OK'd Firebase + Vercel env updates ("you can deploy firebase stuff or sync vercel env variables or update .env.local file too"). appkit npm publish remains held; consumer still on `file:./appkit`.
