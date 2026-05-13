@@ -9584,3 +9584,181 @@ Public detail page    true            yes               no
 This pair (UI prop + adapter strip - adapter lands with SB4-G) ensures
 the general buyer never sees that their favourite prize is gone, which
 would suppress demand.
+
+---
+
+## S7-PrizeDraws-3 — Listing-type tabs + back-end OrderItem stamp (2026-05-13)
+
+### Tab-config single source of truth (SB10-A)
+
+```
+appkit/src/features/products/constants/listing-tabs.ts
+┌──────────────────────────────────────────────────────────┐
+│  CATEGORY_PAGE_TABS  STORE_PAGE_TABS                    │
+│       │                    │                            │
+│       ├─ products    →  listingType==standard           │
+│       ├─ auctions    →  listingType==auction            │
+│       ├─ pre-orders  →  listingType==pre-order          │
+│       ├─ prize-draws →  listingType==prize-draw         │
+│       └─ bundles     →  collection:"bundles"            │
+│                                                          │
+│  SELLER_LISTING_TABS                SEARCH_RESULT_TABS  │
+│       │                                     │            │
+│       ├─ all (no filter)            ├─ all              │
+│       └─ standard/auction/          └─ + bundles        │
+│            pre-order/prize-draw                          │
+└──────────────────────────────────────────────────────────┘
+
+Consumers:
+   CategoryDetailTabs ─┐
+   BrandDetailTabs   ──┤── CATEGORY_PAGE_TABS
+   StoreDetailLayoutView   STORE_PAGE_TABS (5 product counts, 1 bundle count)
+   AdminProductsView       TYPE_OPTIONS (string array; manual mapping)
+   SellerProductsView      ListingKind union (matches the constant ids)
+   SearchResourceType      union widened with prize-draws + bundles
+```
+
+### Bundles-as-collection — fetched parent-side
+
+```
+CategoryDetailPageView                  BrandDetailPageView
+   │                                       │
+   ├─ productRepository.list  (×4)         ├─ productRepository.list  (×4)
+   │     standard/auction/                 │     standard/auction/
+   │     pre-order/prize-draw              │     pre-order/prize-draw
+   └─ bundlesRepository                    └─ bundlesRepository.findAll
+       .findByCategory(categoryId)               + client-side brand filter
+                       │                                 │
+                       └────────────┬────────────────────┘
+                                    ▼
+                CategoryDetailTabs.initialBundles
+                BrandDetailTabs.initialBundles
+                                    │
+                                    ▼
+                  BundlesByCategoryListing  ── sort + brand-match filter
+```
+
+### Order line stamping (SB8-F)
+
+```
+Cart checkout (group ─→ orderItems.map)
+        │
+        ├─ COD path  createCheckoutOrderAction
+        └─ Razorpay  verifyAndPlaceRazorpayOrderAction
+                │
+                ▼
+        OrderDocumentItem = {
+          productId, productTitle, quantity, unitPrice, totalPrice,
+       +  listingType,                ← from product.listingType
+       +  prizeRevealStatus,          ← "open" | "pending" (start state)
+       +  prizeRevealDeadline,        ← computePrizeRevealDeadline().toISOString()
+       +  revealedItemNumber,         ← filled in by /api/prize-draws/[id]/reveal
+        }
+
+        orderDocumentToOrder() adapter forwards the new fields →
+        /api/user/orders OrderItem  →  OrderCard "N reveals pending"
+                                       OrderDetailView per-item pill
+```
+
+### Post-auth allowance pill (SB6-D)
+
+```
+Page shim:  getServerSessionUser()
+                  │  (React.cache; reads __session cookie)
+                  ▼
+        PrizeDrawDetailPageView(currentUserId?: string)
+                  │  (if maxPerUser && currentUserId)
+                  ▼
+        orderRepository.countByUserAndProduct(uid, productId)
+                  │  (active-status filter; same helper as gates)
+                  ▼
+        <Span>You have used {used}/{maxPerUser}</Span>   ← fuchsia pill
+        <Span>Limit: {maxPerUser} entries per customer</Span>  ← amber pill (existing)
+```
+
+---
+
+## LL-dashboard — Unified dashboard layout islands (2026-05-13)
+
+### Before — triplicated ~75 LOC across 3 layout files
+
+```
+src/app/[locale]/admin/layout.tsx   (77 lines)
+src/app/[locale]/store/layout.tsx   (77 lines)        Total ~234 lines of
+src/app/[locale]/user/layout.tsx    (100 lines)        drawer-state + ProtectedRoute
+                                                       + matchMedia + useDashboardNav
+                                                       boilerplate
+```
+
+### After — appkit islands + 3 thin shims (15–19 LOC each)
+
+```
+appkit/src/_internal/shared/features/layout/
+├── types.ts        SectionResponsive · SectionTheming · LayoutConfig
+│                    DashboardLayoutConfig · LayoutBreakpoint
+├── config.ts       DASHBOARD_DESKTOP_MEDIA_QUERY (768 px)
+│                    DASHBOARD_ACCENT_CLASSES (admin/store/user)
+│                    SIDE_DRAWER_WIDTH · BOTTOM_NAV_CONTENT_PADDING
+└── index.ts        barrel
+
+appkit/src/_internal/client/features/layout/
+├── DashboardLayoutClient.tsx
+│      useResponsiveDrawer()  ← matchMedia + useDashboardNav reg/unreg
+│      variant === "admin"  → <AdminSidebar  groups={...}/>
+│      variant === "store"  → <StoreSidebar  groups={...}/>
+│      variant === "user"   → <UserSidebar   groups={...}/>
+├── RoleGuard.tsx
+│      <ProtectedRoute requireRole={role} routes={{loginPath, unauthorizedPath}}/>
+│      defaults: ROUTES.AUTH.LOGIN · ROUTES.ERRORS.UNAUTHORIZED
+└── index.ts        barrel  (exposed via @mohasinac/appkit/client)
+```
+
+### Consumer shims now
+
+```tsx
+// src/app/[locale]/admin/layout.tsx   (16 lines)
+<RoleGuard role="admin">
+  <DashboardLayoutClient variant="admin" groups={ADMIN_NAV_GROUPS}>
+    {children}
+  </DashboardLayoutClient>
+</RoleGuard>
+
+// src/app/[locale]/store/layout.tsx   (16 lines)
+<RoleGuard role={["seller", "admin"]}>
+  <DashboardLayoutClient variant="store" groups={STORE_NAV_GROUPS}>
+    {children}
+  </DashboardLayoutClient>
+</RoleGuard>
+
+// src/app/[locale]/user/layout.tsx   (19 lines)
+const { user } = useSession();
+const groups = useMemo(
+  () => getUserNavGroups(user?.role === "seller" || user?.role === "admin"),
+  [user?.role],
+);
+<RoleGuard>
+  <DashboardLayoutClient variant="user" groups={groups}>
+    {children}
+  </DashboardLayoutClient>
+</RoleGuard>
+```
+
+### Seller-vs-buyer Selling group (single-source rule)
+
+```
+src/constants/navigation.tsx
+   getUserNavGroups(isSeller: boolean): UserNavGroup[]
+      │
+      └─ Maps the "Selling" group's single item:
+           isSeller  → {href: ROUTES.STORE.DASHBOARD,      label: STORE_DASHBOARD_LABEL}
+           else      → {href: ROUTES.USER.BECOME_SELLER,   label: BECOME_SELLER_LABEL}
+```
+
+### Net effect
+
+```
+~234 LOC removed         →  ~50 LOC across 3 shims + getUserNavGroups()
+3 copies of drawer hook  →  1 (useResponsiveDrawer inside the island)
+3 copies of ProtectedRoute →  1 (RoleGuard with ROUTES.* defaults)
+DASHBOARD_DESKTOP_BREAKPOINT_PX = 768  →  single SoT in shared/features/layout/config
+```
