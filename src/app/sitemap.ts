@@ -346,7 +346,7 @@ async function fetchAuctionUrls(): Promise<MetadataRoute.Sitemap> {
         "==",
         PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED,
       )
-      .where("isAuction", "==", true)
+      .where("listingType", "==", "auction")
       .select(
         PRODUCT_FIELDS.SLUG,
         PRODUCT_FIELDS.ID,

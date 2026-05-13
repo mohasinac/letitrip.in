@@ -31,7 +31,7 @@ export const GET = withProviders(createRouteHandler({
 
     // Get store's auction product IDs (up to 30 for Firestore `in` query limit)
     const auctionResult = await productRepository.list(
-      { filters: `storeId==${store.id},isAuction==true`, sorts: "-createdAt", page: 1, pageSize: 30 },
+      { filters: `storeId==${store.id},listingType==auction`, sorts: "-createdAt", page: 1, pageSize: 30 },
       { storeId: store.id },
     );
 

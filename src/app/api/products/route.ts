@@ -76,12 +76,7 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "storeId",
   "title",
   "price",
-  // SB1-G — canonical discriminator. Boolean flags kept in allow-list for any
-  // consumer that hasn't migrated yet; both shapes resolve to the same docs
-  // because seed wrappers set both fields.
   "listingType",
-  "isAuction",
-  "isPreOrder",
   "featured",
   "isPromoted",
   "stockQuantity",
@@ -142,21 +137,11 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   }
   const inStock = param(url, "inStock");
   if (inStock === "true") parts.push("stockQuantity>0");
-  // SB1-G — translate legacy boolean query params to the canonical
-  // `listingType` discriminator. Public ?isAuction=true/?isPreOrder=true URLs
-  // keep working; internally we route through the single-field clause that
-  // the new composite indexes back. Also accept `?listingType=auction` (etc).
+  // SB1-G — canonical listingType discriminator. Accepts ?listingType=auction,
+  // pre-order, standard, prize-draw, or bundle.
   const listingTypeParam = param(url, "listingType");
-  const isAuction = param(url, "isAuction");
-  const isPreOrder = param(url, "isPreOrder");
   if (listingTypeParam) {
     parts.push(`listingType==${listingTypeParam}`);
-  } else if (isAuction === "true") {
-    parts.push(`listingType==auction`);
-  } else if (isPreOrder === "true") {
-    parts.push(`listingType==pre-order`);
-  } else if (isAuction === "false" && isPreOrder === "false") {
-    parts.push(`listingType==standard`);
   }
   const featured = param(url, "featured");
   if (featured === "true") parts.push("featured==true");
@@ -172,10 +157,10 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   }
   const dateFrom = param(url, "dateFrom");
   const dateTo = param(url, "dateTo");
-  if (isAuction === "true") {
+  if (listingTypeParam === "auction") {
     if (dateFrom) parts.push(`auctionEndDate>=${dateFrom}`);
     if (dateTo) parts.push(`auctionEndDate<=${dateTo}`);
-  } else if (isPreOrder === "true") {
+  } else if (listingTypeParam === "pre-order") {
     if (dateFrom) parts.push(`preOrderDeliveryDate>=${dateFrom}`);
     if (dateTo) parts.push(`preOrderDeliveryDate<=${dateTo}`);
   }
