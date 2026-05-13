@@ -31,9 +31,7 @@ import {
 } from "lucide-react";
 import type {
   AdminNavGroup,
-  AdminNavItem,
   StoreNavGroup,
-  StoreNavItem,
   UserNavGroup,
   UserNavItem,
   MainNavbarItem,

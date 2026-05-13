@@ -22,6 +22,7 @@ import type { UserRole } from "@mohasinac/appkit";
 // callers should still rely on `auth: true` + role check, not a separate role.
 export const USER_ROLE = {
   ADMIN: "admin",
+  EMPLOYEE: "employee",
   MODERATOR: "moderator",
   SELLER: "seller",
   USER: "user",
@@ -35,10 +36,16 @@ export const USER_ROLE = {
 /** Admin-only — site-wide management (users, settings, dashboards). */
 export const ROLES_ADMIN_ONLY: readonly UserRole[] = [USER_ROLE.ADMIN];
 
-/** Admin + moderator — content moderation surfaces (scams, ban review). */
+/** Admin + moderator — content moderation surfaces (ban review). */
 export const ROLES_ADMIN_MOD: readonly UserRole[] = [
   USER_ROLE.ADMIN,
   USER_ROLE.MODERATOR,
+];
+
+/** Admin + employee — trust & safety ops (scam registry, support tickets). */
+export const ROLES_TRUST_SAFETY: readonly UserRole[] = [
+  USER_ROLE.ADMIN,
+  USER_ROLE.EMPLOYEE,
 ];
 
 /** Seller dashboard write-paths — own store only; admin escalation. */

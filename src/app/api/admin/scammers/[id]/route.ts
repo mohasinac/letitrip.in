@@ -6,6 +6,8 @@ import {
   errorResponse,
   scammerRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants/api-roles";
+import type { ScammerDocument } from "@mohasinac/appkit";
 
 const patchSchema = z.object({
   status: z.enum(["pending_review", "verified", "rejected", "removed"]).optional(),
@@ -15,7 +17,7 @@ const patchSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: ROLES_TRUST_SAFETY,
     permission: "admin:scammers:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -29,7 +31,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof patchSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: ROLES_TRUST_SAFETY,
     permission: "admin:scammers:write",
     schema: patchSchema,
     handler: async ({ params, body, user }) => {
@@ -37,7 +39,9 @@ export const PATCH = withProviders(
       const scammer = await scammerRepository.findById(id);
       if (!scammer) return errorResponse("Scammer profile not found", 404);
 
-      const updates: Record<string, unknown> = {};
+      const updates: Partial<ScammerDocument> & { updatedAt: Date } = {
+        updatedAt: new Date(),
+      };
       if (body!.status !== undefined) {
         updates.status = body!.status;
         if (body!.status === "verified" || body!.status === "rejected") {
@@ -48,19 +52,18 @@ export const PATCH = withProviders(
       if (body!.verificationNote !== undefined) {
         updates.verificationNote = body!.verificationNote;
       }
-      updates.updatedAt = new Date();
 
-      await scammerRepository.update(id, updates as any);
+      await scammerRepository.update(id, updates);
       return successResponse({ id }, "Scammer profile updated");
     },
   }),
 );
 
+// Hard delete — admin only; employees may only update status (PATCH above).
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
-    permission: "admin:scammers:delete",
+    roles: ROLES_ADMIN_ONLY,
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const scammer = await scammerRepository.findById(id);

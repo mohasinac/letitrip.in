@@ -2,7 +2,7 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-05-14 — **S9 (RBAC1–10) ✅ + S10 (BAN1–9 + SCAM2/4/6/7/8/9) ✅ closed.** Dependency chains for RBAC + BAN fully annotated. SCAM2 admin list/API done; full-page editor deferred. Next: S11 quality baseline. Plan: `~/.claude/plans/update-and-plan-the-delegated-bumblebee.md`.
+> **Last updated:** 2026-05-14 — **S9 (RBAC1–10) ✅ + S10 (BAN1–9 + SCAM2/4/6/7/8/9) ✅ closed. Quality pass done** (api-roles `EMPLOYEE`+`ROLES_TRUST_SAFETY`, scammer routes use constants, i18n Link fix in auth+scam pages, navigation type cleanup, LayoutShellClient indent, prompt.md dedup). SCAM2 admin list/API done; full-page editor deferred. Next: S11 quality baseline.
 >
 > _Earlier 2026-05-12 history: Tier DX added (38 docs-portal rows) · SSR rearch S4+S5 closed (`_internal/server/features/` layers for cart/orders/promotions/reviews/wishlist/history/homepage) · Tier WL (wishlist+history+cart caps) · TS tech-debt sweep · CLAUDE.md Rule #6 (Vercel Hobby caps)._
 >

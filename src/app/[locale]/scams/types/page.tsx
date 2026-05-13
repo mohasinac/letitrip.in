@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   IndianRupee,
   UserX,
@@ -75,7 +75,7 @@ export default function Page() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
-    <Main>
+      <Main>
       {/* Breadcrumb strip */}
       <div className="border-b appkit-breadcrumb-strip">
         <Container size="xl" className="py-3">
@@ -238,7 +238,7 @@ export default function Page() {
           </Row>
         </Container>
       </Section>
-    </Main>
+      </Main>
     </>
   );
 }

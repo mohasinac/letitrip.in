@@ -222,10 +222,10 @@ export default function LayoutShellClient({
 
   return (
     <Fragment>
-    {themeStyle && <style>{themeStyle}</style>}
-    <AdRuntimeInitializer />
-    <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
-    <AppLayoutShell
+      {themeStyle && <style>{themeStyle}</style>}
+      <AdRuntimeInitializer />
+      <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
+      <AppLayoutShell
       navItems={navItems}
       sidebarSections={sidebarSections}
       sidebarPrimaryActions={
@@ -299,8 +299,8 @@ export default function LayoutShellClient({
       )}
     >
       {children}
-    </AppLayoutShell>
-    <NavigationLoader />
+      </AppLayoutShell>
+      <NavigationLoader />
     </Fragment>
   );
 }
