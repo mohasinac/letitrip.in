@@ -41,6 +41,34 @@
 
 ---
 
+### S7-PrizeDraws-2 — public buyer surface + listing-type tabs + reveals badge (2026-05-13)
+
+Picked up the deferred slice from `S7-PrizeDraws-prep3`. Five focused feat/wire commit pairs across appkit + root (10 commits total). `npm run check` clean (0 errors / 504 pre-existing warnings) at every step. **No deploys, no appkit npm publish — appkit consumed via `file:./appkit`.** Q1-funcs-dryrun + Q1-ops Firebase Functions deploy + Vercel env wiring still carried forward.
+
+| Sub-task | Files / scope |
+|---|---|
+| SB4-F | `appkit/src/features/products/components/MarketplacePrizeDrawCard.tsx` (new, ~250 LOC — 2x2 mini-collage thumb, status pill, entries-remaining, countdown, enter-draw CTA), `PrizeDrawsIndexListing.tsx` (new — client toolbar + grid + pagination + filter drawer with reveal-status filter + category/brand/price filters via existing ProductFilters), `PrizeDrawsListingView.tsx` (new — server RSC, productRepository.list with `listingType==prize-draw,status==published` + URL filter mapping for storeId/prizeRevealStatus/price). `src/app/[locale]/prize-draws/page.tsx` rewritten as thin shim delegating to `PrizeDrawsListingView`. |
+| SB4-G | `appkit/src/features/products/components/PrizeDrawDetailPageView.tsx` (new, ~270 LOC — server RSC, fetches product, **strips `isWon` from prizeDrawItems[]** before passing to `PrizeDrawCollage` to keep public buyers unspoiled, renders entries/window/seller-card via PreOrderDetailView grid-2 shell). `PrizeDrawEntryActions.tsx` (new — client buy panel: "Enter draw" → `NonRefundableConsentModal` listingType="prize-draw" → add 1 entry to guest cart → route to /user/cart; "View RNG source" link). `src/app/[locale]/prize-draws/[slug]/page.tsx` rewritten as thin shim. |
+| SB6-D | `appkit/src/features/products/components/PrizeDrawDetailPageView.tsx` adds "Limit: N entries per customer" pill when `product.maxPerUser` is set. `appkit/src/features/pre-orders/components/PreOrderDetailPageView.tsx` adds matching "Limit: N per customer" pill in the production-status chip row. Bundle detail page already had the badge (S22-followup) — no change. Post-auth personalised "X/Y entries used" badge deferred (requires reading current user's order count). |
+| SB7-C | `appkit/src/features/categories/components/CategoryDetailTabs.tsx` + `BrandDetailTabs.tsx` — adds "Prize Draws" tab alongside Products/Auctions/Pre-Orders, both rendering `PrizeDrawsIndexListing` scoped by categorySlug/brandName. Counts wired through new `counts.prizeDraws` prop (callers default to 0). |
+| SB7-D | `appkit/src/features/stores/components/StoreDetailLayoutView.tsx` — 4th parallel `listingType==prize-draw` count fetch + "Prize Draws" tab in public store nav. `StorePrizeDrawsPageView.tsx` (new — RSC, mirrors StorePreOrdersPageView). `ROUTES.PUBLIC.STORE_PRIZE_DRAWS` route helper added. `PrizeDrawsIndexListing` extended with optional `storeId` prop for hard scoping. `src/app/[locale]/stores/[storeSlug]/prize-draws/page.tsx` shim created. |
+| SB8-F | `appkit/src/features/orders/types/index.ts` — `OrderItem` extended with optional `listingType`, `prizeRevealStatus`, `prizeRevealDeadline`, `revealedItemNumber`. `OrdersList.tsx` (`OrderCard`) — counts unrevealed prize-draw items and renders fuchsia "N reveals pending" pill + earliest deadline date. `src/app/[locale]/user/orders/view/[id]/page.tsx` `renderItems` slot now shows per-item reveal-status pill (Reveal pending / Awaiting reveal window / Prize revealed (#N) / Reveal closed) + deadline. |
+
+**Deferred from S7-PrizeDraws-2 (carry forward):**
+
+| Item | Why deferred |
+|---|---|
+| **SB7-C/D — Bundles tab** | Requires a `BundlesIndexListing-by-category` query path (different collection from `products`). Not built yet. |
+| **SB7-D — admin / store-dashboard / search-results tabs** | Each surface needs its own per-tab scaffold. Public surfaces (category/brand/store) shipped — admin + dashboard tabs are next. |
+| **SB10-A — `CATEGORY_PAGE_TABS` constant** | Spec calls for centralized tab constant; lives in S8 SB10 row. Inline tab arrays used for now. |
+| **SB6-D — Post-auth "X/Y entries used" personalised badge** | Needs current-user order-count lookup; the server-side `prize-bundle-gates.ts` already enforces the cap. UI follow-up. |
+| **SB8-F — Order schema population** | UI infrastructure ships now (`OrderItem.listingType` + `prizeRevealStatus` fields). Checkout-side writes (population) are the back-half — pull when Q1-ops Functions deploy carries them. |
+| **Q1-funcs-dryrun + Q1-ops** | User chose to hold deploys this session. 7 prep3 Functions + `listingProcessor` + Vercel env vars + Firestore indexes for prize-draws all still ⏳ — to be run on user confirmation. |
+
+All quality gates clean. `npm run dev` smoke-test not run this session — UI hand-off to user. Re-seed `/demo/seed` not run (no schema additions hit Firestore — only TypeScript schema extension for OrderItem optional fields).
+
+---
+
 ### S7-PrizeDraws-prep3 — foundation + order gates + UI primitives + reveal + Functions (2026-05-13)
 
 Third carve of S7. Per session directive "do all, no deployments, no deferrments, no deprecations", grinded straight through the 9-phase plan (phases 4/6/7 carved out as `S7-PrizeDraws-2` mid-session by user choice — see prompt.md). 5 commits across appkit + root. tsc clean both repos. **No deploys.**
