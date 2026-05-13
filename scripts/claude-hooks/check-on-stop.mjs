@@ -62,6 +62,12 @@ const checks = [
     args: ["scripts/audit-ssr-in-appkit.mjs"],
     cwd: ROOT,
   },
+  {
+    label: "verify-og-coverage",
+    cmd: "node",
+    args: ["appkit/scripts/verify-og-coverage.mjs"],
+    cwd: ROOT,
+  },
 ];
 
 // audit-ssr-in-appkit baseline: 8 known violations (S2-deferred root files).
