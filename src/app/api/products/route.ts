@@ -235,13 +235,29 @@ async function _GET(request: Request): Promise<NextResponse> {
     let hasMore: boolean;
     let nextCursor: string | null = null;
 
-    const upstream = await callListingProcessor("products", {
-      filters,
-      sorts,
-      page,
-      pageSize,
-      cursor,
-    });
+    // listingProcessor preference: try the colocated Firebase Function first
+    // (cheaper data-locality); if it's not configured OR it fails (cold-start
+    // crash, 401 from a secret-binding regression, network blip), fall through
+    // to the local repository so the route stays available. The function and
+    // the repository share the same Sieve filter logic so results are
+    // semantically identical — only the data-locality differs.
+    let upstream: ListingProcessorResponse | null = null;
+    try {
+      upstream = await callListingProcessor("products", {
+        filters,
+        sorts,
+        page,
+        pageSize,
+        cursor,
+      });
+    } catch (upstreamErr) {
+      logError(
+        "products",
+        "listingProcessor upstream failed — falling back to local repo",
+        upstreamErr,
+      );
+      upstream = null;
+    }
 
     if (upstream) {
       items = upstream.items;
