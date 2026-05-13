@@ -86,7 +86,7 @@
 | **S4** | SB3-D order-side stock sync + SB3-G admin bundles pages + SB3-J Zod hardening + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy |
 | **S5** | Seed scale P24–P31 (auctions/pre-orders/categories/orders/blog/events/coupons/notifications/runner) + ARCH1/6/7 sellerId strip + index re-deploy |
 | **S6** | Tier OG (OG1–OG5) + FI6-2 secondary surfaces + Q6-views infinite-scroll wiring (4 listing views) |
-| **S7** | Tier SB Prize Draws: SB4 (editor/reveal/modal) + SB5 (nav/FAQ/seed) + SB6 (per-user limits) + SB7 (badges + tabs) + SB8 (reveal expiry/auto-refund + Functions). **S7-PrizeDraws-3 also picks up SB-UNI-Z1+Z2+Z3 (media upload reliability — signed-URL flow, MIME widening, limits centralization)** as a prereq fix appended 2026-05-13, since media upload is broken across all listing types and blocks every form session that follows. |
+| **S7** | Tier SB Prize Draws: SB4 (editor/reveal/modal) + SB5 (nav/FAQ/seed) + SB6 (per-user limits) + SB7 (badges + tabs) + SB8 (reveal expiry/auto-refund + Functions). **S7-PrizeDraws-3 code work closed 2026-05-13** (SB10-A centralised tabs · SB7-C bundles-by-category listings · SB7-D admin/seller/store/search tabs · SB6-D post-auth allowance badge · SB8-F OrderItem listingType+prizeRevealStatus population). **Remaining S7-PrizeDraws-3-ops cohort**: `firebase deploy --only firestore:indexes` for prize-draws+entries · `firebase deploy --only functions` for 7 prep3 handlers + `listingProcessor` · Vercel env (`FIREBASE_FUNCTION_LISTING_URL`, `LETITRIP_INTERNAL_SECRET`) · `/demo/seed` re-load. **PLUS SB-UNI-Z1+Z2+Z3 appended 2026-05-13** (media upload reliability — signed-URL flow replacing `/api/media/upload`, MIME widening 3gpp/3gpp2/x-matroska, limits centralized in `_internal/shared/media/limits.ts`). Resolves Rule #6 violation. Single deploy cohort. |
 | **S8** | SB9 Event Raffles (schema + Functions + winner page + spin wheel) + SB10/Tier TC tab constants + SB11 homepage sections |
 | **S9** | Tier RBAC end-to-end (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag in S1–S8 code |
 | **S10** | Tier BAN (BAN1–9) + Tier SCAM (SCAM2/4/6/7/8/9) |
@@ -248,7 +248,7 @@ Rules to keep top-of-mind every task:
 | **S7-PrizeDraws-prep3** ⚠️ | Prize Draws — foundation + order gates + UI primitives + reveal API + Functions (code-only) | **Done 2026-05-13.** 9-phase plan executed across 5 commits (3 appkit + 2 root). **Phase 1 SB5-E** — 2 prize-draw seed docs + 18 prize-item rows + manifest/index/seed-route wiring. **Phase 2 SB6-C + SB8-A** — `prize-bundle-gates.ts` (max-per-user + prize-pool cap + deadline math) wired into BOTH `createCheckoutOrderAction` + `verifyAndPlaceRazorpayOrderAction`; in-tx `prizeCurrentEntries` increment; `OrderType` widened to prize-draw/bundle; `incrementPrizeEntriesInBatch` repo helper. **Phase 3 SB4-A/B/C/D** — `PrizeDrawItemsEditor` (add/reorder, locks-on-won), `PrizeDrawCollage` (with `hideWonState` for public buyers — won items never spoiled), ProductForm prize-draw section with `fieldDisabled` from `anyWon`, `ProductListingMode` widened, `isPrizeDrawListing`/`isBundleListing` predicates. **Lock-on-reveal** — once any prize is won, the listing freezes everywhere: editor, all form fields, listingType toggle, AND server-side 409 from `/api/products/[id]` PATCH for seller+admin. **Phase 5 SB4-H + SB4-I + SB4-E** — `/api/prize-draws/[id]/reveal` transactional crypto.randomInt route (pool-exhaust auto-refund; never echoes pool isWon state); `PrizeRevealModal` with theatrical 3.2-sec decelerating-highlight animation + fairness disclaimer + GitHub RNG link; 7 page shims (`/prize-draws[/[slug]]`, `/store/prize-draws[/new][/[id]/edit]`, `/admin/prize-draws[/[id]/edit]`). **Phase 8 SB1-L** — 7 handlers in `_internal/server/jobs/handlers/` (prizeRevealOpen + SB8-D notify, prizeRevealClose, prizeRevealExpiry SB8-B refund, prizeRevealReminder SB8-E, bundleStockSync, triggerEventRaffle SB9-D, assignSpinPrize SB9-E), all bound in `functions/src/index.ts` region `asia-south1`. **Not deployed.** tsc 0 errors all repos. | SB4-A · SB4-B · SB4-C · SB4-D · SB4-E (create/edit only) · SB4-H · SB4-I · SB5-E · SB6-C · SB6-E (prize-draw only) · SB8-A · SB8-B · SB8-C · SB8-D · SB8-E · SB1-L (code only) | None — carried to S7-PrizeDraws-2 |
 | **S7-PrizeDraws-2** ⚠️ | Public buyer UI + listing-type tabs + reveals badge (no deploys) | **Done 2026-05-13.** Per user directive "confirm big sessions, hold on the deployments, or publishing appkits, use link for now" — 10 commits (5 appkit + 5 root paired) across SB4-F/G + SB6-D + SB7-C/D + SB8-F. `npm run check` clean at every step (0 errors / 504 pre-existing warnings). appkit consumed via `file:./appkit` — no npm publish. **No deploys** — Q1-funcs-dryrun + Q1-ops + Firestore index deploy + seed re-load + Vercel env vars all still pending. **What landed:** SB4-F (`PrizeDrawsListingView` server RSC + `PrizeDrawsIndexListing` client + `MarketplacePrizeDrawCard` w/ 2×2 mini-collage + status pill + countdown, public adapter strips `isWon` to keep buyers unspoiled). SB4-G (`PrizeDrawDetailPageView` server RSC + `PrizeDrawEntryActions` client — Enter Draw → `NonRefundableConsentModal` → cart → /user/cart; "View RNG source" link; collage with `hideWonState`). SB6-D (`maxPerUser` "Limit: N entries/per customer" pills on prize-draw + pre-order detail; bundle already had it). SB7-C (`CategoryDetailTabs` + `BrandDetailTabs` → +Prize Draws tab). SB7-D (`StoreDetailLayoutView` 4th count + tab; `StorePrizeDrawsPageView` RSC; new public route `/stores/[storeSlug]/prize-draws`; `ROUTES.PUBLIC.STORE_PRIZE_DRAWS`; `PrizeDrawsIndexListing.storeId` prop). SB8-F (`OrderItem` extended w/ optional `listingType`/`prizeRevealStatus`/`prizeRevealDeadline`/`revealedItemNumber`; `OrderCard` fuchsia "N reveals pending" + deadline; user order detail per-item reveal pill). | SB4-F · SB4-G · SB6-D (UI only — bundle/prize/preorder limit pills) · SB7-C · SB7-D (category/brand/store-public tabs) · SB8-F (UI only — schema + badges) | None — deploys + appkit publish held per user; carried into S7-PrizeDraws-3 |
 | **S7-PrizeDraws-3** ⚠️ | Prize Draws cohort — code closeout (ops carried to `-ops`) | **Done code side 2026-05-13.** Per user directive "no carry forwards from now on. fix all pending tasks before starting s8" — every S7-PrizeDraws-2 ⚠️ row driven to ✅. 11 commits (6 appkit + 5 root). `npm run check` clean every step. appkit consumed via `file:./appkit` — no npm publish. **What landed (8 sub-tasks):** SB10-A centralised tab constants (`CATEGORY_PAGE_TABS` / `STORE_PAGE_TABS` / `SELLER_LISTING_TABS` / `SEARCH_RESULT_TABS`) + refactor of `CategoryDetailTabs` + `BrandDetailTabs`; SB7-C Bundles tab via new `BundlesByCategoryListing` + `bundlesRepository.findByCategory` server-fetch wired into category + brand page views; SB7-D public-store Bundles tab + `StoreBundlesPageView` RSC + `/stores/[slug]/bundles`; SB7-D admin `AdminProductsView` adds Prize Draws filter; SB7-D seller-dashboard `SellerProductsView` adds Prize Draw chip; SB7-D search `SearchResourceType` widened + dropdown wiring; SB6-D post-auth "You have used N/M" pill via optional `currentUserId` prop + `getServerSessionUser` thread; SB8-F back-end population — `OrderDocumentItem` schema + COD + Razorpay actions + `orderDocumentToOrder` adapter all stamp `listingType` / `prizeRevealStatus` / `prizeRevealDeadline` for prize-draw lines. | SB7-D leftovers · SB7-C bundles · SB10-A · SB6-D auth · SB8-F population | None — deploys held; ops moved to `S7-PrizeDraws-3-ops` |
-| **S7-PrizeDraws-3-ops** | Prize Draws + media upload deploy cohort | Ops-only carry from S7-PrizeDraws-3: **Q1-funcs-dryrun** + **Q1-ops** `firebase deploy --only firestore:indexes` (prize-draws + entries) + `firebase deploy --only functions` (7 prep3 handlers + `listingProcessor`) + Vercel env (`FIREBASE_FUNCTION_LISTING_URL`, `LETITRIP_INTERNAL_SECRET`). Re-seed via `/demo/seed`. **PLUS** SB-UNI-Z1 + Z2 + Z3 media upload reliability (signed-URL flow replacing `/api/media/upload`; MIME widening to 3gpp/3gpp2/x-matroska; limits centralised in `_internal/shared/media/limits.ts`) — Rule #6 violation, blocks new form work. | Q1-funcs-dryrun · Q1-ops · SB-UNI-Z1 · SB-UNI-Z2 · SB-UNI-Z3 | indices · functions · vercel env · seed · media upload signed-URL flow |
+| **S7-PrizeDraws-3-ops** ⚠️ | Firebase + Vercel env deploys (Z1–Z3 still pending) | **Mostly done 2026-05-13** after user OK'd Firebase + Vercel env updates. `firebase-merge.mjs` re-synced root indexes from source (3 prize-draw composites picked up). `firebase deploy --only firestore:indexes` ✓. `cd functions && npm run build` + `firebase deploy --only functions` ✓ — all 7 prep3 prize-draw functions **created** in `asia-south1`: `triggerEventRaffle` · `assignSpinPrize` · `prizeRevealOpen` · `prizeRevealClose` · `prizeRevealExpiry` · `prizeRevealReminder` · `bundleStockSync`. `listingProcessor` + all other functions **updated** in place. `.env.local` gains `FIREBASE_FUNCTION_LISTING_URL="https://listingprocessor-nkzuprfdya-el.a.run.app"`. Vercel: `FIREBASE_FUNCTION_LISTING_URL` added to production + preview + development; `LETITRIP_INTERNAL_SECRET` mirrored from prod to preview + development. `/demo/seed` not needed (no Firestore schema additions). **Remaining:** SB-UNI-Z1/Z2/Z3 media upload reliability — separate cohort. | Q1-funcs-dryrun · Q1-ops | All indices · all functions · all Vercel env tiers · `.env.local`; appkit publish still held; Z1/Z2/Z3 carried |
 | **S8** | Event Raffles + tab constants + homepage sections | SB9-A–I event raffle schema, Firebase Functions (winner picker, spin animation backend), winner page, spin wheel UI. SB10-A–D + TC1–4 tab configuration constants (apply to listing types touched in S1). SB11-A–G homepage sections for bundles, prize-draws, event raffles. | SB9 · SB10 · Tier TC · SB11 | indices (raffles + entries) · 2+ Functions (winner picker scheduled) · seed homepage sections + raffles |
 | **S9** | RBAC complete + inline retrofit | RBAC1 permission constants, RBAC2 server resolver, RBAC3 dashboard gates, RBAC4–6 team management, RBAC7–9 Firestore rules, RBAC10 audit. **Inline retrofit**: every `requireRole()` call with `// TODO(RBAC)` tag left by S1–S8 is replaced with `hasPermission(user, PERM.*)` in the same files. | RBAC1–10 · `TODO(RBAC)` tags from S1–S8 | Firestore rules deploy · seed roles + permissions baseline · no new indices |
 | **S10** | BAN + SCAM | BAN1–9 ban schema, enforcement middleware, support ticket limits, admin UI, lifecycle Cloud Function (auto-expire soft bans). SCAM2/4/6–9 scam awareness page, registration acknowledgement gate, SEO + JSON-LD, RBAC wiring for scam admin actions. | BAN1–9 · SCAM2 · SCAM4 · SCAM6–9 | indices (bans by `userId+status`, scammers by `phoneIndex`/`upiIndex`) · 1 Function (ban expiry scheduler) · seed scam registry baseline |
@@ -454,7 +454,7 @@ Rules to keep top-of-mind every task:
 
 ## Tier SB-UNI — Platform Model Restructure
 
-> **Single-session cohort scope (Tier SB-UNI primary):** Phase 0 (X1–X3 infra) + Phase 1 (A–V collection unifications) ship together as **one prod-deployable session (S-SBUNI)**. Z1–Z3 media upload reliability is **appended to S7-PrizeDraws-3** as a prereq fix (media upload is broken across all listing types; can't wait).
+> **Single-session cohort scope (Tier SB-UNI primary):** Phase 0 (X1–X3 infra) + Phase 1 (A–V collection unifications) ship together as **one prod-deployable session (S-SBUNI)**. Z1–Z3 media upload reliability is **appended to the S7-PrizeDraws-3-ops cohort** (Prize-Draws-3 code work closed 2026-05-13; ops + Z1–Z3 ship as one deploy session) since media upload is broken across all listing types and blocks every form session that follows.
 >
 > **Follow-up phases NOT slotted into specific sessions** — pull individually as priorities emerge: Phase 2 (F), Phase 3 (G–K), Phase 4 (L), Phase 5 (M–O), Phase 6 (P–T), Phase 7 (W-1…W-5), Phase 8 (Y-1…Y-7), Phase 9 polish (Z4–Z5), Phase 0 ride-alongs (X4 feature flags, X5 telemetry).
 >
@@ -468,7 +468,7 @@ Rules to keep top-of-mind every task:
 >
 > **Plan file** (full design rationale, decision log, deferred questions): `~/.claude/plans/like-we-c-created-transient-reef.md`.
 
-### Phase 0 — Future-Expansion Infrastructure (S5)
+### Phase 0 — Future-Expansion Infrastructure (S-SBUNI)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -478,7 +478,7 @@ Rules to keep top-of-mind every task:
 | SB-UNI-X4 | `siteSettings.featureFlags.listingTypes` + `featureFlags.categoryTypes` + Admin → Feature Flags UI extension. Helper `isListingTypeEnabled(type)`. Consumer code returns null for disabled types. | S | ⏳ | | Slots with Phase 7. Future-expansion Pattern 5. |
 | SB-UNI-X5 | Telemetry sink — `actionTracker.emit(action, ctx, success?)` consumed by extended `<Button action={...}>`. Default no-op in dev; production writes structured events to `events` collection or external analytics. | S | ⏳ | | Ships with CTA registry (W-1). Future-expansion Pattern 7. |
 
-### Phase 1 — Collection Unification (S5)
+### Phase 1 — Collection Unification (S-SBUNI)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -489,7 +489,7 @@ Rules to keep top-of-mind every task:
 | SB-UNI-V | Re-scope `GroupedListingDocument` as theme-group — drop `bundlePrice`/`originalPrice`/`discountPercent`/`currency`; add `groupTheme`/`minActiveMembers` (default 2)/`activeMemberCount`/`visibilityStatus`. Delete duplicate `appkit/src/features/bundles/` + `appkit/src/_internal/server/features/bundles/` + `appkit/src/_internal/shared/features/bundles/` folders entirely (move `BUNDLE_MAX_ITEMS`/`BUNDLE_MIN_ITEMS`/`BUNDLE_MAX_PER_USER_DEFAULT` into new `appkit/src/_internal/shared/features/categories/bundle-config.ts`). New `onProductStockChange` Firebase Function — recomputes group `visibilityStatus` (group survives partial sellout; hides when active members < min) AND bundle `bundleStockStatus` (bundle out-of-stock if ANY member out). Bundle seed merges into `categories-seed-data.ts`. Update PDP + Auction + Pre-order detail page carousels to query the right collection per concept. | L | ⏳ | | Resolves two-bundle-system confusion discovered 2026-05-13 (groupedListings had bundle semantics; separate `bundles/` folder was a second bundle system). Flips GP1/GP2 to ⚠️. |
 | SB-UNI-E | Discriminator audit cleanup — (a) drop `"bundle"` from `ListingType` (paired with D); (b) grep `"moderator"` across both repos and delete from `UserRole` if unused; (c) add `prizeDraws` + `standardListings` query helpers to `productQueryHelpers`; (d) add boolean accessors `isPrizeDrawListing` / `isAdminUser` / `isSellerUser` / `isEmployeeUser` / `isBuyerUser`; (e) fix `(listingType, category, createdAt)` index field-name drift — `category` vs `categorySlug`, pick one and align schema + index; (f) update CLAUDE.md inventory row for `users` (correct role union). | S | ⏳ | | Mechanical sweep once schema source-of-truth is set. |
 
-### Phase 9 — Media Upload Reliability (S6 — prereq for Phase 8)
+### Phase 9 — Media Upload Reliability (S7-PrizeDraws-3-ops — prereq for any future FormShell work)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -497,13 +497,13 @@ Rules to keep top-of-mind every task:
 | SB-UNI-Z2 | Expand allowed video MIME list — add `video/3gpp` / `video/3gpp2` / `video/x-matroska` to the allowed-video union; reject AVI (`video/x-msvideo`) + M2TS (`video/MP2T`) with explicit "please convert to MP4 or WebM" error message including the detected MIME. Centralize allowed-MIME list in new `appkit/src/_internal/shared/media/mime.ts` consumed by both finalize route + client field. | S | ⏳ | | Magic-byte check moves to the finalize step (Z1). |
 | SB-UNI-Z3 | Centralize media limits — new `appkit/src/_internal/shared/media/limits.ts` exports `IMAGE_MAX_BYTES` / `VIDEO_MAX_BYTES` / `PDF_MAX_BYTES` + per-context limits. Consumed by both `/api/media/upload-finalize` route AND `MediaUploadField`. Add `kind: "image"\|"video"\|"pdf"\|"auto"` prop to `MediaUploadField` — auto-derives `accept` attribute + `maxSizeMB` display. Client-side `File.size` precheck before upload with clear error: "Images must be ≤10 MB; you selected a 12 MB file." | M | ⏳ | | Single source of truth for limits across client+server. Removes confusing 50 MB default that gets server-rejected for images. |
 
-### Phase 2 — ListingType Union Expansion (S7)
+### Phase 2 — ListingType Union Expansion (pull when prioritised)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | SB-UNI-F | Extend `ListingType` union to `"standard"\|"auction"\|"pre-order"\|"prize-draw"\|"classified"\|"digital-code"\|"live"` (after D removes `"bundle"`). Add accessors `isClassifiedListing` / `isDigitalCodeListing` / `isLiveListing` + query helpers `classifieds` / `digitalCodes` / `liveItems`. Update plugin folders under `_internal/shared/listing-types/` (X2). Composite indices stay generic on the field — no constant-value additions in F. Update slug-prefix table in CLAUDE.md: new `classified-` / `digitalcode-` / `live-` prefixes. `CartItem.listingType` gets the same union BUT add-to-cart rejects `classified` and `live` (chat-only / vendor-gated). | M | ⏳ | | Additive — no removals. Existing types unchanged. |
 
-### Phase 3 — Per-listingType Field Additions (S7–S8)
+### Phase 3 — Per-listingType Field Additions (pull when prioritised)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -513,13 +513,13 @@ Rules to keep top-of-mind every task:
 | SB-UNI-J | Digital-code fields — `digitalCode.{codeDeliveryMethod, codePoolSize, codesAvailable, redemptionInstructions, expiresAt?}` + subcollection `products/{id}/codes/{codeId}` with code strings encrypted at rest via existing PII pipeline. Atomic claim at order paid (oldest unclaimed). Order detail page reveals code one-time + emails. Refund revokes unclaimed codes; redeemed codes block refund. | L | ⏳ | | Steam pattern. No shipping address required at checkout. |
 | SB-UNI-K | Live-item fields — `liveItem.{species, ageMonths?, sex, careInfo, transport: {method, handlingFeeInPaise?, insuranceIncluded}, jurisdictionAllowed[], vendorVerified, cites?}`. Vendor-verification admin workflow gates whether a seller can create `listingType:"live"`. Buyer-side jurisdiction guard at add-to-cart. Index `(listingType, liveItem.species, status)`. | L | ⏳ | | Live animals/plants. CITES if exotic. |
 
-### Phase 4 — Catalog + Offer Split (S9–S10)
+### Phase 4 — Catalog + Offer Split (pull when prioritised — 2-cohort effort)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
 | SB-UNI-L | Split `ProductDocument` into shared `CatalogProductDocument` (canonical `title`/`brandSlug`/`categorySlug`/`card`/`description`/`images`/`identifiers`/`offerCount`/`minOfferPriceInPaise`) + per-seller `SellerOfferDocument` (existing product shape with new optional `catalogProductId` link). Two modes per offer: **catalog-linked** (N sellers offering same SKU — PDP aggregates) and **standalone** (one-of-a-kind). New slug prefix `catalog-`. PDP routing: `/products/{slug}` for offer / `/catalog/{slug}` for catalog. Indices `(brandSlug, categorySlug, minOfferPriceInPaise asc)`, `(card.setName, card.cardNumber)`, `(catalogProductId, priceInPaise asc, condition asc)`. Admin "Promote to catalog" flow creates a `CatalogProductDocument` from an existing offer and back-links. Cart line continues to reference an offer (transaction is per-seller). | XL | ⏳ | | Biggest restructure of the program — 2 sessions. Amazon / TCGPlayer multi-seller-per-SKU. |
 
-### Phase 5 — Per-Type Checkout / Contact Flows (S11)
+### Phase 5 — Per-Type Checkout / Contact Flows (pull when prioritised)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -527,7 +527,7 @@ Rules to keep top-of-mind every task:
 | SB-UNI-N | Digital-code reveal flow — checkout skips shipping address for digital-code orders. On payment success, atomically claim next code from `products/{id}/codes` and mark `claimedByOrderId`. Order detail page reveals code one-time + emails it. Refund revokes unclaimed codes; redeemed codes block refund and surface "this code has been redeemed" to buyer. | M | ⏳ | | Depends on Z1 (signed-URL for code-pool ingestion). |
 | SB-UNI-O | Live-item jurisdiction + transport flow — jurisdiction check at add-to-cart (buyer's state ∈ `liveItem.jurisdictionAllowed`?). Force buyer to acknowledge transport conditions + care info before checkout. Vendor-verification gate: only `vendorVerified === true` sellers can create live listings. Post-purchase: courier method spawns shipment booking flow with live-item-specific carrier (Shiprocket may not cover; fallback needed). | L | ⏳ | | Live animals/plants. Carrier handoff complex. |
 
-### Phase 6 — Downstream Surface Updates (S11–S15)
+### Phase 6 — Downstream Surface Updates (pull when prioritised)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -537,7 +537,7 @@ Rules to keep top-of-mind every task:
 | SB-UNI-S | Cart + checkout listingType-awareness — reject classified/live at add-to-cart (capability registry read); skip shipping address step for digital-code; chat-only for classified. | M | ⏳ | | Reads from capability registry (X1). |
 | SB-UNI-T | Search/filter UI — search-bar dropdown adds listingType filter alongside existing resource-type dropdown (Search Redesign). Faceted filters per type: grade range for graded; meetup city for classified; jurisdiction match for live; redemption-method for digital-code. | M | ⏳ | | Coordinates with Search Redesign memory. |
 
-### Phase 7 — CTA Registry (S10 + S14–S15)
+### Phase 7 — CTA Registry (pull when prioritised — shell + 5-wave sweep)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -547,7 +547,7 @@ Rules to keep top-of-mind every task:
 | SB-UNI-W-4 | Sweep admin dashboard — every CRUD view. Approve/reject/ban/verify-vendor/rebuild-bundle/reset-seed-data flows. | M | ⏳ | | Wave D. |
 | SB-UNI-W-5 | Lint rule `lir/prefer-action-registry` + finalize i18n integration. Rule flags any `<Button>` without an `action` prop whose label string matches a registered label. Allows opt-out via `// eslint-disable-next-line lir/prefer-action-registry`. | S | ⏳ | | Wave F enforcement. |
 
-### Phase 8 — Form & Interaction UX (S11–S14)
+### Phase 8 — Form & Interaction UX (pull when prioritised — shell + 7-cluster migration)
 
 | # | Task | Complexity | Status | Part | Notes |
 |---|------|-----------|--------|------|-------|
@@ -1886,9 +1886,10 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| LL-dashboard-admin | Adopt `<DashboardScaffold>` in admin dashboard layout | ⏳ | Scaffold already in appkit. |
-| LL-dashboard-store | Adopt `<DashboardScaffold>` in store dashboard layout | ⏳ | |
-| LL-dashboard-user | Adopt `<DashboardScaffold>` in user dashboard layout | ⏳ | |
+| LL-dashboard-admin | Adopt unified dashboard scaffold in admin dashboard layout | ✅ | 2026-05-13. `admin/layout.tsx` 77 → 15 lines. Uses appkit `DashboardLayoutClient` + `RoleGuard` from `_internal/client/features/layout/`. |
+| LL-dashboard-store | Adopt unified dashboard scaffold in store dashboard layout | ✅ | 2026-05-13. `store/layout.tsx` 77 → 15 lines. Same islands, `variant="store"`. |
+| LL-dashboard-user | Adopt unified dashboard scaffold in user dashboard layout | ✅ | 2026-05-13. `user/layout.tsx` 100 → 17 lines. Seller-vs-buyer Selling-group mapping lifted to `getUserNavGroups(isSeller)` helper in `src/constants/navigation.tsx`. |
+| LL-dashboard-foundation | Shared layout types/config + `DashboardLayoutClient` + `RoleGuard` islands in appkit | ✅ | 2026-05-13. New `appkit/src/_internal/shared/features/layout/{types,config,index}.ts` (LayoutConfig, DashboardLayoutConfig, SectionTheming, SectionResponsive, DASHBOARD_DESKTOP_MEDIA_QUERY, DASHBOARD_ACCENT_CLASSES). New `appkit/src/_internal/client/features/layout/{DashboardLayoutClient,RoleGuard,index}.tsx`. Collapses ~234 lines of triplicate drawer-state + ProtectedRoute boilerplate. Exported via `@mohasinac/appkit/client`. |
 | LL-scaffold-listing | Extract `<ListingScaffold>` (responsive sticky-rail filters + grid + toolbar) | ⏳ | New `_internal/client/scaffolds/ListingScaffold.tsx`. Replaces ad-hoc layouts in 4 listing views. |
 | LL-scaffold-detail | Extract `<DetailScaffold>` (sticky purchase rail on lg+, inline below) | ⏳ | New `_internal/client/scaffolds/DetailScaffold.tsx`. |
 
@@ -1897,8 +1898,8 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | Q1-funcs-audit | Audit `letitrip.in/functions/src/index.ts` — confirm every Cloud Function is one-line `bindToFirebase.{schedule\|documentWritten\|https}(...)` | ⏳ | Verify step after pre-merge functions rewrite. |
-| Q1-funcs-dryrun | `firebase deploy --only functions --dry-run` parity test | ⏳ | Same function names, regions, triggers as pre-migration. |
-| Q1-ops | `firebase deploy --only functions` + set `FIREBASE_FUNCTION_LISTING_URL` + `LETITRIP_INTERNAL_SECRET` in Vercel env | ⏳ | Promoted from `newchange.md` DEFERRED. |
+| Q1-funcs-dryrun | `firebase deploy --only functions --dry-run` parity test | ✅ | Effectively covered by S7-PrizeDraws-3-ops 2026-05-13 — full deploy shipped with all pre-migration function names + regions + triggers intact. |
+| Q1-ops | `firebase deploy --only functions` + set `FIREBASE_FUNCTION_LISTING_URL` + `LETITRIP_INTERNAL_SECRET` in Vercel env | ✅ | **Done S7-PrizeDraws-3-ops 2026-05-13.** Functions deployed (`asia-south1`). `FIREBASE_FUNCTION_LISTING_URL="https://listingprocessor-nkzuprfdya-el.a.run.app"` added to Vercel production + preview + development; `LETITRIP_INTERNAL_SECRET` mirrored from prod to preview + development. `.env.local` also synced. |
 | Q3-pre-orders | Rewire `/api/pre-orders/route.ts` through `listingProcessor` with `listingType==pre-order` filter | ✅ | **Done S3 2026-05-13.** `/api/pre-orders` queries `productRepository.list` directly with `listingType==pre-order` injected into the filter, mirroring `/api/products` shape. POST handler dropped (pre-order docs are now created through normal product creation). `listingProcessor` delegation deferred to S4 (Q1-ops Functions deploy) — direct repo call is the dev-friendly fallback, same pattern as `/api/products`. |
 
 ### → Tier V (UX Completeness)

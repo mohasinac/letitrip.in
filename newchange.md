@@ -41,6 +41,27 @@
 
 ---
 
+### S7-PrizeDraws-3-ops — Firebase + Vercel deploys (2026-05-13)
+
+Ops cohort fired after user OK'd Firebase + Vercel env updates ("you can deploy firebase stuff or sync vercel env variables or update .env.local file too"). appkit npm publish remains held; consumer still on `file:./appkit`.
+
+| Step | Outcome |
+|---|---|
+| `node appkit/scripts/firebase-merge.mjs` | Root `firestore.indexes.json` re-synced from `appkit/firebase/base/firestore.indexes.json`. 3 prize-draw composites picked up: `(listingType, prizeRevealStatus, prizeRevealWindowEnd)`, `(listingType, prizeRevealStatus, prizeRevealWindowStart)`, `orders.(prizeRevealDeadline)`. |
+| `firebase deploy --only firestore:indexes` | ✅ Indices deployed cleanly to `letitrip-in-app`. |
+| `cd functions && npm run build` | tsup bundle clean — `lib/index.js` 364 KB CJS. |
+| `firebase deploy --only functions` | ✅ All 7 S7-PrizeDraws-prep3 functions created in `asia-south1`: `triggerEventRaffle` · `assignSpinPrize` · `prizeRevealOpen` · `prizeRevealClose` · `prizeRevealExpiry` · `prizeRevealReminder` · `bundleStockSync`. `listingProcessor` updated. All other existing functions updated in place. |
+| `.env.local` | Added `FIREBASE_FUNCTION_LISTING_URL="https://listingprocessor-nkzuprfdya-el.a.run.app"`. `LETITRIP_INTERNAL_SECRET` was already present. |
+| Vercel env | `FIREBASE_FUNCTION_LISTING_URL` added to **production · preview · development** (encrypted). `LETITRIP_INTERNAL_SECRET` was already on production — mirrored to preview + development for parity. |
+
+**Effect:** `/api/products` will now forward listing queries to the `listingProcessor` HTTPS Function the next time it sees both env vars at request time. Prize-draw scheduled jobs (open/close/expiry/reminder every 5 min – 6 h – daily) will start firing on the Cloud Scheduler cadence. `bundleStockSync` runs daily 10:00 IST.
+
+**Held:** `/demo/seed` re-load against staging (no Firestore schema change; product schema TS-level additions only). SB-UNI-Z1/Z2/Z3 media upload reliability — separate cohort.
+
+**Smoke check pending:** end-to-end browser test of the prize-draw create → checkout → reveal flow against live functions. Hand-off to user.
+
+---
+
 ### S7-PrizeDraws-3 — carry-forward closeout (2026-05-13)
 
 Per user directive "no carry forwards from now on. fix all pending tasks before starting s8", drove every S7-PrizeDraws-2 ⚠️ partial row to ✅ on the code side. Ops (Firebase deploys + Vercel env + index deploy + re-seed) remain held — those move to `S7-PrizeDraws-3-ops`. 11 commits across appkit + root. `npm run check` clean (0 errors / 504 pre-existing warnings) every step. appkit consumed via `file:./appkit` — no npm publish.
