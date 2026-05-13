@@ -9,12 +9,14 @@ import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   productRepository,
+  storeRepository,
   successResponse,
+  errorResponse,
   serverLogger,
+  bundleUpdateInputSchema,
 } from "@mohasinac/appkit";
 import { bundlesRepository } from "@mohasinac/appkit/server";
-
-type Ctx = { params: Promise<{ id: string }> };
+import type { BundleUpdateInput } from "@mohasinac/appkit";
 
 async function syncReverseRefs(
   bundleId: string,
@@ -27,91 +29,107 @@ async function syncReverseRefs(
   await Promise.all([
     ...added.map(async (productId) => {
       try {
-        const p: any = await productRepository.findById(productId);
+        const p = await productRepository.findById(productId);
         if (!p) return;
-        const ids: string[] = Array.from(
-          new Set([...(p.partOfBundleIds ?? []), bundleId]),
+        const ids = Array.from(
+          new Set([
+            ...((p as { partOfBundleIds?: string[] }).partOfBundleIds ?? []),
+            bundleId,
+          ]),
         );
-        const titles: string[] = Array.from(
-          new Set([...(p.partOfBundleTitles ?? []), bundleTitle]),
+        const titles = Array.from(
+          new Set([
+            ...((p as { partOfBundleTitles?: string[] }).partOfBundleTitles ?? []),
+            bundleTitle,
+          ]),
         );
         await productRepository.update(productId, {
           partOfBundleIds: ids,
           partOfBundleTitles: titles,
-        } as any);
+        } as never);
       } catch (err) {
-        serverLogger.warn("Bundle reverse-ref add failed", { productId, err });
+        serverLogger.warn("Bundle reverse-ref add failed", { productId, bundleId, err });
       }
     }),
     ...removed.map(async (productId) => {
       try {
-        const p: any = await productRepository.findById(productId);
+        const p = await productRepository.findById(productId);
         if (!p) return;
-        const ids: string[] = (p.partOfBundleIds ?? []).filter(
-          (id: string) => id !== bundleId,
-        );
-        const titles: string[] = (p.partOfBundleTitles ?? []).filter(
-          (t: string) => t !== bundleTitle,
-        );
+        const ids = (
+          (p as { partOfBundleIds?: string[] }).partOfBundleIds ?? []
+        ).filter((id) => id !== bundleId);
+        const titles = (
+          (p as { partOfBundleTitles?: string[] }).partOfBundleTitles ?? []
+        ).filter((t) => t !== bundleTitle);
         await productRepository.update(productId, {
           partOfBundleIds: ids,
           partOfBundleTitles: titles,
-        } as any);
+        } as never);
       } catch (err) {
-        serverLogger.warn("Bundle reverse-ref remove failed", { productId, err });
+        serverLogger.warn("Bundle reverse-ref remove failed", { productId, bundleId, err });
       }
     }),
   ]);
 }
 
-export async function GET(_request: Request, context: Ctx) {
+/**
+ * Verify the caller owns `storeId` (their `ownerId` resolves to the same
+ * store) or is an admin. Returns null when authorised; an error response
+ * otherwise.
+ */
+async function assertOwnerOrAdmin(
+  user: { uid: string; role?: string } | null | undefined,
+  storeId: string,
+): Promise<Response | null> {
+  if (!user) return errorResponse("Authentication required", 401);
+  if (user.role === "admin") return null;
+  const ownerStore = await storeRepository.findByOwnerId(user.uid);
+  if (!ownerStore || ownerStore.id !== storeId) {
+    return errorResponse("Not authorised for this bundle", 403, {
+      code: "FORBIDDEN",
+    });
+  }
+  return null;
+}
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
   const { id } = await context.params;
   const bundle = await bundlesRepository.findById(id);
   if (!bundle) {
-    return Response.json(
-      { error: { code: "NOT_FOUND", message: "Bundle not found" } },
-      { status: 404 },
-    );
+    return errorResponse("Bundle not found", 404, { code: "NOT_FOUND" });
   }
-  return Response.json(successResponse({ bundle }));
+  return successResponse({ bundle });
 }
 
 export const PUT = withProviders(
-  createRouteHandler<unknown, { id: string }>({
+  createRouteHandler<BundleUpdateInput, { id: string }>({
     auth: true,
-    handler: async ({ request, user, params }) => {
-      const id = (params as any)?.id as string;
+    schema: bundleUpdateInputSchema,
+    handler: async ({ body, user, params }) => {
+      const id = (params as { id: string }).id;
       const existing = await bundlesRepository.findById(id);
       if (!existing) {
-        return Response.json(
-          { error: { code: "NOT_FOUND", message: "Bundle not found" } },
-          { status: 404 },
-        );
+        return errorResponse("Bundle not found", 404, { code: "NOT_FOUND" });
       }
-      // Authorization: store owner or admin.
-      if (user?.role !== "admin" && existing.storeId !== user?.uid) {
-        // storeId is the store slug, not Auth uid — accept admin only as a
-        // simple guard for v1. Stricter ownership lookup can land later.
-        if (user?.role !== "admin") {
-          return Response.json(
-            { error: { code: "FORBIDDEN", message: "Not your bundle" } },
-            { status: 403 },
-          );
-        }
-      }
-      const body: any = await request.json();
-      const productIds: string[] = Array.isArray(body.bundleItems)
-        ? body.bundleItems.map((it: any) => it.productId)
+      const forbidden = await assertOwnerOrAdmin(user, existing.storeId);
+      if (forbidden) return forbidden;
+
+      const input = body ?? {};
+      const productIds = input.bundleItems
+        ? input.bundleItems.map((it) => it.productId)
         : existing.partOfBundleProductIds;
-      const updates: any = {
-        ...body,
+      const updates = {
+        ...input,
         partOfBundleProductIds: productIds,
         updatedAt: new Date(),
       };
-      const next = await bundlesRepository.update(id, updates);
+      const next = await bundlesRepository.update(id, updates as never);
       await syncReverseRefs(
         id,
-        body.title ?? existing.title,
+        input.title ?? existing.title,
         productIds,
         existing.partOfBundleProductIds ?? [],
       );
@@ -124,17 +142,14 @@ export const DELETE = withProviders(
   createRouteHandler<unknown, { id: string }>({
     auth: true,
     handler: async ({ user, params }) => {
-      const id = (params as any)?.id as string;
+      const id = (params as { id: string }).id;
       const existing = await bundlesRepository.findById(id);
       if (!existing) {
         return successResponse({ deleted: true });
       }
-      if (user?.role !== "admin") {
-        return Response.json(
-          { error: { code: "FORBIDDEN", message: "Admin required" } },
-          { status: 403 },
-        );
-      }
+      const forbidden = await assertOwnerOrAdmin(user, existing.storeId);
+      if (forbidden) return forbidden;
+
       await bundlesRepository.delete(id);
       await syncReverseRefs(
         id,

@@ -8,13 +8,19 @@ import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   productRepository,
+  storeRepository,
   successResponse,
+  errorResponse,
   serverLogger,
+  bundleCreateInputSchema,
+  BUNDLE_ITEM_MIN,
+  BUNDLE_ITEM_MAX,
 } from "@mohasinac/appkit";
 import { bundlesRepository } from "@mohasinac/appkit/server";
-import type { BundleDocument } from "@mohasinac/appkit";
-
-const ALLOWED_STATUS = ["draft", "published", "out_of_stock", "archived"] as const;
+import type {
+  BundleCreateInput,
+  BundleDocument,
+} from "@mohasinac/appkit";
 
 function slugifyTitle(title: string): string {
   return title
@@ -41,41 +47,66 @@ async function syncReverseRefs(
   await Promise.all([
     ...added.map(async (productId) => {
       try {
-        const p: any = await productRepository.findById(productId);
+        const p = await productRepository.findById(productId);
         if (!p) return;
-        const ids: string[] = Array.from(
-          new Set([...(p.partOfBundleIds ?? []), bundleId]),
+        const ids = Array.from(
+          new Set([
+            ...((p as { partOfBundleIds?: string[] }).partOfBundleIds ?? []),
+            bundleId,
+          ]),
         );
-        const titles: string[] = Array.from(
-          new Set([...(p.partOfBundleTitles ?? []), bundleTitle]),
+        const titles = Array.from(
+          new Set([
+            ...((p as { partOfBundleTitles?: string[] }).partOfBundleTitles ?? []),
+            bundleTitle,
+          ]),
         );
         await productRepository.update(productId, {
           partOfBundleIds: ids,
           partOfBundleTitles: titles,
-        } as any);
+        } as never);
       } catch (err) {
         serverLogger.warn("Bundle reverse-ref add failed", { productId, bundleId, err });
       }
     }),
     ...removed.map(async (productId) => {
       try {
-        const p: any = await productRepository.findById(productId);
+        const p = await productRepository.findById(productId);
         if (!p) return;
-        const ids: string[] = (p.partOfBundleIds ?? []).filter(
-          (id: string) => id !== bundleId,
-        );
-        const titles: string[] = (p.partOfBundleTitles ?? []).filter(
-          (t: string) => t !== bundleTitle,
-        );
+        const ids = (
+          (p as { partOfBundleIds?: string[] }).partOfBundleIds ?? []
+        ).filter((id) => id !== bundleId);
+        const titles = (
+          (p as { partOfBundleTitles?: string[] }).partOfBundleTitles ?? []
+        ).filter((t) => t !== bundleTitle);
         await productRepository.update(productId, {
           partOfBundleIds: ids,
           partOfBundleTitles: titles,
-        } as any);
+        } as never);
       } catch (err) {
         serverLogger.warn("Bundle reverse-ref remove failed", { productId, bundleId, err });
       }
     }),
   ]);
+}
+
+/**
+ * Verify the caller owns `storeId` (their `ownerId` resolves to the same store)
+ * or is an admin. Returns null when authorised; an error response otherwise.
+ */
+async function assertOwnerOrAdmin(
+  user: { uid: string; role?: string } | null | undefined,
+  storeId: string,
+): Promise<Response | null> {
+  if (!user) return errorResponse("Authentication required", 401);
+  if (user.role === "admin") return null;
+  const ownerStore = await storeRepository.findByOwnerId(user.uid);
+  if (!ownerStore || ownerStore.id !== storeId) {
+    return errorResponse("Not authorised for this store", 403, {
+      code: "FORBIDDEN",
+    });
+  }
+  return null;
 }
 
 export const GET = withProviders(
@@ -86,7 +117,7 @@ export const GET = withProviders(
       const category = url.searchParams.get("category");
       const featured = url.searchParams.get("featured");
 
-      let items;
+      let items: BundleDocument[];
       if (storeId) items = await bundlesRepository.findByStore(storeId);
       else if (category) items = await bundlesRepository.findByCategory(category);
       else if (featured === "true") items = await bundlesRepository.findFeatured();
@@ -96,8 +127,7 @@ export const GET = withProviders(
       const isPublic = !url.searchParams.has("includeAll");
       const filtered = isPublic
         ? items.filter(
-            (b: BundleDocument) =>
-              b.status === "published" || b.status === "out_of_stock",
+            (b) => b.status === "published" || b.status === "out_of_stock",
           )
         : items;
 
@@ -107,66 +137,44 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<BundleCreateInput>({
     auth: true,
-    handler: async ({ request, user }) => {
-      const body: any = await request.json();
-      if (!body?.title?.trim()) {
-        return Response.json(
-          { error: { code: "INVALID_INPUT", message: "title required" } },
-          { status: 400 },
-        );
-      }
+    schema: bundleCreateInputSchema,
+    handler: async ({ body, user }) => {
+      const input = body!;
+
+      const forbidden = await assertOwnerOrAdmin(user, input.storeId);
+      if (forbidden) return forbidden;
+
+      // Belt-and-suspenders — schema enforces these but routes are the
+      // canonical contract for the public API.
       if (
-        !Array.isArray(body.bundleItems) ||
-        body.bundleItems.length < 3 ||
-        body.bundleItems.length > 16
+        input.bundleItems.length < BUNDLE_ITEM_MIN ||
+        input.bundleItems.length > BUNDLE_ITEM_MAX
       ) {
-        return Response.json(
-          {
-            error: {
-              code: "INVALID_INPUT",
-              message: "bundleItems must be 3..16 entries",
-            },
-          },
-          { status: 400 },
-        );
-      }
-      const itemType = body.bundleItems[0]?.listingType;
-      if (itemType !== "standard" && itemType !== "pre-order") {
-        return Response.json(
-          { error: { code: "INVALID_INPUT", message: "invalid bundleItemType" } },
-          { status: 400 },
-        );
-      }
-      if (body.bundleItems.some((it: any) => it.listingType !== itemType)) {
-        return Response.json(
-          {
-            error: {
-              code: "INVALID_INPUT",
-              message: "bundle items must share the same listingType",
-            },
-          },
-          { status: 400 },
+        return errorResponse(
+          `bundleItems must be ${BUNDLE_ITEM_MIN}..${BUNDLE_ITEM_MAX} entries`,
+          400,
+          { code: "INVALID_INPUT" },
         );
       }
 
-      const id = body.id ?? makeBundleId(body.title);
-      const productIds = body.bundleItems.map((it: any) => it.productId);
-      const status = ALLOWED_STATUS.includes(body.status) ? body.status : "draft";
+      const itemType = input.bundleItems[0].listingType;
+      const id = input.id ?? makeBundleId(input.title);
+      const productIds = input.bundleItems.map((it) => it.productId);
 
       const bundle = await bundlesRepository.create({
-        ...body,
+        ...input,
         id,
-        slug: body.slug ?? id,
-        status,
+        slug: input.slug ?? id,
+        status: input.status ?? "draft",
         bundleItemType: itemType,
         currency: "INR",
         partOfBundleProductIds: productIds,
-        createdBy: user?.uid,
-      });
+        createdBy: user!.uid,
+      } as never);
 
-      await syncReverseRefs(id, body.title, productIds, []);
+      await syncReverseRefs(id, input.title, productIds, []);
 
       return successResponse({ bundle });
     },
