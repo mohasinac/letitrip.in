@@ -322,3 +322,22 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
 ];
 
 export const USER_NAV_ALL_ITEMS: UserNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items ?? []);
+
+/**
+ * Resolve the user dashboard sidebar groups, swapping the "Selling" group's
+ * single item between "Store Dashboard" (sellers/admins) and "Open a Store"
+ * (everyone else). Kept here (not in the layout component) so the layout
+ * shim stays declarative and the seller-vs-buyer rule is single-sourced.
+ */
+const SELLING_GROUP_TITLE = "Selling";
+const STORE_DASHBOARD_LABEL = "Store Dashboard";
+const BECOME_SELLER_LABEL = "Open a Store";
+
+export function getUserNavGroups(isSeller: boolean): UserNavGroup[] {
+  const sellingItem: UserNavItem = isSeller
+    ? { href: String(ROUTES.STORE.DASHBOARD), label: STORE_DASHBOARD_LABEL }
+    : { href: String(ROUTES.USER.BECOME_SELLER), label: BECOME_SELLER_LABEL };
+  return USER_NAV_GROUPS.map((group) =>
+    group.title === SELLING_GROUP_TITLE ? { ...group, items: [sellingItem] } : group,
+  );
+}
