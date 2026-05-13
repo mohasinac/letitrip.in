@@ -11,29 +11,19 @@
  */
 
 import { request } from "./_http.mjs";
+import {
+  LISTING_TYPES,
+  SEEDED_TIER0_CATEGORIES,
+  SEEDED_STORES_WITH_PRODUCTS,
+  SLUG_PREFIXES,
+} from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
-// ── Seed-known reference values (keep in sync with appkit/src/seed/*) ──────
 const SEED = {
-  storesWithProducts: [
-    "store-pokemon-palace",
-    "store-diecast-depot",
-    "store-cardgame-hub",
-    "store-beyblade-arena",
-    "store-tokyo-toys-india",
-    "store-gundam-galaxy",
-  ],
-  categoriesTier0: new Set([
-    "category-action-figures",
-    "category-trading-cards",
-    "category-diecast-vehicles",
-    "category-spinning-tops",
-    "category-model-kits",
-    "category-vintage-rare",
-  ]),
-  listingTypes: ["standard", "auction", "pre-order", "prize-draw", "bundle"],
+  storesWithProducts: SEEDED_STORES_WITH_PRODUCTS,
+  categoriesTier0: new Set(SEEDED_TIER0_CATEGORIES),
 };
 
 async function probe(label, path, predicate = (r) => r.status === 200) {
@@ -132,7 +122,7 @@ export async function run() {
   // ── PRODUCTS — filter value verification ─────────────────────────────────
   await probe("products listing", "/api/products?pageSize=12");
 
-  for (const lt of ["standard", "auction", "pre-order"]) {
+  for (const lt of [LISTING_TYPES.STANDARD, LISTING_TYPES.AUCTION, LISTING_TYPES.PRE_ORDER]) {
     const r = await probe(
       `products listingType=${lt}`,
       `/api/products?pageSize=12&listingType=${lt}`,
@@ -272,10 +262,16 @@ export async function run() {
     "categories tier=1",
     "/api/categories?flat=true&tier=1&pageSize=120",
   );
+  // Schema (appkit/src/features/categories/schemas/firestore.ts) uses
+  // `parentIds: string[]` — the singular `parentId` is an optional convenience
+  // field for legacy callers. Assert via the array which is canonical.
   assertEvery(
-    "categories tier=1 — every item.parentId references a tier-0",
+    "categories tier=1 — every item.parentIds[0] references a tier-0",
     itemsOf(tier1R.body),
-    (it) => !!it.parentId && it.parentId !== it.id,
+    (it) =>
+      Array.isArray(it.parentIds) &&
+      it.parentIds.length > 0 &&
+      it.parentIds[0] !== it.id,
   );
 
   // featured / isBrand
@@ -320,9 +316,9 @@ export async function run() {
 
   const faqsR = await probe("faqs listing", "/api/faqs?pageSize=20");
   assertEvery(
-    "faqs — every item has id starting with 'faq-'",
+    `faqs — every item has id starting with '${SLUG_PREFIXES.FAQ}'`,
     itemsOf(faqsR.body),
-    (it) => typeof it.id === "string" && it.id.startsWith("faq-"),
+    (it) => typeof it.id === "string" && it.id.startsWith(SLUG_PREFIXES.FAQ),
   );
 
   const faqHomeR = await request(
@@ -337,13 +333,16 @@ export async function run() {
 
   const preR = await probe("pre-orders listing", "/api/pre-orders?pageSize=12");
   assertEvery(
-    "pre-orders — every item.listingType==='pre-order'",
+    `pre-orders — every item.listingType==='${LISTING_TYPES.PRE_ORDER}'`,
     itemsOf(preR.body),
-    (it) => it.listingType === "pre-order",
+    (it) => it.listingType === LISTING_TYPES.PRE_ORDER,
   );
 
   // ── Product detail ───────────────────────────────────────────────────────
-  const onePstd = await request("GET", "/api/products?pageSize=1&listingType=standard");
+  const onePstd = await request(
+    "GET",
+    `/api/products?pageSize=1&listingType=${LISTING_TYPES.STANDARD}`,
+  );
   const pid = itemsOf(onePstd.body)[0]?.id;
   if (pid) {
     const detail = await probe(`product ${pid} detail`, `/api/products/${pid}`);
@@ -365,8 +364,8 @@ export async function run() {
   );
   await sieveDiff(
     "products listingType",
-    "/api/products?pageSize=12&listingType=auction&sorts=-createdAt",
-    "/api/products?pageSize=12&listingType=standard&sorts=-createdAt",
+    `/api/products?pageSize=12&listingType=${LISTING_TYPES.AUCTION}&sorts=-createdAt`,
+    `/api/products?pageSize=12&listingType=${LISTING_TYPES.STANDARD}&sorts=-createdAt`,
   );
   await sieveDiff(
     "products price range minPrice vs maxPrice",

@@ -52,6 +52,7 @@ async function computeSellerEarnings(storeId: string) {
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
+  roles: ["seller", "admin"],
   handler: async ({ request, user }) => {
     const uid = user!.uid;
     const store = await storeRepository.findByOwnerId(uid);

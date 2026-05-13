@@ -9762,3 +9762,130 @@ src/constants/navigation.tsx
 3 copies of ProtectedRoute →  1 (RoleGuard with ROUTES.* defaults)
 DASHBOARD_DESKTOP_BREAKPOINT_PX = 768  →  single SoT in shared/features/layout/config
 ```
+
+
+## S-SBUNI-1 + S-SBUNI-2 — Categories Unification (2026-05-13)
+
+Four standalone Firestore collections collapsed onto one. `CategoryDocument.categoryType` is the discriminator.
+
+```
+BEFORE (4 collections + 4 repos + 4 seed files)
+═══════════════════════════════════════════════════════════════
+
+categories             ─── tier-N hierarchy
+sublistingCategories   ─── leaf groupings under a parent
+brands                 ─── brand storefronts
+bundles                ─── pricing-aware product packs
+groupedListings        ─── "bundle-priced" theme groups (duplicate semantics)
+
+AFTER (1 collection × 4 categoryType values + theme-group)
+═══════════════════════════════════════════════════════════════
+
+                       categoriesRepository
+                              │
+        ┌──────────────┬──────┴───────┬──────────────┐
+        │              │              │              │
+    "category"    "sublisting"     "brand"       "bundle"
+        │              │              │              │
+        │              ├ itemCode    ├ brandWebsite │ bundlePriceInPaise
+        │              │              ├ brandCountry │ bundleQueryRule
+        │              │              ├ brandFounded │   (static | dynamic)
+        │              │              └ brandBanner  │ bundleStockStatus
+        │              │                Image        │ bundleProductIds[]
+        │              │                             │ bundleQueryResolvedAt
+        │              │                             │
+        ▼              ▼              ▼              ▼
+   tier 0..N      tier 1..3       tier 0         tier 0
+   parentIds      parentIds       self-rooted    self-rooted
+                                                 createdByStoreId
+                                                 = seller scoping
+
+groupedListings (re-scoped V)
+═══════════════════════════════════════════════════════════════
+
+BEFORE:  bundlePrice / originalPrice / discountPercent / currency
+AFTER :  groupTheme: related | character | lineage | set | generic
+         minActiveMembers (default 2)
+         activeMemberCount       ◄── maintained by onProductStockChange
+         visibilityStatus: visible | hidden
+```
+
+```
+ListingType union (SB-UNI-D)
+═══════════════════════════════════════════════════════════════
+
+BEFORE:  "standard" | "auction" | "pre-order" | "prize-draw" | "bundle"
+AFTER :  "standard" | "auction" | "pre-order" | "prize-draw"
+
+   ↑ bundles are NOT a listingType anymore — they're a categoryType.
+   ↑ cart line for a bundle (forward-looking) = { bundleCategorySlug, qty }
+     expanded to N product order lines at checkout. Not wired today;
+     deferred to S-SBUNI-3.
+```
+
+```
+onProductStockChange Firebase Function (V) — Firestore onWrite trigger
+═══════════════════════════════════════════════════════════════
+
+   products/{productId}  ───write──►  onProductStockChange (asia-south1)
+                                              │
+                                              ▼
+              ┌────────────────────────────────────────────────┐
+              │ if isAvailable(before) === isAvailable(after)  │
+              │   → no-op                                       │
+              └────────────────────────────────────────────────┘
+                                              │
+              ┌────────────────────────────────┼──────────────────┐
+              ▼                                ▼                  ▼
+        categoriesRepository           groupedListings     bundleStockSync
+        .listByType("bundle")          (productIds         (scheduled
+        .where("bundleProductIds",      array-contains)     daily 10:00 IST)
+                "array-contains",
+                productId)
+                                              │
+              ▼                                ▼
+        recompute bundleStockStatus      recompute activeMemberCount
+        (in_stock | partial |             visibilityStatus
+         out_of_stock)                    (visible | hidden)
+```
+
+```
+Firestore index changes (SB-UNI-1/2 deploys)
+═══════════════════════════════════════════════════════════════
+
+ADDED (categories collection)
+  (categoryType, isActive, order)               B + C list queries
+  (categoryType, createdAt DESC)                Admin sweeps
+  (categoryType, createdByStoreId, isActive,
+   createdAt DESC)                              Store-scoped bundles (D)
+
+AUTO-INDEXED
+  bundleProductIds CONTAINS                     onProductStockChange lookup
+  groupedListings.productIds CONTAINS           Theme-group sync
+
+ORPHANS (delete with --force when convenient — cost-free)
+  sublistingCategories × 2 composites
+  bundles × 6 composites
+```
+
+```
+Bundle UI ROUTES (post-SB-UNI-2 — REBUILD DEFERRED to S-SBUNI-3)
+═══════════════════════════════════════════════════════════════
+
+DELETED entirely (not redirects — 404 until rebuilt):
+  /admin/bundles                    /admin/bundles/[id]/edit
+  /store/bundles                    /store/bundles/new
+  /store/bundles/[id]/edit          /bundles (public listing)
+  /bundles/[slug] (public detail)
+  /api/bundles                      /api/bundles/[id]
+
+ROUTES.* constants still declared (BUNDLES, BUNDLE_DETAIL, STORE_BUNDLES,
+ADMIN.BUNDLES) — kept so the rebuild can land into existing route names.
+Until then, links via these constants resolve to 404.
+
+REPLACEMENT primitives that survive:
+  categoriesRepository.findBySlugAndType(slug, "bundle")
+  categoriesRepository.listByType("bundle", { activeOnly, limit })
+  <CategoryBundlesListing initialBundles={...} brandName={...} />
+  StoreBundlesPageView (renders against category-scoped bundles)
+```

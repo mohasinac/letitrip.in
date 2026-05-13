@@ -19,6 +19,7 @@ import { serverLogger } from "@mohasinac/appkit";
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
+    roles: ["seller", "admin"],
     handler: async ({ user }) => {
       const functionUrl = process.env.FIREBASE_FUNCTION_STORE_ANALYTICS_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;

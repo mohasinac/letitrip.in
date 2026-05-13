@@ -30,6 +30,7 @@ import { serverLogger } from "@mohasinac/appkit";
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
+  roles: ["seller", "admin"],
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
