@@ -132,7 +132,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                   : null;
               // SB1-G Phase 4 — canonical predicates over listingType only.
               const lAsLT = l as {
-                listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+                listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
               };
               const isAuction = isAuctionListing(lAsLT);
               const isPreOrder = isPreOrderListing(lAsLT);

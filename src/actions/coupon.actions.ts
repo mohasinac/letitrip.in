@@ -38,12 +38,12 @@ const cartItemSchema = z.object({
   price: z.number().positive(),
   quantity: z.number().int().min(1),
   // SB1-G Phase 4 — canonical listing-kind snapshot.
+  // SB-UNI-D — "bundle" removed; bundles are a categoryType, not listingType.
   listingType: z.enum([
     "standard",
     "auction",
     "pre-order",
     "prize-draw",
-    "bundle",
   ]),
 });
 

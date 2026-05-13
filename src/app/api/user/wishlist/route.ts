@@ -78,7 +78,7 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
     // SB1-G Phase 4 — canonical listingType drives the snapshot's `productType` tag.
     const lt = normalizeListingType(
       product as {
-        listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+        listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
       },
     );
     const productType: "product" | "auction" | "preorder" =

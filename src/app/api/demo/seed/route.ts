@@ -51,7 +51,6 @@ import {
   historySeedData,
   conversationsSeedData,
   groupedListingsSeedData,
-  bundlesSeedData,
   scammersSeedData,
   productFeaturesSeedData,
 } from "@mohasinac/appkit";
@@ -82,7 +81,7 @@ import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
 // SB-UNI-B — SUBLISTING_CATEGORIES_COLLECTION removed; sublistings now live in CATEGORIES_COLLECTION with categoryType:"sublisting".
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
-import { BUNDLES_COLLECTION } from "@mohasinac/appkit";
+// SB-UNI-V — BUNDLES_COLLECTION dropped; bundles in CATEGORIES_COLLECTION with categoryType:"bundle".
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_FEATURES_COLLECTION } from "@mohasinac/appkit";
@@ -114,7 +113,6 @@ type CollectionName =
   | "history"
   | "conversations"
   | "groupedListings"
-  | "bundles"
   | "couponUsage"
   | "scammerProfiles"
   | "productFeatures";
@@ -153,7 +151,6 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   history: HISTORY_COLLECTION,
   conversations: CONVERSATIONS_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
-  bundles: BUNDLES_COLLECTION,
   scammerProfiles: SCAMMER_COLLECTION,
   productFeatures: PRODUCT_FEATURES_COLLECTION,
 };
@@ -191,7 +188,6 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   history: historySeedData,
   conversations: conversationsSeedData,
   groupedListings: groupedListingsSeedData,
-  bundles: bundlesSeedData,
   scammerProfiles: scammersSeedData,
   productFeatures: productFeaturesSeedData,
 };

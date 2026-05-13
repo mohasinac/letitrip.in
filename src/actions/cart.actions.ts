@@ -36,12 +36,12 @@ const addToCartSchema = z.object({
   storeId: z.string().min(1),
   storeName: z.string().min(1),
   // SB1-G Phase 4 — canonical listing-kind snapshot.
+  // SB-UNI-D — "bundle" removed; bundles are a categoryType, not listingType.
   listingType: z.enum([
     "standard",
     "auction",
     "pre-order",
     "prize-draw",
-    "bundle",
   ]),
   /** Set when item originates from an accepted Make-an-Offer */
   offerId: z.string().optional(),

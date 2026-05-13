@@ -35,7 +35,7 @@ const CORE_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
-  "products", "bids", "groupedListings", "bundles", "productFeatures",
+  "products", "bids", "groupedListings", "productFeatures",
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
@@ -1010,44 +1010,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "storeId",  type: "ref",       filterable: true, indexed: true },
       { name: "status",   type: "enum",      filterable: true },
       { name: "createdAt",type: "timestamp", sortable: true, indexed: true },
-    ],
-  },
-  bundles: {
-    label: "Bundles (Tier SB)",
-    icon: "🎁",
-    group: "listings",
-    target: 12,
-    description:
-      "Tier SB foundation — homogeneous bundles of 3–16 items (all-standard XOR all-pre-order). Auctions and prize-draws intentionally excluded. Bundle-level price + items[] with isSold flag; markItemSold transactionally flips bundle to out_of_stock when any item sells. partOfBundleProductIds is the reverse-pointer list for array-contains queries from a product's perspective.",
-    slugPattern: "bundle-{title-kebab}",
-    seededItems: [
-      "bundle-pokemon-tcg-starter-pack-2026 — published, featured, standard, 3 items, maxPerUser=3",
-      "bundle-gunpla-pg-arrivals-2026 — published, promoted, pre-order, 3 items, maxPerUser=1",
-      "bundle-beyblade-x-launch-pack-2025 — out_of_stock (one item sold), standard, 3 items",
-    ],
-    pendingItems: [
-      "Real bundle-image-* uploads (S23+)",
-      "Admin /admin/bundles moderation list pages (SB3-G admin pair pending)",
-      "SB3-D stock-sync triggers wired into /api/orders POST + /api/products PATCH (currently best-effort only on bundle write)",
-    ],
-    uiPath: "/store/bundles",
-    fields: [
-      { name: "title",                  type: "string",    searchable: true },
-      { name: "slug",                   type: "string",    searchable: true, indexed: true },
-      { name: "storeId",                type: "ref",       filterable: true, indexed: true },
-      { name: "status",                 type: "enum",      filterable: true, indexed: true },
-      { name: "bundleItemType",         type: "enum",      filterable: true, note: "standard | pre-order" },
-      { name: "bundleItems",            type: "array",     note: "min 3, max 16 (BUNDLE_MIN_ITEMS/MAX_ITEMS)" },
-      { name: "bundlePrice",            type: "number",    sortable: true, note: "paise" },
-      { name: "bundleOriginalTotal",    type: "number",    note: "paise; sum of items at assembly" },
-      { name: "categorySlug",           type: "ref",       filterable: true, indexed: true },
-      { name: "brandSlug",              type: "ref",       filterable: true },
-      { name: "isFeatured",             type: "boolean",   filterable: true, indexed: true },
-      { name: "isPromoted",             type: "boolean",   filterable: true },
-      { name: "maxPerUser",             type: "number",    note: "hard cap per buyer (SB6)" },
-      { name: "partOfBundleProductIds", type: "array",     indexed: true, note: "array-contains reverse pointer" },
-      { name: "createdAt",              type: "timestamp", sortable: true, indexed: true },
-      { name: "updatedAt",              type: "timestamp", sortable: true },
     ],
   },
   scammerProfiles: {

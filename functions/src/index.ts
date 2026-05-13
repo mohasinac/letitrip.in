@@ -37,6 +37,7 @@ import {
   onCategoryWriteHandler,
   onOrderCreateHandler,
   onOrderStatusChangeHandler,
+  onProductStockChangeHandler,
   onProductWriteHandler,
   onReviewWriteHandler,
   onStoreWriteHandler,
@@ -172,6 +173,15 @@ export const onOrderStatusChange = bindToFirebase.documentUpdated(
 export const onProductWrite = bindToFirebase.documentWritten(
   "onProductWrite",
   onProductWriteHandler,
+  { document: "products/{productId}", region: REGION },
+);
+
+// SB-UNI-V — recomputes bundleStockStatus on bundle categories +
+// activeMemberCount on groupedListings when a product's available/
+// unavailable state flips.
+export const onProductStockChange = bindToFirebase.documentWritten(
+  "onProductStockChange",
+  onProductStockChangeHandler,
   { document: "products/{productId}", region: REGION },
 );
 

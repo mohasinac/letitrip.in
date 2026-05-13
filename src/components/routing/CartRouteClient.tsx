@@ -38,13 +38,13 @@ interface ServerCartItem {
   sellerName?: string;
   sellerSlug?: string;
   /** Canonical listing-kind snapshot from CartItemDocument (SB1-G Phase 4). */
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
 }
 
 /** Local helper — derives the per-item `listingType` snapshot used by cart UI rendering. */
 type CartItemWithListingType = CartItem & {
   itemId?: string;
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle";
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
 };
 
 interface AppliedCoupon {
@@ -84,7 +84,7 @@ interface ValidateResponse {
 /** Derive the product detail URL from the canonical listingType (with slug-prefix fallback). */
 function getProductHref(
   productId: string,
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw" | "bundle",
+  listingType?: "standard" | "auction" | "pre-order" | "prize-draw",
 ): string {
   if (listingType === "auction" || productId.startsWith("auction-")) {
     return String(ROUTES.PUBLIC.AUCTION_DETAIL(productId));
