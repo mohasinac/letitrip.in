@@ -201,19 +201,24 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### ✅ LAST COMPLETED — S-SBUNI-RULES follow-up: payout deduction + quality pass (2026-05-14)
+### ✅ LAST COMPLETED — S-dashboard-quality-pass: appkit wrappers + CSS vars + prize-draws shim (2026-05-14)
+
+Appkit wrappers + CSS var quality pass on files from S-dashboard-listing-audit. `npm run check` exits 0. Appkit published v2.6.5. Deployed to Vercel prod.
+
+- **store/prize-draws/page.tsx** — stub missed in S-dashboard-listing-audit; wired to `SellerPrizeDrawsView`.
+- **store/sublisting-categories/page.tsx** — full rewrite: raw HTML (div/span/p/h1/button/input + `eslint-disable`) → appkit primitives (Div/Row/Text/Heading/Button/Select/Badge). CSS vars throughout.
+- **store/templates/page.tsx** — CSS var pass: all `zinc-{n} dark:zinc-{n}` pairs → `--appkit-color-border/surface/border-subtle/error-*` tokens.
+- **appkit v2.6.5** — includes SellerPreOrdersView + SellerPrizeDrawsView + AdminPrizeDrawsView + CSS var pass on AdminPrizeDrawsView + client.ts exports for all 3 views. Published to npm.
+- No schema, seed, Firebase index, or SieveJS changes this session.
+
+### ✅ Previous — S-SBUNI-RULES follow-up: payout deduction + quality pass (2026-05-14)
 
 REFUND_COPY constants module + component quality pass + payout deduction architecture. `npm run check` exits 0. Appkit published v2.6.4. Deployed to Vercel prod.
 
-- **REFUND_COPY module** (`appkit/src/_internal/shared/features/orders/refund-copy.ts`) — single source of truth for all user-facing strings in refund/shipping/sibling-payment UI. Groups: `history` · `request` (incl. `acknowledgments as const`) · `siblingPayments` (factory fn) · `shipping`. Exported from `appkit/src/index.ts`.
-- **Component quality pass** — `RefundHistoryTable` / `RefundRequestView` / `OrderSiblingPayments` rewritten: all strings via REFUND_COPY, all raw HTML replaced with appkit primitives (`Badge` / `Div` / `Heading` / `Row` / `Stack` / `Text` / `Checkbox` / `Textarea`), colors via `text-[color:var(--appkit-color-primary)]`. `ShippingPicker` migrated to REFUND_COPY.shipping.*. Acknowledgment count derived from `.length` (not a magic number).
-- **Payout deduction** — `PayoutRefundDeduction` interface + `applyRefundDeductionAction` (fire-and-forget from `processRefundAction`); `applyRefundDeduction` repo method atomically appends deduction + recalculates `netAmount = max(0, amount − totalDeducted)`; `POST /api/admin/payouts/[id]/deduction` manual clawback route. `netAmount` added to payouts SIEVE_FIELDS.
-- **Sieve fields** — `paymentBatchId` + `contestable` added to orders `ADMIN_SIEVE_FIELDS` + `SELLER_SIEVE_FIELDS`. `netAmount` added to payouts SIEVE_FIELDS.
-- **Fix** — TS1005 parse error in `refund-copy.ts` `nonContestableBanner` string (embedded `"` inside double-quoted string); fixed by switching outer quotes to single.
-- **ASCII diagrams** — updated Admin > Payouts section (netAmount column + deduction modal); added diagrams for RefundHistoryTable / RefundRequestView / OrderSiblingPayments / ShippingPicker.
+- **REFUND_COPY module** — single source of truth for all user-facing strings in refund/shipping/sibling-payment UI.
+- **Component quality pass** — `RefundHistoryTable` / `RefundRequestView` / `OrderSiblingPayments` / `ShippingPicker` rewritten with REFUND_COPY + appkit primitives.
+- **Payout deduction** — `PayoutRefundDeduction` + `applyRefundDeductionAction` + `POST /api/admin/payouts/[id]/deduction`. `netAmount` field on payouts.
 - **appkit v2.6.4** published to npm. `vercel --prod` deployed.
-
-**Pending follow-up**: `firebase deploy --only firestore:indexes` for `paymentBatchId` composite (index already merged into `firestore.indexes.json` in prior session).
 
 ### 🔄 CURRENT — S9: RBAC complete (RBAC1–10) + inline TODO(RBAC) retrofit
 
