@@ -41,6 +41,23 @@
 
 ---
 
+### S-dashboard-quality-pass — appkit wrappers + CSS vars + prize-draws shim (2026-05-14)
+
+Quality pass on the files changed in S-dashboard-listing-audit. TypeScript: 0 errors. `npm run check` exits 0. appkit v2.6.5 published. Deployed to Vercel prod.
+
+| File | Change |
+|------|--------|
+| `store/sublisting-categories/page.tsx` | Full rewrite — raw HTML → appkit Div/Row/Text/Heading/Button/Select/Badge; eslint-disable removed; ROUTES + useUrlTable from `@mohasinac/appkit/client`; CSS var tokens on all borders/surfaces |
+| `store/templates/page.tsx` | Hardcoded zinc/red Tailwind dark-mode pairs replaced with `--appkit-color-border/surface/border-subtle/error-*` tokens; redundant text color classNames removed |
+| `store/prize-draws/page.tsx` | Wire `SellerPrizeDrawsView` — was still a placeholder stub from last session (missed in the SB4-E commit) |
+| `admin/prize-draws/page.tsx` | No-op line-ending normalisation |
+| `store/pre-orders/page.tsx` | No-op line-ending normalisation |
+| appkit v2.6.5 | Release commit (`45830dc`) includes `63ddcef` (SellerPreOrdersView + SellerPrizeDrawsView + AdminPrizeDrawsView) + `780884d` (CSS var quality pass on AdminPrizeDrawsView + client.ts exports for all 3 views) |
+
+**Deferred**: none — no schema/seed/index changes this session.
+
+---
+
 ### S-SBUNI-RULES follow-up — payout deduction + quality pass (2026-05-14)
 
 Continuation of S-SBUNI-RULES. Two deliverables:

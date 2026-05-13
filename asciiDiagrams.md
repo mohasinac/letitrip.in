@@ -3801,31 +3801,41 @@ API: GET /api/store/analytics → proxies Firebase Function storeAnalytics
 
 ---
 
-## Store > Sub-listing Categories ✅ (SC1+SC2 store-side — 2026-05-10)
+## Store > Sub-listing Categories ✅ (SC1+SC2 store-side — quality pass 2026-05-14)
 
 ```
 Pages: /store/sublisting-categories          (list)
        /store/sublisting-categories/new      (create)
        /store/sublisting-categories/[id]/edit (edit)
-APIs:  GET    /api/store/sublisting-categories
+APIs:  GET    /api/store/sublisting-categories   ?page=&pageSize=25&sorts=name
        POST   /api/store/sublisting-categories
        GET    /api/store/sublisting-categories/[id]
        PUT    /api/store/sublisting-categories/[id]
        DELETE /api/store/sublisting-categories/[id]
 Ownership: sellers can only edit/delete categories where createdBy === store.id
+Components: appkit Div/Row/Text/Heading/Button/Select/Badge (no raw HTML)
+URL state: useUrlTable — sort + page persisted in URL query params
 
 LIST PAGE (/store/sublisting-categories)
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Sub-listing Groups                              [+ New Category]           │
+│  Sub-listing Categories                          [+ New Category]           │
+│  Group your listings of the same collectible across grades/conditions.      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Search [________________________]                                           │
+│  [Search by name or item code…]   [Sort: Name A–Z ▾]                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Base Set Charizard 108/120      #PKMN-BS-108    12 items  [Edit] [Delete]  │
-│  Hot Wheels Redline 1968–1977    #HW-RL-68       8 items   [Edit] [Delete]  │
-│  Gundam HGUC 1/144              #BNDI-HGUC      5 items   [Edit]           │
-│  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│
-│  (admin-created categories show without Delete — ownership gated)           │
+│  Base Set Charizard 108/120  [#PKMN-BS-108] [12 listings]                  │
+│    Group of all Base Set Charizard listings...            [View][Edit][Del] │
+│  Hot Wheels Redline 1968–1977 [#HW-RL-68] [8 listings]  [View][Edit][Del] │
+│  Gundam HGUC 1/144 [#BNDI-HGUC] [5 listings]            [View][Edit]       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  24 categories total  ·  You can edit/delete categories you created.        │
+│                                            [← Previous]  1 / 2  [Next →]   │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Sort options: Name A–Z (default) | Name Z–A | Newest | Oldest
+Server-side sort via sorts= param. pageSize=25. Local search (API has no q param).
+Row actions: View (opens public /sublisting-categories/[id] in new tab) · Edit · Delete.
+Delete gated: confirms irreversibility, only creator can delete.
 
 CREATE / EDIT FORM (/new or /[id]/edit)
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -9435,7 +9445,7 @@ Discount row colour: text-emerald-600 dark:text-emerald-400 (print:text-black)
 
 ---
 
-## Store > Product Templates ✅ (Session S4, G1)
+## Store > Product Templates ✅ (Session S4, G1 · quality pass 2026-05-14)
 
 ```
 Route:   /store/templates
@@ -9443,12 +9453,13 @@ Page:    src/app/[locale]/store/templates/page.tsx
 API:     GET/POST /api/store/templates   GET/PUT/DELETE /api/store/templates/[id]
 ROUTES:  ROUTES.STORE.TEMPLATES
 Nav:     Listings → Templates (STORE_NAV_GROUPS)
+URL state: useUrlTable — sort + condition filter persisted in URL query params
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Product Templates                             [+ New Template]             │
 │  Save common field sets to pre-fill new listings faster.                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [Search templates…                                                    ]     │
+│  [Search templates…      ]  [Sort: Name A–Z ▾]  [Any condition ▾]          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Pokémon Card Standard                     [Edit] [Delete]                  │
 │  trading-cards · Pokémon Company · like_new                                 │
@@ -9456,6 +9467,11 @@ Nav:     Listings → Templates (STORE_NAV_GROUPS)
 │  Hot Wheels Die-cast                       [Edit] [Delete]                  │
 │  diecast-vehicles · Hot Wheels · new                                        │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Sort options: Name A–Z (default) | Name Z–A  (client-side — API has no sort param)
+Condition filter: Any | New | Like New | Good | Fair | Used  (client-side)
+Search: filters by name on Enter key (client-side)
+All CSS: --appkit-color-border/surface/border-subtle/error-* tokens (no zinc pairs)
 
 SideDrawer (mode=create|edit):
 ┌─────────────────────────────────────┐
