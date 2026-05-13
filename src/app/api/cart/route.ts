@@ -59,6 +59,13 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.OUT_OF_STOCK);
     }
 
+    const listingType = normalizeListingType(product);
+    if (listingType === "auction") {
+      return ApiErrors.badRequest(
+        "Auctions can't be added to cart. Place a bid on the auction page instead.",
+      );
+    }
+
     if (product.availableQuantity < quantity) {
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.INSUFFICIENT_STOCK);
     }
