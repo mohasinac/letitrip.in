@@ -12,7 +12,11 @@
   - [Standard Admin Listing View Pattern](#shared--standard-admin-listing-view-pattern-)
   - [MediaUploadField](#shared--mediauploadfield-)
   - [PageLoader](#shared--pageloader-)
-c  - [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-)
+  - [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-)
+  - [RefundHistoryTable](#shared--refundhistorytable-)
+  - [RefundRequestView](#shared--refundrequestview-)
+  - [OrderSiblingPayments](#shared--ordersiblingpayments-)
+  - [ShippingPicker](#shared--shippingpicker-)
 - **Card Components & List Views** *(all collections)*
   - [Card Inventory Table](#card-components--card-inventory-table)
   - [BaseListingCard (compound primitive)](#card-components--baselistingcard-compound-primitive)
@@ -2983,7 +2987,7 @@ SideDrawer (3+ fields → SideDrawer rule):
 
 ---
 
-## Admin > Payouts List ✅ (ARCH4 — storeId identity + mark-paid + CSV)
+## Admin > Payouts List ✅ (ARCH4 — storeId identity + mark-paid + CSV + deduction S-SBUNI-RULES)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -2991,19 +2995,23 @@ SideDrawer (3+ fields → SideDrawer rule):
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  [🔍 Search stores, payout IDs, or order groups...]   [Status ▾]  [Sort ▾] │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Payout ID · Amount          Store (storeName)    Status      Updated    ⋮  │
+│  Payout ID · Amount  · Net   Store (storeName)    Status      Updated    ⋮  │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  payout-mistys-… · ₹47,500  Misty's Water Cards  PENDING     2 days ago ⋮  │
-│  payout-bladers-… · ₹28,000 Bladers Paradise     PAID        5 days ago ⋮  │
-│  payout-animev-… · ₹15,200  Anime Vault India    PROCESSING  1 day ago  ⋮  │
+│  payout-mistys-… · ₹47,500 · ₹42,250  Misty's   PENDING    2 days ago  ⋮  │
+│  payout-bladers-… · ₹28,000 · ₹28,000 Bladers   PAID       5 days ago  ⋮  │
+│  payout-animev-… · ₹15,200 · ₹15,200  Anime     PROCESSING 1 day ago   ⋮  │
 │  ─────────────── Empty state: "No payouts found" ─────────────────────────  │
 
+  netAmount: gross amount minus any refund deductions (refundDeductions[]).
+  Payout batch dispatches netAmount ?? amount to Razorpay.
+
   [Export CSV] → GET /api/admin/payouts/export → downloads payouts-YYYY-MM-DD.csv
-                 Columns: id, storeId, storeName, amount, status, transactionId,
-                          periodStart, periodEnd, createdAt
+                 Columns: id, storeId, storeName, amount, netAmount, status,
+                          transactionId, periodStart, periodEnd, createdAt
 
   Row ⋮ → RowActionMenu:
-    [Mark paid]  (disabled if status = paid or cancelled)
+    [Mark paid]        (disabled if status = paid or cancelled)
+    [Apply deduction]  (enabled only if status = pending)
 
   Mark paid Modal (1 field — 0-2 field rule):
   ┌──────────────────────────────────────────┐
@@ -3016,6 +3024,28 @@ SideDrawer (3+ fields → SideDrawer rule):
   │                    [Cancel] [Confirm paid]│
   └──────────────────────────────────────────┘
   → PATCH /api/admin/payouts/[id]  { status:"paid", transactionId }
+
+  Apply Deduction Modal — manual admin clawback for already-settled payouts:
+  ┌──────────────────────────────────────────────────────────────┐
+  │  Apply refund deduction                                   [✕]│
+  ├──────────────────────────────────────────────────────────────┤
+  │  Order ID      [order-3-20260508-a1b2c3___________________]  │
+  │  Refund ID     [refund_Abcd1234____________________________]  │
+  │  Refunded amt  [₹ paise integer e.g. 50000]                  │
+  │  Deducted amt  [₹ paise — default = refunded × 0.95]         │
+  │  Reason        [Free text________________________________]    │
+  ├──────────────────────────────────────────────────────────────┤
+  │                              [Cancel]  [Apply deduction]      │
+  └──────────────────────────────────────────────────────────────┘
+  → POST /api/admin/payouts/[id]/deduction
+       { orderId, refundId, refundedAmount, deductedAmount?, reason }
+  Returns 409 when payout not pending, 404 when not found.
+
+  Automatic deduction (fire-and-forget from processRefundAction):
+    On refund approval → applyRefundDeductionAction(storeId, orderId, refundId,
+      refundedAmountInPaise, platformFeeRate?) called in refund server action.
+    deductedAmount = refundedAmount × (1 − platformFeeRate)  [platform keeps fee share]
+    No-op if no pending payout found for that storeId / orderId.
 ```
 
 ---
@@ -10760,3 +10790,157 @@ Indices -> Functions -> Vercel  (each independent, indices first because
 | `ROUTES.PUBLIC.BUNDLES`, `BUNDLE_DETAIL`  | `@mohasinac/appkit/client`                                               |
 | `ROUTES.ADMIN.BUNDLES`, `BUNDLES_NEW`, `BUNDLES_EDIT` | `@mohasinac/appkit/client`                                   |
 | `API_ROUTES.ADMIN.BUNDLES`, `BUNDLE_BY_ID`| `src/constants/api.ts`                                                   |
+
+---
+
+## Shared > RefundHistoryTable ✅ (S-SBUNI-RULES 2026-05-13)
+
+```
+Component: appkit/src/features/orders/components/RefundHistoryTable.tsx
+Copy:      REFUND_COPY.history (all strings)
+Import:    Badge, Div, Heading, Row, Stack, Text (appkit/src/ui)
+
+Rendered inside order detail views (user + admin + store) when order.refunds.length > 0.
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Refund history                                                              │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  Full refund  (or "Partial refund")  [badge: green / amber]         │   │
+│  │  ₹500.00 · 10 May 2026                                              │   │
+│  │  Reason: Item arrived damaged                                        │   │
+│  │  Txn: refund_Abcd1234                                                │   │
+│  │  Razorpay: pay_Xyz9876   (shown when razorpayRefundId present)      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ────────────────────────────────────────────────────────────────────────── │
+│  ⚠ Disputes, RMA requests, and "Item Not Received" claims are no longer    │
+│    available for this order.                                                │
+│    (shown when order.contestable === false)                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Props:
+  refunds: OrderRefundEvent[]
+  contestable?: boolean   (shows non-contestable banner when false)
+Data shape (OrderRefundEvent):
+  type: "razorpay" | "manual"  ·  amount: number  ·  reason: string
+  refundedAt: Date  ·  refundId: string  ·  razorpayRefundId?: string
+  isPartial: boolean
+```
+
+---
+
+## Shared > RefundRequestView ✅ (S-SBUNI-RULES 2026-05-13)
+
+```
+Component: appkit/src/features/orders/components/RefundRequestView.tsx
+Copy:      REFUND_COPY.request (all strings, including acknowledgments[] tuple)
+Import:    Checkbox, Textarea from appkit/src/ui; REFUND_COPY for copy constants
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Request Refund                                                              │
+│  Order total:  ₹1,200.00                                                    │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Reason for refund *                                                         │
+│  [Textarea — min 10 chars, placeholder REFUND_COPY.request.reasonPlaceholder│
+│   (appkit <Textarea> component, not raw <textarea>)]                        │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Before submitting, please acknowledge:                                      │
+│  [☑] I understand this refund request, once approved, permanently removes… │
+│  [☑] I confirm the item has not been used, worn, or damaged…                │
+│  [☑] I understand the refund amount may take 5–7 business days…            │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  [Request refund]  (disabled until all 3 checkboxes checked + reason ≥ 10) │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Error banner: REFUND_COPY.request.errorFallback  (shown on action error)  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Non-refundable state (isNonRefundable=true):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ⚠ REFUND_COPY.request.nonRefundableMessage                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Already-refunded state (alreadyRefunded=true):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ⚠ REFUND_COPY.request.alreadyRefundedMessage                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Props:
+  orderTotal: number        (paise — displayed via formatCurrency)
+  onSubmit: (reason) => Promise<void>
+  isLoading?: boolean
+  isNonRefundable?: boolean
+  alreadyRefunded?: boolean
+Acknowledgment list sourced from REFUND_COPY.request.acknowledgments (as const tuple).
+Checkbox count derived at runtime via .length — no magic integer.
+```
+
+---
+
+## Shared > OrderSiblingPayments ✅ (S-SBUNI-RULES 2026-05-13)
+
+```
+Component: appkit/src/features/orders/components/OrderSiblingPayments.tsx
+Copy:      REFUND_COPY.siblingPayments.heading(count) → "Other orders from this payment (N)"
+Link:      text-[color:var(--appkit-color-primary)] (CSS variable, not hardcoded class)
+
+Rendered in order detail when order.paymentBatchId is set and siblings exist.
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Other orders from this payment (2)                                          │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │  order-2-20260510-abc123  ·  Charizard PSA 9  · ₹12,000  DELIVERED  │   │
+│  │  [View →]  (link → ROUTES.USER.ORDER_DETAIL(id))                    │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Props:
+  batchId: string                   (paymentBatchId on the order)
+  currentOrderId: string            (current order — excluded from sibling list)
+  orders: OrderDocument[]           (pre-fetched siblings from findByPaymentBatchId)
+Data source: orderRepository.findByPaymentBatchId(batchId) — max 20, no pagination.
+```
+
+---
+
+## Shared > ShippingPicker ✅ (S-SBUNI-RULES 2026-05-13)
+
+```
+Component: appkit/src/features/cart/components/ShippingPicker.tsx
+Copy:      REFUND_COPY.shipping (noOptions, freeLabel, etaFormat)
+
+Rendered in cart item / checkout step — buyer selects their shipping provider.
+Provider fee calculated client-side (resolveProviderFee): flatInPaise + percentOfOrder,
+  freeAboveInPaise threshold, minInPaise floor.
+
+No providers (empty):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  No shipping options available for this item.                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+With providers:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ── radiogroup ────────────────────────────────────────────────────────────│
+│  [●─────────────────────────────────────────────────────────────────────]  │  ← selected (variant=primary)
+│  │  Standard Delivery             ETA: 3–7 days         ₹99.00         │   │
+│  [○─────────────────────────────────────────────────────────────────────]  │
+│  │  Express Delivery              ETA: 1–2 days         ₹199.00        │   │
+│  [○─────────────────────────────────────────────────────────────────────]  │
+│  │  Store Pickup                  ETA: 0–1 days         Free           │   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Interaction:
+  Click provider → handleSelect → resolveProviderFee(provider, subtotalInPaise)
+               → onPickProvider(providerId, feeInPaise) → caller persists to CartItem
+  Loading state: all buttons disabled while pending=true or isLoading=true
+
+Props:
+  providers: ShippingProviderConfig[]          (from store.shippingConfig.providers[])
+  selectedProviderId?: string                  (from CartItemDocument.chosenShippingProviderId)
+  subtotalInPaise?: number                     (for freeAbove + percent-of-order calc)
+  onPickProvider: (id, feeInPaise) => void | Promise<void>
+  isLoading?: boolean
+Fee resolution: resolveProviderFee(p, subtotal):
+  if freeAboveInPaise defined and subtotal >= threshold → 0
+  else flat + ceil(percent/100 × subtotal), clamped to minInPaise
+```
