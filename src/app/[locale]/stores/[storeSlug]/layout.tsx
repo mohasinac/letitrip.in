@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getStoreBySlug } from "@mohasinac/appkit";
+import { getStoreBySlug, productFeaturesRepository } from "@mohasinac/appkit";
+import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 type Props = {
@@ -26,7 +27,17 @@ export async function generateMetadata({ params }: { params: Promise<{ storeSlug
 
 export default async function Layout({ children, params }: Props) {
   const { storeSlug } = await params;
-  const store = await getStoreBySlug(storeSlug).catch(() => null);
+  const [store, platformFeatures] = await Promise.all([
+    getStoreBySlug(storeSlug).catch(() => null),
+    productFeaturesRepository.listPlatform().catch(() => []),
+  ]);
   if (!store) notFound();
-  return children;
+  // S6 FI6-2 — provider at the storeSlug boundary covers every store sub-page
+  // (products/auctions/pre-orders/about/reviews/coupons + the storeSlug root)
+  // so feature badges render uniformly across the whole store surface.
+  return (
+    <ProductFeaturesProvider features={platformFeatures}>
+      {children}
+    </ProductFeaturesProvider>
+  );
 }
