@@ -57,6 +57,16 @@ export default function WishlistPage() {
   const wl = useWishlistWithGuest(sessionLoading ? undefined : user?.uid ?? null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-addedAt");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (id: string, next: boolean) => {
+    setSelectedIds((prev) => {
+      const s = new Set(prev);
+      if (next) s.add(id); else s.delete(id);
+      return s;
+    });
+  };
+  const clearSelection = () => setSelectedIds(new Set());
 
   // Staged (pending) filter state — applied on "Apply filters" click
   const [pending, setPending] = useState<WishlistFilters>(EMPTY_FILTERS);
@@ -158,10 +168,22 @@ export default function WishlistPage() {
     <ListingLayout
       headerSlot={
         <Div>
-          <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-            My Wishlist
-          </Heading>
-          {!isLoading && wl.total > 0 && (
+          <Row gap="sm" className="items-center flex-wrap">
+            <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+              My Wishlist
+            </Heading>
+            {selectedIds.size > 0 && (
+              <Row gap="sm" className="items-center ml-auto">
+                <Text className="text-sm text-zinc-600 dark:text-zinc-300">
+                  {selectedIds.size} selected
+                </Text>
+                <Button variant="ghost" size="sm" onClick={clearSelection}>
+                  Clear
+                </Button>
+              </Row>
+            )}
+          </Row>
+          {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
             <Text variant="secondary" className="text-sm mt-0.5">
               {wl.total} saved item{wl.total !== 1 ? "s" : ""}
             </Text>
@@ -242,7 +264,7 @@ export default function WishlistPage() {
       onFilterClear={handleClear}
     >
       {isLoading ? (
-        <Div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <Div className="fluid-grid-card gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <Div
               key={i}
@@ -269,7 +291,7 @@ export default function WishlistPage() {
           )}
         </Div>
       ) : (
-        <Div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <Div className="fluid-grid-card gap-4">
           {filteredItems.map((item) => {
             const slug = item.product?.slug ?? item.productSlug ?? item.productId;
             return (
@@ -277,6 +299,9 @@ export default function WishlistPage() {
                 key={item.id}
                 href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
                 isWishlisted
+                selectable={selectedIds.size > 0}
+                isSelected={selectedIds.has(item.productId)}
+                onSelect={toggleSelect}
                 product={{
                   id:        item.productId,
                   title:     item.product?.title     ?? item.productTitle ?? "",
