@@ -31,7 +31,7 @@ import {
 import {
   orderRepository,
   productRepository,
-  addressRepository,
+  addressesRepository,
   isPreOrderListing,
 } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
@@ -91,8 +91,14 @@ export const POST = withProviders(createRouteHandler<
     if (!isPreOrderListing(product))
       throw new ValidationError("Product is not a pre-order item");
 
-    // 4. Fetch user address
-    const address = await addressRepository.findById(user!.uid, addressId);
+    // 4. Fetch user address (SB-UNI-A 2026-05-13 — unified addresses w/ ownerType guard)
+    const addressDoc = await addressesRepository.findById(addressId);
+    const address =
+      addressDoc &&
+      addressDoc.ownerType === "user" &&
+      addressDoc.ownerId === user!.uid
+        ? addressDoc
+        : null;
     if (!address) throw new NotFoundError("Address not found");
 
     const shippingAddress = [

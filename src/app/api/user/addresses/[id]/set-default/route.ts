@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import {
-  addressRepository,
+  addressesRepository,
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
@@ -10,7 +10,7 @@ export const POST = withProviders(
     auth: true,
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
-      const updated = await addressRepository.setDefault(user!.uid, id);
+      const updated = await addressesRepository.setDefault("user", user!.uid, id);
       return successResponse(updated, "Default address updated");
     },
   }),

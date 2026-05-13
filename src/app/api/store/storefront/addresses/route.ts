@@ -3,12 +3,12 @@ import { withProviders } from "@/providers.config";
  * GET /api/store/store/addresses — List pickup addresses for the seller's store.
  *
  * The seller's store slug is resolved from their user record.
- * Returns an array of StoreAddressDocument objects.
+ * Returns an array of AddressDocument objects (ownerType:"store" filter).
  *
  * Mutations (create/update/delete) use Server Actions.
  */
 
-import { storeRepository, storeAddressRepository } from "@mohasinac/appkit";
+import { storeRepository, addressesRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { NotFoundError } from "@mohasinac/appkit";
@@ -22,8 +22,7 @@ export const GET = withProviders(createRouteHandler({
     if (!store?.storeSlug)
       throw new NotFoundError(ERROR_MESSAGES.GENERIC.NOT_FOUND);
 
-    const addresses = await storeAddressRepository.findByStore(store.storeSlug);
+    const addresses = await addressesRepository.listByOwner("store", store.storeSlug);
     return successResponse(addresses);
   },
 }));
-

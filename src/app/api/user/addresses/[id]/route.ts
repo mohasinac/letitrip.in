@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import {
-  addressRepository,
+  addressesRepository,
   createRouteHandler,
   successResponse,
   errorResponse,
@@ -11,8 +11,10 @@ export const GET = withProviders(
     auth: true,
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
-      const address = await addressRepository.findById(user!.uid, id);
-      if (!address) return errorResponse("Address not found", 404);
+      const address = await addressesRepository.findById(id);
+      if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
+        return errorResponse("Address not found", 404);
+      }
       return successResponse(address);
     },
   }),
@@ -24,7 +26,12 @@ export const PATCH = withProviders(
     handler: async ({ user, request, params }) => {
       const id = (params as { id: string }).id;
       const body = await request.json();
-      const updated = await addressRepository.update(user!.uid, id, body);
+      const updated = await addressesRepository.updateForOwner(
+        "user",
+        user!.uid,
+        id,
+        body,
+      );
       return successResponse(updated);
     },
   }),
@@ -35,7 +42,7 @@ export const DELETE = withProviders(
     auth: true,
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
-      await addressRepository.delete(user!.uid, id);
+      await addressesRepository.deleteForOwner("user", user!.uid, id);
       return successResponse(null, "Address deleted");
     },
   }),

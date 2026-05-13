@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
-import { storeAddressRepository, storeRepository } from "@mohasinac/appkit";
+import { addressesRepository, storeRepository } from "@mohasinac/appkit";
 
 const updateAddressSchema = z.object({
   label: z.string().min(1).max(60).optional(),
@@ -28,10 +28,12 @@ export const PUT = withProviders(createRouteHandler<(typeof updateAddressSchema)
     const addressId = String(params?.id ?? "");
     if (!addressId) return ApiErrors.badRequest("Address ID is required");
 
-    const existing = await storeAddressRepository.findById(store.id, addressId);
-    if (!existing) return ApiErrors.notFound("Address not found");
-
-    const updated = await storeAddressRepository.update(store.id, addressId, body!);
+    const updated = await addressesRepository.updateForOwner(
+      "store",
+      store.id,
+      addressId,
+      body!,
+    );
     return successResponse(updated, "Address updated");
   },
 }));
@@ -46,10 +48,7 @@ export const DELETE = withProviders(createRouteHandler({
     const addressId = String(params?.id ?? "");
     if (!addressId) return ApiErrors.badRequest("Address ID is required");
 
-    const existing = await storeAddressRepository.findById(store.id, addressId);
-    if (!existing) return ApiErrors.notFound("Address not found");
-
-    await storeAddressRepository.delete(store.id, addressId);
+    await addressesRepository.deleteForOwner("store", store.id, addressId);
     return successResponse(null, "Address deleted");
   },
 }));

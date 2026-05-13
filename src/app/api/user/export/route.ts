@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, orderRepository, addressRepository } from "@mohasinac/appkit";
+import { createRouteHandler, orderRepository, addressesRepository } from "@mohasinac/appkit";
 import type { FirebaseSieveResult, OrderDocument } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 
@@ -20,7 +20,7 @@ export const GET = withProviders(
 
       const [orders, addresses] = await Promise.all([
         orderRepository.listForUser(uid, {}).catch(() => EMPTY_ORDER_RESULT),
-        addressRepository.findByUser(uid).catch(() => []),
+        addressesRepository.listByOwner("user", uid).catch(() => []),
       ]);
 
       const payload = {

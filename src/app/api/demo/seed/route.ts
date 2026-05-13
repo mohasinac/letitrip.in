@@ -89,7 +89,6 @@ import { PRODUCT_FEATURES_COLLECTION } from "@mohasinac/appkit";
 type CollectionName =
   | "users"
   | "addresses"
-  | "storeAddresses"
   | "categories"
   | "stores"
   | "products"
@@ -125,8 +124,8 @@ interface SeedRequest {
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
-  addresses: "addresses", // Subcollection under users
-  storeAddresses: "storeAddresses", // Subcollection under stores
+  // SB-UNI-A 2026-05-13 — top-level collection w/ ownerType:"user"|"store".
+  addresses: "addresses",
   couponUsage: "couponUsage", // Subcollection under users
   categories: CATEGORIES_COLLECTION,
   stores: STORE_COLLECTION,
@@ -155,10 +154,24 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   productFeatures: PRODUCT_FEATURES_COLLECTION,
 };
 
+// SB-UNI-A 2026-05-13 — addresses merges both legacy seed files; each entry
+// is tagged with the canonical ownerType + ownerId before write.
+const mergedAddressesSeedData = [
+  ...addressesSeedData.map((a) => ({
+    ...a,
+    ownerType: "user" as const,
+    ownerId: a.userId,
+  })),
+  ...storeAddressesSeedData.map((a) => ({
+    ...a,
+    ownerType: "store" as const,
+    ownerId: a.storeSlug,
+  })),
+];
+
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: usersSeedData,
-  addresses: addressesSeedData,
-  storeAddresses: storeAddressesSeedData,
+  addresses: mergedAddressesSeedData,
   categories: categoriesSeedData,
   stores: storesSeedData,
   products: [
@@ -195,7 +208,6 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
   "users",
   "addresses",
-  "storeAddresses",
   "products",
   "orders",
   "reviews",
@@ -263,31 +275,10 @@ async function countExistingForCollection(
   if (!seedData || seedData.length === 0) return 0;
 
   if (colName === "addresses") {
+    // SB-UNI-A 2026-05-13 — top-level addresses collection w/ ownerType discriminator.
     const refs = (seedData as any[])
-      .filter((d) => d.userId && d.id)
-      .map((d) =>
-        db
-          .collection(USER_COLLECTION)
-          .doc(d.userId)
-          .collection(ADDRESS_SUBCOLLECTION)
-          .doc(d.id),
-      );
-    if (refs.length === 0) return 0;
-    const snaps = await db.getAll(...refs);
-    return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
-      .length;
-  }
-
-  if (colName === "storeAddresses") {
-    const refs = (seedData as any[])
-      .filter((d) => d.storeSlug && d.id)
-      .map((d) =>
-        db
-          .collection(STORE_COLLECTION)
-          .doc(d.storeSlug)
-          .collection(STORE_ADDRESS_SUBCOLLECTION)
-          .doc(d.id),
-      );
+      .filter((d) => d.id)
+      .map((d) => db.collection("addresses").doc(d.id));
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
     return snaps.filter((s: FirebaseFirestore.DocumentSnapshot) => s.exists)
@@ -681,24 +672,19 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "addresses") {
-            // Addresses are subcollection under users
+            // SB-UNI-A 2026-05-13 — top-level addresses collection.
+            // Each seed entry carries ownerType + ownerId from the merge above.
             for (const addressData of seedData) {
               try {
-                const { userId, id, ...data } = addressData as any;
+                const { id, userId: _u, storeSlug: _s, ...data } = addressData as any;
 
-                if (!userId || !id) {
-                  serverLogger.error("Address missing userId or id");
+                if (!id || !data.ownerType || !data.ownerId) {
+                  serverLogger.error("Address missing id/ownerType/ownerId");
                   totalErrors++;
                   continue;
                 }
 
-                // Skip if document already exists
-                const docRef = db
-                  .collection(USER_COLLECTION)
-                  .doc(userId)
-                  .collection(ADDRESS_SUBCOLLECTION)
-                  .doc(id);
-
+                const docRef = db.collection("addresses").doc(id);
                 await docRef.set(
                   encryptPiiFields(stripUndefined(data), [
                     ...ADDRESS_PII_FIELDS,
@@ -708,36 +694,6 @@ export async function POST(request: NextRequest) {
                 totalCreated++;
               } catch (err) {
                 serverLogger.error(`Error seeding address:`, err);
-                totalErrors++;
-              }
-            }
-          } else if (collectionName === "storeAddresses") {
-            // Store addresses are subcollection under stores
-            for (const addressData of seedData) {
-              try {
-                const { storeSlug, id, ...data } = addressData as any;
-
-                if (!storeSlug || !id) {
-                  serverLogger.error("Store address missing storeSlug or id");
-                  totalErrors++;
-                  continue;
-                }
-
-                const docRef = db
-                  .collection(STORE_COLLECTION)
-                  .doc(storeSlug)
-                  .collection(STORE_ADDRESS_SUBCOLLECTION)
-                  .doc(id);
-
-                await docRef.set(
-                  encryptPiiFields(stripUndefined(data), [
-                    ...ADDRESS_PII_FIELDS,
-                  ]),
-                  { merge: true },
-                );
-                totalCreated++;
-              } catch (err) {
-                serverLogger.error(`Error seeding store address:`, err);
                 totalErrors++;
               }
             }
@@ -945,28 +901,13 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "addresses") {
-            // Purge the entire addresses subcollection for every seed user.
-            const userIds = [...new Set((seedData as any[]).map((d) => d.userId).filter(Boolean))] as string[];
-            for (const userId of userIds) {
-              try {
-                await purgeCollection(db, `${USER_COLLECTION}/${userId}/${ADDRESS_SUBCOLLECTION}`);
-                totalDeleted++;
-              } catch (err) {
-                serverLogger.error(`Error purging addresses for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
-                totalErrors++;
-              }
-            }
-          } else if (collectionName === "storeAddresses") {
-            // Purge the entire store-addresses subcollection for every seed store.
-            const storeSlugs = [...new Set((seedData as any[]).map((d) => d.storeSlug).filter(Boolean))] as string[];
-            for (const storeSlug of storeSlugs) {
-              try {
-                await purgeCollection(db, `${STORE_COLLECTION}/${storeSlug}/${STORE_ADDRESS_SUBCOLLECTION}`);
-                totalDeleted++;
-              } catch (err) {
-                serverLogger.error(`Error purging store addresses for ${storeSlug}`, { error: err instanceof Error ? err.message : String(err) });
-                totalErrors++;
-              }
+            // SB-UNI-A 2026-05-13 — top-level addresses collection.
+            try {
+              await purgeCollection(db, "addresses");
+              totalDeleted++;
+            } catch (err) {
+              serverLogger.error("Error purging addresses", { error: err instanceof Error ? err.message : String(err) });
+              totalErrors++;
             }
           } else if (collectionName === "wishlists") {
             // Top-level wishlists collection — purge all docs.

@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
-import { storeAddressRepository, storeRepository } from "@mohasinac/appkit";
+import { addressesRepository, storeRepository } from "@mohasinac/appkit";
 
 const createAddressSchema = z.object({
   label: z.string().min(1).max(60),
@@ -24,7 +24,7 @@ export const GET = withProviders(createRouteHandler({
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
-    const addresses = await storeAddressRepository.findByStore(store.id);
+    const addresses = await addressesRepository.listByOwner("store", store.id);
     return successResponse({ addresses, total: addresses.length });
   },
 }));
@@ -37,7 +37,7 @@ export const POST = withProviders(createRouteHandler<(typeof createAddressSchema
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
-    const address = await storeAddressRepository.create(store.id, body!);
+    const address = await addressesRepository.createForOwner("store", store.id, body!);
     return successResponse(address, "Address created");
   },
 }));

@@ -30,8 +30,11 @@ import type { SeedCollectionName } from "@/actions/demo-seed.types";
 
 // ─── Collection order ─────────────────────────────────────────────────────────
 
+// SB-UNI-A 2026-05-13 — store addresses merged into top-level `addresses`
+// collection with ownerType:"user"|"store" discriminator. The legacy
+// "storeAddresses" entry was removed.
 const CORE_COLLECTIONS: SeedCollectionName[] = [
-  "users", "addresses", "stores", "storeAddresses", "categories",
+  "users", "addresses", "stores", "categories",
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
@@ -150,27 +153,34 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "updatedAt",    type: "timestamp", sortable: true },
     ],
   },
+  // SB-UNI-A 2026-05-13 — unified top-level `addresses` collection. Holds
+  // both buyer delivery addresses (ownerType:"user") and store pickup
+  // addresses (ownerType:"store"). Subcollection paths
+  // `users/{uid}/addresses` and `stores/{slug}/addresses` are deprecated.
   addresses: {
-    label: "Delivery Addresses",
+    label: "Addresses (User + Store)",
     icon: "📍",
     group: "core",
-    target: 25,
-    description: "Buyer delivery addresses — Indian format with pincode, state, city. Each buyer has 2–3 saved addresses with one marked default.",
-    slugPattern: "auto-ID  (sub-collection under users/{userId}/addresses)",
+    target: 35,
+    description: "Unified addresses collection (SB-UNI-A 2026-05-13). Discriminated by ownerType:\"user\"|\"store\" + ownerId. Holds buyer delivery addresses AND store pickup addresses. Indian format with pincode/state/city. One default address per (ownerType, ownerId) pair enforced at the repo level.",
+    slugPattern: "auto-ID (top-level addresses/{addressId})",
     seededItems: [
-      "11 addresses linked to buyer accounts",
+      "11 user addresses linked to buyer accounts (ownerType:user)",
+      "13 store pickup addresses across all 8 stores (ownerType:store)",
       "Mix of Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Pune locations",
       "Correct pincode + landmark format for Indian addresses",
-      "One default address per user",
+      "One default address per owner-pair",
     ],
     pendingItems: [
-      "14 more addresses to reach target 25",
-      "Kolkata, Ahmedabad, Jaipur coverage",
+      "Additional addresses for Kolkata, Ahmedabad, Jaipur",
       "Corporate / office address type",
+      "Pickup availability schedule fields for store addresses",
     ],
     uiPath: "/user/addresses",
     piiFields: ["fullName", "phone", "addressLine1"],
     fields: [
+      { name: "ownerType",    type: "enum",      filterable: true, indexed: true },
+      { name: "ownerId",      type: "ref",       filterable: true, indexed: true },
       { name: "label",        type: "string",    searchable: true },
       { name: "fullName",     type: "string",    searchable: true, pii: true },
       { name: "phone",        type: "string",    pii: true },
@@ -185,6 +195,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "createdAt",    type: "timestamp", sortable: true, indexed: true },
     ],
   },
+  // SB-UNI-A 2026-05-13 — `storeAddresses` legacy alias removed; addresses
+  // entry above covers both ownerType:"user" and ownerType:"store" rows.
   stores: {
     label: "Stores",
     icon: "🏪",
@@ -228,35 +240,9 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "createdAt",        type: "timestamp", sortable: true },
     ],
   },
-  storeAddresses: {
-    label: "Store / Pickup Addresses",
-    icon: "🏬",
-    group: "core",
-    target: 15,
-    description: "Physical pickup / warehouse addresses for stores. Used in orders and listing pickups.",
-    slugPattern: "auto-ID",
-    seededItems: [
-      "8 store addresses — one primary per store",
-      "Pickup instructions and operating hours per address",
-      "storeId cross-reference on every record",
-    ],
-    pendingItems: [
-      "7 more for secondary warehouses",
-      "Pickup availability schedule fields",
-    ],
-    uiPath: "/admin/stores",
-    fields: [
-      { name: "label",        type: "string",    searchable: true },
-      { name: "fullName",     type: "string",    pii: true },
-      { name: "phone",        type: "string",    pii: true },
-      { name: "addressLine1", type: "string",    pii: true },
-      { name: "city",         type: "string",    filterable: true },
-      { name: "state",        type: "string",    filterable: true },
-      { name: "postalCode",   type: "string",    filterable: true },
-      { name: "isDefault",    type: "boolean",   filterable: true, indexed: true },
-      { name: "createdAt",    type: "timestamp", sortable: true, indexed: true },
-    ],
-  },
+  // SB-UNI-A 2026-05-13 — `storeAddresses` card removed. Store pickup
+  // addresses now live in the unified top-level `addresses` collection
+  // with ownerType:"store".
   // SB-UNI-C — brands folded into categories with categoryType:"brand".
   categories: {
     label: "Categories",

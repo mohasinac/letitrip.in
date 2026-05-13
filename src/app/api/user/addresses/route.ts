@@ -8,7 +8,7 @@ import { withProviders } from "@/providers.config";
  * Max addresses per user: 10
  */
 
-import { addressRepository } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { userAddressCreateSchema } from "@/validation/request-schemas";
@@ -33,7 +33,7 @@ export const GET = withProviders(createRouteHandler({
     const verified = url.searchParams.get("verified");
     const activeOnly = url.searchParams.get("activeOnly");
 
-    let addresses = await addressRepository.findByUser(user!.uid);
+    let addresses = await addressesRepository.listByOwner("user", user!.uid);
 
     if (q) {
       addresses = addresses.filter((a) => {
@@ -79,7 +79,7 @@ export const POST = withProviders(createRouteHandler<
   schema: userAddressCreateSchema,
   handler: async ({ user, body }) => {
     // Enforce address limit
-    const currentCount = await addressRepository.count(user!.uid);
+    const currentCount = await addressesRepository.countByOwner("user", user!.uid);
     if (currentCount >= MAX_ADDRESSES_PER_USER) {
       return errorResponse(
         `You can only store up to ${MAX_ADDRESSES_PER_USER} addresses`,
@@ -87,7 +87,7 @@ export const POST = withProviders(createRouteHandler<
       );
     }
 
-    const address = await addressRepository.create(user!.uid, body!);
+    const address = await addressesRepository.createForOwner("user", user!.uid, body!);
 
     serverLogger.info("Address created via API", {
       userId: user!.uid,
