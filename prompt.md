@@ -69,139 +69,77 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 ---
 
+## 🏗️ APPKIT PUBLISH & VERCEL DEPLOY WORKFLOW
+
+> **Never publish appkit or deploy to Vercel unless the user explicitly asks.**
+> Local dev always uses `"@mohasinac/appkit": "file:./appkit"` — this is the only safe default.
+
+### Step 1 — Validate locally first (file: link, no publish)
+
+```
+1. npm run watch:appkit      # compile appkit/src/ → appkit/dist/ (keep running in bg)
+2. npm run dev               # verify ALL touched routes smoke-test cleanly
+3. npm run check             # must exit 0 (tsc both repos + 4 audits + eslint)
+   └── Fix any errors before proceeding. Do NOT publish with failing checks.
+```
+
+### Step 2 — Publish appkit (only after Step 1 exits 0)
+
+```
+1. Commit all appkit source changes (no uncommitted source — dist must match git)
+2. Bump appkit/package.json version by exactly +0.0.1 (patch only, never minor/major)
+3. cd appkit/ && npm run build          # rebuild dist/ from committed source
+4. npm publish                          # single publish per session — never publish twice
+5. cd ..
+```
+
+### Step 3 — Switch letitrip to npm package + rebuild
+
+```
+1. Edit letitrip/package.json: "@mohasinac/appkit": "^X.Y.Z"  (new version from Step 2)
+2. Delete package-lock.json
+3. npm install                          # lockfile must resolve from npm registry (not file:)
+   └── Verify: package-lock.json shows "resolved": "https://registry.npmjs.org/..."
+               not "resolved": "appkit" + "link": true
+4. npm run check                        # must still exit 0 with npm package
+```
+
+### Step 4 — Sync Vercel env variables
+
+```
+1. List env vars added this session — check src/app/api/**/*.ts for new process.env.*
+2. For each NEW var: vercel env add VAR_NAME production preview development
+3. For each CHANGED var: edit in Vercel dashboard → Settings → Environment Variables
+4. Pull and verify locally: vercel env pull .env.local
+```
+
+### Step 5 — Deploy to Vercel prod
+
+```
+vercel --prod
+```
+
+Auto-deploy is **disabled** (`vercel.json` → `"deploymentEnabled": false`). Always deploy via CLI.
+After deploy: smoke-test the production URL for all touched routes.
+
+---
+
 ## 📋 SESSION STATE (single source of truth for "where are we")
 
-> Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
+> Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ Previous — S-SBUNI-5 Bundle checkout finalize (closes Phase 1) (2026-05-13)
+### ✅ LAST COMPLETED — S-auth-nav: Login/Register cross-links + TitleBar auth buttons + avatar fix + role badge + employee role + seed users (2026-05-14)
 
-Bundle commerce loop end-to-end functional. 8 commits across appkit (5) + main (3). Quality gate ends 0 errors. **No new infra deploys this session** — schema fields already shipped in S-SBUNI-4, no new indices, no new Functions.
+- **LoginPageClient** — added `renderCreateAccountLink` (→ `/auth/register`) + `renderForgotPasswordLink` to `<LoginForm>`.
+- **RegisterPageClient** — added `renderLoginLink` (→ `/auth/login`) + `renderTermsLink` to `<RegisterForm>`.
+- **TitleBarLayout** — replaced `next/image` with `<img>` for profile avatar (any-domain support); added `loginHref`/`registerHref` props; shows "Sign in" + "Register" text buttons in TB1 desktop when user is not logged in.
+- **AppLayoutShell** — added `registerHref` prop; passes `loginHref`/`registerHref` to `TitleBar`; replaced full-text `RoleBadge` avatar overlay with a compact 16px colored dot indicator (role initial letter, no text overflow).
+- **LayoutShellClient** — passes `registerHref={ROUTES.AUTH.REGISTER}` to `AppLayoutShell`.
+- **RoleBadge + Badge** — added `employee` to labels/colors/variant cast; added `appkit-badge--employee` amber CSS (light + dark).
+- **Seed users** — added `avatarMetadata` (url+position+zoom) to 3 existing users (Aryan Kapoor, Priya Patel, Siddharth Rao); added `user-deepak-verma` (moderator) + `user-simran-kaur` (employee) with avatarMetadata.
+- `appkit` rebuilt to v2.6.7 dist. `npm run check` exits 0.
 
-- **Slice CTA** — `BundleAddToCartCta` client island (qty input clamped 1..10 + Add button w/ isLoading + inline error + `useToast` feedback; out-of-stock bundles render disabled CTA). `BundleDetailView` gains optional `onAddToCart` prop. New `addBundleToCartAction({ bundleSlug, quantity })` in `src/actions/cart.actions.ts` (requireAuthUser + per-uid rate-limit + zod). `/bundles/[slug]/page.tsx` passes the action.
-- **Slice CHECKOUT** — new `_internal/server/features/checkout/bundle-expansion.ts` (`getCartItemMemberIds` / `getExpandedDecrements` / `validateCartItemStock`). Both COD pre-tx/in-tx loops + Razorpay-paid path rewired around the helper. Per-product decrement collapses to ONE update per unique member (cumulative-decrement aware so two cart lines sharing a member don't double-count or pass when summed demand exceeds stock). `unitPriceFor(item, product)` helper picks `item.price` (locked bundlePriceInPaise) for bundle lines, `product.price` for regular lines — used in cartSubtotal / groupTotal / coupon-eligible-total / cartSubtotalRs.
-- **Slice ORDER-UI** — new `appkit/src/features/orders/utils/bundle-grouping.ts` exports `groupOrderItemsByBundle(items)` returning ordered `BundleOrderGroup` discriminated union. `/user/orders/view/[id]` renderItems rewritten — bundle groups render under "Bundle: <name>" header + member-count chip inside a bordered card; member rows nest via the same renderItemRow helper that handles regular rows + prize-draw badges.
-- **Slice ADMIN-DYN** — new `BundleDynamicRuleEditor` (filter inputs categorySlug/brandSlug/tags/listingType + orderBy Select + numeric limit clamped 1..BUNDLE_MAX_ITEMS). `AdminBundleEditorView` ruleType Select toggles between `BundleItemsPicker` (static) and the dynamic editor. handleSave branches on ruleType. `BUNDLE_COPY.adminEditor.ruleType*` + `dynamic.*` strings centralised.
-
-**Phase 1 of Tier SB-UNI now closed.** All SB-UNI Phase 1 rows complete: A · B · C · D · E · V · Bundle-UI · Bundle-Checkout. Phase 2+ (ListingType union: classified / digital-code / live · catalog/offer split · per-type checkout / FormShell / CTA registry) remains independent pull-when-prioritised cohorts.
-
----
-
-### ✅ Previous (parallel) — S8 Event Raffles + dashboard tab constants (2026-05-13)
-
-S8 cohort closed (SB9 fully + SB10-B/D fully + SB10-C partial). Quality gate ends 0 errors in both appkit and root; `npm run check:audits` clean. **Deploy held** — new Firestore indices + admin/spin API routes sit with the S7 prize-draws ops cohort.
-
-- **SB9 schema (A/B/C)** — `EventType` extended with `"raffle" | "spin_wheel"`. `EventDocument` gains 12 raffle/spin fields (config + result + spin-prizes block); new `RaffleType` and `SpinPrize` interfaces exported from types. `EventEntryDocument` gains `raffleEligible` + `spinUsed` + `spinPrizeId` + `spinPrizeCouponCode` + `spinWonAt`. `EventItem` mirrors with string dates. `EVENT_FIELDS.TYPE_VALUES.RAFFLE` / `SPIN_WHEEL` + `EventCard` icons (🎟️/🎡) added.
-- **SB9-D/E surface** — prep3 handlers already wrapped in jobs/handlers; this session added `triggerEventRaffleAction` + `assignSpinPrizeAction` in `_internal/server/features/raffle/actions.ts` (build a JobContext around `getAdminDb` and call `runTriggerEventRaffle` / `runAssignSpinPrize`). Re-exported from `@mohasinac/appkit/server`. Next.js routes: `POST /api/admin/events/[id]/trigger-raffle` (admin only) + `POST /api/events/[id]/spin` (auth).
-- **SB9-F winner page** — `EventRaffleWinnerView` in appkit (winner card + prize + pool size + fairness-proof URL link with shape-agnostic `RaffleWinnerEvent` interface accepting both `EventItem`/`EventDocument`). Page shim at `src/app/[locale]/events/[id]/winner/page.tsx` + new `ROUTES.PUBLIC.EVENT_WINNER`.
-- **SB9-G spin wheel** — `SpinWheelView` client component with 3.2s CSS keyframe decelerating spin, `onSpin` callback contract, in-window enforcement, already-spun guard, coupon-code reveal in won-prize card.
-- **SB9-H admin editor** — Raffle config section in `AdminEventEditorView`: hasRaffle toggle (auto-enabled for raffle/spin_wheel types), raffleType select, top-N input, prize description, coupon ID, full spin-prizes editor (label/coupon/weight/isActive/remove + add row), spin window pickers, "Trigger Raffle Now" button calling the new admin route, read-only winner display after trigger. `/api/admin/events` schema widened to accept raffle/spin_wheel types + raffle/spin fields.
-- **SB9-I indices** — 3 new composites: `eventEntries (eventId, status, points DESC)`, `eventEntries (eventId, status, createdAt)`, `events (hasRaffle, status, raffleWinnerUserId)`. `firebase-merge.mjs` run.
-- **SB10-B/D** — `src/constants/dashboard-tabs.ts` exports all 12 spec'd tab sets (STORE_LISTINGS reuses appkit's SELLER_LISTING_TABS; STORE/USER/ADMIN orders share the same shape). `src/constants/index.ts` re-exports them. Main appkit barrel now also exposes `CATEGORY_PAGE_TABS` / `STORE_PAGE_TABS` / `SELLER_LISTING_TABS` / `SEARCH_RESULT_TABS`.
-- **SB10-C (partial ⚠️)** — `StoreDetailLayoutView` listing-type rows refactored to derive from `STORE_PAGE_TABS` + a `STORE_LISTING_HREF` map. Long tail (admin/seller/blog/event listing views + user profile tabs) still has inline arrays — pull as files are touched.
-
-**Required user follow-ups** (no code action this session):
-- `firebase deploy --only firestore:indexes` — 3 new SB9 composites (folds into S7 prize-draws ops cohort).
-- `firebase deploy --only functions` — `triggerEventRaffle` / `assignSpinPrize` callable handlers already in prep3 code; Next.js routes use the in-Vercel JobContext path so the deploy is only needed if you also want the Firebase callable endpoint exposed.
-- No `vercel --prod` per standing instruction.
-
-**Deferred / spun out**:
-- SB10-C full sweep — remaining inline tab arrays in admin/seller/user views.
-- Pre-existing uncommitted `BundleItemsPicker.tsx` had a `size="xs"` Button prop type error from prior session; resolved during this session's appkit rebuild via fresh tsbuildinfo.
-
----
-
-### ✅ Previous — S-SBUNI-3 Phase 1 A + E + bundle UI public read paths (2026-05-13)
-
-Two SB-UNI cleanup rows closed plus restored the public bundle read surface deleted in SB-UNI-V. 6 commits across appkit (3) + main (3). Quality gate ends 0 errors. Operational follow-ups outstanding: `POST /demo/seed` + `firebase deploy --only firestore:indexes`. No `vercel --prod` per standing instruction.
-
-- **SB-UNI-E discriminator cleanup** — 3 drifted `UserRole` definitions (4/5/4 roles) consolidated onto the canonical 5-role union in `features/auth/types`; `moderator` kept (33+ usages). New `features/auth/role-predicates.ts` exports `isAdminUser` / `isSellerUser` / `isModeratorUser` / `isEmployeeUser` / `isBuyerUser`. `productQueryHelpers` gains `prizeDraws` + `standardListings`. `isPrizeDrawListing` surfaced through public barrels. `NonRefundableListingType` narrowed to `"prize-draw"`. Sitemap data-layer's `"bundle"` literal dropped. 6 orphan `bundles` composite indices dropped from base indexes file.
-- **SB-UNI-A addresses unification** — new top-level `addresses` collection with `ownerType: "user"|"store"` + `ownerId`. New `AddressesRepository extends BaseRepository` (createWithId + update PII-encryption overrides). 2 old repos + 2 old action files deleted (thin shim actions kept). 5 API routes + `/api/user/export` + `/api/payment/preorder` + `_internal/server/features/{account,checkout}` + checkout-actions rewired. Seed route + manifest + SeedPanel merge both legacy arrays into one ownerType-tagged write/purge branch. 2 new composites: `(ownerType, ownerId, createdAt desc)` + `(ownerType, ownerId, isDefault)`. CLAUDE.md addresses-row rewritten.
-- **Bundle UI rebuild (public read paths)** — `/bundles/[slug]/page.tsx` rebuilt (was 404 since V); new `BundleDetailView` in appkit (cover + price + stock badge + description + members grid, add-to-cart explicitly disabled w/ aria-live hint). New `_internal/server/features/bundles/{data,metadata,index}.ts` (`getBundleForDetail` / `listBundleMembers` / `listFeaturedBundles` wrapped in `React.cache`; `buildBundleMetadata(doc, opts)` brand-agnostic). `FeaturedBundlesSection` un-stubbed — was returning `null` since V. `SectionData` gains `bundles?: CategoryDocument[]`; homepage view fetches via `listFeaturedBundles(8)` gated by section presence.
-
-**Required user follow-ups** (no code action this session): `POST /demo/seed` to wipe legacy subcollections + reseed top-level addresses; `firebase deploy --only firestore:indexes` for the two new addresses composites.
-
-**Spun out to S-SBUNI-4** (carry-overs):
-- Bundle admin editor (list / new / edit pages) — needs the multi-select product picker UI design call.
-- Bundle cart-line `{bundleCategorySlug, qty}` + N-product order-line checkout expansion.
-- Bundle OG renderer — covered by the existing 5-baseline OG follow-up.
-
----
-
-### ✅ Previous — S-BUGFIX Functions deploy + appkit 2.6.3 release + smoke refactor (2026-05-13)
-
-Three production-deployable bugs caught by `scripts/qa/smoke-prod.mjs` closed in a single cohort, plus a substantial smoke-test refactor centralising constants. `appkit@2.6.2 → 2.6.3` published (one publish only, per "don't publish multiple appkit"). Indices + Functions + Vercel re-deployed.
-
-- **J18 listingType alias** — `FILTER_ALIASES.listingType` rejected canonical tokens `standard` and `pre-order` (only accepted legacy aliases) → Sieve clause silently dropped → `/api/products?listingType=standard` returned the unfiltered list. Fixed via `LISTING_KIND_ALIAS_MAP` accepting both canonical and legacy forms. Regression guard in `01-public-sieves.mjs` + `15-firebase-functions.mjs`.
-- **J19 RBAC leaks** — `/api/store/{orders,analytics,payouts}` were `auth: true` with no `roles:` guard, returning 200 (empty data) to buyers. New `src/constants/api-roles.ts` defines `ROLES_STORE_WRITE` + `ROLES_ADMIN_ONLY` + `ROLES_ADMIN_MOD` + `ROLES_STORE_READ` + `ROLES_ANY_STAFF`; all three routes adopt `ROLES_STORE_WRITE`. Future API routes should consume the same constants.
-- **J20 Functions ADC** — `admin.ts` + `admin-app-lite.ts` threw "Firebase Admin credentials not found" inside Firebase Functions because neither `firebase-admin-key.json` nor `FIREBASE_ADMIN_*` env vars are present there (ADC via metadata server is the canonical path). Added third detection branch: `FUNCTION_TARGET || K_SERVICE || FIREBASE_CONFIG || GOOGLE_APPLICATION_CREDENTIALS` → `initializeApp()` with no credential. Every Function was 500 before this; now Function init succeeds.
-- **J21 secret auto-bind** — `bindHttps` adapter was reading `process.env[secretEnvVar]` but the deployed function had no env-var binding (Firebase Functions v2 needs `secrets: [...]` in `onRequest` options). Adapter now auto-pushes `secretEnvVar` (plain string, not `defineSecret` Param) into `httpsOptions.secrets[]` — skips firebase-tools' `.env.<project>` preflight. Manifest now declares `secretEnvironmentVariables:[{key:LETITRIP_INTERNAL_SECRET, version:2}]` per HTTPS endpoint. **Done-but-verify**: runtime still returns 401 because the Cloud Run compute SA (`949266230223-compute@developer.gserviceaccount.com`) lacks `roles/secretmanager.secretAccessor` on the secret. Q1-iam in tracker covers the follow-up — single `gcloud` command fixes it.
-- **J22 `/api/products` fallback** — `callListingProcessor` upstream errors were bubbling to a generic 500. Wrapped in its own try/catch with `productRepository.list` fallback. Necessary because J21's IAM gap leaves the function 401 — without the fallback `/api/products` was 500 on prod after the new Vercel build.
-- **Q4 smoke constants** — `scripts/qa/_constants.mjs` mirrors the TS source-of-truth for `LISTING_TYPES`, `LEGACY_LISTING_ALIASES`, `SLUG_PREFIXES`, `SEEDED_TIER0_CATEGORIES`, `SEEDED_STORES_WITH_PRODUCTS`, `HTTP_STATUS`, `STATUS_GROUPS`, `USER_ROLES`, `FIREBASE_FUNCTIONS`, `LISTING_REQUEST_KEYS`, `LISTING_COLLECTIONS`. `01-public-sieves.mjs` + `13-roles-access.mjs` + new `15-firebase-functions.mjs` all consume it. Tier=1 assertion fixed to check `parentIds[]` (canonical schema) not the legacy singular `parentId`. RBAC denial check accepts `405` alongside `401/403`.
-- **Q4 functions smoke** — new `scripts/qa/prod-suites/15-firebase-functions.mjs` covers the 4 HTTPS Functions (`listingProcessor` / `adminAnalytics` / `storeAnalytics` / `promotionsApi`) — auth (no/bad/good secret), method allow (GET→405), body validation, happy-path shape, listingType filter regression guard, cursor pagination. Env-gated (skips when `FIREBASE_FUNCTION_*_URL` not set).
-- **Appkit `jobs/handlers` refactor** — `2c3d770` splits every scheduled / callable / Firestore-trigger handler into a pure `runXxx(ctx)` in `_internal/server/jobs/core/` plus a thin envelope wrapper in `handlers/`. Public surface unchanged.
-
-**Required user follow-up (NOT a code task)**: `gcloud secrets add-iam-policy-binding LETITRIP_INTERNAL_SECRET --member="serviceAccount:949266230223-compute@developer.gserviceaccount.com" --role="roles/secretmanager.secretAccessor" --project=letitrip-in-app` (tracker row Q1-iam). Until granted, every HTTPS Function returns 401 and `/api/products` serves from the J22 local-repo fallback. Smoke `15-firebase-functions.mjs` flips 5/18 → ~13/18 once granted. Plus: prod Firestore data is empty — `POST /demo/seed` re-run pending.
-
----
-
-<!-- Older session entries trimmed per "keep only 1 LAST" rule. Historical detail
-preserved in newchange.md.
-
-Older entries trimmed: S-BUGFIX, S-SBUNI-2 (Phase 1 D + V), S-SBUNI-1
-(Phase 0 X1+X2 + Phase 1 B + C), SB-UNI-Z1/Z2/Z3 (media upload reliability).
-
-### ✅ Previous — S-SBUNI-2 Phase 1 D + V (bundles re-architect) (2026-05-13)
-
-Bundles moved from `listingType:"bundle"` to `categoryType:"bundle"`. `features/bundles/` (17 files, ~1900 LOC) + 2 `_internal` folders deleted outright. `GroupedListingDocument` re-scoped to theme-group semantics. New `onProductStockChange` Firebase Function deployed. 4 commits + indices deploy + functions deploy.
-
-- **D ListingType prune** — `ListingType` union shrinks to `standard|auction|pre-order|prize-draw`. 17 inline duplicates pruned via one-off sweep across appkit + main. CategoryDocument gains `bundlePriceInPaise`/`bundleQueryRule` (static or dynamic)/`bundleStockStatus`/`bundleQueryResolvedAt`/`bundleProductIds[]`. `LISTING_TYPE_CAPABILITIES`/`_registry`/`isBundleListing`/order-splitter/checkout actions all drop the bundle branch.
-- **V folder deletion** — `appkit/src/features/bundles/` entirely DELETED. `_internal/server/features/bundles/` + `_internal/shared/features/bundles/` DELETED. Bundle UI tree under `src/app/[locale]/bundles/`, `/admin/bundles/`, `/store/bundles/` + `src/app/api/bundles/` DELETED. `BUNDLE_*` constants rehomed in `_internal/shared/features/categories/bundle-config.ts`.
-- **V GroupedListingDocument re-scope** — pricing fields (`bundlePrice`/`originalPrice`/`discountPercent`/`currency`) dropped; `groupTheme`/`minActiveMembers`/`activeMemberCount`/`visibilityStatus` added.
-- **V Firebase Function** — new `onProductStockChange` Firestore-onWrite trigger on products. Recomputes bundle `bundleStockStatus` + grouped `activeMemberCount`/`visibilityStatus` when a product's available/unavailable state flips. `bundleStockSync` scheduled handler updated to operate on bundle categories. Both deployed to `asia-south1`.
-- **V Consumer sweep** — BrandDetailPageView, CategoryDetailPageView, BrandDetailTabs, CategoryDetailTabs, StoreDetailLayoutView, StoreBundlesPageView all repointed at `categoriesRepository.listByType("bundle")` + new `CategoryBundlesListing` component (replaces deleted `BundlesByCategoryListing`). FeaturedBundlesSection homepage case returns null pending rebuild.
-- **V Seed migration** — 3 bundle rows (Pokémon TCG starter, Gunpla PG arrivals, Beyblade X launch pack) merged into `categoriesSeedData` as `Partial<CategoryDocument>` with `categoryType:"bundle"` + `bundleQueryRule.type:"static"`.
-- **V Indices** — added composite `(categoryType, createdByStoreId, isActive, createdAt)` for store-scoped bundle queries. Bundle-collection composites (6 entries) + sublistingCategories composites (2 entries) left as orphans; `firebase deploy --only firestore:indexes --force` cleanup deferred.
-
-**Required user follow-up**: hit `POST /demo/seed` to wipe orphan `bundles` collection + reseed `categories` with 3 bundle rows. **No `vercel --prod` per standing instruction.**
-
-**Spun out to S-SBUNI-3** (deferred from this session):
-- Bundle UI rebuild — admin editor with multi-select product picker + public bundle detail/listing pages against `CategoryDocument` shape. Was deleted outright in V to keep this session sized.
-- Bundle cart-line `{bundleCategorySlug, qty}` + checkout expansion to N product order lines (forward-looking; no add-to-cart-bundle UI exists today).
-
----
-
-### ✅ Previous — S-SBUNI-1 Phase 0 X1+X2 + Phase 1 B + C (2026-05-13)
-
-First slice of Tier SB-UNI. 8 commits. `firebase deploy --only firestore:indexes` fired; `npm run check` exits 0.
-
-- **X1 capability registry** — `_internal/shared/listing-types/capabilities.ts` exports `LISTING_TYPE_CAPABILITIES` + 6 accessors + `assertNever`. Future-expansion Pattern 1 + 2.
-- **X2 plugin folder scaffold** — `_internal/shared/listing-types/{standard,auction,pre-order,prize-draw}/` each with `config.ts` (concrete: listingType + capability + slugPrefix + cartLine) + 4 stub files (schema/ctas/og/seed-factory) marked TODO for later phases. `_registry.ts` aggregates.
-- **X3 schemaVersion infra — 🚫 dropped per user push-back.** Pre-launch / no live data, so version handles + migrations.ts shells were dead weight. Captured in memory `feedback_no_speculative_infra.md` — skip future-proofing infra whose only stated payoff is "prevents future migration pain" until a real consumer exists.
-- **B sublistings → categories.categoryType:"sublisting"** — 12 sublisting rows merged into `categoriesSeedData`. **Deleted** `features/sublisting/`, `features/products/repository/sublisting-categories.repository.ts`, `features/products/schemas/sublisting-categories.ts`, `seed/sublisting-categories-seed-data.ts`. 5 API routes repointed at `categoriesRepository`. New methods: `listByType`, `findBySlugAndType`, `getSublistingListings`, `deleteWithSublistingUnlink`, `generateSublistingId`. Indices `(categoryType, isActive, order)` + `(categoryType, createdAt)` shipped.
-- **C brands → categories.categoryType:"brand"** — **Entire `features/brands/` folder DELETED**. 25 brand rows transformed into `Partial<CategoryDocument>` entries with `categoryType:"brand"` + `brandWebsite`/`brandCountry`/`brandFounded`/`brandBannerImage` + `display.coverImage` (was logoURL). New `categoriesRepository.findActiveBrands()`. `createBrandAction`/`updateBrandAction`/`deleteBrandAction` rewritten to translate BrandInput → CategoryDocument fields. Homepage data + listingProcessor + 3 API routes + SeedPanel repointed.
-
-**Required user follow-up**: hit `POST /demo/seed` to wipe the deleted `sublistingCategories` + `brands` collections and reseed `categories` with the merged rows. The orphan `sublistingCategories` indexes left in Firestore can be `firebase deploy --only firestore:indexes --force`-cleaned at any future deploy. **No `vercel --prod` per standing instruction.**
-
-**Phase 1 carried to next session** — D (bundles re-architect, L), V (grouped re-scope + 3-folder delete + `onProductStockChange` Function, L), E (discriminator cleanup, S), A (addresses unification, M). Sequence per plan: D → V → E → A.
-
----
-
-### ✅ Previous — SB-UNI-Z1/Z2/Z3 Media upload reliability (2026-05-13)
-
-Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byte through the Vercel Lambda (4.5 MB request cap) which made the route's claimed 50 MB video ceiling unreachable in prod. Replaced with a signed-URL flow that bypasses the Lambda entirely. 6 commits.
-
-- **Z3 (centralised limits)** — new `appkit/src/_internal/shared/media/limits.ts` is the single source of truth for `MAX_*_BYTES` / `MAX_LABEL` / `ALLOWED_*_MIMES` / `MIME_TO_EXT` / `PDF_MAGIC` + `classifyMime` / `isAllowedMime` / `maxBytesFor` helpers. Exported from `client.ts` / `server.ts` / `index.ts`. Legacy upload route consumed them before deletion.
-- **Z2 (MIME widening + conversion hints)** — `ALLOWED_VIDEO_MIMES` widened with `video/3gpp` · `video/3gpp2` · `video/x-matroska`. New `VIDEO_CONVERSION_HINTS` + `getConversionHint(mime)` returns actionable strings ("AVI is not supported — please convert to MP4 or WebM") for `video/x-msvideo` · `video/MP2T` · `video/x-flv` · `video/x-ms-wmv`. Errors carry the hint as both the user-facing message and a `hint` body field.
-- **Z1 (signed-URL flow)** — new `POST /api/media/sign` (auth + caps + v4 signed PUT URL, 15-min TTL) + `POST /api/media/finalize` (pulls metadata, streams first 4 KB for `fileTypeFromBuffer` verification, rejects + deletes on declared-vs-detected MIME mismatch, stamps `customMetadata`, returns 7-day signed read URL or public URL). Per-context guardrails (product/review/auction/preorder/event/blog/rich-text caps + image-only + pdf-only affinity + SEO filename) extracted to `appkit/src/_internal/server/features/media/contextGuards.ts` for reuse. `useMediaUpload` rewritten to `sign → fetch PUT → finalize` — hook surface preserved so field components need no changes. Client-side `File.size`/MIME precheck added. `AvatarUpload.tsx` migrated to the new hook signature. Legacy `src/app/api/media/upload/route.ts` deleted.
-
-**Operational follow-up (NOT a code task; no `vercel --prod` per user instruction):** Firebase Storage bucket CORS for browser `PUT` from `https://letitrip.in` + `http://localhost:3000` via `gsutil cors set`. End-to-end browser smoke test of `MediaUploadField` for each kind not yet run against live Firebase.
-
-**Deferred (Z3 follow-up, carried separately):** `kind: "image"|"video"|"pdf"|"auto"` prop on `MediaUploadField` auto-deriving `accept` + `maxSizeMB` — pulled out to keep blast radius small.
-
-**Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
--->
-
-### ✅ LAST COMPLETED — S-prod-fix: Firebase Lambda tracing + media watermark proxy + store encryption + seed auth gate (2026-05-14)
+### ✅ Previous — S-prod-fix: Firebase Lambda tracing + media watermark proxy + store encryption + seed auth gate (2026-05-14)
 
 All prod 500s fixed. `npm run check` exits 0. **Deploy pending** — requires `vercel --prod` + `firebase deploy --only firestore:indexes` + `/demo/seed` Load All.
 
@@ -211,11 +149,7 @@ All prod 500s fixed. `npm run check` exits 0. **Deploy pending** — requires `v
 - **Fix 5** — `STORE_SECRET_FIELDS` constant in `pii-schemas.ts`. `StoreRepository` gains `encryptSecrets`/`decryptSecrets` helpers + `mapDoc`/`update`/`create`/`changeSlug` overrides for `whatsappConfig.accessToken` (AES-256-GCM via `encryptSecret`/`decryptSecret`).
 - **Pre-existing TS errors fixed** — `support.repository.ts` (`.count()` → `.select().get()`, implicit-any reduce, `prepareForFirestore(message as unknown as Record<string, unknown>)`)  · `checkSoftBan.ts` + `server.ts` (`BannedAction` sourced from `permissions/constants` not re-exported `schemas/firestore`) · `hard-ban/route.ts` (`getProviders` → `getAdminAuth` + `findAll(obj)` → `findActiveByUser` / `findByOwnerId` / `findByStore` / `findBy`) · `unban/route.ts` (same `getProviders` fix) · `LayoutShellClient.tsx` (cast `user` for `isAdminUser`) · `support/tickets/route.ts` (`order.buyerId` → `order.userId`) · appkit dist rebuilt (v2.6.5, still file:./appkit).
 
-### ✅ Previous — S9: RBAC1–10 complete (2026-05-14)
-
-Full permission system shipped in one commit. `npm run check` exits 0. RBAC2–10 all wired (server permissions, admin layout RSC, section layouts, route handler permission gate, team management, nav filter, store capabilities, Firestore rules, Edge JWT role gate).
-
-### 🔄 CURRENT — Deploy S-prod-fix: `vercel --prod` + indexes + seed
+### 🔄 CURRENT — Deploy: `vercel --prod` + `/demo/seed` reload (auth-nav session landed)
 
 ### ⏳ NEXT UP — bundle checkout finalize + Phase 2+ (S-SBUNI-4 closed 2026-05-13)
 
@@ -226,6 +160,7 @@ Full permission system shipped in one commit. `npm run check` exits 0. RBAC2–1
 | – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: ListingType union extends to `classified`/`digital-code`/`live`) · Phase 3 (G–K: TCGPlayer grading, eBay hybrid auction+BIN, classified fields, digital-code subcollection, live-item jurisdiction) · Phase 4 (L: Amazon-style catalog/offer split — 2-cohort) · Phase 5 (M–O: per-type checkout flows) · Phase 6 (P–T: SeedPanel sweep + per-type views + cart awareness + search facets) · Phase 7 (W-1…W-5: CTA registry + 5-wave sweep + lint rule) · Phase 8 (Y-1…Y-7: FormShell + 7-cluster migration) · Phase 9 polish (Z4: HEVC hint; Z5: MediaUploadField error UX) · X4 feature flags + X5 telemetry. | Each is its own cohort — slot when ready. **Phase 1 is fully closed (S-SBUNI-5 2026-05-13).** **SB10-C fully closed S8 follow-up 2026-05-13.** |
 | 4 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
 | 5 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
+| 6 | **S-polish-pass** *(slot after S11)* | **10-phase listing quality polish pass.** Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL` of `crud-tracker.md`. **Foundational rules** (apply to every listing page this session): (a) no in-memory filtering — all list ops at query layer (Firestore + Sieve or listingProcessor); (b) URL params always human-readable in the browser address bar (`sort=newest&type=auction&page=2`), translated to Sieve DSL internally by `parseListingSearchParams`; (c) all URL state via `useUrlTable` (instant: sort/page/toggles/view) + `usePendingFilters` (deferred: filter drawer). **Phases:** PL1 `SearchableEntitySelect` new appkit component + form wiring (brand/store/category/sublisting/bundle product picker for supported listing types only) · PL2 `ListingToolbar.toggles` prop + `isSold`/sold-out URL-driven toolbar toggles on product/auction/pre-order/bundle listing views + `AdminBundlesView` full `ListingViewShell` upgrade · PL3 orphaned view shell audit + deletion (zero imports + not in future plan = delete) · PL4 missing admin editor pages (`/admin/users/[id]/edit`, `/admin/stores/[id]/edit`, `/admin/orders/[id]`) · PL5 bespoke admin page upgrades (carousels search/pagination, sublisting-categories scaffold, deals+featured sort+bulk) · PL6 in-memory filter elimination (wishlist page → query-layer API with Firestore composites, history tab → query or documented ≤50-row exception) + "coming soon" sweep · PL7 LR-tier 35-file migration (raw HTML → `<Div>/<Text>/<Heading>/<Button>/<MediaImage>/<Stack>/<Row>`) · PL8 Sieve/Firebase adapter fixes (double-query fix, incompatibility doc, `callListingProcessor` extraction to `src/lib/listing-processor.ts`, readable-param translation audit, `validateSieveFilters` to all public list routes) · PL9 listingProcessor extended to blog/events/stores/categories/faqs/coupons/store-products/store-auctions routes · PL10 Vitest setup + unit tests (filter-aliases, validateSieveFilters, listingProcessor, coupon expiry, order timeout, media cleanup, UI tests for ListingToolbar/SearchableEntitySelect/BulkActionBar). | After S11 — quality polish + test foundation |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]` (now category route post-SB-UNI-D), `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |
 | – | **S1-polish** | Optional slot-shell polish slots deferred from S1 (admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products). Feature work — new endpoints + hooks. | Pull when prioritised |

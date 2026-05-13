@@ -15,6 +15,7 @@ import {
   isAdminUser,
   useSession,
   useToast,
+  ScamAwarenessModal,
   type AppLayoutShellProps,
   type MainNavbarItem,
   type SearchResourceType,
@@ -27,6 +28,8 @@ import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/con
 import { BRAND, getBrandCopyright } from "@/constants/brand";
 import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants/footer";
 import { SEARCH_LABELS } from "@/constants/search";
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
   { value: "products",    label: "Products" },
@@ -81,6 +84,7 @@ export default function LayoutShellClient({
   const { user } = useSession();
   const { showToast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const [scamModalDismissed, setScamModalDismissed] = useState(false);
 
   const searchLabels = SEARCH_LABELS;
 
@@ -209,10 +213,18 @@ export default function LayoutShellClient({
     return parts.length ? parts.join("\n") : null;
   })();
 
+  const showScamModal =
+    !scamModalDismissed &&
+    !!user &&
+    !user.scamAwarenessAcknowledgedAt &&
+    !!user.createdAt &&
+    Date.now() - new Date(user.createdAt).getTime() < THIRTY_DAYS_MS;
+
   return (
     <Fragment>
     {themeStyle && <style>{themeStyle}</style>}
     <AdRuntimeInitializer />
+    <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
     <AppLayoutShell
       navItems={navItems}
       sidebarSections={sidebarSections}
@@ -241,6 +253,7 @@ export default function LayoutShellClient({
       adminHref={String(ROUTES.ADMIN.DASHBOARD)}
       storeHref={String(ROUTES.STORE.DASHBOARD)}
       loginHref={String(ROUTES.AUTH.LOGIN)}
+      registerHref={String(ROUTES.AUTH.REGISTER)}
       homeHref={String(ROUTES.HOME)}
       shopHref={String(ROUTES.PUBLIC.PRODUCTS)}
       onLogout={handleLogout}

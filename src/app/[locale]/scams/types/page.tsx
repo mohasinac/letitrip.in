@@ -27,6 +27,7 @@ import {
   SCAM_CATEGORIES,
   SCAM_TYPES,
   getScamTypesByCategory,
+  faqJsonLd,
 } from "@mohasinac/appkit";
 import type { ScamCategory } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -60,7 +61,20 @@ const CATEGORY_ICON_MAP: Record<ScamCategory, React.ReactNode> = {
 export default function Page() {
   const registryHref = String(ROUTES.PUBLIC.SCAMS);
 
+  // FAQPage JSON-LD: "How do I avoid [scam type]?" per scam type
+  const ld = faqJsonLd(
+    SCAM_TYPES.slice(0, 10).map((t) => ({
+      question: `How do I avoid ${t.label.toLowerCase()} scams?`,
+      answer: t.howToAvoid.join(" "),
+    })),
+  );
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+      />
     <Main>
       {/* Breadcrumb strip */}
       <div className="border-b appkit-breadcrumb-strip">
@@ -225,5 +239,6 @@ export default function Page() {
         </Container>
       </Section>
     </Main>
+    </>
   );
 }

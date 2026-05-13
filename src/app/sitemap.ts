@@ -8,6 +8,7 @@ import { BLOG_POSTS_COLLECTION, BLOG_POST_FIELDS } from "@mohasinac/appkit";
 import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
 import { STORE_COLLECTION, STORE_FIELDS } from "@mohasinac/appkit";
 import { CATEGORY_FIELDS } from "@mohasinac/appkit";
+import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { ROUTES } from "@/constants";
 
@@ -194,6 +195,30 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SCAMS}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.8,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SCAM_TYPES}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SCAM_REPORT}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SCAM_FAQS}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
   },
 ];
 
@@ -403,6 +428,32 @@ async function fetchStoreUrls(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+async function fetchScammerUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db
+      .collection(SCAMMER_COLLECTION)
+      .where("status", "==", "verified")
+      .select("seo", "updatedAt")
+      .limit(2000)
+      .get();
+
+    return snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => {
+      const data = doc.data();
+      const slug: string = (data.seo as { slug?: string } | undefined)?.slug ?? doc.id;
+      return {
+        url: `${BASE_URL}${ROUTES.PUBLIC.SCAM_DETAIL(slug)}`,
+        lastModified: (data.updatedAt as { toDate?: () => Date } | undefined)?.toDate?.() ?? new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sitemap: failed to fetch scammer URLs", { error: err });
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [
     productUrls,
@@ -411,6 +462,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogUrls,
     auctionUrls,
     storeUrls,
+    scammerUrls,
   ] = await Promise.all([
     fetchProductUrls(),
     fetchCategoryUrls(),
@@ -418,6 +470,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     fetchBlogPostUrls(),
     fetchAuctionUrls(),
     fetchStoreUrls(),
+    fetchScammerUrls(),
   ]);
 
   return [
@@ -428,6 +481,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...auctionUrls,
     ...eventUrls,
     ...storeUrls,
+    ...scammerUrls,
   ];
 }
 

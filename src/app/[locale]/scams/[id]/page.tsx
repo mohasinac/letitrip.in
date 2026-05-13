@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getScammerProfilePageData } from "@mohasinac/appkit";
+import { getScammerProfilePageData, getScamType } from "@mohasinac/appkit";
 import { ScamProfileView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { SCAM_TYPE_LABELS } from "@mohasinac/appkit";
+import { SCAM_TYPE_LABELS, breadcrumbJsonLd, faqJsonLd, ROUTES } from "@mohasinac/appkit";
 
 export const revalidate = 300;
 
@@ -40,13 +40,48 @@ export default async function Page({ params }: Props) {
 
   if (!data) notFound();
 
+  const { scammer } = data;
+  const name = scammer.displayNames[0] ?? "Unknown";
+
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: "Home", url: String(ROUTES.HOME) },
+    { name: "Scam Registry", url: String(ROUTES.PUBLIC.SCAMS) },
+    { name, url: String(ROUTES.PUBLIC.SCAM_DETAIL(id)) },
+  ]);
+
+  const scamTypeData = getScamType(scammer.scamType);
+  const faqLd = scamTypeData
+    ? faqJsonLd([
+        {
+          question: `How do I avoid ${scamTypeData.label.toLowerCase()} scams?`,
+          answer: scamTypeData.howToAvoid.join(" "),
+        },
+        {
+          question: `How does a ${scamTypeData.label.toLowerCase()} scam work?`,
+          answer: scamTypeData.howItHappens,
+        },
+      ])
+    : null;
+
   return (
-    <ScamProfileView
-      scammer={data.scammer}
-      incidents={data.incidents}
-      comments={data.comments}
-      relatedScammers={data.relatedScammers}
-      isAuthenticated={false}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      )}
+      <ScamProfileView
+        scammer={data.scammer}
+        incidents={data.incidents}
+        comments={data.comments}
+        relatedScammers={data.relatedScammers}
+        isAuthenticated={false}
+      />
+    </>
   );
 }

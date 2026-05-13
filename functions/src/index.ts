@@ -58,6 +58,9 @@ import {
   onSupportTicketCreateHandler,
   onSupportTicketUpdateHandler,
   onUserBanChangeHandler,
+  // SCAM8 — scam report notifications
+  onScamReportCreateHandler,
+  onScamReportUpdateHandler,
   // Adapter
   bindToFirebase,
 } from "@mohasinac/appkit/jobs";
@@ -306,4 +309,20 @@ export const onUserBanChange = bindToFirebase.documentUpdated(
   "onUserBanChange",
   onUserBanChangeHandler,
   { document: "users/{uid}", region: REGION },
+);
+
+// ── SCAM8 — scam report notifications ─────────────────────────────────────
+// onScamReportCreate  — notify reporter + all employees with scammer read permission
+// onScamReportUpdate  — notify reporter when status → verified or rejected
+
+export const onScamReportCreate = bindToFirebase.documentCreated(
+  "onScamReportCreate",
+  onScamReportCreateHandler,
+  { document: "scammerProfiles/{scammerId}", region: REGION },
+);
+
+export const onScamReportUpdate = bindToFirebase.documentUpdated(
+  "onScamReportUpdate",
+  onScamReportUpdateHandler,
+  { document: "scammerProfiles/{scammerId}", region: REGION },
 );

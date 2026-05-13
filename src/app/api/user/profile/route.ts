@@ -35,6 +35,7 @@ export const GET = withProviders(createApiHandler({
         : undefined,
       createdAt: user!.createdAt,
       updatedAt: user!.updatedAt,
+      scamAwarenessAcknowledgedAt: user!.scamAwarenessAcknowledgedAt ?? null,
     });
   },
 }));
@@ -58,13 +59,14 @@ const updateProfileSchema = z.object({
     .optional(),
   bio: z.string().max(500).optional(),
   profileIsPublic: z.boolean().optional(),
+  acknowledgeScamAwareness: z.boolean().optional(),
 });
 
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,
   handler: async ({ user, body }) => {
-    const { bio, profileIsPublic, ...coreFields } = body!;
+    const { bio, profileIsPublic, acknowledgeScamAwareness, ...coreFields } = body!;
 
     // Update core fields (auto-resets verification flags when email/phone changes)
     const updatedUser = await userRepository.updateProfileWithVerificationReset(
@@ -72,9 +74,14 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
       coreFields,
     );
 
+    // Mark scam awareness acknowledged
+    if (acknowledgeScamAwareness === true) {
+      await userRepository.update(user!.uid, { scamAwarenessAcknowledgedAt: new Date() } as any);
+    }
+
     // Persist bio + visibility into publicProfile sub-object when provided
     if (bio !== undefined || profileIsPublic !== undefined) {
-      const existing = (updatedUser as any).publicProfile ?? {};
+      const existing = (updatedUser.publicProfile as Record<string, unknown>) ?? {};
       await userRepository.update(user!.uid, {
         publicProfile: {
           ...existing,

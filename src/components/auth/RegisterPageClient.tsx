@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RegisterForm, useRegister, useToast, ROUTES } from "@mohasinac/appkit/client";
 
@@ -23,6 +24,24 @@ export function RegisterPageClient() {
       }}
       isLoading={register.isPending}
       error={register.error?.message ?? null}
+      renderLoginLink={() => (
+        <Link
+          href={String(ROUTES.AUTH.LOGIN)}
+          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          Sign in
+        </Link>
+      )}
+      renderTermsLink={() => (
+        <Link
+          href={String(ROUTES.PUBLIC.TERMS)}
+          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Terms of Service
+        </Link>
+      )}
     />
   );
 }

@@ -221,6 +221,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
+    title: "Trust & Safety",
+    items: [
+      { href: String(ROUTES.ADMIN.SUPPORT_TICKETS), label: "Support Tickets", requiredPermission: "admin:support-tickets:read" },
+      { href: String(ROUTES.ADMIN.SCAMMERS),        label: "Scam Registry",   requiredPermission: "admin:scammers:read"       },
+    ],
+  },
+  {
     title: "System",
     items: [
       { href: String(ROUTES.ADMIN.SESSIONS),      label: "Sessions",      requiredPermission: "admin:sessions:read"      },
@@ -318,6 +325,12 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     title: "Selling",
     items: [
       { href: String(ROUTES.USER.BECOME_SELLER), label: "Open a Store" },
+    ],
+  },
+  {
+    title: "Help",
+    items: [
+      { href: String(ROUTES.USER.SUPPORT), label: "Support Tickets" },
     ],
   },
 ];

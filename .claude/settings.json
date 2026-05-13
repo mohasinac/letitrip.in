@@ -18,7 +18,13 @@
       "PowerShell($p='d:\\\\proj\\\\letitrip.in\\\\prompt.md'; $lines = Get-Content $p; $kept = $lines[0..115] + $lines[231..\\($lines.Count-1\\)]; $kept | Set-Content -Encoding utf8 $p; \"lines now: $\\(\\(Get-Content $p\\).Count\\)\")",
       "Bash(git commit -m ' *)",
       "Bash(grep -c \"flex-1\\\\b\\\\|lg\\\\\\\\\\\\\\\\:w-80\\\\|lg\\\\\\\\\\\\\\\\:flex-row\" d:/proj/letitrip.in/appkit/dist/tailwind-utilities.css)",
-      "Bash(grep -o \"lg\\\\\\\\\\\\\\\\:w-80\\\\|\\\\.flex-1{\\\\|lg\\\\\\\\\\\\\\\\:flex-row\" d:/proj/letitrip.in/appkit/dist/tailwind-utilities.css)"
+      "Bash(grep -o \"lg\\\\\\\\\\\\\\\\:w-80\\\\|\\\\.flex-1{\\\\|lg\\\\\\\\\\\\\\\\:flex-row\" d:/proj/letitrip.in/appkit/dist/tailwind-utilities.css)",
+      "Bash(git -C \"d:/proj/letitrip.in\" add appkit)",
+      "Bash(git -C \"d:/proj/letitrip.in\" status --short)",
+      "Bash(git -C \"d:/proj/letitrip.in\" diff \"src/app/api/user/profile/route.ts\")",
+      "Bash(git -C \"d:/proj/letitrip.in\" diff \".claude/settings.json\")",
+      "Bash(git -C \"d:/proj/letitrip.in\" add \"src/app/api/user/profile/route.ts\" \".claude/settings.json\")",
+      "Bash(git -C d:/proj/letitrip.in commit -m ' *)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"
