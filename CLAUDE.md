@@ -255,6 +255,10 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 | Wishlist (per user) | `wishlist-` | `wishlist-user-mohsin-c` |
 | History (per user) | `history-` | `history-user-mohsin-c` |
 | Product feature | `feature-` | `feature-free-shipping` |
+| Classified listing (SB-UNI-F) | `classified-` | `classified-vintage-funko-bangalore-meetup` |
+| Digital-code listing (SB-UNI-F) | `digitalcode-` | `digitalcode-steam-cyberpunk-2077` |
+| Live-item listing (SB-UNI-F) | `live-` | `live-axolotl-leucistic-juvenile` |
+| Catalog product (SB-UNI-L) | `catalog-` | `catalog-pokemon-charizard-base-set-4-102` |
 
 **Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles, wishlists, history, product features.
 
