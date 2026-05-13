@@ -73,7 +73,7 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-SBUNI-5 Bundle checkout finalize (closes Phase 1) (2026-05-13)
+### ✅ Previous — S-SBUNI-5 Bundle checkout finalize (closes Phase 1) (2026-05-13)
 
 Bundle commerce loop end-to-end functional. 8 commits across appkit (5) + main (3). Quality gate ends 0 errors. **No new infra deploys this session** — schema fields already shipped in S-SBUNI-4, no new indices, no new Functions.
 
@@ -201,16 +201,19 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 **Held items (carried forward):** appkit npm publish (still on `file:./appkit`) · `/demo/seed` re-seed (no Firestore schema changes this session).
 -->
 
-### ✅ LAST COMPLETED — S-dashboard-listing-audit: dashboard listing audit + stub pages (2026-05-14)
+### ✅ LAST COMPLETED — S-SBUNI-RULES follow-up: payout deduction + quality pass (2026-05-14)
 
-Audit of all user/admin/store dashboard listing pages. `npm run check` exits 0.
+REFUND_COPY constants module + component quality pass + payout deduction architecture. `npm run check` exits 0. Appkit published v2.6.4. Deployed to Vercel prod.
 
-- **New appkit views**: `SellerPreOrdersView` + `SellerPrizeDrawsView` + `AdminPrizeDrawsView` — each with `useUrlTable`, `ListingToolbar`, `DataTable`, status filter drawer, sort, search. Added `SELLER_PRE_ORDER_STATUS_TABS` + `SELLER_PRIZE_DRAW_STATUS_TABS` to `filter-tabs.ts`. Exported from all barrels.
-- **SB4-E closed**: `store/prize-draws/page.tsx` + `admin/prize-draws/page.tsx` stubs → thin shims mounting the new views. `store/pre-orders/page.tsx` stub → `<SellerPreOrdersView />`.
-- **Templates page (Phase 2a)**: added `useUrlTable` + sort dropdown (Name A–Z / Z–A) + condition filter dropdown + search-on-Enter. Client-side — API has no q/sort params.
-- **Sublisting-categories page (Phase 2b)**: dropped `pageSize=200` → `pageSize=25` + server-side sort + proper pagination (prev/next with `total` from API). `useUrlTable` for sort+page URL persistence. Local search kept client-side (API has no q param).
+- **REFUND_COPY module** (`appkit/src/_internal/shared/features/orders/refund-copy.ts`) — single source of truth for all user-facing strings in refund/shipping/sibling-payment UI. Groups: `history` · `request` (incl. `acknowledgments as const`) · `siblingPayments` (factory fn) · `shipping`. Exported from `appkit/src/index.ts`.
+- **Component quality pass** — `RefundHistoryTable` / `RefundRequestView` / `OrderSiblingPayments` rewritten: all strings via REFUND_COPY, all raw HTML replaced with appkit primitives (`Badge` / `Div` / `Heading` / `Row` / `Stack` / `Text` / `Checkbox` / `Textarea`), colors via `text-[color:var(--appkit-color-primary)]`. `ShippingPicker` migrated to REFUND_COPY.shipping.*. Acknowledgment count derived from `.length` (not a magic number).
+- **Payout deduction** — `PayoutRefundDeduction` interface + `applyRefundDeductionAction` (fire-and-forget from `processRefundAction`); `applyRefundDeduction` repo method atomically appends deduction + recalculates `netAmount = max(0, amount − totalDeducted)`; `POST /api/admin/payouts/[id]/deduction` manual clawback route. `netAmount` added to payouts SIEVE_FIELDS.
+- **Sieve fields** — `paymentBatchId` + `contestable` added to orders `ADMIN_SIEVE_FIELDS` + `SELLER_SIEVE_FIELDS`. `netAmount` added to payouts SIEVE_FIELDS.
+- **Fix** — TS1005 parse error in `refund-copy.ts` `nonContestableBanner` string (embedded `"` inside double-quoted string); fixed by switching outer quotes to single.
+- **ASCII diagrams** — updated Admin > Payouts section (netAmount column + deduction modal); added diagrams for RefundHistoryTable / RefundRequestView / OrderSiblingPayments / ShippingPicker.
+- **appkit v2.6.4** published to npm. `vercel --prod` deployed.
 
-**No schema changes. No indices needed. No seed reload needed.**
+**Pending follow-up**: `firebase deploy --only firestore:indexes` for `paymentBatchId` composite (index already merged into `firestore.indexes.json` in prior session).
 
 ### 🔄 CURRENT — S9: RBAC complete (RBAC1–10) + inline TODO(RBAC) retrofit
 
