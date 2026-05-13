@@ -64,6 +64,10 @@ module.exports = {
     "sm:flex-row",
     "md:flex-row",
     "lg:flex-row",
+    // Responsive sizing/gap used by appkit CheckoutView (2-col main + sidebar)
+    "lg:w-80",
+    "lg:w-96",
+    "lg:gap-8",
     // Responsive align/justify used by appkit listing and card components
     "sm:items-center",
     "sm:justify-between",

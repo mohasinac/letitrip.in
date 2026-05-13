@@ -303,8 +303,15 @@ export function CheckoutRouteClient() {
   const stepIndex =
     step === "address" ? 0 : step === "otp" ? 1 : step === "payment" ? 2 : 2;
 
+  const formattedTotal = subtotal.toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   return (
-    <>
+    <Div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
     <SideDrawer
       isOpen={addAddressDrawerOpen}
       onClose={() => setAddAddressDrawerOpen(false)}
@@ -495,7 +502,7 @@ export function CheckoutRouteClient() {
               Total
             </Text>
             <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
-              &#x20B9;{subtotal.toFixed(2)}
+              {formattedTotal}
             </Text>
           </Div>
           {step === "address" && (
@@ -514,6 +521,6 @@ export function CheckoutRouteClient() {
         </Div>
       )}
     />
-    </>
+    </Div>
   );
 }

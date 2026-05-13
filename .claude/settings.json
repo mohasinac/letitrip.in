@@ -16,7 +16,9 @@
       "Bash(echo \"exit_code=$?\")",
       "PowerShell($p='d:\\\\proj\\\\letitrip.in\\\\prompt.md'; $lines = Get-Content $p; for\\($i=0;$i -lt $lines.Count;$i++\\){ if\\($lines[$i] -match '^## HOW TO WORK$' -and $lines[$i+2] -notmatch 'LEGACY'\\){ \"second HOW TO WORK at line $\\($i+1\\)\"; break } })",
       "PowerShell($p='d:\\\\proj\\\\letitrip.in\\\\prompt.md'; $lines = Get-Content $p; $kept = $lines[0..115] + $lines[231..\\($lines.Count-1\\)]; $kept | Set-Content -Encoding utf8 $p; \"lines now: $\\(\\(Get-Content $p\\).Count\\)\")",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(grep -c \"flex-1\\\\b\\\\|lg\\\\\\\\\\\\\\\\:w-80\\\\|lg\\\\\\\\\\\\\\\\:flex-row\" d:/proj/letitrip.in/appkit/dist/tailwind-utilities.css)",
+      "Bash(grep -o \"lg\\\\\\\\\\\\\\\\:w-80\\\\|\\\\.flex-1{\\\\|lg\\\\\\\\\\\\\\\\:flex-row\" d:/proj/letitrip.in/appkit/dist/tailwind-utilities.css)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"

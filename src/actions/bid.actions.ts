@@ -36,25 +36,41 @@ const placeBidSchema = z.object({
 
 // --- Server Actions --------------------------------------------------------
 
+export type PlaceBidActionResult =
+  | { ok: true; data: PlaceBidResult }
+  | { ok: false; error: string };
+
 export async function placeBidAction(
   input: PlaceBidInput,
-): Promise<PlaceBidResult> {
-  const user = await requireAuthUser();
+): Promise<PlaceBidActionResult> {
+  try {
+    const user = await requireAuthUser();
 
-  const rl = await rateLimitByIdentifier(
-    `bid:place:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = placeBidSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid bid data",
+    const rl = await rateLimitByIdentifier(
+      `bid:place:${user.uid}`,
+      RateLimitPresets.STRICT,
     );
+    if (!rl.success)
+      return { ok: false, error: "Too many requests. Please slow down." };
 
-  return placeBid(user.uid, user.email ?? "", parsed.data);
+    const parsed = placeBidSchema.safeParse(input);
+    if (!parsed.success)
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid bid data",
+      };
+
+    const data = await placeBid(user.uid, user.email ?? "", parsed.data);
+    return { ok: true, data };
+  } catch (err: unknown) {
+    if (err instanceof AuthorizationError)
+      return { ok: false, error: "Please sign in to place a bid." };
+    if (err instanceof ValidationError)
+      return { ok: false, error: err.message };
+    if (err instanceof Error && err.message)
+      return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to place bid. Please try again." };
+  }
 }
 
 export async function listBidsByProductAction(
