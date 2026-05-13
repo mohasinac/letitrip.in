@@ -11,6 +11,14 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import {
   formatFileSize, generateMediaFilename } from "@mohasinac/appkit";
 import type { MediaFilenameContext } from "@mohasinac/appkit";
+import {
+  ALLOWED_TYPES_LABEL,
+  MAX_BYTES,
+  MAX_LABEL,
+  MIME_TO_EXT,
+  PDF_MAGIC,
+  classifyMime,
+} from "@mohasinac/appkit/server";
 
 /**
  * Media Upload API Route
@@ -33,22 +41,6 @@ const BLOG_CONTENT_IMAGE_MAX = 10;
 const BLOG_ADDITIONAL_IMAGE_MAX = 5;
 const RICH_TEXT_IMAGE_MAX = 20;
 const TMP_UPLOAD_PREFIX = "tmp";
-
-// File-size limits — kept as named bytes so the size-too-large response can
-// quote the user-facing megabyte label without re-deriving it.
-const MEGABYTE = 1024 * 1024;
-const MAX_IMAGE_BYTES = 10 * MEGABYTE;
-const MAX_PDF_BYTES = 20 * MEGABYTE;
-const MAX_VIDEO_BYTES = 50 * MEGABYTE;
-const MAX_LABEL: Record<"image" | "pdf" | "video", string> = {
-  image: "10MB",
-  pdf: "20MB",
-  video: "50MB",
-};
-
-const PDF_MAGIC = "%PDF-";
-const ALLOWED_TYPES_LABEL =
-  "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime, PDF";
 
 const PDF_FOLDER = "documents";
 const DEFAULT_MEDIA_FOLDER = "uploads";
@@ -87,21 +79,6 @@ export const POST = withProviders(createRouteHandler({
       return errorResponse(ERROR_MESSAGES.MEDIA.NO_FILE, 400);
     }
 
-    const allowedImageTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-    ];
-    const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
-    const allowedDocTypes = ["application/pdf"];
-    const allowedTypes = [
-      ...allowedImageTypes,
-      ...allowedVideoTypes,
-      ...allowedDocTypes,
-    ];
-
     // Convert file to buffer early so we can inspect magic bytes
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -113,7 +90,7 @@ export const POST = withProviders(createRouteHandler({
     const looksLikePdf =
       buffer.length >= PDF_MAGIC.length &&
       buffer.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
-    if (!detected || !allowedTypes.includes(detected.mime)) {
+    if (!detected || classifyMime(detected.mime) === null) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: ALLOWED_TYPES_LABEL,
         detected: detected?.mime ?? "unknown",
@@ -128,19 +105,10 @@ export const POST = withProviders(createRouteHandler({
 
     // Use server-detected MIME type for storage, not client-supplied file.type
     const detectedMime = detected.mime;
-    const isVideo = allowedVideoTypes.includes(detectedMime);
-    const isPdf = allowedDocTypes.includes(detectedMime);
-    const kind: keyof typeof MAX_LABEL = isVideo
-      ? "video"
-      : isPdf
-        ? "pdf"
-        : "image";
-    const maxSize =
-      kind === "video"
-        ? MAX_VIDEO_BYTES
-        : kind === "pdf"
-          ? MAX_PDF_BYTES
-          : MAX_IMAGE_BYTES;
+    const kind = classifyMime(detectedMime)!;
+    const isVideo = kind === "video";
+    const isPdf = kind === "pdf";
+    const maxSize = MAX_BYTES[kind];
 
     if (file.size > maxSize) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
@@ -350,18 +318,7 @@ export const POST = withProviders(createRouteHandler({
         }
 
         // Force the correct extension from the server-detected MIME type
-        const mimeToExt: Record<string, string> = {
-          "image/jpeg": "jpg",
-          "image/jpg": "jpg",
-          "image/png": "png",
-          "image/gif": "gif",
-          "image/webp": "webp",
-          "video/mp4": "mp4",
-          "video/webm": "webm",
-          "video/quicktime": "mov",
-          "application/pdf": "pdf",
-        };
-        const detectedExt = mimeToExt[detectedMime] ?? detected.ext;
+        const detectedExt = MIME_TO_EXT[detectedMime] ?? detected.ext;
 
         // PDF-only contexts must receive PDF bytes; non-PDF contexts must not
         // accept PDF uploads. Narrowing via the type-predicate keeps the
