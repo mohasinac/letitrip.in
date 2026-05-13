@@ -115,13 +115,13 @@ export default function LayoutShellClient({
         title: "Support",
         items: [
           ...SIDEBAR_SUPPORT_LINKS,
-          ...(seedPanelEnabled
+          ...(seedPanelEnabled && user?.role === "admin"
             ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
             : []),
         ],
       },
     ],
-    [navItems, seedPanelEnabled],
+    [navItems, seedPanelEnabled, user],
   );
 
   // Locale switcher for sidebar
@@ -158,9 +158,9 @@ export default function LayoutShellClient({
   // Notification bell hidden per product decision — only show wishlist
   const notificationSlot = <>{wishlistIcon}</>;
 
-  // Seed & Docs slot — visible to everyone when seedPanel feature flag is enabled
+  // Seed & Docs slot — admin only, gated by the seedPanel feature flag
   const devSlot =
-    seedPanelEnabled ? (
+    seedPanelEnabled && user?.role === "admin" ? (
       <Link
         href={String(ROUTES.DEMO.SEED)}
         className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
