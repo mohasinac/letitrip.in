@@ -89,34 +89,67 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               Items ({order.items.length})
             </Text>
             <Stack gap="md">
-              {order.items.map((item: NonNullable<typeof order>["items"][number], i: number) => (
-                <Row key={i} gap="3" align="start">
-                  {item.image && (
-                    <Div
-                      role="img"
-                      aria-label={item.title}
-                      className="h-16 w-16 rounded-lg shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800"
-                      style={{ backgroundImage: `url(${item.image})` }}
-                    />
-                  )}
-                  <Div className="flex-1 min-w-0">
-                    <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100 line-clamp-2">
-                      {item.title}
-                    </Text>
-                    {item.attributes && Object.keys(item.attributes).length > 0 && (
-                      <Text variant="secondary" className="text-xs mt-0.5">
-                        {Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(" · ")}
-                      </Text>
+              {order.items.map((item: NonNullable<typeof order>["items"][number], i: number) => {
+                const isPrizeDraw = item.listingType === "prize-draw";
+                const revealStatus = item.prizeRevealStatus;
+                const revealDeadline = item.prizeRevealDeadline
+                  ? new Date(item.prizeRevealDeadline)
+                  : null;
+                return (
+                  <Row key={i} gap="3" align="start">
+                    {item.image && (
+                      <Div
+                        role="img"
+                        aria-label={item.title}
+                        className="h-16 w-16 rounded-lg shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800"
+                        style={{ backgroundImage: `url(${item.image})` }}
+                      />
                     )}
-                    <Row justify="between" className="mt-1">
-                      <Text variant="secondary" className="text-xs">×{item.quantity}</Text>
-                      <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                        {paise(item.price * item.quantity, item.currency)}
+                    <Div className="flex-1 min-w-0">
+                      <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100 line-clamp-2">
+                        {item.title}
                       </Text>
-                    </Row>
-                  </Div>
-                </Row>
-              ))}
+                      {item.attributes && Object.keys(item.attributes).length > 0 && (
+                        <Text variant="secondary" className="text-xs mt-0.5">
+                          {Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(" · ")}
+                        </Text>
+                      )}
+                      {isPrizeDraw && revealStatus && (
+                        <Row gap="sm" className="mt-1 flex-wrap items-center">
+                          {revealStatus === "revealed" ? (
+                            <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                              Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
+                            </span>
+                          ) : revealStatus === "open" ? (
+                            <span className="inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+                              Reveal pending
+                            </span>
+                          ) : revealStatus === "pending" ? (
+                            <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                              Awaiting reveal window
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-200">
+                              Reveal closed
+                            </span>
+                          )}
+                          {revealDeadline && revealStatus !== "revealed" && (
+                            <Text variant="secondary" className="text-[10px]">
+                              by {revealDeadline.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+                            </Text>
+                          )}
+                        </Row>
+                      )}
+                      <Row justify="between" className="mt-1">
+                        <Text variant="secondary" className="text-xs">×{item.quantity}</Text>
+                        <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                          {paise(item.price * item.quantity, item.currency)}
+                        </Text>
+                      </Row>
+                    </Div>
+                  </Row>
+                );
+              })}
             </Stack>
           </Div>
         );
