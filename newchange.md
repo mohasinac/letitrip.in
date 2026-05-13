@@ -41,6 +41,35 @@
 
 ---
 
+### S5 (no-op) + S6 partial — OG1/OG5/FI6-2 landed; Q6-views deferred (2026-05-13)
+
+**S5 closed ✅ doc-only.** Verify-first audit found every sub-task already done or deferred-by-design in earlier sessions:
+- P24/P26/P27/P28/P30 ✅ done (S14–S16, Session 81+, S15-audit)
+- P25 ⚠️ 33/55 categories — user deliberately skipped padding-for-padding
+- P29 ⚠️ wishlists skipped (one-doc-per-user pattern)
+- P31 ⚠️ Zod hook + dry-run + retry done; PII masking already-better than spec (AES-256-GCM + HMAC blind indices vs sha256 placeholder); SeedPanel UI polish deferred
+- ARCH1/6/7 ✅ done S6 2026-05-11
+- Firestore indices: root + base in sync (270/270, listingType+... composites present)
+
+**S6 partial.** OG1 + OG5 + FI6-2 landed. OG2/3/4 verified-N/A. Q6-views deferred (substantial refactor).
+
+| Sub-task | Files |
+|---|---|
+| OG1 — categories OG | `appkit/src/_internal/server/features/categories/og.tsx` (new, two-layer renderer); `appkit/src/server.ts` + `appkit/src/server-entry.ts` (export); `src/app/[locale]/categories/[slug]/opengraph-image.tsx` (new page shim) |
+| OG2 | N/A — no `/faq/[slug]` route (only `/faq` list + `/faqs/[category]`); FAQs aren't deep-linked share targets |
+| OG3 | N/A — `/user/**` is authenticated dashboard; public profile `/profile/[userId]` already has OG |
+| OG4 | Already done — `src/app/[locale]/sublisting-categories/[slug]/opengraph-image.tsx` exists |
+| OG5 — audit script | `appkit/scripts/verify-og-coverage.mjs` (new); `package.json` + `scripts/claude-hooks/check-on-stop.mjs` (wired into `check:audits` + Stop hook). 5 known baseline gaps tracked as `OG-coverage-followup`. |
+| FI6-2 | `src/app/[locale]/wishlist/layout.tsx` (was passthrough → async Provider wrap); `src/app/[locale]/stores/[storeSlug]/layout.tsx` (Promise.all + Provider wrap). SearchResultsClient verified-N/A (orphan file; /search pages are redirectors). RelatedProductsCarousel verified-N/A (props pass-through from detail pages). Promotions already wraps. |
+
+**Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos. No deploys.
+
+**Deferred follow-up tracker rows added**:
+- `OG-coverage-followup` — per-feature OG renderers for bundles/[slug], faqs/[category], reviews/[id], scams/[id], sellers/[id]
+- `S6-followup` Q6-views — switch 4 listing views from useQuery → useInfiniteQuery
+
+---
+
 ### S4 — SB3 closeout (D/G/J); SB1-L + Q1-ops deferred to S7 (2026-05-13)
 
 **Scope (final)**: SB3-D + SB3-G + SB3-J. The original tracker row also listed SB1-L (7 Firebase Functions) + Q1-ops (listingProcessor deploy); deferred to S7 because:

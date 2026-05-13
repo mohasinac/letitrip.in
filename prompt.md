@@ -73,23 +73,24 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S4 SB3 closeout (D/G/J); SB1-L + Q1-ops deferred to S7 (2026-05-13)
+### ✅ LAST COMPLETED — S5 (no-op) + S6 partial (2026-05-13)
 
-- **Scoping decision**: SB1-L's 7 Firebase Functions are mostly Prize-Draw-specific (`scheduledPrizeRevealOpen/Close/Expiry/Reminder`) + event raffle + spin prize + bundle stock-sync. Moved entire SB1-L cohort + Q1-ops `listingProcessor` deploy into **S7** (Prize Draws) so the Functions deploy ships as one cohesive cohort with the Prize-Draw surface. This session covered SB3 closeout (D/G/J) cleanly.
-- **SB3-D (bundle stock-sync hook)**: when a product transitions to sold/out_of_stock/discontinued via `appkit/src/features/products/api/[id]/route.ts` PATCH/DELETE, fire-and-forget `bundlesRepository.markItemSold(bundleId, productId)` per `partOfBundleIds[]` entry. `onProductWriteHandler` also runs the sync as a cross-cutting trigger (covers order-side stock decrement that bottoms at availableQuantity=0, admin tools, scripts). Idempotent re-marking.
-- **SB3-G (admin bundle pages)**: `src/app/[locale]/admin/bundles/page.tsx` (list every bundle across stores via `?includeAll=true`, shows storeName/storeId per row) + `/[id]/edit/page.tsx` (wraps appkit's `AdminBundleEditorView`, PUTs to `/api/bundles/[id]`).
-- **SB3-J (Zod hardening + owner check)**: new appkit `bundleCreateInputSchema` + `bundleUpdateInputSchema` (3..16 items, homogeneous listingType, per-item shape). New `assertOwnerOrAdmin(user, storeId)` helper does the proper two-step lookup (`user.uid` → `storeRepository.findByOwnerId` → compare `store.id`); old check compared bundle slug to Auth UID and always 403'd non-admins. DELETE now allows owner, not admin-only. Dropped every `as any` cast.
-- **Quality gates**: `npm run check` 0 errors, 499 warnings (up 3 — new pages' `<img>` LCP nags). tsc clean both repos. No deploys.
+- **S5 closed ✅ doc-only**: verify-first audit showed every sub-task already done or deferred-by-design from earlier sessions. P24/P26/P27/P28/P30 ✅ in S14–S16/Session 81+; P25/P29/P31 ⚠️ partial deliberately ("skip padding for padding's sake" per user 2026-05-12); ARCH1/6/7 ✅ S6 2026-05-11. Root + base Firestore indexes in sync (270/270, listingType+... composites present).
+- **S6 partial**: OG1 + OG5 + FI6-2 landed. OG2/3/4 verified-N/A. **Q6-views deferred to S6-followup** (useQuery→useInfiniteQuery refactor on 4 listing views is substantial; the `useInfiniteScroll` primitive is shipped and ready).
+- **OG1**: new `appkit/src/_internal/server/features/categories/og.tsx` two-layer renderer (cover-image bg + 140-char description + product-count chip). Page shim at `src/app/[locale]/categories/[slug]/opengraph-image.tsx`. Exported via both `server.ts` and `server-entry.ts`.
+- **OG5**: new `appkit/scripts/verify-og-coverage.mjs` audit. Walks consumer `src/app/[locale]/**/page.tsx`, gates on NEW public dynamic-leaf detail pages missing OG. Two exempt sets — `OG_EXEMPT_ROUTES` (pagination wrappers, token-gated previews) + `OG_KNOWN_GAPS` (5 baseline: `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`). Wired into `npm run check:audits` + Stop hook. Filed `OG-coverage-followup` to drive baseline to 0.
+- **FI6-2**: `wishlist/layout.tsx` (was identity passthrough; now async + Provider wrap). `stores/[storeSlug]/layout.tsx` extended with `Promise.all([getStoreBySlug, listPlatform])` and Provider wrap. SearchResultsClient verified-N/A (orphan source; /search pages are pure redirectors). RelatedProductsCarousel verified-N/A (props pass-through from detail pages). Promotions already wraps.
+- **Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos. No deploys.
 
-### 🔄 CURRENT — none (awaiting S5 kickoff)
+### 🔄 CURRENT — none (awaiting S7 kickoff)
 
 ### ⏳ NEXT UP — new S1-onward sequence (impact + dependency ordered)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
-| 2 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
-| 3 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks) **PLUS SB1-L 7 Firebase Functions + Q1-ops listingProcessor deploy** (moved from S4 — 4 of 7 SB1-L Functions are prize-draw-specific so this is one cohesive deploy cohort) | Self-contained feature surface + missing Functions |
+| 1 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks) **PLUS SB1-L 7 Firebase Functions + Q1-ops listingProcessor deploy** (moved from S4 — 4 of 7 SB1-L Functions are prize-draw-specific so this is one cohesive deploy cohort) | Self-contained feature surface + missing Functions |
+| – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
+| – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |
 | 5 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
 | 6 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
 | 7 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
