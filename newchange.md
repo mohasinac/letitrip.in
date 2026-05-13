@@ -41,6 +41,34 @@
 
 ---
 
+### S-SBUNI-RULES follow-up — payout deduction + quality pass (2026-05-14)
+
+Continuation of S-SBUNI-RULES. Two deliverables:
+
+**PAYOUT DEDUCTION** — seller-side refund clawback tied into the payout pipeline:
+- `PayoutRefundDeduction` interface in `PayoutDocument` — tracks orderId, refundId, gross refundedAmount, net deductedAmount, reason, appliedAt.
+- `payoutRepository.findPendingByStore(storeId)` + `applyRefundDeduction(payoutId, deduction)` Firestore transaction — atomically appends deduction entry + recalculates `netAmount = max(0, amount − totalDeducted)`.
+- `applyRefundDeductionAction` server action — fire-and-forget from `processRefundAction` after refund committed; `deductedAmount = refundedAmountInPaise × (1 − platformFeeRate)`. No-op when no pending payout found for the storeId/orderId pair.
+- `POST /api/admin/payouts/[id]/deduction` — manual admin clawback route for already-settled payouts (roles: admin-only).
+- `payoutBatch` Cloud Function now dispatches `netAmount ?? amount` to Razorpay.
+- `netAmount` added to payout `SIEVE_FIELDS` (filterable + sortable).
+- Seed: two pending payouts updated with `refundDeductions[]` and computed `netAmount`.
+- `applyRefundDeductionAction` + type exports added to `@mohasinac/appkit/server`.
+
+**QUALITY PASS** — maintainability sweep across all refund/shipping components:
+- `REFUND_COPY` module (`appkit/src/_internal/shared/features/orders/refund-copy.ts`) — single source of truth for all user-visible strings in RefundHistoryTable / RefundRequestView / OrderSiblingPayments / ShippingPicker. No more inline hardcoded strings.
+- `RefundHistoryTable`, `RefundRequestView`, `OrderSiblingPayments` rewritten to use appkit UI primitives (Badge, Div, Heading, Row, Stack, Text, Checkbox, Textarea). No raw `<input>` or `<textarea>` tags.
+- `OrderSiblingPayments`: link color via `text-[color:var(--appkit-color-primary)]` — no hardcoded Tailwind color class.
+- `ShippingPicker`: all strings via `REFUND_COPY.shipping.*`.
+- `paymentBatchId` + `contestable` added to orders `ADMIN_SIEVE_FIELDS` + `SELLER_SIEVE_FIELDS`.
+- ASCII diagrams updated: Admin > Payouts List shows `netAmount` column + deduction modal; 4 new component diagrams added (RefundHistoryTable, RefundRequestView, OrderSiblingPayments, ShippingPicker).
+- `REFUND_COPY` + `PayoutRefundDeduction` exported from public appkit index.
+- `npm run check` exits 0 (0 errors, 496 warnings — pre-existing).
+
+**Commits**: 5 across appkit (2) + main (3). Appkit NOT yet published to npm (pending local build test + manual deploy trigger).
+
+---
+
 ### S-SBUNI-RULES (all 6 phases) — full checkout rule registry end-to-end (2026-05-13)
 
 All 6 phases complete. `npm run check` exits 0 (0 errors, 495 warnings). Required follow-ups: `POST /demo/seed` + `firebase deploy --only firestore:indexes`.
