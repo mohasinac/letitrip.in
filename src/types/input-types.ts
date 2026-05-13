@@ -127,7 +127,9 @@ export interface CreateCarouselSlideInput {
 export type UpdateCarouselSlideInput = Partial<CreateCarouselSlideInput>;
 
 // --- Admin: Users ---
-export type UserRole = "user" | "seller" | "admin" | "moderator";
+// Re-export canonical 5-role union from appkit (consolidated SB-UNI-E 2026-05-13).
+import type { UserRole } from "@mohasinac/appkit";
+export type { UserRole };
 
 export interface UpdateUserRoleInput {
   role?: UserRole;
