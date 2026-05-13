@@ -16,6 +16,7 @@ import {
   getStringParam,
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants/api-roles";
 
 /**
  * GET /api/store/orders
@@ -30,7 +31,7 @@ import { serverLogger } from "@mohasinac/appkit";
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

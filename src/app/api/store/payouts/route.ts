@@ -19,6 +19,7 @@ import { buildSieveFilters } from "@mohasinac/appkit";
 import { orderRepository, payoutRepository } from "@mohasinac/appkit";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@mohasinac/appkit";
 import { PayoutStatusValues } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants/api-roles";
 
 // --- Helper ---------------------------------------------------------------
 
@@ -52,7 +53,7 @@ async function computeSellerEarnings(storeId: string) {
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user }) => {
     const uid = user!.uid;
     const store = await storeRepository.findByOwnerId(uid);

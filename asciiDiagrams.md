@@ -9889,3 +9889,277 @@ REPLACEMENT primitives that survive:
   <CategoryBundlesListing initialBundles={...} brandName={...} />
   StoreBundlesPageView (renders against category-scoped bundles)
 ```
+
+## S-BUGFIX — Functions HTTPS auth + ADC + Vercel fallback (2026-05-13)
+
+Production deploy of `@mohasinac/appkit@2.6.3` plus a multi-failure recovery on
+the HTTPS Cloud Functions stack. Two appkit-side regressions (admin SDK init,
+secret binding) compounded one consumer regression (`FILTER_ALIASES.listingType`
+canonical token rejection), all caught by `scripts/qa/prod-suites/`.
+
+### Function init crash → graceful boot (J20)
+
+```
+BEFORE — every HTTPS Function cold-started with a generic 500
+
+  Cloud Run cold start
+        |
+        v
+  bindHttps(...) onRequest handler
+        |
+        v
+  buildContext(job) -> getAdminDb() -> getAdminApp()
+        |
+        v
+  +- check firebase-admin-key.json -------- NOT present in /workspace
+  |
+  +- check FIREBASE_ADMIN_PROJECT_ID  ----- NOT set in Functions
+  |     + FIREBASE_ADMIN_CLIENT_EMAIL
+  |     + FIREBASE_ADMIN_PRIVATE_KEY
+  |
+  +- throw "Firebase Admin credentials not found"
+        |
+        v
+  Google Frontend swallows -> "Internal Server Error" (text/plain 500)
+
+AFTER — third credential branch covers ADC
+
+  getAdminApp() (and getAdminAppLite())
+        |
+        v
+  +- check firebase-admin-key.json -------- for local dev
+  |
+  +- check FIREBASE_ADMIN_* env vars ------ for Vercel
+  |
+  +- check FUNCTION_TARGET                  NEW — Firebase Functions Gen 2
+  |     || K_SERVICE                         Cloud Run
+  |     || FIREBASE_CONFIG                   Firebase auto-injected
+  |     || GOOGLE_APPLICATION_CREDENTIALS    GCE/GKE
+  |     |
+  |     v
+  |  initializeApp({ databaseURL })          no `credential` — SDK resolves
+  |                                          via the GCE metadata server.
+  |
+  +- throw — only if none of the three branches matched.
+```
+
+### Secret binding flow — manifest + runtime (J21)
+
+```
+bindHttps adapter (appkit/.../jobs/runtime/adapters/firebase.ts)
+
+  bindToFirebase.https(name, handler, {
+    secretEnvVar: "LETITRIP_INTERNAL_SECRET",   <- caller's promise
+    ...httpsOptions
+  })
+        |
+        v
+  Auto-inject the secret NAME (plain string, not a defineSecret Param)
+  into httpsOptions.secrets[] — deduped against existing entries.
+
+  Why string-form, not defineSecret(name)?
+    firebase-tools' Param preflight needs a `functions/.env.<proj>`
+    file (or interactive prompt) to resolve the value at deploy. In
+    non-interactive mode without one the deploy errors:
+      "In non-interactive mode but have no value for the following
+       secrets: LETITRIP_INTERNAL_SECRET"
+    The string-form skips that path and lets the runtime resolve
+    directly from Cloud Secret Manager.
+
+        |
+        v
+  onRequest({ ...httpsOptions, secrets: ["LETITRIP_INTERNAL_SECRET"] }, ...)
+        |
+        v
+  firebase deploy --only functions
+        |
+        v
+  Function manifest declares:
+    secretEnvironmentVariables: [
+      { key: "LETITRIP_INTERNAL_SECRET",
+        projectId: "letitrip-in-app",
+        secret: "LETITRIP_INTERNAL_SECRET",
+        version: "2" }
+    ]
+        |
+        v
+  At cold start, Cloud Run reads the secret from Secret Manager using
+  the compute service account
+  (949266230223-compute@developer.gserviceaccount.com) and injects
+  it into process.env.LETITRIP_INTERNAL_SECRET.                  [!]
+
+        |
+        v
+  Handler reads:
+    expected = process.env[secretEnvVar];
+    provided = req.headers["x-internal-secret"];
+    if (!expected || provided !== expected) -> 401 Unauthorized
+```
+
+**[!] Q1-iam follow-up (NOT a code task).** The Cloud Run compute SA is
+missing `roles/secretmanager.secretAccessor` on the secret, so env-var
+injection silently fails — `process.env.LETITRIP_INTERNAL_SECRET` is
+undefined at runtime, every authenticated call 401s. Single fix:
+
+```
+gcloud secrets add-iam-policy-binding LETITRIP_INTERNAL_SECRET \
+  --member="serviceAccount:949266230223-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor" \
+  --project=letitrip-in-app
+```
+
+### /api/products fallback flow (J22)
+
+```
+Public consumer call to /api/products
+
+  GET /api/products?listingType=standard
+        |
+        v
+  buildFilters() -> "listingType==standard,status==published,..."
+        |
+        v
+  try {
+    upstream = await callListingProcessor("products", { f, s, p, ps })
+        |
+        v
+    +- FIREBASE_FUNCTION_LISTING_URL + LETITRIP_INTERNAL_SECRET
+    |  set on Vercel env?
+    +- No   -> return null -> fallback path
+    +- Yes  -> POST to listingprocessor-...a.run.app
+                  |
+                  +- 200 OK  -> return ListingProcessorResponse
+                  |
+                  +- 401 from secret-binding gap (J21)   <- current prod
+                  |  +- throws -> caught by outer try -+
+                  |                                    |
+                  +- 5xx / network error               |
+                     +- throws -> caught by outer try -+
+  } catch (upstreamErr) {                              |
+    logError("listingProcessor upstream failed —       |
+              falling back to local repo", upstreamErr)|
+    upstream = null                                    |
+  }                                                    |
+        | <----------------------------------------------+
+        v
+  if (upstream) -> serve from Function response
+  else          -> productRepository.list({ filters, sorts, ... })
+                       |
+                       v
+                  Same Sieve adapter, same FILTER_ALIASES path,
+                  same result shape. Only differences:
+                    - data locality (Vercel runtime vs Mumbai Firestore)
+                    - cold-start cost (Vercel: ~hot; Function: ~3-5s)
+```
+
+### listingType alias canonicalisation (J18)
+
+```
+BEFORE — canonical Firestore tokens silently dropped
+
+  Route URL                        buildFilters output
+  ?listingType=auction        ->  "listingType==auction"
+  ?listingType=standard       ->  "listingType==standard"
+  ?listingType=pre-order      ->  "listingType==pre-order"
+
+  Sieve adapter
+        |
+        v
+  FILTER_ALIASES.listingType(value, op)
+    if (value !== "auction"    &&
+        value !== "preorder"   &&  <- no hyphen, can't accept canonical
+        value !== "product"    &&
+        value !== "prizedraw"  &&
+        value !== "prize-draw")
+      return ""  <- empty clause, silently dropped
+        |
+        v
+  Firestore query loses the listingType WHERE clause.
+  Returns the unfiltered first page, sorted by -createdAt.
+
+AFTER — single LISTING_KIND_ALIAS_MAP source of truth
+
+  const LISTING_KIND_ALIAS_MAP = {
+    standard:    LISTING_TYPE_VALUES.STANDARD,    // canonical
+    auction:     LISTING_TYPE_VALUES.AUCTION,
+    "pre-order": LISTING_TYPE_VALUES.PRE_ORDER,
+    "prize-draw":LISTING_TYPE_VALUES.PRIZE_DRAW,
+    product:     LISTING_TYPE_VALUES.STANDARD,    // legacy alias
+    preorder:    LISTING_TYPE_VALUES.PRE_ORDER,
+    prizedraw:   LISTING_TYPE_VALUES.PRIZE_DRAW,
+  };
+
+  Regression guards:
+    scripts/qa/prod-suites/01-public-sieves.mjs
+      "products listingType=standard — every item.listingType==standard"
+    scripts/qa/prod-suites/15-firebase-functions.mjs
+      "listingProcessor listingType==<x> filter applied"
+```
+
+### Smoke-test constants module
+
+```
+scripts/qa/
++-- _constants.mjs       <- NEW. Mirrors TS source-of-truth so suite
+                            assertions never inline strings/literals.
+                            Add a constant here BEFORE inlining it.
+
+       LISTING_TYPES            <- appkit/.../products/types/index.ts
+       LEGACY_LISTING_ALIASES   <- FILTER_ALIASES.listingType allowlist
+       SLUG_PREFIXES            <- CLAUDE.md "Slug Prefix System"
+       SEEDED_TIER0_CATEGORIES  <- appkit/src/seed/categories-seed-data
+       SEEDED_STORES_WITH_PRODUCTS
+       HTTP_STATUS / STATUS_GROUPS
+       USER_ROLES               <- appkit security/authorization.ts
+       FIREBASE_FUNCTIONS       <- functions/src/index.ts export names
+       LISTING_REQUEST_KEYS     <- listingProcessor ListingRequestBody
+       LISTING_COLLECTIONS      <- listingProcessor LISTERS dict keys
+
++-- prod-suites/
+    +-- 01-public-sieves.mjs    <- refactored: uses LISTING_TYPES + slug
+    |                              prefixes; tier=1 assertion fixed to
+    |                              check parentIds[] (not legacy parentId).
+    +-- 13-roles-access.mjs     <- refactored: STATUS_GROUPS.DENIED_OR_
+    |                              NOT_EXPOSED accepts 405 (method not
+    |                              exposed is still "denied").
+    +-- 15-firebase-functions.mjs  <- NEW. Direct probes of the 4 HTTPS
+                                      Functions. Auth (no/bad/good),
+                                      method allow, body validation,
+                                      happy-path shape, listingType
+                                      filter regression guard, cursor
+                                      pagination disjoint check.
+                                      Env-gated — skips when the
+                                      FIREBASE_FUNCTION_*_URL var is
+                                      not set.
+```
+
+### Deploy choreography (S-BUGFIX 2026-05-13)
+
+```
+Indices -> Functions -> Vercel  (each independent, indices first because
+                                  idempotent + cheapest)
+
+  1.  firebase deploy --only firestore:indexes
+        -> 0 changes (already current); orphan-warning carried.
+
+  2.  cd functions && npm run build
+      firebase deploy --only functions          (x 3 iterations)
+        a. First pass — built with appkit 2.6.2 -> init crash (J20)
+        b. After J20 fix -> still 401 (J21 — secret not bound)
+        c. After J21 fix -> manifest now declares secretEnvironment
+                            Variables. Runtime 401 persists (Q1-iam
+                            IAM gap).
+
+  3.  cd appkit && npm publish                  (single publish: 2.6.3)
+        -> npmjs.org tarball 2.0 MB, 3372 files, shasum 7d82...bba4
+
+  4.  package.json: "@mohasinac/appkit": "file:./appkit" -> "^2.6.3"
+      npm install                                (regenerates lockfile)
+      npm run check                              (tsc + audits + lint)
+
+  5.  vercel --prod                              (x 2 iterations)
+        a. First pass — /api/products -> 500 (function 401 bubbled up)
+        b. After J22 fallback patch -> /api/products -> 200 (warns
+           "listingProcessor upstream failed — falling back to local
+           repo", serves from productRepository.list).
+```

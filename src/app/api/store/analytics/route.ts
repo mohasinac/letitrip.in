@@ -15,11 +15,12 @@
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants/api-roles";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const functionUrl = process.env.FIREBASE_FUNCTION_STORE_ANALYTICS_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;

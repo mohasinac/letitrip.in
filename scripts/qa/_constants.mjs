@@ -126,11 +126,14 @@ export const STATUS_GROUPS = Object.freeze({
 
 // ── User roles ──────────────────────────────────────────────────────────────
 // Mirrors the role tokens accepted by `createRouteHandler({ roles: [...] })`.
+// Mirrors appkit/src/security/authorization.ts > `UserRole`. The buyer-tier
+// caller has role token `"user"`, not `"buyer"`; suites that fixture a buyer
+// session should reference `USER` here for parity with the appkit type.
 export const USER_ROLES = Object.freeze({
   ADMIN: "admin",
   MODERATOR: "moderator",
   SELLER: "seller",
-  BUYER: "buyer",
+  USER: "user",
 });
 
 // ── Firebase Function names ─────────────────────────────────────────────────

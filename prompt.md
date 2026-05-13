@@ -73,7 +73,24 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S-SBUNI-2 Phase 1 D + V (bundles re-architect) (2026-05-13)
+### ✅ LAST COMPLETED — S-BUGFIX Functions deploy + appkit 2.6.3 release + smoke refactor (2026-05-13)
+
+Three production-deployable bugs caught by `scripts/qa/smoke-prod.mjs` closed in a single cohort, plus a substantial smoke-test refactor centralising constants. `appkit@2.6.2 → 2.6.3` published (one publish only, per "don't publish multiple appkit"). Indices + Functions + Vercel re-deployed.
+
+- **J18 listingType alias** — `FILTER_ALIASES.listingType` rejected canonical tokens `standard` and `pre-order` (only accepted legacy aliases) → Sieve clause silently dropped → `/api/products?listingType=standard` returned the unfiltered list. Fixed via `LISTING_KIND_ALIAS_MAP` accepting both canonical and legacy forms. Regression guard in `01-public-sieves.mjs` + `15-firebase-functions.mjs`.
+- **J19 RBAC leaks** — `/api/store/{orders,analytics,payouts}` were `auth: true` with no `roles:` guard, returning 200 (empty data) to buyers. New `src/constants/api-roles.ts` defines `ROLES_STORE_WRITE` + `ROLES_ADMIN_ONLY` + `ROLES_ADMIN_MOD` + `ROLES_STORE_READ` + `ROLES_ANY_STAFF`; all three routes adopt `ROLES_STORE_WRITE`. Future API routes should consume the same constants.
+- **J20 Functions ADC** — `admin.ts` + `admin-app-lite.ts` threw "Firebase Admin credentials not found" inside Firebase Functions because neither `firebase-admin-key.json` nor `FIREBASE_ADMIN_*` env vars are present there (ADC via metadata server is the canonical path). Added third detection branch: `FUNCTION_TARGET || K_SERVICE || FIREBASE_CONFIG || GOOGLE_APPLICATION_CREDENTIALS` → `initializeApp()` with no credential. Every Function was 500 before this; now Function init succeeds.
+- **J21 secret auto-bind** — `bindHttps` adapter was reading `process.env[secretEnvVar]` but the deployed function had no env-var binding (Firebase Functions v2 needs `secrets: [...]` in `onRequest` options). Adapter now auto-pushes `secretEnvVar` (plain string, not `defineSecret` Param) into `httpsOptions.secrets[]` — skips firebase-tools' `.env.<project>` preflight. Manifest now declares `secretEnvironmentVariables:[{key:LETITRIP_INTERNAL_SECRET, version:2}]` per HTTPS endpoint. **Done-but-verify**: runtime still returns 401 because the Cloud Run compute SA (`949266230223-compute@developer.gserviceaccount.com`) lacks `roles/secretmanager.secretAccessor` on the secret. Q1-iam in tracker covers the follow-up — single `gcloud` command fixes it.
+- **J22 `/api/products` fallback** — `callListingProcessor` upstream errors were bubbling to a generic 500. Wrapped in its own try/catch with `productRepository.list` fallback. Necessary because J21's IAM gap leaves the function 401 — without the fallback `/api/products` was 500 on prod after the new Vercel build.
+- **Q4 smoke constants** — `scripts/qa/_constants.mjs` mirrors the TS source-of-truth for `LISTING_TYPES`, `LEGACY_LISTING_ALIASES`, `SLUG_PREFIXES`, `SEEDED_TIER0_CATEGORIES`, `SEEDED_STORES_WITH_PRODUCTS`, `HTTP_STATUS`, `STATUS_GROUPS`, `USER_ROLES`, `FIREBASE_FUNCTIONS`, `LISTING_REQUEST_KEYS`, `LISTING_COLLECTIONS`. `01-public-sieves.mjs` + `13-roles-access.mjs` + new `15-firebase-functions.mjs` all consume it. Tier=1 assertion fixed to check `parentIds[]` (canonical schema) not the legacy singular `parentId`. RBAC denial check accepts `405` alongside `401/403`.
+- **Q4 functions smoke** — new `scripts/qa/prod-suites/15-firebase-functions.mjs` covers the 4 HTTPS Functions (`listingProcessor` / `adminAnalytics` / `storeAnalytics` / `promotionsApi`) — auth (no/bad/good secret), method allow (GET→405), body validation, happy-path shape, listingType filter regression guard, cursor pagination. Env-gated (skips when `FIREBASE_FUNCTION_*_URL` not set).
+- **Appkit `jobs/handlers` refactor** — `2c3d770` splits every scheduled / callable / Firestore-trigger handler into a pure `runXxx(ctx)` in `_internal/server/jobs/core/` plus a thin envelope wrapper in `handlers/`. Public surface unchanged.
+
+**Required user follow-up (NOT a code task)**: `gcloud secrets add-iam-policy-binding LETITRIP_INTERNAL_SECRET --member="serviceAccount:949266230223-compute@developer.gserviceaccount.com" --role="roles/secretmanager.secretAccessor" --project=letitrip-in-app` (tracker row Q1-iam). Until granted, every HTTPS Function returns 401 and `/api/products` serves from the J22 local-repo fallback. Smoke `15-firebase-functions.mjs` flips 5/18 → ~13/18 once granted. Plus: prod Firestore data is empty — `POST /demo/seed` re-run pending.
+
+---
+
+### ✅ Previous — S-SBUNI-2 Phase 1 D + V (bundles re-architect) (2026-05-13)
 
 Bundles moved from `listingType:"bundle"` to `categoryType:"bundle"`. `features/bundles/` (17 files, ~1900 LOC) + 2 `_internal` folders deleted outright. `GroupedListingDocument` re-scoped to theme-group semantics. New `onProductStockChange` Firebase Function deployed. 4 commits + indices deploy + functions deploy.
 
@@ -125,7 +142,7 @@ Rule #6 violation closed. The legacy `POST /api/media/upload` buffered every byt
 
 ### 🔄 CURRENT — none (awaiting next session)
 
-Next up: **S-SBUNI-3** — Phase 1 E + A + bundle UI rebuild. **E** (discriminator audit cleanup; S) → **A** (top-level `addresses` with `ownerType`; M) → **bundle UI rebuild** (admin editor with multi-select product picker + public bundle detail/listing pages against `CategoryDocument`; M-L since deleted outright in S-SBUNI-2). Optional: bundle cart-line representation + checkout expansion to N product order lines (no add-to-cart-bundle UI exists today, so spec-only).
+Next up: **Q1-iam** (one-shot infra grant — see tracker; closes the J21 Function-401 cluster without code) → **S-SBUNI-3** (Phase 1 E + A + bundle UI rebuild — see below).
 
 ### ⏳ NEXT UP — single SB-UNI session (Z1–Z3 closed 2026-05-13)
 
