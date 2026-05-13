@@ -10186,3 +10186,134 @@ Indices -> Functions -> Vercel  (each independent, indices first because
            "listingProcessor upstream failed — falling back to local
            repo", serves from productRepository.list).
 ```
+
+---
+
+## Tier SB-UNI — Bundles as `categoryType:"bundle"` (S-SBUNI-3 + S-SBUNI-4 2026-05-13)
+
+> **Supersedes** the older "Tier SB — Bundle feature foundation" section above.
+> SB-UNI-D/V deleted the standalone `bundles` collection + `features/bundles/`
+> folder and re-architected bundles as a discriminated row on the categories
+> collection. The diagram below is the current source of truth.
+
+### Data model
+
+```
+                ┌────────────────────────┐
+                │   ProductDocument      │
+                │   (products/{slug})    │
+                ├────────────────────────┤
+                │ id, slug, title, ...   │
+                │ listingType: ──────────┼──► "standard" | "auction" |
+                │                        │     "pre-order" | "prize-draw"
+                │ category: <slug>       │     (note: "bundle" REMOVED in SB-UNI-D)
+                │ availableQuantity      │
+                └─────────▲──────────────┘
+                          │ id-array lookup
+                          │  (listBundleMembers)
+                ┌─────────┴──────────────────────────┐
+                │   CategoryDocument                 │
+                │   (categories/{bundle-slug})       │
+                ├────────────────────────────────────┤
+                │ id, name, slug (bundle-...)        │
+                │ categoryType: "bundle" ◄───────────┼── discriminator
+                │ bundlePriceInPaise: number         │   (locked checkout price)
+                │ bundleQueryRule:                   │
+                │   | { type:"static",               │
+                │       productIds[3..16] }          │   ← BundleItemsPicker writes here
+                │   | { type:"dynamic",              │
+                │       filter:{...}, limit }        │   ← resolved by Function
+                │ bundleProductIds[]: string         │   ← index-friendly mirror
+                │ bundleStockStatus:                 │
+                │   "in_stock" | "partial"           │   ← recomputed by
+                │   | "out_of_stock"                 │     onProductStockChange
+                │ bundleQueryResolvedAt?             │
+                │ display: { coverImage, ... }       │
+                │ isActive: boolean                  │
+                └────────────────────────────────────┘
+```
+
+### Read paths (S-SBUNI-3)
+
+```
+  GET /api/categories?categoryType=bundle  ────►  CategoryBundlesListing (client)
+  GET /bundles                             ────►  BundlesListView  (RSC)
+                                                  → categoriesRepository.listByType("bundle")
+  GET /bundles/[slug]                      ────►  BundleDetailView (client island)
+                                                  → getBundleForDetail(slug)   [React.cache]
+                                                  → listBundleMembers(bundle)  [React.cache]
+  Homepage section type:"featured-bundles" ────►  FeaturedBundlesSection
+                                                  ← sectionData.bundles
+                                                    (listFeaturedBundles(8))
+  GET /bundles/[slug]/opengraph-image      ────►  renderBundleOg(doc, opts)
+                                                  → ImageResponse 1200x630
+                                                  (S-SBUNI-4 — baseline 6→5)
+```
+
+### Write paths (S-SBUNI-4)
+
+```
+  Admin UI                                Server
+  ────────────────────────────────        ──────────────────────────────────
+  /admin/bundles                  ───►   AdminBundlesView
+                                          fetch('/api/admin/bundles')
+                                          ──► categoriesRepository.listByType
+
+  /admin/bundles/new              ───►   AdminBundleEditorView (bundleId=undef)
+                                          + BundleItemsPicker (debounced
+                                            search → /api/products)
+                                          ──► POST /api/admin/bundles
+                                              zod: bundleCreateSchema
+                                              ──► categoriesRepository
+                                                    .createWithId(id,
+                                                      { categoryType:"bundle",
+                                                        bundlePriceInPaise,
+                                                        bundleQueryRule,
+                                                        bundleProductIds,
+                                                        ... })
+
+  /admin/bundles/[id]/edit        ───►   AdminBundleEditorView (bundleId=id)
+                                          GET  /api/admin/bundles/[id]
+                                          PUT  /api/admin/bundles/[id]
+                                          DEL  /api/admin/bundles/[id]
+                                                (loadBundleOrFail guard:
+                                                 categoryType:"bundle" required)
+```
+
+### Cart-line foundation (S-SBUNI-4 — foundation only)
+
+```
+  CartItemDocument                                 OrderItem
+  ───────────────────────────────────              ──────────────────────────
+  productId        = bundle.id                     (mirror of cart fields when
+  price            = bundlePriceInPaise              order is created)
+  listingType      = "standard"                    bundleCategorySlug?
+  bundleCategorySlug?: string                      bundleProductIds?
+  bundleProductIds?: string[]   ← snapshot
+
+  ── add-to-cart ─────────────────────
+    addBundleToCart(uid, slug, qty)
+      1. categoriesRepository.findBySlugAndType(slug, "bundle")
+      2. validate price/stock/members (BUNDLE_MIN_ITEMS..BUNDLE_MAX_ITEMS)
+      3. cartRepository.addItem(uid, { ...bundle-shaped input })
+
+  ── checkout (DEFERRED → S-SBUNI-5) ──
+    BundleDetailView CTA wire           ⏳
+    Pre-tx stock check loop expansion   ⏳   (iterate bundleProductIds)
+    In-tx stock update loop expansion   ⏳   (decrement member products)
+    Order-detail UI grouping            ⏳   (re-collapse expanded lines)
+```
+
+### Public exports / constants
+
+| Surface                                   | Where                                                                    |
+|-------------------------------------------|--------------------------------------------------------------------------|
+| `BUNDLE_COPY`, `BUNDLE_STOCK_VARIANT`     | `@mohasinac/appkit` (`_internal/shared/features/categories/bundle-copy`) |
+| `bundleCreateSchema`, `bundleUpdateSchema`| `@mohasinac/appkit` (`_internal/shared/features/categories/bundle-schemas`) |
+| `BUNDLE_MIN_ITEMS`, `BUNDLE_MAX_ITEMS`    | `@mohasinac/appkit` (`_internal/shared/features/categories/bundle-config`) |
+| `BundleDetailView`, `FeaturedBundlesSection`, `CategoryBundlesListing`, `BundleItemsPicker`, `AdminBundlesView`, `AdminBundleEditorView` | `@mohasinac/appkit`                                |
+| `getBundleForDetail`, `listBundleMembers`, `listFeaturedBundles`, `buildBundleMetadata`, `renderBundleOg` | `@mohasinac/appkit/server`                         |
+| `addBundleToCart(userId, slug, qty)`      | `@mohasinac/appkit`                                                      |
+| `ROUTES.PUBLIC.BUNDLES`, `BUNDLE_DETAIL`  | `@mohasinac/appkit/client`                                               |
+| `ROUTES.ADMIN.BUNDLES`, `BUNDLES_NEW`, `BUNDLES_EDIT` | `@mohasinac/appkit/client`                                   |
+| `API_ROUTES.ADMIN.BUNDLES`, `BUNDLE_BY_ID`| `src/constants/api.ts`                                                   |

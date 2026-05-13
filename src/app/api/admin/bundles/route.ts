@@ -1,11 +1,11 @@
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
 import {
   createRouteHandler,
   successResponse,
   ApiErrors,
   categoriesRepository,
   serverLogger,
+  bundleCreateSchema,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants/api-roles";
 
@@ -14,46 +14,22 @@ import { ROLES_ADMIN_MOD } from "@/constants/api-roles";
  *
  * Bundles live as `categoryType:"bundle"` rows on the categories collection
  * (SB-UNI-D + V). These routes delegate to `categoriesRepository` with a
- * categoryType:"bundle" guard so admins can CRUD bundles without exposing the
- * generic /api/admin/categories surface.
+ * `categoryType:"bundle"` guard so admins can CRUD bundles without exposing
+ * the generic /api/admin/categories surface.
+ *
+ * Zod schemas live in appkit's `bundleCreateSchema` so the POST + PUT
+ * routes share one validator (S-SBUNI-4 follow-up).
  */
 
-const bundleQueryRuleSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("static"),
-    productIds: z.array(z.string().min(1)).min(0).max(64),
-  }),
-  z.object({
-    type: z.literal("dynamic"),
-    filter: z.object({
-      categorySlug: z.string().optional(),
-      brandSlug: z.string().optional(),
-      tags: z.array(z.string()).optional(),
-      listingType: z.enum(["standard", "pre-order"]).optional(),
-    }),
-    orderBy: z
-      .enum(["price-asc", "price-desc", "createdAt-desc"])
-      .optional(),
-    limit: z.number().int().min(1).max(64),
-  }),
-]);
+const DEFAULT_LIST_LIMIT = 50;
+const MAX_LIST_LIMIT = 200;
 
-const createBundleSchema = z.object({
-  name: z.string().min(2).max(120),
-  slug: z.string().min(2).max(120).optional(),
-  description: z.string().max(2000).optional(),
-  bundlePriceInPaise: z.number().int().min(100),
-  bundleQueryRule: bundleQueryRuleSchema,
-  bundleProductIds: z.array(z.string().min(1)).min(0).max(64),
-  display: z
-    .object({
-      coverImage: z.string().url().optional(),
-      icon: z.string().optional(),
-      color: z.string().optional(),
-    })
-    .optional(),
-  isActive: z.boolean().optional(),
-});
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 export const GET = withProviders(
   createRouteHandler({
@@ -62,10 +38,13 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const url = new URL(request!.url);
       const activeOnlyParam = url.searchParams.get("activeOnly");
-      const limit = Number(url.searchParams.get("limit") ?? "50");
+      const requested = Number(url.searchParams.get("limit") ?? DEFAULT_LIST_LIMIT);
+      const limit = Number.isFinite(requested)
+        ? Math.min(Math.max(1, requested), MAX_LIST_LIMIT)
+        : DEFAULT_LIST_LIMIT;
       const items = await categoriesRepository.listByType("bundle", {
         activeOnly: activeOnlyParam !== "false",
-        limit: Number.isFinite(limit) ? Math.min(limit, 200) : 50,
+        limit,
       });
       return successResponse({ items, total: items.length });
     },
@@ -73,18 +52,16 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler<(typeof createBundleSchema)["_output"]>({
+  createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    schema: createBundleSchema,
+    schema: bundleCreateSchema,
     handler: async ({ body, user }) => {
       if (!body) return ApiErrors.badRequest("Body required");
 
-      const slug = (body.slug ?? body.name)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      const id = slug.startsWith("bundle-") ? slug : `bundle-${slug}`;
+      const rawSlug = slugify(body.slug ?? body.name);
+      const slug = rawSlug.startsWith("bundle-") ? rawSlug : `bundle-${rawSlug}`;
+      const id = slug;
 
       const existing = await categoriesRepository.findById(id);
       if (existing) {
@@ -93,7 +70,7 @@ export const POST = withProviders(
 
       await categoriesRepository.createWithId(id, {
         name: body.name,
-        slug: slug.startsWith("bundle-") ? slug : `bundle-${slug}`,
+        slug,
         description: body.description,
         categoryType: "bundle",
         bundlePriceInPaise: body.bundlePriceInPaise,

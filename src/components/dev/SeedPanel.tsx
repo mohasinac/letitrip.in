@@ -490,6 +490,10 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "items[].productId",    type: "ref",    filterable: true },
       { name: "items[].price",        type: "number", sortable: true },
       { name: "items[].listingType",  type: "enum",   filterable: true, note: "snapshot at add-to-cart time (SB1-G)" },
+      // SB-UNI-4 2026-05-13 — bundle cart-line foundation. When set, productId references
+      // the bundle category id and price carries the locked bundlePriceInPaise.
+      { name: "items[].bundleCategorySlug", type: "string", note: "set when the line represents a bundle (categoryType:'bundle')" },
+      { name: "items[].bundleProductIds",   type: "array",  note: "snapshot of bundle members at add-to-cart time" },
       { name: "appliedCoupons",type: "array" },
       { name: "createdAt",     type: "timestamp", sortable: true },
       { name: "updatedAt",     type: "timestamp", sortable: true },
