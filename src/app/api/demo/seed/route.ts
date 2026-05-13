@@ -21,7 +21,6 @@ import {
   getPiiConfigError,
 } from "@mohasinac/appkit";
 import {
-  brandsSeedData,
   usersSeedData,
   addressesSeedData,
   storeAddressesSeedData,
@@ -69,7 +68,7 @@ import { REVIEW_COLLECTION } from "@mohasinac/appkit";
 import { BID_COLLECTION } from "@mohasinac/appkit";
 import { COUPONS_COLLECTION } from "@mohasinac/appkit";
 import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
-import { BRANDS_COLLECTION } from "@mohasinac/appkit";
+// SB-UNI-C — BRANDS_COLLECTION dropped; brands live in CATEGORIES_COLLECTION with categoryType:"brand".
 import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
 import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
 import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
@@ -92,7 +91,6 @@ type CollectionName =
   | "users"
   | "addresses"
   | "storeAddresses"
-  | "brands"
   | "categories"
   | "stores"
   | "products"
@@ -132,7 +130,6 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   addresses: "addresses", // Subcollection under users
   storeAddresses: "storeAddresses", // Subcollection under stores
   couponUsage: "couponUsage", // Subcollection under users
-  brands: BRANDS_COLLECTION,
   categories: CATEGORIES_COLLECTION,
   stores: STORE_COLLECTION,
   products: PRODUCT_COLLECTION,
@@ -165,7 +162,6 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: usersSeedData,
   addresses: addressesSeedData,
   storeAddresses: storeAddressesSeedData,
-  brands: brandsSeedData,
   categories: categoriesSeedData,
   stores: storesSeedData,
   products: [

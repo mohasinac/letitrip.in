@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       brand.description?.slice(0, 155) ||
       `Shop authentic ${brand.name} collectibles on LetItRip India.`,
-    image: brand.logoURL,
+    image: brand.display?.coverImage,
     path: `/brands/${slug}`,
     type: "website",
   });

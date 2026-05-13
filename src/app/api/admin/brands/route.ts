@@ -4,7 +4,8 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  brandsRepository,
+  categoriesRepository,
+  createBrandAction,
 } from "@mohasinac/appkit";
 
 function slugify(str: string): string {
@@ -22,6 +23,8 @@ const createBrandSchema = z.object({
   logoURL: z.string().optional(),
   bannerURL: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
+  country: z.string().optional(),
+  founded: z.number().int().optional(),
   isActive: z.boolean().default(true),
   displayOrder: z.number().int().optional(),
 });
@@ -34,10 +37,18 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
       const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
-      const sorts = url.searchParams.get("sorts") || "displayOrder,name";
-      const filters = url.searchParams.get("filters") ?? undefined;
+      const sorts = url.searchParams.get("sorts") || "order,name";
+      const filters = url.searchParams.get("filters");
+      const combinedFilters = filters
+        ? `${filters},categoryType==brand`
+        : "categoryType==brand";
 
-      const result = await brandsRepository.list({ filters, sorts, page: String(page), pageSize: String(pageSize) });
+      const result = await categoriesRepository.list({
+        filters: combinedFilters,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      });
       return successResponse({
         items: result.items,
         total: result.total,
@@ -57,9 +68,9 @@ export const POST = withProviders(
     schema: createBrandSchema,
     handler: async ({ body }) => {
       const slug = body!.slug || `brand-${slugify(body!.name)}`;
-      const existing = await brandsRepository.findBySlug(slug);
+      const existing = await categoriesRepository.findBySlugAndType(slug, "brand");
       if (existing) return errorResponse("A brand with this slug already exists", 409);
-      const brand = await brandsRepository.create({ ...body!, slug });
+      const brand = await createBrandAction({ ...body!, slug });
       return successResponse(brand, "Brand created");
     },
   }),

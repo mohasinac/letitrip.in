@@ -31,7 +31,7 @@ import type { SeedCollectionName } from "@/actions/demo-seed.types";
 // ─── Collection order ─────────────────────────────────────────────────────────
 
 const CORE_COLLECTIONS: SeedCollectionName[] = [
-  "users", "addresses", "stores", "storeAddresses", "brands", "categories",
+  "users", "addresses", "stores", "storeAddresses", "categories",
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
@@ -257,42 +257,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "createdAt",    type: "timestamp", sortable: true, indexed: true },
     ],
   },
-  brands: {
-    label: "Brands",
-    icon: "🏷️",
-    group: "core",
-    target: 25,
-    description: "Official collectibles brands with logo, country of origin, and category associations.",
-    slugPattern: "brand-*  (e.g. brand-hot-wheels)",
-    mediaFields: ["logoURL", "bannerURL"],
-    seededItems: [
-      "25 brands seeded (displayOrder 1–25)",
-      "Core 13: Pokémon Company, Bandai, Hasbro, Takara-Tomy, Mattel (Hot Wheels), Konami, Funko, NECA, McFarlane, Good Smile, Hot Wheels, Tomica, Beyblade",
-      "12 new: Kotobukiya, Alter, Max Factory, Medicom Toy, Bushiroad, Panini, Spin Master, JAKKS Pacific, Corgi, Matchbox, Mega Construx, Sideshow Collectibles",
-      "Funko — Pop! figures",
-      "NECA — Collectible statues and action figures",
-      "McFarlane Toys — Spawn, DC, sports figures",
-      "Good Smile Company — Nendoroids, figma",
-      "Hot Wheels — Diecast cars (Mattel sub-brand)",
-      "Tomica — Japanese diecast (Takara-Tomy)",
-      "MadBox / Kotobukiya — Model kits",
-    ],
-    pendingItems: [
-      "12 more brands: Kotobukiya, Alter, Max Factory, Medicom, Sideshow, Diamond Select, JAKKS, Spin Master, Cardfight Vanguard, Dragon Ball Super Card Game, Bushiroad, Panini",
-    ],
-    uiPath: "/admin/brands",
-    fields: [
-      { name: "name",         type: "string",    searchable: true, sortable: true },
-      { name: "slug",         type: "string",    filterable: true, indexed: true },
-      { name: "description",  type: "string",    searchable: true },
-      { name: "country",      type: "string",    filterable: true, sortable: true },
-      { name: "founded",      type: "number",    sortable: true },
-      { name: "isActive",     type: "boolean",   filterable: true, indexed: true },
-      { name: "displayOrder", type: "number",    sortable: true },
-      { name: "productCount", type: "number",    sortable: true },
-      { name: "createdAt",    type: "timestamp", sortable: true },
-    ],
-  },
+  // SB-UNI-C — brands folded into categories with categoryType:"brand".
   categories: {
     label: "Categories",
     icon: "🗂️",

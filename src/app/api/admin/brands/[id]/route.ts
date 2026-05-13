@@ -4,7 +4,9 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  brandsRepository,
+  categoriesRepository,
+  updateBrandAction,
+  deleteBrandAction,
 } from "@mohasinac/appkit";
 
 const updateBrandSchema = z.object({
@@ -13,6 +15,8 @@ const updateBrandSchema = z.object({
   logoURL: z.string().optional(),
   bannerURL: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
+  country: z.string().optional(),
+  founded: z.number().int().optional(),
   isActive: z.boolean().optional(),
   displayOrder: z.number().int().optional(),
 });
@@ -23,8 +27,8 @@ export const GET = withProviders(
     roles: ["admin", "moderator"],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const brand = await brandsRepository.findById(id);
-      if (!brand) return errorResponse("Brand not found", 404);
+      const brand = await categoriesRepository.findById(id);
+      if (!brand || brand.categoryType !== "brand") return errorResponse("Brand not found", 404);
       return successResponse(brand);
     },
   }),
@@ -37,9 +41,7 @@ export const PUT = withProviders(
     schema: updateBrandSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
-      const existing = await brandsRepository.findById(id);
-      if (!existing) return errorResponse("Brand not found", 404);
-      const updated = await brandsRepository.update(id, body!);
+      const updated = await updateBrandAction(id, body!);
       return successResponse(updated, "Brand updated");
     },
   }),
@@ -51,9 +53,7 @@ export const DELETE = withProviders(
     roles: ["admin"],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const existing = await brandsRepository.findById(id);
-      if (!existing) return errorResponse("Brand not found", 404);
-      await brandsRepository.delete(id);
+      await deleteBrandAction(id);
       return successResponse(null, "Brand deleted");
     },
   }),
