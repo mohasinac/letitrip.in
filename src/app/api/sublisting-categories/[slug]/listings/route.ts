@@ -3,7 +3,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  sublistingCategoriesRepository,
+  categoriesRepository,
 } from "@mohasinac/appkit";
 
 export const GET = withProviders(
@@ -14,13 +14,10 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const limit = Math.min(50, Math.max(1, Number(url.searchParams.get("limit")) || 20));
 
-      const category = await sublistingCategoriesRepository.findBySlug(slug);
+      const category = await categoriesRepository.findBySlugAndType(slug, "sublisting");
       if (!category) return errorResponse("Sub-listing category not found", 404);
 
-      const listings = await sublistingCategoriesRepository.getListingsByCategoryId(
-        category.id,
-        limit,
-      );
+      const listings = await categoriesRepository.getSublistingListings(category.id, limit);
 
       return successResponse({ listings, total: listings.length });
     },

@@ -4,7 +4,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  sublistingCategoriesRepository,
+  categoriesRepository,
 } from "@mohasinac/appkit";
 
 const createSchema = z.object({
@@ -12,6 +12,7 @@ const createSchema = z.object({
   itemCode: z.string().max(40).optional(),
   description: z.string().max(2000).optional(),
   coverImage: z.string().optional(),
+  parentId: z.string().optional(),
 });
 
 export const GET = withProviders(
@@ -25,8 +26,13 @@ export const GET = withProviders(
       const sorts = url.searchParams.get("sorts") || "name";
       const filters = url.searchParams.get("filters") ?? undefined;
 
-      const result = await sublistingCategoriesRepository.list({
-        filters,
+      // Constrain to sublisting rows.
+      const filterStr = filters
+        ? `${filters},categoryType==sublisting`
+        : "categoryType==sublisting";
+
+      const result = await categoriesRepository.list({
+        filters: filterStr,
         sorts,
         page: String(page),
         pageSize: String(pageSize),
@@ -49,16 +55,34 @@ export const POST = withProviders(
     roles: ["admin"],
     schema: createSchema,
     handler: async ({ body, user }) => {
-      const existing = await sublistingCategoriesRepository.findBySlug(
-        sublistingCategoriesRepository.generateId(body!.name),
-      );
+      const id = categoriesRepository.generateSublistingId(body!.name);
+      const existing = await categoriesRepository.findBySlugAndType(id, "sublisting");
       if (existing) return errorResponse("A sub-listing category with this name already exists", 409);
-      const slug = sublistingCategoriesRepository.generateId(body!.name);
-      const doc = await sublistingCategoriesRepository.create({
-        ...body!,
-        slug,
+
+      const doc = await categoriesRepository.createWithHierarchy({
+        name: body!.name,
+        slug: id,
+        categoryType: "sublisting",
+        itemCode: body!.itemCode,
+        description: body!.description,
+        display: body!.coverImage
+          ? { coverImage: body!.coverImage, showInMenu: false, showInFooter: false }
+          : { showInMenu: false, showInFooter: false },
+        parentId: body!.parentId ?? null,
+        parentIds: body!.parentId ? [body!.parentId] : [],
+        rootId: body!.parentId ?? id,
+        childrenIds: [],
+        tier: 1,
+        path: id,
+        position: 0,
+        subtreeSize: 1,
+        order: 0,
+        isFeatured: false,
+        isActive: true,
+        isSearchable: true,
         createdBy: user!.uid,
-      });
+        seo: { title: body!.name, description: body!.description ?? "", keywords: [] },
+      } as Parameters<typeof categoriesRepository.createWithHierarchy>[0]);
       return successResponse(doc, "Sub-listing category created");
     },
   }),

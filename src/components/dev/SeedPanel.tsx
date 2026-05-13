@@ -35,7 +35,7 @@ const CORE_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
-  "products", "bids", "sublistingCategories", "groupedListings", "bundles", "productFeatures",
+  "products", "bids", "groupedListings", "bundles", "productFeatures",
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
@@ -1029,36 +1029,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "createdAt",        type: "timestamp", sortable: true },
     ],
   },
-  sublistingCategories: {
-    label: "Sublisting Categories",
-    icon: "🏷️",
-    group: "listings",
-    target: 12,
-    description: "Groups independent listings of the same collectible across grades, sellers, and conditions (e.g. 'Base Set Charizard 108/120').",
-    slugPattern: "sublisting-*",
-    seededItems: [
-      "sublisting-base-set-charizard-108-120",
-      "sublisting-hot-wheels-redline-1968-custom-camaro",
-      "sublisting-psa-10-pikachu-illustrator",
-      "sublisting-beyblade-x-dran-sword-3-60f",
-      "sublisting-mg-rx-78-2-ver-3",
-      "sublisting-nendoroid-rem-re-zero",
-      "sublisting-shf-son-goku-saiyan-raised-on-earth",
-      "sublisting-hg-gundam-barbatos",
-      "sublisting-wotc-base-set-1st-edition-booster",
-      "sublisting-ygo-lob-1st-edition-blue-eyes",
-      "sublisting-hot-wheels-redline-1968-custom-cougar",
-      "sublisting-beyblade-x-wizard-rod-5-60b",
-    ],
-    pendingItems: [],
-    uiPath: "/admin/sublisting-categories",
-    fields: [
-      { name: "name",         type: "string",    searchable: true },
-      { name: "itemCode",     type: "string",    searchable: true },
-      { name: "productCount", type: "number",    sortable: true },
-      { name: "createdAt",    type: "timestamp", sortable: true },
-    ],
-  },
+  // SB-UNI-B — sublistingCategories merged into categories with categoryType:"sublisting".
   groupedListings: {
     label: "Grouped Listings",
     icon: "📦",

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  sublistingCategoriesRepository,
+  categoriesRepository,
   ROUTES,
   isAuctionListing,
   isPreOrderListing,
@@ -26,8 +26,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await sublistingCategoriesRepository
-    .findBySlug(slug)
+  const category = await categoriesRepository
+    .findBySlugAndType(slug, "sublisting")
     .catch(() => null);
   if (!category) return _gm({ title: "Sub-listing Category", path: `/sublisting-categories/${slug}` });
   const name = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${name} — All Listings on LetItRip`,
     description:
       category.description ??
-      `Browse all ${category.productCount} listings for ${name} across conditions and sellers on LetItRip.`,
+      `Browse all ${category.metrics?.productCount ?? 0} listings for ${name} across conditions and sellers on LetItRip.`,
     path: `/sublisting-categories/${slug}`,
     keywords: [name, "collectibles", "buy", "india"],
   });
@@ -44,15 +44,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SublistingCategoryPage({ params }: Props) {
   const { slug } = await params;
 
-  const category = await sublistingCategoriesRepository
-    .findBySlug(slug)
+  const category = await categoriesRepository
+    .findBySlugAndType(slug, "sublisting")
     .catch(() => null);
 
   if (!category) notFound();
 
-  const listings = await sublistingCategoriesRepository
-    .getListingsByCategoryId(category.id, 40)
-    .catch(() => []);
+  const listings = await categoriesRepository
+    .getSublistingListings(category.id, 40)
+    .catch((): Record<string, unknown>[] => []);
 
   const displayName = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
 
@@ -73,11 +73,11 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
         {/* Category header */}
         <div className="mb-8">
-          {category.coverImage && (
+          {category.display?.coverImage && (
             <div className="mb-4 h-36 w-full overflow-hidden rounded-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={category.coverImage}
+                src={category.display.coverImage}
                 alt={displayName}
                 className="h-full w-full object-cover"
               />

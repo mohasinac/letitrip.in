@@ -51,7 +51,6 @@ import {
   wishlistsSeedData,
   historySeedData,
   conversationsSeedData,
-  sublistingCategoriesSeedData,
   groupedListingsSeedData,
   bundlesSeedData,
   scammersSeedData,
@@ -82,7 +81,7 @@ import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
 import { ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { STORE_ADDRESS_SUBCOLLECTION } from "@mohasinac/appkit";
 import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
-import { SUBLISTING_CATEGORIES_COLLECTION } from "@mohasinac/appkit";
+// SB-UNI-B — SUBLISTING_CATEGORIES_COLLECTION removed; sublistings now live in CATEGORIES_COLLECTION with categoryType:"sublisting".
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
 import { BUNDLES_COLLECTION } from "@mohasinac/appkit";
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
@@ -116,7 +115,6 @@ type CollectionName =
   | "wishlists"
   | "history"
   | "conversations"
-  | "sublistingCategories"
   | "groupedListings"
   | "bundles"
   | "couponUsage"
@@ -157,7 +155,6 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   wishlists: WISHLIST_COLLECTION,
   history: HISTORY_COLLECTION,
   conversations: CONVERSATIONS_COLLECTION,
-  sublistingCategories: SUBLISTING_CATEGORIES_COLLECTION,
   groupedListings: GROUPED_LISTINGS_COLLECTION,
   bundles: BUNDLES_COLLECTION,
   scammerProfiles: SCAMMER_COLLECTION,
@@ -197,7 +194,6 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   wishlists: wishlistsSeedData,
   history: historySeedData,
   conversations: conversationsSeedData,
-  sublistingCategories: sublistingCategoriesSeedData,
   groupedListings: groupedListingsSeedData,
   bundles: bundlesSeedData,
   scammerProfiles: scammersSeedData,

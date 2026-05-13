@@ -4,7 +4,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  sublistingCategoriesRepository,
+  categoriesRepository,
 } from "@mohasinac/appkit";
 
 const updateSchema = z.object({
@@ -20,8 +20,10 @@ export const GET = withProviders(
     roles: ["admin", "moderator"],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const doc = await sublistingCategoriesRepository.findById(id);
-      if (!doc) return errorResponse("Sub-listing category not found", 404);
+      const doc = await categoriesRepository.findById(id);
+      if (!doc || doc.categoryType !== "sublisting") {
+        return errorResponse("Sub-listing category not found", 404);
+      }
       return successResponse(doc);
     },
   }),
@@ -34,9 +36,19 @@ export const PUT = withProviders(
     schema: updateSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
-      const existing = await sublistingCategoriesRepository.findById(id);
-      if (!existing) return errorResponse("Sub-listing category not found", 404);
-      const updated = await sublistingCategoriesRepository.update(id, body!);
+      const existing = await categoriesRepository.findById(id);
+      if (!existing || existing.categoryType !== "sublisting") {
+        return errorResponse("Sub-listing category not found", 404);
+      }
+      const patch: Record<string, unknown> = { updatedAt: new Date() };
+      if (body?.name !== undefined) patch.name = body.name;
+      if (body?.itemCode !== undefined) patch.itemCode = body.itemCode;
+      if (body?.description !== undefined) patch.description = body.description;
+      if (body?.coverImage !== undefined) {
+        patch.display = { ...existing.display, coverImage: body.coverImage };
+      }
+      await categoriesRepository.update(id, patch);
+      const updated = await categoriesRepository.findById(id);
       return successResponse(updated, "Sub-listing category updated");
     },
   }),
@@ -48,9 +60,11 @@ export const DELETE = withProviders(
     roles: ["admin"],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const existing = await sublistingCategoriesRepository.findById(id);
-      if (!existing) return errorResponse("Sub-listing category not found", 404);
-      await sublistingCategoriesRepository.delete(id);
+      const existing = await categoriesRepository.findById(id);
+      if (!existing || existing.categoryType !== "sublisting") {
+        return errorResponse("Sub-listing category not found", 404);
+      }
+      await categoriesRepository.deleteWithSublistingUnlink(id);
       return successResponse(null, "Sub-listing category deleted");
     },
   }),
