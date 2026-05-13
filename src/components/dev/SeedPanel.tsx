@@ -358,7 +358,36 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "storeId",       type: "ref",       filterable: true, indexed: true },
       { name: "storeName",     type: "string",    searchable: true },
       { name: "featured",      type: "boolean",   filterable: true, indexed: true },
-      { name: "listingType",   type: "enum",      filterable: true, indexed: true, note: "standard|auction|pre-order|prize-draw|bundle (SB1-G canonical)" },
+      { name: "listingType",   type: "enum",      filterable: true, indexed: true, note: "standard|auction|pre-order|prize-draw|classified|digital-code|live (SB1-G + SB-UNI-F)" },
+      // SB-UNI-H 2026-05-13 — eBay-style hybrid auction BIN.
+      { name: "buyItNowPriceInPaise", type: "number",    note: "auction Buy-It-Now price; hidden once bidsHaveStarted (SB-UNI-H)" },
+      { name: "bidsHaveStarted",      type: "boolean",   note: "flips to true on first bid; locks out BIN (SB-UNI-H)" },
+      // SB-UNI-G 2026-05-13 — TCGPlayer grading + card metadata.
+      { name: "grading.service",      type: "enum",      indexed: true, note: "PSA|BGS|CGC|SGC|OTHER (SB-UNI-G)" },
+      { name: "grading.grade",        type: "number",    sortable: true, indexed: true, note: "0-10; BGS allows 0.5 increments (SB-UNI-G)" },
+      { name: "grading.certNumber",   type: "string",    note: "slab cert lookup id (SB-UNI-G)" },
+      { name: "grading.slabImageMedia", type: "string",  note: "media slug for the slab image (SB-UNI-G)" },
+      { name: "card.setName",         type: "string",    indexed: true, note: "TCG set name (SB-UNI-G)" },
+      { name: "card.cardNumber",      type: "string",    indexed: true, note: "card number within the set, e.g. \"108/120\" (SB-UNI-G)" },
+      { name: "card.setYear",         type: "number",    note: "year the set was published (SB-UNI-G)" },
+      { name: "card.rarity",          type: "string",    note: "Common|Uncommon|Rare|Holo|… (SB-UNI-G)" },
+      { name: "card.language",        type: "string",    note: "ISO code: en|jp|… (SB-UNI-G)" },
+      // SB-UNI-I 2026-05-13 — Classified-listing fields.
+      { name: "classified.meetupArea.city", type: "string", indexed: true, note: "drives (listingType, city, createdAt) index (SB-UNI-I)" },
+      { name: "classified.contactMethod",   type: "enum",  note: "chat|phone|both (SB-UNI-I)" },
+      { name: "classified.acceptsShipping", type: "boolean", note: "seller offers shipping in addition to meetup (SB-UNI-I)" },
+      { name: "classified.negotiable",      type: "boolean", note: "price is negotiable (SB-UNI-I)" },
+      // SB-UNI-J 2026-05-13 — Digital-code listing fields.
+      { name: "digitalCode.codeDeliveryMethod", type: "enum", note: "auto-claim|manual-email (SB-UNI-J)" },
+      { name: "digitalCode.codesAvailable",     type: "number", note: "atomic counter; codes subcollection holds encrypted code strings (SB-UNI-J)" },
+      { name: "digitalCode.redemptionInstructions", type: "string", note: "surfaced on order detail page (SB-UNI-J)" },
+      // SB-UNI-K 2026-05-13 — Live-item listing fields.
+      { name: "liveItem.species",       type: "string",    indexed: true, note: "taxonomic; powers (listingType, species, status) index (SB-UNI-K)" },
+      { name: "liveItem.jurisdictionAllowed", type: "array", note: "ISO 3166-2 codes; checkout enforces buyer state inclusion (SB-UNI-K)" },
+      { name: "liveItem.vendorVerified", type: "boolean",   note: "admin verification gate for creation (SB-UNI-K)" },
+      { name: "liveItem.cites",          type: "string",    note: "CITES permit number for Appendix I/II species (SB-UNI-K)" },
+      // SB-UNI-L cohort 1 2026-05-13 — Catalog/Offer split foundation.
+      { name: "catalogProductId",       type: "ref",       indexed: true, note: "offer→catalog link; participates in /catalog/{slug} aggregation (SB-UNI-L)" },
       { name: "isPromoted",    type: "boolean",   filterable: true, indexed: true },
       { name: "auctionEndDate",type: "timestamp", filterable: true, sortable: true },
       { name: "currentBid",    type: "number",    sortable: true },
