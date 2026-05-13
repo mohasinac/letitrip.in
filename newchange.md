@@ -41,6 +41,59 @@
 
 ---
 
+### S3 — listingType boolean removal (SB1-G final) + Q3-pre-orders rewire (2026-05-13)
+
+**Scope**: close SB1-G by removing every consumer reference to the legacy `isAuction` / `isPreOrder` boolean fields and routing all listing-kind discrimination through the canonical `listingType` discriminator. Also: rewire `/api/pre-orders` to query products with `listingType==pre-order` (Q3-pre-orders).
+
+**Verify-first audit (Rule #4) found the heavy pieces already migrated**:
+
+| Tracker deliverable | Reality (verified) |
+|---|---|
+| Drop `isAuction` / `isPreOrder` from `ProductDocument` / `CartItemDocument` / `AuctionItemDocument` | ✅ Already done in a prior partial session — schema fields completely absent. |
+| Update 3 seed wrappers | ✅ Already done — wrappers emit `listingType` only. Doc comments are accurate. |
+| Drop legacy `isAuction+...` / `isPreOrder+...` Firestore composite indices | ✅ Already done — zero references in `appkit/firebase/base/firestore.indexes.json` or root `firestore.indexes.json`. 5 `listingType+...` composites present. |
+| Sweep 36-file consumer list | Found 28 files; most were doc-only references or local var names. Real query-string / Zod / URL-param sites: ~18 files. |
+| `/api/pre-orders` rewire (Q3-pre-orders) | ❌ Was still calling appkit's `preOrdersGET` which queried a never-seeded `preorders` collection. Real fix needed. |
+| `IS_AUCTION` / `IS_PRE_ORDER` constants in `src/constants/field-names.ts` | ❌ Still present, unused outside their own definition site. |
+
+**Two-and-a-half commits landed** (third is no-op):
+
+**C1 — `refactor(listing-type): route all consumer queries through listingType` + `refactor(listing-type): consumer sweep + Q3-pre-orders rewire`**
+
+| file | scope |
+|---|---|
+| `appkit/src/features/products/schemas/firestore.ts` | `MUTABLE_PRODUCT_FILTERS.auctions/preOrders` aliases emit `listingType==X` |
+| `appkit/src/features/products/schemas/index.ts` | drop `isAuction` from `productListParamsSchema`, add `listingType` enum |
+| `appkit/src/features/products/repository/products.repository.ts` | drop `IS_AUCTION` / `IS_PRE_ORDER` from `PRODUCT_FIELDS`; drop both from `PRODUCT_FILTER_CAPABILITIES`; add `listingType` |
+| `appkit/src/features/products/api/route.ts` | drop boolean params from Zod + allow-list + URL→Sieve mapping |
+| `appkit/src/features/auctions/schemas/index.ts` | `isAuction: z.literal(true)` → `listingType: z.literal("auction")` |
+| `appkit/src/features/search/schemas/index.ts` | drop `isAuction`, add `listingType` enum |
+| `appkit/src/features/admin/components/AdminProductsView.tsx` | filter strings use `listingType==auction` / `listingType==pre-order` |
+| `appkit/src/features/homepage/hooks/useFeaturedAuctions.ts` + `useFeaturedPreOrders.ts` | URL-encoded filter clauses |
+| `appkit/src/providers/db-firebase/filter-aliases.ts` | doc comment refresh |
+| `src/app/api/products/route.ts` | drop boolean params from allow-list + URL→Sieve mapping + dateFrom/dateTo branch |
+| `src/app/api/pre-orders/route.ts` | rewrite — `productRepository.list` with `listingType==pre-order` filter injection; POST dropped (no consumers) |
+| `src/app/api/products/group/[groupId]/route.ts` | drop redundant `isPreOrder` response field |
+| `src/app/api/store/bids/route.ts` | filter clause |
+| `src/app/sitemap.ts` | auction sitemap query |
+
+**C2 — `refactor(listing-type): rename SIEVE_CLAUSE_IS_* → SIEVE_CLAUSE_LT_*` + `refactor(listing-type): drop IS_AUCTION / IS_PRE_ORDER field-name constants`**
+
+| file | scope |
+|---|---|
+| `appkit/src/features/products/repository/products.repository.ts` | rename 3 local consts for naming accuracy (they already emitted `listingType==X`) |
+| `appkit/src/features/products/utils/listing-type.ts` | doc comment refresh — point at S3 instead of placeholder S22 |
+| `appkit/src/features/search/api/route.ts` | module docstring lists `listingType` query param |
+| `src/constants/field-names.ts` | drop `IS_AUCTION` + `IS_PRE_ORDER`; add `LISTING_TYPE` |
+
+**C3 — no work** (Firestore indices already clean).
+
+**Quality gates**: `npm run check` → 0 errors, 496 warnings (stable). tsc clean both repos. No deploys needed.
+
+**Deferred to S4**: `/api/pre-orders` currently calls `productRepository.list` directly. When Q1-ops lands in S4, it can switch to `listingProcessor` HTTP delegation the same way `/api/products` does.
+
+---
+
 ### S2 — Cart + Checkout end-to-end (route extraction + notifications) (2026-05-13)
 
 **Scope**: Close S2 per the re-sequenced plan — Firestore-backed cart, Razorpay live, order-creation server action, notifications fire, indices verified.

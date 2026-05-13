@@ -73,32 +73,31 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S2 Cart + Checkout end-to-end (route extraction + notifications) (2026-05-13)
+### ✅ LAST COMPLETED — S3 listingType boolean removal (SB1-G final) (2026-05-13)
 
-- **Verify-first audit (Rule #4) collapsed S2 scope ~70%**. Firestore cart, guest→authed merge (localStorage-mirror model, not signed-cookie as tracker prescribed), 50-cap `CART_FULL` 409, listingType auction-block, Razorpay client flow (TS18), `orders(userId, createdAt desc)` index, and Razorpay-keys-via-`siteSettings.integrations` (cached `resolveKeys()`) were **all already in place**. C3 needed no code changes.
-- **Real remaining work**: (a) commit in-tree WIP `order_placed` notification fan-out in both routes; (b) add Razorpay twin of the already-extracted `createCheckoutOrderAction`; (c) shrink routes to thin delegators.
-- **C1**: buyer + seller `order_placed` notifications committed in checkout + payment/verify (onOrderStatusChange CF only fires on transitions, so creates never produced rows).
-- **C2 — paired appkit + letitrip commits**: added `verifyAndPlaceRazorpayOrderAction` to `appkit/src/_internal/server/features/checkout/actions.ts` (~290 lines: signature + amount + cart re-validate + stock decrement + cart clear + multi-order create + RTDB signal); extracted `emitOrderPlacedNotifications` helper used by both checkout actions; `createCheckoutOrderAction` extended to capture `storeOwnerId` and emit notifications inline. Both routes shrunk: `/api/checkout` 614→45 lines, `/api/payment/verify` 503→53 lines. Switched letitrip to `file:./appkit` so live edits flow.
-- **Smoke**: dev boots Ready + Hobby parity banner; GET / 200. POST checkout + payment-verify need browser-driven end-to-end test (sign in → cart → consent OTP → COD or Razorpay test card → coupon → auction-add-to-cart-block).
-- **Deploy held**: no indices/functions/Vercel — held per user instruction "no deploying till local test".
+- **Verify-first audit (Rule #4) found the heavy pieces already migrated**: schema field removal on `ProductDocument` / `CartItemDocument` / `AuctionItemDocument` was complete from a prior partial session; `listingType+...` Firestore composite indices were already in place; legacy `isAuction+...` / `isPreOrder+...` composites already absent; seed wrappers already emit `listingType` only.
+- **Real remaining work** — boundaries: consumer query strings, URL filter clauses, auth-route Zod schemas, `IS_AUCTION` / `IS_PRE_ORDER` field-name constants, plus the Q3-pre-orders rewire (the `/api/pre-orders` route was still hitting a never-seeded `preorders` collection through appkit's `preOrdersGET`).
+- **C1 (paired appkit + letitrip commits)**: consumer sweep across 10 appkit files + 5 letitrip files. Products repo + api/route + admin filter view + homepage hooks + auctions/search/products Zod schemas + sitemap + bids route + product-group response now all use the canonical `listingType` discriminator. `/api/pre-orders` GET now calls `productRepository.list` directly with `listingType==pre-order` injected; POST dropped (no client consumers). Public `?isAuction=true` URL param removed (zero live callers).
+- **C2 (paired commits)**: dropped `IS_AUCTION` / `IS_PRE_ORDER` from `src/constants/field-names.ts` (added `LISTING_TYPE`); renamed local `SIEVE_CLAUSE_IS_*` → `SIEVE_CLAUSE_LT_*` in products repo for naming accuracy; refreshed stale doc comments.
+- **C3**: no work — Firestore indices already clean. Zero `isAuction|isPreOrder` references in indexes.json files; 5 `listingType+...` composites present.
+- **Quality gates**: `npm run check` 0 errors, 496 warnings (stable). tsc clean both repos. No deploys needed.
 
-### 🔄 CURRENT — none (awaiting S3 kickoff)
+### 🔄 CURRENT — none (awaiting S4 kickoff)
 
 ### ⏳ NEXT UP — new S1-onward sequence (impact + dependency ordered)
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S3** | `listingType` boolean removal — 36-file consumer sweep + 7-file `_internal/` sweep + `/api/pre-orders` fix + index cleanup | Unblocks every future product/listing change |
-| 2 | **S4** | SB3 closeout (D/G/J) + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy | Closes Bundles + ships missing Functions |
-| 3 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
-| 4 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
-| 5 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks, one large session, one deploy) | Self-contained feature surface |
-| 6 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
-| 7 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
-| 8 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
-| 9 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
-| 10 | **S1-polish** | Optional slot-shell polish slots deferred from S1 (admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products). Feature work — new endpoints + hooks. | Pull when prioritised |
-| 11 | **S2-browser-smoke** | User-driven browser smoke for S2 — sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation |
+| 1 | **S4** | SB3 closeout (D/G/J) + SB1-L 7 Firebase Functions + Q1-ops `listingProcessor` deploy | Closes Bundles + ships missing Functions |
+| 2 | **S5** | Seed scale P24–P31 + ARCH1/6/7 sellerId strip + index re-deploy | Realistic data + clean response shapes for downstream work |
+| 3 | **S6** | OG1–OG5 + FI6-2 secondary surfaces + Q6-views infinite scroll wiring | Coverage gaps |
+| 4 | **S7** | Prize Draws complete: SB4 + SB5 + SB6 + SB7 + SB8 (~30 sub-tasks, one large session, one deploy) | Self-contained feature surface |
+| 5 | **S8** | Event Raffles + tab constants + homepage sections: SB9 + SB10 + SB11 | Final SB tier completion |
+| 6 | **S9** | RBAC complete (RBAC1–10) + inline retrofit of every `TODO(RBAC)` tag left by S1–S8 | Permission system end-to-end |
+| 7 | **S10** | BAN (BAN1–9) + SCAM (SCAM2/4/6–9) | Governance / moderation |
+| 8 | **S11** | Quality baseline — drive `audit-ssr-in-appkit` baseline 8→0 + TS9 hex sweep (154 hits) + RA-Tier audits applied inline | Tech-debt closeout |
+| 9 | **S1-polish** | Optional slot-shell polish slots deferred from S1 (admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products). Feature work — new endpoints + hooks. | Pull when prioritised |
+| 10 | **S2-browser-smoke** | User-driven browser smoke for S2 — sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation |
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
 AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)
