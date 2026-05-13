@@ -41,6 +41,23 @@
 
 ---
 
+### S7-PrizeDraws-prep2 — SB5-D + SB6-A/B + index deploy (2026-05-13)
+
+Second carve from the S7 cohort, immediately after S7-prep. No risky changes — all schema/seed/repo additions with one matching index deploy.
+
+| Sub-task | Files |
+|---|---|
+| SB5-D | `appkit/src/seed/homepage-sections-seed-data.ts` — `section-featured-bundles` + `section-prize-draws` flipped `enabled: false → true`. New `section-brand-hot-wheels` + `section-brand-pokemon` (use existing `products` section type with `filterByBrand`). `section-event-raffles` order bumped 22 → 24 |
+| SB6-A | Verified doc-only — `maxPerUser?: number` on `ProductDocument:130` + `BundleDocument:78` |
+| SB6-B | `appkit/src/features/orders/repository/orders.repository.ts` — `countByUserAndProduct(uid, productId)` + `countByUserAndBundle(uid, bundleId)`. Active-status set = pending/confirmed/processing/shipped/delivered (excludes cancelled + refunded — inventory returned). Extended `ORDER_FIELDS.STATUS_VALUES` for the full set + new `ACTIVE_ALLOWANCE_STATUSES` constant. Adds `ORDER_FIELDS.BUNDLE_ID` |
+| Indexes | `appkit/firebase/base/firestore.indexes.json` — adds `orders(userId, productId, status)` + `orders(userId, bundleId, status)`. Merged to root via `firebase-merge.mjs`. **Deployed** via `npm run firebase:deploy:indexes` — succeeded; Firebase reports 34 unrelated stale indexes still on project (not in our local file) but they're not blocking |
+
+**Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos.
+
+**Still deferred to a full S7-PrizeDraws session**: SB4-A–I (Prize Draw editor + reveal API), SB5-E (2 prize-draw seed product docs), SB6-C (order-creation API maxPerUser enforcement + prize-draw pool cap), SB7-C/D (category page listing-type tabs + store/admin/search tabs), SB8-A–F (reveal deadline + auto-refund + reminders + notifications), SB1-L (7 Firebase Functions), Q1-funcs-dryrun + Q1-ops (Functions deploy + Vercel env wiring).
+
+---
+
 ### S7-prep — SB5-A/B + SB7-A/B landed; rest of S7 reopened as S7-PrizeDraws (2026-05-13)
 
 **Scope decision.** Original S7 row bundled SB4 (Prize Draw editor + reveal API), SB5 (nav/FAQ/seed), SB6 (per-user limits), SB7 (badges + tabs), SB8 (reveal expiry + notifications), SB1-L (7 Firebase Functions), Q1-ops (deploy) — ~35 sub-tasks, multi-day, multi-deploy. **S7-prep** carved out the no-deploy primer slice: nav constants, FAQ seed, in-bundle badges. The rest reopened as `S7-PrizeDraws` in NEXT-UP.

@@ -73,9 +73,17 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 > Keep exactly **1 LAST**, **1 CURRENT**, and a short **NEXT** list. Update on every commit.
 
-### ✅ LAST COMPLETED — S7-prep (2026-05-13)
+### ✅ LAST COMPLETED — S7-PrizeDraws-prep2 (2026-05-13)
 
-- **Scoping decision**: original S7 row bundled ~35 sub-tasks across SB4/5/6/7/8 + SB1-L (7 Functions) + Q1-ops deploy. Multi-day, multi-deploy effort. **S7-prep** carved the low-risk no-deploy primer slice; the rest reopened as `S7-PrizeDraws` in NEXT-UP.
+- **Continuing the S7 carve**: this slice added SB5-D homepage sections + SB6-A (verified) + SB6-B orders count helpers + 2 deployed Firestore composites. Still deferred: SB4 (Prize Draw UI + reveal API), SB5-E (prize-draw seed docs), SB6-C (order-creation maxPerUser enforcement), SB7-C/D (listing-type tabs), SB8 (reveal expiry), SB1-L (7 Functions), Q1-ops (deploy).
+- **SB5-D homepage sections**: `section-featured-bundles` + `section-prize-draws` flipped `enabled: false → true` (upstream schema + collections live). New `section-brand-hot-wheels` + `section-brand-pokemon` reuse the `products` section type with `filterByBrand`. `section-event-raffles` order bumped 22 → 24.
+- **SB6-A**: doc-only verified — `maxPerUser?: number` on ProductDocument:130 + BundleDocument:78.
+- **SB6-B orders count helpers**: `countByUserAndProduct(uid, productId)` + `countByUserAndBundle(uid, bundleId)`. Active-status filter PENDING/CONFIRMED/PROCESSING/SHIPPED/DELIVERED. 2 new Firestore composites `orders(userId,productId,status)` + `orders(userId,bundleId,status)` **deployed via `firebase deploy --only firestore:indexes`** (per your in-session firebase deploy authorization).
+- **Quality gates**: 0 errors, 499 warnings (stable). tsc clean both repos.
+
+### Previous session — S7-prep (2026-05-13, same day)
+
+- **Scoping decision**: original S7 row bundled ~35 sub-tasks. S7-prep carved the no-deploy primer slice (SB5-A nav, SB5-B FAQ seed, SB7-A/B in-bundle badges); rest reopened as `S7-PrizeDraws`.
 - **SB5-A nav constants**: Bundles + Prize Draws added to `MAIN_NAV_ITEMS` (Package2 + Gift icons), footer Shop + Learn columns (Bundle Guide + Prize Draw Guide), admin Catalog group, store Listings group. Theme `navIcons.bundles` (teal) + `navIcons.prizeDraws` (pink). i18n `nav.bundles` + `nav.prizeDraws`.
 - **SB5-B FAQ seed**: 6 entries (`faq-what-is-bundle`, `faq-how-create-bundle`, `faq-what-is-prize-draw`, `faq-prize-draw-fairness`, `faq-prize-draw-refund`, `faq-prize-draw-reveal`) under `product_information` — FAQ schema enum has no "listings"; tags + slugs identify the surface.
 - **SB7-A "Bundled" pill on cards**: `ProductGrid.tsx` shows teal pill next to typeBadge when `product.partOfBundleIds.length > 0`. Visual-only (card's outer `<Link>` can't nest a Link). `partOfBundleIds?` + `partOfBundleTitles?` added to `ProductItem` interface.
