@@ -24,10 +24,13 @@
       "Bash(git -C \"d:/proj/letitrip.in\" diff \"src/app/api/user/profile/route.ts\")",
       "Bash(git -C \"d:/proj/letitrip.in\" diff \".claude/settings.json\")",
       "Bash(git -C \"d:/proj/letitrip.in\" add \"src/app/api/user/profile/route.ts\" \".claude/settings.json\")",
-      "Bash(git -C d:/proj/letitrip.in commit -m ' *)"
+      "Bash(git -C d:/proj/letitrip.in commit -m ' *)",
+      "Bash(node -e \"const msg = require\\('./messages/en.json'\\); console.log\\(Object.keys\\(msg\\)\\);\")",
+      "Bash(node scripts/audit-ssr-in-appkit.mjs)"
     ],
     "additionalDirectories": [
-      "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]"
+      "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",
+      "C:\\Users\\mohsi\\Documents"
     ]
   },
   "hooks": {

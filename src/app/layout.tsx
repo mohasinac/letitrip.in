@@ -123,7 +123,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`min-h-full ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
+      className={`min-h-full bg-zinc-50 dark:bg-slate-950 ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
     >
       <head>
         {/* Preconnect to external origins used by media, fonts and analytics.

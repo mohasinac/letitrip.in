@@ -224,7 +224,6 @@ export default function LayoutShellClient({
     <Fragment>
       {themeStyle && <style>{themeStyle}</style>}
       <AdRuntimeInitializer />
-      <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
       <AppLayoutShell
       navItems={navItems}
       sidebarSections={sidebarSections}
@@ -298,6 +297,7 @@ export default function LayoutShellClient({
         </Div>
       )}
     >
+      <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
       {children}
       </AppLayoutShell>
       <NavigationLoader />

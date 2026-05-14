@@ -128,30 +128,19 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S10 fully closed: BAN1–9 + SCAM2/4/6/7/8/9 + tracker/prompt state sync (2026-05-14)
+### ✅ LAST COMPLETED — S-bugfix: next-intl context errors + toolbar URL + Firebase dual-instance + audit scripts (2026-05-14)
 
-- **BAN1–5** — Schema (`softBans`, `hardBanReason`, `SupportTicketDocument`), `isSoftBanned` helper, hard-ban/unban/soft-ban API routes, support ticket API + limit enforcement, guest checkout block.
-- **BAN6** — `AdminUserEditorView` Moderation section: hard-ban (impose + lift + reason), soft-ban list + add-soft-ban form. `AdminUsersView` ban status column.
-- **BAN7** — `AdminSupportTicketsView` + `AdminSupportTicketDetailView` (SideDrawer). Message thread + reply + status/priority. `/admin/support-tickets` page + layout + nav.
-- **BAN8** — `UserSupportView` (ticket form + list + detail). `/user/support` page + nav item.
-- **BAN9** — Firebase Functions: `onSupportTicketCreate`, `onSupportTicketUpdate`, `onUserBanChange`.
-- **SCAM2** ⚠️ — `AdminScammersView` list page + GET/PATCH API (`/api/admin/scammers`). `admin/scammers/layout.tsx`. Trust & Safety nav group. Full-page editor still deferred.
-- **SCAM4** — `"scam_awareness"` `FAQCategory`; 12 seed FAQs; `/scams/faqs` RSC + JSON-LD.
-- **SCAM6** — `ScamAwarenessModal` (non-dismissible, checkbox ack). `scamAwarenessAcknowledgedAt` on `SessionUser` + profile GET/PATCH. `LayoutShellClient` 30-day gate.
-- **SCAM7** — Sitemap entries for all scam pages + dynamic verified profiles. JSON-LD on `/scams/[id]` + `/scams/types`.
-- **SCAM8** — Firebase Functions: `onScamReportCreate` + `onScamReportUpdate`. Bindings wired.
-- **SCAM9** — Section layouts (`admin/scammers/layout.tsx`, `admin/support-tickets/layout.tsx`), nav `requiredPermission` annotations, routes. `trust_and_safety`/`customer_support` PERMISSION_GROUPS already populated by S9 RBAC commit.
-- crud-tracker.md + prompt.md fully synced: RBAC1–10 ✅, BAN1–9 ✅, SCAM4/6/7/8/9 ✅, SCAM2 ⚠️, chain diagrams annotated.
+- **`"use client"` sweep** — 8 filter components missing directive (`PreOrderFilters`, `StoreFilters`, `BlogFilters`, `CategoryFilters`, `EventFilters`, `OrderFilters`, `ReviewFilters`, `AddressFilters`) + `useCategories.ts`. All fixed; resolved "context not found" crash across listing pages.
+- **Double router.replace fix** — 51 violations of `table.set(k,v); table.setPage(1)` across listing components. Redundant `setPage(1)` removed everywhere; `table.set()` already auto-resets page for non-resetting keys.
+- **Firebase dual-module fix** — `appkit/node_modules/firebase` vs root `node_modules/firebase` split the app registry. Fixed via `resolve.alias["firebase"]` in `defineNextConfig` webpack config.
+- **`audit-use-client.mjs`** — new appkit script; detects missing `"use client"` on files importing client-only hooks; wired into stop hook + `check:audits`.
+- **`audit-double-navigation.mjs`** — new appkit script; detects `table.set() + table.setPage()` race pattern; wired into stop hook + `check:audits`.
+- **CLAUDE.md** — 3 new recurrent root cause patterns (12: missing use client, 13: double router.replace, 14: Firebase dual-module).
+- appkit rebuilt to v2.7.3 dist. `npm run check` exits 0.
 
-### ✅ Previous — S-auth-nav + Lambda-tracing: Login/Register links + TitleBar auth + scam modal + appkit v2.6.9 (2026-05-14)
+### ✅ Previous — S10 fully closed: BAN1–9 + SCAM2/4/6/7/8/9 + tracker/prompt state sync (2026-05-14)
 
-- **LoginPageClient** — added `renderCreateAccountLink` + `renderForgotPasswordLink`.
-- **RegisterPageClient** — added `renderLoginLink` + `renderTermsLink`.
-- **TitleBarLayout** — `<img>` for avatar (any-domain); `loginHref`/`registerHref` props; guest "Sign in"/"Register" buttons.
-- **AppLayoutShell** — `registerHref` prop; compact 16px role-dot (no text overflow).
-- **RoleBadge + Badge** — `employee` amber CSS (light + dark).
-- **Vercel Lambda tracing** — google-gax transitive deps added to `defaultOutputFileTracingIncludes`. appkit v2.6.9.
-- `npm run check` exits 0. Deployed to Vercel prod.
+- BAN1–9, SCAM2/4/6/7/8/9 — full ban/scam system: schemas, API routes, views, Firebase Functions. See prior LAST block in `newchange.md`.
 
 ### 🔄 CURRENT — S11: Quality baseline (audit 8→0, TS9 hex sweep, RA-Tier audits inline)
 

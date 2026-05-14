@@ -3,12 +3,14 @@
  * Claude Code Stop hook — runs the fast quality gates after each assistant turn.
  *
  * Runs:
- *   - appkit/scripts/audit-violations.mjs (boundary check)
- *   - appkit/scripts/verify-entries.mjs   (client entry firebase-admin free)
- *   - appkit/scripts/verify-css-build.mjs (compiled CSS class completeness)
- *   - scripts/audit-ssr-in-appkit.mjs     (route shim thresholds + sidecar + brand strings)
+ *   - appkit/scripts/audit-violations.mjs        (boundary check)
+ *   - appkit/scripts/verify-entries.mjs          (client entry firebase-admin free)
+ *   - appkit/scripts/verify-css-build.mjs        (compiled CSS class completeness)
+ *   - scripts/audit-ssr-in-appkit.mjs            (route shim thresholds + sidecar + brand strings)
+ *   - appkit/scripts/audit-use-client.mjs        (missing "use client" on client-hook files)
+ *   - appkit/scripts/audit-double-navigation.mjs (table.set + table.setPage race condition)
  *
- * Total runtime: ~2s. Heavy gates (tsc + lint) live in `npm run check`.
+ * Total runtime: ~2–3s. Heavy gates (tsc + lint) live in `npm run check`.
  *
  * Exit semantics for Claude Code Stop hook:
  *   - exit 0 → silent pass
@@ -67,6 +69,18 @@ const checks = [
     cmd: "node",
     args: ["appkit/scripts/verify-og-coverage.mjs"],
     cwd: ROOT,
+  },
+  {
+    label: "audit-use-client",
+    cmd: "node",
+    args: ["scripts/audit-use-client.mjs"],
+    cwd: join(ROOT, "appkit"),
+  },
+  {
+    label: "audit-double-navigation",
+    cmd: "node",
+    args: ["scripts/audit-double-navigation.mjs"],
+    cwd: join(ROOT, "appkit"),
   },
 ];
 
