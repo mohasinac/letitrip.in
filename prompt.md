@@ -128,28 +128,24 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-bugfix: next-intl context errors + toolbar URL + Firebase dual-instance + audit scripts (2026-05-14)
+### ✅ LAST COMPLETED — S11: Quality baseline — audit 8→0, TS9 hex sweep, config factories (2026-05-14)
 
-- **`"use client"` sweep** — 8 filter components missing directive (`PreOrderFilters`, `StoreFilters`, `BlogFilters`, `CategoryFilters`, `EventFilters`, `OrderFilters`, `ReviewFilters`, `AddressFilters`) + `useCategories.ts`. All fixed; resolved "context not found" crash across listing pages.
-- **Double router.replace fix** — 51 violations of `table.set(k,v); table.setPage(1)` across listing components. Redundant `setPage(1)` removed everywhere; `table.set()` already auto-resets page for non-resetting keys.
-- **Firebase dual-module fix** — `appkit/node_modules/firebase` vs root `node_modules/firebase` split the app registry. Fixed via `resolve.alias["firebase"]` in `defineNextConfig` webpack config.
-- **`audit-use-client.mjs`** — new appkit script; detects missing `"use client"` on files importing client-only hooks; wired into stop hook + `check:audits`.
-- **`audit-double-navigation.mjs`** — new appkit script; detects `table.set() + table.setPage()` race pattern; wired into stop hook + `check:audits`.
-- **CLAUDE.md** — 3 new recurrent root cause patterns (12: missing use client, 13: double router.replace, 14: Firebase dual-module).
-- appkit rebuilt to v2.7.3 dist. `npm run check` exits 0.
+- **Config factories** — `tailwind.config.js` wrapped with `defineTailwindConfig()`; `eslint.config.mjs` spread with `defineEslintConfig()`; `next.config.js` already used `defineNextConfig()`. `audit-config-factories: 0`. X-cli-close: no-op ✅.
+- **TS9 hex sweep** — `audit-hex-tokens.mjs` now loads known tokens from `tokens.css`; auto-fixed 14 Category A var() fallbacks; manually fixed DevToolbar.tsx (25 hex → CSS vars) and sublisting-categories page (2 undefined-token fallbacks → Tailwind classes). `audit-hex-tokens: 0 violations`.
+- **X-audit-baseline** — robots/manifest/sitemap/og extracted to `appkit/src/_internal/server/features/seo/`; 4 consumer files reduced to 6–13 line thin shims; appkit rebuilt to v2.7.4. `audit-ssr-in-appkit: 0 violations`.
+- `npm run check` exits 0. All 5 consumer audits + both tsc + eslint pass.
 
-### ✅ Previous — S10 fully closed: BAN1–9 + SCAM2/4/6/7/8/9 + tracker/prompt state sync (2026-05-14)
+### ✅ Previous — S-bugfix: next-intl context errors + toolbar URL + Firebase dual-instance + audit scripts (2026-05-14)
 
-- BAN1–9, SCAM2/4/6/7/8/9 — full ban/scam system: schemas, API routes, views, Firebase Functions. See prior LAST block in `newchange.md`.
+- `"use client"` sweep, double router.replace fix, Firebase dual-module fix, audit-use-client + audit-double-navigation scripts, CLAUDE.md patterns 12–14. appkit v2.7.3.
 
-### 🔄 CURRENT — S11: Quality baseline (audit 8→0, TS9 hex sweep, RA-Tier audits inline)
+### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
 ### ⏳ NEXT UP
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S11** | Quality baseline — `audit-ssr-in-appkit` 8→0 + TS9 hex sweep (154 hits) + TS17 ops + RA-Tier audits inline + 3-nextconfig/tailwind/eslint cleanup | S9+S10 are closed; tech-debt closeout unblocks S-polish-pass |
-| 2 | **S-SBUNI-RULES** *(slot after S11)* | Per-type cart/checkout/order rule registry. Full plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md`. | S-SBUNI-5 reference impl available |
+| 1 | **S-SBUNI-RULES** | Per-type cart/checkout/order rule registry. Full plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md`. | S11 closed; S-SBUNI-5 reference impl available |
 | – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: `classified`/`digital-code`/`live`) · Phase 3–9 (G–Z5 per-type fields/checkout/forms/polish) · X4 feature flags + X5 telemetry. | Each is its own cohort. Phase 1 fully closed. |
 | – | **S-polish-pass** *(after S11)* | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After S11 — quality polish + test foundation |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |

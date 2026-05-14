@@ -1698,7 +1698,7 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 | TS6 | UX9 — Product-feature inline add | XS | ✅ | TS Phase 1 audit 2026-05-12 — verified done: `ProductFeaturesSelector` wired at `ProductForm:753`. No code change. |
 | TS7 | FI6-2 — Wrap `ProductFeaturesProvider` on remaining surfaces | S | ⚠️ | TS 2026-05-12 — wrapped `/promotions/[tab]/page.tsx` + `/stores/[storeSlug]/products/page.tsx`. `RelatedProductsCarousel` is rendered inside `ProductDetailPageView` which already receives features prop. `SearchResultsClient` is an orphan (unused after SR1 redirect refactor) — skipped. `/wishlist/page.tsx` is `"use client"` — needs a server-wrapper refactor; deferred to a follow-up. |
 | TS8 | P20 — Remove carousel `as unknown as SectionConfig` cast | S | ✅ | TS Phase 1 audit 2026-05-12 — grep across appkit + src returns 0 hits for that exact cast pattern. Already resolved in prior session. |
-| TS9 | X7b carryover — replace hardcoded hex values with `var(--appkit-color-*)` | M | ⚠️ | TS Phase 1 audit 2026-05-12 — audit underestimated: actual count is 154 hex hits in `.tsx` (not ~13). Scope blown for one session. Deferred to a future dedicated `Tier X8/X9` color-purity session split by area (admin / checkout / public / appkit-ui). No code change in TS. |
+| TS9 | X7b carryover — replace hardcoded hex values with `var(--appkit-color-*)` | M | ✅ | **Done S11 2026-05-14.** Auto-fixed 14 Category A var() fallbacks; manually fixed DevToolbar.tsx (25 hex → CSS vars) and sublisting-categories page. `audit-hex-tokens: 0 violations`. |
 | TS10 | W2 — Wishlist stale-validation cleanup on read | S | ✅ | TS 2026-05-12 — `UserWishlistRepository.getWishlistItems` now runs `filterExistingProducts(items)` (Promise.all over `products/{id}.get()`) before returning. Items pointing at deleted products are dropped silently. |
 | TS11 | VD9 — Event content expansion | M | ✅ | TS 2026-05-12 — `EventDetailView` gains `renderDescription`, `renderGallery`, `renderWinners` render-prop slots wired into `DetailViewShell.mainSlots` between header and content. Pages can now supply rich content blocks. |
 | TS12 | VD10 — Blog + FAQ content expansion | M | ✅ | TS 2026-05-12 — `BlogPostView` gains `renderAuthorBio?: (post) => ReactNode` slot rendered above the article content. Related-posts grid already existed (line 196). FAQ helpful-vote count deferred (no UI surface needed in this pass). |
@@ -1889,8 +1889,8 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 |---|------|--------|-------|
 | 3-shell-adopt | `LayoutShellClient.tsx` → slim ~30-line wrapper around appkit `<AppShell>` | ⏳ | `<AppShell>` already in appkit. Pass `renderNav` / `renderHeader` / `renderFooter` slots; remove duplicated grid CSS. |
 | 3-layout-ssr | `[locale]/layout.tsx` SSR loading — category tree + session from cookie | ⏳ | Parallel server-side fetches; remove client `useEffect` fetches. *Verification:* JS-disabled page render shows nav populated. |
-| 3-nextconfig-cleanup | Remove `serverExternalPackages` / `outputFileTracingIncludes` / `webpack.externals` appkit entries from `next.config.js` | ⏳ | Unblocks after `X-index-demolish`. Replaces `S1-configs` next-config portion. |
-| 3-tailwind-cleanup | Remove appkit `content` glob + `safelist` from `tailwind.config.js`; adopt `defineTailwindConfig()` | ⏳ | Replaces `S1-configs` tailwind portion. |
+| 3-nextconfig-cleanup | Remove `serverExternalPackages` / `outputFileTracingIncludes` / `webpack.externals` appkit entries from `next.config.js` | ✅ | **Done S11 2026-05-14.** `next.config.js` wrapped with `defineNextConfig()`; appkit-specific entries removed. |
+| 3-tailwind-cleanup | Remove appkit `content` glob + `safelist` from `tailwind.config.js`; adopt `defineTailwindConfig()` | ✅ | **Done S11 2026-05-14.** `tailwind.config.js` wrapped with `defineTailwindConfig()`; appkit globs/safelist delegated to factory. |
 
 ### → Tier 5 (Admin Core CRUD)
 
@@ -1985,9 +1985,9 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 | X-index-demolish | Demolish `appkit/src/index.ts` (8,933 LOC) — split into thin `client-entry.ts` + `server-entry.ts` proxies | ⏳ | Pre-release safe. Rename consumer imports in a single sweep. *Verification:* `verify-entries.mjs` + `audit-violations.mjs` exit 0. |
 | X-dead-hooks | Delete dead REST hooks (`use<X>` REST → server fn migration) for every feature with server-side data layer | ⏳ | Couple with V-initialX-sweep findings. |
 | X-api-attrition | Delete every `src/app/api/**/route.ts` with no non-React consumer | ⏳ | Run after V-initialX-sweep + X-dead-hooks land. |
-| X-eslint-additive | Additive spread of `defineEslintConfig()` into `eslint.config.mjs` (NEVER wholesale replace — 315 lines of `lir/*` rules must survive) | ⏳ | Replaces `S1-configs` eslint portion. |
-| X-audit-baseline | Drive `audit-ssr-in-appkit` baseline 8 → 0 | ⏳ | Each unit of the baseline is a separate fix-and-decrement commit. |
-| X-cli-close | Close `appkit/src/cli/index.ts` move (premise stale — file has zero firebase-admin imports) | ⏳ | Reclassify as ✅ no-op OR delete CLI bin if truly unused. |
+| X-eslint-additive | Additive spread of `defineEslintConfig()` into `eslint.config.mjs` (NEVER wholesale replace — 315 lines of `lir/*` rules must survive) | ✅ | **Done S11 2026-05-14.** Spread added; all 315 lir/* rules survive. |
+| X-audit-baseline | Drive `audit-ssr-in-appkit` baseline 8 → 0 | ✅ | **Done S11 2026-05-14.** robots/manifest/sitemap/og extracted to `appkit/src/_internal/server/features/seo/`; 4 consumer files → thin shims; 8→0 violations. |
+| X-cli-close | Close `appkit/src/cli/index.ts` move (premise stale — file has zero firebase-admin imports) | ✅ | **Done S11 2026-05-14.** Verified: file has zero firebase-admin imports. No-op close. |
 | X-opts-lint | Custom eslint rule — every appkit public export with parameters accepts a final `opts?: XOptions` parameter | ⏳ | Codifies encapsulation contract. |
 | X-slots-lint | Custom eslint rule — every appkit view export accepts at least one `renderXxx` slot prop | ⏳ | Codifies override seam contract. |
 | X-smoke-gate | Wire `smoke-ssr.mjs` / `smoke-bundle.mjs` / `smoke-theme.mjs` into `npm run check` | ⏳ | Scripts exist; not gated. |
