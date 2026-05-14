@@ -5,6 +5,7 @@ import nextPlugin from "@next/eslint-plugin-next";
 import lirPlugin from "../packages/packages/eslint-plugin-letitrip/index.js";
 import reactPlugin from "eslint-plugin-react";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
+import { defineEslintConfig } from "@mohasinac/appkit/configs";
 
 /**
  * ESLint flat config for LetItRip (Phase 18.19 baseline).
@@ -15,6 +16,8 @@ import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
  * Strict mode (errors instead of warnings) is tracked in TECH_DEBT.md.
  */
 export default tseslint.config(
+  // appkit base: global ignores + no-hardcoded-route lint rule
+  ...defineEslintConfig(),
   // Recommended TypeScript rules
   ...tseslint.configs.recommended,
   // Register react-hooks plugin — prevents "Definition for rule not found" errors

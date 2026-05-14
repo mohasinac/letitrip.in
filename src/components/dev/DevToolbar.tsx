@@ -70,7 +70,7 @@ interface ToggleProps {
   color?: string;
 }
 
-function Toggle({ label, description, enabled, onChange, color = "#3570fc" }: ToggleProps) {
+function Toggle({ label, description, enabled, onChange, color = "var(--appkit-color-cobalt)" }: ToggleProps) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
       <button
@@ -82,7 +82,7 @@ function Toggle({ label, description, enabled, onChange, color = "#3570fc" }: To
           borderRadius: 11,
           border: "none",
           cursor: "pointer",
-          background: enabled ? color : "#334155",
+          background: enabled ? color : "var(--appkit-color-slate-700)",
           position: "relative",
           transition: "background 0.2s",
           padding: 0,
@@ -98,15 +98,15 @@ function Toggle({ label, description, enabled, onChange, color = "#3570fc" }: To
             width: 16,
             height: 16,
             borderRadius: "50%",
-            background: "#fff",
+            background: "var(--appkit-color-text-on-dark)",
             transition: "left 0.2s",
             display: "block",
           }}
         />
       </button>
       <div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "#f8fafc", lineHeight: 1.3 }}>{label}</div>
-        <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.4 }}>{description}</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--appkit-color-slate-50)", lineHeight: 1.3 }}>{label}</div>
+        <div style={{ fontSize: 11, color: "var(--appkit-color-slate-400)", lineHeight: 1.4 }}>{description}</div>
       </div>
     </div>
   );
@@ -140,10 +140,10 @@ export function DevToolbar() {
           bottom: 16,
           right: 16,
           zIndex: 9999,
-          background: "#0f172a",
-          border: "1px solid #334155",
+          background: "var(--appkit-color-slate-900)",
+          border: "1px solid var(--appkit-color-slate-700)",
           borderRadius: 8,
-          color: "#94a3b8",
+          color: "var(--appkit-color-slate-400)",
           fontSize: 11,
           padding: "4px 8px",
           cursor: "pointer",
@@ -162,11 +162,11 @@ export function DevToolbar() {
         bottom: 16,
         right: 16,
         zIndex: 9999,
-        background: "#0f172a",
-        border: "1px solid #334155",
+        background: "var(--appkit-color-slate-900)",
+        border: "1px solid var(--appkit-color-slate-700)",
         borderRadius: 10,
         boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-        color: "#f8fafc",
+        color: "var(--appkit-color-slate-50)",
         fontFamily: "monospace",
         minWidth: 240,
         overflow: "hidden",
@@ -179,13 +179,13 @@ export function DevToolbar() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "8px 12px",
-          borderBottom: "1px solid #334155",
-          background: "#020617",
+          borderBottom: "1px solid var(--appkit-color-slate-700)",
+          background: "var(--appkit-color-slate-950)",
           cursor: "pointer",
         }}
         onClick={() => setCollapsed((c) => !c)}
       >
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa" }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--appkit-color-purple-400)" }}>
           ⚙ DEV TOOLBAR
         </span>
         <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -194,13 +194,13 @@ export function DevToolbar() {
               fontSize: 10,
               padding: "1px 6px",
               borderRadius: 4,
-              background: "#1e40af",
-              color: "#bfdbfe",
+              background: "var(--appkit-color-cobalt-800)",
+              color: "var(--appkit-color-cobalt-200)",
             }}
           >
             localhost
           </span>
-          <span style={{ fontSize: 12, color: "#64748b" }}>
+          <span style={{ fontSize: 12, color: "var(--appkit-color-slate-500)" }}>
             {collapsed ? "▸" : "▾"}
           </span>
         </span>
@@ -214,10 +214,10 @@ export function DevToolbar() {
               style={{
                 marginBottom: 10,
                 padding: "4px 8px",
-                background: "#92400e",
+                background: "var(--appkit-color-amber-800)",
                 borderRadius: 6,
                 fontSize: 11,
-                color: "#fef3c7",
+                color: "var(--appkit-color-amber-100)",
               }}
             >
               ⚠ Mock services active — payment/shipping calls go to local routes
@@ -233,7 +233,7 @@ export function DevToolbar() {
             }
             enabled={prefs.mockRazorpay}
             onChange={(v) => update({ mockRazorpay: v })}
-            color="#f59e0b"
+            color="var(--appkit-color-amber-500)"
           />
 
           <Toggle
@@ -245,12 +245,12 @@ export function DevToolbar() {
             }
             enabled={prefs.mockShiprocket}
             onChange={(v) => update({ mockShiprocket: v })}
-            color="#10b981"
+            color="var(--appkit-color-emerald-500)"
           />
 
           <div
             style={{
-              borderTop: "1px solid #334155",
+              borderTop: "1px solid var(--appkit-color-slate-700)",
               paddingTop: 8,
               display: "flex",
               gap: 8,
@@ -260,7 +260,7 @@ export function DevToolbar() {
               href="/api/dev/mock-razorpay"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "#93c5fd", textDecoration: "none" }}
+              style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}
             >
               Razorpay Docs ↗
             </a>
@@ -268,7 +268,7 @@ export function DevToolbar() {
               href="/api/dev/mock-shiprocket?action=status"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "#93c5fd", textDecoration: "none" }}
+              style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}
             >
               Shiprocket Status ↗
             </a>
@@ -277,7 +277,7 @@ export function DevToolbar() {
               style={{
                 marginLeft: "auto",
                 fontSize: 10,
-                color: "#64748b",
+                color: "var(--appkit-color-slate-500)",
                 background: "none",
                 border: "none",
                 cursor: "pointer",

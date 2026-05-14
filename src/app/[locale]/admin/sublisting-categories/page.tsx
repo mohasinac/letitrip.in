@@ -14,7 +14,7 @@ export default function Page() {
         </h1>
         <Link
           href={String(ROUTES.ADMIN.SUBLISTING_CATEGORIES_NEW)}
-          className="rounded-lg bg-[var(--appkit-color-primary,#6366f1)] px-3.5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
+          className="rounded-lg bg-[var(--appkit-color-primary)] px-3.5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity"
         >
           + New Category
         </Link>

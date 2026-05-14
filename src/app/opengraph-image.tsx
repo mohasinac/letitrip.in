@@ -1,101 +1,15 @@
-import { ImageResponse } from "next/og";
+import { buildDefaultOgImage, DEFAULT_OG_SIZE } from "@mohasinac/appkit/server";
 // Import directly from source file (not the barrel) to keep OG image route lean.
 import { SEO_CONFIG } from "@/constants/seo";
 
 export const runtime = "nodejs";
-
 export const alt = SEO_CONFIG.siteName;
-export const size = { width: 1200, height: 630 };
+export const size = DEFAULT_OG_SIZE;
 export const contentType = "image/png";
 
 export default function OpengraphImage() {
-  return new ImageResponse(
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background:
-          "linear-gradient(135deg, #3570fc 0%, #65c408 50%, #e91e8c 100%)",
-        fontFamily: "sans-serif",
-        position: "relative",
-        overflow: "hidden",
-      }}
-     data-section="opengraph-image-div-1">
-      {/* Background pattern */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.07,
-          backgroundImage:
-            "radial-gradient(circle at 25% 25%, white 1px, transparent 0), radial-gradient(circle at 75% 75%, white 1px, transparent 0)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-
-      {/* Logo / Brand mark */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 120,
-          height: 120,
-          borderRadius: 24,
-          background: "rgba(255,255,255,0.15)",
-          marginBottom: 32,
-          fontSize: 64,
-        }}
-       data-section="opengraph-image-div-2">
-        🛍️
-      </div>
-
-      {/* Site name */}
-      <div
-        style={{
-          fontSize: 80,
-          fontWeight: 800,
-          color: "white",
-          letterSpacing: "-2px",
-          marginBottom: 16,
-          textShadow: "0 4px 24px rgba(0,0,0,0.3)",
-        }}
-       data-section="opengraph-image-div-3">
-        {SEO_CONFIG.siteName}
-      </div>
-
-      {/* Tagline */}
-      <div
-        style={{
-          fontSize: 32,
-          color: "rgba(255,255,255,0.85)",
-          fontWeight: 400,
-          letterSpacing: "0.5px",
-        }}
-       data-section="opengraph-image-div-4">
-        Shop, Bid &amp; Sell — India&apos;s Multi-Seller Marketplace
-      </div>
-
-      {/* URL */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 36,
-          fontSize: 22,
-          color: "rgba(255,255,255,0.6)",
-          letterSpacing: "1px",
-        }}
-       data-section="opengraph-image-div-5">
-        letitrip.in
-      </div>
-    </div>,
-    {
-      ...size,
-    },
-  );
+  return buildDefaultOgImage({
+    siteName: SEO_CONFIG.siteName,
+    domain: "letitrip.in",
+  });
 }
-

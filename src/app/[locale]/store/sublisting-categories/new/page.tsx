@@ -66,7 +66,7 @@ export default function Page() {
             required
             maxLength={120}
             placeholder="e.g. Base Set Charizard 108/120"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
+            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
         </div>
 
@@ -80,7 +80,7 @@ export default function Page() {
             onChange={(e) => setItemCode(e.target.value)}
             maxLength={40}
             placeholder="e.g. PSA 10, 108/120, WOTC, STH"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)]"
+            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
           <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
             Grade, card number, set code, or series. Optional but helps buyers find matches.
@@ -97,7 +97,7 @@ export default function Page() {
             maxLength={500}
             rows={3}
             placeholder="Brief description shown on the public category page…"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary,#6366f1)] resize-none"
+            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
           />
         </div>
 
@@ -111,7 +111,7 @@ export default function Page() {
           <button
             type="submit"
             disabled={!name.trim() || saving}
-            className="rounded-lg bg-[var(--appkit-color-primary,#6366f1)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="rounded-lg bg-[var(--appkit-color-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create category"}
           </button>

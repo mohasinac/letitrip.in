@@ -105,7 +105,7 @@ const baselineArg = argv.find((a) => a.startsWith("--baseline="));
 // Default baseline = number of configs NOT yet adopted.
 // Lower this number as each config migrates to its factory.
 // Set to 0 (or --strict) once all three are adopted.
-const DEFAULT_BASELINE = STRICT ? 0 : 2; // tailwind + eslint pending as of S11
+const DEFAULT_BASELINE = STRICT ? 0 : 0; // all three factories adopted in S11
 const BASELINE = Number(baselineArg ? baselineArg.split("=")[1] : (process.env.AUDIT_CONFIG_FACTORY_BASELINE ?? DEFAULT_BASELINE));
 
 // ---------------------------------------------------------------------------

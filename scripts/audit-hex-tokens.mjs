@@ -80,11 +80,8 @@ const STRICT     = argv.includes("--strict");
 const WARN_ONLY  = argv.includes("--warn-only");
 const baselineArg = argv.find((a) => a.startsWith("--baseline="));
 // Default baseline = current violation count as of S11.
-// Lower this number as TS9 work clears violations.
-// Category A (auto-fixable): run  npm run audit:hex-tokens:fix  to reduce it.
-// Category B/D (manual):     fix DevToolbar.tsx inline styles.
-// Category A undefined tokens: fix --appkit-surface-bg usage in sublisting-categories.
-const DEFAULT_BASELINE = STRICT ? 0 : 41;
+// All hex token violations cleared in S11 (TS9). Baseline locked at 0.
+const DEFAULT_BASELINE = STRICT ? 0 : 0;
 const BASELINE = Number(baselineArg ? baselineArg.split("=")[1] : (process.env.AUDIT_HEX_BASELINE ?? DEFAULT_BASELINE));
 
 // ---------------------------------------------------------------------------
@@ -328,6 +325,13 @@ for (const [cat, label] of Object.entries(categories)) {
 process.stderr.write("\n");
 
 if (!STRICT && totalRemaining <= BASELINE) {
+  process.stderr.write(
+    `audit-hex-tokens: ${totalRemaining} violation(s) at or under baseline ${BASELINE} — pass.\n`,
+  );
+  process.exit(0);
+}
+
+if (totalRemaining > BASELINE && !STRICT) {
   process.stderr.write(
     `Regression: ${totalRemaining} > baseline ${BASELINE} (delta +${totalRemaining - BASELINE}).\n`,
   );

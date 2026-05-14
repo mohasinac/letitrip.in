@@ -57,12 +57,12 @@ export default async function SublistingCategoryPage({ params }: Props) {
   const displayName = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
 
   return (
-    <main className="min-h-screen bg-[var(--appkit-surface-bg,#fff)] dark:bg-[var(--appkit-surface-bg-dark,#09090b)]">
+    <main className="min-h-screen bg-zinc-50 dark:bg-slate-950">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
-          <Link href={String(ROUTES.HOME)} className="hover:text-[var(--appkit-color-primary,#6366f1)] transition-colors">
+          <Link href={String(ROUTES.HOME)} className="hover:text-[var(--appkit-color-primary)] transition-colors">
             Home
           </Link>
           <span aria-hidden>/</span>
@@ -95,7 +95,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </p>
               )}
             </div>
-            <span className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary,#6366f1)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary,#6366f1)] sm:mt-0">
+            <span className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary)] sm:mt-0">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </span>
           </div>
@@ -111,7 +111,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </p>
             <Link
               href={String(ROUTES.PUBLIC.PRODUCTS)}
-              className="mt-5 rounded-lg bg-[var(--appkit-color-primary,#6366f1)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              className="mt-5 rounded-lg bg-[var(--appkit-color-primary)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
             >
               Browse all products
             </Link>
@@ -147,7 +147,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 <Link
                   key={id}
                   href={href}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:border-[var(--appkit-color-primary,#6366f1)]/50 hover:shadow-md transition-all"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:border-[var(--appkit-color-primary)]/50 hover:shadow-md transition-all"
                 >
                   <div className="aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                     {image ? (
