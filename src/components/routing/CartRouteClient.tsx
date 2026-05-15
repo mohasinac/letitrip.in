@@ -36,6 +36,9 @@ import {
   useGuestWishlist,
   useToast,
   ROUTES,
+  useAuthGate,
+  ACTION_ID,
+  LoginRequiredModal,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
@@ -205,6 +208,7 @@ export function CartRouteClient() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
+  const { requireAuth, modalOpen, modalMessage, closeModal } = useAuthGate();
 
   const guest = useGuestCart();
   const { data: serverCart, isLoading: serverLoading, refetch } =
@@ -690,6 +694,7 @@ export function CartRouteClient() {
   // Render
   // ---------------------------------------------------------------------------
   return (
+    <>
     <CartView
       labels={{ title: "Cart" }}
       isEmpty={isEmpty}
@@ -903,6 +908,13 @@ export function CartRouteClient() {
             >
               Checkout
             </Button>
+          ) : !isAuthenticated ? (
+            <Button
+              onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})}
+              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              Checkout
+            </Button>
           ) : (
             <Button
               asChild
@@ -945,6 +957,8 @@ export function CartRouteClient() {
         </Div>
       )}
     />
+    <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
+    </>
   );
 }
 

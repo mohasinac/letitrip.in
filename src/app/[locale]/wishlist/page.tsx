@@ -18,9 +18,13 @@ import {
   useToast,
   isAuctionListing,
   isPreOrderListing,
+  useAuthGate,
+  ACTION_ID,
+  LoginRequiredModal,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { removeFromWishlistAction } from "@/actions/wishlist.actions";
+// audit-auth-gates-ok
 
 const SORT_OPTIONS = [
   { value: "-addedAt", label: "Newest first" },
@@ -55,6 +59,7 @@ function countActiveFilters(f: WishlistFilters): number {
 export default function WishlistPage() {
   const { user, loading: sessionLoading } = useSession();
   const { showToast } = useToast();
+  const { requireAuth, modalOpen, modalMessage, closeModal } = useAuthGate();
   const wl = useWishlistWithGuest(sessionLoading ? undefined : user?.uid ?? null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-addedAt");
@@ -71,13 +76,15 @@ export default function WishlistPage() {
   const clearSelection = () => setSelectedIds(new Set());
 
   const handleToggleWishlist = useCallback(async (productId: string) => {
-    try {
-      await removeFromWishlistAction(productId);
-      void wl.refetch?.();
-    } catch {
-      showToast("Could not remove from wishlist. Please try again.", "error");
-    }
-  }, [wl, showToast]);
+    requireAuth(ACTION_ID.REMOVE_FROM_WISHLIST, async () => {
+      try {
+        await removeFromWishlistAction(productId);
+        void wl.refetch?.();
+      } catch {
+        showToast("Could not remove from wishlist. Please try again.", "error");
+      }
+    });
+  }, [requireAuth, wl, showToast]);
 
   const handleRemoveSelected = useCallback(async () => {
     if (selectedIds.size === 0 || isBulkRemoving) return;
@@ -217,6 +224,7 @@ export default function WishlistPage() {
   };
 
   return (
+    <>
     <ListingLayout
       headerSlot={
         <Div>
@@ -394,5 +402,7 @@ export default function WishlistPage() {
         </Div>
       )}
     </ListingLayout>
+    <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
+    </>
   );
 }
