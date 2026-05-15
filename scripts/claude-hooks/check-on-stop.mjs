@@ -9,8 +9,13 @@
  *   - scripts/audit-ssr-in-appkit.mjs            (route shim thresholds + sidecar + brand strings)
  *   - appkit/scripts/audit-use-client.mjs        (missing "use client" on client-hook files)
  *   - appkit/scripts/audit-double-navigation.mjs (table.set + table.setPage race condition)
+ *   - scripts/audit-html-wrappers.mjs            (raw HTML instead of appkit primitives + bare divs)
+ *   - scripts/audit-code-quality.mjs             (long if-else, deep nesting, large fns, repeated strings)
  *
- * Total runtime: ~2–3s. Heavy gates (tsc + lint) live in `npm run check`.
+ * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
+ * only when the violation count EXCEEDS the recorded baseline (regressions only).
+ *
+ * Total runtime: ~3–5s. Heavy gates (tsc + lint) live in `npm run check`.
  *
  * Exit semantics for Claude Code Stop hook:
  *   - exit 0 → silent pass
@@ -82,11 +87,27 @@ const checks = [
     args: ["scripts/audit-double-navigation.mjs"],
     cwd: join(ROOT, "appkit"),
   },
+  {
+    label: "audit-html-wrappers",
+    cmd: "node",
+    args: ["scripts/audit-html-wrappers.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-code-quality",
+    cmd: "node",
+    args: ["scripts/audit-code-quality.mjs"],
+    cwd: ROOT,
+  },
 ];
 
-// audit-ssr-in-appkit baseline: 8 known violations (S2-deferred root files).
-// Block only on regression (count > baseline), not on baseline itself.
+// Baseline violation counts — block only on regressions (count > baseline).
+// audit-ssr-in-appkit: 8 known violations (S2-deferred root files).
+// audit-html-wrappers: 302 existing raw HTML / bare-div violations.
+// audit-code-quality:  432 existing quality smells (repeated strings, large fns, deep nesting).
 const SSR_BASELINE = 8;
+const HTML_WRAPPERS_BASELINE = 302;
+const CODE_QUALITY_BASELINE = 432;
 
 const failures = [];
 
@@ -102,16 +123,22 @@ for (const check of checks) {
   });
   if (result.status === 0) continue;
 
-  // Special handling for audit-ssr-in-appkit: allow baseline drift only.
-  if (check.label === "audit-ssr-in-appkit") {
+  // Baseline-drift audits: only block on regressions, not on existing violations.
+  const BASELINE_AUDITS = {
+    "audit-ssr-in-appkit": SSR_BASELINE,
+    "audit-html-wrappers": HTML_WRAPPERS_BASELINE,
+    "audit-code-quality": CODE_QUALITY_BASELINE,
+  };
+  if (check.label in BASELINE_AUDITS) {
+    const baseline = BASELINE_AUDITS[check.label];
     const out = (result.stdout || "") + (result.stderr || "");
     const m = out.match(/(\d+)\s+violation\(s\) found/);
     if (m) {
       const count = Number(m[1]);
-      if (count <= SSR_BASELINE) continue;
+      if (count <= baseline) continue;
       failures.push({
         label: check.label,
-        output: `${count} violations (baseline ${SSR_BASELINE} — regression of ${count - SSR_BASELINE}).\n\n${out}`,
+        output: `${count} violations (baseline ${baseline} — regression of ${count - baseline}).\n\n${out}`,
       });
       continue;
     }

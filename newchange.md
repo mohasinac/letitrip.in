@@ -41,6 +41,30 @@
 
 ---
 
+### S-filter-sieve-audit — Filter/sort key audit + Sieve correctness fixes (2026-05-15)
+
+Full end-to-end audit of every listing layout's filter keys, sort options, Sieve safe-lists, and URL→Firestore field mappings. Zero new features — only bug fixes.
+
+| File | Change |
+|------|--------|
+| `src/app/api/products/route.ts` | `freeShipping==true` → `shippingPaidBy==seller`; added `prizeRevealStatus` param handler; added `"shippingPaidBy"` + `"prizeRevealStatus"` to `SAFE_PRODUCT_FILTER_FIELDS` |
+| `appkit/src/features/products/types/index.ts` | Added `prizeRevealStatus?: "pending" \| "open" \| "closed"` to `ProductListParams` |
+| `appkit/src/features/products/hooks/useProducts.ts` | Wired `prizeRevealStatus` into URLSearchParams |
+| `appkit/src/features/products/components/PrizeDrawsIndexListing.tsx` | `prizeRevealStatus` moved from client-side filter to server param; `showClosed` toggle is now only the fallback when no URL param is set |
+| `appkit/src/features/products/components/ProductFilters.tsx` | Fixed `"seller"` → `"storeId"` in public filter keys; `"-views"` → `"-viewCount"` in all 3 sort-option arrays |
+| `appkit/src/features/products/components/AuctionsIndexListing.tsx` | Removed stale `"condition"` from `FILTER_KEYS` (never shown in AuctionFilters, was silently added to URL) |
+| `appkit/src/features/stores/api/route.ts` | Sort key translation for nested Firestore paths: `itemsSold→stats.itemsSold`, `averageRating→stats.averageRating`; expanded `SAFE_STORE_FILTER_FIELDS` with `isFeatured`, `averageRating`, `stats.totalProducts` |
+| `appkit/src/features/stores/schemas/firestore.ts` | Added `isFeatured?: boolean` to `StoreDocument` |
+| `appkit/src/features/admin/components/AdminReturnRequestsView.tsx` | Added missing `const [view, setView] = useState(...)` (pre-existing TS error) |
+| `appkit/src/features/admin/components/AdminStoreAddressesView.tsx` | Added missing `const [view, setView] = useState(...)` (pre-existing TS error) |
+| `appkit/src/features/seller/components/SellerBidsView.tsx` | Added missing `const [view, setView] = useState(...)` (pre-existing TS error) |
+
+**Root cause**: Filter keys in UI components were not consistently checked against actual Firestore field names. `freeShipping` has no Firestore field (the field is `shippingPaidBy`). Store sorts used flat names but Firestore requires nested paths for `stats.*`. `prizeRevealStatus` was handled client-side only, breaking server-side pagination.
+
+**Deferred**: No items deferred. All fixes are self-contained; no schema migrations needed (no field renames, only code-side translation fixes).
+
+---
+
 ### VD13 — Filter unavailable items from detail-page recommendations (2026-05-15)
 
 Buyers were seeing sold-out, ended, and archived items in the "Similar Products" and "Similar Auctions" carousels on detail pages. The fix uses the same availability signals the listing toolbars use — not just `status`, since sellers don't always transition the status field.

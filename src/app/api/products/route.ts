@@ -86,6 +86,8 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   "auctionEndDate",
   "preOrderDeliveryDate",
   "preOrderProductionStatus",
+  "prizeRevealStatus",
+  "shippingPaidBy",
 ]);
 
 function validateSieveFilters(
@@ -166,8 +168,10 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   }
   const preOrderProductionStatus = param(url, "preOrderProductionStatus") ?? param(url, "preOrderStatus");
   if (preOrderProductionStatus) parts.push(`preOrderProductionStatus==${preOrderProductionStatus}`);
+  const prizeRevealStatus = param(url, "prizeRevealStatus");
+  if (prizeRevealStatus) parts.push(`prizeRevealStatus==${prizeRevealStatus}`);
   const freeShipping = param(url, "freeShipping");
-  if (freeShipping === "true") parts.push("freeShipping==true");
+  if (freeShipping === "true") parts.push("shippingPaidBy==seller");
   if (rawFilters) {
     const safe = validateSieveFilters(rawFilters, SAFE_PRODUCT_FILTER_FIELDS);
     if (safe) parts.push(safe);

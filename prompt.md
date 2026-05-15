@@ -133,19 +133,23 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-publish-deploy: appkit 2.7.10 publish + Vercel prod deploy (2026-05-15)
+### ✅ LAST COMPLETED — S-filter-sieve-audit: Filter/sort key audit + fixes across all listing layouts (2026-05-15)
 
-- No TSC errors. appkit built from appkit/ dir. letitrip.in built with symlink (both clean).
-- Published @mohasinac/appkit@2.7.10 (2.7.9 was last published; local was already 2.7.10).
-- Updated letitrip/package.json to "2.7.10". npm install + npm run build passed (160 pages).
-- Deployed to Vercel prod via `vercel --prod`.
-- Clarified in prompt: lockfile `"resolved": "appkit", "link": true` is expected in this monorepo.
+- Full audit of all filter drawers, sort options, search keys, and Sieve safe-lists for every public, admin, store, and user listing layout.
+- Fixed 8 bugs + 3 pre-existing TS errors (missing `view`/`setView` in AdminReturnRequestsView, AdminStoreAddressesView, SellerBidsView).
+- `freeShipping` URL param now correctly maps to `shippingPaidBy==seller` Sieve clause (was silently `freeShipping==true` — no Firestore field exists).
+- `prizeRevealStatus` filter moved from client-side-only to server-side (via `useProducts` + `/api/products` + `SAFE_PRODUCT_FILTER_FIELDS`).
+- Store sort keys `itemsSold`/`averageRating` translated to nested Firestore paths `stats.itemsSold`/`stats.averageRating` in the API route.
+- `SAFE_STORE_FILTER_FIELDS` expanded: added `isFeatured`, `averageRating`, `stats.totalProducts`.
+- `StoreDocument.isFeatured` added to Firestore schema type.
+- Sort option `"-views"` → `"-viewCount"` fixed in all three sort-option arrays.
+- `AuctionsIndexListing` FILTER_KEYS: removed stale `"condition"` key never shown in AuctionFilters.
+- `ProductListParams.prizeRevealStatus` typed + wired into `useProducts`.
+- `npm run check` exits 0. asciiDiagrams.md, crud-tracker.md, newchange.md updated.
 
-### ✅ Previous — VD13: Filter unavailable items from detail-page recommendations (2026-05-15)
+### ✅ Previous — S-publish-deploy: appkit 2.7.10 publish + Vercel prod deploy (2026-05-15)
 
-- "Similar Products" + "Similar Auctions" carousels now exclude sold/out-of-stock/ended/archived items.
-- Multi-signal guard: status field, isSold flag, availableQuantity, auctionEndDate, prizeRevealStatus.
-- Files: `ProductDetailPageView.tsx` + `AuctionDetailPageView.tsx`. `npm run check` exits 0.
+- Published @mohasinac/appkit@2.7.10; deployed to Vercel prod via `vercel --prod`.
 
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 

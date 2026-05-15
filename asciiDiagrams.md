@@ -10,6 +10,8 @@
 - **Shared Components**
   - [ListingToolbar](#shared--listingtoolbar-)
   - [Standard Admin Listing View Pattern](#shared--standard-admin-listing-view-pattern-)
+  - [AdminViewCards (grid/list renderer)](#shared--adminviewcards-gridlist-renderer-)
+  - [BulkActionBar](#shared--bulkactionbar-)
   - [MediaUploadField](#shared--mediauploadfield-)
   - [PageLoader](#shared--pageloader-)
   - [Layout System — C2 Breakpoint Map](#shared--layout-system--c2-breakpoint-map-)
@@ -213,13 +215,21 @@
 
 ```
 Component: appkit/src/ui/components/ListingToolbar.tsx
-Used by: all 11 *IndexListing + Store*Listing public/store views + all 16 Admin*View listing views
+Used by: all 11 *IndexListing + Store*Listing public/store views + all 25+ Admin*View + 9 Seller*View
 
 Key props:
   labels?:           ListingToolbarLabels  — override all button/label text for i18n
   bulkMode?:         boolean               — when true, replaces search row with Select All / Clear
   bulkSelectedCount? / bulkTotalCount?     — drives "N selected" count display
   onBulkSelectAll? / onBulkClear?          — wired to useBulkSelection.toggleAll / clearSelection
+  showTableView?:    boolean               — default false; adds Table2 icon button (dashboards only)
+  view?:             "grid" | "list" | "table"  — current view mode
+  onViewChange?:     (v: "grid" | "list" | "table") => void
+
+Public pages: showTableView omitted — [⊞/≡] grid/list only.
+Dashboard pages (admin + seller): showTableView={true} — [⊞/≡/⊟] grid/list/table shown.
+Default view: dashboard pages → "table"; public pages → "grid".
+Public onViewChange guard: if (v === "table") return; — no table mode for buyers.
 
 Normal mode — Mobile layout (two rows):
 ┌─────────────────────────────────────────────────────────────────┐
@@ -232,6 +242,12 @@ Normal mode — Desktop layout (single row):
 ┌─────────────────────────────────────────────────────────────────┐
 │  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡]  [↺]  {extra}  │
 └─────────────────────────────────────────────────────────────────┘
+
+Dashboard mode (showTableView=true) — Desktop layout:
+┌──────────────────────────────────────────────────────────────────────┐
+│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡/⊟]  [↺]  {extra}  │
+└──────────────────────────────────────────────────────────────────────┘
+  [⊞] grid  [≡] list  [⊟] table (Table2 icon) — only when showTableView=true
 
 Bulk mode (bulkMode=true — selection active on listing):
 ┌─────────────────────────────────────────────────────────────────┐
@@ -246,6 +262,7 @@ Controls & update behaviour:
   [⚙ Filters (N)] opens filter drawer → all drawer fields DEFERRED until [Apply Filters]
   [Sort ▾]        dropdown → INSTANT URL update (table.set "sort")
   [⊞/≡]           grid/list view toggle → INSTANT (NON_RESETTING_KEY, no page reset)
+  [⊟]             table view toggle (dashboard only) → INSTANT local React state (not URL)
   [↺]             reset ALL icon (RotateCcw) → INSTANT table.setMany clears q+sort+all filters
                   visible only when hasActiveState=true (search/sort/toggle/filter is non-default)
   {extra}         per-listing slot — e.g. Show ended [tog], Show sold [tog], Show closed [tog]
@@ -281,38 +298,69 @@ Toolbar reset [↺] scope per listing:
 ## Shared > Standard Admin Listing View Pattern ✅
 
 ```
-Pattern used by all 16 AdminXxxView components (Session 76-listing migration)
+Pattern used by all 25+ AdminXxxView components (updated 2026-05-15)
 appkit/src/features/admin/components/Admin*View.tsx
+appkit/src/features/seller/components/Seller*View.tsx
 
-Views: AdminBidsView, AdminCartsView, AdminWishlistsView, AdminSessionsView,
+Admin views (25+): AdminBidsView, AdminCartsView, AdminWishlistsView, AdminSessionsView,
        AdminPayoutsView, AdminNotificationsView, AdminAllEventEntriesView,
        AdminReturnRequestsView, AdminStoreAddressesView, AdminNewsletterView,
        AdminContactView, AdminEventsView, AdminReviewsView, AdminProductsView,
-       AdminCarouselView, AdminSectionsView
+       AdminCarouselView, AdminSectionsView, AdminBrandsView, AdminCategoriesView,
+       AdminBlogView, AdminStoresView, AdminUsersView, AdminOrdersView,
+       AdminCouponsView, AdminFAQsView, AdminFeaturesView, AdminSublistingCategoriesView
+Seller views (9): SellerProductsView, SellerAuctionsView, SellerPreOrdersView,
+       SellerPrizeDrawsView, SellerOrdersView, SellerBidsView,
+       SellerCouponsView, SellerOffersView, SellerPayoutsView
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│  sticky ListingToolbar  top-[var(--header-height,0px)]                        │
-│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [↺]  {extra: Export CSV...} │
-├───────────────────────────────────────────────────────────────────────────────┤
-│  sticky Pagination row (only when totalPages > 1)                             │
-│  backdrop-blur bg-white/95 dark:bg-slate-900/95 border-b                      │
-│                   [◀]  [1]  [2]  [3]  …  [▶]                                 │
-├───────────────────────────────────────────────────────────────────────────────┤
-│  ❌ {errorMessage}  (conditional red banner)                                  │
-├───────────────────────────────────────────────────────────────────────────────┤
-│  DataTable  (rounded-xl border overflow-hidden)                               │
-│  ┌──────────────────────────────────────────────────────────────────────────┐ │
-│  │  Name / Title      │ Secondary  │ Status  │ Updated  │     ⋮            │ │
-│  ├────────────────────┼────────────┼─────────┼──────────┼──────────────────┤ │
-│  │  Primary name      │ details    │ [badge] │ 2h ago   │     ⋮ menu       │ │
-│  │  subtitle text     │            │         │          │                   │ │
-│  ├────────────────────┼────────────┼─────────┼──────────┼──────────────────┤ │
-│  │  …                 │ …          │ …       │ …        │     ⋮            │ │
-│  └──────────────────────────────────────────────────────────────────────────┘ │
-│                                                                               │
-│  Loading: 5 skeleton rows (animate-pulse h-4 w-full rounded)                 │
-│  Empty:   "No {resource} — use 'New …' to add one"                           │
-└───────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────┐
+│  sticky ListingToolbar  top-[var(--header-height,0px)]                         │
+│  [🔍 Search…  🔍]  [⚙ Filters (N)]  Sort [… ▾]  [⊞/≡/⊟]  [↺]  {extra: +New}│
+│  ← showTableView=true → 3-way grid/list/table toggle                           │
+├────────────────────────────────────────────────────────────────────────────────┤
+│  BulkActionBar (renders only when selectedCount > 0)                           │
+│  [N selected]  [Action ▾ ▼]  [Apply]  [✕ Clear]                               │
+│  ← inline dropdown + Apply button; actions array satisfies BulkActionItem[]   │
+├────────────────────────────────────────────────────────────────────────────────┤
+│  sticky Pagination row (only when totalPages > 1)                              │
+│  backdrop-blur bg-white/95 dark:bg-slate-900/95 border-b                       │
+│                   [◀]  [1]  [2]  [3]  …  [▶]                                  │
+├────────────────────────────────────────────────────────────────────────────────┤
+│  ❌ {errorMessage}  (conditional red banner)                                   │
+├────────────────────────────────────────────────────────────────────────────────┤
+│  view === "table":                                                              │
+│  DataTable  (rounded-xl border overflow-hidden)                                │
+│  ┌──────────────────────────────────────────────────────────────────────────┐  │
+│  │ ☐  Name / Title      │ Secondary  │ Status  │ Updated  │     ⋮          │  │
+│  ├────────────────────────────────────────────────────────────────────────  │  │
+│  │ ☐  Primary name      │ details    │ [badge] │ 2h ago   │     ⋮ menu     │  │
+│  └──────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                │
+│  view === "grid":  AdminViewCards (grid-cols-2 sm:grid-cols-3 lg:grid-cols-4)  │
+│  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐               │
+│  │ ☐  [flags]       │ │ ☐  [flags]       │ │ ☐  [flags]       │               │
+│  │  Primary name    │ │  Primary name    │ │  Primary name    │               │
+│  │  secondary text  │ │  secondary text  │ │  secondary text  │               │
+│  │  [Status] 2h ago │ │  [Status] 2h ago │ │  [Status] 2h ago │               │
+│  └──────────────────┘ └──────────────────┘ └──────────────────┘               │
+│                                                                                │
+│  view === "list":  AdminViewCards (divide-y divide-zinc-100)                   │
+│  ┌──────────────────────────────────────────────────────────────┐              │
+│  │  ☐  Primary name        [flags] secondary text  [Status] 2h  │             │
+│  ├──────────────────────────────────────────────────────────────┤              │
+│  │  ☐  Primary name        [flags] secondary text  [Status] 2h  │             │
+│  └──────────────────────────────────────────────────────────────┘              │
+│                                                                                │
+│  Loading: skeletons for active view mode (5 rows table / 8 cards grid/list)   │
+│  Empty:   "No {resource} found"                                                │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+AdminViewCards flag badges (appkit/src/features/admin/components/AdminViewCards.tsx):
+  [Featured]  amber-100/amber-800   — item.featured
+  [Promoted]  violet-100/violet-800 — item.isPromoted
+  [On Sale]   rose-100/rose-700     — item.isOnSale
+  [Sold]      zinc-200/zinc-600     — item.isSold
+  Checkboxes use data-checkbox attr to prevent row-click propagation.
 
 Filter drawer (fixed left overlay, z-50, w-80):
 ┌──────────────────────────────────────────────────┐
@@ -329,31 +377,121 @@ Filter drawer (fixed left overlay, z-50, w-80):
   Clear all = clears pendingFilters ONLY (no URL touch)
   ✕ = closes drawer, discards pending changes
 
-Row action menu (⋮):
-  [Edit]           → window.location.href = /admin/{resource}/{id}/edit
+Row action menu (⋮) — table view only:
+  [Edit]           → opens SideDrawer or navigates to /admin/{resource}/{id}/edit
   [View]           → opens SideDrawer or navigates
   [Approve]        → PATCH mutation + queryClient.invalidateQueries
   [Delete]         → opens ConfirmDeleteModal (variant=destructive)
   [Mark paid]      → opens mark-paid Modal (transactionId input)
   [Unsubscribe]    → opens ConfirmDeleteModal (variant=warning)
   [Cancel bid]     → opens ConfirmDeleteModal (variant=warning), disabled when already cancelled
+  Grid/list views: row click = onRowClick (opens editor panel or navigates)
 
 Mutations — rendered as React.Fragment siblings AFTER <div className="min-h-screen">:
   <>
-    <div className="min-h-screen">…toolbar + table…</div>
+    <div className="min-h-screen">…toolbar + bulkbar + table/cards…</div>
     <ConfirmDeleteModal isOpen={deleteOpen} … />
     <Modal isOpen={markPaidOpen} … />
+    <SideDrawer isOpen={isCreateOpen || isEditOpen} … />
   </>
 
 State architecture:
   useUrlTable({ defaults })    → URL-backed: q, sort, page, all FILTER_KEYS
+  useState<"grid"|"list"|"table">("table")  → local view mode (not URL-backed)
   pendingFilters               → local React state; synced from URL on drawer open; committed on Apply
+  useBulkSelection({ items: rows, keyExtractor: r => r.id })
+    → selectedIds, selectedIdSet, selectedCount, toggle, setSelectedIds, clearSelection
   useAdminListingData(…)       → rows, total, isLoading, errorMessage
   (mutations)                  → useMutation + queryClient.invalidateQueries on success
 
 Views with no filter drawer (sort-only):
   AdminWishlistsView, AdminReturnRequestsView, AdminStoreAddressesView
   (no openFilters / filterOpen / pendingFilters — ListingToolbar has no onFiltersClick)
+
+BulkActionBar vs BulkActionsBar (old):
+  OLD BulkActionsBar: fixed-position bottom bar, slide-up CSS, multiple discrete buttons
+  NEW BulkActionBar:  inline component, renders null when selectedCount=0,
+                      dropdown picker + single Apply button, BulkActionItem.id field
+```
+
+---
+
+## Shared > AdminViewCards (grid/list renderer) ✅
+
+```
+Component: appkit/src/features/admin/components/AdminViewCards.tsx
+Used by: all Admin*View + Seller*View in grid and list modes (not table mode)
+Row type: AdminListingScaffoldRow { id, primary, secondary, status, updatedAt,
+                                    featured?, isPromoted?, isOnSale?, isSold? }
+
+Grid mode (view="grid") — grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4:
+┌──────────────────────┐
+│  ☐    [Featured] [🏷]│  ← checkbox (top-left), flag badges (top-right)
+│                      │
+│  Primary name        │
+│  secondary text      │
+│  [Status] · 2h ago   │
+└──────────────────────┘
+  Checkbox: opacity-0 on hover shows; always visible when checked
+  data-checkbox attr on wrapper stops click propagation to row
+
+List mode (view="list") — divide-y divide-zinc-100 dark:divide-slate-700:
+┌─────────────────────────────────────────────────────────────┐
+│  ☐  Primary name  [Featured][🏷]  secondary text            │
+│                                   [Status pill]  2h ago     │
+└─────────────────────────────────────────────────────────────┘
+
+Flag badges:
+  [Featured]  bg-amber-100 text-amber-800  — item.featured === true
+  [Promoted]  bg-violet-100 text-violet-800 — item.isPromoted === true
+  [On Sale]   bg-rose-100 text-rose-700    — item.isOnSale === true
+  [Sold]      bg-zinc-200 text-zinc-600    — item.isSold === true
+
+Loading state: 8 skeleton cards (grid) / 5 skeleton rows (list)
+Empty state: centered "No {emptyLabel}" text
+
+Props:
+  rows: AdminListingScaffoldRow[]
+  view: "grid" | "list"
+  isLoading?: boolean
+  emptyLabel?: string
+  onRowClick?: (row) => void
+  selectedIdSet?: Set<string>
+  onToggleSelect?: (id: string) => void
+```
+
+---
+
+## Shared > BulkActionBar ✅
+
+```
+Component: appkit/src/ui/components/BulkActionBar.tsx
+Used by: ALL listing views — public (products/auctions/pre-orders/stores) + admin + seller
+
+Renders null when selectedCount === 0 (no visible DOM element).
+Appears inline below the ListingToolbar when items are selected.
+
+Layout:
+┌────────────────────────────────────────────────────────────┐
+│  3 selected  [Action label ▾]  [Apply]  [✕ Clear]          │
+└────────────────────────────────────────────────────────────┘
+  "N selected" — count chip
+  [Action ▾]   — dropdown picker for multi-action views; hidden when single action
+  [Apply]      — executes selectedAction.onClick()
+  [✕ Clear]    — calls onClearSelection()
+
+Props:
+  selectedCount: number
+  onClearSelection: () => void
+  actions: BulkActionItem[]
+    BulkActionItem { id: string; label: string; variant?: "primary"|"secondary"|"danger";
+                     icon?; onClick: () => void; disabled?: boolean; loading?: boolean }
+
+Difference from old BulkActionsBar (removed):
+  OLD: fixed-position bottom bar, slide-up translate-y CSS animation, z-modal,
+       multiple discrete buttons visible at once, required stable key field
+  NEW: inline (in document flow, no fixed positioning), renders null when empty,
+       dropdown + single Apply button, uses id field (not key)
 ```
 
 ---
@@ -588,8 +726,15 @@ both set?    short wins, long is ignored
 
 API routes (server-side, take a URL)
   /api/products                       — buildFilters(url, std.filters)
+                                        SAFE_PRODUCT_FILTER_FIELDS (S-filter-sieve-audit):
+                                          added "shippingPaidBy" (freeShipping→shippingPaidBy==seller)
+                                          added "prizeRevealStatus" (now server-side)
   /api/pre-orders                     — std.{filters,sorts,page,pageSize}
   /api/stores                         — std.{filters,sorts,page,pageSize,q}
+                                        SAFE_STORE_FILTER_FIELDS (S-filter-sieve-audit):
+                                          added "isFeatured", "averageRating", "stats.totalProducts"
+                                        Sort key translation: itemsSold→stats.itemsSold,
+                                          averageRating→stats.averageRating (nested Firestore paths)
   /api/stores/[slug]/products         — std.{filters,sorts,page,pageSize}
   /api/stores/[slug]/auctions         — std.{filters,sorts,page,pageSize}
 
@@ -5031,7 +5176,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Products Listing ✅ *(VD13 updated 2026-05-15)*
+## Public > Products Listing ✅ *(S-filter-sieve-audit updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5055,6 +5200,12 @@ API key: integrations.googlePlacesApiKey in siteSettings
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
+> **S-filter-sieve-audit (2026-05-15) — filter/sort key corrections:**
+> • `freeShipping` URL param → `shippingPaidBy==seller` Sieve clause (not `freeShipping==true` — no such field).
+> • Sort option `"-views"` corrected to `"-viewCount"` (actual `ProductDocument` field name).
+> • `"storeId"` is the correct filter key (was incorrectly `"seller"` in public FILTER_KEYS).
+> • `"shippingPaidBy"` and `"prizeRevealStatus"` added to `SAFE_PRODUCT_FILTER_FIELDS`.
+>
 > **VD13 — Availability signal (2026-05-15):**
 > "Show sold" toggle OFF (default) → API param `inStock=true` → server clause
 > `stockQuantity>0`. Uses the required `stockQuantity` field (always present) rather
@@ -5067,7 +5218,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Auctions Listing ✅ *(VD13 updated 2026-05-15)*
+## Public > Auctions Listing ✅ *(S-filter-sieve-audit updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5088,11 +5239,15 @@ API key: integrations.googlePlacesApiKey in siteSettings
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
+> **S-filter-sieve-audit (2026-05-15) — auctions filter key fix:**
+> Stale `"condition"` key removed from `AuctionsIndexListing.FILTER_KEYS` — it was never
+> shown in `AuctionFilters` UI but was silently appended to the URL on filter apply.
+> `FILTER_KEYS` now: `["category", "brand", "minBid", "maxBid", "storeId", "dateFrom", "dateTo"]`.
+>
 > **VD13 — Availability signal (2026-05-15):**
 > "Show ended" toggle OFF (default) → API param `dateFrom=<now ISO>` → server clause
 > `auctionEndDate>=<now>`. Only live auctions are shown by default.
 > "Show ended" toggle ON → `dateFrom` omitted → all auctions including ended ones.
-> This was already the correct approach before VD13 (no change needed here — documented for completeness).
 
 ---
 
@@ -5126,7 +5281,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Prize Draws Listing ✅ *(VD13 added 2026-05-15)*
+## Public > Prize Draws Listing ✅ *(S-filter-sieve-audit updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5147,11 +5302,14 @@ API key: integrations.googlePlacesApiKey in siteSettings
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
-> **VD13 — Availability signal (2026-05-15):**
-> No server-side `status` filter is sent (sellers don't reliably manage it).
-> "Show closed" toggle OFF (default) → client-side post-fetch filter excludes items
-> where `prizeRevealStatus === "closed"`. When `prizeRevealStatus` URL param is set
-> (filter drawer), that exact value is used instead (takes priority over showClosed).
+> **S-filter-sieve-audit (2026-05-15) — prizeRevealStatus now server-side:**
+> `prizeRevealStatus` filter is now sent as a server-side URL param → `ProductListParams.prizeRevealStatus`
+> → `useProducts` hook → `/api/products` → `prizeRevealStatus==${value}` Sieve clause.
+> `"prizeRevealStatus"` is in `SAFE_PRODUCT_FILTER_FIELDS`.
+>
+> "Show closed" toggle OFF (default, no URL param set) → client-side post-fetch filter
+> excludes items where `prizeRevealStatus === "closed"`. When `prizeRevealStatus` URL
+> param is set (filter drawer), server returns only those items; client filter is bypassed.
 > "Show closed" toggle ON → all prize draws shown including closed reveals.
 > `listingType: "prize-draw"` is always sent.
 
