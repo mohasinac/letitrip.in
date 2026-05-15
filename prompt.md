@@ -150,16 +150,6 @@ After deploy: smoke-test the production URL for all touched routes.
 - Full audit of all filter drawers, sort options, search keys, and Sieve safe-lists.
 - Fixed 8 bugs + 3 pre-existing TS errors. `freeShipping→shippingPaidBy==seller`, `prizeRevealStatus` server-side, store sort paths translated, `"-views"→"-viewCount"`.
 
-### ✅ LAST COMPLETED — S-admin-seed + product-cards: Admin seed data + product card badges + bundle detail section (2026-05-15)
-
-- Admin buyer persona: 4 orders, wishlist (4 items), cart (2 items), 2 addresses fixed/added in seed data.
-- Bundle reverse refs: `partOfBundleIds`/`partOfBundleTitles` added to 21 products across 10 bundle groups.
-- 2 new admin-curated grouped listings (`group-letitrip-figure-display-set`, `group-letitrip-funko-anime-starter`).
-- ProductGrid: added "In Set"/"Set Parent" (indigo) + "Has Variants" (sky-blue) badges + category/brand chips with SVG folder/tag icons.
-- ProductDetailView: `renderBundleSection` slot added; ProductDetailPageView renders teal "Part of bundle" card below tabs.
-- Fixed `orders/schemas/firestore.ts` curly-quote corruption (introduced by Edit tool). Fixed `package.json` back to `file:./appkit` local link. Rebuilt appkit dist. audit-code-quality baseline bumped 432→434.
-- `npm run check` exits 0. appkit v2.7.17.
-
 ### ✅ LAST COMPLETED — S-fees-rename: Fee schema rename + GST-on-fee + admin UI consolidation (2026-05-15)
 
 - `razorpayFeePercent` → `platformFeePercent` (our cut %, not the gateway fee).
@@ -174,6 +164,16 @@ After deploy: smoke-test the production URL for all touched routes.
 - `bundle.actions.ts`: fixed `ROUTES.PUBLIC.CHECKOUT` → `ROUTES.USER.CHECKOUT` (pre-existing TS error).
 - Seed: `platformFeePercent=5, gstPercent=18, minimumTransactionFee=0, gatewayFeePercent=2, payoutHoldDays=2, minPayoutAmount=100, featuredSlotFee=999, promotedSlotFee=499`.
 - `npm run check` exits 0. appkit v2.7.18.
+
+### ✅ LAST COMPLETED — S-cart-tabs: Cart tab navigation + code quality (2026-05-15)
+
+- `CartRouteClient.tsx` refactored: cart items split into "Cart" (standard+pre-order+oos) and "Won Auctions" buckets via `activeTab` state.
+- `AuctionsTabItems` + `CartTabItems` extracted as sub-components to eliminate deep nesting (DEEP_NESTING violation fixed).
+- `CART_TABS` constant (module-level tab config array) + `CartTab` union type + `LISTING_TYPE_SEARCH_KEYWORDS` record extracted from inline.
+- `tabCounts: Record<CartTab, number>` replaces inline per-tab count expressions.
+- Stale variable refs fixed; `prize-draw` tab removed (raffles bypass cart entirely as immediate buy-nows).
+- audit-code-quality baseline: 435 → 434 (1 improved). audit-html-wrappers: 302 → 301 (1 improved).
+- `npm run check` exits 0.
 
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
