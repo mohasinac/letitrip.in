@@ -128,16 +128,16 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S11: Quality baseline — audit 8→0, TS9 hex sweep, config factories (2026-05-14)
+### ✅ LAST COMPLETED — S-prod-firebase: Vercel Lambda MODULE_NOT_FOUND fix (2026-05-15)
 
-- **Config factories** — `tailwind.config.js` wrapped with `defineTailwindConfig()`; `eslint.config.mjs` spread with `defineEslintConfig()`; `next.config.js` already used `defineNextConfig()`. `audit-config-factories: 0`. X-cli-close: no-op ✅.
-- **TS9 hex sweep** — `audit-hex-tokens.mjs` now loads known tokens from `tokens.css`; auto-fixed 14 Category A var() fallbacks; manually fixed DevToolbar.tsx (25 hex → CSS vars) and sublisting-categories page (2 undefined-token fallbacks → Tailwind classes). `audit-hex-tokens: 0 violations`.
-- **X-audit-baseline** — robots/manifest/sitemap/og extracted to `appkit/src/_internal/server/features/seo/`; 4 consumer files reduced to 6–13 line thin shims; appkit rebuilt to v2.7.4. `audit-ssr-in-appkit: 0 violations`.
-- `npm run check` exits 0. All 5 consumer audits + both tsc + eslint pass.
+- Root cause: Vercel's file tracer misses dynamic `require()` calls in firebase-admin dep chain; packages present locally absent from Lambda bundle.
+- Cascade: `is-stream` (v2.7.5) → `readable-stream` (v2.7.6) → `event-target-shim` + 7 more (v2.7.9). Each blocked all Firebase Admin API routes.
+- Key lesson: never use `@scope/**` broad globs (causes 45min deploy timeout). Use `scripts/trace-firebase-full.mjs` to find exact packages. Added Pattern #6 to CLAUDE.md + bug catalog entry.
+- appkit v2.7.9. `npm run check` exits 0. Pending deploy (`vercel --prod`) to confirm smoke test passes.
 
-### ✅ Previous — S-bugfix: next-intl context errors + toolbar URL + Firebase dual-instance + audit scripts (2026-05-14)
+### ✅ Previous — S11: Quality baseline — audit 8→0, TS9 hex sweep, config factories (2026-05-14)
 
-- `"use client"` sweep, double router.replace fix, Firebase dual-module fix, audit-use-client + audit-double-navigation scripts, CLAUDE.md patterns 12–14. appkit v2.7.3.
+- Config factories, TS9 hex sweep, X-audit-baseline (seo/ layer), appkit v2.7.4. `audit-ssr-in-appkit: 0 violations`.
 
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
