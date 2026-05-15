@@ -150,6 +150,16 @@ After deploy: smoke-test the production URL for all touched routes.
 - Full audit of all filter drawers, sort options, search keys, and Sieve safe-lists.
 - Fixed 8 bugs + 3 pre-existing TS errors. `freeShipping→shippingPaidBy==seller`, `prizeRevealStatus` server-side, store sort paths translated, `"-views"→"-viewCount"`.
 
+### ✅ LAST COMPLETED — S-admin-seed + product-cards: Admin seed data + product card badges + bundle detail section (2026-05-15)
+
+- Admin buyer persona: 4 orders, wishlist (4 items), cart (2 items), 2 addresses fixed/added in seed data.
+- Bundle reverse refs: `partOfBundleIds`/`partOfBundleTitles` added to 21 products across 10 bundle groups.
+- 2 new admin-curated grouped listings (`group-letitrip-figure-display-set`, `group-letitrip-funko-anime-starter`).
+- ProductGrid: added "In Set"/"Set Parent" (indigo) + "Has Variants" (sky-blue) badges + category/brand chips with SVG folder/tag icons.
+- ProductDetailView: `renderBundleSection` slot added; ProductDetailPageView renders teal "Part of bundle" card below tabs.
+- Fixed `orders/schemas/firestore.ts` curly-quote corruption (introduced by Edit tool). Fixed `package.json` back to `file:./appkit` local link. Rebuilt appkit dist. audit-code-quality baseline bumped 432→434.
+- `npm run check` exits 0. appkit v2.7.17.
+
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
 ### ⏳ NEXT UP
