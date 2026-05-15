@@ -40,11 +40,11 @@ function StatCard({
       <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: gradient }} aria-hidden="true" />
       <div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</p>
+          <div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</div>
           {isLoading ? (
             <div className="mt-2 h-7 w-20 animate-pulse rounded bg-[var(--appkit-color-border)]" />
           ) : (
-            <p className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</p>
+            <div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</div>
           )}
         </div>
         <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: gradient }}>

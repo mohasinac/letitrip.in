@@ -37,9 +37,9 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0">
-      <div>
-        <p className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</p>
-        <p className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</p>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</div>
+        <div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</div>
       </div>
       <button
         role="switch"
