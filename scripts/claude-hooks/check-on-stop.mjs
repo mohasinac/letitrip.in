@@ -15,6 +15,8 @@
  *   - scripts/audit-sieve-constants.mjs          (raw sort/filter strings — use sortBy()/sieveFilter())
  *   - appkit/scripts/audit-repository-fields.mjs (deprecated J13 Sieve fields + wrong stats.* sort paths)
  *   - scripts/audit-suspense-boundaries.mjs      (missing <Suspense> on RSC listing page shims)
+ *   - scripts/audit-auth-gates.mjs               (pushWishlistOp/checkout without useAuthGate)
+ *   - scripts/audit-inline-actions.mjs           (inline action IDs/labels duplicating registry)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -126,6 +128,18 @@ const checks = [
     label: "audit-suspense-boundaries",
     cmd: "node",
     args: ["scripts/audit-suspense-boundaries.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-auth-gates",
+    cmd: "node",
+    args: ["scripts/audit-auth-gates.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-inline-actions",
+    cmd: "node",
+    args: ["scripts/audit-inline-actions.mjs"],
     cwd: ROOT,
   },
 ];
