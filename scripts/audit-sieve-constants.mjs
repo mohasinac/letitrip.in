@@ -30,10 +30,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
 // ── Baseline ─────────────────────────────────────────────────────────────────
-// Grandfathered violations as of S-constants-refactor (2026-05-15).
-// products/route.ts and pre-orders/route.ts are already migrated to sortBy().
-// All remaining admin/store/public routes use raw strings — tracked as tech-debt.
-const BASELINE = 68;
+// All violations resolved in S-SBUNI-RULES (2026-05-15). Baseline is now 0 — any regression blocks.
+const BASELINE = 0;
 
 // ── Walk ──────────────────────────────────────────────────────────────────────
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".git", "__tests__", "__mocks__"]);

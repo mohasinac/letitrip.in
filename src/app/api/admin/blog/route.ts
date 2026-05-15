@@ -113,7 +113,7 @@ export const GET = withProviders(createRouteHandler({
         page: "1",
         pageSize: "1",
       }),
-      blogRepository.listAll({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      blogRepository.listAll({ sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"), page: "1", pageSize: "1" }),
       blogRepository.listAll({
         filters,
         sorts,

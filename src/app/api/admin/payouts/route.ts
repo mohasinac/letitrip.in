@@ -63,7 +63,7 @@ export const GET = withProviders(createRouteHandler({
       completedResult,
       failedResult,
     ] = await Promise.all([
-      payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      payoutRepository.list({ sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"), page: "1", pageSize: "1" }),
       payoutRepository.list({
         filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.PENDING),
         sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),

@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
+import { createRouteHandler, successResponse, ApiErrors, sortBy, sieveFilter, sieveAnd, SIEVE_OP, BID_FIELDS, PRODUCT_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
 import { bidRepository, productRepository, storeRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createRouteHandler({
@@ -21,8 +21,8 @@ export const GET = withProviders(createRouteHandler({
         return ApiErrors.forbidden("Product does not belong to your store");
       }
       const result = await bidRepository.list({
-        filters: `productId==${productId}`,
-        sorts: "-bidDate",
+        filters: sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productId),
+        sorts: sortBy(BID_FIELDS.BID_DATE),
         page,
         pageSize,
       });
@@ -31,7 +31,7 @@ export const GET = withProviders(createRouteHandler({
 
     // Get store's auction product IDs (up to 30 for Firestore `in` query limit)
     const auctionResult = await productRepository.list(
-      { filters: `storeId==${store.id},listingType==auction`, sorts: "-createdAt", page: 1, pageSize: 30 },
+      { filters: sieveAnd(sieveFilter(PRODUCT_FIELDS.STORE_ID, SIEVE_OP.EQ, store.id), sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, "auction")), sorts: sortBy(COMMON_FIELDS.CREATED_AT), page: 1, pageSize: 30 },
       { storeId: store.id },
     );
 
@@ -47,7 +47,7 @@ export const GET = withProviders(createRouteHandler({
 
     const result = await bidRepository.list({
       filters: productIds.map((id) => `productId==${id}`).join("|"),
-      sorts: "-bidDate",
+      sorts: sortBy(BID_FIELDS.BID_DATE),
       page,
       pageSize,
     });

@@ -31,7 +31,7 @@ export const GET = withProviders(createRouteHandler({
     const sorts = url.searchParams.get("sorts") ?? DEFAULT_SORTS;
 
     const result = await categoriesRepository.list({
-      filters: sieveFilter(CATEGORY_FIELDS.CATEGORY_TYPE, SIEVE_OP.EQ, CATEGORY_FIELDS.CATEGORY_TYPE_VALUES.SUBLISTING),
+      filters: sieveFilter("categoryType", SIEVE_OP.EQ, "sublisting"),
       sorts,
       page: String(page),
       pageSize: String(pageSize),

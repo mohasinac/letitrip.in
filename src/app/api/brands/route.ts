@@ -27,7 +27,7 @@ export const GET = withProviders(
       }
 
       const result = await categoriesRepository.list({
-        filters: sieveFilter(CATEGORY_FIELDS.CATEGORY_TYPE, SIEVE_OP.EQ, CATEGORY_FIELDS.CATEGORY_TYPE_VALUES.BRAND),
+        filters: sieveFilter("categoryType", SIEVE_OP.EQ, "brand"),
         sorts,
         page: String(page),
         pageSize: String(pageSize),

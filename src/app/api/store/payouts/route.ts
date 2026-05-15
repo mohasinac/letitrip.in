@@ -15,7 +15,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit";
-import { buildSieveFilters } from "@mohasinac/appkit";
+import { buildSieveFilters, sortBy, sieveAnd, sieveFilter, SIEVE_OP, COMMON_FIELDS, ORDER_FIELDS } from "@mohasinac/appkit";
 import { orderRepository, payoutRepository } from "@mohasinac/appkit";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@mohasinac/appkit";
 import { PayoutStatusValues } from "@mohasinac/appkit";
@@ -25,8 +25,8 @@ import { ROLES_STORE_WRITE } from "@/constants/api-roles";
 
 async function computeSellerEarnings(storeId: string) {
   const eligibleOrdersResult = await orderRepository.listAll({
-    filters: `storeId==${storeId},status==delivered,payoutStatus==eligible`,
-    sorts: "-orderDate",
+    filters: sieveAnd(sieveFilter(ORDER_FIELDS.STORE_ID, SIEVE_OP.EQ, storeId), sieveFilter(ORDER_FIELDS.STATUS, SIEVE_OP.EQ, "delivered"), sieveFilter(ORDER_FIELDS.PAYOUT_STATUS, SIEVE_OP.EQ, "eligible")),
+    sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
     page: "1",
     pageSize: "5000",
   });
@@ -73,7 +73,7 @@ export const GET = withProviders(createRouteHandler({
       max: 200,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || sortBy(COMMON_FIELDS.CREATED_AT);
     const storeFilter = `storeId==${storeId}`;
     const effectiveFilters =
       buildSieveFilters(["", storeFilter], ["", filters]) || storeFilter;

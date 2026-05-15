@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { reviewRepository, createReview, successResponse, errorResponse, sieveFilter, SIEVE_OP, REVIEW_FIELDS } from "@mohasinac/appkit";
+import { reviewRepository, createReview, successResponse, errorResponse, sieveFilter, SIEVE_OP, REVIEW_FIELDS, sortBy } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
@@ -74,7 +74,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     const latest = param(url, "latest") === "true";
     const page = numParam(url, "page", 1);
     const pageSize = numParam(url, "pageSize", latest ? 12 : 10);
-    const sorts = param(url, "sorts") ?? param(url, "sort") ?? "-createdAt";
+    const sorts = param(url, "sorts") ?? param(url, "sort") ?? sortBy(REVIEW_FIELDS.CREATED_AT);
 
     if (featured) {
       const featuredReviews = await reviewRepository.findFeatured(

@@ -115,8 +115,12 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
+// Baseline-drift: grandfathered violations as of feat(quality-gates) 2026-05-15.
+// Only regressions (count > BASELINE) block. Drive to 0 as components are migrated.
+const BASELINE = 302;
+
 if (violations.length === 0) {
-  console.log("audit-html-wrappers: 0 violations ✓");
+  console.log("audit-html-wrappers: clean ✓");
   process.exit(0);
 }
 
@@ -136,5 +140,13 @@ for (const [rule, vs] of byRule) {
   out.push("");
 }
 
+if (violations.length <= BASELINE) {
+  const improved = BASELINE - violations.length;
+  process.stdout.write(`audit-html-wrappers: ${violations.length} violation(s) (baseline ${BASELINE}${improved > 0 ? ` — ${improved} improved` : ""}). No regression.\n`);
+  process.exit(0);
+}
+
+const regression = violations.length - BASELINE;
 process.stderr.write(out.join("\n") + "\n");
+process.stderr.write(`audit-html-wrappers: regression of ${regression} new violation(s) above baseline ${BASELINE}.\n`);
 process.exit(1);

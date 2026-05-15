@@ -24,7 +24,7 @@ export const GET = withProviders(
     permission: "admin:payouts:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const payouts = await payoutRepository.list({ filters: sieveFilter(PAYOUT_FIELDS.ID, SIEVE_OP.EQ, id), page: "1", pageSize: "1" });
+      const payouts = await payoutRepository.list({ filters: sieveFilter("id", SIEVE_OP.EQ, id), page: "1", pageSize: "1" });
       const payout = payouts.items[0];
       if (!payout) return errorResponse("Payout not found", 404);
       return successResponse(payout);
