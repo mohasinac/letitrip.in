@@ -17,6 +17,7 @@
  *   - scripts/audit-suspense-boundaries.mjs      (missing <Suspense> on RSC listing page shims)
  *   - scripts/audit-auth-gates.mjs               (pushWishlistOp/checkout without useAuthGate)
  *   - scripts/audit-inline-actions.mjs           (inline action IDs/labels duplicating registry)
+ *   - appkit/scripts/audit-query-provider.mjs    (component both provides QueryClientProvider and calls react-query hooks)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -141,6 +142,12 @@ const checks = [
     cmd: "node",
     args: ["scripts/audit-inline-actions.mjs"],
     cwd: ROOT,
+  },
+  {
+    label: "audit-query-provider",
+    cmd: "node",
+    args: ["scripts/audit-query-provider.mjs"],
+    cwd: join(ROOT, "appkit"),
   },
 ];
 
