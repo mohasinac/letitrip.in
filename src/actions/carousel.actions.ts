@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Carousel Server Actions ï¿½ thin entrypoint (admin only)

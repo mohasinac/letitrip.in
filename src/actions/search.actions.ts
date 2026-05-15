@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Search Server Action â€” thin wrapper

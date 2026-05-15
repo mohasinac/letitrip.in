@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * FAQ Server Actions -- thin entrypoints.

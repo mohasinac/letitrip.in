@@ -11,6 +11,7 @@
  *   - appkit/scripts/audit-double-navigation.mjs (table.set + table.setPage race condition)
  *   - scripts/audit-html-wrappers.mjs            (raw HTML instead of appkit primitives + bare divs)
  *   - scripts/audit-code-quality.mjs             (long if-else, deep nesting, large fns, repeated strings)
+ *   - scripts/audit-bom.mjs                      (UTF-8 BOM characters from PowerShell encoding)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -97,6 +98,12 @@ const checks = [
     label: "audit-code-quality",
     cmd: "node",
     args: ["scripts/audit-code-quality.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-bom",
+    cmd: "node",
+    args: ["scripts/audit-bom.mjs"],
     cwd: ROOT,
   },
 ];

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { PolicyPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 

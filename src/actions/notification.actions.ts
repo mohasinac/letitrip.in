@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Notification Server Actions â€” thin wrapper

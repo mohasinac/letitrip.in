@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { AboutView } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";

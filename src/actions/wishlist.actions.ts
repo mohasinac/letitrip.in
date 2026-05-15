@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Wishlist Server Actions â€” thin entrypoint

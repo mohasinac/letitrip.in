@@ -1,4 +1,4 @@
-﻿import { withProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Store (Seller) Analytics API Route â€” thin proxy
  *

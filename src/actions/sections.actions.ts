@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Homepage Sections Server Actions -- thin entrypoints.

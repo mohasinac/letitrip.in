@@ -1,4 +1,4 @@
-﻿import { AdminAdEditorView } from "@mohasinac/appkit";
+import { AdminAdEditorView } from "@mohasinac/appkit";
 
 export default function Page() {
   return <AdminAdEditorView />;

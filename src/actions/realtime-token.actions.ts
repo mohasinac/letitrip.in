@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Realtime Token Server Action ï¿½ thin entrypoint

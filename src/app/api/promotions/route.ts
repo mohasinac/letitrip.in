@@ -1,4 +1,4 @@
-﻿import { withProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Promotions API Route â€” thin proxy
  *

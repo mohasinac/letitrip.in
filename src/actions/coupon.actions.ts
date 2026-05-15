@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Coupon Server Actions â€” thin entrypoint

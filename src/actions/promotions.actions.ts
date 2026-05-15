@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Promotions Server Action â€” thin wrapper

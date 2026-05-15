@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 /**
  * Product Server Actions -- thin entrypoints.
