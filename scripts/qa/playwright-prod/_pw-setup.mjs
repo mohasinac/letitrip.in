@@ -104,6 +104,63 @@ export function localizedUrl(path = "/") {
   return `${BASE_URL}/${LOCALE}${clean === "/" ? "" : clean}`;
 }
 
+/**
+ * Navigate to a localized URL and wait for recognizable content to attach.
+ * Returns { status, finalUrl }.
+ */
+export async function gotoAndWait(page, url, { timeout = 20000 } = {}) {
+  const res = await page.goto(url, { waitUntil: "domcontentloaded", timeout }).catch(() => null);
+  await page
+    .locator("h1, h2, [data-section], [data-testid], .appkit-card, table, form")
+    .first()
+    .waitFor({ state: "attached", timeout: 8000 })
+    .catch(() => {});
+  return { status: res?.status() ?? 0, finalUrl: page.url() };
+}
+
+/**
+ * Push a standard layout-shell result into the results array.
+ */
+export function assertShell(rec, path, { status, finalUrl, mainCount, contentCount }) {
+  const redirected = /\/auth\/login/.test(finalUrl);
+  rec(
+    `${path}: layout shell`,
+    status < 400 && mainCount > 0 && contentCount > 0 && !redirected,
+    `status=${status} url=${finalUrl} main=${mainCount} content=${contentCount}`,
+  );
+}
+
+/**
+ * Fetch the first item id from a paginated API endpoint.
+ * apiPath example: "/api/admin/products"
+ * filter: optional predicate on item objects.
+ */
+export async function fetchFirstId(baseUrl, apiPath, { filter, cookieHeader } = {}) {
+  try {
+    const headers = cookieHeader ? { Cookie: cookieHeader } : {};
+    const r = await fetch(`${baseUrl}${apiPath}?pageSize=5`, { headers });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const items = j?.data?.items ?? j?.data ?? [];
+    if (filter) return items.find(filter)?.id ?? null;
+    return items[0]?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extract a cookie header string from a Playwright browser context (for use in fetch()).
+ */
+export async function getCookieHeader(ctx, baseUrl) {
+  try {
+    const cookies = await ctx.cookies(baseUrl);
+    return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+  } catch {
+    return "";
+  }
+}
+
 /** Wrap a page operation to capture console errors and net failures. */
 export async function withErrorCollector(page, fn) {
   const consoleErrors = [];
