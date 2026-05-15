@@ -133,15 +133,15 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-auth-gate-ui: Admin settings pages + cart CSS polish (2026-05-15)
+### ✅ LAST COMPLETED — S-auth-gate-ui: Admin settings pages + cart CSS polish + permission fix (2026-05-15)
 
-- Cart: extracted `EMPTY_STATE_CLASS`, `STORE_CARD_CLASS`, `ERROR_TEXT_CLASS` constants; replaced all `text-red-600 dark:text-red-400` with `ERROR_TEXT_CLASS`; removed unused `lir/no-raw-media-elements` from eslint-disable; OOS store card uses `\`${STORE_CARD_CLASS} opacity-60\``.
-- Admin settings UI: `src/app/[locale]/admin/settings/actions/page.tsx` (Action Permissions) + `navigation/page.tsx` (Nav Permissions) — wired to `ActionPermissionsManager` / `NavPermissionsManager` from appkit; guarded with `makeAdminSectionLayout("admin:site:write")`.
+- Cart: extracted `EMPTY_STATE_CLASS`, `STORE_CARD_CLASS`, `ERROR_TEXT_CLASS` constants; replaced all `text-red-600 dark:text-red-400` with `ERROR_TEXT_CLASS`.
+- Admin settings UI: `src/app/[locale]/admin/settings/actions/page.tsx` + `navigation/page.tsx` — `ActionPermissionsManager` / `NavPermissionsManager`; guarded with `makeAdminSectionLayout("admin:settings:write")`.
 - `src/actions/admin-settings.actions.ts` — `updateActionConfigAction` + `updateNavConfigAction` server actions.
-- `src/app/[locale]/layout.tsx` — `getDisabledRoutes()` middleware check; returns 404 for nav-disabled public routes (skips Tier-2 paths).
+- `src/app/[locale]/layout.tsx` — `getDisabledRoutes()` middleware check; returns 404 for nav-disabled public routes.
 - `src/constants/navigation.tsx` — "Action Permissions" + "Nav Permissions" added to Site section of admin nav.
-- appkit v2.7.23: `ActionPermissionsManager`, `NavPermissionsManager`, `NavPermissionsGroup` exported; `ROUTES.ADMIN.SETTINGS_ACTIONS` + `SETTINGS_NAVIGATION` added; package.json bumped to `^2.7.23`.
-- `npm run check` exits 0.
+- appkit v2.7.24: added `"admin:settings:write"` to `Permission` type + `site_manager` preset + route-permission map; `ActionPermissionsManager`, `NavPermissionsManager` exported; `ROUTES.ADMIN.SETTINGS_ACTIONS` + `SETTINGS_NAVIGATION` added.
+- `npm run check` exits 0; `next build` exits 0.
 
 ### ✅ Previous — S-auth-gate: useAuthGate + audit scripts (2026-05-15)
 
