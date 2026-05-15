@@ -1,7 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Fragment, useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -83,6 +84,7 @@ export default function LayoutShellClient({
   const locale = useLocale();
   const { user } = useSession();
   const { showToast } = useToast();
+  const [queryClient] = useState(() => new QueryClient());
   const [searchQuery, setSearchQuery] = useState("");
   const [scamModalDismissed, setScamModalDismissed] = useState(false);
 
@@ -221,7 +223,7 @@ export default function LayoutShellClient({
     Date.now() - new Date(user.createdAt).getTime() < THIRTY_DAYS_MS;
 
   return (
-    <Fragment>
+    <QueryClientProvider client={queryClient}>
       {themeStyle && <style>{themeStyle}</style>}
       <AdRuntimeInitializer />
       <AppLayoutShell
@@ -301,6 +303,6 @@ export default function LayoutShellClient({
       {children}
       </AppLayoutShell>
       <NavigationLoader />
-    </Fragment>
+    </QueryClientProvider>
   );
 }
