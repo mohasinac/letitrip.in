@@ -678,121 +678,147 @@ export function CartRouteClient() {
       labels={{ title: "Cart" }}
       isEmpty={isEmpty}
       isLoading={isLoading}
-      renderItems={(itemsLoading) => (
-        <Div className="space-y-6">
-          {/* Search filter */}
-          {!isEmpty && !itemsLoading && cartItems.length > 1 && (
-            <Input
-              type="search"
-              placeholder="Search by name, store, price or type (auction, raffle…)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-sm"
-            />
-          )}
-
-          {/* Select-all + bulk actions bar */}
-          {!isEmpty && !itemsLoading && (
-            <Div className="flex flex-wrap items-center gap-3">
-              {isAuthenticated && allItemIds.length > 1 && (
-                <Div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="cart-select-all"
-                    checked={isAllSelected}
-                    onChange={isAllSelected ? undefined : selectAll}
-                    onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
-                    className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
-                  />
-                  <label
-                    htmlFor="cart-select-all"
-                    className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300"
-                  >
-                    Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
-                  </label>
-                </Div>
-              )}
-              {effectiveSelected && effectiveSelected.size > 0 && (
-                <button
-                  type="button"
-                  onClick={() => { void handleRemoveSelectedItems(); }}
-                  disabled={isRemoving}
-                  className="text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50"
-                >
-                  {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => { void handleRemoveAll(); }}
-                disabled={isRemoving}
-                className="ml-auto text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50"
-              >
-                {isRemoving ? "Clearing…" : "Remove all"}
-              </button>
-            </Div>
-          )}
-
-          {itemsLoading ? (
-            <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
-          ) : normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0 ? (
-            <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-              No items match &ldquo;{searchQuery.trim()}&rdquo;
-            </Text>
-          ) : (
+      renderItems={(itemsLoading) => {
+        // Resolve tab items with early returns — avoids a multi-branch ternary chain.
+        const tabContent = (() => {
+          if (itemsLoading) {
+            return <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />;
+          }
+          if (activeTab === "auctions") {
+            if (auctionBucket.length === 0) {
+              return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No won auctions in your cart.</Text>;
+            }
+            if (normalizedQuery && filteredAuctions.length === 0) {
+              return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+            }
+            return (
+              <Div className="space-y-4">
+                {sellerGroupsAuctions.map((group) => (
+                  <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+                    <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={false} />
+                  </Div>
+                ))}
+              </Div>
+            );
+          }
+          // default: cart tab (standard + pre-order grouped by store)
+          if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
+            return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+          }
+          return (
             <>
-              {/* --- In-stock seller groups --- */}
               {sellerGroupsCart.map((group) => (
-                <SellerGroupSection
-                  key={group.sellerId}
-                  group={group}
-                  isAuthenticated={isAuthenticated}
-                  effectiveSelected={effectiveSelected}
-                  effectiveCoupons={effectiveCoupons}
-                  onToggleItem={toggleItem}
-                  onQtyChange={handleQtyChange}
-                  onRemove={handleRemove}
-                  onMoveToWishlist={handleMoveToWishlist}
-                  isOutOfStock={false}
-                />
+                <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+                  <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} effectiveCoupons={effectiveCoupons} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={false} />
+                </Div>
               ))}
-
-              {/* --- Unavailable items (sold/OOS/no-stock) — saved to wishlist on load --- */}
+              {cartBucket.length === 0 && oosItems.length === 0 && (
+                <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No standard products or pre-orders in your cart.</Text>
+              )}
               {oosItems.length > 0 && (
                 <Div>
                   <Div className="mb-3 flex items-center justify-between">
-                    <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">
-                      Unavailable ({oosItems.length})
-                    </Text>
-                    <Link
-                      href={String(ROUTES.USER.WISHLIST)}
-                      className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
-                    >
-                      View wishlist →
-                    </Link>
+                    <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">Unavailable ({oosItems.length})</Text>
+                    <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
                   </Div>
                   <Div className="space-y-3">
                     {sellerGroupsOos.map((group) => (
-                      <SellerGroupSection
-                        key={group.sellerId}
-                        group={group}
-                        isAuthenticated={isAuthenticated}
-                        effectiveSelected={null}
-                        effectiveCoupons={[]}
-                        onToggleItem={toggleItem}
-                        onQtyChange={handleQtyChange}
-                        onRemove={handleRemove}
-                        onMoveToWishlist={handleMoveToWishlist}
-                        isOutOfStock={true}
-                      />
+                      <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 opacity-60">
+                        <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={true} />
+                      </Div>
                     ))}
                   </Div>
                 </Div>
               )}
             </>
-          )}
-        </Div>
-      )}
+          );
+        })();
+
+        return (
+          <Div className="space-y-4">
+            {/* ── Tab bar ── */}
+            {!itemsLoading && (
+              <Div className="flex gap-1 rounded-xl bg-zinc-100 dark:bg-slate-800 p-1 text-sm">
+                {(
+                  [
+                    { key: "cart",     label: "Cart",         count: cartBucket.length + oosItems.length },
+                    { key: "auctions", label: "Won Auctions", count: auctionBucket.length },
+                  ] as { key: typeof activeTab; label: string; count: number }[]
+                ).map(({ key, label, count }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setActiveTab(key); setSearchQuery(""); }}
+                    className={[
+                      "flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors",
+                      activeTab === key
+                        ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm"
+                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200",
+                    ].join(" ")}
+                  >
+                    {label}
+                    {count > 0 && <span className="ml-1.5 text-xs opacity-60">({count})</span>}
+                  </button>
+                ))}
+              </Div>
+            )}
+
+            {/* ── Search + clear ── */}
+            {!isEmpty && !itemsLoading && cartItems.length > 1 && (
+              <Div className="relative">
+                <Input
+                  type="search"
+                  placeholder="Search by name, store, price or type (auction, raffle…)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-sm pr-8"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    aria-label="Clear search"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none"
+                  >
+                    ×
+                  </button>
+                )}
+              </Div>
+            )}
+
+            {/* ── Bulk actions (cart tab only) ── */}
+            {activeTab === "cart" && !isEmpty && !itemsLoading && (
+              <Div className="flex flex-wrap items-center gap-3">
+                {isAuthenticated && allItemIds.length > 1 && (
+                  <Div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="cart-select-all"
+                      checked={isAllSelected}
+                      onChange={isAllSelected ? undefined : selectAll}
+                      onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
+                      className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+                    />
+                    <label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
+                      Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
+                    </label>
+                  </Div>
+                )}
+                {effectiveSelected && effectiveSelected.size > 0 && (
+                  <button type="button" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className="text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50">
+                    {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
+                  </button>
+                )}
+                <button type="button" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className="ml-auto text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50">
+                  {isRemoving ? "Clearing…" : "Remove all"}
+                </button>
+              </Div>
+            )}
+
+            {tabContent}
+          </Div>
+        );
+      }}
       renderSummary={() => (
         <CartSummary
           labels={{ title: "Summary" }}
