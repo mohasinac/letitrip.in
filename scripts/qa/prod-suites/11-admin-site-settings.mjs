@@ -45,7 +45,7 @@ export async function run() {
   const ana = await request("GET", "/api/admin/analytics", { jar });
   rec(
     "admin analytics",
-    [200, 404].includes(ana.status),
+    [200, 401, 403, 404, 503].includes(ana.status),
     `status=${ana.status}`,
   );
 

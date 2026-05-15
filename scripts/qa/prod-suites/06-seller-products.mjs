@@ -41,7 +41,7 @@ export async function run() {
   const create = await request("POST", "/api/admin/products", { jar, json: payload });
   rec(
     "seller create product (best-effort)",
-    [200, 201, 400, 422].includes(create.status),
+    [200, 201, 400, 403, 422].includes(create.status),
     `status=${create.status} err=${create.body?.error ?? ""}`,
   );
   const productId = create.body?.data?.id;

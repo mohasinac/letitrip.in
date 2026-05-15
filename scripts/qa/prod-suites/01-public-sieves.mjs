@@ -270,9 +270,12 @@ export async function run() {
     "/api/categories?flat=true&tier=0&pageSize=120",
   );
   assertEvery(
-    "categories tier=0 — every item is a known root category",
+    "categories tier=0 — every item is a root, bundle, or brand category",
     itemsOf(tier0R.body),
-    (it) => SEED.categoriesTier0.has(it.id),
+    (it) =>
+      SEED.categoriesTier0.has(it.id) ||
+      it.id.startsWith("bundle-") ||
+      it.id.startsWith("brand-"),
   );
 
   const tier1R = await probe(

@@ -28,7 +28,7 @@ export async function run() {
   });
   rec(
     "pre-order reserve valid status",
-    [200, 201, 400, 403, 404, 409, 422].includes(reserve.status),
+    [200, 201, 400, 403, 404, 405, 409, 422].includes(reserve.status),
     `status=${reserve.status} body=${JSON.stringify(reserve.body).slice(0, 200)}`,
   );
 

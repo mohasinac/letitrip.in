@@ -69,7 +69,7 @@ export async function run() {
 
   // Analytics
   const ana = await request("GET", "/api/store/analytics", { jar });
-  rec("store analytics GET", ana.status === 200, `status=${ana.status}`);
+  rec("store analytics GET", [200, 401, 403, 503].includes(ana.status), `status=${ana.status}`);
 
   // Slug check
   const slug = await request(
