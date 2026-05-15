@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PrizeDrawsListingView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -30,5 +31,9 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  return <PrizeDrawsListingView searchParams={resolvedSearchParams} />;
+  return (
+    <Suspense>
+      <PrizeDrawsListingView searchParams={resolvedSearchParams} />
+    </Suspense>
+  );
 }

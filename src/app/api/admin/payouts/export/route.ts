@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, payoutRepository } from "@mohasinac/appkit";
+import { createRouteHandler, payoutRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
 
 function escape(value: unknown): string {
   const s = String(value ?? "");
@@ -19,7 +19,7 @@ export const GET = withProviders(
     permission: "admin:payouts:read",
     handler: async () => {
       const result = await payoutRepository.list({
-        sorts: "-createdAt",
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
         page: "1",
         pageSize: "1000",
       });

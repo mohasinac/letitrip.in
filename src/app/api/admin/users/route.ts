@@ -16,6 +16,9 @@ import { userRepository } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { USER_FIELDS } from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(USER_FIELDS.CREATED_AT);
 
 /**
  * GET /api/admin/users
@@ -39,7 +42,7 @@ export const GET = withProviders(createRouteHandler({
       max: 500,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
     const q = getStringParam(searchParams, "q")?.trim() || "";
 
     serverLogger.info("Admin users list requested", {

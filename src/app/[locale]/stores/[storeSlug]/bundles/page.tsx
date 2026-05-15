@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { StoreBundlesPageView } from "@mohasinac/appkit";
 
 type Props = {
@@ -6,5 +7,9 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  return <StoreBundlesPageView storeSlug={storeSlug} />;
+  return (
+    <Suspense>
+      <StoreBundlesPageView storeSlug={storeSlug} />
+    </Suspense>
+  );
 }

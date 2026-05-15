@@ -6,7 +6,12 @@ import {
   errorResponse,
   categoriesRepository,
   createBrandAction,
+  sortBy,
+  COMMON_FIELDS,
+  BRAND_FIELDS,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(BRAND_FIELDS.NAME, "ASC")].join(",");
 
 function slugify(str: string): string {
   return str
@@ -38,7 +43,7 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
       const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
-      const sorts = url.searchParams.get("sorts") || "order,name";
+      const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
       const filters = url.searchParams.get("filters");
       const combinedFilters = filters
         ? `${filters},categoryType==brand`

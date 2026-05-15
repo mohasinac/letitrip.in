@@ -14,6 +14,10 @@ import {
   serverLogger,
 } from "@mohasinac/appkit";
 import { homepageSectionsRepository } from "@mohasinac/appkit";
+import { sortBy, HOMEPAGE_SECTION_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER, "ASC");
+const DESC_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER);
 import {
   type HomepageSectionCreateInput,
   type SectionType,
@@ -45,7 +49,7 @@ export const GET = withProviders(
         max: 200,
       });
       const filters = getStringParam(searchParams, "filters");
-      const sorts = getStringParam(searchParams, "sorts") || "order";
+      const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
       serverLogger.info("Admin homepage sections list requested", {
         filters,
@@ -129,7 +133,7 @@ export const POST = withProviders(
       let resolvedOrder = order;
       if (resolvedOrder === undefined) {
         const latest = await homepageSectionsRepository.list({
-          sorts: "-order",
+          sorts: DESC_SORTS,
           page: "1",
           pageSize: "1",
         });

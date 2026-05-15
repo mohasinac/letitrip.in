@@ -13,6 +13,9 @@ import {
 } from "@mohasinac/appkit";
 import { orderRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { sortBy, ORDER_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(ORDER_FIELDS.CREATED_AT);
 
 /**
  * GET /api/admin/orders
@@ -36,7 +39,7 @@ export const GET = withProviders(createRouteHandler({
       max: 200,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     serverLogger.info("Admin orders list requested", {
       filters,

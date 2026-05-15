@@ -16,6 +16,9 @@ import {
 import { storeRepository } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
+import { sortBy, STORE_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(STORE_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
@@ -29,7 +32,7 @@ export const GET = withProviders(createRouteHandler({
       min: 1,
       max: 100,
     });
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     const filtersArr: string[] = [];
     const statusFilter = getStringParam(searchParams, "storeStatus");

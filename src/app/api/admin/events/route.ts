@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { EVENT_FIELDS } from "@/constants/field-names";
+import { sortBy } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
 /**
  * Admin Events API Route
  * GET /api/admin/events  — Paginated list with Sieve filtering
@@ -150,7 +153,7 @@ export const GET = withProviders(createRouteHandler({
       min: 1,
       max: 100,
     });
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     // Build Sieve filter string from named params + raw filters
     const filtersArr: string[] = [];

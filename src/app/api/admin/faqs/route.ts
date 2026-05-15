@@ -8,6 +8,9 @@ import {
   getStringParam,
 } from "@mohasinac/appkit";
 import { faqsRepository } from "@mohasinac/appkit";
+import { sortBy, FAQ_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = [sortBy(FAQ_FIELDS.PRIORITY), sortBy(FAQ_FIELDS.ORDER, "ASC")].join(",");
 import { z } from "zod";
 
 const createFaqSchema = z.object({
@@ -33,7 +36,7 @@ export const GET = withProviders(createRouteHandler({
     const category = getStringParam(searchParams, "category");
     const search = getStringParam(searchParams, "q");
     const isActive = getStringParam(searchParams, "isActive");
-    const sorts = getStringParam(searchParams, "sorts") || "-priority,order";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 50, {
       min: 1,

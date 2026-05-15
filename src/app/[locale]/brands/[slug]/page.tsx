@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import {
   BrandDetailPageView,
@@ -28,5 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const initialBrand = await getBrandCategoryForDetail(slug);
-  return <BrandDetailPageView slug={slug} initialBrand={initialBrand} />;
+  return (
+    <Suspense>
+      <BrandDetailPageView slug={slug} initialBrand={initialBrand} />
+    </Suspense>
+  );
 }

@@ -30,6 +30,8 @@ import {
   orderRepository,
   payoutRepository,
   storeRepository,
+  sortBy,
+  COMMON_FIELDS,
 } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
@@ -50,7 +52,7 @@ export const POST = withProviders(createRouteHandler({
     const eligibleOrders = await orderRepository.listAll({
       filters:
         "payoutStatus==eligible,shippingMethod==shiprocket,status==delivered",
-      sorts: "-createdAt",
+      sorts: sortBy(COMMON_FIELDS.CREATED_AT),
       page: "1",
       pageSize: "5000",
     });

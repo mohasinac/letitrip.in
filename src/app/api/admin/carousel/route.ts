@@ -7,6 +7,9 @@ import {
 } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit";
+import { sortBy, CAROUSEL_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(CAROUSEL_FIELDS.ORDER, "ASC");
 
 const cardSchema = z.object({
   id: z.string().optional(),
@@ -91,7 +94,7 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 25, { min: 1, max: 100 });
-      const sorts = getStringParam(searchParams, "sorts") || "order";
+      const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
       const rawFilters = getStringParam(searchParams, "filters");
 
       const model: SieveModel = {

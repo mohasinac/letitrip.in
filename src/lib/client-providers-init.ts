@@ -43,7 +43,7 @@ export function initializeClientProviders() {
   }
 
   // Register Firebase providers with appkit's registry
-  registerClientAuthProvider(new FirebaseClientAuthProvider());
+  registerClientAuthProvider(new FirebaseClientAuthProvider(auth));
   registerClientRealtimeProvider(
     new FirebaseClientRealtimeProvider({
       firebaseConfig,

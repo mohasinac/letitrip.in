@@ -6,7 +6,13 @@ import {
   ApiErrors,
   categoriesRepository,
   storeRepository,
+  sortBy,
+  CATEGORY_FIELDS,
+  sieveFilter,
+  SIEVE_OP,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(CATEGORY_FIELDS.NAME, "ASC");
 
 const createSchema = z.object({
   name: z.string().min(1).max(120),
@@ -22,10 +28,10 @@ export const GET = withProviders(createRouteHandler({
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
-    const sorts = url.searchParams.get("sorts") ?? "name";
+    const sorts = url.searchParams.get("sorts") ?? DEFAULT_SORTS;
 
     const result = await categoriesRepository.list({
-      filters: "categoryType==sublisting",
+      filters: sieveFilter(CATEGORY_FIELDS.CATEGORY_TYPE, SIEVE_OP.EQ, CATEGORY_FIELDS.CATEGORY_TYPE_VALUES.SUBLISTING),
       sorts,
       page: String(page),
       pageSize: String(pageSize),

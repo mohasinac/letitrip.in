@@ -100,7 +100,7 @@ const fallbackSessionAdapter: IClientSessionAdapter = {
 };
 
 if (hasFirebaseConfig && auth) {
-  registerClientAuthProvider(new FirebaseClientAuthProvider());
+  registerClientAuthProvider(new FirebaseClientAuthProvider(auth));
   registerClientRealtimeProvider(
     new FirebaseClientRealtimeProvider({
       firebaseConfig,

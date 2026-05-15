@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import {
   ProductsIndexPageView,
@@ -26,8 +27,10 @@ export default async function Page({
     .listPlatform()
     .catch(() => []);
   return (
-    <ProductFeaturesProvider features={platformFeatures}>
-      <ProductsIndexPageView searchParams={resolvedSearchParams} />
-    </ProductFeaturesProvider>
+    <Suspense>
+      <ProductFeaturesProvider features={platformFeatures}>
+        <ProductsIndexPageView searchParams={resolvedSearchParams} />
+      </ProductFeaturesProvider>
+    </Suspense>
   );
 }

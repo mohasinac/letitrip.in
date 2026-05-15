@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, newsletterRepository } from "@mohasinac/appkit";
+import { createRouteHandler, newsletterRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
 
 function escape(value: unknown): string {
   const s = String(value ?? "");
@@ -19,7 +19,7 @@ export const GET = withProviders(
     permission: "admin:newsletter:read",
     handler: async () => {
       const result = await newsletterRepository.list({
-        sorts: "-createdAt",
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
         page: "1",
         pageSize: "10000",
       });

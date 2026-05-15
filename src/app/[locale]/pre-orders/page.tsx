@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PreOrdersListView, productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
@@ -23,8 +24,10 @@ export default async function Page({
     .listPlatform()
     .catch(() => []);
   return (
-    <ProductFeaturesProvider features={platformFeatures}>
-      <PreOrdersListView searchParams={resolvedSearchParams} />
-    </ProductFeaturesProvider>
+    <Suspense>
+      <ProductFeaturesProvider features={platformFeatures}>
+        <PreOrdersListView searchParams={resolvedSearchParams} />
+      </ProductFeaturesProvider>
+    </Suspense>
   );
 }

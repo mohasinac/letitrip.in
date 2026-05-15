@@ -9,6 +9,9 @@ import { successResponse } from "@mohasinac/appkit";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit";
 import { contactSubmissionsRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
@@ -20,7 +23,7 @@ export const GET = withProviders(createRouteHandler({
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 200 });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     serverLogger.info("Admin contact submissions list requested", { filters, page, pageSize });
 

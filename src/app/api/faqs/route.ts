@@ -15,7 +15,9 @@ import { withProviders } from "@/providers.config";
  * - Implement FAQ A/B testing
  */
 
-import { faqsRepository, siteSettingsRepository } from "@mohasinac/appkit";
+import { faqsRepository, siteSettingsRepository, sortBy, FAQ_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = [sortBy(FAQ_FIELDS.PRIORITY), sortBy(FAQ_FIELDS.ORDER, "ASC")].join(",");
 import { successResponse } from "@mohasinac/appkit";
 import {
   getBooleanParam,
@@ -101,7 +103,7 @@ export const GET = withProviders(createRouteHandler({
     const rawResult = await faqsRepository.list(
       {
         filters: buildStructuredFilters(),
-        sorts: sieveSorts || "-priority,order",
+        sorts: sieveSorts || DEFAULT_SORTS,
         page: String(page),
         pageSize: String(pageSize),
       },
@@ -203,7 +205,7 @@ export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_
   handler: async ({ user, body }) => {
     // Auto-assign order — single Firestore query, avoids full collection load
     const latestFAQ = await faqsRepository.list({
-      sorts: "-order",
+      sorts: sortBy(FAQ_FIELDS.ORDER),
       page: "1",
       pageSize: "1",
     });

@@ -1,10 +1,13 @@
 import { withProviders } from "@/providers.config";
+import { EVENT_FIELDS } from "@/constants/field-names";
 import {
   eventRepository,
   eventEntryRepository,
   createRouteHandler,
   successResponse,
   errorResponse,
+  sieveFilter,
+  SIEVE_OP,
 } from "@mohasinac/appkit";
 
 export const GET = withProviders(
@@ -14,14 +17,14 @@ export const GET = withProviders(
     permission: "admin:events:read",
     handler: async ({ params }) => {
       const eventId = (params as { id: string }).id;
-      const events = await eventRepository.list({ filters: `id==${eventId}`, page: "1", pageSize: "1" });
+      const events = await eventRepository.list({ filters: sieveFilter(EVENT_FIELDS.ID, SIEVE_OP.EQ, eventId), page: "1", pageSize: "1" });
       const event = events.items[0];
       if (!event) return errorResponse("Event not found", 404);
 
       const [totalEntries, approvedEntries, flaggedEntries] = await Promise.all([
         eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1 }),
-        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==approved" }),
-        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: "reviewStatus==flagged" }),
+        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: sieveFilter("reviewStatus", SIEVE_OP.EQ, "approved") }),
+        eventEntryRepository.listForEvent(eventId, { page: 1, pageSize: 1, filters: sieveFilter("reviewStatus", SIEVE_OP.EQ, "flagged") }),
       ]);
 
       return successResponse({

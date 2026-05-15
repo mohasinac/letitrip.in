@@ -12,9 +12,13 @@
  *   - scripts/audit-html-wrappers.mjs            (raw HTML instead of appkit primitives + bare divs)
  *   - scripts/audit-code-quality.mjs             (long if-else, deep nesting, large fns, repeated strings)
  *   - scripts/audit-bom.mjs                      (UTF-8 BOM characters from PowerShell encoding)
+ *   - scripts/audit-sieve-constants.mjs          (raw sort/filter strings — use sortBy()/sieveFilter())
+ *   - appkit/scripts/audit-repository-fields.mjs (deprecated J13 Sieve fields + wrong stats.* sort paths)
+ *   - scripts/audit-suspense-boundaries.mjs      (missing <Suspense> on RSC listing page shims)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
+ * audit-sieve-constants manages its own baseline internally (exits 0 on no regression).
  *
  * Total runtime: ~3–5s. Heavy gates (tsc + lint) live in `npm run check`.
  *
@@ -104,6 +108,24 @@ const checks = [
     label: "audit-bom",
     cmd: "node",
     args: ["scripts/audit-bom.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-sieve-constants",
+    cmd: "node",
+    args: ["scripts/audit-sieve-constants.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-repository-fields",
+    cmd: "node",
+    args: ["appkit/scripts/audit-repository-fields.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-suspense-boundaries",
+    cmd: "node",
+    args: ["scripts/audit-suspense-boundaries.mjs"],
     cwd: ROOT,
   },
 ];

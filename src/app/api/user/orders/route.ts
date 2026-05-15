@@ -9,6 +9,8 @@ import {
   type OrderStatus,
   OrderStatusValues,
   orderDocumentToOrder,
+  sortBy,
+  ORDER_FIELDS,
 } from "@mohasinac/appkit";
 
 const VALID_STATUSES: OrderStatus[] = [
@@ -36,7 +38,7 @@ export const GET = withProviders(
 
       const result = await orderRepository.listForUser(user!.uid, {
         filters,
-        sorts: "-orderDate",
+        sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
         page: pageParam,
         pageSize: perPageParam,
       });

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { reviewRepository, createReview, successResponse, errorResponse } from "@mohasinac/appkit";
+import { reviewRepository, createReview, successResponse, errorResponse, sieveFilter, SIEVE_OP, REVIEW_FIELDS } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
@@ -131,7 +131,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       allApprovedReviews.map((review) => review.rating),
     );
     const result = await reviewRepository.listForProduct(productId, {
-      filters: "status==approved",
+      filters: sieveFilter(REVIEW_FIELDS.STATUS, SIEVE_OP.EQ, REVIEW_FIELDS.STATUS_VALUES.APPROVED),
       sorts,
       page,
       pageSize,

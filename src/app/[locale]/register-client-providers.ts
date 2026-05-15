@@ -46,7 +46,7 @@ export default function ClientProviderBootstrap() {
     if (registered || !hasFirebaseConfig || !auth) return;
     registered = true;
 
-    registerClientAuthProvider(new FirebaseClientAuthProvider());
+    registerClientAuthProvider(new FirebaseClientAuthProvider(auth));
     registerClientRealtimeProvider(
       new FirebaseClientRealtimeProvider({
         firebaseConfig,

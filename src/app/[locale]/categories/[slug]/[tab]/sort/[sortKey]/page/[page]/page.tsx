@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CategoryDetailPageView, getCategoryBySlug } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -100,5 +101,9 @@ export default async function Page({ params }: Props) {
   const category = await getCategoryBySlug(slug).catch(() => null);
   if (!category) notFound();
 
-  return <CategoryDetailPageView slug={slug} />;
+  return (
+    <Suspense>
+      <CategoryDetailPageView slug={slug} />
+    </Suspense>
+  );
 }

@@ -13,7 +13,9 @@ import {
 } from "@mohasinac/appkit";
 import { newsletterRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit";
+import { NEWSLETTER_SUBSCRIBER_FIELDS, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
 /**
  * GET /api/admin/newsletter
@@ -40,7 +42,7 @@ export const GET = withProviders(createRouteHandler({
       max: 200,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     serverLogger.info("Admin newsletter subscribers list requested", {
       filters,
@@ -53,19 +55,19 @@ export const GET = withProviders(createRouteHandler({
     const [totalResult, activeResult, unsubscribedResult, sieveResult] =
       await Promise.all([
         newsletterRepository.list({
-          sorts: "createdAt",
+          sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
           page: "1",
           pageSize: "1",
         }),
         newsletterRepository.list({
           filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.ACTIVE}`,
-          sorts: "createdAt",
+          sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
           page: "1",
           pageSize: "1",
         }),
         newsletterRepository.list({
           filters: `${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS}==${NEWSLETTER_SUBSCRIBER_FIELDS.STATUS_VALUES.UNSUBSCRIBED}`,
-          sorts: "createdAt",
+          sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
           page: "1",
           pageSize: "1",
         }),

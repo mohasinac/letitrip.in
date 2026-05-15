@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   StoreProductsPageView,
   loadProductFeaturesForStore,
@@ -12,8 +13,10 @@ export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
   const features = await loadProductFeaturesForStore(storeSlug).catch(() => []);
   return (
-    <ProductFeaturesProvider features={features}>
-      <StoreProductsPageView storeSlug={storeSlug} />
-    </ProductFeaturesProvider>
+    <Suspense>
+      <ProductFeaturesProvider features={features}>
+        <StoreProductsPageView storeSlug={storeSlug} />
+      </ProductFeaturesProvider>
+    </Suspense>
   );
 }

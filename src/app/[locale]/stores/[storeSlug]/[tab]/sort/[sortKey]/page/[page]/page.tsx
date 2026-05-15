@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   StoreAboutView,
   StoreAuctionsPageView,
@@ -107,15 +108,15 @@ export default async function Page({ params }: Props) {
   }
 
   if (normalizedTab === "products") {
-    return <StoreProductsPageView storeSlug={storeSlug} />;
+    return <Suspense><StoreProductsPageView storeSlug={storeSlug} /></Suspense>;
   }
 
   if (normalizedTab === "auctions") {
-    return <StoreAuctionsPageView storeSlug={storeSlug} />;
+    return <Suspense><StoreAuctionsPageView storeSlug={storeSlug} /></Suspense>;
   }
 
   if (normalizedTab === "reviews") {
-    return <StoreReviewsPageView storeSlug={storeSlug} />;
+    return <Suspense><StoreReviewsPageView storeSlug={storeSlug} /></Suspense>;
   }
 
   const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);

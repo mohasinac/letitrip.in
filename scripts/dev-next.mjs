@@ -3,7 +3,7 @@
 //
 // ─── Memory guard ─────────────────────────────────────────────────────────
 // Refuses to start when free RAM is below MIN_FREE_RAM_GB. Next.js dev
-// (webpack + appkit watch) easily eats >2 GB warm; booting under that floor
+// (turbopack + appkit watch) easily eats >2 GB warm; booting under that floor
 // is how OOM compactions and frozen laptops happen. Bypass with
 // DEV_SKIP_MEM_CHECK=1.
 //
@@ -31,7 +31,7 @@ const BYTES_PER_GB = 1024 ** 3;
 // across all compute tiers.
 //
 // The 2 GB function memory is also the empirically-derived minimum heap
-// cap for `next dev --webpack` on this codebase: probe-dev-heap-cap.mjs
+// cap for `next dev` (turbopack) on this codebase: probe-dev-heap-cap.mjs
 // 2026-05-12 showed 1024 MB OOMs under load (peak RSS 1457 MB), 1536 MB
 // runs without OOM (peak RSS 1887 MB), and 1536 + 512 MB headroom rounds
 // up to the 2048 MB cap NODE_OPTIONS uses in package.json `dev:only`.
@@ -96,7 +96,7 @@ if (hobbyOn) {
 
 const child = spawn(
   "node",
-  ["node_modules/next/dist/bin/next", "dev", "--webpack"],
+  ["node_modules/next/dist/bin/next", "dev"],
   { stdio: "inherit", env, shell: false },
 );
 

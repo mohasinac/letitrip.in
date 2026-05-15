@@ -16,7 +16,10 @@ import {
   getStringParam,
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { sortBy, ORDER_FIELDS } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants/api-roles";
+
+const DEFAULT_SORTS = sortBy(ORDER_FIELDS.ORDER_DATE);
 
 /**
  * GET /api/store/orders
@@ -40,7 +43,7 @@ export const GET = withProviders(createRouteHandler({
       max: 100,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-orderDate";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
     serverLogger.info("Seller orders list requested", {

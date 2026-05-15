@@ -6,6 +6,10 @@ import {
   successResponse,
   getSearchParams,
   getNumberParam,
+  sieveFilter,
+  SIEVE_OP,
+  REVIEW_FIELDS,
+  sortBy,
 } from "@mohasinac/appkit";
 
 export const GET = withProviders(
@@ -24,8 +28,8 @@ export const GET = withProviders(
       }
 
       const result = await reviewRepository.listForStore(storeId, {
-        filters: "status==approved",
-        sorts: "-createdAt",
+        filters: sieveFilter(REVIEW_FIELDS.STATUS, SIEVE_OP.EQ, REVIEW_FIELDS.STATUS_VALUES.APPROVED),
+        sorts: sortBy(REVIEW_FIELDS.CREATED_AT),
         page,
         pageSize,
       });

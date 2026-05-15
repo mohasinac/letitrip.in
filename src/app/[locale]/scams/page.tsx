@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ScamRegistryView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -24,5 +25,9 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  return <ScamRegistryView searchParams={resolvedSearchParams} />;
+  return (
+    <Suspense>
+      <ScamRegistryView searchParams={resolvedSearchParams} />
+    </Suspense>
+  );
 }

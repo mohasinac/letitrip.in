@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CouponsIndexListing } from "@mohasinac/appkit";
 import { storeRepository } from "@mohasinac/appkit/server";
 
@@ -11,9 +12,8 @@ export default async function Page({ params }: Props) {
   const storeId = (store as any)?.id ?? undefined;
 
   return (
-    <CouponsIndexListing
-      storeSlug={storeSlug}
-      storeId={storeId}
-    />
+    <Suspense>
+      <CouponsIndexListing storeSlug={storeSlug} storeId={storeId} />
+    </Suspense>
   );
 }

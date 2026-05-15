@@ -21,7 +21,9 @@ import {
   finalizeStagedMediaObject,
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit";
-import { BlogPostStatusValues } from "@mohasinac/appkit";
+import { BlogPostStatusValues, sortBy, sieveFilter, SIEVE_OP, BLOG_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -76,7 +78,7 @@ export const GET = withProviders(createRouteHandler({
       max: 200,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 
     serverLogger.info("Admin blog posts list requested", {
       filters,
@@ -94,20 +96,20 @@ export const GET = withProviders(createRouteHandler({
       sieveResult,
     ] = await Promise.all([
       blogRepository.listAll({
-        filters: `status==${BlogPostStatusValues.PUBLISHED}`,
-        sorts: "createdAt",
+        filters: sieveFilter(BLOG_FIELDS.STATUS, SIEVE_OP.EQ, BlogPostStatusValues.PUBLISHED),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),
       blogRepository.listAll({
-        filters: `status==${BlogPostStatusValues.DRAFT}`,
-        sorts: "createdAt",
+        filters: sieveFilter(BLOG_FIELDS.STATUS, SIEVE_OP.EQ, BlogPostStatusValues.DRAFT),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),
       blogRepository.listAll({
-        filters: "isFeatured==true",
-        sorts: "createdAt",
+        filters: sieveFilter(BLOG_FIELDS.IS_FEATURED, SIEVE_OP.EQ, "true"),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),

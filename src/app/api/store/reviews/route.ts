@@ -7,6 +7,9 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, successResponse, storeRepository, reviewRepository } from "@mohasinac/appkit";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit";
+import { sortBy, REVIEW_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(REVIEW_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createApiHandler({
   auth: true,
@@ -25,7 +28,7 @@ export const GET = withProviders(createApiHandler({
     const pageSize = getNumberParam(sp, "pageSize", 20, { min: 1, max: 100 });
     const rating = getStringParam(sp, "rating");
     const replied = getStringParam(sp, "replied");
-    const sorts = getStringParam(sp, "sorts") || "-createdAt";
+    const sorts = getStringParam(sp, "sorts") || DEFAULT_SORTS;
 
     let filters = `storeId==${store.id}`;
     if (rating) filters += `,rating==${rating}`;

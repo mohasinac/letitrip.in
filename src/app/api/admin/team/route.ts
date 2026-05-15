@@ -11,8 +11,12 @@ import {
   serverLogger,
   adminUpdateUser,
   getProviders,
+  sortBy,
+  USER_FIELDS,
 } from "@mohasinac/appkit";
 import type { UserAdminUpdateInput } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(USER_FIELDS.CREATED_AT);
 
 const inviteSchema = z.object({
   email: z.string().email(),
@@ -29,7 +33,7 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 25, { min: 1, max: 100 });
-      const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+      const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
       const rawFilters = getStringParam(searchParams, "filters") || "";
       const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 

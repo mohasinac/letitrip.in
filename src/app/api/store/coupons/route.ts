@@ -2,6 +2,9 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { couponsRepository, storeRepository } from "@mohasinac/appkit";
+import { sortBy, COUPON_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(COUPON_FIELDS.CREATED_AT);
 
 const createCouponSchema = z.object({
   code: z.string().min(2).max(30).transform((v) => v.toUpperCase().replace(/\s+/g, "")),
@@ -23,7 +26,7 @@ export const GET = withProviders(createRouteHandler({
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 100));
-    const sorts = url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? "-createdAt";
+    const sorts = url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? DEFAULT_SORTS;
     const filters = url.searchParams.get("filters") ?? undefined;
 
     const store = await storeRepository.findByOwnerId(user!.uid);

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ReviewsIndexPageView } from "@mohasinac/appkit";
 
 export const revalidate = 120;
@@ -8,5 +9,9 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  return <ReviewsIndexPageView searchParams={resolvedSearchParams} />;
+  return (
+    <Suspense>
+      <ReviewsIndexPageView searchParams={resolvedSearchParams} />
+    </Suspense>
+  );
 }

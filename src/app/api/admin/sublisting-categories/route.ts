@@ -5,7 +5,11 @@ import {
   successResponse,
   errorResponse,
   categoriesRepository,
+  sortBy,
+  CATEGORY_FIELDS,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(CATEGORY_FIELDS.NAME, "ASC");
 
 const createSchema = z.object({
   name: z.string().min(1).max(120),
@@ -24,7 +28,7 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
       const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
-      const sorts = url.searchParams.get("sorts") || "name";
+      const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
       const filters = url.searchParams.get("filters") ?? undefined;
 
       // Constrain to sublisting rows.

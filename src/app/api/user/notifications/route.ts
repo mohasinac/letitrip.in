@@ -3,7 +3,11 @@ import {
   createRouteHandler,
   successResponse,
   notificationRepository,
+  sortBy,
+  NOTIFICATION_FIELDS,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(NOTIFICATION_FIELDS.CREATED_AT);
 
 export const GET = withProviders(
   createRouteHandler({
@@ -14,7 +18,7 @@ export const GET = withProviders(
       const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 20));
       const isRead = url.searchParams.get("isRead");
       const type = url.searchParams.get("type");
-      const sorts = url.searchParams.get("sorts") || "-createdAt";
+      const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
 
       const filters: string[] = [];
       if (isRead === "true" || isRead === "false") filters.push(`isRead==${isRead}`);

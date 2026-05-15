@@ -5,7 +5,11 @@ import {
   successResponse,
   errorResponse,
   categoriesRepository,
+  sortBy,
+  CATEGORY_FIELDS,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = [sortBy(CATEGORY_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
 
 function slugify(str: string): string {
   return str
@@ -42,7 +46,7 @@ export const GET = withProviders(
         200,
         Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
       );
-      const sorts = url.searchParams.get("sorts") || "order,name";
+      const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
       const filters = url.searchParams.get("filters") ?? undefined;
 
       const result = await categoriesRepository.list({

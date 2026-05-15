@@ -16,7 +16,9 @@ import { buildSieveFilters } from "@mohasinac/appkit";
 import { payoutRepository } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { PAYOUT_FIELDS } from "@mohasinac/appkit";
+import { PAYOUT_FIELDS, sortBy, sieveFilter, SIEVE_OP, PayoutStatusValues, COMMON_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
 /**
  * GET /api/admin/payouts
@@ -42,7 +44,7 @@ export const GET = withProviders(createRouteHandler({
       max: 200,
     });
     const filters = getStringParam(searchParams, "filters");
-    const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
+    const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
     const q = getStringParam(searchParams, "q")?.trim().toLowerCase() || "";
 
     serverLogger.info("Admin payouts list requested", {
@@ -63,26 +65,26 @@ export const GET = withProviders(createRouteHandler({
     ] = await Promise.all([
       payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
       payoutRepository.list({
-        filters: "status==pending",
-        sorts: "createdAt",
+        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.PENDING),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),
       payoutRepository.list({
-        filters: "status==processing",
-        sorts: "createdAt",
+        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.PROCESSING),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),
       payoutRepository.list({
-        filters: "status==completed",
-        sorts: "createdAt",
+        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.COMPLETED),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),
       payoutRepository.list({
-        filters: "status==failed",
-        sorts: "createdAt",
+        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.FAILED),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",
       }),

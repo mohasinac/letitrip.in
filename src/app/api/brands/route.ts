@@ -3,7 +3,13 @@ import {
   createRouteHandler,
   successResponse,
   categoriesRepository,
+  sortBy,
+  sieveFilter,
+  SIEVE_OP,
+  CATEGORY_FIELDS,
 } from "@mohasinac/appkit";
+
+const DEFAULT_SORTS = [sortBy(CATEGORY_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
 
 export const GET = withProviders(
   createRouteHandler({
@@ -13,7 +19,7 @@ export const GET = withProviders(
       const activeOnly = url.searchParams.get("active") !== "false";
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
       const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
-      const sorts = url.searchParams.get("sorts") || "order,name";
+      const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
 
       if (activeOnly) {
         const items = await categoriesRepository.findActiveBrands();
@@ -21,7 +27,7 @@ export const GET = withProviders(
       }
 
       const result = await categoriesRepository.list({
-        filters: "categoryType==brand",
+        filters: sieveFilter(CATEGORY_FIELDS.CATEGORY_TYPE, SIEVE_OP.EQ, CATEGORY_FIELDS.CATEGORY_TYPE_VALUES.BRAND),
         sorts,
         page: String(page),
         pageSize: String(pageSize),
