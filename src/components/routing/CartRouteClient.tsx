@@ -96,6 +96,24 @@ interface ValidateResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const CART_TABS = [
+  { key: "cart"     as const, label: "Cart" },
+  { key: "auctions" as const, label: "Won Auctions" },
+];
+
+type CartTab = typeof CART_TABS[number]["key"];
+
+const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
+  auction:      ["auction"],
+  "pre-order":  ["pre-order", "preorder", "pre order"],
+  standard:     ["standard", "product"],
+  "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
+};
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -388,7 +406,7 @@ export function CartRouteClient() {
   // Item selection for partial checkout
   // ---------------------------------------------------------------------------
   const serverSelectedSet = useMemo(
-    () => new Set(serverCart?.cart?.selectedItemIds ?? []),
+    () => new Set<string>(serverCart?.cart?.selectedItemIds ?? []),
     [serverCart],
   );
   const allItemIds = useMemo(() => inStockItems.map((i) => i.itemId ?? i.id), [inStockItems]);
@@ -622,13 +640,7 @@ export function CartRouteClient() {
       const price = item.meta.price;
       if (String(Math.round(price)).includes(q) || price.toFixed(2).includes(q)) return true;
       const lt = item.listingType ?? "standard";
-      const keywords: Record<string, string[]> = {
-        auction:      ["auction"],
-        "pre-order":  ["pre-order", "preorder", "pre order"],
-        standard:     ["standard", "product"],
-        "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
-      };
-      if ((keywords[lt] ?? [lt]).some((kw) => kw.includes(q))) return true;
+      if ((LISTING_TYPE_SEARCH_KEYWORDS[lt] ?? [lt]).some((kw) => kw.includes(q))) return true;
       return false;
     },
     [normalizedQuery],
@@ -638,7 +650,7 @@ export function CartRouteClient() {
   // Tab split — cart (standard + pre-order) · auctions
   // Raffles/bundles are immediate buy-nows; they skip the cart entirely.
   // ---------------------------------------------------------------------------
-  const [activeTab, setActiveTab] = useState<"cart" | "auctions">("cart");
+  const [activeTab, setActiveTab] = useState<CartTab>("cart");
 
   const [cartBucket, auctionBucket] = useMemo(() => {
     const cart: CartItemWithListingType[] = [];
@@ -679,126 +691,48 @@ export function CartRouteClient() {
       isEmpty={isEmpty}
       isLoading={isLoading}
       renderItems={(itemsLoading) => {
-        // Resolve tab items with early returns — avoids a multi-branch ternary chain.
-        const tabContent = (() => {
-          if (itemsLoading) {
-            return <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />;
-          }
-          if (activeTab === "auctions") {
-            if (auctionBucket.length === 0) {
-              return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No won auctions in your cart.</Text>;
-            }
-            if (normalizedQuery && filteredAuctions.length === 0) {
-              return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
-            }
-            return (
-              <Div className="space-y-4">
-                {sellerGroupsAuctions.map((group) => (
-                  <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
-                    <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={false} />
-                  </Div>
-                ))}
-              </Div>
-            );
-          }
-          // default: cart tab (standard + pre-order grouped by store)
-          if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
-            return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
-          }
-          return (
-            <>
-              {sellerGroupsCart.map((group) => (
-                <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
-                  <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} effectiveCoupons={effectiveCoupons} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={false} />
-                </Div>
-              ))}
-              {cartBucket.length === 0 && oosItems.length === 0 && (
-                <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No standard products or pre-orders in your cart.</Text>
-              )}
-              {oosItems.length > 0 && (
-                <Div>
-                  <Div className="mb-3 flex items-center justify-between">
-                    <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">Unavailable ({oosItems.length})</Text>
-                    <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
-                  </Div>
-                  <Div className="space-y-3">
-                    {sellerGroupsOos.map((group) => (
-                      <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 opacity-60">
-                        <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={toggleItem} onQtyChange={handleQtyChange} onRemove={handleRemove} onMoveToWishlist={handleMoveToWishlist} isOutOfStock={true} />
-                      </Div>
-                    ))}
-                  </Div>
-                </Div>
-              )}
-            </>
-          );
-        })();
-
+        if (itemsLoading) {
+          return <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />;
+        }
+        const tabCounts: Record<CartTab, number> = {
+          cart: cartBucket.length + oosItems.length,
+          auctions: auctionBucket.length,
+        };
         return (
           <Div className="space-y-4">
             {/* ── Tab bar ── */}
-            {!itemsLoading && (
-              <Div className="flex gap-1 rounded-xl bg-zinc-100 dark:bg-slate-800 p-1 text-sm">
-                {(
-                  [
-                    { key: "cart",     label: "Cart",         count: cartBucket.length + oosItems.length },
-                    { key: "auctions", label: "Won Auctions", count: auctionBucket.length },
-                  ] as { key: typeof activeTab; label: string; count: number }[]
-                ).map(({ key, label, count }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => { setActiveTab(key); setSearchQuery(""); }}
-                    className={[
-                      "flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors",
-                      activeTab === key
-                        ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm"
-                        : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200",
-                    ].join(" ")}
-                  >
-                    {label}
-                    {count > 0 && <span className="ml-1.5 text-xs opacity-60">({count})</span>}
-                  </button>
-                ))}
-              </Div>
-            )}
+            <Div className="flex gap-1 rounded-xl bg-zinc-100 dark:bg-slate-800 p-1 text-sm">
+              {CART_TABS.map(({ key, label }) => {
+                const count = tabCounts[key];
+                return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => { setActiveTab(key); setSearchQuery(""); }}
+                  className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"].join(" ")}
+                >
+                  {label}{count > 0 && <span className="ml-1.5 text-xs opacity-60">({count})</span>}
+                </button>
+                );
+              })}
+            </Div>
 
             {/* ── Search + clear ── */}
-            {!isEmpty && !itemsLoading && cartItems.length > 1 && (
+            {!isEmpty && cartItems.length > 1 && (
               <Div className="relative">
-                <Input
-                  type="search"
-                  placeholder="Search by name, store, price or type (auction, raffle…)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-sm pr-8"
-                />
+                <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-sm pr-8" />
                 {searchQuery && (
-                  <button
-                    type="button"
-                    aria-label="Clear search"
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none"
-                  >
-                    ×
-                  </button>
+                  <button type="button" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none">×</button>
                 )}
               </Div>
             )}
 
             {/* ── Bulk actions (cart tab only) ── */}
-            {activeTab === "cart" && !isEmpty && !itemsLoading && (
+            {activeTab === "cart" && !isEmpty && (
               <Div className="flex flex-wrap items-center gap-3">
                 {isAuthenticated && allItemIds.length > 1 && (
                   <Div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="cart-select-all"
-                      checked={isAllSelected}
-                      onChange={isAllSelected ? undefined : selectAll}
-                      onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
-                      className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
-                    />
+                    <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
                     <label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
                       Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
                     </label>
@@ -815,7 +749,39 @@ export function CartRouteClient() {
               </Div>
             )}
 
-            {tabContent}
+            {/* ── Tab content — delegated to extracted components ── */}
+            {activeTab === "auctions" ? (
+              <AuctionsTabItems
+                auctionBucket={auctionBucket}
+                filteredAuctions={filteredAuctions}
+                sellerGroupsAuctions={sellerGroupsAuctions}
+                normalizedQuery={normalizedQuery}
+                searchQuery={searchQuery}
+                isAuthenticated={isAuthenticated}
+                onToggleItem={toggleItem}
+                onQtyChange={handleQtyChange}
+                onRemove={handleRemove}
+                onMoveToWishlist={handleMoveToWishlist}
+              />
+            ) : (
+              <CartTabItems
+                cartBucket={cartBucket}
+                oosItems={oosItems}
+                filteredCartItems={filteredCartItems}
+                filteredOos={filteredOos}
+                sellerGroupsCart={sellerGroupsCart}
+                sellerGroupsOos={sellerGroupsOos}
+                normalizedQuery={normalizedQuery}
+                searchQuery={searchQuery}
+                isAuthenticated={isAuthenticated}
+                effectiveSelected={effectiveSelected}
+                effectiveCoupons={effectiveCoupons}
+                onToggleItem={toggleItem}
+                onQtyChange={handleQtyChange}
+                onRemove={handleRemove}
+                onMoveToWishlist={handleMoveToWishlist}
+              />
+            )}
           </Div>
         );
       }}
@@ -975,6 +941,91 @@ export function CartRouteClient() {
         </Div>
       )}
     />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// AuctionsTabItems / CartTabItems — tab content extracted to avoid deep nesting
+// ---------------------------------------------------------------------------
+
+interface ItemCallbacks {
+  onToggleItem: (itemId: string) => void;
+  onQtyChange: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
+  onMoveToWishlist: (cartItemId: string, productId: string) => void;
+}
+
+interface AuctionsTabItemsProps extends ItemCallbacks {
+  auctionBucket: CartItemWithListingType[];
+  filteredAuctions: CartItemWithListingType[];
+  sellerGroupsAuctions: SellerGroup[];
+  normalizedQuery: string;
+  searchQuery: string;
+  isAuthenticated: boolean;
+}
+
+function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuctions, normalizedQuery, searchQuery, isAuthenticated, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: AuctionsTabItemsProps) {
+  if (auctionBucket.length === 0) {
+    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No won auctions in your cart.</Text>;
+  }
+  if (normalizedQuery && filteredAuctions.length === 0) {
+    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+  }
+  return (
+    <Div className="space-y-4">
+      {sellerGroupsAuctions.map((group) => (
+        <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
+        </Div>
+      ))}
+    </Div>
+  );
+}
+
+interface CartTabItemsProps extends ItemCallbacks {
+  cartBucket: CartItemWithListingType[];
+  oosItems: CartItemWithListingType[];
+  filteredCartItems: CartItemWithListingType[];
+  filteredOos: CartItemWithListingType[];
+  sellerGroupsCart: SellerGroup[];
+  sellerGroupsOos: SellerGroup[];
+  normalizedQuery: string;
+  searchQuery: string;
+  isAuthenticated: boolean;
+  effectiveSelected: Set<string> | null;
+  effectiveCoupons: AppliedCoupon[];
+}
+
+function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, effectiveCoupons, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
+  if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
+    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+  }
+  return (
+    <>
+      {sellerGroupsCart.map((group) => (
+        <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} effectiveCoupons={effectiveCoupons} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
+        </Div>
+      ))}
+      {cartBucket.length === 0 && oosItems.length === 0 && (
+        <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No standard products or pre-orders in your cart.</Text>
+      )}
+      {oosItems.length > 0 && (
+        <Div>
+          <Div className="mb-3 flex items-center justify-between">
+            <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">Unavailable ({oosItems.length})</Text>
+            <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
+          </Div>
+          <Div className="space-y-3">
+            {sellerGroupsOos.map((group) => (
+              <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 opacity-60">
+                <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
+              </Div>
+            ))}
+          </Div>
+        </Div>
+      )}
+    </>
   );
 }
 
