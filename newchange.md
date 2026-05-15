@@ -41,6 +41,19 @@
 
 ---
 
+### VD13 — Filter unavailable items from detail-page recommendations (2026-05-15)
+
+Buyers were seeing sold-out, ended, and archived items in the "Similar Products" and "Similar Auctions" carousels on detail pages. The fix uses the same availability signals the listing toolbars use — not just `status`, since sellers don't always transition the status field.
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/products/components/ProductDetailPageView.tsx` | `relatedItems` filter now excludes: `status` ∈ {sold, out_of_stock, archived, discontinued, draft}; `isSold === true`; `availableQuantity === 0`; auctions where `auctionEndDate ≤ now`; prize-draws where `prizeRevealStatus === "closed"` |
+| `appkit/src/features/auctions/components/AuctionDetailPageView.tsx` | `renderRelated` filter adds same status/isSold guards plus the `auctionEndDate > now` date check (replaces the prior status-only guard that incorrectly depended on `status === "published"` being actively managed) |
+
+**Why not `status === "published"`**: Sellers publish items and don't always transition status when sold/out-of-stock; actual availability tracked via dedicated flags (`isSold`, `availableQuantity`, `auctionEndDate`, `prizeRevealStatus`). Pre-orders pass through regardless (over-sign quota is acceptable per user). `npm run check` exits 0. `asciiDiagrams.md` + `crud-tracker.md` (VD13) updated.
+
+---
+
 ### S-dashboard-quality-pass — appkit wrappers + CSS vars + prize-draws shim (2026-05-14)
 
 Quality pass on the files changed in S-dashboard-listing-audit. TypeScript: 0 errors. `npm run check` exits 0. appkit v2.6.5 published. Deployed to Vercel prod.

@@ -261,10 +261,11 @@ Filter drawer (fixed left overlay, z-50, slides in):
 └────────────────────────────────────┘
 
 Toolbar reset [↺] scope per listing:
-  AuctionsIndexListing     clears: q, sort→"auctionEndDate", showEnded, FILTER_KEYS
-  ProductsIndexListing     clears: q, sort→"-createdAt",     showSold,  FILTER_KEYS
+  AuctionsIndexListing     clears: q, sort→"auctionEndDate", showEnded,  FILTER_KEYS
+  ProductsIndexListing     clears: q, sort→"-createdAt",     showSold,   FILTER_KEYS
   PreOrdersIndexListing    clears: q, sort→"-createdAt",     showClosed, FILTER_KEYS
-  StoresIndexListing       clears: q, sort→"-createdAt",                FILTER_KEYS
+  PrizeDrawsIndexListing   clears: q, sort→"-createdAt",     showClosed, FILTER_KEYS
+  StoresIndexListing       clears: q, sort→"-createdAt",                 FILTER_KEYS
   StoreProductsListing     clears: q, sort→"-createdAt",                FILTER_KEYS
   StoreAuctionsListing     clears: q, sort→"auctionEndDate",            FILTER_KEYS
   StorePreOrdersListing    clears: q, sort→"-createdAt",                FILTER_KEYS
@@ -5030,7 +5031,7 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Products Listing ✅
+## Public > Products Listing ✅ *(VD13 updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5054,17 +5055,19 @@ API key: integrations.googlePlacesApiKey in siteSettings
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
-> **Firestore query constraint (J13):** The standard-products query filters on
-> `where("isAuction","==",false)` + `where("isPreOrder","==",false)`.
-> Every standard product document **MUST** have both `isAuction: false` and
-> `isPreOrder: false` explicitly set — Firestore `==` does NOT match absent fields.
-> Required composite indexes: `(status ASC, isAuction ASC, createdAt DESC)` and
-> `(status ASC, isAuction ASC, isPreOrder ASC, createdAt DESC)`.
-> Both are in `appkit/firebase/base/firestore.indexes.json`.
+> **VD13 — Availability signal (2026-05-15):**
+> "Show sold" toggle OFF (default) → API param `inStock=true` → server clause
+> `stockQuantity>0`. Uses the required `stockQuantity` field (always present) rather
+> than `status=="published"` because sellers don't actively transition status.
+> "Show sold" toggle ON → `inStock` omitted → all items returned regardless of stock.
+>
+> **Listing type:** `listingType: "standard"` — uses `where("listingType","==","standard")`.
+> Composite indexes: `(listingType, createdAt DESC)`, `(listingType, price ASC)` etc.
+> in `appkit/firebase/base/firestore.indexes.json`.
 
 ---
 
-## Public > Auctions Listing ✅
+## Public > Auctions Listing ✅ *(VD13 updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5085,9 +5088,76 @@ API key: integrations.googlePlacesApiKey in siteSettings
 └──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
+> **VD13 — Availability signal (2026-05-15):**
+> "Show ended" toggle OFF (default) → API param `dateFrom=<now ISO>` → server clause
+> `auctionEndDate>=<now>`. Only live auctions are shown by default.
+> "Show ended" toggle ON → `dateFrom` omitted → all auctions including ended ones.
+> This was already the correct approach before VD13 (no change needed here — documented for completeness).
+
 ---
 
-## Public > Product Detail ✅ *(VD12 updated Session 89a)*
+## Public > Pre-Orders Listing ✅ *(VD13 added 2026-05-15)*
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Pre-Orders                                                                  │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│  FILTERS     │  [🔍 q=…  🔍]  [⚙ Filters (N)]  [Sort ▾]  [⊞/≡]  [↺]  [Show closed ○]  │
+│  Category    │                                                               │
+│  Brand       │  ─────────────────────────────────────────────────────────── │
+│  Price range │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  [₹min–₹max] │  │ 🖼        │  │ 🖼        │  │ 🖼        │  │ 🖼        │   │
+│  Production  │  │ Gundam   │  │ DBZ Goku │  │ Naruto   │  │ One Piece│   │
+│  status      │  │ PG RX-78 │  │ Ultra Ego│  │ Sage Mode│  │ Luffy G5 │   │
+│  [checkboxes]│  │ ₹12,499  │  │ ₹7,999   │  │ ₹5,499   │  │ ₹8,999   │   │
+│              │  │ [Pre-order]│ │[Pre-order]│ │[Pre-order]│ │[Pre-order]│  │
+│  Delivery    │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│  date range  │  ← Prev   Page 1 of 5   Next →                               │
+│  [Clear All] │  Empty: "No pre-orders match your filters"                   │
+└──────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+> **VD13 — Availability signal (2026-05-15):**
+> "Show closed" toggle OFF (default) → API param `inStock=true` → server clause
+> `stockQuantity>0`. Uses the required `stockQuantity` field. Over-sign is intentional:
+> quota is not enforced for pre-orders (user confirmed). "Show closed" ON → all
+> pre-orders returned regardless of stock.
+> `listingType: "pre-order"` is always sent.
+
+---
+
+## Public > Prize Draws Listing ✅ *(VD13 added 2026-05-15)*
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Prize Draws                                                                 │
+├──────────────┬──────────────────────────────────────────────────────────────┤
+│  FILTERS     │  [🔍 q=…  🔍]  [⚙ Filters (N)]  [Sort ▾]  [⊞/≡]  [↺]  [Show closed ○]  │
+│  Category    │                                                               │
+│  Brand       │  ─────────────────────────────────────────────────────────── │
+│  Price per   │  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │
+│  entry       │  │ 🖼        │  │ 🖼        │  │ 🖼        │                  │
+│  [₹min–₹max] │  │ Charizard│  │ Gundam   │  │ Exodia   │                  │
+│  Reveal      │  │ PSA10    │  │ PG RX-78 │  │ PSA8     │                  │
+│  status      │  │ ₹99/entry│  │ ₹149/ent │  │ ₹199/ent │                  │
+│  [pending/   │  │ [Enter]  │  │ [Enter]  │  │ [Enter]  │                  │
+│   open/      │  └──────────┘  └──────────┘  └──────────┘                  │
+│   closed]    │  ← Prev   Page 1 of 3   Next →                               │
+│  [Clear All] │  Empty: "No prize draws match your filters"                  │
+└──────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+> **VD13 — Availability signal (2026-05-15):**
+> No server-side `status` filter is sent (sellers don't reliably manage it).
+> "Show closed" toggle OFF (default) → client-side post-fetch filter excludes items
+> where `prizeRevealStatus === "closed"`. When `prizeRevealStatus` URL param is set
+> (filter drawer), that exact value is used instead (takes priority over showClosed).
+> "Show closed" toggle ON → all prize draws shown including closed reveals.
+> `listingType: "prize-draw"` is always sent.
+
+---
+
+## Public > Product Detail ✅ *(VD13 updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5166,6 +5236,9 @@ API key: integrations.googlePlacesApiKey in siteSettings
 │  BELOW FOLD:                                                                 │
 │  "More from CardGame Hub" → [product carousel]                               │
 │  "Similar Products" → [product carousel]                                     │
+│  (VD13: both carousels exclude unavailable items — status∈{sold,out_of_stock,│
+│   archived,discontinued,draft}, isSold=true, availableQuantity=0,           │
+│   auction w/ auctionEndDate≤now, prize-draw w/ prizeRevealStatus=closed)    │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 STICKY BUY BAR (on scroll past buy box):
@@ -5176,7 +5249,7 @@ STICKY BUY BAR (on scroll past buy box):
 
 ---
 
-## Public > Auction Detail ✅ *(VD12 updated Session 89a)*
+## Public > Auction Detail ✅ *(VD13 updated 2026-05-15)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5215,6 +5288,12 @@ STICKY BUY BAR (on scroll past buy box):
 │  Priya S.   ₹2,50,000   May 08 12:01   Outbid                               │
 │  * Masked: first name + last initial only                                   │
 │  NOTE: GP1 (group row) is NOT shown on auction detail pages                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  BELOW FOLD:                                                                 │
+│  "Similar Auctions" → [auction card carousel, max 4]                        │
+│  (VD13: only shows auctions where status∉{sold,out_of_stock,archived,        │
+│   discontinued,draft}, isSold≠true, AND auctionEndDate > now)               │
+│  Hidden entirely when 0 qualifying auctions in same category.               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -6844,24 +6923,36 @@ Source (INFRA2, created 2026-05-10):
 ### firestore.indexes.json merge system
 
 ```
-Source of truth:  appkit/firebase/base/firestore.indexes.json
+Source of truth:  appkit/firebase/base/firestore.indexes.json   ← appkit base indexes
+Consumer extras:  appkit.config.js → firebase.extensions.indexes ← project-specific indexes
 Merge script:     node appkit/scripts/firebase-merge.mjs
+                  (reads appkit.config.js via require(); no separate extension file needed)
 Output:           firestore.indexes.json (root, deployed by Firebase CLI)
 
-Rule: NEVER edit firestore.indexes.json (root) directly.
-      Always edit appkit/firebase/base/firestore.indexes.json
-      then run firebase-merge.mjs to regenerate the root file.
+Rules:
+  1. NEVER edit firestore.indexes.json (root) directly — it is auto-generated.
+  2. Appkit indexes → edit appkit/firebase/base/firestore.indexes.json
+  3. Project-specific indexes → add to appkit.config.js:
+       firebase.extensions.indexes: [
+         { collectionGroup: "...", queryScope: "COLLECTION", fields: [...] }
+       ]
+  4. Regenerate: npm run firebase:generate   (runs firebase-merge.mjs)
+  5. Deploy:     npm run firebase:deploy      (or: firebase deploy --only firestore:indexes)
+
+firebase.extension.json is DELETED (2026-05-15). All extensions now live in appkit.config.js.
 
 Duplicate index gotcha (fixed 2026-05-10):
   faqs collection had duplicate indexes for (isPinned,priority,order)
   and (isActive,createdAt) × 2. Firebase CLI silently skips dupes in
   the JSON but they cause 409 on redeploy if one is CREATING.
-  Check for dupes before any index-heavy deploy.
+  Check for dupes before any index-heavy deploy. firebase-merge.mjs
+  deduplicates by fingerprint (collectionGroup:queryScope:fields) so
+  the same index in both the base and extensions.indexes is safe.
 ```
 
 ---
 
-*Last updated: 2026-05-10 — Session 76/76-infra: VD4+VD5+VD6+VD7+VD11+VD1+VD2 (public catalogue), J13 (products listing isAuction/isPreOrder fix), J14 (blog initialData shape), J15 (events status filter), INFRA1 (firebase-reset .count() fix), INFRA2 (firebase-delete-indexes.mjs created), Firebase full reset + 263 indexes redeployed.*
+*Last updated: 2026-05-15 — firebase.extension.json removed; consumer index extensions moved to appkit.config.js → firebase.extensions. Brand/SEO/i18n/externalImagePatterns centralised into appkit.config.js (brand, seo, i18n, externalImagePatterns keys). AppkitConfig schema extended with AppkitBrandConfig, AppkitSeoConfig, AppkitI18nConfig, AppkitImagePattern. src/lib/appkit-config.ts typed reader added. Prior: 2026-05-10 — Session 76/76-infra: VD4+VD5+VD6+VD7+VD11+VD1+VD2, J13, J14, J15, INFRA1, INFRA2, Firebase full reset + 263 indexes redeployed.*
 
 
 ---

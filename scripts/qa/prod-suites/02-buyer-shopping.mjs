@@ -10,10 +10,8 @@ const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
 async function findStandardProduct() {
-  const r = await request("GET", "/api/products?pageSize=20&listingType=standard");
-  return (r.body?.data?.items ?? []).find(
-    (p) => (p.availableQuantity ?? 0) >= 3 && p.status === "published",
-  );
+  const r = await request("GET", "/api/products?pageSize=20&listingType=standard&inStock=true");
+  return (r.body?.data?.items ?? []).find((p) => (p.availableQuantity ?? 0) >= 3);
 }
 
 export async function run() {

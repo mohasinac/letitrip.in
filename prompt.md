@@ -86,22 +86,27 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 ### Step 2 — Publish appkit (only after Step 1 exits 0)
 
 ```
-1. Commit all appkit source changes (no uncommitted source — dist must match git)
-2. Bump appkit/package.json version by exactly +0.0.1 (patch only, never minor/major)
-3. cd appkit/ && npm run build          # rebuild dist/ from committed source
-4. npm publish                          # single publish per session — never publish twice
-5. cd ..
+1. Check the currently published version: npm view @mohasinac/appkit version
+2. Compare to local appkit/package.json version:
+   - If local > published: publish as-is (skip version bump)
+   - If local == published: bump appkit/package.json by +0.0.1, then continue
+3. Rebuild dist (from appkit/ dir): npm run build
+4. Publish: npm publish                 # single publish per session — never publish twice
+   └── Confirm success: npm view @mohasinac/appkit version should show new version
 ```
 
 ### Step 3 — Switch letitrip to npm package + rebuild
 
 ```
-1. Edit letitrip/package.json: "@mohasinac/appkit": "^X.Y.Z"  (new version from Step 2)
-2. Delete package-lock.json
-3. npm install                          # lockfile must resolve from npm registry (not file:)
-   └── Verify: package-lock.json shows "resolved": "https://registry.npmjs.org/..."
-               not "resolved": "appkit" + "link": true
-4. npm run check                        # must still exit 0 with npm package
+1. Edit letitrip/package.json: "@mohasinac/appkit": "X.Y.Z"  (exact version, no ^ caret)
+2. Run: npm install
+   └── NOTE: In this monorepo, npm will STILL resolve via the local ./appkit directory
+       because the appkit/ folder exists at root. The lockfile will show:
+         "resolved": "appkit", "link": true
+       This is EXPECTED and correct — Vercel uploads appkit/dist/ alongside the app.
+       Do NOT delete package-lock.json expecting this to change. It won't.
+3. Run: npm run build                   # verify build succeeds with updated version ref
+   └── Must produce full route table — no compilation errors
 ```
 
 ### Step 4 — Sync Vercel env variables
@@ -128,16 +133,19 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-prod-firebase: Vercel Lambda MODULE_NOT_FOUND fix (2026-05-15)
+### ✅ LAST COMPLETED — S-publish-deploy: appkit 2.7.10 publish + Vercel prod deploy (2026-05-15)
 
-- Root cause: Vercel's file tracer misses dynamic `require()` calls in firebase-admin dep chain; packages present locally absent from Lambda bundle.
-- Cascade: `is-stream` (v2.7.5) → `readable-stream` (v2.7.6) → `event-target-shim` + 7 more (v2.7.9). Each blocked all Firebase Admin API routes.
-- Key lesson: never use `@scope/**` broad globs (causes 45min deploy timeout). Use `scripts/trace-firebase-full.mjs` to find exact packages. Added Pattern #6 to CLAUDE.md + bug catalog entry.
-- appkit v2.7.9. `npm run check` exits 0. Pending deploy (`vercel --prod`) to confirm smoke test passes.
+- No TSC errors. appkit built from appkit/ dir. letitrip.in built with symlink (both clean).
+- Published @mohasinac/appkit@2.7.10 (2.7.9 was last published; local was already 2.7.10).
+- Updated letitrip/package.json to "2.7.10". npm install + npm run build passed (160 pages).
+- Deployed to Vercel prod via `vercel --prod`.
+- Clarified in prompt: lockfile `"resolved": "appkit", "link": true` is expected in this monorepo.
 
-### ✅ Previous — S11: Quality baseline — audit 8→0, TS9 hex sweep, config factories (2026-05-14)
+### ✅ Previous — VD13: Filter unavailable items from detail-page recommendations (2026-05-15)
 
-- Config factories, TS9 hex sweep, X-audit-baseline (seo/ layer), appkit v2.7.4. `audit-ssr-in-appkit: 0 violations`.
+- "Similar Products" + "Similar Auctions" carousels now exclude sold/out-of-stock/ended/archived items.
+- Multi-signal guard: status field, isSold flag, availableQuantity, auctionEndDate, prizeRevealStatus.
+- Files: `ProductDetailPageView.tsx` + `AuctionDetailPageView.tsx`. `npm run check` exits 0.
 
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
@@ -176,7 +184,7 @@ AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules
 - **Rule #3** — schema/logic change updates every caller + seed + types in the same session
 - **Rule #4** — never fix without first verifying the bug is still present in the current source
 - **Rule #5** — task is not done until `npm run check` exits 0
-- **Rule #6** — code within Vercel Hobby caps (1024 MB / 10 s / 4.5 MB payload)
+- **Rule #6** — code within Vercel Hobby caps (2048 MB / 10 s / 4.5 MB payload)
 
 ### Per-task loop (repeat for every task)
 

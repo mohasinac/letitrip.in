@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { cache } from "react";
+import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import {
@@ -18,6 +20,19 @@ import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 import { ScrollToTop } from "@/components/ScrollToTop";
+
+const getCachedSiteSettings = cache(() =>
+  siteSettingsRepository.getSingleton().catch(() => null)
+);
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getCachedSiteSettings();
+  const logoUrl = settings?.logo?.url;
+  if (!logoUrl) return {};
+  return {
+    icons: { icon: logoUrl, shortcut: logoUrl, apple: logoUrl },
+  };
+}
 type Props = {
   children: ReactNode;
   params: Promise<unknown>;
@@ -29,7 +44,7 @@ export default async function Layout({ children, params }: Props) {
   setRequestLocale(locale);
   const messages = await getMessages();
 
-  const siteSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+  const siteSettings = await getCachedSiteSettings();
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
   const siteLogoUrl = siteSettings?.logo?.url || undefined;
   const siteTheme = siteSettings?.theme;

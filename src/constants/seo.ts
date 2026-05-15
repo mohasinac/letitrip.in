@@ -1,19 +1,17 @@
-// Minimal local SEO base to avoid importing server-only modules into client bundles.
-const APPKIT_SEO_CONFIG = {
-  siteUrl: "https://letitrip.in",
-  defaultTitle: "letitrip — Curated Marketplace",
-  defaultDescription:
-    "Discover unique products, auctions, and pre-orders on letitrip — your curated online marketplace.",
-  defaultImage: "/images/og-default.png",
-  siteName: "letitrip",
-  twitterHandle: "@letitrip",
-  locale: "en-IN",
-};
+import appkitConfig from "@/lib/appkit-config";
+
+const s = appkitConfig.seo!;
 
 type PageSeoEntry = { title: string; description: string; keywords: string[] };
 
 export const SEO_CONFIG = {
-  ...APPKIT_SEO_CONFIG,
+  siteUrl: s.siteUrl,
+  defaultTitle: s.defaultTitle ?? "",
+  defaultDescription: s.defaultDescription ?? "",
+  defaultImage: s.defaultImage ?? "/images/og-default.png",
+  siteName: s.siteName ?? "",
+  twitterHandle: s.twitterHandle ?? "",
+  locale: s.locale ?? "en",
   pages: {
     home: {
       title: "letitrip — Curated Marketplace",
@@ -72,4 +70,3 @@ export const SEO_CONFIG = {
 // Server-only helpers (generateMetadata, etc.) are exported from
 // `src/constants/seo.server.ts` to avoid pulling server-only modules
 // into client bundles that import `@/constants`.
-

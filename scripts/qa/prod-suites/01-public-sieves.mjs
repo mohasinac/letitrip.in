@@ -338,6 +338,71 @@ export async function run() {
     (it) => it.listingType === LISTING_TYPES.PRE_ORDER,
   );
 
+  // ── Prize Draws listing ───────────────────────────────────────────────────
+  const prizeR = await probe("prize-draws listing", `/api/products?pageSize=12&listingType=${LISTING_TYPES.PRIZE_DRAW}`);
+  assertEvery(
+    `prize-draws — every item.listingType==='${LISTING_TYPES.PRIZE_DRAW}'`,
+    itemsOf(prizeR.body),
+    (it) => it.listingType === LISTING_TYPES.PRIZE_DRAW,
+  );
+
+  // ── VD13 — Availability filter (inStock=true) ─────────────────────────────
+  // Products: inStock=true → stockQuantity>0 on every returned item
+  const inStockR = await request(
+    "GET",
+    `/api/products?pageSize=20&listingType=${LISTING_TYPES.STANDARD}&inStock=true`,
+  );
+  rec(
+    "products inStock=true status",
+    inStockR.status === 200,
+    `status=${inStockR.status} count=${countOf(inStockR.body)}`,
+  );
+  assertEvery(
+    "products inStock=true — every item.stockQuantity > 0",
+    itemsOf(inStockR.body),
+    (it) => typeof it.stockQuantity === "number" && it.stockQuantity > 0,
+  );
+
+  // Pre-orders: inStock=true → stockQuantity>0 on every returned item
+  const preInStockR = await request(
+    "GET",
+    `/api/products?pageSize=12&listingType=${LISTING_TYPES.PRE_ORDER}&inStock=true`,
+  );
+  rec(
+    "pre-orders inStock=true status",
+    preInStockR.status === 200,
+    `status=${preInStockR.status} count=${countOf(preInStockR.body)}`,
+  );
+  assertEvery(
+    "pre-orders inStock=true — every item.stockQuantity > 0",
+    itemsOf(preInStockR.body),
+    (it) => typeof it.stockQuantity === "number" && it.stockQuantity > 0,
+  );
+
+  // Auctions: dateFrom=now should return fewer (or equal) items vs no dateFrom
+  const nowIso = new Date().toISOString();
+  const liveAucR = await request(
+    "GET",
+    `/api/products?pageSize=24&listingType=${LISTING_TYPES.AUCTION}&dateFrom=${encodeURIComponent(nowIso)}`,
+  );
+  const allAucR = await request(
+    "GET",
+    `/api/products?pageSize=24&listingType=${LISTING_TYPES.AUCTION}`,
+  );
+  rec(
+    "auctions dateFrom=now — live auctions ≤ all auctions (no ended items in live set)",
+    liveAucR.status === 200 &&
+      allAucR.status === 200 &&
+      countOf(liveAucR.body) <= countOf(allAucR.body),
+    `live=${countOf(liveAucR.body)} all=${countOf(allAucR.body)}`,
+  );
+  // Every live auction must have auctionEndDate in the future
+  assertEvery(
+    "auctions dateFrom=now — every item.auctionEndDate is in the future",
+    itemsOf(liveAucR.body).filter((it) => !!it.auctionEndDate),
+    (it) => new Date(it.auctionEndDate) > new Date(),
+  );
+
   // ── Product detail ───────────────────────────────────────────────────────
   const onePstd = await request(
     "GET",
