@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cache } from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import {
@@ -15,6 +17,7 @@ import {
   ZodSetup,
 } from "@mohasinac/appkit/client";
 import { siteSettingsRepository } from "@mohasinac/appkit";
+import { getDisabledRoutes } from "@mohasinac/appkit/server";
 import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
@@ -44,6 +47,20 @@ export default async function Layout({ children, params }: Props) {
   const messages = await getMessages();
 
   const siteSettings = await getCachedSiteSettings();
+
+  // Block disabled nav-item routes (strips locale prefix, skips Tier 2 paths)
+  const reqHeaders = await headers();
+  const rawPath = reqHeaders.get("x-invoke-path") ?? reqHeaders.get("x-pathname") ?? "";
+  if (rawPath) {
+    const TIER2 = ["/admin", "/store", "/user", "/checkout", "/demo"];
+    const localePath = rawPath.replace(new RegExp(`^/${locale}`), "") || "/";
+    if (!TIER2.some((t) => localePath.startsWith(t))) {
+      const disabledRoutes = await getDisabledRoutes();
+      if (disabledRoutes.some((r) => localePath === r || localePath.startsWith(`${r}/`))) {
+        notFound();
+      }
+    }
+  }
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
   const siteLogoUrl = siteSettings?.logo?.url || "/logo.svg";
   const siteTheme = siteSettings?.theme;

@@ -133,61 +133,36 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-constants-refactor: Full constants + Sieve builder infrastructure (2026-05-15)
+### ✅ LAST COMPLETED — S-auth-gate-ui: Admin settings pages + cart CSS polish (2026-05-15)
 
-- 10-phase plan: eliminated every hardcoded string across all layers — API routes, SSR page views, listing/filter components, repositories, Firebase job functions, and seed files.
-- **Phase 1** — 4 new appkit modules: `sort.ts` (`SORT_DIR`, `sortBy()`), `table-keys.ts` (`TABLE_KEYS`, `VIEW_MODE`), `sieve-builder.ts` (`SIEVE_OP`, `sieveFilter`, `sieveMultiEq`, `sieveAnd`); `field-names.ts` extended with 12 new collection constants + `PRODUCT_FIELDS.LISTING_TYPE_VALUES`.
-- **Critical pipe-bug fix**: `condition==new|used` was invalid Sieve (silently dropped); fixed to `condition==new,condition==used` via `sieveMultiEq()` in all `buildFilters()` functions.
-- **Phases 2–5** — All API routes, SSR page builders, 9 listing components, 5 filter components, `useUrlTable` NON_RESETTING_KEYS migrated to `TABLE_KEYS.*`/`VIEW_MODE.*`/`sortBy()`.
-- **Phase 6** — All repositories: local field constant defs collapsed to canonical imports; all `.where()` field strings replaced with constants.
-- **Phase 7** — 11 Firebase job functions: `onProductStockChange`, `prizeRevealClose/Open/Expiry/Reminder`, `bundleStockSync`, `countersReconcile`, `triggerEventRaffle`, `assignSpinPrize`, `onProductWrite`.
-- **Phase 8** — 10 seed files updated: products-standard/auctions/preorders/prize-draws, reviews, bids, users, stores, coupons, categories, scammers, support-tickets.
-- **Phase 9** — `_constants.mjs` + smoke tests updated with constant mirrors + multi-value filter test.
-- Both repos tsc 0 errors. appkit v2.7.12. `npm run check` exits 0.
-
-### ✅ Previous — S-filter-sieve-audit: Filter/sort key audit + fixes across all listing layouts (2026-05-15)
-
-- Full audit of all filter drawers, sort options, search keys, and Sieve safe-lists.
-- Fixed 8 bugs + 3 pre-existing TS errors. `freeShipping→shippingPaidBy==seller`, `prizeRevealStatus` server-side, store sort paths translated, `"-views"→"-viewCount"`.
-
-### ✅ LAST COMPLETED — S-fees-rename: Fee schema rename + GST-on-fee + admin UI consolidation (2026-05-15)
-
-- `razorpayFeePercent` → `platformFeePercent` (our cut %, not the gateway fee).
-- `minimumOrderFee` → `minimumTransactionFee` (per-gateway-transaction floor in rupees).
-- GST now applied on platform fee only: `total = base + platformFee + platformFee × gstPercent/100`.
-- Refund deduction uses `effectiveRate = platformFeePercent × (1 + gstPercent/100)`.
-- `resolvePaymentFee()` returns `{ baseAmount, platformFee, gstOnFee, totalAmount }`.
-- `AdminSiteSettingsView` now reads/writes `commissions` key (was reading phantom `fees` key — admin changes had no effect on checkout). Added GST % + minimum transaction fee inputs.
-- Zod validation schema updated; `payoutHoldDays/minPayoutAmount/listing-fees` added to commissions.
-- `PAYMENTS_DEFAULT_RAZORPAY_FEE_PERCENT` → `PAYMENTS_DEFAULT_PLATFORM_FEE_PERCENT`; `PAYMENTS_DEFAULT_GST_PERCENT = 18` added.
-- `BundleDynamicRuleEditor`: added `prize-draw` to listing type filter options (was causing TS2322).
-- `bundle.actions.ts`: fixed `ROUTES.PUBLIC.CHECKOUT` → `ROUTES.USER.CHECKOUT` (pre-existing TS error).
-- Seed: `platformFeePercent=5, gstPercent=18, minimumTransactionFee=0, gatewayFeePercent=2, payoutHoldDays=2, minPayoutAmount=100, featuredSlotFee=999, promotedSlotFee=499`.
-- `npm run check` exits 0. appkit v2.7.18.
-
-### ✅ LAST COMPLETED — S-cart-tabs: Cart tab navigation + code quality (2026-05-15)
-
-- `CartRouteClient.tsx` refactored: cart items split into "Cart" (standard+pre-order+oos) and "Won Auctions" buckets via `activeTab` state.
-- `AuctionsTabItems` + `CartTabItems` extracted as sub-components to eliminate deep nesting (DEEP_NESTING violation fixed).
-- `CART_TABS` constant (module-level tab config array) + `CartTab` union type + `LISTING_TYPE_SEARCH_KEYWORDS` record extracted from inline.
-- `tabCounts: Record<CartTab, number>` replaces inline per-tab count expressions.
-- Stale variable refs fixed; `prize-draw` tab removed (raffles bypass cart entirely as immediate buy-nows).
-- audit-code-quality baseline: 435 → 434 (1 improved). audit-html-wrappers: 302 → 301 (1 improved).
+- Cart: extracted `EMPTY_STATE_CLASS`, `STORE_CARD_CLASS`, `ERROR_TEXT_CLASS` constants; replaced all `text-red-600 dark:text-red-400` with `ERROR_TEXT_CLASS`; removed unused `lir/no-raw-media-elements` from eslint-disable; OOS store card uses `\`${STORE_CARD_CLASS} opacity-60\``.
+- Admin settings UI: `src/app/[locale]/admin/settings/actions/page.tsx` (Action Permissions) + `navigation/page.tsx` (Nav Permissions) — wired to `ActionPermissionsManager` / `NavPermissionsManager` from appkit; guarded with `makeAdminSectionLayout("admin:site:write")`.
+- `src/actions/admin-settings.actions.ts` — `updateActionConfigAction` + `updateNavConfigAction` server actions.
+- `src/app/[locale]/layout.tsx` — `getDisabledRoutes()` middleware check; returns 404 for nav-disabled public routes (skips Tier-2 paths).
+- `src/constants/navigation.tsx` — "Action Permissions" + "Nav Permissions" added to Site section of admin nav.
+- appkit v2.7.23: `ActionPermissionsManager`, `NavPermissionsManager`, `NavPermissionsGroup` exported; `ROUTES.ADMIN.SETTINGS_ACTIONS` + `SETTINGS_NAVIGATION` added; package.json bumped to `^2.7.23`.
 - `npm run check` exits 0.
 
-### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
+### ✅ Previous — S-auth-gate: useAuthGate + audit scripts (2026-05-15)
+
+- `CartRouteClient.tsx`: `useAuthGate`, `LoginRequiredModal` for guest checkout; audit-auth-gates.mjs + audit-inline-actions.mjs stop-hook gates added.
+- appkit `^2.7.19 → ^2.7.20` (`filterNavItems`, `checkActionAllowed`, `useAuthGate`, site-settings server utils).
+
+### 🔄 CURRENT — SB-UNI-Phase2: Classified / digital-code / live listing flows
+
+*(S-SBUNI-RULES all 6 phases completed 2026-05-13 — checkout rule registry, shipping picker, refund events, seeding. Phase 2 is the next SB-UNI cohort.)*
 
 ### ⏳ NEXT UP
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **S-SBUNI-RULES** | Per-type cart/checkout/order rule registry. Full plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md`. | S11 closed; S-SBUNI-5 reference impl available |
-| – | **Tier SB-UNI Phase 2+ follow-ups** *(pull individually when prioritised)* | Phase 2 (F: `classified`/`digital-code`/`live`) · Phase 3–9 (G–Z5 per-type fields/checkout/forms/polish) · X4 feature flags + X5 telemetry. | Each is its own cohort. Phase 1 fully closed. |
-| – | **S-polish-pass** *(after S11)* | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After S11 — quality polish + test foundation |
-| – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised |
-| – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]` (now category route post-SB-UNI-D), `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised |
-| – | **S1-polish** | Optional slot-shell polish slots deferred from S1 (admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products). Feature work — new endpoints + hooks. | Pull when prioritised |
-| – | **S2-browser-smoke** | User-driven browser smoke for S2 — sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation |
+| 1 | **SB-UNI-Phase2** | SB-UNI-M (classified contact-seller flow) · SB-UNI-N (digital-code reveal + skip-shipping) · SB-UNI-O (live-item jurisdiction). Plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md` (Phase 2 section). | Phase 1 (RULES/SCHEMA/CONSUMERS/SHIPPING/CART-UI/REFUNDS) fully closed. Phase 2 is the next cohort. |
+| – | **Tier SB-UNI Phase 3–9** *(pull individually when prioritised)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Each is its own session. |
+| – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
+| – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
+| – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised. |
+| – | **S1-polish** | Slot-shell polish deferred from S1: admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products. Feature work — new endpoints + hooks. | Pull when prioritised. |
+| – | **S2-browser-smoke** | Browser smoke: sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation. |
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
 AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)

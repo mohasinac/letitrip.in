@@ -201,10 +201,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Site",
     items: [
-      { href: String(ROUTES.ADMIN.SITE),       label: "Site Settings", requiredPermission: "admin:site:read"       },
-      { href: String(ROUTES.ADMIN.NAVIGATION), label: "Navigation",    requiredPermission: "admin:navigation:read" },
-      { href: String(ROUTES.ADMIN.SECTIONS),   label: "Sections",      requiredPermission: "admin:sections:read"   },
-      { href: String(ROUTES.ADMIN.CAROUSEL),   label: "Carousel",      requiredPermission: "admin:carousel:read"   },
+      { href: String(ROUTES.ADMIN.SITE),                 label: "Site Settings",       requiredPermission: "admin:site:read"       },
+      { href: String(ROUTES.ADMIN.NAVIGATION),           label: "Navigation",          requiredPermission: "admin:navigation:read" },
+      { href: String(ROUTES.ADMIN.SECTIONS),             label: "Sections",            requiredPermission: "admin:sections:read"   },
+      { href: String(ROUTES.ADMIN.CAROUSEL),             label: "Carousel",            requiredPermission: "admin:carousel:read"   },
+      { href: String(ROUTES.ADMIN.SETTINGS_ACTIONS),     label: "Action Permissions",  requiredPermission: "admin:settings:write"  },
+      { href: String(ROUTES.ADMIN.SETTINGS_NAVIGATION),  label: "Nav Permissions",     requiredPermission: "admin:settings:write"  },
       { href: String(ROUTES.ADMIN.ADS),        label: "Ads",           requiredPermission: "admin:ads:read"        },
       { href: String(ROUTES.ADMIN.FAQS),       label: "FAQs",          requiredPermission: "admin:faqs:read"       },
       { href: String(ROUTES.ADMIN.NEWSLETTER), label: "Newsletter",    requiredPermission: "admin:newsletter:read" },
