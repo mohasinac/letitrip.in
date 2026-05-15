@@ -75,9 +75,9 @@ export const metadata: Metadata = {
     images: [SEO_CONFIG.defaultImage],
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
   },
   robots: {
     index: true,

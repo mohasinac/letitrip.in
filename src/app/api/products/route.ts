@@ -3,13 +3,20 @@ import {
   productRepository,
   sanitizeProductsForPublic,
   parseListingParams,
+  PRODUCT_FIELDS,
+  TABLE_KEYS,
+  SIEVE_OP,
+  expandSieveParam,
+  sieveFilter,
+  sieveAnd,
+  sortBy,
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
-const DEFAULT_SORTS = "-createdAt";
+const DEFAULT_SORTS = sortBy(PRODUCT_FIELDS.CREATED_AT);
 
 /** Matches the Cache-Control used by listingProcessor on Firebase side. */
 const PUBLIC_LISTING_CACHE_CONTROL =
@@ -68,26 +75,26 @@ function param(url: URL, key: string): string | null {
 }
 
 const SAFE_PRODUCT_FILTER_FIELDS = new Set([
-  "status",
-  "category",
-  "categorySlug",
-  "brand",
-  "condition",
-  "storeId",
-  "title",
-  "price",
-  "listingType",
-  "featured",
-  "isPromoted",
-  "stockQuantity",
-  "availableQuantity",
-  "tags",
-  "currentBid",
-  "auctionEndDate",
-  "preOrderDeliveryDate",
-  "preOrderProductionStatus",
-  "prizeRevealStatus",
-  "shippingPaidBy",
+  PRODUCT_FIELDS.STATUS,
+  PRODUCT_FIELDS.CATEGORY,
+  PRODUCT_FIELDS.CATEGORY_SLUG,
+  PRODUCT_FIELDS.BRAND,
+  PRODUCT_FIELDS.CONDITION,
+  PRODUCT_FIELDS.STORE_ID,
+  PRODUCT_FIELDS.TITLE,
+  PRODUCT_FIELDS.PRICE,
+  PRODUCT_FIELDS.LISTING_TYPE,
+  PRODUCT_FIELDS.FEATURED,
+  PRODUCT_FIELDS.IS_PROMOTED,
+  PRODUCT_FIELDS.STOCK_QUANTITY,
+  PRODUCT_FIELDS.AVAILABLE_QUANTITY,
+  PRODUCT_FIELDS.TAGS,
+  PRODUCT_FIELDS.CURRENT_BID,
+  PRODUCT_FIELDS.AUCTION_END_DATE,
+  PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE,
+  PRODUCT_FIELDS.PRE_ORDER_PRODUCTION_STATUS,
+  PRODUCT_FIELDS.PRIZE_REVEAL_STATUS,
+  PRODUCT_FIELDS.SHIPPING_PAID_BY,
 ]);
 
 function validateSieveFilters(
@@ -110,73 +117,97 @@ function validateSieveFilters(
  *   2. A raw Sieve filter string via `f=` (short) or `filters=` (long) — gated
  *      through `validateSieveFilters` so only safelisted fields go through.
  *
- * `rawFilters` is passed in so the caller (using `parseListingParams`)
- * resolves short/long precedence before we get here.
+ * Multi-value pipe params (e.g. condition=new|used) are expanded to multiple
+ * AND clauses (condition==new,condition==used) via expandSieveParam — pipe is
+ * only valid for string-matching operators (@=, _=, _-= and CI variants).
  */
 function buildFilters(url: URL, rawFilters: string | null): string {
   const parts: string[] = [];
-  const status = param(url, "status");
-  if (status) parts.push(`status==${status}`);
-  const category = param(url, "category");
-  if (category) parts.push(`category==${category}`);
-  const categorySlug = param(url, "categorySlug");
-  if (categorySlug) parts.push(`categorySlug==${categorySlug}`);
-  const brand = param(url, "brand");
-  if (brand) parts.push(`brand==${brand}`);
-  const condition = param(url, "condition");
-  if (condition) parts.push(`condition==${condition}`);
-  const storeId = param(url, "storeId");
-  if (storeId) parts.push(`storeId==${storeId}`);
-  const query = param(url, "q");
-  if (query) parts.push(`title@=*${query}`);
-  const minPrice = param(url, "minPrice");
+
+  const status = expandSieveParam(PRODUCT_FIELDS.STATUS, param(url, TABLE_KEYS.STATUS));
+  if (status) parts.push(status);
+
+  const category = expandSieveParam(PRODUCT_FIELDS.CATEGORY, param(url, TABLE_KEYS.CATEGORY));
+  if (category) parts.push(category);
+
+  const categorySlug = expandSieveParam(PRODUCT_FIELDS.CATEGORY_SLUG, param(url, TABLE_KEYS.CATEGORY_SLUG));
+  if (categorySlug) parts.push(categorySlug);
+
+  const brand = expandSieveParam(PRODUCT_FIELDS.BRAND, param(url, TABLE_KEYS.BRAND));
+  if (brand) parts.push(brand);
+
+  const condition = expandSieveParam(PRODUCT_FIELDS.CONDITION, param(url, TABLE_KEYS.CONDITION));
+  if (condition) parts.push(condition);
+
+  const storeId = expandSieveParam(PRODUCT_FIELDS.STORE_ID, param(url, TABLE_KEYS.STORE_ID));
+  if (storeId) parts.push(storeId);
+
+  const query = param(url, TABLE_KEYS.QUERY);
+  if (query) parts.push(sieveFilter(PRODUCT_FIELDS.TITLE, SIEVE_OP.CONTAINS_CI, query));
+
+  const minPrice = param(url, TABLE_KEYS.MIN_PRICE);
   if (minPrice !== null && !Number.isNaN(Number(minPrice))) {
-    parts.push(`price>=${minPrice}`);
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.GTE, minPrice));
   }
-  const maxPrice = param(url, "maxPrice");
+  const maxPrice = param(url, TABLE_KEYS.MAX_PRICE);
   if (maxPrice !== null && !Number.isNaN(Number(maxPrice))) {
-    parts.push(`price<=${maxPrice}`);
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, maxPrice));
   }
-  const inStock = param(url, "inStock");
-  if (inStock === "true") parts.push("stockQuantity>0");
-  // SB1-G — canonical listingType discriminator. Accepts ?listingType=auction,
-  // pre-order, standard, prize-draw, or bundle.
-  const listingTypeParam = param(url, "listingType");
+
+  const inStock = param(url, TABLE_KEYS.IN_STOCK);
+  if (inStock === "true") parts.push(sieveFilter(PRODUCT_FIELDS.STOCK_QUANTITY, SIEVE_OP.GT, 0));
+
+  // SB1-G — canonical listingType discriminator
+  const listingTypeParam = param(url, TABLE_KEYS.LISTING_TYPE);
   if (listingTypeParam) {
-    parts.push(`listingType==${listingTypeParam}`);
+    parts.push(sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, listingTypeParam));
   }
-  const featured = param(url, "featured");
-  if (featured === "true") parts.push("featured==true");
+
+  const featured = param(url, TABLE_KEYS.FEATURED);
+  if (featured === "true") parts.push(sieveFilter(PRODUCT_FIELDS.FEATURED, SIEVE_OP.EQ, true));
+
   const isPromoted = param(url, "isPromoted");
-  if (isPromoted === "true") parts.push("isPromoted==true");
-  const minBid = param(url, "minBid");
+  if (isPromoted === "true") parts.push(sieveFilter(PRODUCT_FIELDS.IS_PROMOTED, SIEVE_OP.EQ, true));
+
+  const minBid = param(url, TABLE_KEYS.MIN_BID);
   if (minBid !== null && !Number.isNaN(Number(minBid))) {
-    parts.push(`currentBid>=${minBid}`);
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, minBid));
   }
-  const maxBid = param(url, "maxBid");
+  const maxBid = param(url, TABLE_KEYS.MAX_BID);
   if (maxBid !== null && !Number.isNaN(Number(maxBid))) {
-    parts.push(`currentBid<=${maxBid}`);
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, maxBid));
   }
-  const dateFrom = param(url, "dateFrom");
-  const dateTo = param(url, "dateTo");
+
+  const dateFrom = param(url, TABLE_KEYS.DATE_FROM);
+  const dateTo = param(url, TABLE_KEYS.DATE_TO);
   if (listingTypeParam === "auction") {
-    if (dateFrom) parts.push(`auctionEndDate>=${dateFrom}`);
-    if (dateTo) parts.push(`auctionEndDate<=${dateTo}`);
+    if (dateFrom) parts.push(sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.GTE, dateFrom));
+    if (dateTo) parts.push(sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.LTE, dateTo));
   } else if (listingTypeParam === "pre-order") {
-    if (dateFrom) parts.push(`preOrderDeliveryDate>=${dateFrom}`);
-    if (dateTo) parts.push(`preOrderDeliveryDate<=${dateTo}`);
+    if (dateFrom) parts.push(sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.GTE, dateFrom));
+    if (dateTo) parts.push(sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.LTE, dateTo));
   }
-  const preOrderProductionStatus = param(url, "preOrderProductionStatus") ?? param(url, "preOrderStatus");
-  if (preOrderProductionStatus) parts.push(`preOrderProductionStatus==${preOrderProductionStatus}`);
-  const prizeRevealStatus = param(url, "prizeRevealStatus");
-  if (prizeRevealStatus) parts.push(`prizeRevealStatus==${prizeRevealStatus}`);
-  const freeShipping = param(url, "freeShipping");
-  if (freeShipping === "true") parts.push("shippingPaidBy==seller");
+
+  const preOrderProductionStatus = param(url, TABLE_KEYS.PREORDER_STATUS) ?? param(url, "preOrderStatus");
+  if (preOrderProductionStatus) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRE_ORDER_PRODUCTION_STATUS, SIEVE_OP.EQ, preOrderProductionStatus));
+  }
+
+  const prizeRevealStatus = param(url, TABLE_KEYS.PRIZE_REVEAL_STATUS);
+  if (prizeRevealStatus) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRIZE_REVEAL_STATUS, SIEVE_OP.EQ, prizeRevealStatus));
+  }
+
+  const freeShipping = param(url, TABLE_KEYS.FREE_SHIPPING);
+  if (freeShipping === "true") {
+    parts.push(sieveFilter(PRODUCT_FIELDS.SHIPPING_PAID_BY, SIEVE_OP.EQ, PRODUCT_FIELDS.SHIPPING_PAID_BY_VALUES.SELLER));
+  }
+
   if (rawFilters) {
     const safe = validateSieveFilters(rawFilters, SAFE_PRODUCT_FILTER_FIELDS);
     if (safe) parts.push(safe);
   }
-  return parts.join(",");
+  return sieveAnd(...parts);
 }
 
 const IDS_MAX = 20;

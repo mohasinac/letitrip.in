@@ -5,6 +5,7 @@
  */
 
 import { login, request } from "./_http.mjs";
+import { LISTING_TYPES } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
@@ -40,7 +41,7 @@ export async function run() {
 
   // Buyer attempts review on first product (likely 403 without delivered order — still verifies route shape)
   const { jar: buyerJar } = await login("buyer");
-  const std = await request("GET", "/api/products?pageSize=1&listingType=standard");
+  const std = await request("GET", `/api/products?pageSize=1&listingType=${LISTING_TYPES.STANDARD}`);
   const pid = std.body?.data?.items?.[0]?.id;
   if (pid) {
     const r = await request("POST", "/api/reviews", {

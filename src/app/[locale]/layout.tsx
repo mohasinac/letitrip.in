@@ -27,8 +27,7 @@ const getCachedSiteSettings = cache(() =>
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCachedSiteSettings();
-  const logoUrl = settings?.logo?.url;
-  if (!logoUrl) return {};
+  const logoUrl = settings?.logo?.url || "/logo.svg";
   return {
     icons: { icon: logoUrl, shortcut: logoUrl, apple: logoUrl },
   };
@@ -46,7 +45,7 @@ export default async function Layout({ children, params }: Props) {
 
   const siteSettings = await getCachedSiteSettings();
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
-  const siteLogoUrl = siteSettings?.logo?.url || undefined;
+  const siteLogoUrl = siteSettings?.logo?.url || "/logo.svg";
   const siteTheme = siteSettings?.theme;
 
   return (

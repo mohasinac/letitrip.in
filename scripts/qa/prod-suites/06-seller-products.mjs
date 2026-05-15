@@ -5,6 +5,7 @@
 
 import { login, request } from "./_http.mjs";
 import { registerCleanup, smokeId } from "./_fixtures.mjs";
+import { LISTING_TYPES, PRODUCT_STATUS, PRODUCT_CONDITION, CURRENCY } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
@@ -28,13 +29,13 @@ export async function run() {
     title,
     description: "Automated smoke test product. Safe to delete.",
     price: 99900,
-    currency: "INR",
+    currency: CURRENCY.ISO,
     stockQuantity: 1,
     availableQuantity: 1,
-    listingType: "standard",
-    status: "draft",
+    listingType: LISTING_TYPES.STANDARD,
+    status: PRODUCT_STATUS.DRAFT,
     images: [],
-    condition: "new",
+    condition: PRODUCT_CONDITION.NEW,
   };
   // Seller-side product creation is on /api/admin/products with seller-level RBAC
   const create = await request("POST", "/api/admin/products", { jar, json: payload });

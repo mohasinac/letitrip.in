@@ -7,13 +7,14 @@
 
 import { request } from "./_http.mjs";
 import { BASE_URL } from "./_fixtures.mjs";
+import { LISTING_TYPES } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
 export async function run() {
   // Fetch a product with images
-  const list = await request("GET", "/api/products?pageSize=10&listingType=standard");
+  const list = await request("GET", `/api/products?pageSize=10&listingType=${LISTING_TYPES.STANDARD}`);
   const items = list.body?.data?.items ?? [];
   const product = items.find((p) => Array.isArray(p.images) && p.images.length > 0);
   if (!product) {

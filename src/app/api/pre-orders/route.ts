@@ -3,6 +3,10 @@ import {
   productRepository,
   sanitizeProductsForPublic,
   parseListingParams,
+  PRODUCT_FIELDS,
+  sieveFilter,
+  SIEVE_OP,
+  sortBy,
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
@@ -19,12 +23,12 @@ import { logError } from "@/lib/logger";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
-const DEFAULT_SORTS = "preOrderDeliveryDate";
+const DEFAULT_SORTS = sortBy(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, "ASC");
 
 const PUBLIC_LISTING_CACHE_CONTROL =
   "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
 
-const LISTING_TYPE_CLAUSE = "listingType==pre-order";
+const LISTING_TYPE_CLAUSE = sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, "pre-order");
 
 function mergeListingTypeFilter(filters: string | null | undefined): string {
   if (!filters) return LISTING_TYPE_CLAUSE;
@@ -32,7 +36,7 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
     .split(",")
     .map((c) => c.trim())
     .filter(Boolean)
-    .filter((c) => !c.startsWith("listingType="));
+    .filter((c) => !c.startsWith(`${PRODUCT_FIELDS.LISTING_TYPE}=`));
   parts.push(LISTING_TYPE_CLAUSE);
   return parts.join(",");
 }

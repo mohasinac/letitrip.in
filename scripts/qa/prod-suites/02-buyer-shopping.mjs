@@ -5,12 +5,13 @@
 
 import { login, request } from "./_http.mjs";
 import { registerCleanup, smokeId } from "./_fixtures.mjs";
+import { LISTING_TYPES, PRODUCT_STATUS } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
 async function findStandardProduct() {
-  const r = await request("GET", "/api/products?pageSize=20&listingType=standard&inStock=true");
+  const r = await request("GET", `/api/products?pageSize=20&listingType=${LISTING_TYPES.STANDARD}&inStock=true`);
   return (r.body?.data?.items ?? []).find((p) => (p.availableQuantity ?? 0) >= 3);
 }
 
@@ -49,7 +50,7 @@ export async function run() {
   // ── Wishlist ──────────────────────────────────────────────────────
   const wAdd = await request("POST", "/api/wishlist", {
     jar,
-    json: { productId: product.id, productType: "standard" },
+    json: { productId: product.id, productType: LISTING_TYPES.STANDARD },
   });
   rec(
     "wishlist add",

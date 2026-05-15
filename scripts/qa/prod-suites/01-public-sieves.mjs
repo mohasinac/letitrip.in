@@ -16,6 +16,10 @@ import {
   SEEDED_TIER0_CATEGORIES,
   SEEDED_STORES_WITH_PRODUCTS,
   SLUG_PREFIXES,
+  PRODUCT_STATUS,
+  PRODUCT_CONDITION,
+  SIEVE_OP,
+  sortBy,
 } from "../_constants.mjs";
 
 const results = [];
@@ -192,6 +196,19 @@ export async function run() {
     (it) => it.featured === true,
   );
 
+  // Multi-value condition filter — verifies the pipe-bug fix (condition==new,condition==used not condition==new|used)
+  const multiCondR = await request("GET", `/api/products?pageSize=12&listingType=${LISTING_TYPES.STANDARD}&condition=new|used`);
+  rec(
+    "products multi-value condition filter returns results",
+    multiCondR.status === 200 && countOf(multiCondR.body) > 0,
+    `n=${countOf(multiCondR.body)}`,
+  );
+  assertEvery(
+    "products multi-value condition — every item.condition is new or used",
+    itemsOf(multiCondR.body),
+    (it) => it.condition === PRODUCT_CONDITION.NEW || it.condition === PRODUCT_CONDITION.USED,
+  );
+
   // Title query (`q`) — every item title must contain the substring (case-insensitive)
   const qR = await request("GET", "/api/products?pageSize=12&q=pokemon");
   rec("products q=pokemon status", qR.status === 200, `count=${countOf(qR.body)}`);
@@ -202,21 +219,21 @@ export async function run() {
   );
 
   // ── PRODUCTS — sort order verification ───────────────────────────────────
-  const sortAsc = await request("GET", "/api/products?pageSize=10&sorts=price");
+  const sortAsc = await request("GET", `/api/products?pageSize=10&sorts=${sortBy("price", "ASC")}`);
   assertSort(
     "products sort=price ascending",
     itemsOf(sortAsc.body),
     "price",
     "asc",
   );
-  const sortDesc = await request("GET", "/api/products?pageSize=10&sorts=-price");
+  const sortDesc = await request("GET", `/api/products?pageSize=10&sorts=${sortBy("price")}`);
   assertSort(
     "products sort=-price descending",
     itemsOf(sortDesc.body),
     "price",
     "desc",
   );
-  const sortDate = await request("GET", "/api/products?pageSize=10&sorts=-createdAt");
+  const sortDate = await request("GET", `/api/products?pageSize=10&sorts=${sortBy("createdAt")}`);
   assertSort(
     "products sort=-createdAt descending",
     itemsOf(sortDate.body),
@@ -225,8 +242,8 @@ export async function run() {
   );
 
   // ── PRODUCTS — pagination integrity ──────────────────────────────────────
-  const p1 = await request("GET", "/api/products?pageSize=5&page=1&sorts=-createdAt");
-  const p2 = await request("GET", "/api/products?pageSize=5&page=2&sorts=-createdAt");
+  const p1 = await request("GET", `/api/products?pageSize=5&page=1&sorts=${sortBy("createdAt")}`);
+  const p2 = await request("GET", `/api/products?pageSize=5&page=2&sorts=${sortBy("createdAt")}`);
   assertDisjoint(
     "products pagination — page1 ∩ page2 = ∅",
     itemsOf(p1.body),
@@ -429,13 +446,13 @@ export async function run() {
   );
   await sieveDiff(
     "products listingType",
-    `/api/products?pageSize=12&listingType=${LISTING_TYPES.AUCTION}&sorts=-createdAt`,
-    `/api/products?pageSize=12&listingType=${LISTING_TYPES.STANDARD}&sorts=-createdAt`,
+    `/api/products?pageSize=12&listingType=${LISTING_TYPES.AUCTION}&sorts=${sortBy("createdAt")}`,
+    `/api/products?pageSize=12&listingType=${LISTING_TYPES.STANDARD}&sorts=${sortBy("createdAt")}`,
   );
   await sieveDiff(
     "products price range minPrice vs maxPrice",
-    "/api/products?pageSize=12&minPrice=100000&sorts=-createdAt",
-    "/api/products?pageSize=12&maxPrice=500000&sorts=-createdAt",
+    `/api/products?pageSize=12&minPrice=100000&sorts=${sortBy("createdAt")}`,
+    `/api/products?pageSize=12&maxPrice=500000&sorts=${sortBy("createdAt")}`,
   );
   await sieveDiff(
     "categories tier=0 vs tier=1",

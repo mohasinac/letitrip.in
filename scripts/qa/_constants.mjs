@@ -190,3 +190,81 @@ export const LISTING_COLLECTIONS = Object.freeze({
   SCAMMERS: "scammers",
   STORES: "stores",
 });
+
+// ── Product status values ──────────────────────────────────────────────────
+// Mirrors PRODUCT_FIELDS.STATUS_VALUES in appkit/src/constants/field-names.ts
+export const PRODUCT_STATUS = Object.freeze({
+  DRAFT: "draft",
+  PUBLISHED: "published",
+  OUT_OF_STOCK: "out_of_stock",
+  DISCONTINUED: "discontinued",
+  SOLD: "sold",
+});
+
+// ── Product condition values ────────────────────────────────────────────────
+// Mirrors PRODUCT_FIELDS.CONDITION_VALUES
+export const PRODUCT_CONDITION = Object.freeze({
+  NEW: "new",
+  USED: "used",
+  REFURBISHED: "refurbished",
+  BROKEN: "broken",
+});
+
+// ── Order status values ────────────────────────────────────────────────────
+// Mirrors ORDER_FIELDS.STATUS_VALUES
+export const ORDER_STATUS = Object.freeze({
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  PROCESSING: "processing",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
+  RETURNED: "returned",
+  RETURN_REQUESTED: "return_requested",
+  REFUNDED: "refunded",
+});
+
+// ── Review status values ────────────────────────────────────────────────────
+// Mirrors REVIEW_FIELDS.STATUS_VALUES
+export const REVIEW_STATUS = Object.freeze({
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+});
+
+// ── Store status values ─────────────────────────────────────────────────────
+// Mirrors STORE_FIELDS.STATUS_VALUES (from appkit features/stores)
+export const STORE_STATUS = Object.freeze({
+  ACTIVE: "active",
+  PENDING: "pending",
+  SUSPENDED: "suspended",
+  REJECTED: "rejected",
+});
+
+// ── Sieve operators ─────────────────────────────────────────────────────────
+// Mirrors SIEVE_OP in appkit/src/utils/sieve-builder.ts.
+// NOTE: Pipe `|` is ONLY valid for CONTAINS/STARTS/ENDS (and CI variants).
+// Multi-value equality: use separate clauses (field==v1,field==v2 NOT field==v1|v2).
+export const SIEVE_OP = Object.freeze({
+  EQ: "==",
+  NEQ: "!=",
+  GT: ">",
+  LT: "<",
+  GTE: ">=",
+  LTE: "<=",
+  CONTAINS: "@=",
+  STARTS: "_=",
+  ENDS: "_-=",
+  CONTAINS_CI: "@=*",
+  STARTS_CI: "_=*",
+  ENDS_CI: "_-=*",
+});
+
+// ── View modes ───────────────────────────────────────────────────────────────
+// Mirrors VIEW_MODE in appkit/src/constants/table-keys.ts
+export const VIEW_MODE = Object.freeze({ GRID: "grid", LIST: "list", TABLE: "table" });
+
+// ── Sort direction + helper ──────────────────────────────────────────────────
+// Mirrors SORT_DIR / sortBy() in appkit/src/constants/sort.ts
+export const SORT_DIR = Object.freeze({ ASC: "", DESC: "-" });
+export const sortBy = (field, dir = "DESC") => `${SORT_DIR[dir]}${field}`;

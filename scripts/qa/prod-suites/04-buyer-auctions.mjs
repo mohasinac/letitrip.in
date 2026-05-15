@@ -4,6 +4,7 @@
  */
 
 import { login, request } from "./_http.mjs";
+import { LISTING_TYPES } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
@@ -12,7 +13,7 @@ export async function run() {
   const { jar } = await login("buyer");
 
   // List auctions
-  const aucList = await request("GET", "/api/products?pageSize=10&listingType=auction");
+  const aucList = await request("GET", `/api/products?pageSize=10&listingType=${LISTING_TYPES.AUCTION}`);
   const auctions = aucList.body?.data?.items ?? [];
   rec(
     "auctions list",

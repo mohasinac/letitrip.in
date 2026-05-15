@@ -9,20 +9,21 @@
 import { login, request } from "./_http.mjs";
 import { seedConsentOtp, clearConsentOtp } from "./_otp-bypass.mjs";
 import { registerCleanup, smokeId } from "./_fixtures.mjs";
+import { LISTING_TYPES, PRODUCT_STATUS } from "../_constants.mjs";
 
 const results = [];
 const rec = (name, ok, detail) =>
   results.push({ name, ok, detail: detail ?? "" });
 
 async function findStandardProduct() {
-  const res = await request("GET", "/api/products?pageSize=40&listingType=standard");
+  const res = await request("GET", `/api/products?pageSize=40&listingType=${LISTING_TYPES.STANDARD}`);
   if (res.status !== 200) return null;
   const items = res.body?.data?.items ?? [];
   return items.find(
     (p) =>
-      p.listingType === "standard" &&
+      p.listingType === LISTING_TYPES.STANDARD &&
       (p.availableQuantity ?? 0) >= 5 &&
-      p.status === "published",
+      p.status === PRODUCT_STATUS.PUBLISHED,
   );
 }
 
