@@ -635,21 +635,19 @@ export function CartRouteClient() {
   );
 
   // ---------------------------------------------------------------------------
-  // Tab split — cart (standard + pre-order) · auctions · immediate (raffle)
+  // Tab split — cart (standard + pre-order) · auctions
+  // Raffles/bundles are immediate buy-nows; they skip the cart entirely.
   // ---------------------------------------------------------------------------
-  const [activeTab, setActiveTab] = useState<"cart" | "auctions" | "immediate">("cart");
+  const [activeTab, setActiveTab] = useState<"cart" | "auctions">("cart");
 
-  const [cartBucket, auctionBucket, immediateBucket] = useMemo(() => {
+  const [cartBucket, auctionBucket] = useMemo(() => {
     const cart: CartItemWithListingType[] = [];
     const auctions: CartItemWithListingType[] = [];
-    const immediate: CartItemWithListingType[] = [];
     for (const item of inStockItems) {
-      const lt = item.listingType ?? "standard";
-      if (lt === "auction") auctions.push(item);
-      else if (lt === "prize-draw") immediate.push(item);
-      else cart.push(item); // standard + pre-order
+      if ((item.listingType ?? "standard") === "auction") auctions.push(item);
+      else cart.push(item);
     }
-    return [cart, auctions, immediate];
+    return [cart, auctions];
   }, [inStockItems]);
 
   const filteredCartItems = useMemo(
@@ -659,10 +657,6 @@ export function CartRouteClient() {
   const filteredAuctions = useMemo(
     () => (normalizedQuery ? auctionBucket.filter(matchesSearch) : auctionBucket),
     [auctionBucket, normalizedQuery, matchesSearch],
-  );
-  const filteredImmediate = useMemo(
-    () => (normalizedQuery ? immediateBucket.filter(matchesSearch) : immediateBucket),
-    [immediateBucket, normalizedQuery, matchesSearch],
   );
   const filteredOos = useMemo(
     () => (normalizedQuery ? oosItems.filter(matchesSearch) : oosItems),
@@ -675,7 +669,6 @@ export function CartRouteClient() {
   const sellerGroupsCart = useMemo(() => groupBySeller(filteredCartItems), [filteredCartItems]);
   const sellerGroupsOos = useMemo(() => groupBySeller(filteredOos), [filteredOos]);
   const sellerGroupsAuctions = useMemo(() => groupBySeller(filteredAuctions), [filteredAuctions]);
-  const sellerGroupsImmediate = useMemo(() => groupBySeller(filteredImmediate), [filteredImmediate]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -742,14 +735,14 @@ export function CartRouteClient() {
 
           {itemsLoading ? (
             <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
-          ) : normalizedQuery && filteredInStock.length === 0 && filteredOos.length === 0 ? (
+          ) : normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0 ? (
             <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
               No items match &ldquo;{searchQuery.trim()}&rdquo;
             </Text>
           ) : (
             <>
               {/* --- In-stock seller groups --- */}
-              {sellerGroupsInStock.map((group) => (
+              {sellerGroupsCart.map((group) => (
                 <SellerGroupSection
                   key={group.sellerId}
                   group={group}
