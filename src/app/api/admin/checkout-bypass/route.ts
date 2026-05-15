@@ -6,6 +6,7 @@ import {
   siteSettingsRepository,
   createCheckoutOrderAction,
   ApiErrors,
+  PaymentMethodValues,
 } from "@mohasinac/appkit";
 import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
 
@@ -67,7 +68,7 @@ export const POST = withProviders(
           "Admin",
         userEmail: user!.email ?? "",
         addressId,
-        paymentMethod: "admin_bypass",
+        paymentMethod: PaymentMethodValues.ADMIN_BYPASS,
         notes,
         excludedProductIds,
         adminBypass: true,

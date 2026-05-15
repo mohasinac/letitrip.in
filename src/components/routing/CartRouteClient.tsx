@@ -607,10 +607,75 @@ export function CartRouteClient() {
   );
 
   // ---------------------------------------------------------------------------
+  // Client-side search filter — title · seller · price · listing type
+  // ---------------------------------------------------------------------------
+  const [searchQuery, setSearchQuery] = useState("");
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  const matchesSearch = useCallback(
+    (item: CartItemWithListingType): boolean => {
+      if (!normalizedQuery) return true;
+      const q = normalizedQuery;
+      if ((item.meta.title ?? "").toLowerCase().includes(q)) return true;
+      const seller = ((item.meta.attributes?.sellerName as string | undefined) ?? "").toLowerCase();
+      if (seller.includes(q)) return true;
+      const price = item.meta.price;
+      if (String(Math.round(price)).includes(q) || price.toFixed(2).includes(q)) return true;
+      const lt = item.listingType ?? "standard";
+      const keywords: Record<string, string[]> = {
+        auction:      ["auction"],
+        "pre-order":  ["pre-order", "preorder", "pre order"],
+        standard:     ["standard", "product"],
+        "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
+      };
+      if ((keywords[lt] ?? [lt]).some((kw) => kw.includes(q))) return true;
+      return false;
+    },
+    [normalizedQuery],
+  );
+
+  // ---------------------------------------------------------------------------
+  // Tab split — cart (standard + pre-order) · auctions · immediate (raffle)
+  // ---------------------------------------------------------------------------
+  const [activeTab, setActiveTab] = useState<"cart" | "auctions" | "immediate">("cart");
+
+  const [cartBucket, auctionBucket, immediateBucket] = useMemo(() => {
+    const cart: CartItemWithListingType[] = [];
+    const auctions: CartItemWithListingType[] = [];
+    const immediate: CartItemWithListingType[] = [];
+    for (const item of inStockItems) {
+      const lt = item.listingType ?? "standard";
+      if (lt === "auction") auctions.push(item);
+      else if (lt === "prize-draw") immediate.push(item);
+      else cart.push(item); // standard + pre-order
+    }
+    return [cart, auctions, immediate];
+  }, [inStockItems]);
+
+  const filteredCartItems = useMemo(
+    () => (normalizedQuery ? cartBucket.filter(matchesSearch) : cartBucket),
+    [cartBucket, normalizedQuery, matchesSearch],
+  );
+  const filteredAuctions = useMemo(
+    () => (normalizedQuery ? auctionBucket.filter(matchesSearch) : auctionBucket),
+    [auctionBucket, normalizedQuery, matchesSearch],
+  );
+  const filteredImmediate = useMemo(
+    () => (normalizedQuery ? immediateBucket.filter(matchesSearch) : immediateBucket),
+    [immediateBucket, normalizedQuery, matchesSearch],
+  );
+  const filteredOos = useMemo(
+    () => (normalizedQuery ? oosItems.filter(matchesSearch) : oosItems),
+    [oosItems, normalizedQuery, matchesSearch],
+  );
+
+  // ---------------------------------------------------------------------------
   // Render helpers — W4 product link
   // ---------------------------------------------------------------------------
-  const sellerGroupsInStock = useMemo(() => groupBySeller(inStockItems), [inStockItems]);
-  const sellerGroupsOos = useMemo(() => groupBySeller(oosItems), [oosItems]);
+  const sellerGroupsCart = useMemo(() => groupBySeller(filteredCartItems), [filteredCartItems]);
+  const sellerGroupsOos = useMemo(() => groupBySeller(filteredOos), [filteredOos]);
+  const sellerGroupsAuctions = useMemo(() => groupBySeller(filteredAuctions), [filteredAuctions]);
+  const sellerGroupsImmediate = useMemo(() => groupBySeller(filteredImmediate), [filteredImmediate]);
 
   // ---------------------------------------------------------------------------
   // Render
@@ -622,6 +687,17 @@ export function CartRouteClient() {
       isLoading={isLoading}
       renderItems={(itemsLoading) => (
         <Div className="space-y-6">
+          {/* Search filter */}
+          {!isEmpty && !itemsLoading && cartItems.length > 1 && (
+            <Input
+              type="search"
+              placeholder="Search by name, store, price or type (auction, raffle…)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full text-sm"
+            />
+          )}
+
           {/* Select-all + bulk actions bar */}
           {!isEmpty && !itemsLoading && (
             <Div className="flex flex-wrap items-center gap-3">
@@ -666,6 +742,10 @@ export function CartRouteClient() {
 
           {itemsLoading ? (
             <Div className="h-32 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
+          ) : normalizedQuery && filteredInStock.length === 0 && filteredOos.length === 0 ? (
+            <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+              No items match &ldquo;{searchQuery.trim()}&rdquo;
+            </Text>
           ) : (
             <>
               {/* --- In-stock seller groups --- */}

@@ -34,20 +34,17 @@ export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)[
 
     const { amount, currency, receipt } = body!;
 
-    // Apply Razorpay processing fee from site settings (default 5%).
+    // Platform fee (our cut) + 18% GST on that fee, floored by per-transaction minimum.
     const siteSettings = await siteSettingsRepository.getSingleton();
-    const razorpayFeePercent =
-      siteSettings?.commissions?.razorpayFeePercent ?? 5;
-    const minimumOrderFee = Math.max(0, siteSettings?.commissions?.minimumOrderFee ?? 0);
+    const platformFeePercent = siteSettings?.commissions?.platformFeePercent ?? 5;
+    const gstPercent = siteSettings?.commissions?.gstPercent ?? 18;
+    const minimumTransactionFee = Math.max(0, siteSettings?.commissions?.minimumTransactionFee ?? 0);
 
-    const rawFee = amount * (razorpayFeePercent / 100);
-    if (rawFee < 0) throw ApiErrors.badRequest("Platform fee cannot be negative");
-    const platformFee = Math.round(rawFee * 100) / 100;
-
-    // Enforce minimum order amount (after fee). If both subtotal and fee are 0
-    // but minimumOrderFee > 0, the user still pays the minimum.
-    const rawTotal = amount + platformFee;
-    const totalAmount = Math.max(rawTotal, minimumOrderFee);
+    const platformFee = Math.round(amount * (platformFeePercent / 100) * 100) / 100;
+    const gstOnFee = Math.round(platformFee * (gstPercent / 100) * 100) / 100;
+    const rawTotal = amount + platformFee + gstOnFee;
+    // Floor: total charge must be at least amount + minimumTransactionFee.
+    const totalAmount = Math.max(rawTotal, amount + minimumTransactionFee);
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
@@ -59,7 +56,7 @@ export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)[
     });
 
     serverLogger.info(
-      `Payment order created: ${razorpayOrder.id} for user ${user!.uid} — base ₹${amount} + fee ₹${platformFee} = ₹${totalAmount}`,
+      `Payment order created: ${razorpayOrder.id} for user ${user!.uid} — base ₹${amount} + fee ₹${platformFee} + GST ₹${gstOnFee} = ₹${totalAmount}`,
     );
 
     return successResponse({
@@ -68,6 +65,7 @@ export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)[
       currency: razorpayOrder.currency,
       keyId,
       platformFee,
+      gstOnFee,
       baseAmount: amount,
     });
   },

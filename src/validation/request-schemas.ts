@@ -335,11 +335,21 @@ export const siteSettingsUpdateSchema = z
       .optional(),
     commissions: z
       .object({
-        razorpayFeePercent: z.number().min(0).max(100),
+        platformFeePercent: z.number().min(0).max(100),
+        gstPercent: z.number().min(0).max(100),
+        minimumTransactionFee: z.number().min(0),
+        gatewayFeePercent: z.number().min(0).max(100),
         codDepositPercent: z.number().min(0).max(100),
         sellerShippingFixed: z.number().min(0),
         platformShippingPercent: z.number().min(0).max(100),
         platformShippingFixedMin: z.number().min(0),
+        autoPayoutWindowDays: z.number().min(0).optional(),
+        payoutHoldDays: z.number().min(0).optional(),
+        minPayoutAmount: z.number().min(0).optional(),
+        auctionListingFee: z.number().min(0).optional(),
+        preOrderListingFee: z.number().min(0).optional(),
+        featuredSlotFee: z.number().min(0).optional(),
+        promotedSlotFee: z.number().min(0).optional(),
       })
       .optional(),
     credentials: z

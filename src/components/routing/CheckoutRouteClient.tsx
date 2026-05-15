@@ -137,7 +137,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
   const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
 
   const handleSelectAddress = useCallback(
-    (addressId: string, address: Address) => {
+    (_addressId: string, address: Address) => {
       setSelectedAddress(address);
     },
     [],
