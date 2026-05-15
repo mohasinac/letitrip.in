@@ -160,6 +160,21 @@ After deploy: smoke-test the production URL for all touched routes.
 - Fixed `orders/schemas/firestore.ts` curly-quote corruption (introduced by Edit tool). Fixed `package.json` back to `file:./appkit` local link. Rebuilt appkit dist. audit-code-quality baseline bumped 432→434.
 - `npm run check` exits 0. appkit v2.7.17.
 
+### ✅ LAST COMPLETED — S-fees-rename: Fee schema rename + GST-on-fee + admin UI consolidation (2026-05-15)
+
+- `razorpayFeePercent` → `platformFeePercent` (our cut %, not the gateway fee).
+- `minimumOrderFee` → `minimumTransactionFee` (per-gateway-transaction floor in rupees).
+- GST now applied on platform fee only: `total = base + platformFee + platformFee × gstPercent/100`.
+- Refund deduction uses `effectiveRate = platformFeePercent × (1 + gstPercent/100)`.
+- `resolvePaymentFee()` returns `{ baseAmount, platformFee, gstOnFee, totalAmount }`.
+- `AdminSiteSettingsView` now reads/writes `commissions` key (was reading phantom `fees` key — admin changes had no effect on checkout). Added GST % + minimum transaction fee inputs.
+- Zod validation schema updated; `payoutHoldDays/minPayoutAmount/listing-fees` added to commissions.
+- `PAYMENTS_DEFAULT_RAZORPAY_FEE_PERCENT` → `PAYMENTS_DEFAULT_PLATFORM_FEE_PERCENT`; `PAYMENTS_DEFAULT_GST_PERCENT = 18` added.
+- `BundleDynamicRuleEditor`: added `prize-draw` to listing type filter options (was causing TS2322).
+- `bundle.actions.ts`: fixed `ROUTES.PUBLIC.CHECKOUT` → `ROUTES.USER.CHECKOUT` (pre-existing TS error).
+- Seed: `platformFeePercent=5, gstPercent=18, minimumTransactionFee=0, gatewayFeePercent=2, payoutHoldDays=2, minPayoutAmount=100, featuredSlotFee=999, promotedSlotFee=499`.
+- `npm run check` exits 0. appkit v2.7.18.
+
 ### 🔄 CURRENT — S-SBUNI-RULES: Per-type cart/checkout/order rule registry
 
 ### ⏳ NEXT UP
