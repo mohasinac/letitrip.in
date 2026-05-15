@@ -133,31 +133,30 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-auth-gate-ui: Admin settings pages + cart CSS polish + permission fix (2026-05-15)
+### ✅ LAST COMPLETED — SB-UNI-Phase2: Classified / digital-code / live listing flows (2026-05-15)
 
-- Cart: extracted `EMPTY_STATE_CLASS`, `STORE_CARD_CLASS`, `ERROR_TEXT_CLASS` constants; replaced all `text-red-600 dark:text-red-400` with `ERROR_TEXT_CLASS`.
-- Admin settings UI: `src/app/[locale]/admin/settings/actions/page.tsx` + `navigation/page.tsx` — `ActionPermissionsManager` / `NavPermissionsManager`; guarded with `makeAdminSectionLayout("admin:settings:write")`.
-- `src/actions/admin-settings.actions.ts` — `updateActionConfigAction` + `updateNavConfigAction` server actions.
-- `src/app/[locale]/layout.tsx` — `getDisabledRoutes()` middleware check; returns 404 for nav-disabled public routes.
-- `src/constants/navigation.tsx` — "Action Permissions" + "Nav Permissions" added to Site section of admin nav.
-- appkit v2.7.24: added `"admin:settings:write"` to `Permission` type + `site_manager` preset + route-permission map; `ActionPermissionsManager`, `NavPermissionsManager` exported; `ROUTES.ADMIN.SETTINGS_ACTIONS` + `SETTINGS_NAVIGATION` added.
-- `npm run check` exits 0; `next build` exits 0.
+- **SB-UNI-M** classified contact-seller: `appkit/_internal/server/features/classified/` (data.ts + actions.ts) · `conversationsRepository.findOrCreateByContext()` stable composite ID · `ClassifiedDetailView` client view with "Contact Seller" → conversation link · `src/app/[locale]/classified/[slug]/page.tsx` shim.
+- **SB-UNI-N** digital-code reveal: `ProductCodeDocument` + `PRODUCT_CODES_SUBCOLLECTION` added to `firestore.ts` · `POST /api/store/products/[id]/codes` (Z1 pool ingestion) · `GET /api/orders/[id]/code` (reveal) · `DigitalCodeDetailView` + `CodeRevealPanel` · checkout `cartIsDigitalOnly()` short-circuits address + OTP for digital-only carts · `src/app/[locale]/digital-codes/[slug]/page.tsx`.
+- **SB-UNI-O** live jurisdiction: `live.rule.ts` `cartEligible` flipped to `true` · `assertLiveJurisdiction()` pre-transaction gate in checkout actions (COD + Razorpay paths) · `LiveItemDetailView` client view · `src/app/[locale]/live/[slug]/page.tsx`.
+- Routes: 6 PUBLIC + 1 STORE added to `route-map.ts`; `API_ROUTES.STORE.PRODUCT_CODES` + `API_ROUTES.ORDERS.CODE` added.
+- Seed: 1 classified (Funko lot bangalore meetup) + 1 digital-code (Cyberpunk 2077 Steam key, pool=50) + 1 live (leucistic axolotl, jurisdiction: MH/KA/TN) appended to `productsStandardSeedData`.
+- appkit exports wired in `index.ts` (server functions/types) + `client.ts` (views). `npm run check` exits 0.
 
-### ✅ Previous — S-auth-gate: useAuthGate + audit scripts (2026-05-15)
+### ✅ Previous — S-auth-gate-ui: Admin settings pages + cart CSS polish (2026-05-15)
 
-- `CartRouteClient.tsx`: `useAuthGate`, `LoginRequiredModal` for guest checkout; audit-auth-gates.mjs + audit-inline-actions.mjs stop-hook gates added.
-- appkit `^2.7.19 → ^2.7.20` (`filterNavItems`, `checkActionAllowed`, `useAuthGate`, site-settings server utils).
+- Cart: extracted `EMPTY_STATE_CLASS`, `STORE_CARD_CLASS`, `ERROR_TEXT_CLASS` constants.
+- Admin settings UI: `ActionPermissionsManager` / `NavPermissionsManager`; `updateActionConfigAction` + `updateNavConfigAction` server actions; `getDisabledRoutes()` in layout.tsx.
+- appkit v2.7.24: `"admin:settings:write"` permission, `ROUTES.ADMIN.SETTINGS_ACTIONS` + `SETTINGS_NAVIGATION`.
 
-### 🔄 CURRENT — SB-UNI-Phase2: Classified / digital-code / live listing flows
+### 🔄 CURRENT — Tier SB-UNI Phase 3–9: Per-type detail/list views + seller forms
 
-*(S-SBUNI-RULES all 6 phases completed 2026-05-13 — checkout rule registry, shipping picker, refund events, seeding. Phase 2 is the next SB-UNI cohort.)*
+*(SB-UNI-Phase2 completed 2026-05-15 — classified/digital-code/live flows all landed. Pull Phase 3 tasks individually when prioritised.)*
 
 ### ⏳ NEXT UP
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **SB-UNI-Phase2** | SB-UNI-M (classified contact-seller flow) · SB-UNI-N (digital-code reveal + skip-shipping) · SB-UNI-O (live-item jurisdiction). Plan: `~/.claude/plans/also-add-rules-for-golden-clarke.md` (Phase 2 section). | Phase 1 (RULES/SCHEMA/CONSUMERS/SHIPPING/CART-UI/REFUNDS) fully closed. Phase 2 is the next cohort. |
-| – | **Tier SB-UNI Phase 3–9** *(pull individually when prioritised)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Each is its own session. |
+| 1 | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Phase 2 (M/N/O) now closed. Pull next sub-tier when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised. |

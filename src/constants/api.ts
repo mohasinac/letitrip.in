@@ -108,6 +108,8 @@ export const API_ROUTES = {
     PRODUCT_GROUP: (id: string) => `/api/store/products/${id}/group`,
     PRODUCT_GROUP_CHILDREN: (id: string) => `/api/store/products/${id}/group/children`,
     PRODUCT_GROUP_CHILD: (id: string, childId: string) => `/api/store/products/${id}/group/children/${childId}`,
+    // SB-UNI-N — digital-code pool management (Z1)
+    PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
     TEMPLATES: "/api/store/templates",
     TEMPLATE_BY_ID: (id: string) => `/api/store/templates/${id}`,
     PROFILE: "/api/store/profile",
@@ -128,6 +130,10 @@ export const API_ROUTES = {
     LIST: "/api/prize-draws",
     BY_ID: (id: string) => `/api/prize-draws/${id}`,
     REVEAL: (id: string) => `/api/prize-draws/${id}/reveal`,
+  },
+  ORDERS: {
+    // SB-UNI-N — reveal a digital code for a confirmed order
+    CODE: (id: string) => `/api/orders/${id}/code`,
   },
   USER: {
     PROFILE: "/api/user/profile",
