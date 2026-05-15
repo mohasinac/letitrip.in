@@ -7,15 +7,18 @@ import {
   OrdersList,
   ROUTES,
 } from "@mohasinac/appkit/client";
+import { ShoppingBag, Heart, MapPin, Settings, MessageCircle, Bell } from "lucide-react";
 import Link from "next/link";
 
+const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
+
 const NAV_LINKS = [
-  { label: "My Orders", href: ROUTES.USER.ORDERS },
-  { label: "Wishlist", href: ROUTES.USER.WISHLIST },
-  { label: "Addresses", href: ROUTES.USER.ADDRESSES },
-  { label: "Settings", href: ROUTES.USER.SETTINGS },
-  { label: "Messages", href: ROUTES.USER.MESSAGES },
-  { label: "Notifications", href: ROUTES.USER.NOTIFICATIONS },
+  { label: "My Orders",    href: ROUTES.USER.ORDERS,        Icon: ShoppingBag },
+  { label: "Wishlist",     href: ROUTES.USER.WISHLIST,       Icon: Heart },
+  { label: "Addresses",    href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
+  { label: "Settings",     href: ROUTES.USER.SETTINGS,       Icon: Settings },
+  { label: "Messages",     href: ROUTES.USER.MESSAGES,       Icon: MessageCircle },
+  { label: "Notifications",href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },
 ];
 
 export default function Page() {
@@ -27,24 +30,29 @@ export default function Page() {
       labels={{ title: "My Account" }}
       renderProfile={() =>
         userLoading ? null : user ? (
-          <div className="flex items-center gap-4 rounded-xl border border-neutral-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
+            {/* gradient top accent */}
+            <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
             {user.photoURL ? (
               <img
                 src={user.photoURL}
                 alt={user.displayName ?? ""}
-                className="h-14 w-14 rounded-full object-cover"
+                className="h-14 w-14 rounded-full object-cover ring-2 ring-[var(--appkit-color-border)]"
               />
             ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary text-xl font-bold">
+              <div
+                className="flex h-14 w-14 items-center justify-center rounded-full text-white text-xl font-bold flex-shrink-0"
+                style={{ background: BRAND_GRAD }}
+              >
                 {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
               </div>
             )}
-            <div>
-              <div className="font-semibold text-neutral-900 dark:text-zinc-100">
+            <div className="min-w-0">
+              <div className="font-semibold text-[var(--appkit-color-text)] truncate">
                 {user.displayName ?? "My Account"}
               </div>
               {user.email && (
-                <div className="text-sm text-neutral-500 dark:text-zinc-400">{user.email}</div>
+                <div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</div>
               )}
             </div>
           </div>
@@ -52,12 +60,15 @@ export default function Page() {
       }
       renderNav={() => (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {NAV_LINKS.map(({ label, href }) => (
+          {NAV_LINKS.map(({ label, href, Icon }) => (
             <Link
               key={label}
               href={String(href)}
-              className="rounded-xl border border-neutral-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm font-medium text-neutral-700 dark:text-zinc-300 hover:border-primary hover:text-primary transition-colors"
+              className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
+              <span className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
+                <Icon className="w-3.5 h-3.5 text-white" />
+              </span>
               {label}
             </Link>
           ))}
@@ -67,14 +78,14 @@ export default function Page() {
         orders.length > 0 || ordersLoading ? (
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-semibold text-neutral-700 dark:text-zinc-300">
+              <span className="text-sm font-semibold text-[var(--appkit-color-text)]">
                 Recent Orders
               </span>
               <Link
                 href={String(ROUTES.USER.ORDERS)}
-                className="text-xs text-primary hover:underline"
+                className="text-xs text-[var(--appkit-color-primary)] hover:underline"
               >
-                View all
+                View all →
               </Link>
             </div>
             <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />

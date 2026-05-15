@@ -2,7 +2,7 @@
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   Button,
   CartItemRow,
@@ -16,11 +16,12 @@ import {
   useCartQuery,
   useGuestCart,
   useGuestCartMerge,
+  useGuestWishlist,
   useToast,
   ROUTES,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -74,7 +75,7 @@ interface ServerCartResponse {
 }
 
 interface ValidateResponse {
-  data: { stale: string[]; outOfStock: string[] };
+  data: { stale: string[]; moveable: string[] };
 }
 
 // ---------------------------------------------------------------------------
@@ -189,10 +190,16 @@ export function CartRouteClient() {
     : cartItems.reduce((sum, i) => sum + i.meta.price * i.quantity, 0);
 
   // ---------------------------------------------------------------------------
-  // W1: Stale validation — run once on cart load
+  // W1: Stale + unavailability validation — run once on cart load
   // ---------------------------------------------------------------------------
   const validatedRef = useRef(false);
-  const [outOfStockIds, setOutOfStockIds] = useState<Set<string>>(new Set());
+  const guestWishlist = useGuestWishlist();
+  /**
+   * productIds that are temporarily unavailable (sold/OOS/no-stock) but NOT
+   * deleted. These items are moved to wishlist on validation; if the move fails
+   * they stay here so the per-item "Move to wishlist" button still shows.
+   */
+  const [moveableIds, setMoveableIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (loading || (isAuthenticated && serverLoading)) return;
@@ -211,12 +218,11 @@ export function CartRouteClient() {
         });
         if (!res.ok) return;
         const data = (await res.json()) as ValidateResponse;
-        const { stale, outOfStock } = data.data;
+        const { stale, moveable } = data.data;
 
-        // --- Remove stale items ---
+        // --- Remove truly unpublished items from cart (and wishlist is handled server-side) ---
         if (stale.length > 0) {
           if (isAuthenticated) {
-            // Find itemIds for stale productIds and call DELETE for each
             const staleSet = new Set(stale);
             const staleItems = cartItems.filter((i) => staleSet.has(i.productId));
             await Promise.allSettled(
@@ -230,11 +236,8 @@ export function CartRouteClient() {
             );
             refetch?.();
           } else {
-            // Guest cart — remove from localStorage
             const staleSet = new Set(stale);
-            for (const productId of staleSet) {
-              guest.remove(productId);
-            }
+            for (const productId of staleSet) guest.remove(productId);
           }
           showToast(
             `${stale.length} item${stale.length !== 1 ? "s" : ""} removed — no longer available.`,
@@ -242,9 +245,54 @@ export function CartRouteClient() {
           );
         }
 
-        // --- Mark out-of-stock items ---
-        if (outOfStock.length > 0) {
-          setOutOfStockIds(new Set(outOfStock));
+        // --- Move unavailable items (sold/OOS/no-stock) from cart to wishlist ---
+        if (moveable.length > 0) {
+          const moveSet = new Set(moveable);
+          const moveItems = cartItems.filter((i) => moveSet.has(i.productId));
+          const failedIds: string[] = [];
+
+          if (isAuthenticated) {
+            await Promise.allSettled(
+              moveItems.map(async (item) => {
+                const cartItemId = item.itemId ?? item.id;
+                // Try to add to wishlist first; only remove from cart on success
+                const wishlistRes = await fetch("/api/wishlist", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ productId: item.productId }),
+                  credentials: "include",
+                });
+                if (!wishlistRes.ok) {
+                  failedIds.push(item.productId);
+                  return;
+                }
+                await fetch(`/api/cart/${encodeURIComponent(cartItemId)}`, {
+                  method: "DELETE",
+                  credentials: "include",
+                });
+              }),
+            );
+            if (moveItems.length - failedIds.length > 0) refetch?.();
+          } else {
+            // Guest: add to localStorage wishlist and remove from guest cart
+            for (const item of moveItems) {
+              guestWishlist.add(item.productId, "product", {
+                title: item.meta.title,
+                image: item.meta.image,
+              });
+              guest.remove(item.productId);
+            }
+          }
+
+          if (failedIds.length > 0) setMoveableIds(new Set(failedIds));
+
+          const movedCount = moveItems.length - failedIds.length;
+          if (movedCount > 0) {
+            showToast(
+              `${movedCount} unavailable item${movedCount !== 1 ? "s" : ""} saved to your wishlist.`,
+              "info",
+            );
+          }
         }
       } catch {
         // Validation is best-effort; don't surface errors
@@ -259,17 +307,17 @@ export function CartRouteClient() {
   }, [user?.uid]);
 
   // ---------------------------------------------------------------------------
-  // W3: Split items into in-stock and out-of-stock
+  // W3: Split items into in-stock and unavailable (moveable)
   // ---------------------------------------------------------------------------
   const [inStockItems, oosItems] = useMemo(() => {
     const inStock: typeof cartItems = [];
     const oos: typeof cartItems = [];
     for (const item of cartItems) {
-      if (outOfStockIds.has(item.productId)) oos.push(item);
+      if (moveableIds.has(item.productId)) oos.push(item);
       else inStock.push(item);
     }
     return [inStock, oos];
-  }, [cartItems, outOfStockIds]);
+  }, [cartItems, moveableIds]);
 
   const isEmpty = cartItems.length === 0;
   const hasOnlyOos = inStockItems.length === 0 && oosItems.length > 0;
@@ -411,6 +459,110 @@ export function CartRouteClient() {
   const finalTotal = Math.max(0, selectedSubtotal - totalDiscount);
 
   // ---------------------------------------------------------------------------
+  // Bulk remove actions
+  // ---------------------------------------------------------------------------
+  const [isRemoving, setIsRemoving] = useState(false);
+
+  const handleRemoveSelectedItems = useCallback(async () => {
+    if (!effectiveSelected || effectiveSelected.size === 0 || isRemoving) return;
+    const toRemove = inStockItems.filter((i) => effectiveSelected.has(i.itemId ?? i.id));
+    if (toRemove.length === 0) return;
+    setIsRemoving(true);
+    try {
+      if (isAuthenticated) {
+        await Promise.allSettled(
+          toRemove.map((item) => {
+            const id = item.itemId ?? item.id;
+            return fetch(`/api/cart/${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
+          }),
+        );
+        refetch?.();
+      } else {
+        toRemove.forEach((item) => guest.remove(item.productId));
+      }
+      setSelectedIds(null);
+      showToast(`${toRemove.length} item${toRemove.length !== 1 ? "s" : ""} removed.`, "info");
+    } catch {
+      showToast("Could not remove items. Please try again.", "error");
+    } finally {
+      setIsRemoving(false);
+    }
+  }, [effectiveSelected, inStockItems, isAuthenticated, isRemoving, guest, showToast, refetch]);
+
+  const handleRemoveAll = useCallback(async () => {
+    const toRemove = [...inStockItems, ...oosItems];
+    if (toRemove.length === 0 || isRemoving) return;
+    const count = toRemove.length;
+    setIsRemoving(true);
+    try {
+      if (isAuthenticated) {
+        await Promise.allSettled(
+          toRemove.map((item) => {
+            const id = item.itemId ?? item.id;
+            return fetch(`/api/cart/${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
+          }),
+        );
+        refetch?.();
+      } else {
+        toRemove.forEach((item) => guest.remove(item.productId));
+      }
+      setSelectedIds(null);
+      setLocalCoupons(null);
+      showToast(`Cart cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
+    } catch {
+      showToast("Could not clear cart. Please try again.", "error");
+    } finally {
+      setIsRemoving(false);
+    }
+  }, [inStockItems, oosItems, isAuthenticated, isRemoving, guest, showToast, refetch]);
+
+  // ---------------------------------------------------------------------------
+  // Move-to-wishlist — per item and called from auto-move on validation
+  // ---------------------------------------------------------------------------
+  const handleMoveToWishlist = useCallback(
+    async (cartItemId: string, productId: string) => {
+      if (!isAuthenticated) {
+        const item = cartItems.find((i) => i.productId === productId);
+        guestWishlist.add(productId, "product", {
+          title: item?.meta.title,
+          image: item?.meta.image,
+        });
+        guest.remove(productId);
+        setMoveableIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
+        showToast("Item saved to wishlist.", "info");
+        return;
+      }
+      try {
+        const wishlistRes = await fetch("/api/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+          credentials: "include",
+        });
+        if (!wishlistRes.ok) {
+          const errData = (await wishlistRes.json().catch(() => ({}))) as { code?: string };
+          if (errData.code === "WISHLIST_FULL") {
+            showToast("Wishlist is full — remove an item to save this here.", "error");
+          } else {
+            showToast("Could not save to wishlist. Please try again.", "error");
+          }
+          return;
+        }
+        await fetch(`/api/cart/${encodeURIComponent(cartItemId)}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        setMoveableIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
+        refetch?.();
+        showToast("Item saved to wishlist.", "info");
+      } catch {
+        showToast("Could not save to wishlist. Please try again.", "error");
+      }
+    },
+    [isAuthenticated, cartItems, guestWishlist, guest, showToast, refetch],
+  );
+
+  // ---------------------------------------------------------------------------
   // Item actions — W1 R1: proper toast on all mutations
   // ---------------------------------------------------------------------------
   const handleQtyChange = useCallback(
@@ -483,23 +635,45 @@ export function CartRouteClient() {
       isLoading={isLoading}
       renderItems={(itemsLoading) => (
         <Div className="space-y-6">
-          {/* Select-all toggle — only over in-stock items */}
-          {!isEmpty && !itemsLoading && isAuthenticated && allItemIds.length > 1 && (
-            <Div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="cart-select-all"
-                checked={isAllSelected}
-                onChange={isAllSelected ? undefined : selectAll}
-                onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
-                className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
-              />
-              <label
-                htmlFor="cart-select-all"
-                className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300"
+          {/* Select-all + bulk actions bar */}
+          {!isEmpty && !itemsLoading && (
+            <Div className="flex flex-wrap items-center gap-3">
+              {isAuthenticated && allItemIds.length > 1 && (
+                <Div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="cart-select-all"
+                    checked={isAllSelected}
+                    onChange={isAllSelected ? undefined : selectAll}
+                    onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
+                    className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+                  />
+                  <label
+                    htmlFor="cart-select-all"
+                    className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300"
+                  >
+                    Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
+                  </label>
+                </Div>
+              )}
+              {effectiveSelected && effectiveSelected.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => { void handleRemoveSelectedItems(); }}
+                  disabled={isRemoving}
+                  className="text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50"
+                >
+                  {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => { void handleRemoveAll(); }}
+                disabled={isRemoving}
+                className="ml-auto text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50"
               >
-                Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
-              </label>
+                {isRemoving ? "Clearing…" : "Remove all"}
+              </button>
             </Div>
           )}
 
@@ -515,20 +689,28 @@ export function CartRouteClient() {
                   isAuthenticated={isAuthenticated}
                   effectiveSelected={effectiveSelected}
                   effectiveCoupons={effectiveCoupons}
-                  outOfStockIds={outOfStockIds}
                   onToggleItem={toggleItem}
                   onQtyChange={handleQtyChange}
                   onRemove={handleRemove}
+                  onMoveToWishlist={handleMoveToWishlist}
                   isOutOfStock={false}
                 />
               ))}
 
-              {/* --- Out-of-stock section (W3) --- */}
+              {/* --- Unavailable items (sold/OOS/no-stock) — saved to wishlist on load --- */}
               {oosItems.length > 0 && (
                 <Div>
-                  <Text className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">
-                    Out of Stock ({oosItems.length})
-                  </Text>
+                  <Div className="mb-3 flex items-center justify-between">
+                    <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">
+                      Unavailable ({oosItems.length})
+                    </Text>
+                    <Link
+                      href={String(ROUTES.USER.WISHLIST)}
+                      className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
+                    >
+                      View wishlist →
+                    </Link>
+                  </Div>
                   <Div className="space-y-3">
                     {sellerGroupsOos.map((group) => (
                       <SellerGroupSection
@@ -537,10 +719,10 @@ export function CartRouteClient() {
                         isAuthenticated={isAuthenticated}
                         effectiveSelected={null}
                         effectiveCoupons={[]}
-                        outOfStockIds={outOfStockIds}
                         onToggleItem={toggleItem}
                         onQtyChange={handleQtyChange}
                         onRemove={handleRemove}
+                        onMoveToWishlist={handleMoveToWishlist}
                         isOutOfStock={true}
                       />
                     ))}
@@ -719,10 +901,10 @@ interface SellerGroupSectionProps {
   isAuthenticated: boolean;
   effectiveSelected: Set<string> | null;
   effectiveCoupons: AppliedCoupon[];
-  outOfStockIds: Set<string>;
   onToggleItem: (itemId: string) => void;
   onQtyChange: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
+  onMoveToWishlist: (cartItemId: string, productId: string) => void;
   isOutOfStock: boolean;
 }
 
@@ -734,6 +916,7 @@ function SellerGroupSection({
   onToggleItem,
   onQtyChange,
   onRemove,
+  onMoveToWishlist,
   isOutOfStock,
 }: SellerGroupSectionProps) {
   return (
@@ -794,6 +977,15 @@ function SellerGroupSection({
                   onQtyChange={isOutOfStock ? undefined : onQtyChange}
                   onRemove={onRemove}
                 />
+                {isOutOfStock && (
+                  <button
+                    type="button"
+                    onClick={() => onMoveToWishlist(iid, item.productId)}
+                    className="mt-1 text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
+                  >
+                    Save to wishlist
+                  </button>
+                )}
               </Div>
             </Div>
           );

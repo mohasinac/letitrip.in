@@ -1,6 +1,7 @@
 import {
   wishlistRepository,
   productRepository,
+  ProductStatusValues,
   successResponse,
   createRouteHandler,
 } from "@mohasinac/appkit";
@@ -12,13 +13,11 @@ export const POST = withProviders(
     handler: async ({ user }) => {
       const uid = user!.uid;
 
-      // Get all wishlist items for this user
       const items = await wishlistRepository.getWishlistItems(uid);
       if (items.length === 0) {
         return successResponse({ removedCount: 0, removedProductIds: [] });
       }
 
-      // Check each product in parallel
       const results = await Promise.allSettled(
         items.map((item) => productRepository.findById(item.productId)),
       );
@@ -27,14 +26,27 @@ export const POST = withProviders(
       items.forEach((item, i) => {
         const result = results[i];
         if (result.status === "rejected" || result.value === null) {
+          // Doc deleted from DB — gone for good.
+          staleProductIds.push(item.productId);
+          return;
+        }
+        const { status } = result.value;
+        // Only remove truly unpublished listings. Sold/OOS items may come back
+        // (restock, relist after auction, pre-order reopened) so we keep them.
+        if (
+          status === ProductStatusValues.ARCHIVED ||
+          status === ProductStatusValues.DISCONTINUED ||
+          status === ProductStatusValues.DRAFT
+        ) {
           staleProductIds.push(item.productId);
         }
       });
 
-      // Remove stale items from wishlist subcollection
       if (staleProductIds.length > 0) {
         await Promise.allSettled(
-          staleProductIds.map((productId) => wishlistRepository.removeItem(uid, productId)),
+          staleProductIds.map((productId) =>
+            wishlistRepository.removeItem(uid, productId),
+          ),
         );
       }
 

@@ -7,9 +7,10 @@ import {
   categoriesRepository,
   sortBy,
   CATEGORY_FIELDS,
+  COMMON_FIELDS,
 } from "@mohasinac/appkit";
 
-const DEFAULT_SORTS = [sortBy(CATEGORY_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
+const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
 
 function slugify(str: string): string {
   return str

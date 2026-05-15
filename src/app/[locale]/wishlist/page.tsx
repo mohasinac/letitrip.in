@@ -59,6 +59,7 @@ export default function WishlistPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-addedAt");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkRemoving, setIsBulkRemoving] = useState(false);
 
   const toggleSelect = (id: string, next: boolean) => {
     setSelectedIds((prev) => {
@@ -77,6 +78,48 @@ export default function WishlistPage() {
       showToast("Could not remove from wishlist. Please try again.", "error");
     }
   }, [wl, showToast]);
+
+  const handleRemoveSelected = useCallback(async () => {
+    if (selectedIds.size === 0 || isBulkRemoving) return;
+    const ids = Array.from(selectedIds);
+    setIsBulkRemoving(true);
+    try {
+      if (user?.uid) {
+        await Promise.allSettled(ids.map((id) => removeFromWishlistAction(id)));
+      } else {
+        const guestWl = (wl as { guestWishlist?: { remove: (id: string, type: string) => void } }).guestWishlist;
+        ids.forEach((id) => guestWl?.remove(id, "product"));
+      }
+      clearSelection();
+      void wl.refetch?.();
+      showToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} removed.`, "info");
+    } catch {
+      showToast("Could not remove items. Please try again.", "error");
+    } finally {
+      setIsBulkRemoving(false);
+    }
+  }, [selectedIds, isBulkRemoving, user?.uid, wl, showToast]);
+
+  const handleRemoveAll = useCallback(async () => {
+    if (wl.items.length === 0 || isBulkRemoving) return;
+    const count = wl.items.length;
+    setIsBulkRemoving(true);
+    try {
+      if (user?.uid) {
+        await Promise.allSettled(wl.items.map((item) => removeFromWishlistAction(item.productId)));
+      } else {
+        const guestWl = (wl as { guestWishlist?: { clear: () => void } }).guestWishlist;
+        guestWl?.clear();
+      }
+      clearSelection();
+      void wl.refetch?.();
+      showToast(`Wishlist cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
+    } catch {
+      showToast("Could not clear wishlist. Please try again.", "error");
+    } finally {
+      setIsBulkRemoving(false);
+    }
+  }, [wl, isBulkRemoving, user?.uid, showToast]);
 
   // Staged (pending) filter state — applied on "Apply filters" click
   const [pending, setPending] = useState<WishlistFilters>(EMPTY_FILTERS);
@@ -166,7 +209,6 @@ export default function WishlistPage() {
   }, [wl.items, search, sort, applied]);
 
   const activeFilterCount = countActiveFilters(applied);
-  const pendingFilterCount = countActiveFilters(pending);
 
   const handleApply = () => setApplied({ ...pending });
   const handleClear = () => {
@@ -182,16 +224,38 @@ export default function WishlistPage() {
             <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
               My Wishlist
             </Heading>
-            {selectedIds.size > 0 && (
-              <Row gap="sm" className="items-center ml-auto">
-                <Text className="text-sm text-zinc-600 dark:text-zinc-300">
-                  {selectedIds.size} selected
-                </Text>
-                <Button variant="ghost" size="sm" onClick={clearSelection}>
-                  Clear
+            <Row gap="sm" className="items-center ml-auto flex-wrap">
+              {selectedIds.size > 0 && (
+                <>
+                  <Text className="text-sm text-zinc-600 dark:text-zinc-300">
+                    {selectedIds.size} selected
+                  </Text>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemoveSelected}
+                    disabled={isBulkRemoving}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                  >
+                    {isBulkRemoving ? "Removing…" : "Remove selected"}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>
+                    Deselect
+                  </Button>
+                </>
+              )}
+              {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRemoveAll}
+                  disabled={isBulkRemoving}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                >
+                  {isBulkRemoving ? "Clearing…" : "Remove all"}
                 </Button>
-              </Row>
-            )}
+              )}
+            </Row>
           </Row>
           {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
             <Text variant="secondary" className="text-sm mt-0.5">

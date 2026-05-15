@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-21: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-21) */
-import { AdminDashboardView, ROUTES } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Text } from "@mohasinac/appkit/client";
+import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -35,10 +36,10 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 border-b border-zinc-100 dark:border-slate-800 last:border-0">
+    <div className="flex items-center justify-between gap-4 py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0">
       <div>
-        <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{label}</p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{description}</p>
+        <p className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</p>
+        <p className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</p>
       </div>
       <button
         role="switch"
@@ -58,15 +59,17 @@ function ToggleRow({
   );
 }
 
+const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
+
 const QUICK_ACTIONS = [
-  { label: "Users", href: ROUTES.ADMIN.USERS },
-  { label: "Categories", href: ROUTES.ADMIN.CATEGORIES },
-  { label: "Reviews", href: ROUTES.ADMIN.REVIEWS },
-  { label: "Coupons", href: ROUTES.ADMIN.COUPONS },
-  { label: "FAQs", href: ROUTES.ADMIN.FAQS },
-  { label: "Site Settings", href: ROUTES.ADMIN.SITE },
-  { label: "Carousel", href: ROUTES.ADMIN.CAROUSEL },
-  { label: "Sections", href: ROUTES.ADMIN.SECTIONS },
+  { label: "Users",         href: ROUTES.ADMIN.USERS,       Icon: Users },
+  { label: "Categories",    href: ROUTES.ADMIN.CATEGORIES,  Icon: Tag },
+  { label: "Reviews",       href: ROUTES.ADMIN.REVIEWS,     Icon: Star },
+  { label: "Coupons",       href: ROUTES.ADMIN.COUPONS,     Icon: Ticket },
+  { label: "FAQs",          href: ROUTES.ADMIN.FAQS,        Icon: HelpCircle },
+  { label: "Site Settings", href: ROUTES.ADMIN.SITE,        Icon: Settings },
+  { label: "Carousel",      href: ROUTES.ADMIN.CAROUSEL,    Icon: Layout },
+  { label: "Sections",      href: ROUTES.ADMIN.SECTIONS,    Icon: Layers },
 ];
 
 export default function Page() {
@@ -90,20 +93,23 @@ export default function Page() {
       renderQuickActions={() => (
         <div className="space-y-8">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {QUICK_ACTIONS.map(({ label, href }) => (
+            {QUICK_ACTIONS.map(({ label, href, Icon }) => (
               <Link
                 key={label}
                 href={String(href)}
-                className="rounded-xl border border-neutral-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm font-medium text-neutral-700 dark:text-zinc-300 hover:border-primary hover:text-primary transition-colors"
+                className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
+                <span className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
+                  <Icon className="w-3.5 h-3.5 text-white" />
+                </span>
                 {label}
               </Link>
             ))}
           </div>
 
-          <div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+          <div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Dev Settings</span>
+              <span className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</span>
               {(prefs.mockRazorpay || prefs.mockShiprocket) && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
                   Mock active
@@ -122,6 +128,18 @@ export default function Page() {
               enabled={prefs.mockShiprocket}
               onChange={(v) => update({ mockShiprocket: v })}
             />
+            <div className="flex items-center justify-between gap-4 py-3">
+              <>
+                <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Seed Data</Text>
+                <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Load or reset Firestore seed collections</Text>
+              </>
+              <Link
+                href="/demo/seed"
+                className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-primary)] hover:text-white transition-colors"
+              >
+                Open Seed Panel →
+              </Link>
+            </div>
           </div>
         </div>
       )}
