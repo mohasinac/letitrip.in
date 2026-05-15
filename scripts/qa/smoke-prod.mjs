@@ -45,6 +45,15 @@ async function loadDotEnvLocal() {
 
 await loadDotEnvLocal();
 
+// Node.js ≥18 resolves `localhost` to ::1 (IPv6) on Windows, but the dev
+// server typically binds to 127.0.0.1 (IPv4). Rewrite localhost → 127.0.0.1
+// so the smoke runner works the same way curl / PowerShell do on Windows.
+if (!process.env.SMOKE_BASE_URL) {
+  process.env.SMOKE_BASE_URL = "https://www.letitrip.in";
+} else if (process.env.SMOKE_BASE_URL.includes("localhost")) {
+  process.env.SMOKE_BASE_URL = process.env.SMOKE_BASE_URL.replace("localhost", "127.0.0.1");
+}
+
 const args = process.argv.slice(2);
 const onlyIdx = args.indexOf("--only");
 const filter = onlyIdx >= 0 ? args[onlyIdx + 1] : null;

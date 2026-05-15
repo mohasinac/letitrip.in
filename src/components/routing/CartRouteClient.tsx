@@ -170,7 +170,7 @@ export function CartRouteClient() {
   const { data: serverCart, isLoading: serverLoading, refetch } =
     useCartQuery<ServerCartResponse>({
       endpoint: "/api/cart",
-      queryKey: ["cart", user?.uid],
+      queryKey: ["cart"],
       enabled: !!user?.uid,
     });
 

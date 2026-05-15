@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-30: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-30) */
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   useWishlistWithGuest,
   useSession,
@@ -20,6 +20,7 @@ import {
   isPreOrderListing,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
+import { removeFromWishlistAction } from "@/actions/wishlist.actions";
 
 const SORT_OPTIONS = [
   { value: "-addedAt", label: "Newest first" },
@@ -67,6 +68,15 @@ export default function WishlistPage() {
     });
   };
   const clearSelection = () => setSelectedIds(new Set());
+
+  const handleToggleWishlist = useCallback(async (productId: string) => {
+    try {
+      await removeFromWishlistAction(productId);
+      void wl.refetch?.();
+    } catch {
+      showToast("Could not remove from wishlist. Please try again.", "error");
+    }
+  }, [wl, showToast]);
 
   // Staged (pending) filter state — applied on "Apply filters" click
   const [pending, setPending] = useState<WishlistFilters>(EMPTY_FILTERS);
@@ -299,6 +309,7 @@ export default function WishlistPage() {
                 key={item.id}
                 href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
                 isWishlisted
+                onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
                 selectable={selectedIds.size > 0}
                 isSelected={selectedIds.has(item.productId)}
                 onSelect={toggleSelect}
