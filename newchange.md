@@ -41,6 +41,31 @@
 
 ---
 
+### S-auth-gate-ui — Auth gate admin settings pages + getDisabledRoutes (2026-05-15)
+
+Completed the auth gate plan: admin settings pages for action/nav permissions, route-blocking middleware, and appkit v2.7.23–v2.7.24 export wiring.
+
+| File | Change |
+|------|--------|
+| `appkit/src/features/site-settings/components/ActionPermissionsManager.tsx` | NEW — client component table with per-action enable/disable toggles, category badges, search filter |
+| `appkit/src/features/site-settings/components/NavPermissionsManager.tsx` | NEW — client component table with per-nav-item enable/disable toggles; legacy items (no `id`) show read-only label |
+| `appkit/src/index.ts` | Exported `ActionPermissionsManager`, `NavPermissionsManager`, `NavPermissionsGroup`, `NavPermissionsItem` |
+| `appkit/src/client.ts` | Same exports added |
+| `appkit/src/features/auth/permissions/constants.ts` | `"admin:settings:write"` added to `Permission` union |
+| `appkit/src/next/routing/route-map.ts` | `ROUTES.ADMIN.SETTINGS_ACTIONS` + `ROUTES.ADMIN.SETTINGS_NAVIGATION` added |
+| `src/actions/admin-settings.actions.ts` | NEW — `updateActionConfigAction` + `updateNavConfigAction` server actions (admin-only) |
+| `src/app/[locale]/admin/settings/actions/layout.tsx` | NEW — `makeAdminSectionLayout("admin:site:write")` |
+| `src/app/[locale]/admin/settings/actions/page.tsx` | NEW — admin page shim loading `ActionPermissionsManager` |
+| `src/app/[locale]/admin/settings/navigation/layout.tsx` | NEW — `makeAdminSectionLayout("admin:site:write")` |
+| `src/app/[locale]/admin/settings/navigation/page.tsx` | NEW — admin page shim loading `NavPermissionsManager` |
+| `src/app/[locale]/layout.tsx` | Added `getDisabledRoutes()` check → `notFound()` for disabled public routes (skips Tier-2 paths) |
+| `src/constants/navigation.tsx` | "Action Permissions" + "Nav Permissions" added to admin nav Site section |
+| `package.json` | appkit bumped to `^2.7.23` |
+
+**Deferred**: Nav item `id: "nav-*"` fields for `MAIN_NAV_ITEMS` in `src/constants/navigation.tsx` — the nav permissions page hard-codes the IDs inline; adding `id` fields to existing nav constants is a data-only enhancement that can be done incrementally.
+
+---
+
 ### S-filter-sieve-audit — Filter/sort key audit + Sieve correctness fixes (2026-05-15)
 
 Full end-to-end audit of every listing layout's filter keys, sort options, Sieve safe-lists, and URL→Firestore field mappings. Zero new features — only bug fixes.
