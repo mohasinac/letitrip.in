@@ -1,4 +1,5 @@
 "use client";
+// audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
 import { useCallback, useState } from "react";
 import {

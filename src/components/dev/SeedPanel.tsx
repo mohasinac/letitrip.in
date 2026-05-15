@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-01: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-01) */
+// audit-auth-gates-ok — imports @/actions/demo-seed.types (types only, no function calls)
 
 /**
  * SeedPanel — Admin data management and schema documentation panel.
