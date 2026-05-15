@@ -97,23 +97,23 @@ export const GET = withProviders(createRouteHandler({
     ] = await Promise.all([
       blogRepository.listAll({
         filters: sieveFilter(BLOG_FIELDS.STATUS, SIEVE_OP.EQ, BlogPostStatusValues.PUBLISHED),
-        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
         page: "1",
         pageSize: "1",
       }),
       blogRepository.listAll({
         filters: sieveFilter(BLOG_FIELDS.STATUS, SIEVE_OP.EQ, BlogPostStatusValues.DRAFT),
-        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
         page: "1",
         pageSize: "1",
       }),
       blogRepository.listAll({
         filters: sieveFilter(BLOG_FIELDS.IS_FEATURED, SIEVE_OP.EQ, "true"),
-        sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
+        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
         page: "1",
         pageSize: "1",
       }),
-      blogRepository.listAll({ sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"), page: "1", pageSize: "1" }),
+      blogRepository.listAll({ sorts: sortBy(COMMON_FIELDS.CREATED_AT), page: "1", pageSize: "1" }),
       blogRepository.listAll({
         filters,
         sorts,
