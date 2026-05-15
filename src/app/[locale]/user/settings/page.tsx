@@ -29,8 +29,13 @@ function SectionCard({ children }: { children: React.ReactNode }) {
   return (
     <Stack
       gap="md"
-      className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
+      className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm"
     >
+      <div
+        className="absolute top-0 left-0 right-0 h-[3px]"
+        style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }}
+        aria-hidden="true"
+      />
       {children}
     </Stack>
   );
@@ -38,7 +43,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <Text className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+    <Text className="text-xs font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">
       {children}
     </Text>
   );
@@ -105,10 +110,10 @@ export default function Page() {
 
   return (
     <Div className="max-w-2xl mx-auto px-4 py-8">
-      <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Settings</Text>
+      <Text className="text-xl font-bold text-[var(--appkit-color-text)] mb-6">Settings</Text>
 
       {/* tab bar */}
-      <Row gap="xs" className="mb-6 border-b border-zinc-200 dark:border-slate-700">
+      <Row gap="xs" className="mb-6 border-b border-[var(--appkit-color-border)]">
         {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
           <button
             key={tab}
@@ -117,7 +122,7 @@ export default function Page() {
               "px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px",
               activeTab === tab
                 ? "border-[var(--appkit-color-primary)] text-[var(--appkit-color-primary)]"
-                : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100",
+                : "border-transparent text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]",
             ].join(" ")}
           >
             {TAB_LABELS[tab]}
@@ -132,7 +137,7 @@ export default function Page() {
             <SectionTitle>Account Info</SectionTitle>
             <Row justify="between" align="center" gap="md">
               <Div className="min-w-0">
-                <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                <Text className="text-sm font-medium text-[var(--appkit-color-text)] truncate">
                   {user?.displayName || user?.email?.split("@")[0] || "My Account"}
                 </Text>
                 {user?.email && (

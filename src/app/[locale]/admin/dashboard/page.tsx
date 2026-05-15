@@ -3,7 +3,7 @@
 import { AdminDashboardView, ROUTES, Text } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "letitrip_dev_prefs";
 
@@ -74,9 +74,43 @@ const QUICK_ACTIONS = [
 
 export default function Page() {
   const [prefs, setPrefs] = useState<DevPrefs>(DEFAULT_PREFS);
+  const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
+  const [bypassLoading, setBypassLoading] = useState(false);
+  const bypassFetched = useRef(false);
 
   useEffect(() => {
     setPrefs(loadPrefs());
+  }, []);
+
+  // Load adminCheckoutBypass from Firestore on mount.
+  useEffect(() => {
+    if (bypassFetched.current) return;
+    bypassFetched.current = true;
+    fetch("/api/admin/checkout-bypass", { credentials: "include" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.data?.enabled !== undefined) {
+          setAdminBypassEnabled(data.data.enabled as boolean);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleAdminBypass = useCallback(async (next: boolean) => {
+    setBypassLoading(true);
+    try {
+      await fetch("/api/admin/feature-flags", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ flags: { adminCheckoutBypass: next } }),
+      });
+      setAdminBypassEnabled(next);
+    } catch {
+      // silently revert on failure
+    } finally {
+      setBypassLoading(false);
+    }
   }, []);
 
   const update = useCallback((patch: Partial<DevPrefs>) => {
@@ -110,7 +144,7 @@ export default function Page() {
           <div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</span>
-              {(prefs.mockRazorpay || prefs.mockShiprocket) && (
+              {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
                   Mock active
                 </span>
@@ -127,6 +161,18 @@ export default function Page() {
               description={prefs.mockShiprocket ? "Routing to /api/dev/mock-shiprocket" : "Use mock for shipping flows"}
               enabled={prefs.mockShiprocket}
               onChange={(v) => update({ mockShiprocket: v })}
+            />
+            <ToggleRow
+              label="Admin Checkout Bypass"
+              description={
+                bypassLoading
+                  ? "Saving…"
+                  : adminBypassEnabled
+                    ? "Bypass active — OTP + payment skipped for admin orders (server-enforced)"
+                    : "Allow admins to skip OTP and payment at checkout (for testing)"
+              }
+              enabled={adminBypassEnabled}
+              onChange={toggleAdminBypass}
             />
             <div className="flex items-center justify-between gap-4 py-3">
               <>

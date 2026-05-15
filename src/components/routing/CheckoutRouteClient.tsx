@@ -87,7 +87,7 @@ type CheckoutStep = "address" | "otp" | "payment" | "processing";
 
 // --- Component ---------------------------------------------------------------
 
-export function CheckoutRouteClient() {
+export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypassEnabled?: boolean }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
@@ -291,6 +291,38 @@ export function CheckoutRouteClient() {
     }
   }, [selectedAddress, router, showToast]);
 
+  const handleAdminBypass = useCallback(async () => {
+    if (!selectedAddress) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await fetch("/api/admin/checkout-bypass", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addressId: selectedAddress.id }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(
+          (err as { error?: string }).error ?? "Admin bypass failed",
+        );
+      }
+      const data = await res.json().catch(() => ({}));
+      const firstOrderId = (data?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Admin bypass order placed (test). No real payment charged.", "success");
+      router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep(step === "processing" ? "payment" : step);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, router, showToast, step]);
+
   // --- Redirect unauthenticated users ----------------------------------------
 
   if (!authLoading && !user) {
@@ -440,6 +472,21 @@ export function CheckoutRouteClient() {
                 >
                   {isSendingOtp ? "Resending…" : "Resend code"}
                 </Button>
+                {adminBypassEnabled && (
+                  <Div className="mt-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
+                    <Text className="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                      Admin Test Mode
+                    </Text>
+                    <Button
+                      type="button"
+                      onClick={handleAdminBypass}
+                      disabled={isProcessingPayment}
+                      className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
+                    >
+                      Skip OTP + Place Order (Admin Bypass)
+                    </Button>
+                  </Div>
+                )}
               </Stack>
             </Div>
           );
@@ -474,6 +521,24 @@ export function CheckoutRouteClient() {
                 >
                   Cash on Delivery
                 </Button>
+                {adminBypassEnabled && (
+                  <Div className="mt-1 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
+                    <Text className="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                      Admin Test Mode
+                    </Text>
+                    <Button
+                      type="button"
+                      onClick={handleAdminBypass}
+                      disabled={isProcessingPayment || cartIsEmpty}
+                      className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
+                    >
+                      No Payment — Admin Bypass Order
+                    </Button>
+                    <Text className="mt-1.5 text-xs text-amber-600 dark:text-amber-500">
+                      Creates a real order record. No money charged.
+                    </Text>
+                  </Div>
+                )}
               </Stack>
             )}
           </Div>

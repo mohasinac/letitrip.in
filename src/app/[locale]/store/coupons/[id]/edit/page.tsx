@@ -109,7 +109,7 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--appkit-color-surface)] dark:bg-slate-950 py-8">
+    <div className="py-8 px-4">
       <SellerCouponEditorView
         couponId={couponId}
         initial={initial}

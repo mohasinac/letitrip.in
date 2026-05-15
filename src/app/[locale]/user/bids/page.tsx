@@ -67,7 +67,7 @@ export default function UserBidsPage() {
   return (
     <Div className="w-full max-w-3xl space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
           My Bids
         </Heading>
         {!loading && data && (
@@ -86,8 +86,8 @@ export default function UserBidsPage() {
             onClick={() => setFilter(tab.key)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               filter === tab.key
-                ? "bg-primary text-white"
-                : "bg-zinc-100 dark:bg-slate-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-slate-700"
+                ? "bg-[var(--appkit-color-primary)] text-white"
+                : "bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text-muted)] hover:bg-[var(--appkit-color-border)]"
             }`}
           >
             {tab.label}
@@ -98,9 +98,9 @@ export default function UserBidsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div key={i} className="animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 p-5 space-y-3">
-              <Div className="h-4 w-1/3 rounded bg-zinc-200 dark:bg-slate-700" />
-              <Div className="h-3 w-1/2 rounded bg-zinc-200 dark:bg-slate-700" />
+            <Div key={i} className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-5 space-y-3">
+              <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
+              <Div className="h-3 w-1/2 rounded bg-[var(--appkit-color-border)]" />
             </Div>
           ))}
         </Stack>
@@ -121,18 +121,23 @@ export default function UserBidsPage() {
             return (
               <Div
                 key={bid.id}
-                className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
+                className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden shadow-sm p-5"
               >
+                <div
+                  className="absolute top-0 left-0 right-0 h-[3px]"
+                  style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }}
+                  aria-hidden="true"
+                />
                 <Row justify="between" wrap align="start" gap="3">
                   <Div className="space-y-1 min-w-0">
-                    <Link href={auctionHref} className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 hover:underline line-clamp-1">
+                    <Link href={auctionHref} className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1">
                       {bid.productTitle}
                     </Link>
                     <Text variant="secondary" className="text-xs">{date}</Text>
                   </Div>
                   <Row gap="sm" className="shrink-0 items-center">
                     {bid.isWinning && (
-                      <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-medium">
+                      <span className="rounded-full bg-[var(--appkit-color-primary)] text-white px-2 py-0.5 text-xs font-medium">
                         Winning
                       </span>
                     )}
@@ -141,9 +146,9 @@ export default function UserBidsPage() {
                     </span>
                   </Row>
                 </Row>
-                <Row justify="between" className="mt-3 pt-3 border-t border-zinc-100 dark:border-slate-800">
+                <Row justify="between" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)]">
                   <Text variant="secondary" className="text-sm">Your bid</Text>
-                  <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">
                     {paise(bid.bidAmount)}
                   </Text>
                 </Row>

@@ -1,6 +1,23 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
 
+const JSON_HEADERS = { "Content-Type": "application/json" } as const;
+
+async function deleteCartItem(itemId: string) {
+  return fetch(`/api/cart/${encodeURIComponent(itemId)}`, { method: "DELETE", credentials: "include" });
+}
+
+async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
+  const res = await fetch("/api/wishlist", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ productId: item.productId }),
+    credentials: "include",
+  });
+  if (!res.ok) { failedIds.push(item.productId); return; }
+  await deleteCartItem(item.id);
+}
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -201,103 +218,73 @@ export function CartRouteClient() {
    */
   const [moveableIds, setMoveableIds] = useState<Set<string>>(new Set());
 
+  const runCartValidation = useCallback(async () => {
+    const productIds = cartItems.map((i) => i.productId);
+    try {
+      const res = await fetch("/api/cart/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productIds }),
+      });
+      if (!res.ok) return;
+      const data = (await res.json()) as ValidateResponse;
+      const { stale, moveable } = data.data;
+
+      // --- Remove truly unpublished items ---
+      if (stale.length > 0) {
+        if (isAuthenticated) {
+          const staleSet = new Set(stale);
+          const staleItems = cartItems.filter((i) => staleSet.has(i.productId));
+          await Promise.allSettled(staleItems.map((item) => deleteCartItem(item.id)));
+          refetch?.();
+        } else {
+          for (const productId of stale) guest.remove(productId);
+        }
+        showToast(
+          `${stale.length} item${stale.length !== 1 ? "s" : ""} removed — no longer available.`,
+          "info",
+        );
+      }
+
+      // --- Move unavailable items (sold/OOS/no-stock) from cart to wishlist ---
+      if (moveable.length > 0) {
+        const moveSet = new Set(moveable);
+        const moveItems = cartItems.filter((i) => moveSet.has(i.productId));
+        const failedIds: string[] = [];
+        const moveGuestItem = (item: CartItem) => {
+          guestWishlist.add(item.productId, "product", { title: item.meta.title, image: item.meta.image });
+          guest.remove(item.productId);
+        };
+
+        if (isAuthenticated) {
+          await Promise.allSettled(moveItems.map((item) => addToWishlistAndRemoveFromCart(item, failedIds)));
+          if (moveItems.length - failedIds.length > 0) refetch?.();
+        } else {
+          moveItems.forEach(moveGuestItem);
+        }
+
+        if (failedIds.length > 0) setMoveableIds(new Set(failedIds));
+
+        const movedCount = moveItems.length - failedIds.length;
+        if (movedCount > 0) {
+          showToast(
+            `${movedCount} unavailable item${movedCount !== 1 ? "s" : ""} saved to your wishlist.`,
+            "info",
+          );
+        }
+      }
+    } catch {
+      // Validation is best-effort; don't surface errors
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, cartItems, refetch, guest, guestWishlist, showToast]);
+
   useEffect(() => {
     if (loading || (isAuthenticated && serverLoading)) return;
     if (cartItems.length === 0) return;
     if (validatedRef.current) return;
     validatedRef.current = true;
-
-    const productIds = cartItems.map((i) => i.productId);
-
-    void (async () => {
-      try {
-        const res = await fetch("/api/cart/validate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productIds }),
-        });
-        if (!res.ok) return;
-        const data = (await res.json()) as ValidateResponse;
-        const { stale, moveable } = data.data;
-
-        // --- Remove truly unpublished items from cart (and wishlist is handled server-side) ---
-        if (stale.length > 0) {
-          if (isAuthenticated) {
-            const staleSet = new Set(stale);
-            const staleItems = cartItems.filter((i) => staleSet.has(i.productId));
-            await Promise.allSettled(
-              staleItems.map((item) => {
-                const id = item.itemId ?? item.id;
-                return fetch(`/api/cart/${encodeURIComponent(id)}`, {
-                  method: "DELETE",
-                  credentials: "include",
-                });
-              }),
-            );
-            refetch?.();
-          } else {
-            const staleSet = new Set(stale);
-            for (const productId of staleSet) guest.remove(productId);
-          }
-          showToast(
-            `${stale.length} item${stale.length !== 1 ? "s" : ""} removed — no longer available.`,
-            "info",
-          );
-        }
-
-        // --- Move unavailable items (sold/OOS/no-stock) from cart to wishlist ---
-        if (moveable.length > 0) {
-          const moveSet = new Set(moveable);
-          const moveItems = cartItems.filter((i) => moveSet.has(i.productId));
-          const failedIds: string[] = [];
-
-          if (isAuthenticated) {
-            await Promise.allSettled(
-              moveItems.map(async (item) => {
-                const cartItemId = item.itemId ?? item.id;
-                // Try to add to wishlist first; only remove from cart on success
-                const wishlistRes = await fetch("/api/wishlist", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ productId: item.productId }),
-                  credentials: "include",
-                });
-                if (!wishlistRes.ok) {
-                  failedIds.push(item.productId);
-                  return;
-                }
-                await fetch(`/api/cart/${encodeURIComponent(cartItemId)}`, {
-                  method: "DELETE",
-                  credentials: "include",
-                });
-              }),
-            );
-            if (moveItems.length - failedIds.length > 0) refetch?.();
-          } else {
-            // Guest: add to localStorage wishlist and remove from guest cart
-            for (const item of moveItems) {
-              guestWishlist.add(item.productId, "product", {
-                title: item.meta.title,
-                image: item.meta.image,
-              });
-              guest.remove(item.productId);
-            }
-          }
-
-          if (failedIds.length > 0) setMoveableIds(new Set(failedIds));
-
-          const movedCount = moveItems.length - failedIds.length;
-          if (movedCount > 0) {
-            showToast(
-              `${movedCount} unavailable item${movedCount !== 1 ? "s" : ""} saved to your wishlist.`,
-              "info",
-            );
-          }
-        }
-      } catch {
-        // Validation is best-effort; don't surface errors
-      }
-    })();
+    void runCartValidation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, serverLoading, isAuthenticated]);
 

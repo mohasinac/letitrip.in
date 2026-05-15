@@ -56,10 +56,10 @@ function NotifCard({
 }) {
   return (
     <Div
-      className={`rounded-xl border px-5 py-4 space-y-2 transition-colors ${
+      className={`rounded-xl border px-5 py-4 space-y-2 transition-colors shadow-sm ${
         notif.isRead
-          ? "border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900"
-          : "border-primary/30 dark:border-primary/20 bg-primary/5 dark:bg-primary/10"
+          ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]"
+          : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]"
       }`}
     >
       <Row justify="between" wrap gap="3" align="start">
@@ -68,7 +68,7 @@ function NotifCard({
             {!notif.isRead && (
               <span className="inline-block h-2 w-2 rounded-full bg-primary shrink-0" />
             )}
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-1">
+            <Text className="text-sm font-semibold text-[var(--appkit-color-text)] line-clamp-1">
               {notif.title}
             </Text>
           </Row>
@@ -91,7 +91,7 @@ function NotifCard({
           <button
             type="button"
             onClick={() => onMarkRead(notif.id)}
-            className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+            className="text-xs text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)] transition-colors"
           >
             Mark read
           </button>
@@ -187,7 +187,7 @@ export default function NotificationsPage() {
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                   filter === tab.key
                     ? "bg-primary text-white"
-                    : "bg-zinc-100 dark:bg-slate-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-slate-700"
+                    : "bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text-muted)] hover:bg-[var(--appkit-color-border)]"
                 }`}
               >
                 {tab.label}
@@ -211,9 +211,9 @@ export default function NotificationsPage() {
           return (
             <Stack gap="md">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Div key={i} className="animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 p-4 space-y-2">
-                  <Div className="h-4 w-1/3 rounded bg-zinc-200 dark:bg-slate-700" />
-                  <Div className="h-3 w-2/3 rounded bg-zinc-200 dark:bg-slate-700" />
+                <Div key={i} className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-4 space-y-2">
+                  <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
+                  <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
                 </Div>
               ))}
             </Stack>

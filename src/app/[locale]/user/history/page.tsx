@@ -40,11 +40,11 @@ const TAB_BTN_IDLE =
   "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-slate-800 dark:text-zinc-300 dark:hover:bg-slate-700";
 
 const CARD =
-  "rounded-xl border border-zinc-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900";
+  "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-3 shadow-sm";
 const TYPE_CHIP =
-  "rounded-full bg-zinc-100 px-2 py-0.5 capitalize text-zinc-600 dark:bg-slate-800 dark:text-zinc-300";
+  "rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 capitalize text-[var(--appkit-color-text-muted)]";
 const REMOVE_BTN =
-  "shrink-0 rounded-full p-2 text-zinc-400 hover:bg-zinc-100 hover:text-rose-500 dark:hover:bg-slate-800";
+  "shrink-0 rounded-full p-2 text-[var(--appkit-color-text-muted)] hover:bg-[var(--appkit-color-border-subtle)] hover:text-red-500";
 
 function relativeTime(iso: string): string {
   const t = new Date(iso).getTime();
@@ -78,7 +78,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
   return (
     <Row gap="md" align="center" className={CARD}>
       <Link href={href} className="shrink-0">
-        <Div className="relative h-16 w-16 overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-800">
+        <Div className="relative h-16 w-16 overflow-hidden rounded-lg bg-[var(--appkit-color-border-subtle)]">
           <MediaImage
             src={item.productSnapshot?.thumb}
             alt={title}
@@ -90,7 +90,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
       <Div className="min-w-0 flex-1">
         <Link
           href={href}
-          className="block line-clamp-1 text-sm font-semibold text-zinc-900 hover:underline dark:text-zinc-100"
+          className="block line-clamp-1 text-sm font-semibold text-[var(--appkit-color-text)] hover:underline"
         >
           {title}
         </Link>
@@ -136,7 +136,7 @@ export default function UserHistoryPage() {
     <Div className="w-full max-w-3xl space-y-6">
       <Row justify="between" align="end" wrap gap="3">
         <Div>
-          <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+          <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
             Recently Viewed
           </Heading>
           <Text variant="secondary" className="mt-0.5 text-sm">
