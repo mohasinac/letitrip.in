@@ -41,6 +41,34 @@
 
 ---
 
+### SB-UNI-Q — SSR layering for classified/digital-code/live listing-type detail views (2026-05-16)
+
+Completed the missing SSR layer (adapters/metadata/og) for the three new listing types introduced in SB-UNI Phase 2. No schema changes, no new Firestore indexes, no seed changes.
+
+| File | Change |
+|------|--------|
+| `appkit/src/_internal/server/features/classified/adapters.ts` | NEW — `toClientClassified()` strips internal fields |
+| `appkit/src/_internal/server/features/classified/metadata.ts` | NEW — `buildClassifiedMetadata()` → full Metadata with OG/twitter/canonical |
+| `appkit/src/_internal/server/features/classified/og.tsx` | NEW — `renderClassifiedOg()` + `renderClassifiedOgImage()` (cyan theme) |
+| `appkit/src/_internal/server/features/digital-code/adapters.ts` | NEW — `toClientDigitalCode()` strips codesAvailable/codePoolSize (operational) |
+| `appkit/src/_internal/server/features/digital-code/metadata.ts` | NEW — `buildDigitalCodeMetadata()` |
+| `appkit/src/_internal/server/features/digital-code/og.tsx` | NEW — `renderDigitalCodeOg()` (violet theme) |
+| `appkit/src/_internal/server/features/live/adapters.ts` | NEW — `toClientLiveItem()` strips vendorVerified (admin-only) |
+| `appkit/src/_internal/server/features/live/metadata.ts` | NEW — `buildLiveItemMetadata()` appends species to title |
+| `appkit/src/_internal/server/features/live/og.tsx` | NEW — `renderLiveItemOg()` (green theme) |
+| `appkit/src/_internal/server/features/{classified,digital-code,live}/index.ts` | Updated — re-export adapters/metadata/og |
+| `appkit/src/server.ts` | 18 new exports (data+adapters+metadata+og for all 3 types) |
+| `appkit/package.json` | Bumped 2.7.27 → 2.7.28 (dev bump to break npm dedup) |
+| `src/app/[locale]/classified/[slug]/page.tsx` | `generateMetadata` → `buildClassifiedMetadata` |
+| `src/app/[locale]/classified/[slug]/opengraph-image.tsx` | NEW |
+| `src/app/[locale]/digital-codes/[slug]/page.tsx` | `generateMetadata` → `buildDigitalCodeMetadata` |
+| `src/app/[locale]/digital-codes/[slug]/opengraph-image.tsx` | NEW |
+| `src/app/[locale]/live/[slug]/page.tsx` | `generateMetadata` → `buildLiveItemMetadata` |
+| `src/app/[locale]/live/[slug]/opengraph-image.tsx` | NEW |
+| `package.json` | `@mohasinac/appkit` → `file:./appkit` (local dev mode restored) |
+
+**Deferred**: `CatalogProductDetailView` — awaits SB-UNI-L (Phase 4 catalog product infrastructure).
+
 ### S-auth-gate-ui — Auth gate admin settings pages + getDisabledRoutes (2026-05-15)
 
 Completed the auth gate plan: admin settings pages for action/nav permissions, route-blocking middleware, and appkit v2.7.23–v2.7.24 export wiring.
