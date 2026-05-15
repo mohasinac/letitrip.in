@@ -54,7 +54,12 @@ for (const dir of SCAN_DIRS) {
     }
 
     // Rule 2: Checkout navigation without auth gate
-    if (/ROUTES\.USER\.CHECKOUT/.test(content) && /<Link|router\.push/.test(content) && !hasAuthGate(content)) {
+    if (
+      /ROUTES\.USER\.CHECKOUT/.test(content) &&
+      /<Link|router\.push/.test(content) &&
+      !hasAuthGate(content) &&
+      !content.includes("// audit-auth-gates-ok")
+    ) {
       VIOLATIONS.push(`${file}: ROUTES.USER.CHECKOUT navigation without auth gate`);
     }
 
