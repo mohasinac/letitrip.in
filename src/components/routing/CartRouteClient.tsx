@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
+/* eslint-disable lir/no-raw-html-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 
@@ -112,6 +112,10 @@ const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
   standard:     ["standard", "product"],
   "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
 };
+
+const EMPTY_STATE_CLASS = "py-6 text-center text-sm text-zinc-500 dark:text-zinc-400";
+const STORE_CARD_CLASS = "rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4";
+const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -739,11 +743,11 @@ export function CartRouteClient() {
                   </Div>
                 )}
                 {effectiveSelected && effectiveSelected.size > 0 && (
-                  <button type="button" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className="text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50">
+                  <button type="button" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                     {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
                   </button>
                 )}
-                <button type="button" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className="ml-auto text-sm text-red-600 dark:text-red-400 hover:underline underline-offset-2 disabled:opacity-50">
+                <button type="button" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                   {isRemoving ? "Clearing…" : "Remove all"}
                 </button>
               </Div>
@@ -861,7 +865,7 @@ export function CartRouteClient() {
                       </Button>
                     </Div>
                     {couponError && (
-                      <Text className="text-xs text-red-600 dark:text-red-400">{couponError}</Text>
+                      <Text className={`text-xs ${ERROR_TEXT_CLASS}`}>{couponError}</Text>
                     )}
                   </Div>
                 </Div>
@@ -966,15 +970,15 @@ interface AuctionsTabItemsProps extends ItemCallbacks {
 
 function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuctions, normalizedQuery, searchQuery, isAuthenticated, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: AuctionsTabItemsProps) {
   if (auctionBucket.length === 0) {
-    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No won auctions in your cart.</Text>;
+    return <Text className={EMPTY_STATE_CLASS}>No won auctions in your cart.</Text>;
   }
   if (normalizedQuery && filteredAuctions.length === 0) {
-    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+    return <Text className={EMPTY_STATE_CLASS}>No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
   }
   return (
     <Div className="space-y-4">
       {sellerGroupsAuctions.map((group) => (
-        <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
         </Div>
       ))}
@@ -998,17 +1002,17 @@ interface CartTabItemsProps extends ItemCallbacks {
 
 function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, effectiveCoupons, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
   if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
-    return <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+    return <Text className={EMPTY_STATE_CLASS}>No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
   }
   return (
     <>
       {sellerGroupsCart.map((group) => (
-        <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} effectiveCoupons={effectiveCoupons} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
         </Div>
       ))}
       {cartBucket.length === 0 && oosItems.length === 0 && (
-        <Text className="py-6 text-center text-sm text-zinc-500 dark:text-zinc-400">No standard products or pre-orders in your cart.</Text>
+        <Text className={EMPTY_STATE_CLASS}>No standard products or pre-orders in your cart.</Text>
       )}
       {oosItems.length > 0 && (
         <Div>
@@ -1018,7 +1022,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
           </Div>
           <Div className="space-y-3">
             {sellerGroupsOos.map((group) => (
-              <Div key={group.sellerId} className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 opacity-60">
+              <Div key={group.sellerId} className={`${STORE_CARD_CLASS} opacity-60`}>
                 <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
               </Div>
             ))}

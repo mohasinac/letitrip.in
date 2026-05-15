@@ -31,7 +31,9 @@
       "Bash(echo \"EXIT:$?\")",
       "Bash(node scripts/audit-code-quality.mjs)",
       "Bash(node scripts/claude-hooks/check-on-stop.mjs)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(taskkill //F //IM node.exe)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

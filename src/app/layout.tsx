@@ -75,9 +75,16 @@ export const metadata: Metadata = {
     images: [SEO_CONFIG.defaultImage],
   },
   icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    shortcut: "/favicon/favicon.ico",
+    apple: "/favicon/apple-touch-icon.png",
+    other: [
+      { rel: "mask-icon", url: "/favicon/favicon.ico" },
+    ],
   },
   robots: {
     index: true,
