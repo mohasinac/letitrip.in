@@ -1,7 +1,7 @@
 "use server";
 
 /**
- * Offer Server Actions ï¿½ thin entrypoint
+ * Offer Server Actions — thin entrypoint
  *
  * Authenticates, rate-limits, validates, then delegates to
  * appkit offer domain functions. No business logic here.
@@ -13,7 +13,6 @@ import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   makeOffer,
   respondToOffer,
@@ -29,6 +28,7 @@ import {
 } from "@mohasinac/appkit";
 import type { CartDocument } from "@mohasinac/appkit";
 import type { OfferDocument } from "@mohasinac/appkit";
+import type { ActionResult } from "@mohasinac/appkit";
 import { ERR_RATE_LIMIT } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------
@@ -64,56 +64,86 @@ const buyerCounterSchema = z.object({
 
 export async function makeOfferAction(
   input: MakeOfferInput,
-): Promise<OfferDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`offer:make:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = makeOfferSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid offer data");
-  return makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
+): Promise<ActionResult<OfferDocument>> {
+  try {
+    const user = await requireAuthUser();
+    const rl = await rateLimitByIdentifier(`offer:make:${user.uid}`, RateLimitPresets.STRICT);
+    if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
+    const parsed = makeOfferSchema.safeParse(input);
+    if (!parsed.success)
+      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid offer data" };
+    const data = await makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
+    return { ok: true, data };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to submit offer. Please try again." };
+  }
 }
 
 export async function respondToOfferAction(
   input: RespondToOfferInput,
-): Promise<OfferDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`offer:respond:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = respondToOfferSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return respondToOffer(user.uid, parsed.data as RespondToOfferInput);
+): Promise<ActionResult<OfferDocument>> {
+  try {
+    const user = await requireAuthUser();
+    const rl = await rateLimitByIdentifier(`offer:respond:${user.uid}`, RateLimitPresets.STRICT);
+    if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
+    const parsed = respondToOfferSchema.safeParse(input);
+    if (!parsed.success)
+      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    const data = await respondToOffer(user.uid, parsed.data as RespondToOfferInput);
+    return { ok: true, data };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to respond to offer. Please try again." };
+  }
 }
 
 export async function acceptCounterOfferAction(
   input: z.infer<typeof acceptCounterSchema>,
-): Promise<OfferDocument> {
-  const user = await requireAuthUser();
-  const parsed = acceptCounterSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError("Invalid input");
-  return acceptCounterOffer(user.uid, parsed.data.offerId);
+): Promise<ActionResult<OfferDocument>> {
+  try {
+    const user = await requireAuthUser();
+    const parsed = acceptCounterSchema.safeParse(input);
+    if (!parsed.success) return { ok: false, error: "Invalid input" };
+    const data = await acceptCounterOffer(user.uid, parsed.data.offerId);
+    return { ok: true, data };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to accept counter offer. Please try again." };
+  }
 }
 
 export async function counterOfferByBuyerAction(
   input: BuyerCounterInput,
-): Promise<OfferDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`offer:buyer-counter:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = buyerCounterSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid counter offer data");
-  return counterOfferByBuyer(user.uid, user.email ?? "", parsed.data as BuyerCounterInput);
+): Promise<ActionResult<OfferDocument>> {
+  try {
+    const user = await requireAuthUser();
+    const rl = await rateLimitByIdentifier(`offer:buyer-counter:${user.uid}`, RateLimitPresets.STRICT);
+    if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
+    const parsed = buyerCounterSchema.safeParse(input);
+    if (!parsed.success)
+      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid counter offer data" };
+    const data = await counterOfferByBuyer(user.uid, user.email ?? "", parsed.data as BuyerCounterInput);
+    return { ok: true, data };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to submit counter offer. Please try again." };
+  }
 }
 
 export async function withdrawOfferAction(
   input: z.infer<typeof withdrawOfferSchema>,
-): Promise<void> {
-  const user = await requireAuthUser();
-  const parsed = withdrawOfferSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError("Invalid input");
-  return withdrawOffer(user.uid, parsed.data.offerId);
+): Promise<ActionResult<void>> {
+  try {
+    const user = await requireAuthUser();
+    const parsed = withdrawOfferSchema.safeParse(input);
+    if (!parsed.success) return { ok: false, error: "Invalid input" };
+    await withdrawOffer(user.uid, parsed.data.offerId);
+    return { ok: true, data: undefined };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to withdraw offer. Please try again." };
+  }
 }
 
 export async function listBuyerOffersAction(): Promise<OfferDocument[]> {
@@ -128,10 +158,15 @@ export async function listSellerOffersAction(): Promise<OfferDocument[]> {
 
 export async function checkoutOfferAction(
   offerId: string,
-): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`offer:checkout:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  return checkoutOffer(user.uid, offerId);
+): Promise<ActionResult<CartDocument>> {
+  try {
+    const user = await requireAuthUser();
+    const rl = await rateLimitByIdentifier(`offer:checkout:${user.uid}`, RateLimitPresets.STRICT);
+    if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
+    const data = await checkoutOffer(user.uid, offerId);
+    return { ok: true, data };
+  } catch (err) {
+    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    return { ok: false, error: "Failed to checkout offer. Please try again." };
+  }
 }
-

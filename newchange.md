@@ -41,6 +41,30 @@
 
 ---
 
+### S-full-audit — Comprehensive Platform Audit & Fix (2026-05-17)
+
+**Sub-sessions A (indices), B (bid/offer business logic), C (UI + QA). `npm run check` exits 0.**
+
+| Area | Detail |
+|------|--------|
+| **A1: 10 Firestore indices** | Added I-01…I-10 to `appkit/firebase/base/firestore.indexes.json`: bids(userId,status,createdAt), products(storeId,listingType,status,createdAt), products(listingType,auctionEndDate,status), products(listingType,prizeDrawEndDate), orders(paymentStatus,status,createdAt), orders(paymentStatus,status,prizeRevealDeadline), orders(storeId,status,payoutStatus), coupons(validity.isActive,type,createdAt), categories(parentId,isActive,displayOrder), eventEntries(userId,eventId,createdAt) |
+| **B7: checkoutDeadline on OfferDocument** | Added `checkoutDeadline?: Date` + `OFFER_FIELDS.CHECKOUT_DEADLINE` to `appkit/src/features/seller/schemas/firestore.ts` |
+| **B8: Write checkoutDeadline on accept** | `respondToOffer` accept branch + `acceptCounterOffer` both write 48h deadline; `checkoutOffer()` validates it with `OFFER_ERROR_CODES.CHECKOUT_EXPIRED` |
+| **B10: handleActionError utility** | New `appkit/src/utils/action-response.ts` — maps `NotFoundError→NOT_FOUND`, `ValidationError→code`, `AuthorizationError→UNAUTHORIZED`, others→INTERNAL. Dev-only `debug.stack`. Exported from appkit index. |
+| **B11: ActionResult<T> extension** | `appkit/src/core/server-action.ts` error branch gains `code?: string` + `debug?: { stack?: string }` |
+| **B12: Offer actions wrapped** | `src/actions/offer.actions.ts` all mutations return `Promise<ActionResult<T>>` via `handleActionError`; list actions unchanged |
+| **B13: Page shims updated** | `store/offers/page.tsx`, `user/offers/page.tsx`, `products/[slug]/actions.ts` — unwrap ActionResult, re-throw as Error to keep appkit component props stable |
+| **C1a: /store/bundles** | Replaced "coming soon" with Alert (contact support for bundle inclusion) + link to listings |
+| **C1b: /admin/dashboard** | Wired `renderAlerts` (4 stat cards: pending orders/payouts/reviews/coupons) + `renderRecentActivity` (5 recent orders) via client-side fetch |
+| **C1e: User bids pagination** | `BidRepository.findByUserPaginated()` added; `/api/user/bids` route uses it with `pageSize` query param |
+| **C2–C5: QA suites** | pw-19-bid-placement, pw-20-prize-draw-reveal, pw-21-offers-flow, pw-22-admin-power-actions written |
+| **C6: Suite updates** | pw-01 + checkout OTP consent; pw-16 + /admin/site fees tab; sieve-16 + combo filter (listingType=auction+status=published) |
+| **C7: env.local** | `EMAIL_FROM_NAME="Letitrip"` → `"LetItRip"` |
+| **C8: audit-env-alignment.mjs** | `scripts/audit-env-alignment.mjs` validates 17 required vars + EMAIL_FROM_NAME casing + stale FIREBASE_INTERNAL_SECRET |
+| **PrintCenterView stub** | Created `appkit/src/features/seller/components/PrintCenterView.tsx` stub (3 pages imported deleted component); exported from client.ts |
+
+---
+
 ### S-formshells-padding — FormShell create-mode action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
 
 **Fixed 5 layout/visibility bugs + 1 pre-existing code-quality violation. New audit-dashboard-padding script. `npm run check:audits` clean.**

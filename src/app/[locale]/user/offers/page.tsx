@@ -7,17 +7,20 @@ import {
 
 async function handleAcceptCounter(offerId: string): Promise<void> {
   "use server";
-  await acceptCounterOfferAction({ offerId });
+  const result = await acceptCounterOfferAction({ offerId });
+  if (!result.ok) throw new Error(result.error);
 }
 
 async function handleWithdraw(offerId: string): Promise<void> {
   "use server";
-  await withdrawOfferAction({ offerId });
+  const result = await withdrawOfferAction({ offerId });
+  if (!result.ok) throw new Error(result.error);
 }
 
 async function handleCheckout(offerId: string): Promise<void> {
   "use server";
-  await checkoutOfferAction(offerId);
+  const result = await checkoutOfferAction(offerId);
+  if (!result.ok) throw new Error(result.error);
 }
 
 export default function Page() {

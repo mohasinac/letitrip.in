@@ -72,17 +72,47 @@ const QUICK_ACTIONS = [
   { label: "Sections",      href: ROUTES.ADMIN.SECTIONS,    Icon: Layers },
 ];
 
+interface DashboardStats {
+  pendingOrders: number;
+  pendingPayouts: number;
+  pendingReviews: number;
+  activeCoupons: number;
+}
+
+interface RecentOrder {
+  id: string;
+  status: string;
+  totalAmount: number;
+  currency: string;
+  createdAt: string;
+}
+
+function StatCard({ label, value, href }: { label: string; value: number | null; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col gap-1 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
+    >
+      <span className="text-xs text-[var(--appkit-color-text-muted)]">{label}</span>
+      <span className="text-2xl font-bold text-[var(--appkit-color-text)]">
+        {value === null ? "—" : value}
+      </span>
+    </Link>
+  );
+}
+
 export default function Page() {
   const [prefs, setPrefs] = useState<DevPrefs>(DEFAULT_PREFS);
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
   const bypassFetched = useRef(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
 
   useEffect(() => {
     setPrefs(loadPrefs());
   }, []);
 
-  // Load adminCheckoutBypass from Firestore on mount.
   useEffect(() => {
     if (bypassFetched.current) return;
     bypassFetched.current = true;
@@ -92,6 +122,29 @@ export default function Page() {
         if (data?.data?.enabled !== undefined) {
           setAdminBypassEnabled(data.data.enabled as boolean);
         }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/admin/orders?status=PENDING&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
+      fetch("/api/admin/payouts?status=PENDING&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
+      fetch("/api/admin/reviews?status=pending&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
+      fetch("/api/admin/coupons?validity.isActive=true&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
+    ]).then(([orders, payouts, reviews, coupons]) => {
+      setStats({
+        pendingOrders: orders?.data?.total ?? orders?.data?.items?.length ?? 0,
+        pendingPayouts: payouts?.data?.total ?? payouts?.data?.items?.length ?? 0,
+        pendingReviews: reviews?.data?.total ?? reviews?.data?.items?.length ?? 0,
+        activeCoupons: coupons?.data?.total ?? coupons?.data?.items?.length ?? 0,
+      });
+    }).catch(() => {});
+
+    fetch("/api/admin/orders?sort=-createdAt&pageSize=5", { credentials: "include" })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.data?.items) setRecentOrders(data.data.items as RecentOrder[]);
       })
       .catch(() => {});
   }, []);
@@ -107,7 +160,6 @@ export default function Page() {
       });
       setAdminBypassEnabled(next);
     } catch {
-      // silently revert on failure
     } finally {
       setBypassLoading(false);
     }
@@ -124,6 +176,14 @@ export default function Page() {
   return (
     <AdminDashboardView
       labels={{ title: "Admin Dashboard" }}
+      renderAlerts={() => (
+        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
+          <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
+          <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
+          <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+        </Div>
+      )}
       renderQuickActions={() => (
         <Div className="space-y-8">
           <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -189,6 +249,29 @@ export default function Page() {
           </Div>
         </Div>
       )}
+      renderRecentActivity={() =>
+        recentOrders.length > 0 ? (
+          <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden">
+            <Div className="flex items-center justify-between px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]">
+              <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">Recent Orders</Text>
+              <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
+            </Div>
+            <Div className="divide-y divide-[var(--appkit-color-border-subtle)]">
+              {recentOrders.map((order) => (
+                <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
+                  <Text className="text-xs font-mono text-[var(--appkit-color-text-muted)]">{order.id}</Text>
+                  <Div className="flex items-center gap-3">
+                    <Text className="text-xs text-[var(--appkit-color-text-muted)]">{order.status}</Text>
+                    <Text className="text-xs font-semibold text-[var(--appkit-color-text)]">
+                      ₹{((order.totalAmount ?? 0) / 100).toLocaleString("en-IN")}
+                    </Text>
+                  </Div>
+                </Link>
+              ))}
+            </Div>
+          </Div>
+        ) : null
+      }
     />
   );
 }

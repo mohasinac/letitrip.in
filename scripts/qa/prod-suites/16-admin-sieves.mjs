@@ -81,6 +81,17 @@ export async function run() {
     `/api/admin/products?pageSize=12&filters=listingType%3D%3D${LISTING_TYPES.AUCTION}`,
   );
 
+  // listingType=auction + status=published combo filter
+  const auctionPublished = await probe(
+    "admin products listingType=auction + status=published",
+    `/api/admin/products?pageSize=10&filters=listingType%3D%3D${LISTING_TYPES.AUCTION}%3Bstatus%3D%3Dpublished`,
+  );
+  assertEvery(
+    "admin products listingType=auction+status=published — every item matches both",
+    itemsOf(auctionPublished.body),
+    (it) => it.listingType === LISTING_TYPES.AUCTION && (it.status === PRODUCT_STATUS.PUBLISHED || it.status === "published"),
+  );
+
   // ── ORDERS ──────────────────────────────────────────────────────────────────
   // probe-only: prod orders include real user orders with Firestore auto-IDs (no order- prefix)
   await probe("admin orders list", "/api/admin/orders?pageSize=12");

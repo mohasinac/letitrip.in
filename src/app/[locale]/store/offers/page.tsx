@@ -4,7 +4,8 @@ import type { SellerOfferAction } from "@mohasinac/appkit";
 
 async function handleRespond(input: SellerOfferAction): Promise<void> {
   "use server";
-  await respondToOfferAction(input);
+  const result = await respondToOfferAction(input);
+  if (!result.ok) throw new Error(result.error);
 }
 
 export default function Page() {

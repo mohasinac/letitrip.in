@@ -276,5 +276,40 @@ export async function run() {
     await visitPublicPath(ctx, entry);
   }
 
+  // ── Checkout OTP consent step checkpoint ────────────────────────────────
+  {
+    const userCtx = await getContext("user");
+    const page = await userCtx.newPage();
+    page.setDefaultTimeout(20000);
+    const label = "checkout-otp-consent";
+    try {
+      const { status, finalUrl } = await gotoAndWait(page, localizedUrl("/checkout"));
+      const redirected = /\/auth\/login/.test(finalUrl);
+      rec(`${label}: checkout loads (or redirects to login)`, status < 400, `status=${status}`);
+
+      if (!redirected) {
+        // OTP consent step heading
+        const otpHeading = await page
+          .locator("h1, h2, h3")
+          .filter({ hasText: /verify.*identity|otp|phone verification/i })
+          .count()
+          .catch(() => 0);
+        rec(`${label}: otp-consent step heading visible`, otpHeading > 0, `count=${otpHeading}`);
+
+        // "Send verification code" button (not immediate send)
+        const sendCodeBtn = await page
+          .locator("button")
+          .filter({ hasText: /send.*code|send.*otp|verify/i })
+          .count()
+          .catch(() => 0);
+        rec(`${label}: send verification code button`, sendCodeBtn > 0, `count=${sendCodeBtn}`);
+      }
+    } catch (e) {
+      rec(`${label}: checkout otp consent`, false, e.message);
+    }
+    await page.close();
+    await userCtx.close();
+  }
+
   return results;
 }

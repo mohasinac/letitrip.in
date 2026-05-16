@@ -55,9 +55,10 @@ export const POST = withProviders(
         const result = await placeBid(user!.uid, user!.email ?? "", body!);
         return successResponse(result, "Bid placed", 201);
       } catch (err) {
-        if (err instanceof NotFoundError) return errorResponse(err.message, 404, (err.data as Record<string, unknown> | undefined));
-        if (err instanceof ValidationError) return errorResponse(err.message, 400, (err.data as Record<string, unknown> | undefined));
-        if (err instanceof AuthorizationError) return errorResponse(err.message, 403, (err.data as Record<string, unknown> | undefined));
+        const errData = (e: unknown) => "data" in (e as object) ? ((e as { data?: unknown }).data as Record<string, unknown> | undefined) : undefined;
+        if (err instanceof NotFoundError) return errorResponse(err.message, 404, errData(err));
+        if (err instanceof ValidationError) return errorResponse(err.message, 400, errData(err));
+        if (err instanceof AuthorizationError) return errorResponse(err.message, 403, errData(err));
         throw err;
       }
     },

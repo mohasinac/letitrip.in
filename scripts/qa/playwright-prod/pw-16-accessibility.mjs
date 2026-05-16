@@ -115,12 +115,48 @@ export async function run() {
     "/admin/orders",
     "/admin/blog",
     "/admin/carousel",
+    "/admin/site",
   ]) {
     await auditA11y(adminCtx, path, "admin");
   }
 
+  // Admin site settings: Fees tab fields present
+  {
+    const page = await adminCtx.newPage();
+    page.setDefaultTimeout(15000);
+    const label = "admin-site-fees-tab";
+    try {
+      await gotoAndWait(page, localizedUrl("/admin/site"));
+
+      // Navigate to Fees tab
+      const feesTab = page.locator('[role="tab"]:has-text("Fees"), button:has-text("Fees"), a:has-text("Fees")');
+      const feesTabCount = await feesTab.count().catch(() => 0);
+      if (feesTabCount > 0) await feesTab.first().click();
+
+      // platformFeePercent input
+      const platformFeeInput = await page
+        .locator('input[name="platformFeePercent"], input[id*="platformFee"], input[placeholder*="platform" i]')
+        .count()
+        .catch(() => 0);
+      rec(`${label}: platformFeePercent input visible`, platformFeeInput > 0, `count=${platformFeeInput}`);
+
+      // minimumTransactionFee input
+      const minFeeInput = await page
+        .locator('input[name="minimumTransactionFee"], input[id*="minimumTransaction"], input[placeholder*="minimum" i]')
+        .count()
+        .catch(() => 0);
+      rec(`${label}: minimumTransactionFee input visible`, minFeeInput > 0, `count=${minFeeInput}`);
+    } catch (e) {
+      rec(`${label}: fees tab check`, false, e.message);
+    }
+    await page.close();
+  }
+
+  await adminCtx.close();
+
   // Store pages (seller)
   const sellerCtx = await getContext("seller");
+
   for (const path of ["/store", "/store/products", "/store/orders"]) {
     await auditA11y(sellerCtx, path, "seller");
   }

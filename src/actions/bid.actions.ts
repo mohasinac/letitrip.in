@@ -65,12 +65,14 @@ export async function placeBidAction(
   } catch (err: unknown) {
     if (err instanceof AuthorizationError)
       return { ok: false, error: "Please sign in to place a bid." };
-    if (err instanceof ValidationError)
+    if (err instanceof ValidationError) {
+      const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
       return {
         ok: false,
         error: err.message,
-        code: (err.data as { code?: string } | undefined)?.code,
+        code: (veData as { code?: string } | undefined)?.code,
       };
+    }
     if (err instanceof Error && err.message)
       return { ok: false, error: err.message };
     return { ok: false, error: "Failed to place bid. Please try again." };

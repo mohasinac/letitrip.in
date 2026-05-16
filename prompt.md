@@ -133,13 +133,28 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — Next: SB-UNI Phase 3–9 or S-polish-pass (pull when ready)
+### 🔄 CURRENT — S-full-audit (closed 2026-05-17): Next: SB-UNI Phase 3–9 or S-polish-pass
 
-Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type detail/list views), SB-UNI-R (seller forms), SB-UNI-T (search facets), or S-polish-pass.
+S-full-audit completed. All A/B/C sub-sessions done. Pull next ⏳ task from `crud-tracker.md`.
 
 ---
 
-### ✅ LAST COMPLETED — S-formshells-padding: FormShell action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
+### ✅ LAST COMPLETED — S-full-audit: Comprehensive Platform Audit & Fix (2026-05-17)
+
+- **A1**: Added 10 missing Firestore composite indices (bids user history, products seller tabs, orders pending/prize-reveal/earnings, coupons admin filter, categories nav tree, eventEntries user history)
+- **B1–B6** (prior session): Bid runTransaction race fix, minBidIncrement validation, bids/route.ts error catch, leadingBidderId in onBidPlaced, BID_ERROR_CODES, PlaceBidFormClient code-mapped errors
+- **B7–B9**: `checkoutDeadline` field on `OfferDocument`; written on seller accept + buyer counter-accept; validated in `checkoutOffer()` with `OFFER_ERROR_CODES.CHECKOUT_EXPIRED`
+- **B10–B14**: `handleActionError` utility in `appkit/src/utils/action-response.ts`; `ActionResult<T>` extended with `code?` + `debug?`; all offer server actions wrapped; page shims unwrap ActionResult to `throw Error`
+- **C1a**: `/store/bundles/page.tsx` — replaced "coming soon" with informational Alert + link to listings
+- **C1b**: `/admin/dashboard/page.tsx` — wired `renderAlerts` (4 stat cards) + `renderRecentActivity` (5 recent orders) via client-side fetch
+- **C1e**: User bids pagination — `findByUserPaginated()` added to `BidRepository`; `/api/user/bids` route updated
+- **C2–C5**: pw-19 (bid placement), pw-20 (prize draw reveal), pw-21 (offers flow), pw-22 (admin power actions) smoke suites written
+- **C6**: pw-01 updated with checkout OTP consent checkpoint; pw-16 updated with admin site + fees tab; sieve-16 updated with combo filter test
+- **C7–C8**: `EMAIL_FROM_NAME` fixed to `"LetItRip"`; `scripts/audit-env-alignment.mjs` created
+- **PrintCenterView** stub added to appkit (component was deleted in S-print-center-cleanup but 3 consuming pages remained)
+- `npm run check` exits 0
+
+### ✅ PREVIOUS LAST — S-formshells-padding: FormShell action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
 
 - `StepForm.hideActions` prop: suppresses built-in `StepFormActions` inside scrollable body — use with `FormShell.renderBottomBar` so step nav is always visible
 - `SellerProductShell` create mode: `renderBottomBar` now passes `StepFormActions` + `stepError` to FormShell's sticky footer; `handleNext` + `stepError` state hoisted out of StepForm body
