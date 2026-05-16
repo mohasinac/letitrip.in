@@ -1,7 +1,8 @@
-import { SellerCreateProductView, ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { createSellerProductAction } from "@/actions/seller.actions";
 import { redirect } from "next/navigation";
+import { StoreCreateProductShell } from "@/components/store/SellerProductFormShell";
 
 export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
@@ -25,7 +26,7 @@ export default function Page() {
   }
 
   return (
-    <SellerCreateProductView
+    <StoreCreateProductShell
       listingType="classified"
       onSave={handleSave}
       onPublish={handlePublish}

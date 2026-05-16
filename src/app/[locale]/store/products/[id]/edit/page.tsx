@@ -1,7 +1,8 @@
-import { SellerEditProductView, ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { sellerUpdateProductAction } from "@/actions/seller.actions";
 import { redirect } from "next/navigation";
+import { StoreEditProductShell } from "@/components/store/SellerProductFormShell";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -23,7 +24,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <SellerEditProductView
+    <StoreEditProductShell
       listingType="standard"
       productId={id}
       onSave={handleSave}

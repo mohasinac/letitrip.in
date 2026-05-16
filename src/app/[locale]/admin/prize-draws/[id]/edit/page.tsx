@@ -1,7 +1,8 @@
-import { SellerEditProductView, ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { sellerUpdateProductAction } from "@/actions/seller.actions";
 import { redirect } from "next/navigation";
+import { StoreEditProductShell } from "@/components/store/SellerProductFormShell";
 
 /**
  * Admin prize-draw edit page (SB4-E). Re-uses SellerEditProductView so admin
@@ -37,7 +38,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <SellerEditProductView
+    <StoreEditProductShell
       listingType="prize-draw"
       productId={id}
       onSave={handleSave}

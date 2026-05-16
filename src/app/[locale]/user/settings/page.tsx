@@ -244,7 +244,7 @@ export default function Page() {
             className={[
               "px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px",
               activeTab === tab
-                ? "border-[var(--appkit-color-primary)] text-[var(--appkit-color-primary)]"
+                ? "border-[var(--appkit-color-cobalt)] text-[var(--appkit-color-cobalt)]"
                 : "border-transparent text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]",
             ].join(" ")}
           >

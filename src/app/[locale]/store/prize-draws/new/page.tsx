@@ -1,7 +1,8 @@
-import { SellerCreateProductView, ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { createSellerProductAction } from "@/actions/seller.actions";
 import { redirect } from "next/navigation";
+import { StoreCreateProductShell } from "@/components/store/SellerProductFormShell";
 
 /**
  * Store-side prize-draw create page (SB4-E + SB4-D).
@@ -33,7 +34,7 @@ export default function Page() {
   }
 
   return (
-    <SellerCreateProductView
+    <StoreCreateProductShell
       listingType="prize-draw"
       onSave={handleSave}
       onPublish={handlePublish}
