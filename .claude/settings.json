@@ -51,29 +51,9 @@
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",
-      "C:\\Users\\mohsi\\Documents"
+      "C:\\Users\\mohsi\\Documents",
+      "c:\\Users\\mohsi\\.claude\\plans"
     ]
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node scripts/claude-hooks/load-prompt-on-start.mjs"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node scripts/claude-hooks/check-on-stop.mjs"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }
