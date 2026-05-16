@@ -213,7 +213,18 @@ After deploy: smoke-test the production URL for all touched routes.
 - Added 9 seller page shims (list/new/edit × 3 types). ROUTES.STORE + STORE_NAV_GROUPS wired.
 - Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
 
-### ✅ CURRENT — SB-UNI Phase 7 CTA registry sweeps: W-4 done, W-5 next (2026-05-16)
+### ✅ LAST COMPLETED — S-quality-pass-W4: Quality gate + ASCII diagrams + appkit 2.7.31 publish + deploy (2026-05-16)
+
+- `AdminAddressEditorView` fully rewritten: 3 `Card variant="outlined"` sections (Ownership / Contact & Location / Flags), two-panel `grid lg:grid-cols-[1fr_280px]`, cross-form submit, `ACTIONS.ADMIN["save-changes"].label`, `ConfirmDeleteModal` replacing `confirm()`.
+- `AdminProductEditorView` + `AdminCategoryEditorView`: replaced native `confirm()` with `ConfirmDeleteModal`.
+- `POST /api/admin/addresses/route.ts`: fixed status 200→201, removed unused `sortBy`/`ADDRESS_FIELDS` imports.
+- `asciiDiagrams.md`: added `Shared > CTA Action Registry — ACTIONS.ADMIN ✅ (W-4)` section (17-leaf table + confirmation dialog index + consumer sweep list). Index entry added.
+- Full `npm run check` exits 0 (0 errors, 541 warnings pre-existing).
+- appkit 2.7.31 published to npm. Consumer `package.json` updated. Next.js prod build passes.
+- Firebase indexes + rules deployed (`firebase-merge.mjs --deploy`).
+- Vercel `--prod` deploy complete.
+
+### ✅ PREVIOUS — SB-UNI Phase 7 CTA registry sweeps: W-4 done, W-5 next (2026-05-16)
 
 All tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md` are complete.
 
