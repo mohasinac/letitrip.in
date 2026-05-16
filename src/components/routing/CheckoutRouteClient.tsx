@@ -84,7 +84,13 @@ interface ServerCartResponse {
   itemCount: number;
 }
 
-type CheckoutStep = "address" | "otp" | "payment" | "processing";
+type CheckoutStep = "address" | "otp-consent" | "otp" | "payment" | "processing";
+
+// --- Shared class strings ----------------------------------------------------
+
+const STEP_CARD_CLS = "rounded-xl border border-zinc-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900";
+const STEP_SUBLABEL_CLS = "text-sm text-zinc-500 dark:text-zinc-400";
+const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
 // --- Sub-renderers -----------------------------------------------------------
 
@@ -116,15 +122,15 @@ function renderAddressDrawer({
   );
 }
 
+const STEP_LABELS = ["Shipping Address", "Identity Verification", "Payment"];
+
 function renderStepIndicator(activeStep: number, totalSteps: number) {
   return (
     <Text className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
       Step {activeStep + 1} of {totalSteps}:{" "}
-      {activeStep === 0
-        ? "Shipping Address"
-        : activeStep === 1
-          ? "Verify Identity"
-          : "Payment"}
+      <span className="font-medium text-zinc-700 dark:text-zinc-300">
+        {STEP_LABELS[activeStep] ?? ""}
+      </span>
     </Text>
   );
 }
@@ -198,6 +204,69 @@ function renderAddressStep({
   );
 }
 
+function renderOtpConsentStep({
+  userEmail,
+  isSendingOtp,
+  isProcessingPayment,
+  adminBypassEnabled,
+  handleSendOtp,
+  handleAdminBypass,
+}: {
+  userEmail: string;
+  isSendingOtp: boolean;
+  isProcessingPayment: boolean;
+  adminBypassEnabled: boolean;
+  handleSendOtp: () => Promise<void>;
+  handleAdminBypass: () => Promise<void>;
+}) {
+  const maskedDisplay = userEmail
+    ? `${userEmail[0]}***@${userEmail.split("@")[1] ?? ""}`
+    : "your registered email";
+  return (
+    <Div className={STEP_CARD_CLS}>
+      <Heading level={2} className="mb-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        Verify Your Identity
+      </Heading>
+      <Text className={STEP_SUBLABEL_CLS}>
+        Step 2 of 3 — Identity Verification
+      </Text>
+      <Text className="mb-5 text-sm text-zinc-600 dark:text-zinc-400">
+        To keep your account secure, we need to verify it's really you before placing this order.
+        We'll send a one-time code to{" "}
+        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedDisplay}</span>.
+      </Text>
+      <Stack gap="md">
+        <Button
+          type="button"
+          onClick={handleSendOtp}
+          disabled={isSendingOtp}
+          className={PRIMARY_BTN_CLS}
+        >
+          {isSendingOtp ? "Sending code…" : "Send verification code"}
+        </Button>
+        {adminBypassEnabled && (
+          <Div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
+            <Text className="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+              Admin Test Mode
+            </Text>
+            <Text className="mb-2 text-xs text-amber-600 dark:text-amber-500">
+              Skip email verification and place a test order without payment.
+            </Text>
+            <Button
+              type="button"
+              onClick={handleAdminBypass}
+              disabled={isProcessingPayment}
+              className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
+            >
+              Skip Verification — Admin Bypass
+            </Button>
+          </Div>
+        )}
+      </Stack>
+    </Div>
+  );
+}
+
 function renderOtpStep({
   maskedEmail,
   otpCode,
@@ -205,11 +274,8 @@ function renderOtpStep({
   otpError,
   isVerifyingOtp,
   isSendingOtp,
-  isProcessingPayment,
-  adminBypassEnabled,
   handleVerifyOtp,
-  handleProceedToOtp,
-  handleAdminBypass,
+  handleSendOtp,
 }: {
   maskedEmail: string;
   otpCode: string;
@@ -217,19 +283,21 @@ function renderOtpStep({
   otpError: string;
   isVerifyingOtp: boolean;
   isSendingOtp: boolean;
-  isProcessingPayment: boolean;
-  adminBypassEnabled: boolean;
   handleVerifyOtp: () => Promise<void>;
-  handleProceedToOtp: () => Promise<void>;
-  handleAdminBypass: () => Promise<void>;
+  handleSendOtp: () => Promise<void>;
 }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
-      <Heading level={2} className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-        Verify Your Identity
+    <Div className={STEP_CARD_CLS}>
+      <Heading level={2} className="mb-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+        Enter Verification Code
       </Heading>
+      <Text className={STEP_SUBLABEL_CLS}>
+        Step 2 of 3 — Identity Verification
+      </Text>
       <Text className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-        A verification code has been sent to {maskedEmail}. Enter it below to continue.
+        A 6-digit code was sent to{" "}
+        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedEmail}</span>.
+        Enter it below to continue.
       </Text>
       <Stack gap="md">
         <Input
@@ -248,34 +316,19 @@ function renderOtpStep({
           type="button"
           onClick={handleVerifyOtp}
           disabled={isVerifyingOtp || otpCode.length < 6}
-          className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+          className={PRIMARY_BTN_CLS}
         >
-          {isVerifyingOtp ? "Verifying…" : "Verify Code"}
+          {isVerifyingOtp ? "Verifying…" : "Verify & Continue"}
         </Button>
         <Button
           type="button"
           variant="ghost"
-          onClick={handleProceedToOtp}
+          onClick={handleSendOtp}
           disabled={isSendingOtp}
           className="w-full text-sm text-zinc-600 dark:text-zinc-400 underline"
         >
           {isSendingOtp ? "Resending…" : "Resend code"}
         </Button>
-        {adminBypassEnabled && (
-          <Div className="mt-2 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
-            <Text className="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-              Admin Test Mode
-            </Text>
-            <Button
-              type="button"
-              onClick={handleAdminBypass}
-              disabled={isProcessingPayment}
-              className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
-            >
-              Skip OTP + Place Order (Admin Bypass)
-            </Button>
-          </Div>
-        )}
       </Stack>
     </Div>
   );
@@ -301,9 +354,14 @@ function renderPaymentStep({
   handleAdminBypass: () => Promise<void>;
 }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+    <Div className={STEP_CARD_CLS}>
+      {step !== "processing" && (
+        <Text className={STEP_SUBLABEL_CLS}>
+          Step 3 of 3 — Payment
+        </Text>
+      )}
       <Heading level={2} className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-        {step === "processing" ? "Processing…" : "Choose Payment Method"}
+        {step === "processing" ? "Processing your order…" : "Choose Payment Method"}
       </Heading>
       {step === "processing" ? (
         <Div className="h-20 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
@@ -316,7 +374,7 @@ function renderPaymentStep({
             type="button"
             onClick={handlePayOnline}
             disabled={isProcessingPayment || cartIsEmpty}
-            className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            className={PRIMARY_BTN_CLS}
           >
             Pay Online (Razorpay)
           </Button>
@@ -356,18 +414,16 @@ function renderOrderSummary({
   selectedAddress,
   formattedTotal,
   step,
-  isSendingOtp,
   addressesLoading,
   actionError,
-  handleProceedToOtp,
+  handleAdvanceToVerification,
 }: {
   selectedAddress: Address | null;
   formattedTotal: string;
   step: CheckoutStep;
-  isSendingOtp: boolean;
   addressesLoading: boolean;
   actionError: string;
-  handleProceedToOtp: () => Promise<void>;
+  handleAdvanceToVerification: () => void;
 }) {
   return (
     <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
@@ -394,11 +450,11 @@ function renderOrderSummary({
       {step === "address" && (
         <Button
           type="button"
-          onClick={handleProceedToOtp}
-          disabled={!selectedAddress || isSendingOtp || addressesLoading}
+          onClick={handleAdvanceToVerification}
+          disabled={!selectedAddress || addressesLoading}
           className="mt-4 w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
         >
-          {isSendingOtp ? "Sending OTP…" : "Continue"}
+          Continue to Verification
         </Button>
       )}
       {actionError && step === "address" && (
@@ -466,7 +522,13 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     [],
   );
 
-  const handleProceedToOtp = useCallback(async () => {
+  const handleAdvanceToVerification = useCallback(() => {
+    if (!selectedAddress) return;
+    setActionError("");
+    setStep("otp-consent");
+  }, [selectedAddress]);
+
+  const handleSendOtp = useCallback(async () => {
     if (!selectedAddress) return;
     setIsSendingOtp(true);
     setActionError("");
@@ -493,7 +555,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       setStep("payment");
       showToast("Identity verified. Choose a payment method.", "success");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Invalid OTP. Please try again.";
+      const msg = err instanceof Error ? err.message : "Invalid code. Please try again.";
       setOtpError(msg);
       showToast(msg, "error");
     } finally {
@@ -656,7 +718,11 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
   // --- Render -----------------------------------------------------------------
 
   const stepIndex =
-    step === "address" ? 0 : step === "otp" ? 1 : step === "payment" ? 2 : 2;
+    step === "address"
+      ? 0
+      : step === "otp-consent" || step === "otp"
+        ? 1
+        : 2;
 
   const formattedTotal = subtotal.toLocaleString("en-IN", {
     style: "currency",
@@ -677,12 +743,15 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
           if (step === "address") {
             return renderAddressStep({ addresses: addresses ?? [], selectedAddress, handleSelectAddress, setAddAddressDrawerOpen });
           }
+          if (step === "otp-consent") {
+            return renderOtpConsentStep({ userEmail: user?.email ?? "", isSendingOtp, isProcessingPayment, adminBypassEnabled, handleSendOtp, handleAdminBypass });
+          }
           if (step === "otp") {
-            return renderOtpStep({ maskedEmail, otpCode, setOtpCode, otpError, isVerifyingOtp, isSendingOtp, isProcessingPayment, adminBypassEnabled, handleVerifyOtp, handleProceedToOtp, handleAdminBypass });
+            return renderOtpStep({ maskedEmail, otpCode, setOtpCode, otpError, isVerifyingOtp, isSendingOtp, handleVerifyOtp, handleSendOtp });
           }
           return renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, handlePayOnline, handlePlaceCodOrder, handleAdminBypass });
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, step, isSendingOtp, addressesLoading, actionError, handleProceedToOtp })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, step, addressesLoading, actionError, handleAdvanceToVerification })}
       />
     </Div>
   );
