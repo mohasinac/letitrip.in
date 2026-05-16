@@ -41,6 +41,25 @@
 
 ---
 
+### S-ts-cleanup — Print-center removal + PhysicalLocationModal rescue + lint cleanup (2026-05-17)
+
+**Cleaned up the incomplete print-center removal and committed pre-existing lint changes. `npm run check` exits 0.**
+
+| Area | Detail |
+|------|--------|
+| **appkit: print-center removed** | Deleted entire `_internal/client/features/seller/print-center/` directory: `PrintCenterView`, `LabelDesignPicker`, `PrintGrid`, `StoreCard`, `WebsiteCard`, `useInventoryPdf`, `InventoryLabel`, `OrderPackingLabel`, `types.ts` |
+| **PhysicalLocationModal preserved** | Moved to `features/seller/components/PhysicalLocationModal.tsx` — still used by `SellerProductsView` + `SellerOrdersView` for warehouse location bulk-set. Import paths in both views updated. |
+| **client.ts** | Removed 7 print-center exports; kept `PhysicalLocationModal` + `PhysicalLocation` at new path |
+| **3 app pages deleted** | `admin/print-center/page.tsx`, `store/print-center/page.tsx`, `store/inventory/print/page.tsx` — all imported removed `PrintCenterView` |
+| **navigation.tsx** | Removed `PRINT_CENTER` nav groups from `ADMIN_NAV_GROUPS` (Operations) + `STORE_NAV_GROUPS` (Tools) |
+| **Lint cleanup committed** | `eslint.config.mjs` overrides for social-feed / store-addresses / brand / request-schemas / grid-cols; `firestore.indexes.json` sync from appkit merge |
+| **Quality gates** | `npm run check` exits 0: tsc both repos + all 18 audits + ESLint |
+| **Commits** | `f247f70` (appkit) · `99c9a66e9` (main) |
+
+**No deferred items.**
+
+---
+
 ### S-print-center — Physical Inventory Labeling + Print & Label Center (2026-05-17)
 
 **Full print-center feature delivered: QR + Code128 barcode labels for all listing types, order packing slips, store business cards, website promo cards, bulk location assignment, and label design system.**

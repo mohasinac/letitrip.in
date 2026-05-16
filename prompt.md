@@ -139,7 +139,24 @@ Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type de
 
 ---
 
-### ✅ LAST COMPLETED — S-print-center: Physical Inventory Labeling + Print & Label Center (2026-05-17)
+### ✅ LAST COMPLETED — S-ts-cleanup: Print-center removal + lint cleanup (2026-05-17)
+
+- Removed entire `_internal/client/features/seller/print-center/` directory from appkit (`PrintCenterView`, `LabelDesignPicker`, `PrintGrid`, `StoreCard`, `WebsiteCard`, `useInventoryPdf`, `InventoryLabel`, `OrderPackingLabel`, `types.ts`)
+- `PhysicalLocationModal` preserved — moved to `features/seller/components/` (still used by `SellerProductsView` + `SellerOrdersView`)
+- Deleted 3 RSC app pages that imported removed `PrintCenterView` (`admin/print-center`, `store/print-center`, `store/inventory/print`)
+- Removed `PRINT_CENTER` nav groups from `ADMIN_NAV_GROUPS` + `STORE_NAV_GROUPS` in `navigation.tsx`
+- Committed pre-existing `eslint.config.mjs` lint overrides + `firestore.indexes.json` sync
+- Tracker: X9 ✅. `npm run check` exits 0. 2 commits: appkit `f247f70` + main `99c9a66e9`.
+
+### ✅ PREVIOUS LAST — S-media-upload-bugs: Media upload wildcard MIME + next/image domain + accept overrides (2026-05-17)
+
+- **MEDIA-BUG-04**: `ImageUpload.tsx` — `matchesMimeAccept` wildcard helper replaces broken `Array.includes` MIME check; default `accept` broadened to `"image/*"`
+- **MEDIA-BUG-05**: `appkit/src/configs/next.ts` — added `storage.googleapis.com` to `defaultRemotePatterns` so finalize-route public URLs render in `next/image`
+- **MEDIA-BUG-06**: Broadened `accept` overrides across all 6 callers: `BlogPostForm` content/additional images → `"image/*,video/*"`; `ProductForm` gallery → `"image/*,video/*"`; `SellerProductShell` gallery → `"image/*,video/*"` + added `MediaUploadField` for dedicated product video + `video?: string` on `SellerProductDraft`; `PrizeDrawItemsEditor` video → `"video/*"`; `AvatarUpload` → `"image/*"`; `MediaUploadList` default → `"image/*,video/*,application/pdf"`
+- `ImageUpload` empty state compacted from `aspect-[16/9]` ghost button to inline button row (~60px); preview compacted to `h-32 max-w-xs`; `MediaUploadList` item thumbnails `aspect-square max-h-24`; add-files trigger compact `outline sm` button
+- `npm run check:audits` exits 0. `tsc --noEmit` clean in both repos.
+
+### ✅ PREVIOUS LAST — S-print-center: Physical Inventory Labeling + Print & Label Center (2026-05-17)
 
 - **9 appkit print-center components** fully implemented: `InventoryLabel`, `OrderPackingLabel`, `StoreCard`, `WebsiteCard`, `LabelDesignPicker`, `PrintGrid`, `PhysicalLocationModal`, `useInventoryPdf`, `PrintCenterView`
 - **3 letitrip pages**: `/store/print-center`, `/store/inventory/print` (auto-print), `/admin/print-center`
