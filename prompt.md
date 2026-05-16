@@ -133,25 +133,26 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-infra-indexes: Firestore composite index audit + 5 missing indexes deployed (2026-05-16)
+### ✅ LAST COMPLETED — SB-UNI-R: Per-type seller create/edit forms (classified/digital-code/live) (2026-05-16)
+
+- Extended `ProductListingMode` union + `SellerProductDraft` with 20 new fields (city/locality/contact/shipping/negotiable for classified; delivery/pool/instructions/expiry for digital-code; species/age/sex/care/transport/fee/jurisdictions/cites for live).
+- Added `StepClassifiedSettings`, `StepDigitalCodeSettings`, `StepLiveItemSettings` step components in `SellerProductShell.tsx`.
+- Wired all three into `typeSpecificStep`, `listingTypeLabel`, `editSections`, and edit-mode section JSX.
+- Added 9 seller page shims (list/new/edit × 3 types): `store/classified`, `store/digital-codes`, `store/live`.
+- Added `ROUTES.STORE.CLASSIFIED/CLASSIFIED_NEW/CLASSIFIED_EDIT`, `DIGITAL_CODES/DIGITAL_CODES_NEW/DIGITAL_CODES_EDIT`, `LIVE_ITEMS/LIVE_ITEMS_NEW/LIVE_ITEMS_EDIT` to route-map.ts.
+- Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
+- Wired all 3 into `STORE_NAV_GROUPS` Listings section.
+- `npm run check` exits 0 (0 errors, 520 warnings pre-existing). appkit rebuilt v2.7.28.
+
+### ✅ Previous — S-infra-indexes: Firestore composite index audit + 5 missing indexes deployed (2026-05-16)
 
 - Full audit of all repository queries vs. deployed index set — 14 candidates checked against source code, 5 confirmed missing.
 - Added: `offers(storeId, status, createdAt ASC)` · `blogPosts(status, isFeatured, publishedAt DESC)` · `productTemplates(storeId, createdAt DESC)` · `bids(productId, userId, status)` · `events(status, type, startsAt ASC)`.
-- Fixed stale `"featured"` field name in blogPosts featured index (schema field is `"isFeatured"`).
-- Also fixed 47 TDZ circular-ref constants in appkit, JSX attribute syntax errors, `ERR_*` constant stripping from prior session.
 - `firebase deploy --only firestore:indexes --force` — clean, 0 errors. `vercel --prod` deployed.
-- `npm run check:audits` exits 0.
 
-### ✅ Previous — SB-UNI-Q: SSR layering for new listing-type detail views (2026-05-16)
+### 🔄 CURRENT — Tier SB-UNI Phase 3–9: CTA sweeps + search facets
 
-- **Playwright suites pw-01…pw-16** (10 new + 4 expanded): `_pw-setup.mjs` helpers (`gotoAndWait` / `fetchFirstId` / `getCookieHeader`); `pw-01` expanded to 60+ static+dynamic public routes; `pw-02` expanded to 13 listing pages; `pw-04` expanded to 57 admin + 31 store paths with DataTable/toolbar assertions; `pw-07` deep admin content assertions per listing page; `pw-08` dynamic edit/detail routes with real IDs; `pw-09` CRUD create (9 entities); `pw-10` CRUD edit; `pw-11` bulk select+actions; `pw-12` all store routes + dynamic edit routes for all 7 entity types; `pw-13` store CRUD+bulk; `pw-14` all user routes + order cancel/invoice/support ticket detail; `pw-15` full public expansion + classified/digital-codes/live listings + event sub-tabs + sublisting-categories + seller detail + auth utility routes; `pw-16` accessibility (skip-to-main, landmarks, empty buttons, image alt, input labels, h1, Tab focus).
-- **data-testid additions**: `DataTable` / `BulkActionBar` / `ListingToolbar` / `EmptyState` / `SiteLogo` / `Toast` / `TablePagination` / `CountdownDisplay` — all now have stable test selectors.
-- **View polish**: `ClassifiedDetailView` raw `<button>` → `<Button variant="primary" size="lg">`. `CodeRevealPanel` raw buttons → `<Button>` + `<Span>` primitives. `digital-codes/[slug]/page.tsx` bug fixed — removed non-serializable `fetchCode` prop from Server Component (code reveal wired from order detail page, not product page).
-- Seed, Firebase indices, SeedPanel: already complete in SB-UNI-Phase2. `npm run check` exits 0 (0 errors, 513 warnings pre-existing). appkit v2.7.26.
-
-### 🔄 CURRENT — Tier SB-UNI Phase 3–9: Per-type seller forms + CTA sweeps
-
-*(SB-UNI-Q completed 2026-05-16 — adapters/metadata/og/opengraph-image SSR layer for classified/digital-code/live. Next: SB-UNI-R seller create/edit forms or SB-UNI-W-2 public CTA sweep.)*
+*(SB-UNI-R completed 2026-05-16 — per-type seller forms for classified/digital-code/live. Next: SB-UNI-T (search facets) or SB-UNI-W-2 (public CTA sweep).)*
 
 ### ⏳ NEXT UP
 
