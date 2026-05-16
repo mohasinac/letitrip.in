@@ -18,6 +18,7 @@
  *   - scripts/audit-auth-gates.mjs               (pushWishlistOp/checkout without useAuthGate)
  *   - scripts/audit-inline-actions.mjs           (inline action IDs/labels duplicating registry)
  *   - appkit/scripts/audit-query-provider.mjs    (component both provides QueryClientProvider and calls react-query hooks)
+ *   - appkit/scripts/audit-export-paths.mjs     (broken re-exports in client.ts/index.ts/server.ts → deleted source files)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -147,6 +148,12 @@ const checks = [
     label: "audit-query-provider",
     cmd: "node",
     args: ["scripts/audit-query-provider.mjs"],
+    cwd: join(ROOT, "appkit"),
+  },
+  {
+    label: "audit-export-paths",
+    cmd: "node",
+    args: ["scripts/audit-export-paths.mjs"],
     cwd: join(ROOT, "appkit"),
   },
 ];
