@@ -41,6 +41,22 @@
 
 ---
 
+### SB-UNI-W-3 — CTA registry sweep: seller + user dashboards (2026-05-16)
+
+Filled ACTIONS.SELLER and ACTIONS.USER registry buckets; swept seller listing view aria-labels and user order/settings CTAs.
+
+| Area | Detail |
+|------|--------|
+| `action-registry.ts` | ACTIONS.SELLER: edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes. ACTIONS.USER: cancel-order, request-return, save-settings, send-verification-email, update-password, delete-address, set-default-address. |
+| `SellerProductsView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`; `aria-label="Delete"` → `ACTIONS.SELLER["delete-listing"].ariaLabel`. |
+| `SellerPreOrdersView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`. |
+| `SellerPrizeDrawsView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`. |
+| `user/orders/view/[id]/page.tsx` | "Cancel Order" → `ACTIONS.USER["cancel-order"].label`. |
+| `user/settings/page.tsx` | "Send Verification Email" → `ACTIONS.USER["send-verification-email"].label`; "Update Password" → `ACTIONS.USER["update-password"].label`. |
+| Quality | `npm run check` exits 0. appkit rebuilt v2.7.29. |
+
+---
+
 ### SB-UNI-W-2 — CTA registry sweep: public surfaces (2026-05-16)
 
 Wired the ACTIONS registry across public marketplace surfaces. Completed the Button `action` prop that was deferred from W-1.
