@@ -5,6 +5,7 @@ import {
   useOrder,
   OrderDetailView,
   ROUTES,
+  ACTIONS,
   Div,
   Text,
   Row,
@@ -286,7 +287,7 @@ function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, ca
       )}
       {canCancel && (
         <Button variant="danger" size="sm" asChild>
-          <Link href={String(ROUTES.USER.ORDER_CANCEL(order.id))}>Cancel Order</Link>
+          <Link href={String(ROUTES.USER.ORDER_CANCEL(order.id))}>{ACTIONS.USER["cancel-order"].label}</Link>
         </Button>
       )}
     </Row>

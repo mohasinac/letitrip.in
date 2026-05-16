@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   useAuth,
   ROUTES,
+  ACTIONS,
   useChangePassword,
   useChangeEmail,
   useToast,
@@ -114,7 +115,7 @@ function renderAccountTab({
         <form onSubmit={handleEmailSubmit} className="space-y-3">
           <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
           <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
-          <Button type="submit" isLoading={changeEmail.isPending} size="sm">Send Verification Email</Button>
+          <Button type="submit" isLoading={changeEmail.isPending} size="sm">{ACTIONS.USER["send-verification-email"].label}</Button>
         </form>
       </SectionCard>
 
@@ -124,7 +125,7 @@ function renderAccountTab({
           <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
           <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
           <Input id="confirm-password" type="password" label="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
-          <Button type="submit" isLoading={changePassword.isPending} size="sm">Update Password</Button>
+          <Button type="submit" isLoading={changePassword.isPending} size="sm">{ACTIONS.USER["update-password"].label}</Button>
         </form>
       </SectionCard>
     </Stack>
