@@ -17,7 +17,7 @@ export default function Page() {
   };
 
   return (
-    <Div className="mx-auto max-w-2xl px-4 py-6">
+    <Div className="mx-auto max-w-2xl">
       <Heading level={1} className="mb-6 text-2xl font-semibold">New Template</Heading>
       <form onSubmit={handleSubmit}>
         <Stack gap="md">

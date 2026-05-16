@@ -121,7 +121,7 @@ export default function Page() {
       : "text-zinc-400 dark:text-zinc-500";
 
   return (
-    <Div className="mx-auto max-w-2xl px-4 py-6">
+    <Div className="mx-auto max-w-2xl">
       <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">
         Store URL / Slug
       </Heading>
