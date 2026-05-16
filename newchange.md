@@ -41,16 +41,31 @@
 
 ---
 
-### SB-UNI-W-3 — CTA registry sweep: seller + user dashboards (2026-05-16)
+### S-quality-pass — CTA registry quality consolidation + HTML wrapper sweep (2026-05-16)
 
-Filled ACTIONS.SELLER and ACTIONS.USER registry buckets; swept seller listing view aria-labels and user order/settings CTAs.
+Post-W-3 quality pass: corrected STORE vs SELLER naming, replaced raw HTML with appkit primitives, fixed TS4104 error, removed anti-pattern.
 
 | Area | Detail |
 |------|--------|
-| `action-registry.ts` | ACTIONS.SELLER: edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes. ACTIONS.USER: cancel-order, request-return, save-settings, send-verification-email, update-password, delete-address, set-default-address. |
-| `SellerProductsView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`; `aria-label="Delete"` → `ACTIONS.SELLER["delete-listing"].ariaLabel`. |
-| `SellerPreOrdersView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`. |
-| `SellerPrizeDrawsView.tsx` | `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`. |
+| `action-registry.ts` | Moved all 7 store-dashboard leaves from `ACTIONS.SELLER` → `ACTIONS.STORE`. `ACTIONS.SELLER` is now `{}` (intentionally empty — project uses STORE, not SELLER). Removed `listingTypeScope: undefined` from `USER["cancel-order"]` (omit-not-set pattern). |
+| `SellerProductsView.tsx` | `ACTIONS.SELLER[*]` → `ACTIONS.STORE[*]` on all aria-labels. Delete Button gains `action={ACTIONS.STORE["delete-listing"]}` — registry confirmation dialog replaces `window.confirm()`. Raw `div/span/button` in filter drawer + column renders → `Div/Row/Span/Text/Button`. `sm:px-4` → `lg:px-4` breakpoint. |
+| `SellerPreOrdersView.tsx` | `ACTIONS.SELLER["edit-listing"].ariaLabel` → `ACTIONS.STORE["edit-listing"].ariaLabel`. Filter drawer → appkit primitives. |
+| `SellerPrizeDrawsView.tsx` | Same STORE fix + filter drawer → appkit primitives. |
+| `AdminSiteSettingsView.tsx` | `PRIORITY_OPTIONS` typed as `SelectOption[]` — fixes TS4104 (readonly array not assignable to mutable). `import type { SelectOption }` added. |
+| Quality | `npm run check` exits 0. appkit rebuilt v2.7.30. |
+
+---
+
+### SB-UNI-W-3 — CTA registry sweep: seller + user dashboards (2026-05-16)
+
+Filled `ACTIONS.STORE` (store-management) and `ACTIONS.USER` registry buckets; swept seller listing view aria-labels and user order/settings CTAs. **Note:** W-3 originally filled `ACTIONS.SELLER` — immediately corrected in S-quality-pass to use `ACTIONS.STORE` per project convention.
+
+| Area | Detail |
+|------|--------|
+| `action-registry.ts` | ACTIONS.STORE management leaves: edit-listing, delete-listing (w/ confirmation), publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes. ACTIONS.USER: cancel-order (w/ confirmation), request-return, save-settings, send-verification-email, update-password, delete-address (w/ confirmation), set-default-address. |
+| `SellerProductsView.tsx` | Edit + Delete aria-labels → `ACTIONS.STORE[*].ariaLabel`. |
+| `SellerPreOrdersView.tsx` | Edit aria-label → `ACTIONS.STORE["edit-listing"].ariaLabel`. |
+| `SellerPrizeDrawsView.tsx` | Edit aria-label → `ACTIONS.STORE["edit-listing"].ariaLabel`. |
 | `user/orders/view/[id]/page.tsx` | "Cancel Order" → `ACTIONS.USER["cancel-order"].label`. |
 | `user/settings/page.tsx` | "Send Verification Email" → `ACTIONS.USER["send-verification-email"].label`; "Update Password" → `ACTIONS.USER["update-password"].label`. |
 | Quality | `npm run check` exits 0. appkit rebuilt v2.7.29. |

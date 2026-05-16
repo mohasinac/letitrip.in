@@ -133,17 +133,35 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — SB-UNI-W-3: CTA registry sweep — seller + user dashboards (2026-05-16)
+### ✅ LAST COMPLETED — S-quality-pass: CTA registry quality consolidation (2026-05-16)
 
-- ACTIONS.SELLER filled: edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes.
-- ACTIONS.USER filled: cancel-order, request-return, save-settings, send-verification-email, update-password, delete-address, set-default-address.
-- Swept SellerProductsView / SellerPreOrdersView / SellerPrizeDrawsView: `aria-label="Edit"` → `ACTIONS.SELLER["edit-listing"].ariaLabel`, `aria-label="Delete"` → `ACTIONS.SELLER["delete-listing"].ariaLabel`.
-- Swept `user/orders/view/[id]/page.tsx`: "Cancel Order" → `ACTIONS.USER["cancel-order"].label`.
-- Swept `user/settings/page.tsx`: "Send Verification Email" → `ACTIONS.USER["send-verification-email"].label`, "Update Password" → `ACTIONS.USER["update-password"].label`.
-- `ACTIONS` was already exported from `client.ts` (SB-UNI-W-1 shell) — no new export needed.
+- Fixed ACTIONS registry: moved store-dashboard leaves from `SELLER` bucket → `STORE` bucket (edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes). `ACTIONS.SELLER` now empty.
+- Replaced `window.confirm()` in `SellerProductsView.handleDelete` with `action={ACTIONS.STORE["delete-listing"]}` on Delete Button — uses the registry confirmation dialog via portal.
+- Swept 3 seller views for raw HTML wrappers: `div/span/button` → `Div/Row/Text/Button` throughout filter drawers + column renders + outer containers.
+- Fixed `AdminSiteSettingsView.PRIORITY_OPTIONS`: typed as `SelectOption[]` (TS4104 — readonly array not assignable to mutable).
+- Removed `listingTypeScope: undefined` from `ACTIONS.USER["cancel-order"]` (omit-not-undefined pattern).
+- `npm run check` exits 0 (0 errors, 528 warnings). appkit rebuilt v2.7.29.
+
+### ✅ Previous — S-notif-channels: Multi-channel notification system + dashboard layout fix (2026-05-16)
+
+- `NotificationChannelConfig` schema + `DEFAULT_NOTIFICATION_CHANNELS` + `meetsMinPriority()` in admin `firestore.ts`.
+- `sendNotification()` dispatcher in `notification-actions.ts` fans out in-app → email (Resend) → WhatsApp based on admin channel config AND per-user prefs. Skips channels user has disabled.
+- `buildConsentOtpWhatsApp` helper for WhatsApp OTP auth flows.
+- `NotificationChannelPrefs` + `NotificationTypePrefs` types added; `notificationPreferences` field on `UserDocument`.
+- `GET/PUT /api/user/notification-preferences` route — reads/writes user prefs via `userRepository`.
+- `NotificationPreferencesPanel` (appkit) — per-channel toggles (admin-gated) + 7 per-type toggles. Exported from `client.ts`.
+- Wired as 4th "Notifications" tab in `user/settings/page.tsx`.
+- Admin `AdminSiteSettingsView` gains ⑭ Notifications tab — email (Resend key + sender + minPriority), WhatsApp (minPriority + OTP), SMS (minPriority). `PRIORITY_OPTIONS` constant extracted.
+- Dashboard layout centering fix: `AppLayoutShell.contentClassName` prop + `LayoutShellClient` passes `w-full` for dashboard paths; `DashboardLayoutClient` adds content padding (`px-4 py-6 md:pl-5 md:pr-6 lg:pr-8`).
+- `SeedPanel` siteSettings updated: 13 groups + `notificationChannels` FieldDef + `notificationPreferences` on users.
+- `npm run check` exits 0 (0 errors, 528 warnings pre-existing). appkit rebuilt v2.7.30.
+
+### ✅ Previous — SB-UNI-W-3: CTA registry sweep — seller + user dashboards (2026-05-16)
+
+- `ACTIONS.STORE` gains 7 store-management leaves (edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes). `ACTIONS.SELLER` is empty — we use STORE, not SELLER.
+- `ACTIONS.USER` filled: cancel-order (with confirmation), request-return, save-settings, send-verification-email, update-password, delete-address (with confirmation), set-default-address.
+- Swept `SellerProductsView` / `SellerPreOrdersView` / `SellerPrizeDrawsView` aria-labels; `user/orders/view` Cancel Order; `user/settings` email + password submit labels.
 - `npm run check` exits 0 (0 errors, 527 warnings pre-existing). appkit rebuilt v2.7.29.
-
-### ✅ Previous — SB-UNI-W-2: CTA registry sweep — public surfaces (2026-05-16)
 
 - Extended `SearchResourceType` union with `"classified" | "digital-codes" | "live"` in `Search.tsx`.
 - Added `ROUTES.PUBLIC.CLASSIFIED / CLASSIFIED_DETAIL / DIGITAL_CODES / DIGITAL_CODE_DETAIL / LIVE / LIVE_DETAIL` to route-map.ts.
@@ -165,7 +183,7 @@ After deploy: smoke-test the production URL for all touched routes.
 
 ### 🔄 CURRENT — Tier SB-UNI Phase 7–9: remaining CTA sweeps + FormShell
 
-*(SB-UNI-W-3 completed 2026-05-16 — seller + user dashboard CTA sweep. Next: SB-UNI-W-4 (admin dashboard sweep) or SB-UNI-Y-1 (FormShell primitive).)*
+*(S-quality-pass completed 2026-05-16 — CTA registry quality consolidation + HTML wrapper sweep. Next: SB-UNI-W-4 (admin dashboard CTA sweep) or SB-UNI-Y-1 (FormShell primitive).)*
 
 ### ⏳ NEXT UP
 
