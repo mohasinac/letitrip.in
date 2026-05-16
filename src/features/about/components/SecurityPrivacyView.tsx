@@ -17,6 +17,65 @@ import {
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+type SecurityCard = { icon: React.ComponentType<{ className?: string }>; title: string; text: string; color: string; iconColor: string };
+type T = Awaited<ReturnType<typeof getTranslations<"securityPage">>>;
+
+function renderSecurityOverview(t: T) {
+  return (
+    <Section className="text-center">
+      <Heading level={2} className="mb-3">{t("overviewTitle")}</Heading>
+      <Text variant="secondary" className="max-w-2xl mx-auto">{t("overviewText")}</Text>
+    </Section>
+  );
+}
+
+function renderSecurityCards(sections: SecurityCard[]) {
+  return (
+    <Section>
+      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-2`}>
+        {sections.map(({ icon: Icon, title, text, color, iconColor }) => (
+          <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+            <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </Div>
+            <Text className="font-semibold mb-1">{title}</Text>
+            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+          </Div>
+        ))}
+      </Grid>
+    </Section>
+  );
+}
+
+function renderSecurityDiagram(diagramSteps: FlowStep[], t: T) {
+  return (
+    <Section>
+      <FlowDiagram
+        title={`🛡️ ${t("diagramTitle")}`}
+        titleClass="text-primary"
+        connectorClass="bg-primary/20 dark:bg-primary/30"
+        steps={diagramSteps}
+        centered
+      />
+    </Section>
+  );
+}
+
+function renderSecurityCta(t: T) {
+  return (
+    <Section className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}>
+      <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
+      <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
+      <Div className={`${flex.center} gap-4 flex-wrap`}>
+        <TextLink href={ROUTES.PUBLIC.PRIVACY}>{t("ctaPrivacy")}</TextLink>
+        <TextLink href={ROUTES.PUBLIC.CONTACT} variant="muted">{t("ctaContact")}</TextLink>
+      </Div>
+    </Section>
+  );
+}
+
 export async function SecurityPrivacyView() {
   const t = await getTranslations("securityPage");
 
@@ -166,66 +225,11 @@ export async function SecurityPrivacyView() {
       </Section>
 
       <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
-        {/* Overview */}
-        <Section className="text-center">
-          <Heading level={2} className="mb-3">
-            {t("overviewTitle")}
-          </Heading>
-          <Text variant="secondary" className="max-w-2xl mx-auto">
-            {t("overviewText")}
-          </Text>
-        </Section>
-
-        {/* Security cards */}
-        <Section>
-          <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-2`}>
-            {SECTIONS.map(({ icon: Icon, title, text, color, iconColor }) => (
-              <Div key={title} className={`rounded-xl border p-5 ${color}`}>
-                <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
-                  <Icon className={`w-5 h-5 ${iconColor}`} />
-                </Div>
-                <Text className="font-semibold mb-1">{title}</Text>
-                <Text variant="secondary" className="text-sm leading-relaxed">
-                  {text}
-                </Text>
-              </Div>
-            ))}
-          </Grid>
-        </Section>
-
-        {/* Flow diagram */}
-        <Section>
-          <FlowDiagram
-            title={`🛡️ ${t("diagramTitle")}`}
-            titleClass="text-primary"
-            connectorClass="bg-primary/20 dark:bg-primary/30"
-            steps={DIAGRAM_STEPS}
-            centered
-          />
-        </Section>
-
-        {/* Last updated */}
-        <Text variant="secondary" className="text-center text-sm">
-          {t("lastUpdated")}
-        </Text>
-
-        {/* CTA */}
-        <Section
-          className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}
-        >
-          <Heading level={2} className="mb-3">
-            {t("ctaTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
-            {t("ctaText")}
-          </Text>
-          <Div className={`${flex.center} gap-4 flex-wrap`}>
-            <TextLink href={ROUTES.PUBLIC.PRIVACY}>{t("ctaPrivacy")}</TextLink>
-            <TextLink href={ROUTES.PUBLIC.CONTACT} variant="muted">
-              {t("ctaContact")}
-            </TextLink>
-          </Div>
-        </Section>
+        {renderSecurityOverview(t)}
+        {renderSecurityCards(SECTIONS)}
+        {renderSecurityDiagram(DIAGRAM_STEPS, t)}
+        <Text variant="secondary" className="text-center text-sm">{t("lastUpdated")}</Text>
+        {renderSecurityCta(t)}
       </Div>
     </Div>
   );

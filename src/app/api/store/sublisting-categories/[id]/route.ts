@@ -8,6 +8,8 @@ import {
   storeRepository,
 } from "@mohasinac/appkit";
 
+const MSG_SUBLISTING_CAT_NOT_FOUND = "Sublisting category not found.";
+
 const updateSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   itemCode: z.string().max(40).optional(),
@@ -23,7 +25,7 @@ export const GET = withProviders(createRouteHandler({
     if (!id) return ApiErrors.badRequest("Missing id");
     const category = await categoriesRepository.findById(id);
     if (!category || category.categoryType !== "sublisting") {
-      return ApiErrors.notFound("Sub-listing category not found");
+      return ApiErrors.notFound(MSG_SUBLISTING_CAT_NOT_FOUND);
     }
     return successResponse({ category });
   },
@@ -39,7 +41,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
 
     const existing = await categoriesRepository.findById(id);
     if (!existing || existing.categoryType !== "sublisting") {
-      return ApiErrors.notFound("Sub-listing category not found");
+      return ApiErrors.notFound(MSG_SUBLISTING_CAT_NOT_FOUND);
     }
 
     if (user!.role === "seller") {
@@ -71,7 +73,7 @@ export const DELETE = withProviders(createRouteHandler({
 
     const existing = await categoriesRepository.findById(id);
     if (!existing || existing.categoryType !== "sublisting") {
-      return ApiErrors.notFound("Sub-listing category not found");
+      return ApiErrors.notFound(MSG_SUBLISTING_CAT_NOT_FOUND);
     }
 
     if (user!.role === "seller") {

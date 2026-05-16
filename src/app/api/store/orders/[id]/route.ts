@@ -86,6 +86,39 @@ async function getSellerShippingMethod(uid: string): Promise<string | null> {
   return cfg.method ?? null;
 }
 
+type ShiprocketPackageInput = z.infer<typeof shiprocketPackageSchema>;
+
+type AutoShipResult =
+  | { ok: true; updated: Record<string, unknown> | null; result: unknown }
+  | { ok: false; message: string };
+
+/**
+ * Dispatch the Shiprocket auto-ship flow for an order.
+ * Returns a discriminated result so the caller can build the response
+ * without any additional try/catch nesting.
+ */
+async function tryAutoShip(
+  id: string,
+  pkg: ShiprocketPackageInput,
+): Promise<AutoShipResult> {
+  try {
+    const result = await shipOrderAction(id, {
+      method: "shiprocket",
+      packageWeight: pkg.weight,
+      packageLength: pkg.length,
+      packageBreadth: pkg.breadth,
+      packageHeight: pkg.height,
+      courierId: pkg.courierId,
+    });
+    const updated = (await orderRepository.findById(id)) as Record<string, unknown> | null;
+    return { ok: true, updated, result };
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to ship via Shiprocket";
+    return { ok: false, message };
+  }
+}
+
 // ─── Handlers ──────────────────────────────────────────────────────────────
 
 export const GET = withProviders(
@@ -159,25 +192,14 @@ export const PATCH = withProviders(
               { code: "SHIPROCKET_PACKAGE_REQUIRED" },
             );
           }
-          try {
-            const result = await shipOrderAction(id, {
-              method: "shiprocket",
-              packageWeight: shiprocketPackage.weight,
-              packageLength: shiprocketPackage.length,
-              packageBreadth: shiprocketPackage.breadth,
-              packageHeight: shiprocketPackage.height,
-              courierId: shiprocketPackage.courierId,
-            });
-            const updated = await orderRepository.findById(id);
-            return successResponse(
-              { ...updated, shiprocket: result },
-              "Order shipped via Shiprocket",
-            );
-          } catch (err: unknown) {
-            const msg =
-              err instanceof Error ? err.message : "Failed to ship via Shiprocket";
-            return errorResponse(msg, 400, { code: "SHIPROCKET_FAILED" });
+          const shipResult = await tryAutoShip(id, shiprocketPackage);
+          if (!shipResult.ok) {
+            return errorResponse(shipResult.message, 400, { code: "SHIPROCKET_FAILED" });
           }
+          return successResponse(
+            { ...shipResult.updated, shiprocket: shipResult.result },
+            "Order shipped via Shiprocket",
+          );
         }
       }
 

@@ -7,6 +7,8 @@ import {
   contactSubmissionsRepository,
 } from "@mohasinac/appkit";
 
+const MSG_SUBMISSION_NOT_FOUND = "Submission not found.";
+
 const updateSubmissionSchema = z.object({
   action: z.enum(["read", "resolved", "delete"]),
 });
@@ -19,7 +21,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);
-      if (!submission) return errorResponse("Submission not found", 404);
+      if (!submission) return errorResponse(MSG_SUBMISSION_NOT_FOUND, 404);
       return successResponse(submission);
     },
   }),
@@ -34,7 +36,7 @@ export const PATCH = withProviders(
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);
-      if (!submission) return errorResponse("Submission not found", 404);
+      if (!submission) return errorResponse(MSG_SUBMISSION_NOT_FOUND, 404);
       if (body!.action === "read") {
         await contactSubmissionsRepository.markRead(id);
         return successResponse(null, "Marked as read");
@@ -60,7 +62,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);
-      if (!submission) return errorResponse("Submission not found", 404);
+      if (!submission) return errorResponse(MSG_SUBMISSION_NOT_FOUND, 404);
       await contactSubmissionsRepository.deleteById(id);
       return successResponse(null, "Submission deleted");
     },

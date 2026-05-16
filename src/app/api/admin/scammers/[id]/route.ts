@@ -9,6 +9,8 @@ import {
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants/api-roles";
 import type { ScammerDocument } from "@mohasinac/appkit";
 
+const MSG_SCAMMER_NOT_FOUND = "Scammer profile not found.";
+
 const patchSchema = z.object({
   status: z.enum(["pending_review", "verified", "rejected", "removed"]).optional(),
   verificationNote: z.string().optional(),
@@ -22,7 +24,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const scammer = await scammerRepository.findById(id);
-      if (!scammer) return errorResponse("Scammer profile not found", 404);
+      if (!scammer) return errorResponse(MSG_SCAMMER_NOT_FOUND, 404);
       return successResponse(scammer);
     },
   }),
@@ -37,7 +39,7 @@ export const PATCH = withProviders(
     handler: async ({ params, body, user }) => {
       const id = (params as { id: string }).id;
       const scammer = await scammerRepository.findById(id);
-      if (!scammer) return errorResponse("Scammer profile not found", 404);
+      if (!scammer) return errorResponse(MSG_SCAMMER_NOT_FOUND, 404);
 
       const updates: Partial<ScammerDocument> & { updatedAt: Date } = {
         updatedAt: new Date(),
@@ -67,7 +69,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const scammer = await scammerRepository.findById(id);
-      if (!scammer) return errorResponse("Scammer profile not found", 404);
+      if (!scammer) return errorResponse(MSG_SCAMMER_NOT_FOUND, 404);
       await scammerRepository.delete(id);
       return successResponse({ id }, "Scammer profile deleted");
     },

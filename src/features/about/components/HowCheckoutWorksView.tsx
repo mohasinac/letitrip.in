@@ -6,6 +6,78 @@ import { Smartphone, Banknote } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+type CheckoutStep = { number: number; icon: string; title: string; text: string };
+type PaymentMethod = { icon: React.ComponentType<{ className?: string }>; title: string; text: string; color: string; iconColor: string };
+type T = Awaited<ReturnType<typeof getTranslations<"howCheckoutWorks">>>;
+
+function renderCheckoutSteps(steps: CheckoutStep[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-8 text-center">{t("stepsTitle")}</Heading>
+      <Stack gap="md">
+        {steps.map(({ number, icon, title, text }) => (
+          <Div key={number} className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}>
+            <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}>{icon}</Div>
+            <Div>
+              <Text className="font-semibold mb-0.5">{number}. {title}</Text>
+              <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+            </Div>
+          </Div>
+        ))}
+      </Stack>
+    </Section>
+  );
+}
+
+function renderCheckoutDiagram(diagramSteps: FlowStep[], t: T) {
+  return (
+    <Section>
+      <FlowDiagram
+        title={`🗺️ ${t("diagramTitle")}`}
+        titleClass="text-primary"
+        connectorClass="bg-primary/20 dark:bg-primary/30"
+        steps={diagramSteps}
+        centered
+      />
+    </Section>
+  );
+}
+
+function renderCheckoutPaymentMethods(methods: PaymentMethod[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-3 text-center">{t("paymentMethodsTitle")}</Heading>
+      <Text variant="secondary" className="text-center mb-8 max-w-xl mx-auto">{t("paymentMethodsSubtitle")}</Text>
+      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-3`}>
+        {methods.map(({ icon: Icon, title, text, color, iconColor }) => (
+          <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+            <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </Div>
+            <Text className="font-semibold mb-1">{title}</Text>
+            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+          </Div>
+        ))}
+      </Grid>
+    </Section>
+  );
+}
+
+function renderCheckoutCta(t: T) {
+  return (
+    <Section className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}>
+      <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
+      <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
+      <Div className={`${flex.center} gap-4 flex-wrap`}>
+        <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
+        <TextLink href={ROUTES.PUBLIC.HOW_ORDERS_WORK} variant="muted">{t("ctaOrders")}</TextLink>
+      </Div>
+    </Section>
+  );
+}
+
 export async function HowCheckoutWorksView() {
   const t = await getTranslations("howCheckoutWorks");
 
@@ -100,89 +172,10 @@ export async function HowCheckoutWorksView() {
       </Section>
 
       <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
-        {/* Steps */}
-        <Section>
-          <Heading level={2} className="mb-8 text-center">
-            {t("stepsTitle")}
-          </Heading>
-          <Stack gap="md">
-            {STEPS.map(({ number, icon, title, text }) => (
-              <Div
-                key={number}
-                className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
-              >
-                <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}>
-                  {icon}
-                </Div>
-                <Div>
-                  <Text className="font-semibold mb-0.5">
-                    {number}. {title}
-                  </Text>
-                  <Text variant="secondary" className="text-sm leading-relaxed">
-                    {text}
-                  </Text>
-                </Div>
-              </Div>
-            ))}
-          </Stack>
-        </Section>
-
-        {/* Flow diagram */}
-        <Section>
-          <FlowDiagram
-            title={`🗺️ ${t("diagramTitle")}`}
-            titleClass="text-primary"
-            connectorClass="bg-primary/20 dark:bg-primary/30"
-            steps={DIAGRAM_STEPS}
-            centered
-          />
-        </Section>
-
-        {/* Payment methods */}
-        <Section>
-          <Heading level={2} className="mb-3 text-center">
-            {t("paymentMethodsTitle")}
-          </Heading>
-          <Text
-            variant="secondary"
-            className="text-center mb-8 max-w-xl mx-auto"
-          >
-            {t("paymentMethodsSubtitle")}
-          </Text>
-          <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-3`}>
-            {PAYMENT_METHODS.map(
-              ({ icon: Icon, title, text, color, iconColor }) => (
-                <Div key={title} className={`rounded-xl border p-5 ${color}`}>
-                  <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
-                    <Icon className={`w-5 h-5 ${iconColor}`} />
-                  </Div>
-                  <Text className="font-semibold mb-1">{title}</Text>
-                  <Text variant="secondary" className="text-sm leading-relaxed">
-                    {text}
-                  </Text>
-                </Div>
-              ),
-            )}
-          </Grid>
-        </Section>
-
-        {/* CTA */}
-        <Section
-          className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}
-        >
-          <Heading level={2} className="mb-3">
-            {t("ctaTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
-            {t("ctaText")}
-          </Text>
-          <Div className={`${flex.center} gap-4 flex-wrap`}>
-            <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
-            <TextLink href={ROUTES.PUBLIC.HOW_ORDERS_WORK} variant="muted">
-              {t("ctaOrders")}
-            </TextLink>
-          </Div>
-        </Section>
+        {renderCheckoutSteps(STEPS, t)}
+        {renderCheckoutDiagram(DIAGRAM_STEPS, t)}
+        {renderCheckoutPaymentMethods(PAYMENT_METHODS, t)}
+        {renderCheckoutCta(t)}
       </Div>
     </Div>
   );

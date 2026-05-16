@@ -16,6 +16,8 @@ import {
   type PlacementRecord,
 } from "../validation";
 
+const MSG_AD_ID_REQUIRED = "Ad ID is required.";
+
 const adPatchSchema = z
   .object({
     name: z.string().min(2).max(120).optional(),
@@ -65,7 +67,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;
       if (!id) {
-        return errorResponse("Ad id is required", 400);
+        return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
@@ -90,7 +92,7 @@ export const PATCH = withProviders(
     handler: async ({ params, body, user }) => {
       const id = (params as { id?: string } | undefined)?.id;
       if (!id) {
-        return errorResponse("Ad id is required", 400);
+        return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
@@ -180,7 +182,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;
       if (!id) {
-        return errorResponse("Ad id is required", 400);
+        return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;

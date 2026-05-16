@@ -7,6 +7,8 @@ import {
   categoriesRepository,
 } from "@mohasinac/appkit";
 
+const MSG_SUBLISTING_CAT_NOT_FOUND = "Sublisting category not found.";
+
 const updateSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   itemCode: z.string().max(40).optional(),
@@ -23,7 +25,7 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const doc = await categoriesRepository.findById(id);
       if (!doc || doc.categoryType !== "sublisting") {
-        return errorResponse("Sub-listing category not found", 404);
+        return errorResponse(MSG_SUBLISTING_CAT_NOT_FOUND, 404);
       }
       return successResponse(doc);
     },
@@ -40,7 +42,7 @@ export const PUT = withProviders(
       const id = (params as { id: string }).id;
       const existing = await categoriesRepository.findById(id);
       if (!existing || existing.categoryType !== "sublisting") {
-        return errorResponse("Sub-listing category not found", 404);
+        return errorResponse(MSG_SUBLISTING_CAT_NOT_FOUND, 404);
       }
       const patch: Record<string, unknown> = { updatedAt: new Date() };
       if (body?.name !== undefined) patch.name = body.name;
@@ -65,7 +67,7 @@ export const DELETE = withProviders(
       const id = (params as { id: string }).id;
       const existing = await categoriesRepository.findById(id);
       if (!existing || existing.categoryType !== "sublisting") {
-        return errorResponse("Sub-listing category not found", 404);
+        return errorResponse(MSG_SUBLISTING_CAT_NOT_FOUND, 404);
       }
       await categoriesRepository.deleteWithSublistingUnlink(id);
       return successResponse(null, "Sub-listing category deleted");

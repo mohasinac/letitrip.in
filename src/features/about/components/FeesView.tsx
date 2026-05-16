@@ -4,6 +4,72 @@ import { getTranslations } from "next-intl/server";
 
 const { themed, page } = THEME_CONSTANTS;
 
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+type FeeRow = { category: string; rate: string; who: string; note: string };
+type PayoutRow = { label: string; example: string; highlight?: boolean };
+type T = Awaited<ReturnType<typeof getTranslations<"fees">>>;
+
+function renderFeeTable(feeRows: FeeRow[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-6">{t("tableTitle")}</Heading>
+      <Div className={`overflow-x-auto rounded-xl border ${themed.border}`}>
+        <table className="w-full text-sm">
+          <thead className={themed.bgSecondary}>
+            <tr>
+              <th className="py-3 px-4 text-left font-semibold">{t("colFeeType")}</th>
+              <th className="py-3 px-4 text-left font-semibold">{t("colRate")}</th>
+              <th className="py-3 px-4 text-left font-semibold">{t("colPaidBy")}</th>
+              <th className="py-3 px-4 text-left font-semibold hidden md:table-cell">{t("colNote")}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            {feeRows.map((row) => (
+              <tr key={row.category} className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}>
+                <td className="py-3 px-4 font-medium">{row.category}</td>
+                <td className="py-3 px-4 font-semibold text-violet-700 dark:text-violet-400">{row.rate}</td>
+                <td className="py-3 px-4"><Caption>{row.who}</Caption></td>
+                <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell text-xs">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Div>
+      <Caption className="mt-3 block text-neutral-500">{t("tableNote")}</Caption>
+    </Section>
+  );
+}
+
+function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-3">{t("payoutExampleTitle")}</Heading>
+      <Text variant="secondary" className="mb-6">{t("payoutExampleSubtitle")}</Text>
+      <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 max-w-sm`}>
+        <Heading level={3} className="text-base mb-4">{t("payoutExampleProduct")}</Heading>
+        <Div className="space-y-2">
+          {payoutRows.map((row, i) => (
+            <Div key={i} className={`flex justify-between text-sm ${row.highlight ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 font-bold" : ""}`}>
+              <Text className={row.highlight ? "font-bold" : "text-neutral-600 dark:text-neutral-400"}>{row.label}</Text>
+              <Text className={row.highlight ? "font-bold text-emerald-700 dark:text-emerald-400" : ""}>{row.example}</Text>
+            </Div>
+          ))}
+        </Div>
+      </Div>
+    </Section>
+  );
+}
+
+function renderFeesDisclaimer(t: T) {
+  return (
+    <Section className={`rounded-xl border ${themed.border} p-5 ${themed.bgSecondary}`}>
+      <Heading level={3} className="text-base mb-2">{t("disclaimerTitle")}</Heading>
+      <Caption className="leading-relaxed">{t("disclaimerText")}</Caption>
+    </Section>
+  );
+}
+
 export async function FeesView() {
   const t = await getTranslations("fees");
 
@@ -71,110 +137,9 @@ export async function FeesView() {
       </Section>
 
       <Div className={`${page.container.sm} py-10 md:py-12 lg:py-16 space-y-12`}>
-        {/* Fee table */}
-        <Section>
-          <Heading level={2} className="mb-6">
-            {t("tableTitle")}
-          </Heading>
-          <Div className={`overflow-x-auto rounded-xl border ${themed.border}`}>
-            <table className="w-full text-sm">
-              <thead className={themed.bgSecondary}>
-                <tr>
-                  <th className="py-3 px-4 text-left font-semibold">
-                    {t("colFeeType")}
-                  </th>
-                  <th className="py-3 px-4 text-left font-semibold">
-                    {t("colRate")}
-                  </th>
-                  <th className="py-3 px-4 text-left font-semibold">
-                    {t("colPaidBy")}
-                  </th>
-                  <th className="py-3 px-4 text-left font-semibold hidden md:table-cell">
-                    {t("colNote")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {FEE_ROWS.map((row) => (
-                  <tr
-                    key={row.category}
-                    className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}
-                  >
-                    <td className="py-3 px-4 font-medium">{row.category}</td>
-                    <td className="py-3 px-4 font-semibold text-violet-700 dark:text-violet-400">
-                      {row.rate}
-                    </td>
-                    <td className="py-3 px-4">
-                      <Caption>{row.who}</Caption>
-                    </td>
-                    <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell text-xs">
-                      {row.note}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Div>
-          <Caption className="mt-3 block text-neutral-500">
-            {t("tableNote")}
-          </Caption>
-        </Section>
-
-        {/* Seller payout example */}
-        <Section>
-          <Heading level={2} className="mb-3">
-            {t("payoutExampleTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6">
-            {t("payoutExampleSubtitle")}
-          </Text>
-          <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 max-w-sm`}>
-            <Heading level={3} className="text-base mb-4">
-              {t("payoutExampleProduct")}
-            </Heading>
-            <Div className="space-y-2">
-              {OFFER_PAYOUT_ROWS.map((row, i) => (
-                <Div
-                  key={i}
-                  className={`flex justify-between text-sm ${
-                    row.highlight
-                      ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 font-bold"
-                      : ""
-                  }`}
-                >
-                  <Text
-                    className={
-                      row.highlight
-                        ? "font-bold"
-                        : "text-neutral-600 dark:text-neutral-400"
-                    }
-                  >
-                    {row.label}
-                  </Text>
-                  <Text
-                    className={
-                      row.highlight
-                        ? "font-bold text-emerald-700 dark:text-emerald-400"
-                        : ""
-                    }
-                  >
-                    {row.example}
-                  </Text>
-                </Div>
-              ))}
-            </Div>
-          </Div>
-        </Section>
-
-        {/* Disclaimer */}
-        <Section
-          className={`rounded-xl border ${themed.border} p-5 ${themed.bgSecondary}`}
-        >
-          <Heading level={3} className="text-base mb-2">
-            {t("disclaimerTitle")}
-          </Heading>
-          <Caption className="leading-relaxed">{t("disclaimerText")}</Caption>
-        </Section>
+        {renderFeeTable(FEE_ROWS, t)}
+        {renderPayoutExample(OFFER_PAYOUT_ROWS, t)}
+        {renderFeesDisclaimer(t)}
       </Div>
     </Div>
   );

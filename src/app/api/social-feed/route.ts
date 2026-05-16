@@ -10,6 +10,8 @@ import type { SocialPlatform, SocialPostType } from "@mohasinac/appkit/server";
 
 export const dynamic = "force-dynamic";
 
+const CACHE_HEADER = "public, max-age=300, s-maxage=300, stale-while-revalidate=60";
+
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
@@ -34,21 +36,21 @@ export async function GET(request: NextRequest) {
         if (!token)
           return NextResponse.json({ error: "Instagram access token not configured" }, { status: 503 });
         const posts = await fetchInstagramPosts(handle, postType, count, token);
-        return NextResponse.json({ posts }, { headers: { "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=60" } });
+        return NextResponse.json({ posts }, { headers: { "Cache-Control": CACHE_HEADER } });
       }
       case "facebook": {
         const token = credentials?.metaPageAccessToken;
         if (!token)
           return NextResponse.json({ error: "Facebook access token not configured" }, { status: 503 });
         const posts = await fetchFacebookPosts(handle, postType, count, token);
-        return NextResponse.json({ posts }, { headers: { "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=60" } });
+        return NextResponse.json({ posts }, { headers: { "Cache-Control": CACHE_HEADER } });
       }
       case "tiktok": {
         const token = credentials?.tiktokAccessToken;
         if (!token)
           return NextResponse.json({ error: "TikTok access token not configured" }, { status: 503 });
         const posts = await fetchTikTokPosts(handle, postType, count, token);
-        return NextResponse.json({ posts }, { headers: { "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=60" } });
+        return NextResponse.json({ posts }, { headers: { "Cache-Control": CACHE_HEADER } });
       }
       case "deviantart": {
         const clientId = credentials?.deviantartClientId;
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
         if (!clientId || !clientSecret)
           return NextResponse.json({ error: "DeviantArt credentials not configured" }, { status: 503 });
         const posts = await fetchDeviantArtPosts(handle, postType, count, clientId, clientSecret);
-        return NextResponse.json({ posts }, { headers: { "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=60" } });
+        return NextResponse.json({ posts }, { headers: { "Cache-Control": CACHE_HEADER } });
       }
       default:
         return NextResponse.json({ error: "Unsupported platform" }, { status: 400 });

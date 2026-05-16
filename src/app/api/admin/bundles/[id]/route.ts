@@ -17,6 +17,9 @@ import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants/api-roles";
  * neither PUT nor DELETE can hit a non-bundle category by accident.
  */
 
+const MSG_BUNDLE_ID_REQUIRED = "Bundle ID is required.";
+const MSG_BUNDLE_NOT_FOUND = "Bundle not found.";
+
 async function loadBundleOrFail(id: string) {
   const bundle = await categoriesRepository.findById(id);
   if (!bundle) return null;
@@ -31,9 +34,9 @@ export const GET = withProviders(
     permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = String(params?.id ?? "");
-      if (!id) return ApiErrors.badRequest("Bundle id is required");
+      if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
       const bundle = await loadBundleOrFail(id);
-      if (!bundle) return ApiErrors.notFound("Bundle not found");
+      if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
       return successResponse(bundle);
     },
   }),
@@ -47,9 +50,9 @@ export const PUT = withProviders(
     schema: bundleUpdateSchema,
     handler: async ({ body, params, user }) => {
       const id = String(params?.id ?? "");
-      if (!id) return ApiErrors.badRequest("Bundle id is required");
+      if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
       const bundle = await loadBundleOrFail(id);
-      if (!bundle) return ApiErrors.notFound("Bundle not found");
+      if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
 
       await categoriesRepository.update(id, body as never);
       serverLogger.info("Admin bundle updated", { id, by: user?.uid });
@@ -66,9 +69,9 @@ export const DELETE = withProviders(
     permission: "admin:categories:delete",
     handler: async ({ params, user }) => {
       const id = String(params?.id ?? "");
-      if (!id) return ApiErrors.badRequest("Bundle id is required");
+      if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
       const bundle = await loadBundleOrFail(id);
-      if (!bundle) return ApiErrors.notFound("Bundle not found");
+      if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
 
       await categoriesRepository.delete(id);
       serverLogger.info("Admin bundle deleted", { id, by: user?.uid });

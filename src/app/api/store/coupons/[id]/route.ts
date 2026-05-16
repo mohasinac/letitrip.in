@@ -8,6 +8,8 @@ import {
   storeRepository,
 } from "@mohasinac/appkit";
 
+const MSG_COUPON_NOT_FOUND = "Coupon not found.";
+
 const updateCouponSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
@@ -47,11 +49,11 @@ export const GET = withProviders(
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.findById(id);
-      if (!coupon) return errorResponse("Coupon not found", 404);
+      if (!coupon) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
       if (user!.role !== "admin") {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || coupon.storeId !== store.id) {
-          return errorResponse("Coupon not found", 404);
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
         }
       }
       return successResponse(coupon);
@@ -67,11 +69,11 @@ export const PATCH = withProviders(
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
-      if (!existing) return errorResponse("Coupon not found", 404);
+      if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
       if (user!.role !== "admin") {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
-          return errorResponse("Coupon not found", 404);
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
         }
       }
       const { action, validity, ...updateData } = body!;
@@ -106,11 +108,11 @@ export const DELETE = withProviders(
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
-      if (!existing) return errorResponse("Coupon not found", 404);
+      if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
       if (user!.role !== "admin") {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
-          return errorResponse("Coupon not found", 404);
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
         }
       }
       await couponsRepository.delete(id);

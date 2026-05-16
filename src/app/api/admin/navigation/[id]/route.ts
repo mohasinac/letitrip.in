@@ -8,6 +8,8 @@ import {
 } from "@mohasinac/appkit";
 import type { NavItem } from "../route";
 
+const MSG_NAV_ITEM_NOT_FOUND = "Navigation item not found.";
+
 const updateNavItemSchema = z.object({
   label: z.string().min(1).optional(),
   href: z.string().min(1).optional(),
@@ -40,7 +42,7 @@ export const PUT = withProviders(
       const b = body!;
       const items = await getNavItems();
       const idx = items.findIndex((i) => i.id === id);
-      if (idx === -1) return errorResponse("Nav item not found", 404);
+      if (idx === -1) return errorResponse(MSG_NAV_ITEM_NOT_FOUND, 404);
       items[idx] = { ...items[idx], ...b };
       await saveNavItems(items);
       return successResponse(items[idx], "Nav item updated");
@@ -59,7 +61,7 @@ export const PATCH = withProviders(
       const b = body!;
       const items = await getNavItems();
       const idx = items.findIndex((i) => i.id === id);
-      if (idx === -1) return errorResponse("Nav item not found", 404);
+      if (idx === -1) return errorResponse(MSG_NAV_ITEM_NOT_FOUND, 404);
       items[idx] = { ...items[idx], ...b };
       await saveNavItems(items);
       return successResponse(items[idx], "Nav item updated");
@@ -77,7 +79,7 @@ export const DELETE = withProviders(
       const items = await getNavItems();
       const filtered = items.filter((i) => i.id !== id);
       if (filtered.length === items.length)
-        return errorResponse("Nav item not found", 404);
+        return errorResponse(MSG_NAV_ITEM_NOT_FOUND, 404);
       await saveNavItems(filtered);
       return successResponse(null, "Nav item deleted");
     },

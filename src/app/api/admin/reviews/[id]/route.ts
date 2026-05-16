@@ -7,6 +7,8 @@ import {
   reviewRepository,
 } from "@mohasinac/appkit";
 
+const MSG_REVIEW_NOT_FOUND = "Review not found.";
+
 const updateReviewSchema = z.object({
   status: z.enum(["pending", "approved", "rejected"]).optional(),
   featured: z.boolean().optional(),
@@ -22,7 +24,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const review = await reviewRepository.findById(id);
-      if (!review) return errorResponse("Review not found", 404);
+      if (!review) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
       return successResponse(review);
     },
   }),
@@ -37,7 +39,7 @@ export const PATCH = withProviders(
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
       const existing = await reviewRepository.findById(id);
-      if (!existing) return errorResponse("Review not found", 404);
+      if (!existing) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
       const updated = await reviewRepository.update(id, {
         ...body,
         updatedAt: new Date(),
@@ -55,7 +57,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await reviewRepository.findById(id);
-      if (!existing) return errorResponse("Review not found", 404);
+      if (!existing) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
       await reviewRepository.delete(id);
       return successResponse(null, "Review deleted");
     },

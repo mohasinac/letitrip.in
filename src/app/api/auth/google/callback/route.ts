@@ -97,6 +97,179 @@ async function writeOutcomeAndClose(
   return NextResponse.redirect(closeUrl.toString());
 }
 
+/** Validate state param and RTDB event node. Returns eventId or redirects. */
+async function validateStateAndEvent(
+  state: string,
+  origin: string,
+): Promise<{ eventId: string } | NextResponse> {
+  if (!UUID_REGEX.test(state)) {
+    serverLogger.warn("Google callback: invalid state param");
+    return NextResponse.redirect(new URL("/auth/close?error=invalid_state", origin));
+  }
+  const eventId = state;
+  const db = getAdminRealtimeDb();
+  try {
+    const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
+    if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
+      serverLogger.warn("Google callback: event not found or not pending", { eventId });
+      return NextResponse.redirect(new URL("/auth/close?error=event_expired", origin));
+    }
+  } catch (rtdbReadErr) {
+    serverLogger.warn(
+      "Google callback: RTDB unavailable — skipping anti-replay check, proceeding with OAuth state validation only",
+      { eventId, rtdbReadErr },
+    );
+  }
+  return { eventId };
+}
+
+/** Exchange auth code for a verified Google ID-token payload. */
+async function exchangeGoogleCode(
+  code: string,
+  clientId: string,
+  clientSecret: string,
+  redirectUri: string,
+  eventId: string,
+  origin: string,
+) {
+  const oauthClient = new OAuth2Client(clientId, clientSecret, redirectUri);
+  try {
+    const { tokens } = await oauthClient.getToken(code);
+    oauthClient.setCredentials(tokens);
+    const ticket = await oauthClient.verifyIdToken({ idToken: tokens.id_token!, audience: clientId });
+    return { ticket };
+  } catch (exchangeErr) {
+    serverLogger.error("Google token exchange/verification failed", { eventId, exchangeErr });
+    return {
+      redirect: await writeOutcomeAndClose(
+        eventId,
+        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.OAUTH_CODE_EXCHANGE_FAILED },
+        origin,
+      ),
+    };
+  }
+}
+
+/** Find or create Firebase Auth user for the Google account. */
+async function resolveFirebaseUser(
+  email: string,
+  name: string | undefined,
+  picture: string | undefined,
+  email_verified: boolean | undefined,
+): Promise<{ firebaseUid: string; isNewUser: boolean }> {
+  const adminAuth = getAdminAuth();
+  try {
+    const existingUser = await adminAuth.getUserByEmail(email);
+    await adminAuth.updateUser(existingUser.uid, {
+      displayName: existingUser.displayName || name,
+      photoURL: existingUser.photoURL || picture,
+      emailVerified: existingUser.emailVerified || !!email_verified,
+    });
+    return { firebaseUid: existingUser.uid, isNewUser: false };
+  } catch (lookupErr: any) {
+    if (lookupErr.code !== "auth/user-not-found") throw lookupErr;
+    const newUser = await adminAuth.createUser({
+      email,
+      displayName: name ?? email.split("@")[0],
+      photoURL: picture ?? undefined,
+      emailVerified: !!email_verified,
+      disabled: false,
+    });
+    return { firebaseUid: newUser.uid, isNewUser: true };
+  }
+}
+
+/** Ensure Firestore profile exists; returns the resolved role. */
+async function ensureFirestoreProfile(
+  firebaseUid: string,
+  email: string,
+  name: string | undefined,
+  picture: string | undefined,
+  email_verified: boolean | undefined,
+  isNewUser: boolean,
+): Promise<{ userRole: UserRole; isNewUser: boolean }> {
+  let userRole: UserRole = SCHEMA_DEFAULTS.USER_ROLE;
+  const existingProfile = await userRepository.findById(firebaseUid);
+  if (!existingProfile) {
+    userRole = email === SCHEMA_DEFAULTS.ADMIN_EMAIL ? "admin" : SCHEMA_DEFAULTS.USER_ROLE;
+    await userRepository.createWithId(firebaseUid, {
+      ...DEFAULT_USER_DATA,
+      uid: firebaseUid,
+      email,
+      displayName: name ?? email.split("@")[0] ?? SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
+      photoURL: picture ?? null,
+      emailVerified: !!email_verified,
+      role: userRole,
+    });
+    return { userRole, isNewUser: true };
+  }
+  return { userRole: (existingProfile.role as UserRole) ?? SCHEMA_DEFAULTS.USER_ROLE, isNewUser };
+}
+
+/** Exchange custom token for Firebase ID token via Identity Toolkit. */
+async function exchangeCustomToken(
+  adminAuth: ReturnType<typeof getAdminAuth>,
+  firebaseUid: string,
+  userRole: UserRole,
+  apiKey: string,
+  eventId: string,
+  origin: string,
+): Promise<{ idToken: string } | { redirect: NextResponse }> {
+  const customToken = await adminAuth.createCustomToken(firebaseUid, { role: userRole });
+  const signInRes = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: customToken, returnSecureToken: true }),
+    },
+  );
+  const signInData = await signInRes.json();
+  if (!signInData.idToken) {
+    return {
+      redirect: await writeOutcomeAndClose(
+        eventId,
+        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED },
+        origin,
+      ),
+    };
+  }
+  return { idToken: signInData.idToken };
+}
+
+/** Build the final close-page response with session cookies set. */
+function buildSessionResponse(
+  origin: string,
+  sessionCookie: string,
+  sessionId: string,
+  firebaseUid: string,
+  userRole: UserRole,
+  isNewUser: boolean,
+): NextResponse {
+  const closeParams = new URLSearchParams({
+    uid: firebaseUid,
+    role: userRole,
+    isNew: isNewUser ? "1" : "0",
+  });
+  const closeUrl = `${origin}/auth/close?${closeParams.toString()}`;
+  const response = NextResponse.redirect(closeUrl);
+  response.cookies.set("__session", sessionCookie, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 5,
+    path: "/",
+  });
+  response.cookies.set("__session_id", sessionId, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 60 * 60 * 24 * 5,
+    path: "/",
+  });
+  return response;
+}
+
 export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 
@@ -106,43 +279,12 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get("code");
     const oauthError = searchParams.get("error");
 
-    // Validate state format — always perform this check first
-    if (!UUID_REGEX.test(state)) {
-      serverLogger.warn("Google callback: invalid state param");
-      return NextResponse.redirect(
-        new URL("/auth/close?error=invalid_state", origin),
-      );
-    }
+    const stateResult = await validateStateAndEvent(state, origin);
+    if (stateResult instanceof NextResponse) return stateResult;
+    const { eventId } = stateResult;
 
-    const eventId = state;
-
-    // Verify the event node still exists + is pending (replays are rejected).
-    // If RTDB is unavailable we skip the anti-replay check and rely on the
-    // OAuth state parameter (CSRF) + Google's single-use authorization code.
-    const db = getAdminRealtimeDb();
-    try {
-      const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
-      if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
-        serverLogger.warn("Google callback: event not found or not pending", {
-          eventId,
-        });
-        return NextResponse.redirect(
-          new URL("/auth/close?error=event_expired", origin),
-        );
-      }
-    } catch (rtdbReadErr) {
-      serverLogger.warn(
-        "Google callback: RTDB unavailable — skipping anti-replay check, proceeding with OAuth state validation only",
-        { eventId, rtdbReadErr },
-      );
-    }
-
-    // User cancelled or Google returned an error
     if (oauthError || !code) {
-      serverLogger.info("Google callback: user cancelled or OAuth error", {
-        eventId,
-        oauthError,
-      });
+      serverLogger.info("Google callback: user cancelled or OAuth error", { eventId, oauthError });
       return writeOutcomeAndClose(
         eventId,
         { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.SIGN_IN_CANCELLED },
@@ -164,34 +306,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Step 1: Exchange authorization code for Google tokens (server-side)
-    const oauthClient = new OAuth2Client(clientId, clientSecret, redirectUri);
-    let ticket;
-    try {
-      const { tokens } = await oauthClient.getToken(code);
-      oauthClient.setCredentials(tokens);
-      // Verify the ID token — this is the authoritative identity proof
-      ticket = await oauthClient.verifyIdToken({
-        idToken: tokens.id_token!,
-        audience: clientId,
-      });
-    } catch (exchangeErr) {
-      serverLogger.error("Google token exchange/verification failed", {
-        eventId,
-        exchangeErr,
-      });
-      return writeOutcomeAndClose(
-        eventId,
-        {
-          status: RTDBPayloadStatus.ERROR,
-          error: ERROR_MESSAGES.AUTH.OAUTH_CODE_EXCHANGE_FAILED,
-        },
-        origin,
-      );
-    }
-
-    const payload = ticket.getPayload();
-    if (!payload?.email) {
+    const exchangeResult = await exchangeGoogleCode(code, clientId, clientSecret, redirectUri, eventId, origin);
+    if ("redirect" in exchangeResult) return exchangeResult.redirect;
+    const googlePayload = exchangeResult.ticket.getPayload();
+    if (!googlePayload?.email) {
       return writeOutcomeAndClose(
         eventId,
         { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.OAUTH_USER_INFO_FAILED },
@@ -199,152 +317,43 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { sub: googleUid, email, name, picture, email_verified } = payload;
+    const { email, name, picture, email_verified } = googlePayload;
 
-    // Step 2: Find or create the Firebase Auth user
-    const adminAuth = getAdminAuth();
-    let firebaseUid: string;
-    let isNewUser = false;
-    try {
-      // Try to find by Google provider UID first
-      const existingUser = await adminAuth.getUserByEmail(email);
-      firebaseUid = existingUser.uid;
+    const { firebaseUid, isNewUser: newFromAuth } = await resolveFirebaseUser(email, name, picture, email_verified);
+    const { userRole, isNewUser } = await ensureFirestoreProfile(
+      firebaseUid, email, name, picture, email_verified, newFromAuth,
+    );
 
-      // Sync profile fields from Google if they've changed (photo, display name)
-      await adminAuth.updateUser(firebaseUid, {
-        displayName: existingUser.displayName || name,
-        photoURL: existingUser.photoURL || picture,
-        emailVerified: existingUser.emailVerified || !!email_verified,
-      });
-    } catch (lookupErr: any) {
-      if (lookupErr.code !== "auth/user-not-found") {
-        throw lookupErr;
-      }
-      // New user — create Firebase Auth account
-      isNewUser = true;
-      const newUser = await adminAuth.createUser({
-        email,
-        displayName: name ?? email.split("@")[0],
-        photoURL: picture ?? undefined,
-        emailVerified: !!email_verified,
-        disabled: false,
-      });
-      firebaseUid = newUser.uid;
-    }
-
-    // Step 3: Ensure Firestore profile exists
-    let userRole: UserRole = SCHEMA_DEFAULTS.USER_ROLE;
-    const existingProfile = await userRepository.findById(firebaseUid);
-    if (!existingProfile) {
-      isNewUser = true;
-      userRole =
-        email === SCHEMA_DEFAULTS.ADMIN_EMAIL
-          ? "admin"
-          : SCHEMA_DEFAULTS.USER_ROLE;
-      await userRepository.createWithId(firebaseUid, {
-        ...DEFAULT_USER_DATA,
-        uid: firebaseUid,
-        email,
-        displayName:
-          name ?? email.split("@")[0] ?? SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
-        photoURL: picture ?? null,
-        emailVerified: !!email_verified,
-        role: userRole,
-      });
-    } else {
-      userRole =
-        (existingProfile.role as UserRole) ?? SCHEMA_DEFAULTS.USER_ROLE;
-    }
-
-    // Step 4: custom token → Firebase ID token → session cookie
-    // (createSessionCookie requires a Firebase ID token, not a custom token)
-    // Embed role in custom token claims so the resulting session cookie carries the correct role
-    const apiKey =
-      process.env.FIREBASE_API_KEY ?? process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    const apiKey = process.env.FIREBASE_API_KEY ?? process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
       return writeOutcomeAndClose(
         eventId,
-        {
-          status: RTDBPayloadStatus.ERROR,
-          error: "Authentication service configuration error.",
-        },
-        origin,
-      );
-    }
-    const customToken = await adminAuth.createCustomToken(firebaseUid, {
-      role: userRole,
-    });
-    const signInRes = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: customToken, returnSecureToken: true }),
-      },
-    );
-    const signInData = await signInRes.json();
-    if (!signInData.idToken) {
-      return writeOutcomeAndClose(
-        eventId,
-        { status: RTDBPayloadStatus.ERROR, error: ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED },
+        { status: RTDBPayloadStatus.ERROR, error: "Authentication service configuration error." },
         origin,
       );
     }
 
-    const sessionCookie = await createSessionCookie(signInData.idToken);
+    const adminAuth = getAdminAuth();
+    const tokenResult = await exchangeCustomToken(adminAuth, firebaseUid, userRole, apiKey, eventId, origin);
+    if ("redirect" in tokenResult) return tokenResult.redirect;
 
-    // Step 5: Create session record in Firestore
+    const sessionCookie = await createSessionCookie(tokenResult.idToken);
     const session = await sessionRepository.createSession(firebaseUid, {
       deviceInfo: parseUserAgent(
         request.headers.get("user-agent") ?? SCHEMA_DEFAULTS.UNKNOWN_USER_AGENT,
       ),
     });
 
-    // Step 6: Signal success to the main window via RTDB (include user info so
-    // the client knows whether this was a first-time sign-up or a returning login)
     await writeOutcomeAndClose(
       eventId,
       { status: RTDBPayloadStatus.SUCCESS, isNewUser, uid: firebaseUid, role: userRole },
       origin,
     );
 
-    // Build the close-page redirect response and attach the session cookies.
-    // uid/role/isNew are passed as query params so /auth/close can forward
-    // them via postMessage — the primary channel is RTDB but postMessage is
-    // the fallback when RTDB is unavailable.
-    const closeParams = new URLSearchParams({
-      uid: firebaseUid,
-      role: userRole,
-      isNew: isNewUser ? "1" : "0",
-    });
-    const closeUrl = `${origin}/auth/close?${closeParams.toString()}`;
-    const response = NextResponse.redirect(closeUrl);
-
-    response.cookies.set("__session", sessionCookie, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 5, // 5 days
-      path: "/",
-    });
-    response.cookies.set("__session_id", session.id, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 24 * 5,
-      path: "/",
-    });
-
-    serverLogger.info("Google OAuth session created", {
-      uid: firebaseUid,
-      eventId,
-    });
-    return response;
+    serverLogger.info("Google OAuth session created", { uid: firebaseUid, eventId });
+    return buildSessionResponse(origin, sessionCookie, session.id, firebaseUid, userRole, isNewUser);
   } catch (error) {
-    serverLogger.error("GET /api/auth/google/callback unexpected error", {
-      error,
-    });
-    // Attempt a best-effort RTDB error signal — state may not have been validated yet
+    serverLogger.error("GET /api/auth/google/callback unexpected error", { error });
     const state = request.nextUrl.searchParams.get("state");
     if (state && UUID_REGEX.test(state)) {
       try {
@@ -357,9 +366,7 @@ export async function GET(request: NextRequest) {
         // ignore secondary failure
       }
     }
-    return NextResponse.redirect(
-      new URL("/auth/close?error=unexpected", origin),
-    );
+    return NextResponse.redirect(new URL("/auth/close?error=unexpected", origin));
   }
 }
 

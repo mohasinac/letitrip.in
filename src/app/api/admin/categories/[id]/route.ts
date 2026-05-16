@@ -7,6 +7,8 @@ import {
   categoriesRepository,
 } from "@mohasinac/appkit";
 
+const MSG_CATEGORY_NOT_FOUND = "Category not found.";
+
 const updateCategorySchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
@@ -29,7 +31,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const category = await categoriesRepository.findById(id);
-      if (!category) return errorResponse("Category not found", 404);
+      if (!category) return errorResponse(MSG_CATEGORY_NOT_FOUND, 404);
       return successResponse(category);
     },
   }),
@@ -44,7 +46,7 @@ export const PUT = withProviders(
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
       const existing = await categoriesRepository.findById(id);
-      if (!existing) return errorResponse("Category not found", 404);
+      if (!existing) return errorResponse(MSG_CATEGORY_NOT_FOUND, 404);
 
       const updated = await categoriesRepository.update(id, {
         ...(body as any),
@@ -63,7 +65,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await categoriesRepository.findById(id);
-      if (!existing) return errorResponse("Category not found", 404);
+      if (!existing) return errorResponse(MSG_CATEGORY_NOT_FOUND, 404);
       if (!existing.isLeaf) {
         return errorResponse(
           "Cannot delete a category that has subcategories. Remove all children first.",

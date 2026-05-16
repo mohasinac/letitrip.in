@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
 const DEV_ONLY = process.env.NODE_ENV !== "development";
+const COURIER_BLUEDART = "BlueDart";
 
 function devGuard() {
   if (DEV_ONLY) {
@@ -89,7 +90,7 @@ export async function GET(req: NextRequest) {
             delivered_to: "Customer",
             destination: "Mumbai, MH",
             origin: "Delhi, DL",
-            courier_company: "BlueDart Express",
+            courier_company: COURIER_BLUEDART,
           },
         ],
         shipment_track_activities: [
@@ -127,7 +128,7 @@ export async function GET(req: NextRequest) {
       courier_data: [
         {
           courier_company_id: 1,
-          courier_name: "BlueDart Express",
+          courier_name: COURIER_BLUEDART,
           rate: 120,
           estimated_delivery_days: 2,
           is_surface: false,
@@ -193,7 +194,7 @@ export async function POST(req: NextRequest) {
       status_code: 1,
       awb_code: awb,
       courier_company_id: 1,
-      courier_name: "BlueDart Express",
+      courier_name: COURIER_BLUEDART,
       label: labelUrl,
       pickup_scheduled_date: new Date(Date.now() + 86_400_000).toISOString(),
       pickup_token_number: `PTN${Math.floor(Math.random() * 9000) + 1000}`,
@@ -211,7 +212,7 @@ export async function POST(req: NextRequest) {
       status_code: 200,
       awb_code: awb,
       courier_company_id: 1,
-      courier_name: "BlueDart Express",
+      courier_name: COURIER_BLUEDART,
       applied_weight: 0.5,
       company_auto_ship_enabled: false,
       routing_code: shipment.routing_code,

@@ -7,6 +7,18 @@ function sseChunk(type: string, data?: unknown): Uint8Array {
   return new TextEncoder().encode(`data: ${JSON.stringify({ type, data })}\n\n`);
 }
 
+/**
+ * Enqueue an SSE chunk into the stream controller, ignoring errors that occur
+ * when the stream is already closed (client disconnected).
+ */
+function tryEnqueue(controller: ReadableStreamDefaultController, type: string, data?: unknown): void {
+  try {
+    controller.enqueue(sseChunk(type, data));
+  } catch {
+    // Stream already closed — client disconnected
+  }
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -26,20 +38,12 @@ export async function GET(
       valueListener = (snapshot: any) => {
         const data = snapshot.val();
         if (data) {
-          try {
-            controller.enqueue(sseChunk("update", data));
-          } catch {
-            // Stream already closed
-          }
+          tryEnqueue(controller, "update", data);
         }
       };
 
       ref.on("value", valueListener, () => {
-        try {
-          controller.enqueue(sseChunk("error"));
-        } catch {
-          // Stream already closed
-        }
+        tryEnqueue(controller, "error");
       });
     },
     cancel() {

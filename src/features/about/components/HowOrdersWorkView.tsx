@@ -6,6 +6,88 @@ import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+type StatusStep = { label: string; desc: string; color: string; badge: string; icon: string };
+type InfoCard = { icon: React.ComponentType<{ className?: string }>; title: string; text: string; color: string; iconColor: string };
+type T = Awaited<ReturnType<typeof getTranslations<"howOrdersWork">>>;
+
+function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-3 text-center">{t("lifecycleTitle")}</Heading>
+      <Text variant="secondary" className="text-center mb-8 max-w-xl mx-auto">{t("lifecycleSubtitle")}</Text>
+      <Div className="space-y-3">
+        {statusSteps.map(({ label, desc, color, badge, icon }) => (
+          <Div key={label} className={`flex items-start gap-4 p-4 rounded-xl border ${color}`}>
+            <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
+            <Div className="flex-1">
+              <Row gap="sm" className="mb-1">
+                <Span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}>{label}</Span>
+              </Row>
+              <Text variant="secondary" className="text-sm leading-relaxed">{desc}</Text>
+            </Div>
+          </Div>
+        ))}
+        <Div className="flex items-start gap-4 p-4 rounded-xl border bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700">
+          <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
+          <Div className="flex-1">
+            <Row gap="sm" className="mb-1">
+              <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">{t("sCancelLabel")}</Span>
+            </Row>
+            <Text variant="secondary" className="text-sm leading-relaxed">{t("sCancelDesc")}</Text>
+          </Div>
+        </Div>
+      </Div>
+    </Section>
+  );
+}
+
+function renderOrdersDiagram(diagramSteps: FlowStep[], t: T) {
+  return (
+    <Section>
+      <FlowDiagram
+        title={`📦 ${t("diagramTitle")}`}
+        titleClass="text-primary"
+        connectorClass="bg-primary/20 dark:bg-primary/30"
+        steps={diagramSteps}
+      />
+    </Section>
+  );
+}
+
+function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
+  return (
+    <Section>
+      <Heading level={2} className="mb-8 text-center">{t("infoTitle")}</Heading>
+      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
+        {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
+          <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+            <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </Div>
+            <Text className="font-semibold mb-1">{title}</Text>
+            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+          </Div>
+        ))}
+      </Grid>
+    </Section>
+  );
+}
+
+function renderOrdersCta(t: T) {
+  return (
+    <Section className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}>
+      <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
+      <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
+      <Div className={`${flex.center} gap-4 flex-wrap`}>
+        <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
+        <TextLink href={ROUTES.PUBLIC.HOW_CHECKOUT_WORKS} variant="muted">{t("ctaCheckout")}</TextLink>
+      </Div>
+    </Section>
+  );
+}
+
 export async function HowOrdersWorkView() {
   const t = await getTranslations("howOrdersWork");
 
@@ -165,103 +247,10 @@ export async function HowOrdersWorkView() {
       </Section>
 
       <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
-        {/* Order status lifecycle */}
-        <Section>
-          <Heading level={2} className="mb-3 text-center">
-            {t("lifecycleTitle")}
-          </Heading>
-          <Text
-            variant="secondary"
-            className="text-center mb-8 max-w-xl mx-auto"
-          >
-            {t("lifecycleSubtitle")}
-          </Text>
-          <Div className="space-y-3">
-            {STATUS_STEPS.map(({ label, desc, color, badge, icon }) => (
-              <Div
-                key={label}
-                className={`flex items-start gap-4 p-4 rounded-xl border ${color}`}
-              >
-                <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
-                <Div className="flex-1">
-                  <Row gap="sm" className="mb-1">
-                    <Span
-                      className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}
-                    >
-                      {label}
-                    </Span>
-                  </Row>
-                  <Text variant="secondary" className="text-sm leading-relaxed">
-                    {desc}
-                  </Text>
-                </Div>
-              </Div>
-            ))}
-
-            {/* Cancelled state */}
-            <Div className="flex items-start gap-4 p-4 rounded-xl border bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700">
-              <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
-              <Div className="flex-1">
-                <Row gap="sm" className="mb-1">
-                  <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
-                    {t("sCancelLabel")}
-                  </Span>
-                </Row>
-                <Text variant="secondary" className="text-sm leading-relaxed">
-                  {t("sCancelDesc")}
-                </Text>
-              </Div>
-            </Div>
-          </Div>
-        </Section>
-
-        {/* Flow diagram */}
-        <Section>
-          <FlowDiagram
-            title={`📦 ${t("diagramTitle")}`}
-            titleClass="text-primary"
-            connectorClass="bg-primary/20 dark:bg-primary/30"
-            steps={DIAGRAM_STEPS}
-          />
-        </Section>
-
-        {/* Info cards */}
-        <Section>
-          <Heading level={2} className="mb-8 text-center">
-            {t("infoTitle")}
-          </Heading>
-          <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
-            {INFO_CARDS.map(({ icon: Icon, title, text, color, iconColor }) => (
-              <Div key={title} className={`rounded-xl border p-5 ${color}`}>
-                <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
-                  <Icon className={`w-5 h-5 ${iconColor}`} />
-                </Div>
-                <Text className="font-semibold mb-1">{title}</Text>
-                <Text variant="secondary" className="text-sm leading-relaxed">
-                  {text}
-                </Text>
-              </Div>
-            ))}
-          </Grid>
-        </Section>
-
-        {/* CTA */}
-        <Section
-          className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}
-        >
-          <Heading level={2} className="mb-3">
-            {t("ctaTitle")}
-          </Heading>
-          <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
-            {t("ctaText")}
-          </Text>
-          <Div className={`${flex.center} gap-4 flex-wrap`}>
-            <TextLink href={ROUTES.PUBLIC.PRODUCTS}>{t("ctaBrowse")}</TextLink>
-            <TextLink href={ROUTES.PUBLIC.HOW_CHECKOUT_WORKS} variant="muted">
-              {t("ctaCheckout")}
-            </TextLink>
-          </Div>
-        </Section>
+        {renderOrdersLifecycle(STATUS_STEPS, t)}
+        {renderOrdersDiagram(DIAGRAM_STEPS, t)}
+        {renderOrdersInfoCards(INFO_CARDS, t)}
+        {renderOrdersCta(t)}
       </Div>
     </Div>
   );

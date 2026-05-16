@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { productTemplateRepository, storeRepository } from "@mohasinac/appkit";
 
+const MSG_TEMPLATE_NOT_FOUND = "Template not found.";
+
 const updateSchema = z.object({
   name: z.string().min(1).max(120).optional(),
   description: z.string().max(500).optional(),
@@ -24,7 +26,7 @@ export const GET = withProviders(
       const id = (params as Record<string, string>)?.id;
       if (!id) return ApiErrors.badRequest("Missing id");
       const template = await productTemplateRepository.findById(id);
-      if (!template) return ApiErrors.notFound("Template not found");
+      if (!template) return ApiErrors.notFound(MSG_TEMPLATE_NOT_FOUND);
       return successResponse({ template });
     },
   }),
@@ -40,7 +42,7 @@ export const PUT = withProviders(
       if (!id) return ApiErrors.badRequest("Missing id");
 
       const existing = await productTemplateRepository.findById(id);
-      if (!existing) return ApiErrors.notFound("Template not found");
+      if (!existing) return ApiErrors.notFound(MSG_TEMPLATE_NOT_FOUND);
 
       if (user!.role === "seller") {
         const store = await storeRepository.findByOwnerId(user!.uid);
@@ -64,7 +66,7 @@ export const DELETE = withProviders(
       if (!id) return ApiErrors.badRequest("Missing id");
 
       const existing = await productTemplateRepository.findById(id);
-      if (!existing) return ApiErrors.notFound("Template not found");
+      if (!existing) return ApiErrors.notFound(MSG_TEMPLATE_NOT_FOUND);
 
       if (user!.role === "seller") {
         const store = await storeRepository.findByOwnerId(user!.uid);

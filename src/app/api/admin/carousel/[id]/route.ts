@@ -7,6 +7,8 @@ import {
   errorResponse,
 } from "@mohasinac/appkit";
 
+const MSG_SLIDE_NOT_FOUND = "Carousel slide not found.";
+
 const updateSlideSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   order: z.number().int().min(0).optional(),
@@ -39,7 +41,7 @@ export const GET = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const slide = await carouselRepository.findById(id);
-      if (!slide) return errorResponse("Carousel slide not found", 404);
+      if (!slide) return errorResponse(MSG_SLIDE_NOT_FOUND, 404);
       return successResponse(slide);
     },
   }),
@@ -54,7 +56,7 @@ export const PUT = withProviders(
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
       const existing = await carouselRepository.findById(id);
-      if (!existing) return errorResponse("Carousel slide not found", 404);
+      if (!existing) return errorResponse(MSG_SLIDE_NOT_FOUND, 404);
       const updated = await carouselRepository.update(id, body as any);
       return successResponse(updated, "Carousel slide updated");
     },
@@ -69,7 +71,7 @@ export const DELETE = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await carouselRepository.findById(id);
-      if (!existing) return errorResponse("Carousel slide not found", 404);
+      if (!existing) return errorResponse(MSG_SLIDE_NOT_FOUND, 404);
       await carouselRepository.delete(id);
       return successResponse(null, "Carousel slide deleted");
     },

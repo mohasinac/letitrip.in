@@ -2,6 +2,8 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 
+const MSG_PRODUCT_NOT_FOUND = "Product not found.";
+
 /** POST — start a group (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
   roles: ["admin"],
@@ -9,7 +11,7 @@ export const POST = withProviders(createApiHandler({
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound("Product not found");
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
     if (isAuctionListing(product)) return ApiErrors.badRequest("Auctions cannot be in groups");
     if (product.groupId) return ApiErrors.badRequest("Product is already in a group");
 
@@ -26,7 +28,7 @@ export const PATCH = withProviders(createApiHandler({
   handler: async ({ request, params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound("Product not found");
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
     if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
 
     const body = await request.json() as { groupTitle?: string };
@@ -42,7 +44,7 @@ export const DELETE = withProviders(createApiHandler({
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;
     const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound("Product not found");
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
     if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
     if (!product.groupId) return ApiErrors.badRequest("No groupId on product");
 

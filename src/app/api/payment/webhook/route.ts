@@ -25,6 +25,32 @@ import { serverLogger } from "@mohasinac/appkit";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 import { RTDB_PATHS } from "@mohasinac/appkit";
 
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+interface RazorpayPaymentEntity {
+  id?: string;
+  order_id?: string;
+  error_description?: string;
+}
+
+/**
+ * Signal the RTDB payment-events node for a given Razorpay order.
+ * Extracted to eliminate deep nesting in the switch/case blocks.
+ */
+async function signalPaymentEvent(
+  orderId: string,
+  payload: { status: string; error?: string; updatedAt: number },
+  logTag: string,
+): Promise<void> {
+  try {
+    await getAdminRealtimeDb()
+      .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${orderId}`)
+      .update(payload);
+  } catch (err) {
+    serverLogger.warn(`${logTag} RTDB signal failed`, { err });
+  }
+}
+
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -70,21 +96,17 @@ export async function POST(request: NextRequest) {
         // Payment was captured — orders should already be confirmed via /verify.
         // Signal the RTDB node as a fallback in case the client lost connectivity.
         const payment = (
-          event.payload as {
-            payment?: { entity?: { id?: string; order_id?: string } };
-          }
+          event.payload as { payment?: { entity?: RazorpayPaymentEntity } }
         )?.payment?.entity;
         serverLogger.info(
           `payment.captured: paymentId=${payment?.id} orderId=${payment?.order_id}`,
         );
         if (payment?.order_id) {
-          try {
-            await getAdminRealtimeDb()
-              .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
-              .update({ status: "success", updatedAt: Date.now() });
-          } catch (err) {
-            serverLogger.warn("payment.captured RTDB signal failed", { err });
-          }
+          await signalPaymentEvent(
+            payment.order_id,
+            { status: "success", updatedAt: Date.now() },
+            "payment.captured",
+          );
         }
         break;
       }
@@ -92,33 +114,23 @@ export async function POST(request: NextRequest) {
       case "payment.failed": {
         // Signal the RTDB node so usePaymentEvent can show the failure to the user.
         const payment = (
-          event.payload as {
-            payment?: {
-              entity?: {
-                id?: string;
-                order_id?: string;
-                error_description?: string;
-              };
-            };
-          }
+          event.payload as { payment?: { entity?: RazorpayPaymentEntity } }
         )?.payment?.entity;
         serverLogger.warn(
           `payment.failed: paymentId=${payment?.id} reason=${payment?.error_description}`,
         );
         if (payment?.order_id) {
-          try {
-            await getAdminRealtimeDb()
-              .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
-              .update({
-                status: "failed",
-                error:
-                  payment.error_description ??
-                  ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
-                updatedAt: Date.now(),
-              });
-          } catch (err) {
-            serverLogger.warn("payment.failed RTDB signal failed", { err });
-          }
+          await signalPaymentEvent(
+            payment.order_id,
+            {
+              status: "failed",
+              error:
+                payment.error_description ??
+                ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
+              updatedAt: Date.now(),
+            },
+            "payment.failed",
+          );
         }
         break;
       }
