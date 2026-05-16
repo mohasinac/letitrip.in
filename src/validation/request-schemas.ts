@@ -154,7 +154,7 @@ const productBaseSchema = z.object({
   seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
   // SB1-G Phase 4 — canonical discriminator (booleans removed).
   listingType: z
-    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle"])
+    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle", "classified", "digital-code", "live"])
     .optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),
