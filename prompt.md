@@ -133,7 +133,29 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-uni-W4: Admin CTA registry sweep (2026-05-16)
+### ✅ LAST COMPLETED — S-polish-pass Phase 8a: Raw HTML sweep batch 2 (2026-05-16)
+
+- `events/PollInlineClient` — removed eslint-disable; split dynamic `<input type={expr}>` → static checkbox/radio conditionals; fixed Link + API_ROUTES imports.
+- `events/EventParticipateClient` — same checkbox/radio split; `<label>` → `<Label>`.
+- `store/sublisting-categories/new+edit` — `LBL_CLS` constant extraction, `<label>`→`<Label>`, deep import fixed.
+- `store/templates` — `<Div as="select">` → proper `<Select options={...}>`; deep `@/constants/api` import fixed.
+- `sublisting-categories/[slug]/page` — `<Div as="nav">` → `<Nav>`; raw `<img>` → `<MediaImage>` (cover + grid cards).
+- `ProfilePageClient` — avatar `<img>` → `<MediaImage>`; `Link` from `@/i18n/navigation`.
+- `UserAddressesClient` — `<div>/<button>` → `<Div>/<Button>`; removed eslint-disable.
+- `scams/report + CartRouteClient` — LR1-02/LR1-17 suppress comments; deferred to Tier LR migration.
+- `scripts/audit-product-form-shell.mjs` — new audit enforcing `SellerProductFormShell` wrapper; added to `check:audits`.
+- `npm run check:audits` exits 0; `tsc --noEmit` exits 0.
+
+### ✅ PREVIOUS LAST — S-product-form-shell + S-polish-7b: Paginated pickers + poll raw HTML sweep (2026-05-16)
+
+**S-product-form-shell:**
+- `src/components/store/SellerProductFormShell.tsx` — `StoreCreateProductShell` + `StoreEditProductShell` wrappers injecting `CategoryInlineSelect` + `BrandInlineSelect` render props.
+- 15 store product form pages updated (products/auctions/pre-orders/classified/digital-codes/live × new+edit + admin/prize-draws/edit).
+- `store/sublisting-categories/new+edit` — extracted repeated `LBL_CLS`, fixed deep `@/constants/api` import.
+- `events/PollInlineClient + EventParticipateClient` — removed file-level eslint-disable; split dynamic `<input type={expr}>` → static `type="checkbox"` / `type="radio"` conditionals.
+- `npm run check:audits` exits 0.
+
+### ✅ LAST — S-uni-W4: Admin CTA registry sweep (2026-05-16)
 
 **SB-UNI-W-4 — ACTIONS.ADMIN populated + admin view sweep:**
 - Added 17 action leaves to `ACTIONS.ADMIN` in `appkit/src/_internal/shared/actions/action-registry.ts`: approve-product, reject-product, ban-user, unban-user, verify-vendor, unverify-vendor, verify-store, suspend-store, approve-review, reject-review, approve-return, reject-return, grant-payout, hold-payout, rebuild-bundle, reset-seed-data, save-changes.

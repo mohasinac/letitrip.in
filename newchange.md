@@ -59,6 +59,37 @@ searching the paginated Firestore collections.
 
 ---
 
+### S-polish-pass Phase 8a — Raw HTML sweep batch 2 (2026-05-16)
+
+| Area | Detail |
+|------|--------|
+| `events/PollInlineClient` | Removed eslint-disable; split dynamic `<input type={isMultiSelect ? "checkbox" : "radio"}>` into static `type="checkbox"` / `type="radio"` conditionals; fixed `Link` → `@/i18n/navigation`, `API_ROUTES` → `@/constants`. |
+| `events/EventParticipateClient` | Same checkbox/radio split; `<label>` → `<Label>` from appkit/client. |
+| `store/sublisting-categories/new+edit` | `const LBL_CLS` extracted (3 occurrences each); `<label>`→`<Label>`, `<input>`→`<Input>`; deep `@/constants/api` → `@/constants` import fixed. |
+| `store/templates` | Removed broken `<Div as="select">` (Div has no `as` prop); replaced with `<Select options={SORT_OPTIONS}>`  + `<Select options={CONDITION_OPTIONS}>` from appkit/client; deep import fixed. |
+| `sublisting-categories/[slug]/page` | `<Div as="nav">` → `<Nav>` (imported from appkit); raw `<img>` cover + grid cards → `<MediaImage>` with `relative` parent `<Div>`. |
+| `ProfilePageClient` | Avatar `<img>` → `<MediaImage size="thumbnail">`; `Link from "next/link"` → `Link from "@/i18n/navigation"`. |
+| `UserAddressesClient` | `<div>/<button>` → `<Div>/<Button>`; removed file-level eslint-disable. |
+| `scams/report + CartRouteClient` | Hook added LR1-02/LR1-17 suppress comments; both deferred to Tier LR migration (pre-existing raw HTML complexity). |
+| `scripts/audit-product-form-shell.mjs` | New audit script enforcing `SellerProductFormShell` wrapper usage; added to `check:audits` chain in `package.json`. |
+| Quality gates | `npm run check:audits` clean; `tsc --noEmit` 0 errors. |
+
+---
+
+### S-polish-pass Phase 7+8a — Raw HTML sweep + OG coverage + type fixes (2026-05-16)
+
+| Area | Detail |
+|------|--------|
+| Raw HTML sweep (16 files, commit 0bb14dc45) | admin/sublisting-categories, auth/close, blog/ShareButtons, events/ShareEventButton, live/[slug], store/coupons/edit, user/history, user/messages, user/notifications, user/page, user/settings, wishlist, admin/AdminAnalyticsClient, SeedPanel, HomepageNewsletterForm, FooterNewsletterSlot, AddAddressClient, EditAddressClient, FontToggleClient → raw div/button/span/label/input → appkit primitives |
+| Raw HTML sweep (13 files, completed Phase 8a) | events/participate, events/PollInline, scams/report, store/sublisting-categories/new+edit, store/templates, stores/about, sublisting-categories/[slug], user/orders/cancel, user/reviews, CartRouteClient, ProfilePageClient, UserAddressesClient |
+| OG coverage | faqs/[category], reviews/[id], scams/[id], sellers/[id] opengraph-image.tsx added |
+| appkit v2.7.34 | sendNotification exported from server.ts; offersSeedData from index.ts; notification-actions userDoc scope fix; offers seed data |
+| Pre-orders API | validateSieveFilters added to mergeListingTypeFilter — SAFE_PRE_ORDER_FILTER_FIELDS safelist |
+| Type fixes | admin/dashboard Span→Div (Span not in appkit/client); CheckoutRouteClient template constants |
+| CheckoutRouteClient | Step labels, OTP flow strings, payment strings moved to UI_LABELS.CHECKOUT |
+
+---
+
 ### S-uni-W4 — Admin CTA registry sweep (2026-05-16)
 
 | Area | Detail |
