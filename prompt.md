@@ -139,7 +139,20 @@ Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type de
 
 ---
 
-### ✅ LAST COMPLETED — S-ts-cleanup: Print-center removal + lint cleanup (2026-05-17)
+### ✅ LAST COMPLETED — S-print-center-cleanup: Auction improvements + UI polish (2026-05-17)
+
+- `RowActionMenu`: rewritten with `createPortal` portal dropdown — fixed clipping by `overflow:hidden` table containers; `fixed` positioning via `getBoundingClientRect`; z-index via `--appkit-z-modal`
+- `ProductDocument.leadingBidderId`: new field tracking current auction bid winner; `incrementBidCountInBatch` updated to write it; `onBidPlaced` job passes `userId`
+- `BID_ERROR_CODES` + `OFFER_ERROR_CODES` constants in `error-codes.ts`; re-exported from `errors/index.ts`; `ERROR_MESSAGES.AUCTIONS.INCREMENT_TOO_LOW` added
+- `bids/route.ts`: `placeBid` wrapped in typed error catch — `NotFoundError→404`, `ValidationError→400`, `AuthorizationError→403`
+- `SellerProductShell`: step navigation moved to `FormShell.renderBottomBar` using `hideActions` prop on `StepForm`; step validation errors shown inline below the action bar
+- `StepForm.hideActions` prop + `StepFormActions` padding px-4→px-5 harmonized
+- `runPromotions`: `Promise.allSettled` — partial failures log warning, return available data instead of throwing
+- Layout gutter: `px-4→px-5` / `1rem→1.25rem` across `DashboardLayoutClient`, `AppLayoutShell`, `FormShell`, `AutoBreadcrumbs`, `SideDrawer.style.css`
+- `pw-17-media-upload`: button text selectors updated for compact upload UI redesign
+- appkit: `f84ca72` → `01333cc` → `186ac90` → `f3bfe23` → `c2f2a3c` → `01333cc` (all committed). `npm run check:audits` clean.
+
+### ✅ PREVIOUS LAST — S-ts-cleanup: Print-center removal + lint cleanup (2026-05-17)
 
 - Removed entire `_internal/client/features/seller/print-center/` directory from appkit (`PrintCenterView`, `LabelDesignPicker`, `PrintGrid`, `StoreCard`, `WebsiteCard`, `useInventoryPdf`, `InventoryLabel`, `OrderPackingLabel`, `types.ts`)
 - `PhysicalLocationModal` preserved — moved to `features/seller/components/` (still used by `SellerProductsView` + `SellerOrdersView`)
@@ -155,20 +168,6 @@ Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type de
 - **MEDIA-BUG-06**: Broadened `accept` overrides across all 6 callers: `BlogPostForm` content/additional images → `"image/*,video/*"`; `ProductForm` gallery → `"image/*,video/*"`; `SellerProductShell` gallery → `"image/*,video/*"` + added `MediaUploadField` for dedicated product video + `video?: string` on `SellerProductDraft`; `PrizeDrawItemsEditor` video → `"video/*"`; `AvatarUpload` → `"image/*"`; `MediaUploadList` default → `"image/*,video/*,application/pdf"`
 - `ImageUpload` empty state compacted from `aspect-[16/9]` ghost button to inline button row (~60px); preview compacted to `h-32 max-w-xs`; `MediaUploadList` item thumbnails `aspect-square max-h-24`; add-files trigger compact `outline sm` button
 - `npm run check:audits` exits 0. `tsc --noEmit` clean in both repos.
-
-### ✅ PREVIOUS LAST — S-print-center: Physical Inventory Labeling + Print & Label Center (2026-05-17)
-
-- **9 appkit print-center components** fully implemented: `InventoryLabel`, `OrderPackingLabel`, `StoreCard`, `WebsiteCard`, `LabelDesignPicker`, `PrintGrid`, `PhysicalLocationModal`, `useInventoryPdf`, `PrintCenterView`
-- **3 letitrip pages**: `/store/print-center`, `/store/inventory/print` (auto-print), `/admin/print-center`
-- **2 bulk-location API routes**: `PATCH /api/store/products/bulk-location` + `PATCH /api/store/orders/bulk-location`
-- **Schema**: `physicalLocation: { zone, shelf, bin }` added to `ProductDocument`, `OrderDocument`, `ProductItem`
-- **`SellerProductsView`**: `physicalLocation` column + Set Location bulk action + PhysicalLocationModal
-- **`SellerOrdersView`**: `physicalLocation` staging column + Print Packing Slips + Set Location bulk actions + checkboxes
-- **Navigation**: Print Center added to STORE_NAV_GROUPS (Tools) + ADMIN_NAV_GROUPS (Operations)
-- **Action registry**: `print-labels`, `set-location`, `print-packing-slips`, `open-print-center` in `ACTIONS.STORE`
-- **Design persistence**: `LabelDesignPicker` saves to `localStorage` per user/browser
-- Physical location fully optional (no required fields in modal)
-- All audits pass. `npm run check:audits` exits 0. appkit build clean.
 
 ### ✅ PREVIOUS LAST — S-security-admin: Payment integrity + sendNotification wiring + ACTIONS admin wiring (2026-05-16)
 
