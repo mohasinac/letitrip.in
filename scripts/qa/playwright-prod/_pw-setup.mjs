@@ -2,13 +2,32 @@
  * Shared Playwright helpers: launch a single Chromium browser, build
  * per-role browser contexts pre-loaded with auth cookies (obtained via
  * the same /api/auth/login the HTTP suites use — no UI login).
+ *
+ * Video recording: opt-in via SMOKE_RECORD_VIDEO=1 env var.
+ *   Videos land in SMOKE_VIDEO_DIR (default: test-results/videos/).
+ *   Each context gets its own sub-directory keyed by role so files don't
+ *   collide when multiple roles run in the same session.
+ *
+ * Screenshots: call takeScreenshot(page, "label") at any point, or wrap
+ *   a block in withScreenshotOnFailure(page, "label", fn) to auto-capture
+ *   on throw. Screenshots land in SMOKE_SCREENSHOT_DIR (default:
+ *   test-results/screenshots/).
  */
 
 import { chromium } from "playwright";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ROLES, BASE_URL, LOCALE } from "../prod-suites/_fixtures.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, "..", "..", "..");
 
 const HEADLESS = process.env.SMOKE_HEADLESS !== "0";
 const SLOW_MO = Number(process.env.SMOKE_SLOW_MO ?? 0);
+const RECORD_VIDEO = process.env.SMOKE_RECORD_VIDEO === "1";
+const VIDEO_DIR = path.resolve(ROOT, process.env.SMOKE_VIDEO_DIR ?? "test-results/videos");
+const SCREENSHOT_DIR = path.resolve(ROOT, process.env.SMOKE_SCREENSHOT_DIR ?? "test-results/screenshots");
 
 let _browser = null;
 
@@ -81,11 +100,22 @@ const _ctxCache = new Map();
 export async function getContext(role = "anon") {
   if (_ctxCache.has(role)) return _ctxCache.get(role);
   const browser = await getBrowser();
+
+  const recordVideoOpts = RECORD_VIDEO
+    ? {
+        recordVideo: {
+          dir: path.join(VIDEO_DIR, role),
+          size: { width: 1280, height: 900 },
+        },
+      }
+    : {};
+
   const ctx = await browser.newContext({
     viewport: { width: 1280, height: 900 },
     locale: "en-IN",
     userAgent:
       "Mozilla/5.0 (smoke-prod-playwright/1.0) Chrome/124.0 Safari/537.36",
+    ...recordVideoOpts,
   });
   if (role !== "anon") {
     try {
@@ -158,6 +188,36 @@ export async function getCookieHeader(ctx, baseUrl) {
     return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
   } catch {
     return "";
+  }
+}
+
+/**
+ * Capture a screenshot to SCREENSHOT_DIR.
+ * name: slug used in the filename (e.g. "media-upload-after-select").
+ * Returns the output path, or null if the page is already closed.
+ */
+export async function takeScreenshot(page, name) {
+  try {
+    await mkdir(SCREENSHOT_DIR, { recursive: true });
+    const ts = Date.now().toString(36);
+    const file = path.join(SCREENSHOT_DIR, `${name}-${ts}.png`);
+    await page.screenshot({ path: file, fullPage: false });
+    return file;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Run fn(). If it throws, capture a screenshot before re-throwing.
+ * Use around any block where a mid-test failure is hard to diagnose.
+ */
+export async function withScreenshotOnFailure(page, name, fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    await takeScreenshot(page, `fail-${name}`).catch(() => {});
+    throw err;
   }
 }
 

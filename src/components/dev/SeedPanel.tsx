@@ -28,7 +28,6 @@ import {
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import type { SeedCollectionName } from "@/actions/demo-seed.types";
-import { Heading, Text } from "@mohasinac/appkit";
 
 // ─── Collection order ─────────────────────────────────────────────────────────
 
@@ -1411,7 +1410,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           <span key={label} className={`text-[10px] font-medium ${color}`}>{label}</span>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 
