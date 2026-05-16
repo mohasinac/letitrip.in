@@ -133,7 +133,16 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-orphan-wirewup: Dead-code wiring + UI polish pass (2026-05-16)
+### ✅ LAST COMPLETED — S-polish-pass Phase 8b: appkit v2.7.36 + TextLink client export + OG polish (2026-05-16)
+
+- appkit v2.7.36: export `TextLink` + `TextLinkProps` from `client.ts` (needed by `StoreAboutClient`)
+- `resolveOgImageUrl()` helper added to `seo/og.tsx`; exported from `server.ts`. All 13 per-feature OG renderers updated to use it for image URLs.
+- `AdminProductsView`: wire `ACTIONS.ADMIN` approve/reject quick-edit actions with separator.
+- `AdminPayoutsView`, `BlogPostForm`, `CategoryForm`, `FormField`: export/type consistency fixes.
+- `SectionCarousel`: simplify conditional rendering; `homepage-sections-seed-data`: update carousel config shape.
+- `npm run check` exits 0 (types + audits + lint).
+
+### ✅ LAST — S-orphan-wirewup: Dead-code wiring + UI polish pass (2026-05-16)
 
 **Form field styling (Issue 4):**
 - `Select.style.css` — hover, focus ring (inset + outer), error, disabled states; dark mode variants.
@@ -249,19 +258,6 @@ After deploy: smoke-test the production URL for all touched routes.
 - Added `StepClassifiedSettings`, `StepDigitalCodeSettings`, `StepLiveItemSettings` step components.
 - Added 9 seller page shims (list/new/edit × 3 types). ROUTES.STORE + STORE_NAV_GROUPS wired.
 - Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
-
-### ✅ LAST COMPLETED — S-checkout-otp-ux: Checkout OTP consent UX refactor + ACTIONS.CHECKOUT registry (2026-05-16)
-
-- `CheckoutRouteClient.tsx`: added `otp-consent` step (new intermediate between address and OTP). OTP is no longer sent automatically — user must click "Send verification code" after seeing the consent screen. Admin bypass moved to the consent step (button visible before any OTP is sent).
-- All inline checkout strings extracted to `UI_LABELS.CHECKOUT` in `src/constants/ui.ts` (~30 new keys). Component uses `const CK = UI_LABELS.CHECKOUT` alias throughout.
-- `ACTIONS.CHECKOUT` registry expanded from 1 to 9 entries: `continue-to-verification`, `send-otp`, `verify-otp`, `resend-otp`, `pay-online`, `pay-cod`, `admin-bypass`, `admin-bypass-payment`.
-- CSS constants (`STEP_CARD_CLS`, `STEP_SUBLABEL_CLS`, `PRIMARY_BTN_CLS`) extracted to satisfy audit-code-quality.
-- `asciiDiagrams.md`: Checkout section rewritten with 3-step flow, otp-consent sub-step, and full flow diagram.
-- Fixed pre-existing HTML-wrapper lint violations in 4 files (`scams/report/page.tsx`, `stores/[slug]/about/StoreAboutClient.tsx`, `store/templates/page.tsx`, `components/user/ProfilePageClient.tsx`).
-- Fixed pre-existing TS error in `sublisting-categories/[slug]/page.tsx` (Nav closed with </Div>).
-- Rebuilt appkit dist to pick up `baseUrl?: string` in OG render opts; resolves 4 pre-existing tsc errors.
-- `.claude/settings.json` allowlist: added `npm view *`, `npm run audit:*`, `vercel logs *`.
-- `npm run check` exits 0 (0 errors, 526 warnings pre-existing).
 
 ### ✅ PREVIOUS — SB-UNI Phase 7 CTA registry sweeps: W-4 done, W-5 next (2026-05-16)
 
