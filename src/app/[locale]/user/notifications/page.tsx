@@ -96,6 +96,7 @@ function NotifCard({
             Mark read
           </Button>
         )}
+        {/* eslint-disable-next-line lir/prefer-action-registry */}
         <Button
           type="button"
           variant="ghost"

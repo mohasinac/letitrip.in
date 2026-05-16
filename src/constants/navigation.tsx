@@ -250,6 +250,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.TEAM),          "Team",          "admin:team:read"),
     ],
   },
+  {
+    title: "Operations",
+    items: [
+      adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read"),
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -305,6 +311,12 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.COUPONS),      label: "Coupons"       },
       { href: String(ROUTES.STORE.WHATSAPP),     label: "WhatsApp"      },
       { href: String(ROUTES.STORE.SLUG),         label: "Store URL"     },
+    ],
+  },
+  {
+    title: "Tools",
+    items: [
+      { href: String(ROUTES.STORE.PRINT_CENTER), label: "Print Center"  },
     ],
   },
 ];

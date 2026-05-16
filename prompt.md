@@ -133,7 +133,27 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-security-admin: Payment integrity + sendNotification wiring + ACTIONS admin wiring (2026-05-16)
+### 🔄 CURRENT — Next: SB-UNI Phase 3–9 or S-polish-pass (pull when ready)
+
+Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type detail/list views), SB-UNI-R (seller forms), SB-UNI-T (search facets), or S-polish-pass.
+
+---
+
+### ✅ LAST COMPLETED — S-print-center: Physical Inventory Labeling + Print & Label Center (2026-05-17)
+
+- **9 appkit print-center components** fully implemented: `InventoryLabel`, `OrderPackingLabel`, `StoreCard`, `WebsiteCard`, `LabelDesignPicker`, `PrintGrid`, `PhysicalLocationModal`, `useInventoryPdf`, `PrintCenterView`
+- **3 letitrip pages**: `/store/print-center`, `/store/inventory/print` (auto-print), `/admin/print-center`
+- **2 bulk-location API routes**: `PATCH /api/store/products/bulk-location` + `PATCH /api/store/orders/bulk-location`
+- **Schema**: `physicalLocation: { zone, shelf, bin }` added to `ProductDocument`, `OrderDocument`, `ProductItem`
+- **`SellerProductsView`**: `physicalLocation` column + Set Location bulk action + PhysicalLocationModal
+- **`SellerOrdersView`**: `physicalLocation` staging column + Print Packing Slips + Set Location bulk actions + checkboxes
+- **Navigation**: Print Center added to STORE_NAV_GROUPS (Tools) + ADMIN_NAV_GROUPS (Operations)
+- **Action registry**: `print-labels`, `set-location`, `print-packing-slips`, `open-print-center` in `ACTIONS.STORE`
+- **Design persistence**: `LabelDesignPicker` saves to `localStorage` per user/browser
+- Physical location fully optional (no required fields in modal)
+- All audits pass. `npm run check:audits` exits 0. appkit build clean.
+
+### ✅ PREVIOUS LAST — S-security-admin: Payment integrity + sendNotification wiring + ACTIONS admin wiring (2026-05-16)
 
 - `/api/payment/create-order`: removed client-supplied `amount`; server now recomputes subtotal from live Firestore product prices (prevents price-manipulation attacks)
 - `createCheckoutOrderAction` (COD/UPI): added `unitPriceFor()` helper — bundle lines use locked price, regular lines use `product.price`

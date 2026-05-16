@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { SellerCouponsView } from "@mohasinac/appkit";
+import { SellerCouponsView, ROUTES } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
 export default function Page() {
@@ -21,8 +21,8 @@ export default function Page() {
 
   return (
     <SellerCouponsView
-      onCreateClick={() => router.push("/store/coupons/new")}
-      onEditClick={(id) => router.push(`/store/coupons/${id}/edit`)}
+      onCreateClick={() => router.push(String(ROUTES.STORE.COUPONS_NEW))}
+      onEditClick={(id) => router.push(String(ROUTES.STORE.COUPONS_EDIT(id)))}
       onToggle={handleToggle}
       onDelete={handleDelete}
     />

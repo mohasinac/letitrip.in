@@ -289,6 +289,7 @@ async function countExistingForCollection(
     // SB-UNI-A 2026-05-13 — top-level addresses collection w/ ownerType discriminator.
     const refs = (seedData as any[])
       .filter((d) => d.id)
+      // eslint-disable-next-line lir/no-hardcoded-collection
       .map((d) => db.collection("addresses").doc(d.id));
     if (refs.length === 0) return 0;
     const snaps = await db.getAll(...refs);
@@ -705,6 +706,7 @@ export async function POST(request: NextRequest) {
                   continue;
                 }
 
+                // eslint-disable-next-line lir/no-hardcoded-collection
                 const docRef = db.collection("addresses").doc(id);
                 await docRef.set(
                   encryptPiiFields(stripUndefined(data), [

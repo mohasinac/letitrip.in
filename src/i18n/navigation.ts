@@ -12,8 +12,24 @@
  */
 
 import { createNavigation } from "next-intl/navigation";
+import { notFound } from "next/navigation";
 import { routing } from "./routing";
 
-export const { Link, redirect, useRouter, usePathname, getPathname } =
-  createNavigation(routing);
+const {
+  Link,
+  redirect: _redirect,
+  useRouter,
+  usePathname,
+  getPathname,
+} = createNavigation(routing);
+
+export { Link, useRouter, usePathname, getPathname, notFound };
+
+/**
+ * Redirect to a plain path string. Locale is always "en" (single-locale project).
+ * Accepts a plain string so call sites don't need to thread locale through.
+ */
+export function redirect(href: string): never {
+  return _redirect({ href, locale: routing.defaultLocale });
+}
 

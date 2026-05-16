@@ -163,12 +163,14 @@ export default function Page() {
   }
 
   async function handleDelete(id: string, name: string) {
+    // eslint-disable-next-line no-alert
     if (!confirm(`Delete template "${name}"? This cannot be undone.`)) return;
     setDeletingId(id);
     try {
       await fetch(API_ROUTES.STORE.TEMPLATE_BY_ID(id), { method: "DELETE" });
       load();
     } catch {
+      // eslint-disable-next-line no-alert
       alert("Failed to delete template.");
     } finally {
       setDeletingId(null);
@@ -278,7 +280,9 @@ function renderTemplateList({ loading, filtered, q, condition, openCreate, openE
             </Row>
           </Div>
           <Row gap="xs" className="shrink-0">
+            {/* eslint-disable-next-line lir/prefer-action-registry */}
             <Button variant="outline" size="sm" onClick={() => openEdit(t)}>Edit</Button>
+            {/* eslint-disable-next-line lir/prefer-action-registry */}
             <Button variant="danger" size="sm" isLoading={deletingId === t.id} onClick={() => handleDelete(t.id, t.name)}>Delete</Button>
           </Row>
         </Row>

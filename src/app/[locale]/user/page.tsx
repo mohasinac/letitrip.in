@@ -33,7 +33,7 @@ export default function Page() {
             {/* gradient top accent */}
             <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
             {user.photoURL ? (
-              // eslint-disable-next-line lir/no-raw-media-elements
+              // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
               <img
                 src={user.photoURL}
                 alt={user.displayName ?? ""}

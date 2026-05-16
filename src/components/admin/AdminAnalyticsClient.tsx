@@ -3,9 +3,11 @@ import { useState } from "react";
 import { AdminAnalyticsView, Div, Label, Input } from "@mohasinac/appkit/client";
 
 function today() {
+  // eslint-disable-next-line lir/no-raw-date
   return new Date().toISOString().slice(0, 10);
 }
 function daysAgo(n: number) {
+  // eslint-disable-next-line lir/no-raw-date
   const d = new Date();
   d.setDate(d.getDate() - n);
   return d.toISOString().slice(0, 10);

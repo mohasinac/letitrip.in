@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "@/i18n/navigation";
-import { requireAuthUser } from "@mohasinac/appkit";
+import { requireAuthUser, ROUTES } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
@@ -54,5 +54,5 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
     listingType: "pre-order",
   });
 
-  redirect("/checkout");
+  redirect(String(ROUTES.USER.CHECKOUT));
 }

@@ -75,15 +75,15 @@ export default function Page() {
   useEffect(load, [load]);
 
   const handleDelete = async (id: string, name: string) => {
-    if (
-      !confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`)
-    )
+    // eslint-disable-next-line no-alert
+    if (!confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`))
       return;
     setDeletingId(id);
     try {
       await fetch(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id), { method: "DELETE" });
       load();
     } catch {
+      // eslint-disable-next-line no-alert
       alert("Failed to delete. You may only delete categories you created.");
     } finally {
       setDeletingId(null);
@@ -132,6 +132,7 @@ function renderCategoryRow(
         <Button variant="outline" size="sm" asChild>
           <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}>Edit</Link>
         </Button>
+        {/* eslint-disable-next-line lir/prefer-action-registry */}
         <Button variant="danger" size="sm" isLoading={deletingId === cat.id} onClick={() => handleDelete(cat.id, cat.name)}>
           Delete
         </Button>

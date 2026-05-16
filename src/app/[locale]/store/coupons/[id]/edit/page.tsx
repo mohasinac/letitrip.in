@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
-import { SellerCouponEditorView, Text, Div } from "@mohasinac/appkit";
+import { SellerCouponEditorView, Text, Div, ROUTES } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
@@ -88,7 +88,7 @@ export default function Page() {
       const data = await res.json().catch(() => ({}));
       throw new Error((data as { error?: string })?.error ?? "Failed to update coupon");
     }
-    router.push("/store/coupons");
+    router.push(String(ROUTES.STORE.COUPONS));
     router.refresh();
   };
 
@@ -114,7 +114,7 @@ export default function Page() {
         couponId={couponId}
         initial={initial}
         onSave={handleSave}
-        onCancel={() => router.push("/store/coupons")}
+        onCancel={() => router.push(String(ROUTES.STORE.COUPONS))}
       />
     </Div>
   );

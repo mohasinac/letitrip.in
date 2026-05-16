@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { SellerCouponEditorView } from "@mohasinac/appkit";
+import { SellerCouponEditorView, ROUTES } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
@@ -29,7 +29,7 @@ export default function Page() {
       const data = await res.json().catch(() => ({}));
       throw new Error((data as { error?: string })?.error ?? "Failed to create coupon");
     }
-    router.push("/store/coupons");
+    router.push(String(ROUTES.STORE.COUPONS));
     router.refresh();
   };
 
@@ -37,7 +37,7 @@ export default function Page() {
     <div className="py-8 px-4">
       <SellerCouponEditorView
         onSave={handleSave}
-        onCancel={() => router.push("/store/coupons")}
+        onCancel={() => router.push(String(ROUTES.STORE.COUPONS))}
       />
     </div>
   );
